@@ -37,8 +37,16 @@ Maven-Ausgaben maskiert.
 
 Im GitHub-Repository sind die Actions-Secrets `MAVEN_USERNAME` und
 `MAVEN_PASSWORD` hinterlegt. Der Workflow
-`.github/workflows/publish-snapshots.yml` stellt Java 25 bereit und ruft das
-Publish-Skript auf.
+`.github/workflows/publish-snapshots.yml` heisst **publish artefacts** und
+läuft bei **jedem Push** sowie manuell über `workflow_dispatch`.
+
+Ablauf:
+
+1. Java 25 wird bereitgestellt.
+2. `./mvnw -B -Pgeotools-probe clean verify` führt die vollständige
+   Standard- und GeoTools-Testmatrix aus.
+3. Erst danach werden die getesteten Artefakte mit
+   `-Ppublish-snapshots -DskipTests -DskipITs deploy` veröffentlicht.
 
 Manuell starten:
 
@@ -48,7 +56,7 @@ gh run list --workflow publish-snapshots.yml
 gh run watch <run-id>
 ```
 
-Alternativ im GitHub-UI unter **Actions → Publish snapshots → Run workflow**.
+Alternativ im GitHub-UI unter **Actions → publish artefacts → Run workflow**.
 
 ## 4. Veröffentlichen lokal
 

@@ -1,6 +1,7 @@
-name: Publish snapshots
+name: publish artefacts
 
 on:
+  push:
   workflow_dispatch:
 
 permissions:
@@ -12,9 +13,9 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish 0.1.0-SNAPSHOT
+    name: publish artefacts
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,8 +27,16 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Build and publish snapshot
+      - name: Run all tests including GeoTools profile
+        run: ./mvnw -B -Pgeotools-probe clean verify
+
+      - name: Publish snapshot artefacts
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-        run: ./scripts/publish-snapshots.sh
+        run: >-
+          ./mvnw -B
+          -s docs/implementation/publish-settings.xml
+          -Ppublish-snapshots
+          -DskipTests -DskipITs
+          deploy

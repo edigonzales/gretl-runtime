@@ -351,10 +351,12 @@ Die produktiven Maven-Artefakte und die Scriptdistribution werden unter
 Die vollständige Anleitung steht in
 [`publish-snapshots.md`](publish-snapshots.md).
 
-Der GitHub-Actions-Workflow `.github/workflows/publish-snapshots.yml` wird
-über **Actions → Publish snapshots → Run workflow** oder
-`gh workflow run publish-snapshots.yml --ref main` gestartet und nutzt die
-Repository-Secrets `MAVEN_USERNAME`/`MAVEN_PASSWORD`.
+Der GitHub-Actions-Workflow `.github/workflows/publish-snapshots.yml` heisst
+**publish artefacts** und läuft bei jedem Push sowie manuell über
+`workflow_dispatch`. Er führt zuerst
+`./mvnw -B -Pgeotools-probe clean verify` aus und deployt anschliessend mit
+`-DskipTests -DskipITs`; die Repository-Secrets `MAVEN_USERNAME` und
+`MAVEN_PASSWORD` werden nur im Deploy-Schritt injiziert.
 
 Lokal:
 
