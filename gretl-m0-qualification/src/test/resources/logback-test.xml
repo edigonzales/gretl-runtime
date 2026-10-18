@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-  <!--
-    M0 qualification harness only: suppress incidental console output while the
-    test appenders inspect the real Logback events. No runtime configuration.
-  -->
-  <root level="OFF"/>
-</configuration>

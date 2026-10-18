@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.sun.net.httpserver.HttpServer;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -15,6 +16,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -41,8 +44,12 @@ class DistributionIT {
                 .findFirst().orElseThrow();
         assertEquals(ChecksumManifest.sha256(base.resolve("bin/gretl")),
                 line.substring(0, 64));
+        assertApiArtifact(base);
 
-        assertEquals(0, run(base, "--version").code());
+        ProcessResult version = run(base, "--version");
+        assertEquals(0, version.code(), version.err());
+        assertTrue(version.out().contains("Java: 25"));
+        assertTrue(version.out().contains("Groovy: 6.0.0"));
         ProcessResult operations = run(base, "operations");
         assertEquals(0, operations.code(), operations.err());
         assertTrue(operations.out().contains("HttpDownload"));
@@ -267,6 +274,38 @@ class DistributionIT {
         assertEquals(0, run.code(), run.err());
         assertTrue(Files.isRegularFile(report));
         assertTrue(Files.readString(report).contains("SUCCEEDED"));
+    }
+
+    private static void assertApiArtifact(Path base) throws Exception {
+        Path runtime = base.resolve("lib/runtime");
+        Path apiJar;
+        try (java.util.stream.Stream<Path> files = Files.list(runtime)) {
+            apiJar = files.filter(path -> path.getFileName().toString()
+                            .startsWith("gretl-api-"))
+                    .filter(path -> path.getFileName().toString().endsWith(".jar"))
+                    .findFirst().orElseThrow();
+        }
+        assertTrue(Files.isRegularFile(apiJar), "API JAR missing: " + apiJar);
+        try (JarFile jar = new JarFile(apiJar.toFile())) {
+            List<JarEntry> classes = jar.stream()
+                    .filter(entry -> entry.getName().endsWith(".class"))
+                    .filter(entry -> !entry.getName().startsWith("META-INF/"))
+                    .toList();
+            assertEquals(27, classes.size(), "API surface: " + classes);
+            for (JarEntry entry : classes) {
+                try (DataInputStream data = new DataInputStream(
+                        jar.getInputStream(entry))) {
+                    assertEquals(0xCAFEBABE, data.readInt());
+                    data.readUnsignedShort();
+                    assertEquals(69, data.readUnsignedShort(), entry.getName());
+                }
+            }
+            assertTrue(jar.stream().noneMatch(entry ->
+                    entry.getName().startsWith("META-INF/services/")));
+            assertEquals("ch.so.agi.gretl.runtime.api",
+                    jar.getManifest().getMainAttributes()
+                            .getValue("Automatic-Module-Name"));
+        }
     }
 
     private ProcessResult runJava(Path cwd, Path jar, String... args) throws Exception {

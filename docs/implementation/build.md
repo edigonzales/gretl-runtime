@@ -47,13 +47,11 @@ export PATH="$JAVA_HOME/bin:$PATH"
 8. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
 9. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
 10. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
-11. **gretl-m0-qualification** — Groovy-/pgJDBC-/INTERLIS-/Logging-Proben,
-    16 Tests,
-12. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
+11. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration sowie Job-JAR-Paket
     und -Start, 1 Surefire- und 7 Failsafe-Tests.
 
-Erwartet: **286 Tests**, 0 Fehler, `BUILD SUCCESS`.
+Erwartet: **270 Tests**, 0 Fehler, `BUILD SUCCESS`.
 
 ### Artefakte
 
@@ -79,13 +77,12 @@ Erwartet: **286 Tests**, 0 Fehler, `BUILD SUCCESS`.
 ./mvnw -pl gretl-basic-tasks -am test
 ./mvnw -pl gretl-ilivalidator -am test
 ./mvnw -pl gretl-dist -am verify
-./mvnw -pl gretl-m0-qualification -am verify
 ./mvnw -Pgeotools-probe verify -Dmaven.repo.local=/tmp/m5-fresh-final
 ```
 
 `gretl-dist` benötigt `package` (Assembly) vor der Failsafe-Prüfung; `verify`
-erledigt beides. `gretl-m0-qualification` benötigt das separat gebaute
-Erweiterungs-JAR und das API-JAR.
+erledigt beides. Die frühere M0-Testbaugruppe entfällt; ihre Artefaktprüfung
+ist in den Distributions-IT verschoben.
 
 ## 3. Scriptdistribution benutzen
 
@@ -263,7 +260,7 @@ Dollar-Quote, Prepared-Apostroph/null und Rollback nach dem zweiten Fehler.
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **290 Tests** (286 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **274 Tests** (270 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.
@@ -280,7 +277,6 @@ Bestandteil der Scriptdistribution.
 | `gretl-ilivalidator` | reale INTERLIS-Validierung (B) | ja |
 | `gretl-cli` | CLI/Config/Hilfe/Orchestrierung | ja |
 | `examples/file-size-extension` | separat gebautes Erweiterungs-JAR | ja |
-| `gretl-m0-qualification` | M0-Testbaugruppe | ja |
 | `gretl-dist` | Scriptdistribution/Assembly | ja |
 | `gretl-geotools-probe` | GeoTools-Testprobe | nur Profil |
 

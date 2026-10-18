@@ -76,9 +76,9 @@ Regeln:
 
 | Prüfung | Ergebnis |
 |---|---|
-| Standard-`verify` | **286 Tests**, `BUILD SUCCESS` |
-| GeoTools-Profil | **290 Tests**, `BUILD SUCCESS` |
-| Frisches Maven-Repository | **290 Tests**, `BUILD SUCCESS` |
+| Standard-`verify` | **286 Tests**, `BUILD SUCCESS` (historischer M6-Stand; nach Entfernen der M0-Testbaugruppe aktuell 270) |
+| GeoTools-Profil | **290 Tests**, `BUILD SUCCESS` (aktuell 274) |
+| Frisches Maven-Repository | **290 Tests**, `BUILD SUCCESS` (historisch) |
 | `gretl-packager`-Tests | 4 |
 | Distributions-Failsafe | 7 |
 | Dist-Checksum-Test | 1 |

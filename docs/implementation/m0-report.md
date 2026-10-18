@@ -1,5 +1,10 @@
 # M0-Prüfbericht — qualifizierter Anfangsbestand
 
+> **Historische Testbaugruppe.** `gretl-m0-qualification` wurde nach M6 aus
+> dem dauerhaften Build entfernt. Die API-Artefaktprüfung wird seitdem im
+> `gretl-dist`-Integrationstest gegen das ausgelieferte JAR ausgeführt.
+
+
 **Datum:** 18. Oktober 2026  
 **Meilenstein:** M0 gemäss `docs/spec/10-implementierungsplan-fuer-coding-agenten.md`  
 **Spezifikationsbasis:** 4.1  

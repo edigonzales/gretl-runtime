@@ -26,8 +26,8 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - M2-Bericht (historisch): [`docs/implementation/m2-report.md`](docs/implementation/m2-report.md)
 - M1-Bericht (historisch): [`docs/implementation/m1-report.md`](docs/implementation/m1-report.md)
 - M0-Bericht (historisch): [`docs/implementation/m0-report.md`](docs/implementation/m0-report.md)
-- Standardprüfung: `./mvnw verify` mit JDK 25 (**286 Tests**)
-- GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**290 Tests**)
+- Standardprüfung: `./mvnw verify` mit JDK 25 (**270 Tests**)
+- GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**274 Tests**)
 - Scriptdistribution: `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip`
 
 Paketieren und starten:

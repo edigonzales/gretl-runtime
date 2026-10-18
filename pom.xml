@@ -12,7 +12,8 @@
   <name>GRETL Runtime Parent</name>
   <description>
     Root parent and aggregator for the GRETL Runtime product build:
-    API, runner, Groovy adapter, logging, standard tasks, CLI and qualification.
+    API, runner, Groovy adapter, logging, standard tasks, CLI, packager and
+    packaged job runtime.
   </description>
 
   <modules>
@@ -26,7 +27,6 @@
     <module>gretl-job-runtime</module>
     <module>gretl-ilivalidator</module>
     <module>examples/file-size-extension</module>
-    <module>gretl-m0-qualification</module>
     <module>gretl-dist</module>
   </modules>
 

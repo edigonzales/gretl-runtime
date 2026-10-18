@@ -9,7 +9,6 @@
 Veröffentlicht werden die produktiven Maven-Modul-JARs, ihre POMs und die
 Scriptdistribution. Nicht veröffentlicht werden:
 
-- `gretl-m0-qualification` (Test-/Qualifikationsmodul),
 - `examples/file-size-extension` (Fixture),
 - `gretl-geotools-probe` (nur Testprofil),
 - job-spezifische Ausgaben von `gretl package`.
