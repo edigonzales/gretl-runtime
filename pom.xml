@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>ch.so.agi.gretl</groupId>
+  <artifactId>gretl-runtime-parent</artifactId>
+  <version>0.1.0-M6</version>
+  <packaging>pom</packaging>
+
+  <name>GRETL Runtime Parent</name>
+  <description>
+    Root parent and aggregator for the GRETL Runtime product build:
+    API, runner, Groovy adapter, logging, standard tasks, CLI and qualification.
+  </description>
+
+  <modules>
+    <module>gretl-api</module>
+    <module>gretl-runner</module>
+    <module>gretl-groovy</module>
+    <module>gretl-logging</module>
+    <module>gretl-packager</module>
+    <module>gretl-basic-tasks</module>
+    <module>gretl-cli</module>
+    <module>gretl-job-runtime</module>
+    <module>gretl-ilivalidator</module>
+    <module>examples/file-size-extension</module>
+    <module>gretl-m0-qualification</module>
+    <module>gretl-dist</module>
+  </modules>
+
+  <properties>
+    <!-- Product baseline, spec 07. The wrapper pins Maven 3.10.0 separately. -->
+    <java.version>25</java.version>
+    <maven.compiler.release>25</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <groovy.version>6.0.0</groovy.version>
+    <junit.version>5.14.4</junit.version>
+    <slf4j.version>2.0.20</slf4j.version>
+    <logback.version>1.6.5</logback.version>
+    <postgresql.version>42.7.14</postgresql.version>
+    <ilivalidator.version>1.15.0</ilivalidator.version>
+    <geotools.version>35.2</geotools.version>
+    <commons-compress.version>1.27.1</commons-compress.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.5.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.5.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.16.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.6.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.5.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.7.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.6.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>3.11.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.6.3</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-product-toolchain</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[25,26)</version>
+                  <message>
+                    GRETL Runtime M0 must be built with a Java 25 toolchain.
+                    Set JAVA_HOME to the qualified JDK 25 before running ./mvnw.
+                  </message>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.10.0,3.11)</version>
+                  <message>
+                    GRETL Runtime M0 must be built with the repository Maven wrapper
+                    (Maven 3.10.0). Use ./mvnw, not an arbitrary system Maven.
+                  </message>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- JUnit Platform is auto-detected from the Jupiter engine on the test classpath. -->
+          <trimStackTrace>false</trimStackTrace>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!--
+      The GeoTools probe is an explicitly separated M0/B qualification profile.
+      It is not part of the default product build and its test dependencies are
+      not part of any runtime or standard distribution artifact.
+    -->
+    <profile>
+      <id>geotools-probe</id>
+      <modules>
+        <module>gretl-geotools-probe</module>
+      </modules>
+    </profile>
+  </profiles>
+</project>

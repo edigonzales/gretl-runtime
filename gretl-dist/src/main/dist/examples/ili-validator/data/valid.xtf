@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+<HEADERSECTION SENDER="gretl-dist" VERSION="2.3">
+<MODELS><MODEL NAME="GretlM0Fixture" VERSION="2026-10-18" URI="https://example.invalid"></MODEL></MODELS>
+</HEADERSECTION>
+<DATASECTION>
+<GretlM0Fixture.Site BID="b1">
+<GretlM0Fixture.Site.Punkt TID="p1">
+<name>Beispiel</name>
+<value>12.5</value>
+</GretlM0Fixture.Site.Punkt>
+</GretlM0Fixture.Site>
+</DATASECTION>
+</TRANSFER>

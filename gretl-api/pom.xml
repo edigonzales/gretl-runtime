@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ch.so.agi.gretl</groupId>
+    <artifactId>gretl-runtime-parent</artifactId>
+    <version>0.1.0-M6</version>
+  </parent>
+
+  <artifactId>gretl-api</artifactId>
+  <packaging>jar</packaging>
+
+  <name>GRETL Runtime API</name>
+  <description>
+    JDK-only public operation SPI for GRETL Runtime. This module deliberately has
+    no Gradle, Groovy, logging-backend or domain-library dependency.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>ch.so.agi.gretl.runtime.api</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "name": "ili-validator",
+  "version": "0.1.0-M6",
+  "runtimeVersion": "0.1.0-M6",
+  "entryScript": "job.groovy",
+  "sources": [],
+  "resources": ["data", "models"],
+  "dependencies": [
+    "ch.so.agi.gretl:gretl-ilivalidator:0.1.0-M6"
+  ]
+}

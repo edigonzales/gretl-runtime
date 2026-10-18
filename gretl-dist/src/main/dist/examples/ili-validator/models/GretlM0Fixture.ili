@@ -1,0 +1,16 @@
+INTERLIS 2.3;
+
+MODEL GretlM0Fixture (en)
+  AT "mailto:test@example.invalid"
+  VERSION "2026-10-18" =
+
+  TOPIC Site =
+
+    CLASS Punkt =
+      name : MANDATORY TEXT*50;
+      value : 0.0 .. 1000.0;
+    END Punkt;
+
+  END Site;
+
+END GretlM0Fixture.

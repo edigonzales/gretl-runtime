@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!--
+    This example deliberately has no project parent. It demonstrates that an
+    external custom-task library only needs the published gretl-api artifact.
+    In the full reactor, gretl-api is resolved from the reactor.
+  -->
+  <groupId>ch.so.agi.gretl.examples</groupId>
+  <artifactId>file-size-extension</artifactId>
+  <version>0.1.0-M6</version>
+  <packaging>jar</packaging>
+
+  <name>GRETL M0 FileSize example extension</name>
+  <description>Separately built example OperationProvider used by M0 qualification.</description>
+
+  <properties>
+    <maven.compiler.release>25</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <gretl.api.version>0.1.0-M6</gretl.api.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-api</artifactId>
+      <version>${gretl.api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.16.0</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>ch.so.agi.gretl.examples.file_size</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

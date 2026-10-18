@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+BASE_DIR=$(dirname -- "$SCRIPT_DIR")
+JAVA_BIN="${JAVA_HOME:+$JAVA_HOME/bin/}java"
+
+exec "$JAVA_BIN" ${GRETL_JAVA_OPTS:-} \
+  -cp "$BASE_DIR/lib/runtime/*:$BASE_DIR/lib/tasks/*:$BASE_DIR/lib/extensions/*" \
+  ch.so.agi.gretl.cli.Main "$@"

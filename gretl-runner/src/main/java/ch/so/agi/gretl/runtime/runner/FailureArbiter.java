@@ -1,0 +1,105 @@
+package ch.so.agi.gretl.runtime.runner;
+
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Deterministic task failure precedence. It analyzes explicit work/control
+ * values, never log severity, clocks or business codes.
+ */
+public final class FailureArbiter {
+
+    public TaskCompletion resolve(
+            WorkCompletion work, ControlSnapshot control, List<Throwable> closeErrors) {
+        Objects.requireNonNull(work, "work");
+        Objects.requireNonNull(control, "control");
+        List<Throwable> failures = closeErrors == null ? List.of() : closeErrors;
+        List<FailureInfo> closeFailures = failures.stream().map(FailureInfo::from).toList();
+
+        if (work instanceof WorkCompletion.Failure failure) {
+            for (Throwable closeError : failures) {
+                if (closeError != failure.error()) {
+                    failure.error().addSuppressed(closeError);
+                }
+            }
+            return TaskCompletion.failed(FailureInfo.from(failure.error()), closeFailures);
+        }
+
+        if (work instanceof WorkCompletion.Skipped skipped) {
+            if (!failures.isEmpty()) {
+                return failureFromCloseErrors(failures);
+            }
+            return TaskCompletion.skipped(skipped.reason());
+        }
+
+        if (work instanceof WorkCompletion.Finished finished) {
+            if (control.cancellationReason().isPresent()) {
+                return TaskCompletion.cancelled(closeFailures);
+            }
+            if (!failures.isEmpty()) {
+                return failureFromCloseErrors(failures);
+            }
+            return TaskCompletion.skipped(finished.reason());
+        }
+
+        if (work instanceof WorkCompletion.Cancelled) {
+            return TaskCompletion.cancelled(closeFailures);
+        }
+
+        WorkCompletion.Value value = (WorkCompletion.Value) work;
+        if (control.finishRequested()) {
+            if (!failures.isEmpty()) {
+                return failureFromCloseErrors(failures);
+            }
+            return TaskCompletion.skipped(
+                    control.finishReason().orElse("JOB_FINISHED"));
+        }
+        if (!failures.isEmpty()) {
+            return failureFromCloseErrors(failures);
+        }
+        return TaskCompletion.succeeded(value.value());
+    }
+
+    private static TaskCompletion failureFromCloseErrors(List<Throwable> closeErrors) {
+        Throwable primary = closeErrors.get(0);
+        for (int index = 1; index < closeErrors.size(); index++) {
+            if (closeErrors.get(index) != primary) {
+                primary.addSuppressed(closeErrors.get(index));
+            }
+        }
+        List<FailureInfo> secondary = closeErrors.subList(1, closeErrors.size()).stream()
+                .map(FailureInfo::from).toList();
+        return TaskCompletion.failed(FailureInfo.from(primary), secondary);
+    }
+
+    /** Explicit result of the executable work, independent of close failures. */
+    public sealed interface WorkCompletion {
+        record Value(Object value) implements WorkCompletion {
+        }
+
+        record Failure(Throwable error) implements WorkCompletion {
+            public Failure {
+                Objects.requireNonNull(error, "error");
+            }
+        }
+
+        record Finished(String reason) implements WorkCompletion {
+            public Finished {
+                if (reason == null || reason.isBlank()) {
+                    throw new IllegalArgumentException("reason must not be blank");
+                }
+            }
+        }
+
+        record Skipped(String reason) implements WorkCompletion {
+            public Skipped {
+                if (reason == null || reason.isBlank()) {
+                    throw new IllegalArgumentException("reason must not be blank");
+                }
+            }
+        }
+
+        record Cancelled() implements WorkCompletion {
+        }
+    }
+}

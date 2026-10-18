@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "name": "sql-example",
+  "version": "0.1.0-M6",
+  "runtimeVersion": "0.1.0-M6",
+  "entryScript": "job.groovy",
+  "sources": [],
+  "resources": ["sql"],
+  "dependencies": [
+    "ch.so.agi.gretl:gretl-basic-tasks:0.1.0-M6"
+  ]
+}

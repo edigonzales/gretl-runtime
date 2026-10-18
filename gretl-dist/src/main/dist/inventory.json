@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "runtime": "gretl-runtime",
+  "version": "${project.version}",
+  "java": "25",
+  "groovy": "6.0.0",
+  "modules": [
+    "gretl-api",
+    "gretl-runner",
+    "gretl-groovy",
+    "gretl-logging",
+    "gretl-basic-tasks",
+    "gretl-ilivalidator",
+    "gretl-cli",
+    "gretl-packager",
+    "gretl-job-runtime"
+  ],
+  "tasks": ["HttpDownload", "Extract", "SqlExecutor", "IliValidator"],
+  "extensionDirectory": "lib/extensions",
+  "taskArtifacts": [
+    "gretl-basic-tasks-${project.version}.jar",
+    "gretl-ilivalidator-${project.version}.jar"
+  ],
+  "packager": "gretl package job-package.json --output job.jar",
+  "dependencyVersions": {
+    "groovy": "6.0.0",
+    "slf4j": "2.0.20",
+    "logback": "1.6.5",
+    "commons-compress": "1.27.1",
+    "postgresql": "42.7.14",
+    "ilivalidator": "1.15.0"
+  },
+  "sourceRevision": "working-tree; release build must provide the source commit",
+  "checksumsFile": "SHA256SUMS"
+}

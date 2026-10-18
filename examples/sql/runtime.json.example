@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "runtime": {
+    "workRoot": "/tmp/gretl-work",
+    "reportRoot": "/tmp/gretl-reports"
+  },
+  "logging": {
+    "format": "text",
+    "level": "INFO",
+    "eventFile": true
+  },
+  "secrets": {
+    "dbPassword": {"environment": "GRETL_DB_PASSWORD"}
+  },
+  "taskConfig": {
+    "edit": {
+      "jdbcUrl": "jdbc:postgresql://localhost/gretl_test",
+      "user": "gretl_test",
+      "passwordSecret": "dbPassword"
+    }
+  }
+}

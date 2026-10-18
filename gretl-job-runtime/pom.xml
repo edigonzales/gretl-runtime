@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>ch.so.agi.gretl</groupId>
+    <artifactId>gretl-runtime-parent</artifactId>
+    <version>0.1.0-M6</version>
+  </parent>
+  <artifactId>gretl-job-runtime</artifactId>
+  <packaging>jar</packaging>
+  <name>GRETL Packaged Job Runtime</name>
+  <description>Entry point and resource materialization for executable job JARs.</description>
+  <dependencies>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-cli</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-groovy</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-logging</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>ch.so.agi.gretl.job.JobJarMain</mainClass>
+            </manifest>
+            <manifestEntries>
+              <Automatic-Module-Name>ch.so.agi.gretl.job</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
