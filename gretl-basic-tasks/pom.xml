@@ -6,7 +6,7 @@
   <parent>
     <groupId>ch.so.agi.gretl</groupId>
     <artifactId>gretl-runtime-parent</artifactId>
-    <version>0.1.0-M6</version>
+    <version>0.1.0-SNAPSHOT</version>
   </parent>
   <artifactId>gretl-basic-tasks</artifactId>
   <packaging>jar</packaging>

@@ -41,6 +41,11 @@ public record PackageDescriptor(
     }
 
     public static PackageDescriptor load(Path descriptor) throws PackageException {
+        return load(descriptor, false);
+    }
+
+    public static PackageDescriptor load(Path descriptor, boolean allowSnapshots)
+            throws PackageException {
         Path file = descriptor.toAbsolutePath().normalize();
         if (!Files.isRegularFile(file)) {
             throw new PackageException("PACKAGE_DESCRIPTOR_MISSING",
@@ -78,7 +83,7 @@ public record PackageDescriptor(
         String entryScript = text(object, "entryScript");
         List<String> sources = textList(object, "sources");
         List<String> resources = textList(object, "resources");
-        List<Dependency> dependencies = dependencies(object);
+        List<Dependency> dependencies = dependencies(object, allowSnapshots);
 
         Path base = file.getParent().toAbsolutePath().normalize();
         PackageDescriptor value = new PackageDescriptor(file, base, schemaVersion,
@@ -242,7 +247,8 @@ public record PackageDescriptor(
         return result;
     }
 
-    private static List<Dependency> dependencies(Map<String, Object> object)
+    private static List<Dependency> dependencies(Map<String, Object> object,
+                                                  boolean allowSnapshots)
             throws PackageException {
         Object value = object.get("dependencies");
         if (value == null) {
@@ -267,7 +273,8 @@ public record PackageDescriptor(
             String version = parts[2];
             if (version.startsWith("[") || version.startsWith("(")
                     || version.equals("LATEST") || version.equals("RELEASE")
-                    || version.toUpperCase(java.util.Locale.ROOT).endsWith("-SNAPSHOT")
+                    || (!allowSnapshots && version.toUpperCase(java.util.Locale.ROOT)
+                    .endsWith("-SNAPSHOT"))
                     || version.contains("*")) {
                 throw new PackageException("PACKAGE_DEPENDENCY_VERSION",
                         "Dependency benoetigt eine feste Version: " + text);

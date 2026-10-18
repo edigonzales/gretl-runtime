@@ -27,7 +27,7 @@ class BytecodeAndArtifactTest {
 
     @Test
     void apiJarIsJava25AndContainsTheTwentySevenPublicApiClasses() throws Exception {
-        Path apiJar = Path.of("..", "gretl-api", "target", "gretl-api-0.1.0-M6.jar")
+        Path apiJar = Path.of("..", "gretl-api", "target", "gretl-api-0.1.0-SNAPSHOT.jar")
                 .toAbsolutePath().normalize();
         assertTrue(java.nio.file.Files.isRegularFile(apiJar), "API JAR exists: " + apiJar);
 

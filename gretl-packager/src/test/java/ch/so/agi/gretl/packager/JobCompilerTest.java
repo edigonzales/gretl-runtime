@@ -36,7 +36,7 @@ class JobCompilerTest {
                   "schemaVersion": 1,
                   "name": "compiler-demo",
                   "version": "2026.10.18",
-                  "runtimeVersion": "0.1.0-M6",
+                  "runtimeVersion": "0.1.0-SNAPSHOT",
                   "entryScript": "job.groovy",
                   "sources": ["helpers"],
                   "resources": [],

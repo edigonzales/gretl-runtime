@@ -11,16 +11,18 @@
   -->
   <groupId>ch.so.agi.gretl.examples</groupId>
   <artifactId>file-size-extension</artifactId>
-  <version>0.1.0-M6</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>GRETL M0 FileSize example extension</name>
   <description>Separately built example OperationProvider used by M0 qualification.</description>
 
   <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+    <maven.install.skip>true</maven.install.skip>
     <maven.compiler.release>25</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <gretl.api.version>0.1.0-M6</gretl.api.version>
+    <gretl.api.version>0.1.0-SNAPSHOT</gretl.api.version>
   </properties>
 
   <dependencies>

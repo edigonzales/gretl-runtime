@@ -20,7 +20,8 @@ public final class JobPackager {
 
     public JobPackageBuilder.PackageResult packageJob(Path descriptorFile, Path output)
             throws PackageException {
-        PackageDescriptor descriptor = PackageDescriptor.load(descriptorFile);
+        PackageDescriptor descriptor = PackageDescriptor.load(descriptorFile,
+                packagerVersion.endsWith("-SNAPSHOT"));
         if (!packagerVersion.equals(descriptor.runtimeVersion())) {
             throw new PackageException("PACKAGE_RUNTIME_VERSION",
                     "Deskriptor verlangt Runtime " + descriptor.runtimeVersion()

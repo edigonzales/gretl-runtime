@@ -117,7 +117,7 @@ class LoggingLimitsAndBridgeTest {
     }
 
     private static LogContext context() {
-        return new LogContext("command", UUID.randomUUID(), "job", "0.1.0-M6",
+        return new LogContext("command", UUID.randomUUID(), "job", "0.1.0-SNAPSHOT",
                 Optional.empty());
     }
 }

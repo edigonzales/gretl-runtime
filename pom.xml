@@ -6,7 +6,7 @@
 
   <groupId>ch.so.agi.gretl</groupId>
   <artifactId>gretl-runtime-parent</artifactId>
-  <version>0.1.0-M6</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>GRETL Runtime Parent</name>
@@ -118,6 +118,11 @@
           <version>3.2.0</version>
         </plugin>
         <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>3.6.1</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
           <version>3.6.3</version>
@@ -180,6 +185,16 @@
   </build>
 
   <profiles>
+    <profile>
+      <id>publish-snapshots</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>interlis-snapshots</id>
+          <url>https://jars.interlis.guru/snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+
     <!--
       The GeoTools probe is an explicitly separated M0/B qualification profile.
       It is not part of the default product build and its test dependencies are

@@ -51,7 +51,7 @@ class RunReportWriterTest {
         JobOutcome outcome = new SequentialJobRunner().run(definition, plan, input);
 
         LogContext context = new LogContext("command-1", outcome.runId(), "report-job",
-                "0.1.0-M6", Optional.of("test"));
+                "0.1.0-SNAPSHOT", Optional.of("test"));
         Path script = tempDir.resolve("job.groovy");
         Files.writeString(script, "// script", StandardCharsets.UTF_8);
         RunReportInput reportInput = new RunReportInput(

@@ -24,11 +24,11 @@ class PackageDescriptorTest {
                   "schemaVersion": 1,
                   "name": "demo",
                   "version": "2026.10.18",
-                  "runtimeVersion": "0.1.0-M6",
+                  "runtimeVersion": "0.1.0-SNAPSHOT",
                   "entryScript": "job.groovy",
                   "sources": [],
                   "resources": ["sql"],
-                  "dependencies": ["ch.so.agi.gretl:gretl-basic-tasks:0.1.0-M6"]
+                  "dependencies": ["ch.so.agi.gretl:gretl-basic-tasks:1.0.0"]
                 }
                 """);
 

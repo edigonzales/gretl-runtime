@@ -23,7 +23,7 @@ public final class HelpPrinter {
 
     public void global() {
         out.println("""
-                gretl-runtime 0.1.0-M6 — sequenzieller GRETL-Jobrunner
+                gretl-runtime 0.1.0-SNAPSHOT — sequenzieller GRETL-Jobrunner
 
                 Aufrufe:
                   gretl --help

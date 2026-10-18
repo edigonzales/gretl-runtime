@@ -27,7 +27,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionStartsAndLoadsStandardAndExtensionTasks() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-M6-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         assertTrue(Files.isRegularFile(zip), "distribution zip missing: " + zip);
         Path root = tempDir.resolve("dist");
         unzip(zip, root);
@@ -76,7 +76,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionDownloadsAndExtractsWithLocalServer() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-M6-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist2");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -121,7 +121,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionRunsOptionalAndNoDataExamples() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-M6-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist4");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -144,7 +144,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionRunsTokenCatalogExample() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-M6-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist5");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -200,7 +200,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionRunsRealInterlisValidator() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-M6-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist3");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -236,7 +236,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionPackagesAndRunsIliValidatorJar() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-M6-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist6");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -250,7 +250,7 @@ class DistributionIT {
         Path foreignCwd = Files.createDirectories(tempDir.resolve("foreign-cwd"));
         ProcessResult version = runJava(foreignCwd, jar, "--version");
         assertEquals(0, version.code(), version.err());
-        assertTrue(version.out().contains("ili-validator 0.1.0-M6"));
+        assertTrue(version.out().contains("ili-validator 0.1.0-SNAPSHOT"));
 
         ProcessResult help = runJava(foreignCwd, jar, "--help");
         assertEquals(0, help.code(), help.err());
@@ -282,7 +282,7 @@ class DistributionIT {
 
     @Test
     void packagedJarDoesNotExecuteAtBuildAndSupportsParametersAndCustomTasks() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-M6-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist7");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -308,12 +308,12 @@ class DistributionIT {
                   "schemaVersion": 1,
                   "name": "parameter-demo",
                   "version": "2026.10.18",
-                  "runtimeVersion": "0.1.0-M6",
+                  "runtimeVersion": "0.1.0-SNAPSHOT",
                   "entryScript": "job.groovy",
                   "sources": [],
                   "resources": ["data.txt"],
                   "dependencies": [
-                    "ch.so.agi.gretl.examples:file-size-extension:0.1.0-M6"
+                    "ch.so.agi.gretl.examples:file-size-extension:0.1.0-SNAPSHOT"
                   ]
                 }
                 """);

@@ -59,17 +59,17 @@ Erwartet: **286 Tests**, 0 Fehler, `BUILD SUCCESS`.
 
 | Artefakt | Ort |
 |---|---|
-| API-JAR | `gretl-api/target/gretl-api-0.1.0-M6.jar` |
-| Runner-JAR | `gretl-runner/target/gretl-runner-0.1.0-M6.jar` |
-| Groovy-Adapter | `gretl-groovy/target/gretl-groovy-0.1.0-M6.jar` |
-| Logging | `gretl-logging/target/gretl-logging-0.1.0-M6.jar` |
-| Standard-Tasks | `gretl-basic-tasks/target/gretl-basic-tasks-0.1.0-M6.jar` |
-| IliValidator | `gretl-ilivalidator/target/gretl-ilivalidator-0.1.0-M6.jar` |
-| CLI | `gretl-cli/target/gretl-cli-0.1.0-M6.jar` |
-| Packager | `gretl-packager/target/gretl-packager-0.1.0-M6.jar` |
-| Job-JAR-Runtime | `gretl-job-runtime/target/gretl-job-runtime-0.1.0-M6.jar` |
-| Erweiterungs-JAR | `examples/file-size-extension/target/file-size-extension-0.1.0-M6.jar` |
-| Scriptdistribution | `gretl-dist/target/gretl-runtime-0.1.0-M6-bin.zip` und `.tar.gz` |
+| API-JAR | `gretl-api/target/gretl-api-0.1.0-SNAPSHOT.jar` |
+| Runner-JAR | `gretl-runner/target/gretl-runner-0.1.0-SNAPSHOT.jar` |
+| Groovy-Adapter | `gretl-groovy/target/gretl-groovy-0.1.0-SNAPSHOT.jar` |
+| Logging | `gretl-logging/target/gretl-logging-0.1.0-SNAPSHOT.jar` |
+| Standard-Tasks | `gretl-basic-tasks/target/gretl-basic-tasks-0.1.0-SNAPSHOT.jar` |
+| IliValidator | `gretl-ilivalidator/target/gretl-ilivalidator-0.1.0-SNAPSHOT.jar` |
+| CLI | `gretl-cli/target/gretl-cli-0.1.0-SNAPSHOT.jar` |
+| Packager | `gretl-packager/target/gretl-packager-0.1.0-SNAPSHOT.jar` |
+| Job-JAR-Runtime | `gretl-job-runtime/target/gretl-job-runtime-0.1.0-SNAPSHOT.jar` |
+| Erweiterungs-JAR | `examples/file-size-extension/target/file-size-extension-0.1.0-SNAPSHOT.jar` |
+| Scriptdistribution | `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip` und `.tar.gz` |
 | Prüfsummen | `SHA256SUMS` im Distributionsarchiv |
 
 ### Gezielte Aufrufe
@@ -91,8 +91,8 @@ Erweiterungs-JAR und das API-JAR.
 
 ```sh
 cd gretl-dist/target
-unzip gretl-runtime-0.1.0-M6-bin.zip
-cd gretl-runtime-0.1.0-M6
+unzip gretl-runtime-0.1.0-SNAPSHOT-bin.zip
+cd gretl-runtime-0.1.0-SNAPSHOT
 export JAVA_HOME=/pfad/zu/temurin-25
 ./bin/gretl --version
 ./bin/gretl operations
@@ -300,9 +300,9 @@ Produktcompiler, kein Shade-Plugin, keine globale Fachdependency in API/Runner.
 ./mvnw -pl gretl-cli dependency:tree
 ./mvnw -pl gretl-basic-tasks dependency:tree
 jdeps --multi-release 25 --ignore-missing-deps -summary \
-  gretl-runner/target/gretl-runner-0.1.0-M6.jar
+  gretl-runner/target/gretl-runner-0.1.0-SNAPSHOT.jar
 jdeps --multi-release 25 --ignore-missing-deps -summary \
-  gretl-basic-tasks/target/gretl-basic-tasks-0.1.0-M6.jar
+  gretl-basic-tasks/target/gretl-basic-tasks-0.1.0-SNAPSHOT.jar
 ```
 
 Die Tests prüfen zusätzlich API-/Runner-Importgrenzen, das Fehlen von
@@ -343,3 +343,21 @@ Protokoll steht in [`m5-user-acceptance.md`](m5-user-acceptance.md). Der
 M6-Packager ist die optionale Lieferstufe C; Publisher, XtfToGpkg und Native
 Image bleiben spätere, getrennte Aufträge. Die M5- und M6-Berichte halten die
 jeweiligen Grenzen fest.
+
+## 13. Snapshot-Veröffentlichung
+
+Die produktiven Maven-Artefakte und die Scriptdistribution werden unter
+`0.1.0-SNAPSHOT` nach `https://jars.interlis.guru/snapshots` veröffentlicht.
+Die vollständige Anleitung steht in
+[`publish-snapshots.md`](publish-snapshots.md).
+
+```sh
+export MAVEN_USERNAME='...'
+export MAVEN_PASSWORD='...'
+./scripts/publish-snapshots.sh
+```
+
+Das Skript nutzt `docs/implementation/publish-settings.xml` mit
+Environment-Platzhaltern und das Maven-Profil `publish-snapshots`. Die
+Distribution wird als `gretl-dist` mit den Classifiers `bin` (ZIP) und
+`bin-tar-gz` (TAR.GZ) angehängt.

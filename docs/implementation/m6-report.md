@@ -2,7 +2,7 @@
 
 **Stand:** 18. Oktober 2026  
 **Basis:** Spezifikation 4.1, Kapitel 09/10/12  
-**Projektversion:** `0.1.0-M6`  
+**Projektversion:** `0.1.0-M6` (historischer Meilensteinbericht; die veröffentlichte Snapshot-Version ist `0.1.0-SNAPSHOT`)  
 **Status:** erster technischer Stufe-C-Packager umgesetzt. Die
 M5-Anwenderabnahme bleibt bestanden; die formale M5-Release-/Pilotentscheidung
 bleibt offen. M6 ist kein Native-Image- und kein Publisher-Meilenstein.
@@ -45,8 +45,10 @@ Regeln:
 - `entryScript` liegt unmittelbar im Deskriptorverzeichnis.
 - Quellen und Ressourcen bleiben unter dieser Wurzel; absolute Pfade, `..`,
   Symlinks und unbekannte Deskriptorfelder werden abgelehnt.
-- Dependency-Versionen müssen fest sein; `LATEST`, `RELEASE`, Bereiche und
-  Snapshots werden abgelehnt.
+- Dependency-Versionen müssen fest sein; `LATEST`, `RELEASE` und Bereiche
+  werden abgelehnt. Ein `0.1.0-SNAPSHOT`-Packager akzeptiert auch
+  Snapshot-Dependencies; ein solches Paket ist nicht als qualifiziertes
+  Release-Artefakt freigegeben.
 - Beim Packen wird der Job **nicht** ausgeführt; Toplevelcode läuft erst beim
   Start.
 - Ressourcen werden als Lesebestand nach `META-INF/gretl/job-resources/`
@@ -137,3 +139,9 @@ vorkompiliert, als eigenständiges JAR ausgeliefert und ohne installierte
 Runtime gestartet werden. Die Tests prüfen die zentralen Paketierungs- und
 Laufzeitrisiken. Die fehlende Maven-Koordinatenauflösung und der vollständige
 Runtimebestand sind vor einer breiten C-Freigabe bewusst nachzubessern.
+
+## Snapshot-Veröffentlichung
+
+Die produktiven Maven-Artefakte und die Scriptdistribution werden unter
+`0.1.0-SNAPSHOT` nach `https://jars.interlis.guru/snapshots` veröffentlicht.
+Die Anleitung steht in [publish-snapshots.md](publish-snapshots.md).

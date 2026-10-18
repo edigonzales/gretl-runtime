@@ -21,7 +21,7 @@ class CliHelpAndDefinitionTest {
     void globalHelpVersionAndOperationsDoNotLoadAJob() {
         Result version = cli().run("--version");
         assertEquals(0, version.code());
-        assertTrue(version.out().contains("gretl-runtime 0.1.0-M6"));
+        assertTrue(version.out().contains("gretl-runtime 0.1.0-SNAPSHOT"));
         assertTrue(version.err().isEmpty());
 
         Result help = cli().run("--help");

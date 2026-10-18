@@ -103,6 +103,6 @@ class LoggingPipelineTest {
     private static LogContext context() {
         return new LogContext("cc35045e-8a2f-4f5e-935e-d59adad4b483",
                 UUID.fromString("230305b8-bd98-4b23-a5b8-6c7e8b8ab4a7"),
-                "job", "0.1.0-M6", Optional.empty());
+                "job", "0.1.0-SNAPSHOT", Optional.empty());
     }
 }
