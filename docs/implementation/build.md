@@ -351,6 +351,13 @@ Die produktiven Maven-Artefakte und die Scriptdistribution werden unter
 Die vollständige Anleitung steht in
 [`publish-snapshots.md`](publish-snapshots.md).
 
+Der GitHub-Actions-Workflow `.github/workflows/publish-snapshots.yml` wird
+über **Actions → Publish snapshots → Run workflow** oder
+`gh workflow run publish-snapshots.yml --ref main` gestartet und nutzt die
+Repository-Secrets `MAVEN_USERNAME`/`MAVEN_PASSWORD`.
+
+Lokal:
+
 ```sh
 export MAVEN_USERNAME='...'
 export MAVEN_PASSWORD='...'

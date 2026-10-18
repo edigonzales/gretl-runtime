@@ -33,7 +33,24 @@ export MAVEN_PASSWORD='...'
 Deploy auf; die Settings-Datei enthält keine Secrets. Das Passwort wird in
 Maven-Ausgaben maskiert.
 
-## 3. Veröffentlichen
+## 3. Veröffentlichen über GitHub Actions
+
+Im GitHub-Repository sind die Actions-Secrets `MAVEN_USERNAME` und
+`MAVEN_PASSWORD` hinterlegt. Der Workflow
+`.github/workflows/publish-snapshots.yml` stellt Java 25 bereit und ruft das
+Publish-Skript auf.
+
+Manuell starten:
+
+```sh
+gh workflow run publish-snapshots.yml --ref main
+gh run list --workflow publish-snapshots.yml
+gh run watch <run-id>
+```
+
+Alternativ im GitHub-UI unter **Actions → Publish snapshots → Run workflow**.
+
+## 4. Veröffentlichen lokal
 
 Zuerst die normale Prüfung:
 
@@ -60,7 +77,7 @@ Credentials, HTTP 401/403, Repositoryfehlern oder einem unvollständigen
 Upload ab. Snapshots dürfen nach einer Korrektur erneut veröffentlicht
 werden; eine automatische Rückabwicklung gibt es nicht.
 
-## 4. Veröffentlichte Koordinaten
+## 5. Veröffentlichte Koordinaten
 
 Gruppe: `ch.so.agi.gretl`
 
@@ -95,7 +112,7 @@ Beispiel zum Auflösen der ZIP:
 </dependency>
 ```
 
-## 5. Prüfung nach dem Deploy
+## 6. Prüfung nach dem Deploy
 
 Remote-Metadaten:
 
@@ -121,7 +138,7 @@ Falls der Repository-Proxy die unversionierte Classifier-Datei nicht direkt
 auflöst, den timestamped Dateinamen aus `<snapshotVersions>` der
 `maven-metadata.xml` verwenden.
 
-## 6. Fehlerfälle
+## 7. Fehlerfälle
 
 | Symptom | Vorgehen |
 |---|---|
@@ -132,7 +149,7 @@ auflöst, den timestamped Dateinamen aus `<snapshotVersions>` der
 | `maven-metadata.xml` veraltet | Deploy erneut ausführen; Snapshot-Update abwarten |
 | Test-/Fixture-Artefakt remote | `maven.deploy.skip` im Modul prüfen |
 
-## 7. Sicherheit
+## 8. Sicherheit
 
 - Keine Credentials in Git, POMs, Skripten oder Logs.
 - Keine `settings.xml` mit Klartextpasswort einchecken.
