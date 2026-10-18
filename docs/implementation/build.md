@@ -32,26 +32,28 @@ export PATH="$JAVA_HOME/bin:$PATH"
 
 `verify` umfasst:
 
-1. **gretl-api** — 27 JDK-only API-Dateien, 17 Tests,
+1. **gretl-api** — 29 JDK-only API-Dateien, 17 Tests,
 2. **gretl-runner** — Definition, Planung, Ergebnisse, Fehler, Abbruch,
    Cleanup, Contexts, Workspace, 115 Tests,
 3. **gretl-groovy** — echte Groovy-6-DSL, ResultView, `ctx.run`, CORE-040,
    49 Tests,
-4. **gretl-logging** — Text/JSON, JSONL-Limits, Redaction, Causegraph,
-   Runbericht, Logback-Bridge, 15 Tests,
-5. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
+4. **gretl-i18n** — englischer Quellkatalog, deutscher Katalog, Locale-Priorität,
+   4 Tests,
+5. **gretl-logging** — Text/JSON, JSONL-Limits, Redaction, Causegraph,
+   Runbericht, Logback-Bridge, 18 Tests,
+6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
-6. **gretl-basic-tasks** — HTTP, ZIP/GZIP, SQL, Provider, 23 Tests,
-7. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
-   Distribution-nahe Integration, 36 Tests,
-8. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
-9. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
-10. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
-11. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
+7. **gretl-basic-tasks** — HTTP, ZIP/GZIP, SQL, Provider, 23 Tests,
+8. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
+   Distribution-nahe Integration, 44 Tests,
+9. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
+10. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
+11. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
+12. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration sowie Job-JAR-Paket
     und -Start, 1 Surefire- und 7 Failsafe-Tests.
 
-Erwartet: **270 Tests**, 0 Fehler, `BUILD SUCCESS`.
+Erwartet: **285 Tests**, 0 Fehler, `BUILD SUCCESS`.
 
 ### Artefakte
 
@@ -61,6 +63,7 @@ Erwartet: **270 Tests**, 0 Fehler, `BUILD SUCCESS`.
 | Runner-JAR | `gretl-runner/target/gretl-runner-0.1.0-SNAPSHOT.jar` |
 | Groovy-Adapter | `gretl-groovy/target/gretl-groovy-0.1.0-SNAPSHOT.jar` |
 | Logging | `gretl-logging/target/gretl-logging-0.1.0-SNAPSHOT.jar` |
+| Lokalisierung | `gretl-i18n/target/gretl-i18n-0.1.0-SNAPSHOT.jar` |
 | Standard-Tasks | `gretl-basic-tasks/target/gretl-basic-tasks-0.1.0-SNAPSHOT.jar` |
 | IliValidator | `gretl-ilivalidator/target/gretl-ilivalidator-0.1.0-SNAPSHOT.jar` |
 | CLI | `gretl-cli/target/gretl-cli-0.1.0-SNAPSHOT.jar` |
@@ -97,6 +100,7 @@ export JAVA_HOME=/pfad/zu/temurin-25
 ./bin/gretl run examples/ili-validator/job.groovy --help
 ./bin/gretl run examples/action-nodata/nodata.groovy --help
 ./bin/gretl operations IliValidator
+./bin/gretl run examples/ili-validator/job.groovy --lang en --help
 ./bin/gretl package examples/ili-validator/job-package.json --output /tmp/ili-job.jar
 java -jar /tmp/ili-job.jar --help
 java -jar /tmp/ili-job.jar --report /tmp/ili-job-report.json
@@ -127,6 +131,10 @@ Maven noch Gradle noch eine installierte GRETL-Distribution. Beim Packen wird
 der Job nicht ausgeführt.
 
 ## 4. Runtimekonfiguration, Pfade und Secrets
+
+Die optionale Ausgabesprache kann per `--lang`, `GRETL_LANGUAGE`, `language`
+in `runtime.json` oder OS-Locale gewählt werden; Fallback ist Englisch.
+Details stehen in [`localization.md`](localization.md).
 
 ```json
 {
@@ -260,7 +268,7 @@ Dollar-Quote, Prepared-Apostroph/null und Rollback nach dem zweiten Fehler.
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **274 Tests** (270 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **289 Tests** (285 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.
@@ -272,6 +280,7 @@ Bestandteil der Scriptdistribution.
 | `gretl-api` | JDK-only SPI | ja |
 | `gretl-runner` | sequenzieller Runner | ja |
 | `gretl-groovy` | Groovy-6-DSL | ja |
+| `gretl-i18n` | englischer Quellkatalog, deutscher Katalog | ja |
 | `gretl-logging` | Events, Redaction, Report | ja |
 | `gretl-basic-tasks` | HTTP/Extract/SQL | ja |
 | `gretl-ilivalidator` | reale INTERLIS-Validierung (B) | ja |

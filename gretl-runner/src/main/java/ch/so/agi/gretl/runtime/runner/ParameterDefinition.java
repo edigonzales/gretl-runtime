@@ -11,17 +11,17 @@ public record ParameterDefinition(
     public ParameterDefinition {
         if (name == null || !name.matches("[A-Za-z][A-Za-z0-9_.-]*")) {
             throw new ParameterException("INVALID_PARAMETER_DECLARATION", name == null ? "?" : name,
-                    "Ungueltiger Parametername: " + name);
+                    "Invalid parameter name: " + name);
         }
         java.util.Objects.requireNonNull(type, "type");
         if (description == null || description.isBlank()) {
             throw new ParameterException("INVALID_PARAMETER_DECLARATION", name,
-                    "Der Parameter " + name + " benoetigt eine Beschreibung");
+                    "Parameter " + name + " requires a description");
         }
         java.util.Objects.requireNonNull(defaultValue, "defaultValue");
         if (required && defaultValue.isPresent()) {
             throw new ParameterException("INVALID_PARAMETER_DECLARATION", name,
-                    "Der Parameter " + name + " darf nicht required und defaultValue kombinieren");
+                    "Parameter " + name + " must not combine required and defaultValue");
         }
         defaultValue.ifPresent(value -> validateDefault(name, type, value));
     }
@@ -43,7 +43,7 @@ public record ParameterDefinition(
         };
         if (!valid) {
             throw new ParameterException("INVALID_PARAMETER_DECLARATION", name,
-                    "Defaultwert passt nicht zum Typ " + type + ": " + value);
+                    "Default value does not match type " + type + ": " + value);
         }
     }
 }

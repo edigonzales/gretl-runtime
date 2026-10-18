@@ -12,7 +12,7 @@ final class ConsoleSink {
     private final LoggingConfig config;
     private final LogContext context;
     private final RecordEncoder encoder;
-    private final TextFormatter text = new TextFormatter();
+    private final TextFormatter text;
     private final Set<String> detailIds = new HashSet<>();
     private boolean degraded;
 
@@ -21,6 +21,7 @@ final class ConsoleSink {
         this.config = config;
         this.context = context;
         this.encoder = new RecordEncoder(context);
+        this.text = new TextFormatter(context.locale());
     }
 
     synchronized void write(LogEvent event) {

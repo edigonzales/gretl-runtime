@@ -2,9 +2,11 @@ package ch.so.agi.gretl.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class CliOptionsTest {
@@ -21,6 +23,16 @@ class CliOptionsTest {
         assertEquals("", options.parameters().get("empty"));
         assertEquals("json", options.logFormat().name().toLowerCase());
         assertEquals("always", options.keepWork().name().toLowerCase().replace('_', '-'));
+    }
+
+    @Test
+    void parserErrorsFollowTheRequestedLocale() {
+        CliException english = assertThrows(CliException.class, () -> CliOptions.parse(
+                new String[]{"run", "--lang", "en"}, Path.of("/tmp"), Locale.ENGLISH));
+        assertTrue(english.getMessage().contains("Job file missing"), english.getMessage());
+        CliException german = assertThrows(CliException.class, () -> CliOptions.parse(
+                new String[]{"run", "--lang", "de"}, Path.of("/tmp"), Locale.GERMAN));
+        assertTrue(german.getMessage().contains("Jobdatei fehlt"), german.getMessage());
     }
 
     @Test

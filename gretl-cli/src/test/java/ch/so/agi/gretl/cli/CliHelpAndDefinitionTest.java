@@ -32,6 +32,14 @@ class CliHelpAndDefinitionTest {
         Result packageHelp = cli().run("package", "--help");
         assertEquals(0, packageHelp.code());
         assertTrue(packageHelp.out().contains("gretl package"));
+        Result englishPackageHelp = cli().run("package", "--help", "--lang", "en");
+        assertEquals(0, englishPackageHelp.code());
+        assertTrue(englishPackageHelp.out().contains("Creates an executable job JAR"));
+
+        Result englishHelp = cli().run("--help", "--lang", "en");
+        assertEquals(0, englishHelp.code());
+        assertTrue(englishHelp.out().contains("Usage:"), englishHelp.out());
+        assertTrue(englishHelp.out().contains("Runtime options for run:"));
 
         Result operations = cli().run("operations");
         assertEquals(0, operations.code());
@@ -39,6 +47,11 @@ class CliHelpAndDefinitionTest {
         assertTrue(operations.out().contains("Extract"));
         assertTrue(operations.out().contains("SqlExecutor"));
         assertFalse(operations.out().contains("Publisher"));
+
+        Result englishDetail = cli().run("operations", "HttpDownload", "--lang", "en");
+        assertEquals(0, englishDetail.code());
+        assertTrue(englishDetail.out().contains("Download a file over HTTP"));
+        assertTrue(englishDetail.out().contains("Absolute HTTP/HTTPS URL"));
 
         Result detail = cli().run("operations", "HttpDownload");
         assertEquals(0, detail.code());
@@ -151,7 +164,7 @@ class CliHelpAndDefinitionTest {
         private final GretlCli cli = new GretlCli(
                 new PrintStream(out, true, StandardCharsets.UTF_8),
                 new PrintStream(err, true, StandardCharsets.UTF_8),
-                Map.of(), tempDir, getClass().getClassLoader());
+                Map.of("GRETL_LANGUAGE", "de"), tempDir, getClass().getClassLoader());
 
         Result run(String... args) {
             int code = cli.run(args);

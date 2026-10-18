@@ -92,6 +92,7 @@ Gruppe: `ch.so.agi.gretl`
 - `gretl-api`
 - `gretl-runner`
 - `gretl-groovy`
+- `gretl-i18n`
 - `gretl-logging`
 - `gretl-packager`
 - `gretl-basic-tasks`

@@ -6,7 +6,7 @@ public final class TaskCancelledException extends RuntimeException {
     private final CancelReason reason;
 
     public TaskCancelledException(CancelReason reason) {
-        super("Ausfuehrung abgebrochen: " + java.util.Objects.requireNonNull(reason));
+        super("Execution cancelled: " + java.util.Objects.requireNonNull(reason));
         this.reason = reason;
     }
 

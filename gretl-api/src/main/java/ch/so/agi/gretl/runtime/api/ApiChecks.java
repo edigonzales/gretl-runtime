@@ -6,7 +6,7 @@ final class ApiChecks {
 
     static String text(String value, String field) {
         if (value == null || value.isBlank())
-            throw new IllegalArgumentException(field + " darf nicht leer sein");
+            throw new IllegalArgumentException(field + " must not be blank");
         return value;
     }
 

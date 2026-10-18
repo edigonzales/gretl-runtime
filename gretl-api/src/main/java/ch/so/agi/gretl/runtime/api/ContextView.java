@@ -17,4 +17,9 @@ public interface ContextView {
     java.nio.file.Path workPath(String relativePath) throws java.io.IOException;
     TaskLogger log();
     void report(Diagnostic diagnostic);
+
+    /** Locale for user-facing messages; English is the safe default. */
+    default java.util.Locale locale() {
+        return java.util.Locale.ENGLISH;
+    }
 }

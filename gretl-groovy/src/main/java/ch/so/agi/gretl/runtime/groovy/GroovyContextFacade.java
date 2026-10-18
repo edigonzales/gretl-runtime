@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.CancellationToken;
 import ch.so.agi.gretl.runtime.api.ContextView;
 import ch.so.agi.gretl.runtime.api.Diagnostic;
@@ -125,15 +126,16 @@ public final class GroovyContextFacade {
     public <C, R> R run(OperationType<C, R> type, Closure<?> configure) throws Exception {
         requireTaskContext("ctx.run");
         if (type == null) {
-            throw new GroovyDslException("UNKNOWN_OPERATION", "ctx.run benoetigt eine Taskart");
+            throw new GroovyDslException("UNKNOWN_OPERATION",
+                    msg("error.groovy.contextRunType"));
         }
         if (configure == null) {
             throw new GroovyDslException("MISSING_CONFIGURATION",
-                    "ctx.run(" + type.symbol() + ") benoetigt eine Konfigurationsclosure");
+                    msg("error.groovy.contextRunConfiguration", type.symbol()));
         }
         if (!(outer instanceof OperationCaller caller)) {
             throw new GroovyDslException("NO_OPERATION_CALLER",
-                    "ctx.run ist nur im Produkt-Runner-Kontext verfuegbar");
+                    msg("error.groovy.contextRunCaller"));
         }
         return caller.invoke(type, (invocationContext, taskContext) ->
                 new TaskConfigurationScope<>(type, configure, model, taskContext,
@@ -156,8 +158,12 @@ public final class GroovyContextFacade {
     private void requireTaskContext(String operation) {
         if (outer == null) {
             throw new GroovyDslException("TASK_CONTEXT_REQUIRED",
-                    operation + " ist in diesem Scope nicht erlaubt");
+                    msg("error.groovy.taskContextRequired", operation));
         }
+    }
+
+    private String msg(String key, Object... arguments) {
+        return Messages.format(model.environment().locale(), key, arguments);
     }
 
     private String taskId() {
@@ -170,6 +176,6 @@ public final class GroovyContextFacade {
         if (operation == null) {
             return raw;
         }
-        return new ResultView(operation, raw);
+        return new ResultView(operation, raw, model.environment().locale());
     }
 }

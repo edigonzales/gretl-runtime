@@ -64,7 +64,7 @@ public final class JobPackageBuilder {
                                Path output) throws PackageException {
         if (classpath.isEmpty()) {
             throw new PackageException("PACKAGE_CLASSPATH_EMPTY",
-                    "Kein Runtime-Klassenpfad fuer das Jobpaket vorhanden");
+                    PackagerMessages.get("package.classpathEmpty"));
         }
         for (Path path : classpath) {
             if (!Files.exists(path)) {
@@ -78,7 +78,7 @@ public final class JobPackageBuilder {
         }
         if (!entries.containsKey(MAIN_CLASS.replace('.', '/') + ".class")) {
             throw new PackageException("PACKAGE_JOB_RUNTIME_MISSING",
-                    "gretl-job-runtime fehlt auf dem Packager-Klassenpfad");
+                    PackagerMessages.get("package.jobRuntimeMissing"));
         }
         validateDeclaredDependencies(descriptor);
         addCompiled(compiled);
@@ -107,7 +107,7 @@ public final class JobPackageBuilder {
                     sha256(path), "jar"));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_CLASSPATH_READ",
-                    "JAR konnte nicht gelesen werden: " + path.getFileName(), exception);
+                    PackagerMessages.format("package.jarRead", path.getFileName()), exception);
         }
     }
 
@@ -124,7 +124,7 @@ public final class JobPackageBuilder {
                     hashDirectory(root), "classes"));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_CLASSPATH_READ",
-                    "Klassenverzeichnis konnte nicht gelesen werden: " + root.getFileName(),
+                    PackagerMessages.format("package.classpathRead", root.getFileName()),
                     exception);
         }
     }
@@ -152,7 +152,7 @@ public final class JobPackageBuilder {
                 properties.load(new ByteArrayInputStream(bytes));
             } catch (IOException exception) {
                 throw new PackageException("PACKAGE_GROOVY_METADATA",
-                        "Groovy-Extension-Metadaten sind ungueltig: " + origin, exception);
+                        PackagerMessages.format("package.groovyMetadata", origin), exception);
             }
             Map<String, String> values = groovyModules.computeIfAbsent(normalized,
                     key -> new TreeMap<>());
@@ -161,8 +161,7 @@ public final class JobPackageBuilder {
                 String previous = values.putIfAbsent(key, value);
                 if (previous != null && !previous.equals(value)) {
                     throw new PackageException("PACKAGE_RESOURCE_CONFLICT",
-                            "Groovy-Extension-Metadaten kollidieren: " + normalized
-                                    + " (" + origin + ")");
+                            PackagerMessages.format("package.groovyMetadataConflict", normalized, origin));
                 }
             }
             return;
@@ -177,8 +176,7 @@ public final class JobPackageBuilder {
         }
         if (normalized.endsWith(".class")) {
             throw new PackageException("PACKAGE_CLASS_CONFLICT",
-                    "Klasse " + normalized + " kollidiert zwischen "
-                            + previous.origin() + " und " + origin);
+                    PackagerMessages.format("package.classConflict", normalized, previous.origin(), origin));
         }
         if (MERGED_METADATA.contains(normalized)) {
             ByteArrayOutputStream merged = new ByteArrayOutputStream();
@@ -189,8 +187,7 @@ public final class JobPackageBuilder {
             return;
         }
         throw new PackageException("PACKAGE_RESOURCE_CONFLICT",
-                "Ressource " + normalized + " kollidiert zwischen "
-                        + previous.origin() + " und " + origin);
+                PackagerMessages.format("package.resourceConflict", normalized, previous.origin(), origin));
     }
 
     private void addCompiled(JobCompiler.CompiledJob compiled) throws PackageException {
@@ -215,7 +212,7 @@ public final class JobPackageBuilder {
                     }
                 } catch (IOException exception) {
                     throw new PackageException("PACKAGE_RESOURCE_READ",
-                            "Ressourcen konnten nicht gelesen werden: " + resource, exception);
+                            PackagerMessages.format("package.resourcesRead", resource), exception);
                 }
             } else {
                 addResource(descriptor, resource);
@@ -231,7 +228,7 @@ public final class JobPackageBuilder {
                     Files.readAllBytes(file), "job resource");
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_RESOURCE_READ",
-                    "Ressource konnte nicht gelesen werden: " + relative, exception);
+                    PackagerMessages.format("package.resourceRead", relative), exception);
         }
     }
 
@@ -283,7 +280,7 @@ public final class JobPackageBuilder {
                             .sorted().forEach(result::add);
                 } catch (IOException exception) {
                     throw new PackageException("PACKAGE_RESOURCE_READ",
-                            "Ressourcenindex konnte nicht erstellt werden", exception);
+                            PackagerMessages.get("package.resourceIndex"), exception);
                 }
             } else {
                 result.add(descriptor.baseDirectory()
@@ -320,7 +317,7 @@ public final class JobPackageBuilder {
         Entry previous = entries.get(name);
         if (previous != null) {
             throw new PackageException("PACKAGE_RESOURCE_CONFLICT",
-                    "Metadatenressource kollidiert: " + name + " (" + previous.origin() + ")");
+                    PackagerMessages.format("package.metadataConflict", name, previous.origin()));
         }
         entries.put(name, new Entry(bytes, origin));
     }
@@ -332,8 +329,7 @@ public final class JobPackageBuilder {
                             || artifact.name().startsWith(dependency.artifactId() + "-"));
             if (!found) {
                 throw new PackageException("PACKAGE_DEPENDENCY_MISSING",
-                        "Dependency " + dependency.coordinate()
-                                + " ist nicht auf dem bereitgestellten Klassenpfad enthalten");
+                        PackagerMessages.format("package.dependencyMissing", dependency.coordinate()));
             }
         }
     }
@@ -345,7 +341,7 @@ public final class JobPackageBuilder {
             Path parent = absolute.getParent();
             if (parent == null) {
                 throw new PackageException("PACKAGE_OUTPUT_INVALID",
-                        "Ausgabepfad hat kein Elternverzeichnis");
+                        PackagerMessages.get("package.outputParent"));
             }
             Files.createDirectories(parent);
             Path temporary = parent.resolve(absolute.getFileName() + ".tmp-" + UUID.randomUUID());
@@ -358,7 +354,7 @@ public final class JobPackageBuilder {
                     total += bytes.length;
                     if (total > MAX_TOTAL_BYTES) {
                         throw new PackageException("PACKAGE_TOO_LARGE",
-                                "Jobpaket ueberschreitet das Groessenlimit");
+                                PackagerMessages.get("package.tooLarge"));
                     }
                     JarEntry jarEntry = new JarEntry(entry.getKey());
                     jarEntry.setTime(0L);
@@ -378,7 +374,7 @@ public final class JobPackageBuilder {
             }
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_WRITE_FAILED",
-                    "Jobpaket konnte nicht geschrieben werden: " + output, exception);
+                    PackagerMessages.format("package.writeFailed", output), exception);
         }
         return new PackageResult(absolute, descriptor.name(), descriptor.version(),
                 compiled.entryClass(), compiled.classCount(),
@@ -410,7 +406,7 @@ public final class JobPackageBuilder {
         String value = name.replace('\\', '/');
         if (value.startsWith("/") || value.contains("../") || value.equals("..")) {
             throw new PackageException("PACKAGE_ENTRY_UNSAFE",
-                    "Unsicherer JAR-Eintrag: " + name);
+                    PackagerMessages.format("package.unsafeEntry", name));
         }
         return value;
     }
@@ -433,7 +429,7 @@ public final class JobPackageBuilder {
             out.write(buffer, 0, read);
             if (out.size() > MAX_ENTRY_BYTES) {
                 throw new PackageException("PACKAGE_ENTRY_TOO_LARGE",
-                        "JAR-Eintrag ist zu gross: " + name);
+                        PackagerMessages.format("package.entryTooLarge", name));
             }
         }
         return out.toByteArray();
@@ -445,7 +441,7 @@ public final class JobPackageBuilder {
                     .digest(Files.readAllBytes(file)));
         } catch (IOException | NoSuchAlgorithmException exception) {
             throw new PackageException("PACKAGE_HASH_FAILED",
-                    "SHA-256 konnte nicht berechnet werden: " + file.getFileName(), exception);
+                    PackagerMessages.format("package.hashFailed", file.getFileName()), exception);
         }
     }
 

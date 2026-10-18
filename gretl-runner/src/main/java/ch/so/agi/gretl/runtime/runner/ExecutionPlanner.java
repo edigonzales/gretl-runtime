@@ -101,7 +101,7 @@ public final class ExecutionPlanner {
         Set<String> targets = new LinkedHashSet<>();
         for (String target : raw) {
             if (target == null || target.isBlank()) {
-                throw new PlanException("INVALID_TARGET", "Ziel darf nicht leer sein");
+                throw new PlanException("INVALID_TARGET", "Target must not be blank");
             }
             targets.add(target);
         }
@@ -114,13 +114,13 @@ public final class ExecutionPlanner {
             for (TaskRef<?> predecessor : task.dependsOn()) {
                 if (!tasks.containsKey(predecessor.id()) || !definition.containsRef(predecessor)) {
                     throw new PlanException("UNKNOWN_TASK_REFERENCE",
-                            "Task " + task.id() + " hat unbekannten Vorgaenger: " + predecessor);
+                            "Task " + task.id() + " has unknown predecessor: " + predecessor);
                 }
             }
             for (TaskRef<?> after : task.after()) {
                 if (!tasks.containsKey(after.id()) || !definition.containsRef(after)) {
                     throw new PlanException("UNKNOWN_TASK_REFERENCE",
-                            "Task " + task.id() + " hat unbekannte after-Referenz: " + after);
+                            "Task " + task.id() + " has unknown after reference: " + after);
                 }
             }
         }
@@ -163,7 +163,7 @@ public final class ExecutionPlanner {
         }
         if (ordered.size() != selected.size()) {
             throw new PlanException("PLAN_CYCLE",
-                    "Der ausgewaehlte Graph konnte nicht vollstaendig sortiert werden");
+                    "The selected graph could not be fully sorted");
         }
         return ordered;
     }
@@ -248,7 +248,7 @@ public final class ExecutionPlanner {
 
     private static String renderCycle(List<PlanEdge> cycle) {
         if (cycle.isEmpty()) {
-            return "<unbekannt>";
+            return "<unknown>";
         }
         StringBuilder result = new StringBuilder();
         for (PlanEdge edge : cycle) {

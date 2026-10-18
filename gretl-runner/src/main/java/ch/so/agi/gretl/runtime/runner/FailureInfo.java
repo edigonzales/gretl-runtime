@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.runtime.runner;
 
+import ch.so.agi.gretl.runtime.api.DiagnosticCarrier;
+import ch.so.agi.gretl.runtime.api.DiagnosticInfo;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -16,7 +18,8 @@ public record FailureInfo(
         String id, String type, String message,
         List<FailureInfo> causes, List<FailureInfo> suppressed, boolean truncated,
         List<Frame> frames, boolean framesTruncated,
-        java.util.Optional<SourceLocation> source) {
+        java.util.Optional<SourceLocation> source,
+        java.util.Optional<DiagnosticInfo> diagnostic) {
 
     /** Bounded stack frame retained for structured diagnoses. */
     public record Frame(String className, String methodName, String fileName, int lineNumber) {
@@ -43,6 +46,16 @@ public record FailureInfo(
         suppressed = List.copyOf(suppressed);
         frames = List.copyOf(frames);
         java.util.Objects.requireNonNull(source, "source");
+        java.util.Objects.requireNonNull(diagnostic, "diagnostic");
+    }
+
+    public FailureInfo(
+            String id, String type, String message,
+            List<FailureInfo> causes, List<FailureInfo> suppressed, boolean truncated,
+            List<Frame> frames, boolean framesTruncated,
+            java.util.Optional<SourceLocation> source) {
+        this(id, type, message, causes, suppressed, truncated, frames,
+                framesTruncated, source, java.util.Optional.empty());
     }
 
     public static FailureInfo from(Throwable throwable) {
@@ -57,7 +70,8 @@ public record FailureInfo(
         if (seen.put(throwable, Boolean.TRUE) != null) {
             return new FailureInfo(id, throwable.getClass().getName(),
                     "[cyclic throwable reference]", List.of(), List.of(), true,
-                    List.of(), false, java.util.Optional.empty());
+                    List.of(), false, java.util.Optional.empty(),
+                    java.util.Optional.empty());
         }
         boolean depthTruncated = depth >= MAX_DEPTH;
         List<FailureInfo> causes = new ArrayList<>();
@@ -103,7 +117,10 @@ public record FailureInfo(
                         || suppressedChildTruncated,
                 frames,
                 stack.length > 64,
-                source);
+                source,
+                throwable instanceof DiagnosticCarrier carrier
+                        ? java.util.Optional.of(carrier.diagnostic())
+                        : java.util.Optional.empty());
     }
 
     private static String shorten(String message) {

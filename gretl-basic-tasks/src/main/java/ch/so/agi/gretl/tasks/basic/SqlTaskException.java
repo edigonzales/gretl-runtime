@@ -1,9 +1,16 @@
 package ch.so.agi.gretl.tasks.basic;
 
+import ch.so.agi.gretl.runtime.api.DiagnosticCarrier;
+import ch.so.agi.gretl.runtime.api.DiagnosticInfo;
+import java.util.List;
+import java.util.Optional;
+
 /** Safe SQL failure details; SQL text and bound values are never included. */
-public final class SqlTaskException extends RuntimeException {
+public final class SqlTaskException extends RuntimeException
+        implements DiagnosticCarrier {
     private static final long serialVersionUID = 1L;
 
+    private final String code;
     private final String databaseAlias;
     private final String scriptName;
     private final int entryIndex;
@@ -14,17 +21,22 @@ public final class SqlTaskException extends RuntimeException {
     public SqlTaskException(String code, String message, String databaseAlias,
                             String scriptName, int entryIndex, String phase,
                             String sqlState, int vendorCode, Throwable cause) {
-        super(code + ": " + message + " [database=" + databaseAlias
-                + (scriptName == null ? "" : ", script=" + scriptName)
-                + ", entry=" + entryIndex + ", phase=" + phase
-                + (sqlState == null ? "" : ", SQLSTATE=" + sqlState)
-                + (vendorCode == 0 ? "" : ", vendor=" + vendorCode) + "]", cause);
+        super(message, cause);
+        this.code = code;
         this.databaseAlias = databaseAlias;
         this.scriptName = scriptName;
         this.entryIndex = entryIndex;
         this.phase = phase;
         this.sqlState = sqlState;
         this.vendorCode = vendorCode;
+    }
+
+    public String code() { return code; }
+
+    @Override
+    public DiagnosticInfo diagnostic() {
+        return new DiagnosticInfo(code, Optional.empty(), Optional.empty(),
+                List.of(), Optional.empty());
     }
 
     public String databaseAlias() { return databaseAlias; }

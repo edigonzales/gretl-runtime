@@ -7,13 +7,20 @@ import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 /** Normal Groovy script source. */
 final class ScriptJobSource implements JobSource {
     private final Path file;
+    private final Locale locale;
 
     ScriptJobSource(Path file) {
+        this(file, Locale.GERMAN);
+    }
+
+    ScriptJobSource(Path file, Locale locale) {
         this.file = file.toAbsolutePath().normalize();
+        this.locale = java.util.Objects.requireNonNull(locale, "locale");
     }
 
     @Override
@@ -41,7 +48,7 @@ final class ScriptJobSource implements JobSource {
     @Override
     public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink) {
         DefinitionEnvironment environment = new DefinitionEnvironment(
-                registry, jobRoot(), startCwd, sink);
+                registry, jobRoot(), startCwd, sink, locale);
         return new GroovyJobLoader().load(file, environment);
     }
 }

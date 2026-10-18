@@ -25,6 +25,11 @@
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-i18n</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
       <artifactId>gretl-logging</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -291,7 +291,7 @@ class DistributionIT {
                     .filter(entry -> entry.getName().endsWith(".class"))
                     .filter(entry -> !entry.getName().startsWith("META-INF/"))
                     .toList();
-            assertEquals(27, classes.size(), "API surface: " + classes);
+            assertEquals(29, classes.size(), "API surface: " + classes);
             for (JarEntry entry : classes) {
                 try (DataInputStream data = new DataInputStream(
                         jar.getInputStream(entry))) {
@@ -369,8 +369,8 @@ class DistributionIT {
 
         ProcessResult missing = runJava(foreignCwd, jar);
         assertEquals(2, missing.code(), missing.err());
-        assertTrue(missing.err().contains("Pflichtparameter")
-                || missing.err().contains("Pflichtwert"));
+        assertTrue(missing.err().toLowerCase().contains("required parameter")
+                || missing.err().toLowerCase().contains("missing required"));
 
         ProcessResult first = runJava(foreignCwd, jar,
                 "--param", "wert=A",

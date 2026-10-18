@@ -49,36 +49,36 @@ public record PackageDescriptor(
         Path file = descriptor.toAbsolutePath().normalize();
         if (!Files.isRegularFile(file)) {
             throw new PackageException("PACKAGE_DESCRIPTOR_MISSING",
-                    "Paketdeskriptor nicht gefunden: " + file);
+                    PackagerMessages.format("package.descriptorMissing", file));
         }
         Object parsed;
         try {
             parsed = Json.parseFile(file, MAX_DESCRIPTOR_BYTES);
         } catch (IOException | RuntimeException exception) {
             throw new PackageException("PACKAGE_DESCRIPTOR_INVALID",
-                    "Paketdeskriptor ist kein gueltiges JSON: " + exception.getMessage(), exception);
+                    PackagerMessages.format("package.descriptorInvalidJson", exception.getMessage()), exception);
         }
         if (!(parsed instanceof Map<?, ?> raw)) {
             throw new PackageException("PACKAGE_DESCRIPTOR_INVALID",
-                    "Paketdeskriptor muss ein JSON-Objekt sein");
+                    PackagerMessages.get("package.descriptorObject"));
         }
         Map<String, Object> object = stringKeys(raw);
         rejectUnknown(object);
         int schemaVersion = integer(object, "schemaVersion");
         if (schemaVersion != 1) {
             throw new PackageException("PACKAGE_DESCRIPTOR_VERSION",
-                    "Unbekannte schemaVersion: " + schemaVersion);
+                    PackagerMessages.format("package.descriptorVersion", schemaVersion));
         }
         String name = text(object, "name");
         if (!NAME.matcher(name).matches()) {
             throw new PackageException("PACKAGE_NAME_INVALID",
-                    "name enthaelt unerlaubte Zeichen: " + name);
+                    PackagerMessages.format("package.nameInvalid", name));
         }
         String version = text(object, "version");
         String runtimeVersion = text(object, "runtimeVersion");
         if (!VERSION.matcher(version).matches() || !VERSION.matcher(runtimeVersion).matches()) {
             throw new PackageException("PACKAGE_VERSION_INVALID",
-                    "version und runtimeVersion muessen feste, nichtleere Versionen sein");
+                    PackagerMessages.get("package.versionInvalid"));
         }
         String entryScript = text(object, "entryScript");
         List<String> sources = textList(object, "sources");
@@ -108,26 +108,26 @@ public record PackageDescriptor(
         Path entry = safePath(entryScript, "entryScript");
         if (!Files.isRegularFile(entry, LinkOption.NOFOLLOW_LINKS)) {
             throw new PackageException("PACKAGE_ENTRY_MISSING",
-                    "entryScript ist keine regulaere Datei: " + entryScript);
+                    PackagerMessages.format("package.entryMissing", entryScript));
         }
         if (!entry.getParent().equals(baseDirectory)) {
             throw new PackageException("PACKAGE_ENTRY_LOCATION",
-                    "entryScript muss unmittelbar im Deskriptorverzeichnis liegen");
+                    PackagerMessages.get("package.entryLocation"));
         }
         if (!entryScript.endsWith(".groovy")) {
             throw new PackageException("PACKAGE_ENTRY_TYPE",
-                    "entryScript muss eine .groovy-Datei sein");
+                    PackagerMessages.get("package.entryType"));
         }
         for (String source : sources) {
             Path path = safePath(source, "sources");
             if (!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
                 throw new PackageException("PACKAGE_SOURCE_MISSING",
-                        "Quelle nicht gefunden: " + source);
+                        PackagerMessages.format("package.sourceMissing", source));
             }
             if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)
                     && !source.endsWith(".groovy")) {
                 throw new PackageException("PACKAGE_SOURCE_TYPE",
-                        "Quelldatei muss .groovy sein: " + source);
+                        PackagerMessages.format("package.sourceType", source));
             }
             rejectNestedSymlinks(path, "sources");
         }
@@ -135,7 +135,7 @@ public record PackageDescriptor(
             Path path = safePath(resource, "resources");
             if (!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
                 throw new PackageException("PACKAGE_RESOURCE_MISSING",
-                        "Ressource nicht gefunden: " + resource);
+                        PackagerMessages.format("package.resourceMissing", resource));
             }
             rejectNestedSymlinks(path, "resources");
         }
@@ -149,13 +149,12 @@ public record PackageDescriptor(
             for (Path path : walk.toList()) {
                 if (Files.isSymbolicLink(path)) {
                     throw new PackageException("PACKAGE_PATH_UNSAFE",
-                            field + " enthaelt einen Symlink: "
-                                    + baseDirectory.relativize(path));
+                            PackagerMessages.format("package.pathSymlink", field, baseDirectory.relativize(path)));
                 }
             }
         } catch (java.io.IOException exception) {
             throw new PackageException("PACKAGE_PATH_UNSAFE",
-                    field + " konnte nicht geprueft werden: " + root, exception);
+                    PackagerMessages.format("package.pathCheckFailed", field, root), exception);
         }
     }
 
@@ -165,19 +164,18 @@ public record PackageDescriptor(
             relative = Path.of(raw);
         } catch (RuntimeException exception) {
             throw new PackageException("PACKAGE_PATH_INVALID",
-                    field + " ist kein gueltiger Pfad: " + raw, exception);
+                    PackagerMessages.format("package.pathInvalid", field, raw), exception);
         }
         if (relative.isAbsolute() || relative.toString().isBlank()
                 || relative.normalize().startsWith("..")
                 || !relative.normalize().toString().equals(relative.toString())) {
             throw new PackageException("PACKAGE_PATH_INVALID",
-                    field + " muss ein normalisierter relativer Pfad ohne '..' sein: " + raw);
+                    PackagerMessages.format("package.pathNotNormalized", field, raw));
         }
         Path resolved = baseDirectory.resolve(relative).normalize();
         if (!resolved.startsWith(baseDirectory) || hasSymlink(resolved)) {
             throw new PackageException("PACKAGE_PATH_UNSAFE",
-                    field + " darf das Deskriptorverzeichnis nicht verlassen oder ein Symlink sein: "
-                            + raw);
+                    PackagerMessages.format("package.pathUnsafe", field, raw));
         }
         return resolved;
     }
@@ -198,7 +196,7 @@ public record PackageDescriptor(
         for (String key : object.keySet()) {
             if (!FIELDS.contains(key)) {
                 throw new PackageException("PACKAGE_DESCRIPTOR_UNKNOWN_FIELD",
-                        "Unbekanntes Deskriptorfeld: " + key);
+                        PackagerMessages.format("package.unknownField", key));
             }
         }
     }
@@ -207,7 +205,7 @@ public record PackageDescriptor(
         Object value = object.get(key);
         if (!(value instanceof Number number) || number.longValue() != number.doubleValue()) {
             throw new PackageException("PACKAGE_FIELD_TYPE",
-                    key + " muss eine Ganzzahl sein");
+                    PackagerMessages.format("package.fieldInteger", key));
         }
         return number.intValue();
     }
@@ -216,7 +214,7 @@ public record PackageDescriptor(
         Object value = object.get(key);
         if (!(value instanceof String text) || text.isBlank()) {
             throw new PackageException("PACKAGE_FIELD_TYPE",
-                    key + " muss ein nichtleerer Text sein");
+                    PackagerMessages.format("package.fieldText", key));
         }
         return text;
     }
@@ -229,18 +227,18 @@ public record PackageDescriptor(
         }
         if (!(value instanceof List<?> list)) {
             throw new PackageException("PACKAGE_FIELD_TYPE",
-                    key + " muss eine Liste sein");
+                    PackagerMessages.format("package.fieldList", key));
         }
         List<String> result = new ArrayList<>();
         Set<String> seen = new LinkedHashSet<>();
         for (Object element : list) {
             if (!(element instanceof String text) || text.isBlank()) {
                 throw new PackageException("PACKAGE_FIELD_TYPE",
-                        key + " darf nur nichtleere Texte enthalten");
+                        PackagerMessages.format("package.fieldTextList", key));
             }
             if (!seen.add(text)) {
                 throw new PackageException("PACKAGE_FIELD_DUPLICATE",
-                        key + " enthaelt " + text + " doppelt");
+                        PackagerMessages.format("package.fieldDuplicate", key, text));
             }
             result.add(text);
         }
@@ -256,19 +254,19 @@ public record PackageDescriptor(
         }
         if (!(value instanceof List<?> list)) {
             throw new PackageException("PACKAGE_FIELD_TYPE",
-                    "dependencies muss eine Liste sein");
+                    PackagerMessages.get("package.dependenciesList"));
         }
         List<Dependency> result = new ArrayList<>();
         for (Object element : list) {
             if (!(element instanceof String text)) {
                 throw new PackageException("PACKAGE_DEPENDENCY_INVALID",
-                        "dependencies darf nur Textkoordinaten enthalten");
+                        PackagerMessages.get("package.dependenciesText"));
             }
             String[] parts = text.split(":", -1);
             if (parts.length != 3 || parts[0].isBlank() || parts[1].isBlank()
                     || parts[2].isBlank()) {
                 throw new PackageException("PACKAGE_DEPENDENCY_INVALID",
-                        "Dependency muss group:artifact:version sein: " + text);
+                        PackagerMessages.format("package.dependencyFormat", text));
             }
             String version = parts[2];
             if (version.startsWith("[") || version.startsWith("(")
@@ -277,7 +275,7 @@ public record PackageDescriptor(
                     .endsWith("-SNAPSHOT"))
                     || version.contains("*")) {
                 throw new PackageException("PACKAGE_DEPENDENCY_VERSION",
-                        "Dependency benoetigt eine feste Version: " + text);
+                        PackagerMessages.format("package.dependencyVersion", text));
             }
             result.add(new Dependency(parts[0], parts[1], version));
         }
@@ -289,7 +287,7 @@ public record PackageDescriptor(
         for (Map.Entry<?, ?> entry : raw.entrySet()) {
             if (!(entry.getKey() instanceof String key)) {
                 throw new PackageException("PACKAGE_DESCRIPTOR_INVALID",
-                        "Deskriptorschluessel muessen Text sein");
+                        PackagerMessages.get("package.descriptorKeyText"));
             }
             result.put(key, entry.getValue());
         }

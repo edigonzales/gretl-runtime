@@ -6,6 +6,8 @@ import ch.so.agi.gretl.runtime.groovy.GretlScript;
 import ch.so.agi.gretl.runtime.groovy.GroovyDslException;
 import ch.so.agi.gretl.runtime.groovy.GroovyJobLoader;
 import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
+import ch.so.agi.gretl.i18n.LocaleSelection;
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.logging.Json;
 import ch.so.agi.gretl.runtime.logging.LogContext;
 import ch.so.agi.gretl.runtime.logging.LogbackBridge;
@@ -48,6 +50,7 @@ import java.time.Instant;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -61,6 +64,7 @@ public final class GretlCli {
     private final ClassLoader classLoader;
     private final Clock clock;
     private final String commandId = UUID.randomUUID().toString();
+    private Locale locale = Locale.GERMAN;
 
     public GretlCli(PrintStream out, PrintStream err, Map<String, String> environment,
                     Path startCwd, ClassLoader classLoader) {
@@ -78,25 +82,37 @@ public final class GretlCli {
     }
 
     public int run(String[] args) {
+        locale = LocaleSelection.resolve(requestedLanguage(args),
+                environment.get("GRETL_LANGUAGE"), null, Locale.getDefault());
         CliOptions options;
         try {
-            options = CliOptions.parse(args, startCwd);
+            options = CliOptions.parse(args, startCwd, locale);
         } catch (CliException exception) {
             error(exception, jsonRequested(args));
             return exception.code();
         }
+        String explicitLanguage = options.language() == null
+                ? requestedLanguage(args) : options.language();
+        locale = LocaleSelection.resolve(explicitLanguage,
+                environment.get("GRETL_LANGUAGE"), null, locale);
         return execute(options, null);
     }
 
     /** Entry point used by a packaged JAR; the job source is already fixed. */
     public int runPackaged(JobSource source, String[] args) {
+        locale = LocaleSelection.resolve(requestedLanguage(args),
+                environment.get("GRETL_LANGUAGE"), null, Locale.getDefault());
         CliOptions options;
         try {
-            options = CliOptions.parsePackaged(args, startCwd);
+            options = CliOptions.parsePackaged(args, startCwd, locale);
         } catch (CliException exception) {
             error(exception, jsonRequested(args));
             return exception.code();
         }
+        String explicitLanguage = options.language() == null
+                ? requestedLanguage(args) : options.language();
+        locale = LocaleSelection.resolve(explicitLanguage,
+                environment.get("GRETL_LANGUAGE"), null, locale);
         return execute(options, source);
     }
 
@@ -137,12 +153,12 @@ public final class GretlCli {
                 if (options.command() == CliOptions.Command.COMMAND_HELP) {
                     commandHelp();
                 } else {
-                    new HelpPrinter(out).global();
+                    new HelpPrinter(out, locale).global();
                 }
                 yield 0;
             }
             case VERSION -> {
-                new HelpPrinter(out).version();
+                new HelpPrinter(out, locale).version();
                 yield 0;
             }
             case OPERATIONS -> operations(options);
@@ -153,20 +169,19 @@ public final class GretlCli {
 
     private int packageCommand(CliOptions options) {
         if (options.help()) {
-            out.println("""
-                    Aufruf: gretl package job-package.json --output job.jar
-                    Erzeugt ein ausfuehrbares Job-JAR aus dem Paketdeskriptor.
-                    """);
+            out.println(Messages.get(locale, "cli.package.help"));
             return 0;
         }
         try {
-            var result = new JobPackager(RuntimeInfo.VERSION)
+            var result = new JobPackager(RuntimeInfo.VERSION, locale)
                     .packageJob(options.job(), options.output());
-            out.println("Paket erstellt: " + result.output());
-            out.println("Job: " + result.name() + " " + result.version());
-            out.println("Entry-Class: " + result.entryClass());
-            out.println("Klassen: " + result.classCount()
-                    + ", Ressourcen: " + result.resourceCount());
+            out.println(Messages.format(locale, "cli.package.created", result.output()));
+            out.println(Messages.format(locale, "cli.package.job", result.name(),
+                    result.version()));
+            out.println(Messages.format(locale, "cli.package.entryClass",
+                    result.entryClass()));
+            out.println(Messages.format(locale, "cli.package.classes",
+                    result.classCount(), result.resourceCount()));
             return 0;
         } catch (PackageException exception) {
             throw new CliException(2, safeMessage(exception), exception,
@@ -176,7 +191,7 @@ public final class GretlCli {
 
     private int operations(CliOptions options) {
         OperationRegistry registry = loadRegistry();
-        HelpPrinter help = new HelpPrinter(out);
+        HelpPrinter help = new HelpPrinter(out, locale);
         if (options.operationSymbol() == null) {
             help.operations(registry);
             return 0;
@@ -197,15 +212,19 @@ public final class GretlCli {
     private int jobCommand(CliOptions options) {
         Path job = options.job();
         if (job == null || !Files.isRegularFile(job)) {
-            throw new CliException(2, "Jobdatei nicht gefunden: " + job);
+            throw new CliException(2, Messages.format(locale,
+                    "cli.error.jobNotFound", job));
         }
-        return jobCommand(new ScriptJobSource(job), options);
+        return jobCommand(new ScriptJobSource(job, locale), options);
     }
 
     private int jobCommand(JobSource source, CliOptions options) {
         RuntimeConfig config = options.config() == null
                 ? RuntimeConfig.defaults(startCwd)
-                : RuntimeConfig.load(options.config(), startCwd);
+                : RuntimeConfig.load(options.config(), startCwd, locale);
+        locale = LocaleSelection.resolve(options.language(),
+                environment.get("GRETL_LANGUAGE"),
+                config.language().orElse(null), locale);
         String jobName = config.jobName()
                 .or(() -> Optional.ofNullable(environment.get("GRETL_JOB_NAME")))
                 .orElseGet(source::jobName);
@@ -220,14 +239,14 @@ public final class GretlCli {
             MutableSink sink = new MutableSink();
             JobDefinition definition = loadDefinition(source, registry, sink);
             sink.flushTo(message -> err.println("SCRIPT: " + message));
-            new HelpPrinter(out).jobHelp(definition, source.displayFile());
+            new HelpPrinter(out, locale).jobHelp(definition, source.displayFile());
             return 0;
         }
 
         MutableSink sink = new MutableSink();
         JobDefinition definition = loadDefinition(source, registry, sink);
-        Map<String, String> fileParameters = ParameterFile.read(options.parameterFile());
-        ParameterResolver resolver = new ParameterResolver(startCwd);
+        Map<String, String> fileParameters = ParameterFile.read(options.parameterFile(), locale);
+        ParameterResolver resolver = new ParameterResolver(startCwd, locale);
         ParameterMode mode = options.command() == CliOptions.Command.RUN
                 ? ParameterMode.RUN : ParameterMode.CHECK;
         ResolvedParameters parameters = resolver.resolve(definition,
@@ -235,23 +254,22 @@ public final class GretlCli {
         List<String> targets = options.targets().isEmpty()
                 ? definition.defaultTargets() : options.targets();
         if (targets.isEmpty()) {
-            throw new CliException(2,
-                    "Keine Ziele angegeben und keine Scriptdefaults vorhanden");
+            throw new CliException(2, Messages.get(locale, "cli.error.noTargets"));
         }
         ExecutionPlan plan = new ExecutionPlanner().plan(definition, targets);
 
         if (options.command() == CliOptions.Command.CHECK) {
             sink.flushTo(message -> err.println("SCRIPT: " + message));
-            out.println("OK: " + source.displayFile().getFileName()
-                    + " — Definition und ausgewaehlte Ziele sind gueltig");
+            out.println(Messages.format(locale, "cli.check.ok",
+                    source.displayFile().getFileName()));
             if (!parameters.missingRequired().isEmpty()) {
-                out.println("Offene Pflichtparameter: "
-                        + String.join(", ", parameters.missingRequired()));
+                out.println(Messages.format(locale, "cli.check.openRequired",
+                        String.join(", ", parameters.missingRequired())));
             }
             return 0;
         }
         if (options.command() == CliOptions.Command.PLAN) {
-            new HelpPrinter(out).plan(plan);
+            new HelpPrinter(out, locale).plan(plan);
             return 0;
         }
         return run(source, definition, plan, parameters, config, registry, sink,
@@ -277,15 +295,15 @@ public final class GretlCli {
         LogContext context = new LogContext(commandId, runId,
                 config.jobName().orElseGet(source::jobName), RuntimeInfo.VERSION,
                 Optional.ofNullable(environment.get("GRETL_DEPLOYMENT_ENVIRONMENT"))
-                        .filter(value -> !value.isBlank()));
+                        .filter(value -> !value.isBlank()), locale);
         Path eventFile = config.reportRoot().resolve(runId + ".events.jsonl");
         LoggingPipeline logging;
         try {
             logging = new LoggingPipeline(config.logging(), context, redactor, err,
                     config.logging().eventFile() ? eventFile : null, clock);
         } catch (IOException exception) {
-            throw new CliException(2, "Ereignisdatei konnte nicht angelegt werden: "
-                    + safeMessage(exception), exception);
+            throw new CliException(2, Messages.format(locale,
+                    "cli.error.eventFile", safeMessage(exception)), exception);
         }
         LogbackBridge bridge = null;
         RunControl control = new RunControl(SystemMonotonicClock.INSTANCE,
@@ -298,14 +316,15 @@ public final class GretlCli {
                 ProviderInventory.verify(classLoader);
                 bridge = LogbackBridge.install(logging, config.logging());
             } catch (RuntimeException exception) {
-                throw new CliException(2, "Loggingprovider ist ungueltig: "
-                        + safeMessage(exception), exception);
+                throw new CliException(2, Messages.format(locale,
+                        "cli.error.loggingProvider", safeMessage(exception)), exception);
             }
             Runtime.getRuntime().addShutdownHook(hook);
             RunInput input = RunInput.builder()
                     .parameters(parameters)
                     .taskConfig(config.taskConfig())
                     .jobRoot(source.jobRoot())
+                    .locale(locale)
                     .startCwd(startCwd)
                     .workRoot(config.workRoot())
                     .jobName(config.jobName().orElseGet(source::jobName))
@@ -325,8 +344,8 @@ public final class GretlCli {
                 try {
                     TerminationMessage.write(startCwd.resolve(terminationPath), outcome);
                 } catch (IOException exception) {
-                    err.println("WARNUNG: Termination Message konnte nicht geschrieben werden: "
-                            + safeMessage(exception));
+                    err.println(Messages.format(locale,
+                            "cli.warning.terminationMessage", safeMessage(exception)));
                 }
             }
             if (bridge != null) {
@@ -343,8 +362,8 @@ public final class GretlCli {
                         RuntimeInfo.inventoryHash(registry), loggingState,
                         commandStarted, context.deploymentEnvironment()), report);
             } catch (IOException exception) {
-                String message = "Runbericht konnte nicht geschrieben werden: "
-                        + safeMessage(exception);
+                String message = Messages.format(locale,
+                        "cli.error.reportWrite", safeMessage(exception));
                 err.println(new TextFormatter().formatProblem(clock.instant(),
                         "REPORT_WRITE_FAILED", null, message, Map.of()));
                 return 10;
@@ -369,27 +388,21 @@ public final class GretlCli {
         } catch (DefinitionException | ParameterException | GroovyDslException exception) {
             throw exception;
         } catch (RuntimeException exception) {
-            throw new CliException(2, "Jobdefinition konnte nicht geladen werden: "
-                    + safeMessage(exception), exception);
+            throw new CliException(2, Messages.format(locale,
+                    "cli.error.jobDefinition", safeMessage(exception)), exception);
         }
     }
 
     private OperationRegistry loadRegistry() {
         try {
-            return OperationRegistry.load(classLoader);
+            return OperationRegistry.load(classLoader, locale);
         } catch (DefinitionException exception) {
             throw new CliException(2, safeMessage(exception), exception);
         }
     }
 
     private void commandHelp() {
-        out.println("""
-                Aufruf: gretl run job.groovy [Optionen]
-                        gretl check job.groovy [Optionen]
-                        gretl plan job.groovy [Optionen]
-                        gretl package job-package.json --output job.jar
-                Siehe gretl --help fuer alle Optionen.
-                """);
+        out.println(Messages.get(locale, "cli.commandHelp"));
     }
 
     private void prepareDirectory(Path path, String label) {
@@ -400,7 +413,8 @@ public final class GretlCli {
                 throw new IOException("not a writable directory");
             }
         } catch (IOException exception) {
-            throw new CliException(2, label + " ist nicht beschreibbar: " + path, exception);
+            throw new CliException(2, Messages.format(locale,
+                    "cli.error.notWritable", label, path), exception);
         }
     }
 
@@ -427,10 +441,10 @@ public final class GretlCli {
         return name.endsWith(".groovy") ? name.substring(0, name.length() - 7) : name;
     }
 
-    private static String requireJobName(String value) {
+    private String requireJobName(String value) {
         if (value == null || value.isBlank() || value.length() > 256
                 || value.chars().anyMatch(Character::isISOControl)) {
-            throw new CliException(2, "jobName ist ungueltig");
+            throw new CliException(2, Messages.get(locale, "cli.error.jobName"));
         }
         return value;
     }
@@ -441,9 +455,9 @@ public final class GretlCli {
                 .filter(candidate -> candidate.equalsIgnoreCase(symbol)
                         || candidate.toLowerCase().contains(symbol.toLowerCase()))
                 .findFirst().orElse(null);
-        return "Unbekannter Baustein " + symbol
-                + (suggestion == null ? "" : ". Meinten Sie " + suggestion + "?")
-                + ". Verfuegbar: gretl operations";
+        String hint = suggestion == null ? ""
+                : Messages.format(locale, "cli.error.unknownOperation.suggestion", suggestion);
+        return Messages.format(locale, "cli.error.unknownOperation", symbol, hint);
     }
 
     private void error(CliException exception, boolean json) {
@@ -463,20 +477,26 @@ public final class GretlCli {
         } else {
             Map<String, String> details = new LinkedHashMap<>();
             if (exception.field() != null && !exception.field().isBlank()) {
-                details.put("Feld", exception.field());
+                details.put(Messages.get(locale, "log.field.field"), exception.field());
             }
             if (exception.task() != null && !exception.task().isBlank()) {
-                details.put("Task", exception.task());
+                details.put(Messages.get(locale, "log.field.task"), exception.task());
             }
             if (exception.source() != null && !exception.source().isBlank()) {
-                details.put("Quelle", exception.source());
+                details.put(Messages.get(locale, "log.field.source"), exception.source());
             }
-            if (message != null && !message.isBlank()) {
-                details.put("Meldung", message);
-            }
-            err.println(new TextFormatter().formatProblem(clock.instant(),
+            err.println(new TextFormatter(locale).formatProblem(clock.instant(),
                     exception.diagnosticCode(), null, message, details));
         }
+    }
+
+    private static String requestedLanguage(String[] args) {
+        for (int index = 0; index < args.length - 1; index++) {
+            if (args[index].equals("--lang")) {
+                return args[index + 1];
+            }
+        }
+        return null;
     }
 
     private static boolean jsonRequested(String[] args) {

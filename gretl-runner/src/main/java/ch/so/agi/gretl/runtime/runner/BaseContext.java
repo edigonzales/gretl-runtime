@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import ch.so.agi.gretl.i18n.Messages;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,11 +57,12 @@ abstract class BaseContext implements ContextView {
     public Object parameter(String name) {
         checkDataAccess();
         if (name == null || name.isBlank()) {
-            throw new ContextAccessException("UNKNOWN_PARAMETER", "Parametername ist leer");
+            throw new ContextAccessException("UNKNOWN_PARAMETER",
+                    Messages.get(environment.locale(), "runner.parameterNameEmpty"));
         }
         if (!environment.parameters().declaredNames().contains(name)) {
             throw new ContextAccessException("UNKNOWN_PARAMETER",
-                    "Der Job kennt den Parameter " + name + " nicht");
+                    Messages.format(environment.locale(), "runner.unknownParameter", name));
         }
         return environment.parameters().get(name);
     }
@@ -74,7 +76,8 @@ abstract class BaseContext implements ContextView {
         }
         if (!type.isInstance(value)) {
             throw new ContextAccessException("PARAMETER_TYPE_MISMATCH",
-                    "Parameter " + name + " ist nicht vom Typ " + type.getName());
+                    Messages.format(environment.locale(), "runner.parameterType",
+                            name, type.getName()));
         }
         return type.cast(value);
     }
@@ -83,12 +86,13 @@ abstract class BaseContext implements ContextView {
     public Map<String, Object> config(String alias) {
         checkDataAccess();
         if (alias == null || alias.isBlank()) {
-            throw new ContextAccessException("UNKNOWN_CONFIG_ALIAS", "Config-Alias ist leer");
+            throw new ContextAccessException("UNKNOWN_CONFIG_ALIAS",
+                    Messages.get(environment.locale(), "runner.configAliasEmpty"));
         }
         Map<String, Object> config = environment.taskConfig().get(alias);
         if (config == null) {
             throw new ContextAccessException("UNKNOWN_CONFIG_ALIAS",
-                    "Unbekannter taskConfig-Alias: " + alias);
+                    Messages.format(environment.locale(), "runner.unknownConfigAlias", alias));
         }
         return config;
     }
@@ -109,29 +113,38 @@ abstract class BaseContext implements ContextView {
     public Path workPath(String relativePath) throws IOException {
         checkWork();
         if (relativePath == null || relativePath.isBlank()) {
-            throw new ContextAccessException("INVALID_PATH", "workPath ist leer");
+            throw new ContextAccessException("INVALID_PATH",
+                    Messages.get(environment.locale(), "runner.workPathEmpty"));
         }
         Path relative;
         try {
             relative = Path.of(relativePath);
         } catch (InvalidPathException exception) {
             throw new ContextAccessException("INVALID_PATH",
-                    "workPath ist kein gueltiger Pfad: " + relativePath);
+                    Messages.format(environment.locale(), "runner.workPathInvalid",
+                            relativePath));
         }
         if (relative.isAbsolute()) {
             throw new ContextAccessException("WORK_PATH_ESCAPE",
-                    "workPath muss relativ sein: " + relativePath);
+                    Messages.format(environment.locale(), "runner.workPathRelative",
+                            relativePath));
         }
         Path path = workBase.resolve(relative).normalize();
         if (!path.startsWith(workBase)) {
             throw new ContextAccessException("WORK_PATH_ESCAPE",
-                    "workPath verlaesst den Arbeitsbereich: " + relativePath);
+                    Messages.format(environment.locale(), "runner.workPathEscape",
+                            relativePath));
         }
         Path parent = path.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
         return path;
+    }
+
+    @Override
+    public java.util.Locale locale() {
+        return environment.locale();
     }
 
     @Override
@@ -236,7 +249,7 @@ abstract class BaseContext implements ContextView {
             return (path.isAbsolute() ? path : base.resolve(path)).normalize();
         } catch (InvalidPathException exception) {
             throw new ContextAccessException("INVALID_PATH",
-                    "Pfad ist ungueltig: " + text);
+                    "Path is invalid: " + text);
         }
     }
 }

@@ -5,6 +5,7 @@ import ch.so.agi.gretl.runtime.api.ConfigBuilder;
 import ch.so.agi.gretl.runtime.api.Fields;
 import ch.so.agi.gretl.runtime.api.InputField;
 import ch.so.agi.gretl.runtime.api.LogLevel;
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationContext;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.OutputField;
@@ -44,17 +45,17 @@ public final class HttpDownloadOperation {
 
     public static OperationType<HttpDownloadRequest, HttpDownloadResult> type() {
         InputField<HttpDownloadRequest, URI> url = new InputField<>(
-                "url", "uri", "Absolute HTTP-/HTTPS-Adresse", true, Optional.empty(),
+                "url", "uri", "Absolute HTTP/HTTPS URL", true, Optional.empty(),
                 List.of("http", "https"), "url = 'https://example.invalid/data.zip'",
                 HttpDownloadOperation::uri,
                 (builder, value) -> ((HttpDownloadBuilder) builder).setUrl(value));
         InputField<HttpDownloadRequest, Path> output = new InputField<>(
-                "output", "path", "Ziel einer vollstaendig heruntergeladenen Datei", true,
+                "output", "path", "Target file for the completed download", true,
                 Optional.empty(), List.of(), "output = workPath('data.zip')",
                 HttpDownloadOperation::path,
                 (builder, value) -> ((HttpDownloadBuilder) builder).setOutput(value));
         InputField<HttpDownloadRequest, Boolean> overwrite = new InputField<>(
-                "overwrite", "boolean", "Vorhandene Zieldatei nach erfolgreichem Download ersetzen",
+                "overwrite", "boolean", "Replace an existing target file after a successful download",
                 false, Optional.of(false), List.of(), "overwrite = true",
                 HttpDownloadOperation::bool,
                 (builder, value) -> ((HttpDownloadBuilder) builder).setOverwrite(value));
@@ -64,7 +65,7 @@ public final class HttpDownloadOperation {
                 HttpDownloadOperation::method,
                 (builder, value) -> ((HttpDownloadBuilder) builder).setMethod(value));
         InputField<HttpDownloadRequest, Map<String, HeaderValue>> headers = new InputField<>(
-                "headers", "map", "HTTP-Header; Werte als Text oder SecretValue", false,
+                "headers", "map", "HTTP headers; values as text or SecretValue", false,
                 Optional.of(Map.of()), List.of(),
                 "headers = ['Accept': 'application/zip']",
                 HttpDownloadOperation::headers,
@@ -75,24 +76,24 @@ public final class HttpDownloadOperation {
                 HttpDownloadOperation::text,
                 (builder, value) -> ((HttpDownloadBuilder) builder).setBodyText(value));
         InputField<HttpDownloadRequest, Long> maxBytes = new InputField<>(
-                "maxBytes", "integer", "Maximal gelesene Bytes", false,
+                "maxBytes", "integer", "Maximum number of bytes read", false,
                 Optional.of(DEFAULT_MAX_BYTES), List.of(), "maxBytes = 1048576L",
                 HttpDownloadOperation::positiveLong,
                 (builder, value) -> ((HttpDownloadBuilder) builder).setMaxBytes(value));
         OutputField<HttpDownloadResult, Path> file = Fields.output(
-                "file", "path", "Abgeschlossene Datei", false, HttpDownloadResult::file);
+                "file", "path", "Completed file", false, HttpDownloadResult::file);
         OutputField<HttpDownloadResult, URI> finalUri = Fields.output(
-                "finalUri", "uri", "Tatsaechlich angefragte URI", false,
+                "finalUri", "uri", "URI actually requested", false,
                 HttpDownloadResult::finalUri);
         OutputField<HttpDownloadResult, Integer> status = Fields.output(
-                "status", "integer", "HTTP-Status", false, HttpDownloadResult::status);
+                "status", "integer", "HTTP status", false, HttpDownloadResult::status);
         OutputField<HttpDownloadResult, Long> bytes = Fields.output(
-                "bytes", "integer", "Tatsaechlich gelesene Bytes", false,
+                "bytes", "integer", "Bytes actually read", false,
                 HttpDownloadResult::bytes);
         OutputField<HttpDownloadResult, String> sha256 = Fields.output(
-                "sha256", "text", "SHA-256 der Datei", false, HttpDownloadResult::sha256);
+                "sha256", "text", "SHA-256 of the file", false, HttpDownloadResult::sha256);
         return new OperationType<>(
-                ID, SYMBOL, "Datei ueber HTTP herunterladen",
+                ID, SYMBOL, "Download a file over HTTP",
                 HttpDownloadRequest.class, HttpDownloadResult.class,
                 HttpDownloadBuilder::new, HttpDownloadHandler::new,
                 List.of(url, output, overwrite, method, headers, bodyText, maxBytes),
@@ -109,7 +110,7 @@ public final class HttpDownloadOperation {
         if (value instanceof Boolean booleanValue) {
             return booleanValue;
         }
-        throw new IllegalArgumentException("overwrite muss true oder false sein");
+        throw new IllegalArgumentException("overwrite must be true or false");
     }
 
     private static URI uri(Object value) {
@@ -120,15 +121,15 @@ public final class HttpDownloadOperation {
             } else if (value instanceof CharSequence text) {
                 uri = URI.create(text.toString());
             } else {
-                throw new IllegalArgumentException("url muss URI oder Text sein");
+                throw new IllegalArgumentException("url must be a URI or text");
             }
         } catch (RuntimeException exception) {
-            throw new IllegalArgumentException("url ist keine gueltige URI", exception);
+            throw new IllegalArgumentException("url is not a valid URI", exception);
         }
         if (!uri.isAbsolute() || uri.getHost() == null
                 || !(uri.getScheme().equalsIgnoreCase("http")
                 || uri.getScheme().equalsIgnoreCase("https"))) {
-            throw new IllegalArgumentException("url muss eine absolute HTTP-/HTTPS-Adresse sein");
+            throw new IllegalArgumentException("url must be an absolute HTTP/HTTPS address");
         }
         if (uri.getUserInfo() != null) {
             throw new IllegalArgumentException("url darf keine Userinfo enthalten");
@@ -143,21 +144,21 @@ public final class HttpDownloadOperation {
         } else if (value instanceof CharSequence text) {
             path = Path.of(text.toString());
         } else {
-            throw new IllegalArgumentException("Pfad muss Path oder Text sein");
+            throw new IllegalArgumentException("Path must be a Path or text");
         }
         if (path.toString().isBlank()) {
-            throw new IllegalArgumentException("Pfad darf nicht leer sein");
+            throw new IllegalArgumentException("Path must not be blank");
         }
         return path.normalize();
     }
 
     private static String method(Object value) {
         if (!(value instanceof CharSequence text)) {
-            throw new IllegalArgumentException("method muss Text sein");
+            throw new IllegalArgumentException("method must be text");
         }
         String method = text.toString().toUpperCase(Locale.ROOT);
         if (!method.equals("GET") && !method.equals("POST")) {
-            throw new IllegalArgumentException("method muss GET oder POST sein");
+            throw new IllegalArgumentException("method must be GET or POST");
         }
         return method;
     }
@@ -181,23 +182,23 @@ public final class HttpDownloadOperation {
                 throw new IllegalArgumentException("maxBytes liegt ausserhalb des Long-Bereichs");
             }
         } else {
-            throw new IllegalArgumentException("maxBytes muss eine positive Ganzzahl sein");
+            throw new IllegalArgumentException("maxBytes must be a positive integer");
         }
         if (result <= 0) {
-            throw new IllegalArgumentException("maxBytes muss positiv sein");
+            throw new IllegalArgumentException("maxBytes must be positive");
         }
         return result;
     }
 
     private static Map<String, HeaderValue> headers(Object value) {
         if (!(value instanceof Map<?, ?> map)) {
-            throw new IllegalArgumentException("headers muss eine Map sein");
+            throw new IllegalArgumentException("headers must be a map");
         }
         Map<String, HeaderValue> result = new LinkedHashMap<>();
         Map<String, String> seen = new LinkedHashMap<>();
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             if (!(entry.getKey() instanceof CharSequence nameText)) {
-                throw new IllegalArgumentException("Headername muss Text sein");
+                throw new IllegalArgumentException("Header name must be text");
             }
             String name = nameText.toString();
             if (!name.matches("[!#$%&'*+.^_`|~0-9A-Za-z-]+")) {
@@ -206,7 +207,7 @@ public final class HttpDownloadOperation {
             String key = name.toLowerCase(Locale.ROOT);
             if (seen.putIfAbsent(key, name) != null) {
                 throw new IllegalArgumentException(
-                        "Header " + name + " ist doppelt (Gross-/Kleinschreibung zaehlt nicht)");
+                        "Header " + name + " is duplicated (case-insensitive)");
             }
             Object raw = entry.getValue();
             HeaderValue header;
@@ -216,12 +217,12 @@ public final class HttpDownloadOperation {
                 String valueText = text.toString();
                 if (valueText.chars().anyMatch(character -> character < 0x20 || character == 0x7f)) {
                     throw new IllegalArgumentException(
-                            "Headerwert fuer " + name + " enthaelt Steuerzeichen");
+                            "Header value for " + name + " contains control characters");
                 }
                 header = new HeaderValue(name, valueText, null);
             } else {
                 throw new IllegalArgumentException(
-                        "Headerwert fuer " + name + " muss Text oder SecretValue sein");
+                        "Header value for " + name + " must be text or SecretValue");
             }
             result.put(name, header);
         }
@@ -281,11 +282,11 @@ public final class HttpDownloadOperation {
         @Override
         public HttpDownloadRequest build() {
             if (url == null) {
-                throw new IllegalArgumentException("url fehlt");
+                throw new IllegalArgumentException("url is missing");
             }
             url = uri(url);
             if (output == null) {
-                throw new IllegalArgumentException("output fehlt");
+                throw new IllegalArgumentException("output is missing");
             }
             method = method(method);
             if (method.equals("GET") && bodyText != null) {
@@ -294,6 +295,10 @@ public final class HttpDownloadOperation {
             return new HttpDownloadRequest(url, output, overwrite, method, headers, bodyText,
                     maxBytes);
         }
+    }
+
+    private static String msg(OperationContext context, String key, Object... args) {
+        return Messages.format(context.locale(), key, args);
     }
 
     static final class HttpDownloadHandler
@@ -308,19 +313,19 @@ public final class HttpDownloadOperation {
             if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
                 if (!request.overwrite()) {
                     throw new HttpTaskException("HTTP_TARGET_EXISTS",
-                            "Zieldatei existiert bereits und overwrite ist nicht aktiviert",
+                            msg(context, "task.http.targetExists"),
                             request.method(), request.url(), 0, 0, "prepare", null);
                 }
                 if (!Files.isRegularFile(target, LinkOption.NOFOLLOW_LINKS)) {
                     throw new HttpTaskException("HTTP_TARGET_UNSAFE",
-                            "Zieldatei ist kein regulaeres File (Verzeichnis oder Symlink)",
+                            msg(context, "task.http.targetUnsafe"),
                             request.method(), request.url(), 0, 0, "prepare", null);
                 }
             }
             Path parent = target.getParent();
             if (parent == null) {
                 throw new HttpTaskException("HTTP_TARGET_INVALID",
-                        "Zielpfad hat kein Elternverzeichnis", request.method(),
+                        msg(context, "task.http.targetInvalid"), request.method(),
                         request.url(), 0, 0, "prepare", null);
             }
             Files.createDirectories(parent);
@@ -330,7 +335,7 @@ public final class HttpDownloadOperation {
             Duration remaining = context.budget().remaining().orElse(null);
             if (remaining != null) {
                 if (remaining.isZero() || remaining.isNegative()) {
-                    throw new HttpTaskException("HTTP_TIMEOUT", "Zeitbudget ist abgelaufen",
+                    throw new HttpTaskException("HTTP_TIMEOUT", msg(context, "task.http.timeout"),
                             request.method(), request.url(), 0, 0, "connect", null);
                 }
                 clientBuilder.connectTimeout(remaining);
@@ -354,7 +359,7 @@ public final class HttpDownloadOperation {
                 httpRequest = builder.build();
             } catch (IllegalArgumentException exception) {
                 throw new HttpTaskException("HTTP_HEADER_INVALID",
-                        "HTTP-Request ist ungueltig", request.method(), request.url(),
+                        msg(context, "task.http.requestInvalid"), request.method(), request.url(),
                         0, 0, "configuration", exception);
             }
 
@@ -371,7 +376,7 @@ public final class HttpDownloadOperation {
                         Thread.currentThread().interrupt();
                     }
                     throw new HttpTaskException("HTTP_TRANSPORT",
-                            "HTTP-Transportfehler", request.method(), request.url(),
+                            msg(context, "task.http.transport"), request.method(), request.url(),
                             0, bytes, "connect", exception);
                 }
                 int status = response.statusCode();
@@ -379,7 +384,7 @@ public final class HttpDownloadOperation {
                     response.body().close();
                     // Deliberately do not read/log an error response body.
                     throw new HttpTaskException("HTTP_STATUS",
-                            "HTTP-Status ausserhalb 200-299", request.method(),
+                            msg(context, "task.http.status"), request.method(),
                             request.url(), status, bytes, "execute", null);
                 }
                 MessageDigest digest = sha256();
@@ -395,7 +400,7 @@ public final class HttpDownloadOperation {
                         bytes += read;
                         if (bytes > request.maxBytes()) {
                             throw new HttpTaskException("HTTP_LIMIT",
-                                    "HTTP-Antwort ueberschreitet maxBytes", request.method(),
+                                    msg(context, "task.http.limit"), request.method(),
                                     request.url(), status, bytes, "execute", null);
                         }
                         output.write(buffer, 0, read);
@@ -410,12 +415,12 @@ public final class HttpDownloadOperation {
                     moveIntoPlace(temporary, target, request.overwrite());
                 } catch (java.nio.file.FileAlreadyExistsException exception) {
                     throw new HttpTaskException("HTTP_TARGET_EXISTS",
-                            "Zieldatei wurde waehrend des Downloads angelegt",
+                            msg(context, "task.http.targetCreated"),
                             request.method(), request.url(), status, bytes, "publish", exception);
                 }
                 String sha = HexFormat.of().formatHex(digest.digest());
                 context.log().log(LogLevel.INFO, "gretl.http.download",
-                        "HTTP-Download abgeschlossen",
+                        msg(context, "task.http.finished"),
                         Map.of("http.method", request.method(),
                                 "http.origin", HttpTaskException.origin(request.url()),
                                 "http.status", Integer.toString(status),
@@ -425,7 +430,7 @@ public final class HttpDownloadOperation {
             } catch (HttpTaskException exception) {
                 deleteQuietly(temporary, exception);
                 context.log().log(LogLevel.WARN, "gretl.http.failed",
-                        "HTTP-Download fehlgeschlagen",
+                        msg(context, "task.http.failed"),
                         Map.of("http.method", request.method(),
                                 "http.origin", HttpTaskException.origin(request.url()),
                                 "http.status", Integer.toString(exception.status()),
@@ -434,7 +439,7 @@ public final class HttpDownloadOperation {
                 throw exception;
             } catch (IOException exception) {
                 HttpTaskException wrapped = new HttpTaskException("HTTP_IO",
-                        "Datei- oder Transportfehler", request.method(), request.url(),
+                        msg(context, "task.http.io"), request.method(), request.url(),
                         0, bytes, "execute", exception);
                 deleteQuietly(temporary, wrapped);
                 throw wrapped;

@@ -29,6 +29,7 @@ public final class RunInput {
     private final SecretResolver secretResolver;
     private final SecretRegistry secretRegistry;
     private final RunControl runControl;
+    private final java.util.Locale locale;
 
     private RunInput(Builder builder) {
         this.parameters = builder.parameters;
@@ -48,6 +49,7 @@ public final class RunInput {
         this.runControl = builder.runControl != null
                 ? builder.runControl
                 : new RunControl(builder.monotonicClock, builder.timeout);
+        this.locale = builder.locale;
     }
 
     public static Builder builder() {
@@ -110,6 +112,10 @@ public final class RunInput {
         return runControl;
     }
 
+    public java.util.Locale locale() {
+        return locale;
+    }
+
     private static Map<String, Map<String, Object>> deepCopy(
             Map<String, Map<String, Object>> source) {
         Map<String, Map<String, Object>> copy = new LinkedHashMap<>();
@@ -139,6 +145,7 @@ public final class RunInput {
         private SecretRegistry secretRegistry = new SecretRegistry();
         private RunControl runControl;
         private Optional<Duration> timeout = Optional.empty();
+        private java.util.Locale locale = java.util.Locale.GERMAN;
 
         public Builder parameters(ResolvedParameters value) {
             this.parameters = Objects.requireNonNull(value, "parameters");
@@ -210,6 +217,11 @@ public final class RunInput {
 
         public Builder runControl(RunControl value) {
             this.runControl = Objects.requireNonNull(value, "runControl");
+            return this;
+        }
+
+        public Builder locale(java.util.Locale value) {
+            this.locale = Objects.requireNonNull(value, "locale");
             return this;
         }
 

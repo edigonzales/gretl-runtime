@@ -75,7 +75,7 @@ public final class ResultStore {
             Class<?> resultType = definition.requireTask(ref).resultType();
             if (!resultType.isInstance(value.value())) {
                 throw new ProviderContractException("TASK_RESULT_TYPE_MISMATCH",
-                        "Task " + ref.id() + " lieferte " + value.value().getClass().getName()
+                        "Task " + ref.id() + " returned " + value.value().getClass().getName()
                                 + " statt " + resultType.getName());
             }
         }
@@ -102,14 +102,14 @@ public final class ResultStore {
                     yield producer.resultType().cast(value.value());
                 }
                 throw new ResultAccessException("RESULT_NOT_PRODUCED",
-                        "Task " + producer.id() + " hat keinen Wert geliefert");
+                        "Task " + producer.id() + " did not return a value");
             }
             case SKIPPED -> throw new ResultAccessException("RESULT_NOT_PRODUCED",
-                    "Task " + producer.id() + " wurde uebersprungen");
+                    "Task " + producer.id() + " was skipped");
             case FAILED, CANCELLED, NOT_RUN -> throw new ResultAccessException("RESULT_NOT_AVAILABLE",
-                    "Task " + producer.id() + " ist nicht erfolgreich abgeschlossen");
+                    "Task " + producer.id() + " did not complete successfully");
             case PENDING, RUNNING -> throw new ResultAccessException("RESULT_NOT_AVAILABLE",
-                    "Task " + producer.id() + " hat noch kein Ergebnis");
+                    "Task " + producer.id() + " has no result yet");
         };
     }
 
@@ -130,7 +130,7 @@ public final class ResultStore {
             case SKIPPED -> Optional.empty();
             case FAILED, CANCELLED, NOT_RUN, PENDING, RUNNING ->
                     throw new ResultAccessException("RESULT_NOT_AVAILABLE",
-                            "Task " + producer.id() + " ist nicht erfolgreich abgeschlossen oder noch offen");
+                            "Task " + producer.id() + " did not complete successfully or is still open");
         };
     }
 
@@ -167,13 +167,13 @@ public final class ResultStore {
         Set<String> predecessors = plan.dataPredecessors(consumerDefinition.id());
         if (!predecessors.contains(producerDefinition.id())) {
             throw new ResultAccessException("UNDECLARED_RESULT_DEPENDENCY",
-                    "Task " + consumerDefinition.id() + " liest " + producerDefinition.id()
+                    "Task " + consumerDefinition.id() + " reads " + producerDefinition.id()
                             + ", hat ihn aber nicht als Datenvorgaenger (dependsOn)");
         }
         TaskState state = states.get(producerDefinition.id());
         if (state == null) {
             throw new ResultAccessException("RESULT_NOT_AVAILABLE",
-                    "Task " + producerDefinition.id() + " ist nicht Teil des ausgewaehlten Plans");
+                    "Task " + producerDefinition.id() + " is not part of the selected plan");
         }
         return state;
     }
@@ -181,11 +181,11 @@ public final class ResultStore {
     private TaskState stateFor(TaskRef<?> ref) {
         TaskDefinition<?> task = definition.task(ref).orElseThrow(() ->
                 new ResultAccessException("FOREIGN_OR_UNKNOWN_TASK_REF",
-                        "TaskRef gehoert nicht zur JobDefinition: " + ref));
+                        "TaskRef does not belong to the JobDefinition: " + ref));
         TaskState state = states.get(task.id());
         if (state == null) {
             throw new ResultAccessException("RESULT_NOT_AVAILABLE",
-                    "Task " + task.id() + " ist nicht Teil des ausgewaehlten Plans");
+                    "Task " + task.id() + " is not part of the selected plan");
         }
         return state;
     }

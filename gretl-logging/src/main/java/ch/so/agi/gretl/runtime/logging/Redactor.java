@@ -60,9 +60,17 @@ public final class Redactor {
         List<FailureInfo> causes = failure.causes().stream().map(this::redact).toList();
         List<FailureInfo> suppressed = failure.suppressed().stream()
                 .map(this::redact).toList();
+        java.util.Optional<ch.so.agi.gretl.runtime.api.DiagnosticInfo> diagnostic =
+                failure.diagnostic().map(value ->
+                        new ch.so.agi.gretl.runtime.api.DiagnosticInfo(
+                                value.code(),
+                                value.taskId().map(this::redact),
+                                value.field().map(this::redact),
+                                value.available().stream().map(this::redact).toList(),
+                                value.hint().map(this::redact)));
         return new FailureInfo(failure.id(), failure.type(), redact(failure.message()),
                 causes, suppressed, failure.truncated(), failure.frames(),
-                failure.framesTruncated(), failure.source());
+                failure.framesTruncated(), failure.source(), diagnostic);
     }
 
     public List<FailureInfo> redactFailures(List<FailureInfo> failures) {

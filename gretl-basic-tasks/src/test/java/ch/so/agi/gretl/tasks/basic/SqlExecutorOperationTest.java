@@ -75,8 +75,8 @@ class SqlExecutorOperationTest {
                 () -> new SqlExecutorOperation.SqlHandler()
                         .execute(builder.build(), context(Map.of(), Map.of())));
 
-        assertTrue(exception.getMessage().contains("SQL"));
-        assertTrue(exception.getMessage().contains("db"));
+        assertEquals("SQL_STATEMENT", exception.code());
+        assertEquals("db", exception.databaseAlias());
         assertFalse(exception.getMessage().contains("no_such_table"));
         try (Connection connection = DriverManager.getConnection(jdbcUrl, "sa", "");
              Statement statement = connection.createStatement();

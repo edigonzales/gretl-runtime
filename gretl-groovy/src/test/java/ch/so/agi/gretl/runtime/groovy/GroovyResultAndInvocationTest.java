@@ -53,7 +53,9 @@ class GroovyResultAndInvocationTest {
         var failure = outcome.task("read").orElseThrow().failure().orElseThrow();
         assertEquals(GroovyDslException.class.getName(), failure.type());
         assertTrue(failure.message().contains("missing"));
-        assertTrue(failure.message().contains("result"));
+        assertEquals("UNKNOWN_OUTPUT_FIELD",
+                failure.diagnostic().orElseThrow().code());
+        assertTrue(failure.diagnostic().orElseThrow().available().contains("result"));
     }
 
     @Test
@@ -235,8 +237,8 @@ class GroovyResultAndInvocationTest {
         var failure = unknown.task("read").orElseThrow().failure().orElseThrow();
         assertTrue(failure.message().contains("unknownActionField"));
         assertTrue(failure.message().contains("action"));
-        assertTrue(failure.message().matches(".*action-unknown-field\\.groovy:\\d+.*"),
-                failure.message());
+        assertEquals("UNKNOWN_PROPERTY", failure.diagnostic().orElseThrow().code());
+        assertTrue(failure.source().isPresent());
     }
 
     @Test

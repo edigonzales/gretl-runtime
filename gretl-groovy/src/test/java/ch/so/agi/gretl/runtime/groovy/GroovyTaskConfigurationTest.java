@@ -12,7 +12,6 @@ import ch.so.agi.gretl.runtime.runner.RunStatus;
 import ch.so.agi.gretl.runtime.runner.TaskStatus;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -99,10 +98,14 @@ class GroovyTaskConfigurationTest {
         var failure = outcome.task("echo").orElseThrow().failure().orElseThrow();
         assertEquals(GroovyDslException.class.getName(), failure.type());
         assertTrue(failure.message().contains("unknownField"));
-        assertTrue(failure.message().contains("task=echo"));
-        assertTrue(failure.message().contains("text"));
-        assertTrue(Pattern.compile("unknownfield\\.groovy:\\d+")
-                .matcher(failure.message()).find(), failure.message());
+        assertEquals("UNKNOWN_CONFIGURATION_FIELD",
+                failure.diagnostic().orElseThrow().code());
+        assertEquals(java.util.Optional.of("echo"),
+                failure.diagnostic().orElseThrow().taskId());
+        assertEquals(java.util.Optional.of("unknownField"),
+                failure.diagnostic().orElseThrow().field());
+        assertTrue(failure.diagnostic().orElseThrow().available().contains("text"));
+        assertTrue(failure.source().isPresent());
     }
 
     @Test

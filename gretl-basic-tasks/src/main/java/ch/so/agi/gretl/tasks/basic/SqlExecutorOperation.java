@@ -4,6 +4,7 @@ import ch.so.agi.gretl.runtime.api.ConfigBuilder;
 import ch.so.agi.gretl.runtime.api.Fields;
 import ch.so.agi.gretl.runtime.api.InputField;
 import ch.so.agi.gretl.runtime.api.LogLevel;
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationContext;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.OutputField;
@@ -43,27 +44,27 @@ public final class SqlExecutorOperation {
 
     public static OperationType<SqlRequest, SqlResult> type() {
         InputField<SqlRequest, String> database = new InputField<>(
-                "database", "text", "Alias einer vorbereiteten PostgreSQL-Verbindung",
+                "database", "text", "Alias of a prepared PostgreSQL connection",
                 true, Optional.empty(), List.of(), "database = 'edit'",
                 SqlExecutorOperation::text, (builder, value) -> ((SqlBuilder) builder).setDatabase(value));
         InputField<SqlRequest, List<Path>> scripts = new InputField<>(
-                "scripts", "list", "Geordnete vollstaendige UTF-8-SQL-Scriptdateien", false,
+                "scripts", "list", "Ordered complete UTF-8 SQL script files", false,
                 Optional.of(List.of()), List.of(),
                 "scripts = [file('sql/update.sql')]",
                 SqlExecutorOperation::paths, (builder, value) -> ((SqlBuilder) builder).setScripts(value));
         InputField<SqlRequest, List<PreparedStatementSpec>> statements = new InputField<>(
-                "statements", "list", "Geordnete PreparedStatements", false,
+                "statements", "list", "Ordered prepared statements", false,
                 Optional.of(List.of()), List.of(),
                 "statements = [[sql: 'UPDATE t SET x=?', parameters: [1]]]",
                 SqlExecutorOperation::statements, (builder, value) -> ((SqlBuilder) builder).setStatements(value));
         OutputField<SqlResult, Integer> executionCount = Fields.output(
-                "executionCount", "integer", "Anzahl Script-/Statementeintraege", false,
+                "executionCount", "integer", "Number of script/statement entries", false,
                 SqlResult::executionCount);
         OutputField<SqlResult, List<SqlExecutionResult>> executions = Fields.output(
-                "executions", "list", "Ergebnisse in Eingabereihenfolge", false,
+                "executions", "list", "Results in input order", false,
                 SqlResult::executions);
         return new OperationType<>(
-                ID, SYMBOL, "SQL-Scripts oder PreparedStatements ausfuehren",
+                ID, SYMBOL, "Execute SQL scripts or prepared statements",
                 SqlRequest.class, SqlResult.class,
                 SqlBuilder::new, SqlHandler::new,
                 List.of(database, scripts, statements),
@@ -93,7 +94,7 @@ public final class SqlExecutorOperation {
             } else if (element instanceof CharSequence text) {
                 path = Path.of(text.toString());
             } else {
-                throw new IllegalArgumentException("scripts enthaelt keinen Pfad");
+                throw new IllegalArgumentException("scripts contains no path");
             }
             paths.add(path.normalize());
         }
@@ -105,17 +106,17 @@ public final class SqlExecutorOperation {
         List<PreparedStatementSpec> statements = new ArrayList<>();
         for (Object element : raw) {
             if (!(element instanceof Map<?, ?> map)) {
-                throw new IllegalArgumentException("statements enthaelt keine Map");
+                throw new IllegalArgumentException("statements contains no map");
             }
             Set<String> keys = map.keySet().stream().map(String::valueOf)
                     .collect(java.util.stream.Collectors.toSet());
             if (!keys.equals(Set.of("sql", "parameters"))) {
                 throw new IllegalArgumentException(
-                        "Statement benoetigt genau sql und parameters");
+                        "Statement requires exactly sql and parameters");
             }
             Object sqlValue = map.get("sql");
             if (!(sqlValue instanceof CharSequence sql)) {
-                throw new IllegalArgumentException("Statement.sql muss Text sein");
+                throw new IllegalArgumentException("Statement.sql must be text");
             }
             List<Object> parameters = parameters(map.get("parameters"));
             statements.add(new PreparedStatementSpec(sql.toString(), parameters));
@@ -137,7 +138,7 @@ public final class SqlExecutorOperation {
             } else {
                 throw new IllegalArgumentException(
                         "SQL-Parameter typ " + element.getClass().getName()
-                                + " wird nicht unterstuetzt");
+                                + " is not supported");
             }
         }
         return java.util.Collections.unmodifiableList(new ArrayList<>(parameters));
@@ -150,7 +151,7 @@ public final class SqlExecutorOperation {
         } else if (value instanceof Object[] array) {
             java.util.Collections.addAll(result, array);
         } else {
-            throw new IllegalArgumentException(field + " muss eine Liste sein");
+            throw new IllegalArgumentException(field + " must be a list");
         }
         return result;
     }
@@ -177,13 +178,13 @@ public final class SqlExecutorOperation {
         @Override
         public SqlRequest build() {
             if (database == null || database.isBlank()) {
-                throw new IllegalArgumentException("database fehlt");
+                throw new IllegalArgumentException("database is missing");
             }
             boolean hasScripts = !scripts.isEmpty();
             boolean hasStatements = !statements.isEmpty();
             if (hasScripts == hasStatements) {
                 throw new IllegalArgumentException(
-                        "Genau eine von scripts oder statements muss nicht leer sein");
+                        "Exactly one of scripts or statements must be non-empty");
             }
             return new SqlRequest(database, scripts, statements);
         }
@@ -194,13 +195,13 @@ public final class SqlExecutorOperation {
         @Override
         public SqlResult execute(SqlRequest request, OperationContext context) {
             Map<String, Object> config = context.config(request.database());
-            String jdbcUrl = requiredText(config, "jdbcUrl");
-            String user = optionalText(config, "user");
+            String jdbcUrl = requiredText(config, "jdbcUrl", context);
+            String user = optionalText(config, "user", context);
             String password = null;
             Object passwordSecret = config.get("passwordSecret");
             if (passwordSecret != null) {
                 if (!(passwordSecret instanceof CharSequence alias)) {
-                    throw new SqlTaskException("SQL_CONFIG", "passwordSecret muss Text sein",
+                    throw new SqlTaskException("SQL_CONFIG", msg(context, "task.sql.passwordSecretText"),
                             request.database(), null, 0, "configuration", null, 0, null);
                 }
                 password = context.sensitive(context.secret(alias.toString()).reveal());
@@ -209,7 +210,7 @@ public final class SqlExecutorOperation {
             for (String key : config.keySet()) {
                 if (!allowed.contains(key)) {
                     throw new SqlTaskException("SQL_CONFIG",
-                            "Unbekanntes Verbindungsfeld " + key, request.database(),
+                            msg(context, "task.sql.unknownField", key), request.database(),
                             null, 0, "configuration", null, 0, null);
                 }
             }
@@ -242,13 +243,13 @@ public final class SqlExecutorOperation {
                     connection.commit();
                 } catch (SQLException exception) {
                     primary = sqlError("SQL_COMMIT_UNKNOWN",
-                            "Commit-Ergebnis unbekannt", request.database(), null,
+                            msg(context, "task.sql.commitUnknown"), request.database(), null,
                             results.size(), "commit", exception);
                     rollbackQuietly(connection, primary);
                     throw primary;
                 }
                 context.log().log(LogLevel.INFO, "gretl.sql.finished",
-                        "SQL-Ausfuehrung abgeschlossen",
+                        msg(context, "task.sql.finished"),
                         Map.of("db.alias", request.database(),
                                 "sql.execution_count", Integer.toString(results.size()),
                                 "duration_ms", Long.toString(
@@ -259,7 +260,8 @@ public final class SqlExecutorOperation {
                 logFailure(context, exception);
                 throw exception;
             } catch (SQLException exception) {
-                primary = sqlError("SQL_EXECUTION", "SQL-Ausfuehrung fehlgeschlagen",
+                primary = sqlError("SQL_EXECUTION",
+                        msg(context, "task.sql.executionFailed"),
                         request.database(), null, 0, "connect", exception);
                 rollbackQuietly(connection, primary);
                 logFailure(context, primary);
@@ -273,13 +275,17 @@ public final class SqlExecutorOperation {
                             primary.addSuppressed(exception);
                         } else {
                             throw new SqlTaskException("SQL_CLOSE",
-                                    "Datenbankverbindung konnte nicht geschlossen werden",
+                                    msg(context, "task.sql.closeFailed"),
                                     request.database(), null, 0, "cleanup",
                                     exception.getSQLState(), exception.getErrorCode(), exception);
                         }
                     }
                 }
             }
+        }
+
+        private static String msg(OperationContext context, String key, Object... args) {
+            return Messages.format(context.locale(), key, args);
         }
 
         private static void logFailure(OperationContext context, SqlTaskException exception) {
@@ -297,7 +303,7 @@ public final class SqlExecutorOperation {
                 fields.put("sql.vendor_code", Integer.toString(exception.vendorCode()));
             }
             context.log().log(LogLevel.WARN, "gretl.sql.failed",
-                    "SQL-Ausfuehrung fehlgeschlagen", fields, exception);
+                    msg(context, "task.sql.executionFailed"), fields, exception);
         }
 
         private static SqlExecutionResult executeScript(
@@ -308,12 +314,12 @@ public final class SqlExecutorOperation {
                 sql = Files.readString(script, StandardCharsets.UTF_8);
             } catch (IOException exception) {
                 throw new SqlTaskException("SQL_SCRIPT_READ",
-                        "SQL-Script konnte nicht gelesen werden", alias,
+                        msg(context, "task.sql.scriptRead"), alias,
                         script.getFileName().toString(), index, "read", null, 0, exception);
             }
             String hash = sha256(sql);
             context.log().log(LogLevel.DEBUG, "gretl.sql.script",
-                    "SQL-Script wird ausgefuehrt",
+                    "SQL script is being executed",
                     Map.of("db.alias", alias,
                             "sql.script", script.getFileName().toString(),
                             "sql.entry", Integer.toString(index),
@@ -323,7 +329,7 @@ public final class SqlExecutorOperation {
                 boolean hasResult = statement.execute(sql);
                 return collect(statement, hasResult, index);
             } catch (SQLException exception) {
-                throw sqlError("SQL_SCRIPT", "SQL-Script fehlgeschlagen", alias,
+                throw sqlError("SQL_SCRIPT", msg(context, "task.sql.scriptFailed"), alias,
                         script.getFileName().toString(), index, "execute", exception);
             }
         }
@@ -337,7 +343,7 @@ public final class SqlExecutorOperation {
                 boolean hasResult = statement.execute();
                 return collect(statement, hasResult, index);
             } catch (SQLException exception) {
-                throw sqlError("SQL_STATEMENT", "SQL-Statement fehlgeschlagen", alias,
+                throw sqlError("SQL_STATEMENT", msg(context, "task.sql.statementFailed"), alias,
                         null, index, "execute", exception);
             }
         }
@@ -403,24 +409,26 @@ public final class SqlExecutorOperation {
             }
         }
 
-        private static String requiredText(Map<String, Object> config, String key) {
+        private static String requiredText(Map<String, Object> config, String key,
+                                           OperationContext context) {
             Object value = config.get(key);
             if (!(value instanceof CharSequence text) || text.toString().isBlank()) {
                 throw new SqlTaskException("SQL_CONFIG",
-                        "Verbindungsfeld " + key + " fehlt oder ist kein Text",
+                        msg(context, "task.sql.fieldMissing", key),
                         "?", null, 0, "configuration", null, 0, null);
             }
             return text.toString();
         }
 
-        private static String optionalText(Map<String, Object> config, String key) {
+        private static String optionalText(Map<String, Object> config, String key,
+                                           OperationContext context) {
             Object value = config.get(key);
             if (value == null) {
                 return null;
             }
             if (!(value instanceof CharSequence text)) {
                 throw new SqlTaskException("SQL_CONFIG",
-                        "Verbindungsfeld " + key + " muss Text sein",
+                        msg(context, "task.sql.fieldNotText", key),
                         "?", null, 0, "configuration", null, 0, null);
             }
             return text.toString();

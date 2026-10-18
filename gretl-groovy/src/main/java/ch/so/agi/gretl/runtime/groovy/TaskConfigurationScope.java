@@ -3,6 +3,7 @@ package ch.so.agi.gretl.runtime.groovy;
 import ch.so.agi.gretl.runtime.api.ConfigBuilder;
 import ch.so.agi.gretl.runtime.api.InputField;
 import ch.so.agi.gretl.runtime.api.OperationContext;
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.TaskContext;
 import ch.so.agi.gretl.runtime.api.TaskRef;
@@ -26,6 +27,7 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
     private final List<InputField<C, ?>> fields;
     private final Map<String, Object> values = new LinkedHashMap<>();
     private final String taskId;
+    private final java.util.Locale locale;
 
     TaskConfigurationScope(
             OperationType<C, R> type, Closure<?> configure, JobDslModel model,
@@ -35,14 +37,14 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
         this.configure = configure;
         this.fields = type.inputs();
         this.taskId = outer.identity().taskId().orElse(type.id());
+        this.locale = inner.locale();
         for (InputField<C, ?> field : fields) {
             field.defaultValue().ifPresent(value -> {
                 try {
                     values.put(field.name(), convert(field, value));
                 } catch (RuntimeException exception) {
                     throw error("INVALID_CONFIGURATION_VALUE",
-                            "Defaultwert fuer Feld " + field.name()
-                                    + " konnte nicht konvertiert werden",
+                            Messages.format(locale, "error.groovy.defaultConvert", field.name()),
                             field.name(), fieldNames(), exception);
                 }
             });
@@ -55,14 +57,14 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
         for (InputField<C, ?> field : fields) {
             if (field.required() && values.get(field.name()) == null) {
                 throw error("MISSING_REQUIRED_FIELD",
-                        "Pflichtfeld " + field.name() + " wurde nicht gesetzt",
+                        Messages.format(locale, "error.groovy.missingRequired", field.name()),
                         field.name(), fieldNames(), null);
             }
         }
         ConfigBuilder<C> builder = type.builderFactory().get();
         if (builder == null) {
             throw error("NULL_CONFIG_BUILDER",
-                    "Taskart " + type.symbol() + " lieferte einen null-Builder",
+                    Messages.format(locale, "error.groovy.nullBuilder", type.symbol()),
                     null, fieldNames(), null);
         }
         for (InputField<C, ?> field : fields) {
@@ -73,14 +75,14 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
                 assign(field, builder, values.get(field.name()));
             } catch (RuntimeException exception) {
                 throw error("INVALID_CONFIGURATION_VALUE",
-                        "Feld " + field.name() + " konnte nicht gesetzt werden",
+                        Messages.format(locale, "error.groovy.assignField", field.name()),
                         field.name(), fieldNames(), exception);
             }
         }
         C request = builder.build();
         if (request == null) {
             throw error("NULL_REQUEST",
-                    "Taskart " + type.symbol() + " lieferte einen null-Request",
+                    Messages.format(locale, "error.groovy.nullRequest", type.symbol()),
                     null, fieldNames(), null);
         }
         return request;
@@ -99,7 +101,7 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
         }
         if (RESERVED.contains(name)) {
             throw error("RESERVED_CONFIGURATION_FIELD",
-                    "Reservierter Name ist kein Konfigurationsfeld: " + name,
+                    Messages.format(locale, "error.groovy.reservedRead", name),
                     name, fieldNames(), null);
         }
         if (field(name) != null) {
@@ -110,7 +112,8 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
             return symbol.get();
         }
         throw error("UNKNOWN_CONFIGURATION_FIELD",
-                "Unbekanntes Konfigurationsfeld " + name + " fuer " + type.symbol(),
+                Messages.format(locale, "error.unknownConfigurationField",
+                        name, type.symbol()),
                 name, fieldNames(), null);
     }
 
@@ -118,14 +121,14 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
     public void setProperty(String name, Object value) {
         if (RESERVED.contains(name)) {
             throw error("RESERVED_CONFIGURATION_FIELD",
-                    "Reservierter Name kann nicht gesetzt werden: " + name,
+                    Messages.format(locale, "error.groovy.reservedWrite", name),
                     name, fieldNames(), null);
         }
         InputField<C, ?> field = field(name);
         if (field == null) {
             throw error("UNKNOWN_CONFIGURATION_FIELD",
-                    "Unbekanntes Konfigurationsfeld " + name + " fuer " + type.symbol()
-                            + "; verwende name = wert",
+                    Messages.format(locale, "error.unknownConfigurationField",
+                            name, type.symbol()),
                     name, fieldNames(), null);
         }
         Object converted;
@@ -133,7 +136,7 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
             converted = convert(field, value);
         } catch (RuntimeException exception) {
             throw error("INVALID_CONFIGURATION_VALUE",
-                    "Wert fuer Feld " + name + " ist ungueltig: " + exception.getMessage(),
+                    Messages.format(locale, "error.groovy.invalidValue", name),
                     name, fieldNames(), exception);
         }
         values.put(name, converted);
@@ -143,7 +146,7 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
     public Object invokeMethod(String name, Object args) {
         if (field(name) != null) {
             throw error("FIELD_ASSIGNMENT_REQUIRED",
-                    "Feld " + name + " wird mit 'name = wert' gesetzt, nicht als Methode",
+                    Messages.format(locale, "error.groovy.fieldAssignment", name),
                     name, fieldNames(), null);
         }
         return super.invokeMethod(name, args);

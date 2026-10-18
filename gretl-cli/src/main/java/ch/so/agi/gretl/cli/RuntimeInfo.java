@@ -31,7 +31,7 @@ public final class RuntimeInfo {
         try {
             return sha256(Files.readAllBytes(script));
         } catch (java.io.IOException exception) {
-            throw new CliException(2, "Jobdatei konnte nicht gelesen werden: " + script,
+            throw new CliException(2, "Job file could not be read: " + script,
                     exception);
         }
     }

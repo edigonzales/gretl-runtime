@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.i18n.Messages;
+
 import ch.so.agi.gretl.runtime.api.CancellationToken;
 import ch.so.agi.gretl.runtime.api.Diagnostic;
 import ch.so.agi.gretl.runtime.api.Progress;
@@ -104,7 +106,8 @@ abstract class AbstractScope extends GroovyObjectSupport {
     @Override
     public void setProperty(String name, Object value) {
         throw error("READ_ONLY_SCOPE",
-                "Dieser Scope nimmt keine Konfigurationsfelder entgegen: " + name,
+                Messages.format(model.environment().locale(),
+                        "error.groovy.scopeReadOnly", name),
                 name, java.util.List.of(), null);
     }
 

@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.CleanupContext;
 import ch.so.agi.gretl.runtime.api.ResourceScope;
 import ch.so.agi.gretl.runtime.api.SecretValue;
@@ -86,13 +87,15 @@ final class CleanupScope extends GroovyObjectSupport {
     @Override
     public void setProperty(String name, Object value) {
         throw new GroovyDslException("READ_ONLY_SCOPE",
-                "CleanupScope nimmt keine Aufgaben oder Konfigurationsfelder entgegen: " + name,
+                Messages.format(model.environment().locale(),
+                        "error.groovy.cleanupReadOnly", name),
                 null, name, SourceLocations.current(model.scriptFile()), java.util.List.of(), null);
     }
 
     public SecretValue secret(String alias) {
         throw new GroovyDslException("SECRET_NOT_ALLOWED",
-                "CleanupScope bietet keinen Secretzugang",
+                Messages.get(model.environment().locale(),
+                        "error.groovy.cleanupSecret"),
                 null, "secret", SourceLocations.current(model.scriptFile()),
                 java.util.List.of(), null);
     }

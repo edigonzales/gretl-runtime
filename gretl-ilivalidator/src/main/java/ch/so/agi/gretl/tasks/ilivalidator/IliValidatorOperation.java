@@ -11,6 +11,7 @@ import ch.so.agi.gretl.runtime.api.DiagnosticSeverity;
 import ch.so.agi.gretl.runtime.api.Fields;
 import ch.so.agi.gretl.runtime.api.InputField;
 import ch.so.agi.gretl.runtime.api.LogLevel;
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationContext;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.OutputField;
@@ -36,27 +37,27 @@ public final class IliValidatorOperation {
 
     public static OperationType<IliValidatorRequest, ValidationResult> type() {
         InputField<IliValidatorRequest, Path> dataFile = new InputField<>(
-                "dataFile", "path", "Vorhandene INTERLIS-XTF-Transferdatei", true,
+                "dataFile", "path", "Existing INTERLIS XTF transfer file", true,
                 Optional.empty(), List.of(), "dataFile = file('data.xtf')",
                 IliValidatorOperation::path, (builder, value) -> ((IliValidatorBuilder) builder).setDataFile(value));
         InputField<IliValidatorRequest, Path> modelDirectory = new InputField<>(
-                "modelDirectory", "path", "Vollstaendiger lokaler Modellbestand", true,
+                "modelDirectory", "path", "Complete local model directory", true,
                 Optional.empty(), List.of(), "modelDirectory = file('models')",
                 IliValidatorOperation::path, (builder, value) -> ((IliValidatorBuilder) builder).setModelDirectory(value));
         InputField<IliValidatorRequest, Path> validationConfig = new InputField<>(
-                "validationConfig", "path", "Optionale lokale Validierungskonfiguration", false,
+                "validationConfig", "path", "Optional local validation configuration", false,
                 Optional.empty(), List.of(), "validationConfig = file('validation.toml')",
                 IliValidatorOperation::path, (builder, value) -> ((IliValidatorBuilder) builder).setValidationConfig(value));
         OutputField<ValidationResult, Path> file = Fields.output(
-                "file", "path", "Validierte Eingabedatei", false, ValidationResult::file);
+                "file", "path", "Validated input file", false, ValidationResult::file);
         OutputField<ValidationResult, Path> reportFile = Fields.output(
-                "reportFile", "path", "Geschuetzter Validierungsbericht", false,
+                "reportFile", "path", "Protected validation report", false,
                 ValidationResult::reportFile);
         OutputField<ValidationResult, Long> warnings = Fields.output(
-                "warnings", "integer", "Anzahl eindeutig erfasster Warnungen", false,
+                "warnings", "integer", "Number of distinctly recorded warnings", false,
                 ValidationResult::warnings);
         return new OperationType<>(
-                ID, SYMBOL, "INTERLIS-XTF mit lokalen Modellen validieren",
+                ID, SYMBOL, "Validate INTERLIS XTF with local models",
                 IliValidatorRequest.class, ValidationResult.class,
                 IliValidatorBuilder::new, IliValidatorHandler::new,
                 List.of(dataFile, modelDirectory, validationConfig),
@@ -76,10 +77,10 @@ public final class IliValidatorOperation {
         } else if (value instanceof CharSequence text) {
             path = Path.of(text.toString());
         } else {
-            throw new IllegalArgumentException("Pfad muss Path oder Text sein");
+            throw new IllegalArgumentException("Path must be a Path or text");
         }
         if (path.toString().isBlank()) {
-            throw new IllegalArgumentException("Pfad darf nicht leer sein");
+            throw new IllegalArgumentException("Path must not be blank");
         }
         return path.normalize();
     }
@@ -105,13 +106,17 @@ public final class IliValidatorOperation {
         @Override
         public IliValidatorRequest build() {
             if (dataFile == null) {
-                throw new IllegalArgumentException("dataFile fehlt");
+                throw new IllegalArgumentException("dataFile is missing");
             }
             if (modelDirectory == null) {
-                throw new IllegalArgumentException("modelDirectory fehlt");
+                throw new IllegalArgumentException("modelDirectory is missing");
             }
             return new IliValidatorRequest(dataFile, modelDirectory, validationConfig);
         }
+    }
+
+    private static String msg(OperationContext context, String key, Object... args) {
+        return Messages.format(context.locale(), key, args);
     }
 
     static final class IliValidatorHandler
@@ -125,19 +130,19 @@ public final class IliValidatorOperation {
             Path models = request.modelDirectory().toAbsolutePath().normalize();
             if (!Files.isRegularFile(data)) {
                 throw new IliValidatorTaskException("DATA_FILE_NOT_FOUND",
-                        "Transferdatei ist nicht vorhanden", "prepare", 0, 0,
+                        msg(context, "task.ili.dataNotFound"), "prepare", 0, 0,
                         Optional.empty(), null);
             }
             if (!Files.isDirectory(models)) {
                 throw new IliValidatorTaskException("MODEL_DIRECTORY_NOT_FOUND",
-                        "Modellverzeichnis ist nicht vorhanden", "prepare", 0, 0,
+                        msg(context, "task.ili.modelsNotFound"), "prepare", 0, 0,
                         Optional.empty(), null);
             }
             if (request.validationConfig() != null
                     && !Files.isRegularFile(request.validationConfig().toAbsolutePath()
                     .normalize())) {
                 throw new IliValidatorTaskException("CONFIG_NOT_FOUND",
-                        "Validierungskonfiguration ist nicht vorhanden", "prepare", 0, 0,
+                        msg(context, "task.ili.configNotFound"), "prepare", 0, 0,
                         Optional.empty(), null);
             }
             Path report = context.workPath("validation-report.txt");
@@ -164,12 +169,12 @@ public final class IliValidatorOperation {
                 writeReport(report, listener, data, models, console.toString(StandardCharsets.UTF_8));
                 DiagnosticArtifact artifact = artifact(report);
                 context.report(new Diagnostic(DiagnosticSeverity.ERROR,
-                        "VALIDATION_ENGINE_FAILED", "INTERLIS-Validierung ist abgebrochen",
+                        "VALIDATION_ENGINE_FAILED", msg(context, "task.ili.engineFailed"),
                         Map.of("errors", Integer.toString(listener.errors()),
                                 "warnings", Long.toString(listener.warnings())),
                         List.of(artifact)));
                 throw new IliValidatorTaskException("VALIDATION_ENGINE_FAILED",
-                        "INTERLIS-Validierung ist abgebrochen", "validation",
+                        msg(context, "task.ili.engineFailed"), "validation",
                         listener.errors(), listener.warnings(), Optional.of(report), exception);
             } finally {
                 System.setOut(originalOut);
@@ -180,32 +185,32 @@ public final class IliValidatorOperation {
                 writeReport(report, listener, data, models, console.toString(StandardCharsets.UTF_8));
             } catch (IOException exception) {
                 throw new IliValidatorTaskException("REPORT_WRITE_FAILED",
-                        "Validierungsbericht konnte nicht geschrieben werden",
+                        msg(context, "task.ili.reportWriteFailed"),
                         "report", listener.errors(), listener.warnings(),
                         Optional.of(report), exception);
             }
             DiagnosticArtifact artifact = artifact(report);
             if (!valid) {
                 context.log().log(LogLevel.WARN, "gretl.ilivalidator.failed",
-                        "INTERLIS-Validierung fehlgeschlagen",
+                        msg(context, "task.ili.failed"),
                         Map.of("ilivalidator.errors", Integer.toString(listener.errors()),
                                 "ilivalidator.warnings", Long.toString(listener.warnings())),
                         null);
                 context.report(new Diagnostic(DiagnosticSeverity.ERROR,
-                        "VALIDATION_FAILED", "INTERLIS-Transfer ist fachlich ungueltig",
+                        "VALIDATION_FAILED", msg(context, "task.ili.invalid"),
                         Map.of("errors", Integer.toString(listener.errors()),
                                 "warnings", Long.toString(listener.warnings())),
                         List.of(artifact)));
                 throw new IliValidatorTaskException("VALIDATION_FAILED",
-                        "INTERLIS-Transfer ist fachlich ungueltig", "validation",
+                        msg(context, "task.ili.invalid"), "validation",
                         listener.errors(), listener.warnings(), Optional.of(report), null);
             }
             context.report(new Diagnostic(DiagnosticSeverity.INFO,
-                    "VALIDATION_REPORT", "INTERLIS-Validierungsbericht",
+                    "VALIDATION_REPORT", msg(context, "task.ili.report"),
                     Map.of("warnings", Long.toString(listener.warnings())),
                     List.of(artifact)));
             context.log().log(LogLevel.INFO, "gretl.ilivalidator.finished",
-                    "INTERLIS-Validierung abgeschlossen",
+                    msg(context, "task.ili.finished"),
                     Map.of("ilivalidator.warnings", Long.toString(listener.warnings())),
                     null);
             return new ValidationResult(data, report, listener.warnings());

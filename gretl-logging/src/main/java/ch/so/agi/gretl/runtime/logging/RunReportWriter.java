@@ -86,6 +86,7 @@ public final class RunReportWriter {
         identity.put("runId", input.context().runId().toString());
         identity.put("jobName", input.context().jobName());
         identity.put("runtimeVersion", input.context().runtimeVersion());
+        identity.put("locale", input.context().locale().toLanguageTag());
         identity.put("inventoryHash", input.inventoryHash());
         identity.put("definitionId", input.definition().definitionId().toString());
         return identity;

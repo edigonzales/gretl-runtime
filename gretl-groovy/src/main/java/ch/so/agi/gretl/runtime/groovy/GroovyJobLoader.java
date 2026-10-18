@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.runner.DefinitionException;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
@@ -42,7 +43,7 @@ public final class GroovyJobLoader {
             Class<?> type = Class.forName(entryClass, true, classLoader);
             if (!GretlScript.class.isAssignableFrom(type)) {
                 throw new GroovyDslException("INVALID_SCRIPT_BASE",
-                        "Die kompilierte Jobklasse verwendet nicht die GRETL-Scriptbasisklasse",
+                        Messages.get(environment.locale(), "error.groovy.invalidCompiledBase"),
                         null, null, SourceLocations.fallback(source), List.of(), null);
             }
             JobDslModel model = new JobDslModel(environment,
@@ -64,7 +65,8 @@ public final class GroovyJobLoader {
             throw error;
         } catch (Throwable throwable) {
             throw new GroovyDslException("JOB_LOAD_FAILED",
-                    "Kompilierter Job konnte nicht geladen werden: " + describe(throwable),
+                    Messages.format(environment.locale(), "error.groovy.compiledLoadFailed",
+                            describe(throwable)),
                     null, null, SourceLocations.fallback(source), List.of(), throwable);
         }
     }
@@ -76,7 +78,7 @@ public final class GroovyJobLoader {
         try {
             if (!Files.isRegularFile(script)) {
                 throw new GroovyDslException("JOB_NOT_FOUND",
-                        "Jobdatei nicht gefunden: " + script,
+                        Messages.format(environment.locale(), "error.groovy.jobNotFound", script),
                         null, null, SourceLocations.fallback(script), List.of(), null);
             }
             JobDslModel model = new JobDslModel(environment,
@@ -93,7 +95,7 @@ public final class GroovyJobLoader {
             Script scriptInstance = shell.parse(script.toFile());
             if (!(scriptInstance instanceof GretlScript gretlScript)) {
                 throw new GroovyDslException("INVALID_SCRIPT_BASE",
-                        "Die Jobdatei verwendet nicht die GRETL-Scriptbasisklasse",
+                        Messages.get(environment.locale(), "error.groovy.invalidScriptBase"),
                         null, null, SourceLocations.fallback(script), List.of(), null);
             }
             scriptInstance.run();
@@ -106,7 +108,8 @@ public final class GroovyJobLoader {
             throw error;
         } catch (Throwable throwable) {
             throw new GroovyDslException("JOB_LOAD_FAILED",
-                    "Job konnte nicht geladen werden: " + describe(throwable),
+                    Messages.format(environment.locale(), "error.groovy.loadFailed",
+                            describe(throwable)),
                     null, null, SourceLocations.from(throwable, script),
                     List.of(), throwable);
         }

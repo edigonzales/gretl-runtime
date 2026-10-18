@@ -1,10 +1,13 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.runtime.api.DiagnosticCarrier;
+import ch.so.agi.gretl.runtime.api.DiagnosticInfo;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /** Groovy DSL error with an optional task, field and original source position. */
-public class GroovyDslException extends RuntimeException {
+public class GroovyDslException extends RuntimeException implements DiagnosticCarrier {
     private static final long serialVersionUID = 1L;
 
     private final String code;
@@ -24,7 +27,7 @@ public class GroovyDslException extends RuntimeException {
     public GroovyDslException(
             String code, String message, String taskId, String fieldName,
             SourceLocation source, List<String> available, Throwable cause) {
-        super(buildMessage(message, taskId, fieldName, source, available), cause);
+        super(message == null ? "Groovy DSL error" : message, cause);
         this.code = require(code, "code");
         this.taskId = taskId;
         this.fieldName = fieldName;
@@ -52,23 +55,13 @@ public class GroovyDslException extends RuntimeException {
         return List.copyOf(available);
     }
 
-    private static String buildMessage(
-            String message, String taskId, String fieldName,
-            SourceLocation source, List<String> available) {
-        StringBuilder result = new StringBuilder(message == null ? "Groovy DSL error" : message);
-        if (taskId != null && !taskId.isBlank()) {
-            result.append(" [task=").append(taskId).append(']');
-        }
-        if (fieldName != null && !fieldName.isBlank()) {
-            result.append(" [field=").append(fieldName).append(']');
-        }
-        if (available != null && !available.isEmpty()) {
-            result.append(" [erlaubt: ").append(String.join(", ", available)).append(']');
-        }
-        if (source != null) {
-            result.append(" [").append(source).append(']');
-        }
-        return result.toString();
+    @Override
+    public DiagnosticInfo diagnostic() {
+        return new DiagnosticInfo(code,
+                Optional.ofNullable(taskId),
+                Optional.ofNullable(fieldName),
+                available,
+                Optional.empty());
     }
 
     private static String require(String value, String field) {

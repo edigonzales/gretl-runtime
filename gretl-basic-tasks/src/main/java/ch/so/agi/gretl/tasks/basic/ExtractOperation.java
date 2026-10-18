@@ -4,6 +4,7 @@ import ch.so.agi.gretl.runtime.api.ConfigBuilder;
 import ch.so.agi.gretl.runtime.api.Fields;
 import ch.so.agi.gretl.runtime.api.InputField;
 import ch.so.agi.gretl.runtime.api.LogLevel;
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationContext;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.OutputField;
@@ -37,7 +38,7 @@ public final class ExtractOperation {
 
     public static OperationType<ExtractRequest, ExtractResult> type() {
         InputField<ExtractRequest, Path> archive = new InputField<>(
-                "archive", "path", "Vorhandene Archivdatei", true, Optional.empty(),
+                "archive", "path", "Existing archive file", true, Optional.empty(),
                 List.of(), "archive = result('download').file",
                 ExtractOperation::path, (builder, value) -> ((ExtractBuilder) builder).setArchive(value));
         InputField<ExtractRequest, String> compression = new InputField<>(
@@ -45,36 +46,36 @@ public final class ExtractOperation {
                 List.of("ZIP", "GZIP"), "compression = 'ZIP'",
                 ExtractOperation::compression, (builder, value) -> ((ExtractBuilder) builder).setCompression(value));
         InputField<ExtractRequest, Path> outputDirectory = new InputField<>(
-                "outputDirectory", "path", "Zielverzeichnis fuer ZIP", false,
+                "outputDirectory", "path", "Target directory for ZIP", false,
                 Optional.empty(), List.of(), "outputDirectory = workPath('out')",
                 ExtractOperation::path, (builder, value) -> ((ExtractBuilder) builder).setOutputDirectory(value));
         InputField<ExtractRequest, Path> outputFile = new InputField<>(
-                "outputFile", "path", "Zieldatei fuer GZIP", false,
+                "outputFile", "path", "Target file for GZIP", false,
                 Optional.empty(), List.of(), "outputFile = workPath('data.csv')",
                 ExtractOperation::path, (builder, value) -> ((ExtractBuilder) builder).setOutputFile(value));
         InputField<ExtractRequest, Long> maxExpandedBytes = new InputField<>(
-                "maxExpandedBytes", "integer", "Maximal entpackte Bytes", false,
+                "maxExpandedBytes", "integer", "Maximum expanded bytes", false,
                 Optional.of(DEFAULT_MAX_EXPANDED_BYTES), List.of(),
                 "maxExpandedBytes = 4294967296L", ExtractOperation::positiveLong,
                 (builder, value) -> ((ExtractBuilder) builder).setMaxExpandedBytes(value));
         InputField<ExtractRequest, Integer> maxEntries = new InputField<>(
-                "maxEntries", "integer", "Maximale ZIP-Eintraege", false,
+                "maxEntries", "integer", "Maximum number of ZIP entries", false,
                 Optional.of(DEFAULT_MAX_ENTRIES), List.of(), "maxEntries = 10000",
                 ExtractOperation::positiveInt, (builder, value) -> ((ExtractBuilder) builder).setMaxEntries(value));
         OutputField<ExtractResult, Path> file = Fields.output(
-                "file", "path", "Einzelne GZIP-Datei, sonst null", true,
+                "file", "path", "Single GZIP file, otherwise null", true,
                 ExtractResult::file);
         OutputField<ExtractResult, List<Path>> files = Fields.output(
-                "files", "list", "Abgeschlossene regulaere Dateien", false,
+                "files", "list", "Completed regular files", false,
                 ExtractResult::files);
         OutputField<ExtractResult, Path> directory = Fields.output(
-                "directory", "path", "ZIP-Ausgabeverzeichnis, sonst null", true,
+                "directory", "path", "ZIP output directory, otherwise null", true,
                 ExtractResult::directory);
         OutputField<ExtractResult, Long> bytes = Fields.output(
-                "bytes", "integer", "Tatsaechlich entpackte Bytes", false,
+                "bytes", "integer", "Bytes actually extracted", false,
                 ExtractResult::bytes);
         return new OperationType<>(
-                ID, SYMBOL, "ZIP- oder GZIP-Archiv entpacken",
+                ID, SYMBOL, "Extract a ZIP or GZIP archive",
                 ExtractRequest.class, ExtractResult.class,
                 ExtractBuilder::new, ExtractHandler::new,
                 List.of(archive, compression, outputDirectory, outputFile,
@@ -96,21 +97,21 @@ public final class ExtractOperation {
         } else if (value instanceof CharSequence text) {
             path = Path.of(text.toString());
         } else {
-            throw new IllegalArgumentException("Pfad muss Path oder Text sein");
+            throw new IllegalArgumentException("Path must be a Path or text");
         }
         if (path.toString().isBlank()) {
-            throw new IllegalArgumentException("Pfad darf nicht leer sein");
+            throw new IllegalArgumentException("Path must not be blank");
         }
         return path.normalize();
     }
 
     private static String compression(Object value) {
         if (!(value instanceof CharSequence text)) {
-            throw new IllegalArgumentException("compression muss Text sein");
+            throw new IllegalArgumentException("compression must be text");
         }
         String compression = text.toString().toUpperCase(Locale.ROOT);
         if (!compression.equals("ZIP") && !compression.equals("GZIP")) {
-            throw new IllegalArgumentException("compression muss ZIP oder GZIP sein");
+            throw new IllegalArgumentException("compression must be ZIP or GZIP");
         }
         return compression;
     }
@@ -127,10 +128,10 @@ public final class ExtractOperation {
                 throw new IllegalArgumentException("maxExpandedBytes ausserhalb Long");
             }
         } else {
-            throw new IllegalArgumentException("maxExpandedBytes muss positive Ganzzahl sein");
+            throw new IllegalArgumentException("maxExpandedBytes must be a positive integer");
         }
         if (result <= 0) {
-            throw new IllegalArgumentException("maxExpandedBytes muss positiv sein");
+            throw new IllegalArgumentException("maxExpandedBytes must be positive");
         }
         return result;
     }
@@ -147,10 +148,10 @@ public final class ExtractOperation {
                 throw new IllegalArgumentException("maxEntries ausserhalb Long");
             }
         } else {
-            throw new IllegalArgumentException("maxEntries muss positive Ganzzahl sein");
+            throw new IllegalArgumentException("maxEntries must be a positive integer");
         }
         if (result <= 0 || result > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("maxEntries muss zwischen 1 und 2147483647 liegen");
+            throw new IllegalArgumentException("maxEntries must be between 1 and 2147483647");
         }
         return (int) result;
     }
@@ -185,10 +186,10 @@ public final class ExtractOperation {
         @Override
         public ExtractRequest build() {
             if (archive == null) {
-                throw new IllegalArgumentException("archive fehlt");
+                throw new IllegalArgumentException("archive is missing");
             }
             if (compression == null) {
-                throw new IllegalArgumentException("compression fehlt");
+                throw new IllegalArgumentException("compression is missing");
             }
             if (compression.equals("ZIP")) {
                 if (outputDirectory == null || outputFile != null) {
@@ -204,6 +205,10 @@ public final class ExtractOperation {
         }
     }
 
+    private static String msg(OperationContext context, String key, Object... args) {
+        return Messages.format(context.locale(), key, args);
+    }
+
     static final class ExtractHandler
             implements ch.so.agi.gretl.runtime.api.OperationHandler<
                     ExtractRequest, ExtractResult> {
@@ -214,7 +219,7 @@ public final class ExtractOperation {
             Path archive = request.archive().toAbsolutePath().normalize();
             if (!Files.isRegularFile(archive)) {
                 throw new ExtractTaskException("ARCHIVE_NOT_FOUND",
-                        "Archivdatei ist nicht vorhanden", null);
+                        msg(context, "task.extract.archiveNotFound"), null);
             }
             long started = System.nanoTime();
             ExtractResult result = request.compression().equals("ZIP")
@@ -222,7 +227,7 @@ public final class ExtractOperation {
                     : gunzip(archive, request, context);
             long duration = (System.nanoTime() - started) / 1_000_000;
             context.log().log(LogLevel.INFO, "gretl.extract.finished",
-                    "Archiv entpackt",
+                    msg(context, "task.extract.finished"),
                     Map.of("archive.file", archive.getFileName().toString(),
                             "compression", request.compression(),
                             "bytes", Long.toString(result.bytes()),
@@ -237,7 +242,7 @@ public final class ExtractOperation {
                 Files.createDirectories(root);
             } catch (IOException exception) {
                 throw new ExtractTaskException("OUTPUT_NOT_WRITABLE",
-                        "Ausgabeverzeichnis konnte nicht angelegt werden", exception);
+                        msg(context, "task.extract.outputNotWritable"), exception);
             }
             List<Path> files = new ArrayList<>();
             Set<String> seen = new HashSet<>();
@@ -250,36 +255,36 @@ public final class ExtractOperation {
                     ZipArchiveEntry entry = entries.nextElement();
                     if (++count > request.maxEntries()) {
                         throw new ExtractTaskException("ARCHIVE_ENTRY_LIMIT",
-                                "Archiv ueberschreitet maxEntries", null);
+                                msg(context, "task.extract.entryLimit"), null);
                     }
                     String name = entry.getName();
                     if (name == null || name.isBlank()) {
                         throw new ExtractTaskException("ARCHIVE_INVALID_ENTRY",
-                                "Archiv enthaelt einen leeren Eintragsnamen", null);
+                                msg(context, "task.extract.emptyEntry"), null);
                     }
                     if (name.indexOf('\\') >= 0) {
                         throw new ExtractTaskException("ARCHIVE_TRAVERSAL",
-                                "Archiv eintrag enthaelt einen unzulaessigen Pfadtrenner", null);
+                                msg(context, "task.extract.invalidSeparator"), null);
                     }
                     Path relative;
                     try {
                         relative = Path.of(name);
                     } catch (RuntimeException exception) {
                         throw new ExtractTaskException("ARCHIVE_INVALID_ENTRY",
-                                "Archiv enthaelt einen ungueltigen Pfad", exception);
+                                msg(context, "task.extract.invalidPath"), exception);
                     }
                     if (relative.isAbsolute() || name.startsWith("/")) {
                         throw new ExtractTaskException("ARCHIVE_TRAVERSAL",
-                                "Archiv eintrag ist absolut", null);
+                                msg(context, "task.extract.absoluteEntry"), null);
                     }
                     Path target = root.resolve(relative).normalize();
                     if (!target.startsWith(root)) {
                         throw new ExtractTaskException("ARCHIVE_TRAVERSAL",
-                                "Archiv eintrag verlaesst das Ausgabeverzeichnis", null);
+                                msg(context, "task.extract.traversal"), null);
                     }
                     if (entry.isUnixSymlink()) {
                         throw new ExtractTaskException("ARCHIVE_SYMLINK",
-                                "Archiv enthaelt einen Symlink-Eintrag", null);
+                                msg(context, "task.extract.symlink"), null);
                     }
                     String normalized = root.relativize(target).toString().replace('\\', '/');
                     if (normalized.isEmpty()) {
@@ -287,26 +292,26 @@ public final class ExtractOperation {
                     }
                     if (!seen.add(normalized.toLowerCase(Locale.ROOT))) {
                         throw new ExtractTaskException("ARCHIVE_COLLISION",
-                                "Archiv enthaelt kollidierende Eintragsnamen", null);
+                                msg(context, "task.extract.collision"), null);
                     }
                     if (entry.isDirectory()) {
                         try {
                             Files.createDirectories(target);
                         } catch (IOException exception) {
                             throw new ExtractTaskException("OUTPUT_NOT_WRITABLE",
-                                    "Ausgabeverzeichnis konnte nicht angelegt werden", exception);
+                                    msg(context, "task.extract.outputNotWritable"), exception);
                         }
                         continue;
                     }
                     if (Files.exists(target)) {
                         throw new ExtractTaskException("OUTPUT_EXISTS",
-                                "Zieldatei existiert bereits", null);
+                                msg(context, "task.extract.outputExists"), null);
                     }
                     try {
                         Files.createDirectories(target.getParent());
                     } catch (IOException exception) {
                         throw new ExtractTaskException("OUTPUT_NOT_WRITABLE",
-                                "Elternverzeichnis konnte nicht angelegt werden", exception);
+                                msg(context, "task.extract.parentNotWritable"), exception);
                     }
                     long written = copyEntry(zip, entry, target, request.maxExpandedBytes() - total,
                             context);
@@ -317,7 +322,7 @@ public final class ExtractOperation {
                 throw exception;
             } catch (IOException exception) {
                 throw new ExtractTaskException("ARCHIVE_INVALID",
-                        "Archiv konnte nicht gelesen werden", exception);
+                        msg(context, "task.extract.archiveInvalid"), exception);
             }
             files.sort(java.util.Comparator.comparing(path ->
                     root.relativize(path).toString().replace('\\', '/')));
@@ -340,7 +345,7 @@ public final class ExtractOperation {
                     written += read;
                     if (written > remaining) {
                         throw new ExtractTaskException("ARCHIVE_SIZE_LIMIT",
-                                "Entpackte Daten ueberschreiten maxExpandedBytes", null);
+                                msg(context, "task.extract.sizeLimit"), null);
                     }
                     output.write(buffer, 0, read);
                     if (written == read || written % (1024 * 1024) < read) {
@@ -352,7 +357,7 @@ public final class ExtractOperation {
                 throw exception;
             } catch (IOException exception) {
                 throw new ExtractTaskException("OUTPUT_WRITE_FAILED",
-                        "Entpackte Datei konnte nicht geschrieben werden", exception);
+                        msg(context, "task.extract.writeFailed"), exception);
             }
             return written;
         }
@@ -362,13 +367,13 @@ public final class ExtractOperation {
             Path target = request.outputFile().toAbsolutePath().normalize();
             if (Files.exists(target)) {
                 throw new ExtractTaskException("OUTPUT_EXISTS",
-                        "Zieldatei existiert bereits", null);
+                        msg(context, "task.extract.outputExists"), null);
             }
             try {
                 Files.createDirectories(target.getParent());
             } catch (IOException exception) {
                 throw new ExtractTaskException("OUTPUT_NOT_WRITABLE",
-                        "Elternverzeichnis konnte nicht angelegt werden", exception);
+                        msg(context, "task.extract.parentNotWritable"), exception);
             }
             long total = 0;
             try (InputStream raw = Files.newInputStream(archive);
@@ -385,7 +390,7 @@ public final class ExtractOperation {
                     total += read;
                     if (total > request.maxExpandedBytes()) {
                         throw new ExtractTaskException("ARCHIVE_SIZE_LIMIT",
-                                "Entpackte Daten ueberschreiten maxExpandedBytes", null);
+                                msg(context, "task.extract.sizeLimit"), null);
                     }
                     output.write(buffer, 0, read);
                     if (total == read || total % (1024 * 1024) < read) {
@@ -397,7 +402,7 @@ public final class ExtractOperation {
                 throw exception;
             } catch (IOException exception) {
                 throw new ExtractTaskException("ARCHIVE_INVALID",
-                        "GZIP konnte nicht entpackt werden", exception);
+                        msg(context, "task.extract.gzipInvalid"), exception);
             }
             return new ExtractResult(target, List.of(target), null, total);
         }

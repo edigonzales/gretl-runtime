@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.runner;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationProvider;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import java.util.ArrayList;
@@ -20,8 +21,10 @@ public final class OperationRegistry {
     private final List<OperationType<?, ?>> operations;
     private final Map<String, RegisteredOperation> byId;
     private final Map<String, RegisteredOperation> bySymbol;
+    private final java.util.Locale locale;
 
-    private OperationRegistry(List<RegisteredOperation> registered) {
+    private OperationRegistry(List<RegisteredOperation> registered, java.util.Locale locale) {
+        this.locale = java.util.Objects.requireNonNull(locale, "locale");
         this.registered = List.copyOf(registered);
         this.operations = registered.stream().map(RegisteredOperation::operation).toList();
         Map<String, RegisteredOperation> ids = new LinkedHashMap<>();
@@ -31,14 +34,15 @@ public final class OperationRegistry {
             RegisteredOperation previousId = ids.putIfAbsent(operation.id(), entry);
             if (previousId != null) {
                 throw new DefinitionException("DUPLICATE_OPERATION_ID",
-                        "Doppelte Operations-ID " + operation.id() + " in "
-                                + previousId.origin() + " und " + entry.origin());
+                        Messages.format(locale, "runner.duplicateOperationId",
+                                operation.id(), previousId.origin(), entry.origin()));
             }
             RegisteredOperation previousSymbol = symbols.putIfAbsent(operation.symbol(), entry);
             if (previousSymbol != null) {
                 throw new DefinitionException("DUPLICATE_OPERATION_SYMBOL",
-                        "Doppeltes Operations-Symbol " + operation.symbol() + " in "
-                                + previousSymbol.origin() + " und " + entry.origin());
+                        Messages.format(locale, "runner.duplicateOperationSymbol",
+                                operation.symbol(), previousSymbol.origin(),
+                                entry.origin()));
             }
         }
         this.byId = Map.copyOf(ids);
@@ -46,19 +50,29 @@ public final class OperationRegistry {
     }
 
     public static OperationRegistry load(ClassLoader classLoader) {
+        return load(classLoader, java.util.Locale.GERMAN);
+    }
+
+    public static OperationRegistry load(ClassLoader classLoader, java.util.Locale locale) {
         Objects.requireNonNull(classLoader, "classLoader");
         List<OperationProvider> providers = new ArrayList<>();
         try {
             ServiceLoader.load(OperationProvider.class, classLoader).forEach(providers::add);
         } catch (java.util.ServiceConfigurationError error) {
             throw new DefinitionException("OPERATION_PROVIDER_LOAD_FAILED",
-                    "OperationProvider konnten nicht geladen werden", error);
+                    Messages.get(locale, "runner.providerLoadFailed"), error);
         }
-        return fromProviders(providers);
+        return fromProviders(providers, locale);
     }
 
     /** Package-visible/testable construction from already loaded providers. */
-    public static OperationRegistry fromProviders(Collection<? extends OperationProvider> providers) {
+    public static OperationRegistry fromProviders(
+            Collection<? extends OperationProvider> providers) {
+        return fromProviders(providers, java.util.Locale.GERMAN);
+    }
+
+    public static OperationRegistry fromProviders(
+            Collection<? extends OperationProvider> providers, java.util.Locale locale) {
         Objects.requireNonNull(providers, "providers");
         List<RegisteredOperation> entries = new ArrayList<>();
         for (OperationProvider provider : providers) {
@@ -68,23 +82,24 @@ public final class OperationRegistry {
                 operations = provider.operations();
             } catch (RuntimeException exception) {
                 throw new DefinitionException("OPERATION_PROVIDER_DEFECT",
-                        "Provider " + provider.getClass().getName()
-                                + " konnte seine Definitionen nicht liefern", exception);
+                        Messages.format(locale, "runner.providerFailed",
+                                provider.getClass().getName()), exception);
             }
             if (operations == null) {
                 throw new DefinitionException("OPERATION_PROVIDER_DEFECT",
-                        "Provider " + provider.getClass().getName() + " lieferte null");
+                        Messages.format(locale, "runner.providerNull",
+                                provider.getClass().getName()));
             }
             for (OperationType<?, ?> operation : operations) {
                 if (operation == null) {
                     throw new DefinitionException("OPERATION_PROVIDER_DEFECT",
-                            "Provider " + provider.getClass().getName()
-                                    + " lieferte eine null-Definition");
+                            Messages.format(locale, "runner.providerNullDefinition",
+                                    provider.getClass().getName()));
                 }
                 entries.add(new RegisteredOperation(operation, provider.getClass().getName()));
             }
         }
-        return new OperationRegistry(entries);
+        return new OperationRegistry(entries, locale);
     }
 
     public List<OperationType<?, ?>> all() {
@@ -99,7 +114,7 @@ public final class OperationRegistry {
         RegisteredOperation entry = byId.get(id);
         if (entry == null) {
             throw new DefinitionException("UNKNOWN_OPERATION",
-                    "Keine Operation mit ID " + id + " im Katalog");
+                    Messages.format(locale, "runner.unknownOperationId", id));
         }
         return entry.operation();
     }
@@ -108,7 +123,7 @@ public final class OperationRegistry {
         RegisteredOperation entry = bySymbol.get(symbol);
         if (entry == null) {
             throw new DefinitionException("UNKNOWN_OPERATION",
-                    "Kein Baustein mit Symbol " + symbol + " im Katalog");
+                    Messages.format(locale, "runner.unknownOperationSymbol", symbol));
         }
         return entry.operation();
     }

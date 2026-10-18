@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.cli;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.LogLevel;
 import ch.so.agi.gretl.runtime.logging.LoggingConfig;
 import ch.so.agi.gretl.runtime.runner.KeepWork;
@@ -17,7 +18,7 @@ public record CliOptions(
         Path config, Path parameterFile, Map<String, String> parameters,
         Path workDir, Path report, Duration timeout,
         LoggingConfig.Format logFormat, LogLevel logLevel, KeepWork keepWork,
-        String operationSymbol, Path output) {
+        String operationSymbol, Path output, String language) {
 
     public enum Command { HELP, VERSION, OPERATIONS, RUN, CHECK, PLAN, PACKAGE, COMMAND_HELP }
 
@@ -28,6 +29,10 @@ public record CliOptions(
     }
 
     public static CliOptions parse(String[] args, Path startCwd) {
+        return parse(args, startCwd, Locale.GERMAN);
+    }
+
+    public static CliOptions parse(String[] args, Path startCwd, Locale locale) {
         if (args.length == 0) {
             return command(Command.HELP);
         }
@@ -39,15 +44,27 @@ public record CliOptions(
             return command(Command.VERSION);
         }
         if (first.equals("operations")) {
-            if (args.length > 2) {
-                throw new CliException(2, "operations akzeptiert hoechstens ein Symbol");
-            }
-            String symbol = args.length == 2 ? args[1] : null;
-            if (symbol != null && symbol.startsWith("-")) {
-                throw new CliException(2, "Unbekannte Option fuer operations: " + symbol);
+            String symbol = null;
+            String language = null;
+            int index = 1;
+            while (index < args.length) {
+                String argument = args[index];
+                if (argument.equals("--lang")) {
+                    language = requireValue(args, ++index, argument, locale);
+                    index++;
+                } else if (argument.startsWith("-")) {
+                    throw new CliException(2,
+                            msg(locale, "cli.error.operations.unknownOption", argument));
+                } else if (symbol == null) {
+                    symbol = argument;
+                    index++;
+                } else {
+                    throw new CliException(2, msg(locale,
+                            "cli.error.operations.maxSymbol"));
+                }
             }
             return new CliOptions(Command.OPERATIONS, null, false, List.of(), null,
-                    null, Map.of(), null, null, null, null, null, null, symbol, null);
+                    null, Map.of(), null, null, null, null, null, null, symbol, null, language);
         }
         Command command = switch (first) {
             case "run" -> Command.RUN;
@@ -55,17 +72,19 @@ public record CliOptions(
             case "plan" -> Command.PLAN;
             case "package" -> Command.PACKAGE;
             default -> throw new CliException(2,
-                    "Unbekannter Befehl: " + first + ". Siehe gretl --help");
+                    msg(locale, "cli.error.unknownCommand", first));
         };
         if (command == Command.PACKAGE) {
-            return parsePackageCommand(args, startCwd);
+            return parsePackageCommand(args, startCwd, locale);
         }
-        return parseJobCommand(command, args, startCwd);
+        return parseJobCommand(command, args, startCwd, locale);
     }
 
-    private static CliOptions parsePackageCommand(String[] args, Path startCwd) {
+    private static CliOptions parsePackageCommand(String[] args, Path startCwd,
+                                                   Locale locale) {
         Path descriptor = null;
         Path output = null;
+        String language = null;
         boolean help = false;
         int index = 1;
         while (index < args.length) {
@@ -73,35 +92,46 @@ public record CliOptions(
             if (argument.equals("--help") || argument.equals("-h")) {
                 help = true;
                 index++;
+            } else if (argument.equals("--lang")) {
+                language = requireValue(args, ++index, argument, locale);
+                index++;
             } else if (argument.equals("--output") || argument.equals("-o")) {
-                output = resolve(startCwd, requireValue(args, ++index, argument));
+                output = resolve(startCwd, requireValue(args, ++index, argument, locale), locale);
                 index++;
             } else if (argument.startsWith("-")) {
-                throw new CliException(2, "Unbekannte Option fuer package: " + argument);
+                throw new CliException(2, msg(locale,
+                        "cli.error.package.unknownOption", argument));
             } else {
                 if (descriptor != null) {
-                    throw new CliException(2, "Mehr als ein Paketdeskriptor angegeben");
+                    throw new CliException(2, msg(locale,
+                            "cli.error.package.multipleDescriptors"));
                 }
-                descriptor = resolve(startCwd, argument);
+                descriptor = resolve(startCwd, argument, locale);
                 index++;
             }
         }
         if (help) {
             return new CliOptions(Command.PACKAGE, descriptor, true, List.of(), null,
-                    null, Map.of(), null, null, null, null, null, null, null, output);
+                    null, Map.of(), null, null, null, null, null, null, null, output, language);
         }
         if (descriptor == null) {
-            throw new CliException(2, "Paketdeskriptor fehlt. Aufruf: gretl package job-package.json --output job.jar");
+            throw new CliException(2, msg(locale,
+                    "cli.error.package.descriptorMissing"));
         }
         if (output == null) {
-            throw new CliException(2, "gretl package benoetigt --output job.jar");
+            throw new CliException(2, msg(locale,
+                    "cli.error.package.outputMissing"));
         }
         return new CliOptions(Command.PACKAGE, descriptor, false, List.of(), null,
-                null, Map.of(), null, null, null, null, null, null, null, output);
+                null, Map.of(), null, null, null, null, null, null, null, output, language);
     }
 
     /** Parse options for a fixed packaged job (no job path or command). */
     public static CliOptions parsePackaged(String[] args, Path startCwd) {
+        return parsePackaged(args, startCwd, Locale.GERMAN);
+    }
+
+    public static CliOptions parsePackaged(String[] args, Path startCwd, Locale locale) {
         List<String> expanded = new ArrayList<>();
         boolean plan = args.length > 0 && args[0].equals("--plan");
         expanded.add(plan ? "plan" : "run");
@@ -110,15 +140,16 @@ public record CliOptions(
         for (int index = start; index < args.length; index++) {
             expanded.add(args[index]);
         }
-        return parse(expanded.toArray(String[]::new), startCwd);
+        return parse(expanded.toArray(String[]::new), startCwd, locale);
     }
 
     private static CliOptions command(Command command) {
         return new CliOptions(command, null, false, List.of(), null, null,
-                Map.of(), null, null, null, null, null, null, null, null);
+                Map.of(), null, null, null, null, null, null, null, null, null);
     }
 
-    private static CliOptions parseJobCommand(Command command, String[] args, Path startCwd) {
+    private static CliOptions parseJobCommand(Command command, String[] args, Path startCwd,
+                                               Locale locale) {
         Path job = null;
         boolean help = false;
         List<String> targets = new ArrayList<>();
@@ -131,15 +162,17 @@ public record CliOptions(
         LoggingConfig.Format format = null;
         LogLevel level = null;
         KeepWork keepWork = null;
+        String language = null;
 
         int index = 1;
         while (index < args.length) {
             String argument = args[index];
             if (!argument.startsWith("-")) {
                 if (job != null) {
-                    throw new CliException(2, "Mehr als eine Jobdatei angegeben: " + argument);
+                    throw new CliException(2, msg(locale,
+                            "cli.error.job.multipleFiles", argument));
                 }
-                job = resolve(startCwd, argument);
+                job = resolve(startCwd, argument, locale);
                 index++;
                 continue;
             }
@@ -149,113 +182,131 @@ public record CliOptions(
                     index++;
                 }
                 case "--target" -> {
-                    targets.add(requireValue(args, ++index, argument));
+                    targets.add(requireValue(args, ++index, argument, locale));
                     index++;
                 }
                 case "--config" -> {
-                    config = resolve(startCwd, requireValue(args, ++index, argument));
+                    config = resolve(startCwd,
+                            requireValue(args, ++index, argument, locale), locale);
                     index++;
                 }
                 case "--params-file" -> {
-                    parameterFile = resolve(startCwd, requireValue(args, ++index, argument));
+                    parameterFile = resolve(startCwd,
+                            requireValue(args, ++index, argument, locale), locale);
                     index++;
                 }
                 case "--param" -> {
-                    String value = requireValue(args, ++index, argument);
+                    String value = requireValue(args, ++index, argument, locale);
                     int separator = value.indexOf('=');
                     if (separator <= 0) {
                         throw new CliException(2,
-                                "--param benoetigt name=value: " + value);
+                                msg(locale, "cli.error.param.invalid", value));
                     }
                     String name = value.substring(0, separator);
                     String parameterValue = value.substring(separator + 1);
                     if (parameters.putIfAbsent(name, parameterValue) != null) {
-                        throw new CliException(2, "Parameter doppelt angegeben: " + name);
+                        throw new CliException(2,
+                                msg(locale, "cli.error.param.duplicate", name));
                     }
                     index++;
                 }
                 case "--work-dir" -> {
-                    workDir = resolve(startCwd, requireValue(args, ++index, argument));
+                    workDir = resolve(startCwd,
+                            requireValue(args, ++index, argument, locale), locale);
                     index++;
                 }
                 case "--report" -> {
-                    report = resolve(startCwd, requireValue(args, ++index, argument));
+                    report = resolve(startCwd,
+                            requireValue(args, ++index, argument, locale), locale);
                     index++;
                 }
                 case "--timeout" -> {
-                    timeout = duration(requireValue(args, ++index, argument));
+                    timeout = duration(requireValue(args, ++index, argument, locale), locale);
                     index++;
                 }
                 case "--log-format" -> {
-                    String value = requireValue(args, ++index, argument);
+                    String value = requireValue(args, ++index, argument, locale);
                     try {
                         format = LoggingConfig.Format.valueOf(value.toUpperCase(Locale.ROOT));
                     } catch (IllegalArgumentException exception) {
-                        throw new CliException(2, "--log-format muss text oder json sein");
+                        throw new CliException(2,
+                                msg(locale, "cli.error.logFormat"));
                     }
                     index++;
                 }
                 case "--log-level" -> {
-                    String value = requireValue(args, ++index, argument);
+                    String value = requireValue(args, ++index, argument, locale);
                     try {
                         level = LogLevel.valueOf(value.toUpperCase(Locale.ROOT));
                     } catch (IllegalArgumentException exception) {
                         throw new CliException(2,
-                                "--log-level muss TRACE, DEBUG, INFO, WARN oder ERROR sein");
+                                msg(locale, "cli.error.logLevel"));
                     }
                     index++;
                 }
+                case "--lang" -> {
+                    language = requireValue(args, ++index, argument, locale);
+                    index++;
+                }
                 case "--keep-work" -> {
-                    String value = requireValue(args, ++index, argument).toLowerCase(Locale.ROOT);
+                    String value = requireValue(args, ++index, argument, locale)
+                            .toLowerCase(Locale.ROOT);
                     keepWork = switch (value) {
                         case "never" -> KeepWork.NEVER;
                         case "on-failure" -> KeepWork.ON_FAILURE;
                         case "always" -> KeepWork.ALWAYS;
                         default -> throw new CliException(2,
-                                "--keep-work muss never, on-failure oder always sein");
+                                msg(locale, "cli.error.keepWork"));
                     };
                     index++;
                 }
-                default -> throw new CliException(2, "Unbekannte Option: " + argument);
+                default -> throw new CliException(2,
+                        msg(locale, "cli.error.option.unknown", argument));
             }
         }
 
         if (command != Command.RUN) {
             if (workDir != null || report != null || keepWork != null || timeout != null) {
-                throw new CliException(2,
-                        "--work-dir, --report, --keep-work und --timeout gelten nur fuer run");
+                throw new CliException(2, msg(locale, "cli.error.runOnly"));
             }
         }
         if (job == null) {
             if (help) {
                 return new CliOptions(Command.COMMAND_HELP, null, true, List.of(), null,
-                        null, Map.of(), null, null, null, null, null, null, null, null);
+                        null, Map.of(), null, null, null, null, null, null, null, null, null);
             }
-            throw new CliException(2, "Jobdatei fehlt. Aufruf: gretl "
-                    + command.name().toLowerCase(Locale.ROOT) + " job.groovy");
+            throw new CliException(2, msg(locale, "cli.error.job.missing",
+                    command.name().toLowerCase(Locale.ROOT)));
         }
         return new CliOptions(command, job, help, targets, config, parameterFile,
-                parameters, workDir, report, timeout, format, level, keepWork, null, null);
+                parameters, workDir, report, timeout, format, level, keepWork, null, null,
+                language);
     }
 
-    private static String requireValue(String[] args, int index, String option) {
+    private static String requireValue(String[] args, int index, String option,
+                                       Locale locale) {
         if (index >= args.length || args[index].startsWith("-")) {
-            throw new CliException(2, "Option " + option + " benoetigt einen Wert");
+            throw new CliException(2,
+                    msg(locale, "cli.error.option.valueMissing", option));
         }
         return args[index];
     }
 
-    private static Path resolve(Path base, String value) {
+    private static Path resolve(Path base, String value, Locale locale) {
         Path path;
         try {
             path = Path.of(value);
         } catch (RuntimeException exception) {
-            throw new CliException(2, "Ungueltiger Pfad: " + value);
+            throw new CliException(2, msg(locale, "cli.error.path.invalid", value));
         }
         return (path.isAbsolute() ? path : base.resolve(path)).toAbsolutePath().normalize();
     }
 
-    private static Duration duration(String value) {
+    private static String msg(Locale locale, String key, Object... arguments) {
+        return Messages.format(locale, key, arguments);
+    }
+
+    private static Duration duration(String value, Locale locale) {
         try {
             Duration duration = Duration.parse(value);
             if (duration.isZero() || duration.isNegative()) {
@@ -263,7 +314,7 @@ public record CliOptions(
             }
             return duration;
         } catch (RuntimeException exception) {
-            throw new CliException(2, "--timeout muss eine positive ISO-8601-Dauer sein");
+            throw new CliException(2, msg(locale, "cli.error.timeout"));
         }
     }
 }

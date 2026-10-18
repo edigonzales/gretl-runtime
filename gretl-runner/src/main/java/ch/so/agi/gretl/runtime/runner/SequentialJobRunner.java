@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.runner;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.CancelReason;
 import ch.so.agi.gretl.runtime.api.ExecutionIdentity;
 import ch.so.agi.gretl.runtime.api.LogLevel;
@@ -194,13 +195,15 @@ public final class SequentialJobRunner {
             if (value == null && task.operation() != null && task.resultType() != Void.class) {
                 work = new FailureArbiter.WorkCompletion.Failure(
                         new ProviderContractException("NULL_TASK_RESULT",
-                                "Task " + task.id() + " lieferte null statt "
-                                        + task.resultType().getName()));
+                                Messages.format(environment.locale(), "runner.nullTaskResult",
+                                        task.id(), task.resultType().getName())));
             } else if (value != null && !task.resultType().isInstance(value)) {
                 work = new FailureArbiter.WorkCompletion.Failure(
                         new ProviderContractException("TASK_RESULT_TYPE_MISMATCH",
-                                "Task " + task.id() + " lieferte " + value.getClass().getName()
-                                        + " statt " + task.resultType().getName()));
+                                Messages.format(environment.locale(),
+                                        "runner.taskResultMismatch", task.id(),
+                                        value.getClass().getName(),
+                                        task.resultType().getName())));
             } else {
                 work = new FailureArbiter.WorkCompletion.Value(value);
             }

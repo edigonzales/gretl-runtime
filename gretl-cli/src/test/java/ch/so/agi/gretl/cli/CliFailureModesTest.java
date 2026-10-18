@@ -108,7 +108,7 @@ class CliFailureModesTest {
         String json = Files.readString(report);
         assertTrue(json.contains("missing"));
         assertTrue(json.contains("GRETL_NOT_SET_ANYWHERE"));
-        assertTrue(json.toLowerCase().contains("secret source"));
+        assertTrue(json.toLowerCase().contains("secret"));
     }
 
     private Path actionJob(String value) throws Exception {

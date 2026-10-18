@@ -32,6 +32,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-i18n</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.groovy</groupId>
       <artifactId>groovy</artifactId>
       <version>${groovy.version}</version>

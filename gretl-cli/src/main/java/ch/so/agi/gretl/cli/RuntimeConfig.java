@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.cli;
 
+import ch.so.agi.gretl.i18n.LocaleSelection;
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.LogLevel;
 import ch.so.agi.gretl.runtime.logging.Json;
 import ch.so.agi.gretl.runtime.logging.LoggingConfig;
@@ -23,6 +25,12 @@ public final class RuntimeConfig {
     private static final long MAX_CONFIG_BYTES = 16L * 1024 * 1024;
     private static final long MAX_SECRET_BYTES = 64 * 1024;
     private static final Pattern PARAMETER_NAME = Pattern.compile("[A-Za-z][A-Za-z0-9_.-]*");
+    private static final ThreadLocal<Locale> ERROR_LOCALE =
+            ThreadLocal.withInitial(() -> Locale.GERMAN);
+
+    private static String msg(String key, Object... arguments) {
+        return Messages.format(ERROR_LOCALE.get(), key, arguments);
+    }
 
     public record SecretSource(String environment, Path file) {
         public SecretSource {
@@ -41,6 +49,7 @@ public final class RuntimeConfig {
     private final Duration timeout;
     private final Optional<String> jobName;
     private final Optional<String> correlationId;
+    private final Optional<String> language;
     private final LoggingConfig logging;
     private final Map<String, String> params;
     private final Map<String, SecretSource> secrets;
@@ -49,7 +58,7 @@ public final class RuntimeConfig {
     private RuntimeConfig(Optional<Path> file, Path configDirectory, Path workRoot,
                           Path reportRoot, KeepWork keepWork, Duration timeout,
                           Optional<String> jobName, Optional<String> correlationId,
-                          LoggingConfig logging, Map<String, String> params,
+                          Optional<String> language, LoggingConfig logging, Map<String, String> params,
                           Map<String, SecretSource> secrets,
                           Map<String, Map<String, Object>> taskConfig) {
         this.file = file;
@@ -60,6 +69,7 @@ public final class RuntimeConfig {
         this.timeout = timeout;
         this.jobName = jobName;
         this.correlationId = correlationId;
+        this.language = language;
         this.logging = logging;
         this.params = Map.copyOf(params);
         this.secrets = Map.copyOf(secrets);
@@ -71,26 +81,33 @@ public final class RuntimeConfig {
         return new RuntimeConfig(Optional.empty(), cwd,
                 Path.of(System.getProperty("java.io.tmpdir"), "gretl-work"),
                 cwd.resolve("gretl-reports"), KeepWork.ON_FAILURE, null,
-                Optional.empty(), Optional.empty(), LoggingConfig.defaults(),
+                Optional.empty(), Optional.empty(), Optional.empty(), LoggingConfig.defaults(),
                 Map.of(), Map.of(), Map.of());
     }
 
     public static RuntimeConfig load(Path configFile, Path startCwd) {
+        return load(configFile, startCwd, Locale.GERMAN);
+    }
+
+    public static RuntimeConfig load(Path configFile, Path startCwd, Locale locale) {
+        ERROR_LOCALE.set(locale);
         Path absolute = resolve(startCwd, configFile.toString());
         if (!Files.isRegularFile(absolute)) {
-            throw new CliException(2, "Runtimekonfiguration nicht gefunden: " + absolute);
+            throw new CliException(2, Messages.format(locale,
+                    "cli.error.runtimeConfig.notFound", absolute));
         }
         Map<String, Object> root;
         try {
             root = object(Json.parseFile(absolute, MAX_CONFIG_BYTES), "Runtimekonfiguration");
         } catch (IOException | IllegalArgumentException exception) {
-            throw new CliException(2, "Runtimekonfiguration ist ungueltig: "
-                    + safeMessage(exception), exception);
+            throw new CliException(2, Messages.format(locale,
+                    "cli.error.runtimeConfig.invalid", safeMessage(exception)), exception);
         }
-        rejectUnknown(root, List.of("schemaVersion", "runtime", "logging", "params",
-                "secrets", "taskConfig"), "Runtimekonfiguration");
+        rejectUnknown(root, List.of("schemaVersion", "language", "runtime", "logging",
+                "params", "secrets", "taskConfig"), "Runtimekonfiguration");
         if (!(root.get("schemaVersion") instanceof Long version) || version != 1) {
-            throw new CliException(2, "Runtimekonfiguration benoetigt schemaVersion 1");
+            throw new CliException(2, Messages.format(locale,
+                    "cli.error.runtimeConfig.schemaVersion"));
         }
         Path configDir = absolute.getParent();
         Map<String, Object> runtime = optionalObject(root, "runtime");
@@ -106,13 +123,15 @@ public final class RuntimeConfig {
         Optional<String> jobName = optionalBoundedText(runtime.get("jobName"), "runtime.jobName");
         Optional<String> correlationId = optionalBoundedText(runtime.get("correlationId"),
                 "runtime.correlationId");
+        Optional<String> language = language(root.get("language"));
         LoggingConfig logging = logging(optionalObject(root, "logging"));
         Map<String, String> params = params(optionalObject(root, "params"));
         Map<String, SecretSource> secrets = secrets(optionalObject(root, "secrets"), configDir);
         Map<String, Map<String, Object>> taskConfig = taskConfig(
                 optionalObject(root, "taskConfig"));
         return new RuntimeConfig(Optional.of(absolute), configDir, workRoot, reportRoot,
-                keepWork, timeout, jobName, correlationId, logging, params, secrets, taskConfig);
+                keepWork, timeout, jobName, correlationId, language, logging, params,
+                secrets, taskConfig);
     }
 
     public RuntimeConfig withOverrides(Path workRootOverride, Path reportRootOverride,
@@ -125,8 +144,12 @@ public final class RuntimeConfig {
                 keepWorkOverride == null ? keepWork : keepWorkOverride,
                 timeoutOverride == null ? timeout : timeoutOverride,
                 jobNameOverride == null ? jobName : jobNameOverride,
-                correlationId, loggingOverride == null ? logging : loggingOverride,
+                correlationId, language, loggingOverride == null ? logging : loggingOverride,
                 params, secrets, taskConfig);
+    }
+
+    public Optional<String> language() {
+        return language;
     }
 
     public SecretResolver secretResolver(Map<String, String> environment,
@@ -134,11 +157,11 @@ public final class RuntimeConfig {
         Map<String, String> cache = new LinkedHashMap<>();
         return alias -> {
             if (alias == null || alias.isBlank()) {
-                throw new IllegalArgumentException("secret alias must not be blank");
+                throw new IllegalArgumentException(msg("cli.error.config.secretAliasBlank"));
             }
             SecretSource source = secrets.get(alias);
             if (source == null) {
-                throw new IllegalArgumentException("unknown secret alias: " + alias);
+                throw new IllegalArgumentException(msg("cli.error.config.secretAliasUnknown", alias));
             }
             String value = cache.get(alias);
             if (value == null) {
@@ -146,9 +169,9 @@ public final class RuntimeConfig {
                         ? environment.get(source.environment())
                         : readSecretFile(source.file(), alias);
                 if (value == null) {
-                    throw new IllegalArgumentException("secret source for alias " + alias
-                            + " is missing (" + (source.environment() != null
-                            ? "environment=" + source.environment() : "file=" + source.file()) + ")");
+                    throw new IllegalArgumentException(msg("cli.error.config.secretSourceMissing", alias,
+                            source.environment() != null
+                            ? "environment=" + source.environment() : "file=" + source.file()));
                 }
                 cache.put(alias, value);
             }
@@ -186,7 +209,7 @@ public final class RuntimeConfig {
         Map<String, Object> levels = optionalObject(logging, "libraryLevels");
         for (Map.Entry<String, Object> entry : levels.entrySet()) {
             if (entry.getKey().isBlank()) {
-                throw new CliException(2, "logging.libraryLevels enthaelt ein leeres Praefix");
+                throw new CliException(2, msg("cli.error.config.loggingLibraryLevelEmpty"));
             }
             libraryLevels.put(entry.getKey(), level(requiredText(entry.getValue(),
                     "logging.libraryLevels." + entry.getKey())));
@@ -195,7 +218,7 @@ public final class RuntimeConfig {
             return new LoggingConfig(format, level, libraryLevels, eventFile,
                     maxRecord, maxFile, progress, heartbeat);
         } catch (IllegalArgumentException exception) {
-            throw new CliException(2, "logging ist ungueltig: " + exception.getMessage());
+            throw new CliException(2, msg("cli.error.config.loggingInvalid", exception.getMessage()));
         }
     }
 
@@ -203,12 +226,10 @@ public final class RuntimeConfig {
         Map<String, String> result = new LinkedHashMap<>();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             if (!PARAMETER_NAME.matcher(entry.getKey()).matches()) {
-                throw new CliException(2, "Ungueltiger Parametername in runtime.params: "
-                        + entry.getKey());
+                throw new CliException(2, msg("cli.error.config.paramsInvalidName", entry.getKey()));
             }
             if (!(entry.getValue() instanceof String text)) {
-                throw new CliException(2, "runtime.params." + entry.getKey()
-                        + " muss ein String sein");
+                throw new CliException(2, msg("cli.error.config.paramsNonString", entry.getKey()));
             }
             result.put(entry.getKey(), text);
         }
@@ -219,20 +240,19 @@ public final class RuntimeConfig {
         Map<String, SecretSource> result = new LinkedHashMap<>();
         for (Map.Entry<String, Object> entry : secrets.entrySet()) {
             if (!PARAMETER_NAME.matcher(entry.getKey()).matches()) {
-                throw new CliException(2, "Ungueltiger Secret-Alias: " + entry.getKey());
+                throw new CliException(2, msg("cli.error.config.secretAliasInvalid", entry.getKey()));
             }
             Map<String, Object> source = object(entry.getValue(),
                     "secrets." + entry.getKey());
             rejectUnknown(source, List.of("environment", "file"), "secrets." + entry.getKey());
             if (source.size() != 1) {
-                throw new CliException(2, "Secret " + entry.getKey()
-                        + " benoetigt genau environment oder file");
+                throw new CliException(2, msg("cli.error.config.secretSourceExactlyOne", entry.getKey()));
             }
             if (source.containsKey("environment")) {
                 String environment = requiredText(source.get("environment"),
                         "secrets." + entry.getKey() + ".environment");
                 if (environment.isBlank() || environment.chars().anyMatch(Character::isISOControl)) {
-                    throw new CliException(2, "Secret-Environmentname ist ungueltig");
+                    throw new CliException(2, msg("cli.error.config.secretEnvironmentInvalid"));
                 }
                 result.put(entry.getKey(), new SecretSource(environment, null));
             } else {
@@ -248,7 +268,7 @@ public final class RuntimeConfig {
         Map<String, Map<String, Object>> result = new LinkedHashMap<>();
         for (Map.Entry<String, Object> entry : taskConfig.entrySet()) {
             if (entry.getKey().isBlank()) {
-                throw new CliException(2, "taskConfig enthaelt einen leeren Alias");
+                throw new CliException(2, msg("cli.error.config.taskConfigEmptyAlias"));
             }
             result.put(entry.getKey(), object(entry.getValue(), "taskConfig." + entry.getKey()));
         }
@@ -258,23 +278,22 @@ public final class RuntimeConfig {
     private static String readSecretFile(Path file, String alias) {
         try {
             if (!Files.isRegularFile(file)) {
-                throw new IllegalArgumentException("secret file for alias " + alias
-                        + " not found: " + file);
+                throw new IllegalArgumentException(msg("cli.error.config.secretFileNotFound", alias, file));
             }
             long size = Files.size(file);
             if (size > MAX_SECRET_BYTES) {
-                throw new IllegalArgumentException("secret file exceeds 64 KiB");
+                throw new IllegalArgumentException(msg("cli.error.config.secretFileTooLarge"));
             }
             String value = Files.readString(file, StandardCharsets.UTF_8);
             if (value.indexOf('\0') >= 0) {
-                throw new IllegalArgumentException("secret file contains NUL");
+                throw new IllegalArgumentException(msg("cli.error.config.secretFileNul"));
             }
             if (value.endsWith("\r\n")) {
                 return value.substring(0, value.length() - 2);
             }
             return value.endsWith("\n") ? value.substring(0, value.length() - 1) : value;
         } catch (IOException exception) {
-            throw new IllegalArgumentException("secret file could not be read", exception);
+            throw new IllegalArgumentException(msg("cli.error.config.secretFileRead"), exception);
         }
     }
 
@@ -294,12 +313,12 @@ public final class RuntimeConfig {
     @SuppressWarnings("unchecked")
     private static Map<String, Object> object(Object value, String field) {
         if (!(value instanceof Map<?, ?> map)) {
-            throw new CliException(2, field + " muss ein JSON-Objekt sein");
+            throw new CliException(2, msg("cli.error.config.objectExpected", field));
         }
         Map<String, Object> result = new LinkedHashMap<>();
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             if (!(entry.getKey() instanceof String key)) {
-                throw new CliException(2, field + " enthaelt einen Nichtstring-Schluessel");
+                throw new CliException(2, msg("cli.error.config.objectNonStringKey", field));
             }
             result.put(key, entry.getValue());
         }
@@ -315,14 +334,14 @@ public final class RuntimeConfig {
                                       String field) {
         for (String key : map.keySet()) {
             if (!allowed.contains(key)) {
-                throw new CliException(2, "Unbekanntes Feld " + field + "." + key);
+                throw new CliException(2, msg("cli.error.config.unknownField", field, key));
             }
         }
     }
 
     private static String requiredText(Object value, String field) {
         if (!(value instanceof String text) || text.isBlank()) {
-            throw new CliException(2, field + " muss nichtleerer Text sein");
+            throw new CliException(2, msg("cli.error.config.textRequired", field));
         }
         return text;
     }
@@ -331,13 +350,26 @@ public final class RuntimeConfig {
         return value == null ? fallback : requiredText(value, field);
     }
 
+    private static Optional<String> language(Object value) {
+        if (value == null) {
+            return Optional.empty();
+        }
+        if (!(value instanceof String text) || text.isBlank()) {
+            throw new CliException(2, msg("cli.error.config.languageInvalid"));
+        }
+        if (LocaleSelection.parse(text).isEmpty()) {
+            throw new CliException(2, msg("cli.error.config.languageInvalid"));
+        }
+        return Optional.of(text);
+    }
+
     private static Optional<String> optionalBoundedText(Object value, String field) {
         if (value == null) {
             return Optional.empty();
         }
         String text = requiredText(value, field);
         if (text.length() > 256 || text.chars().anyMatch(Character::isISOControl)) {
-            throw new CliException(2, field + " ist zu lang oder enthaelt Steuerzeichen");
+            throw new CliException(2, msg("cli.error.config.textTooLong", field));
         }
         return Optional.of(text);
     }
@@ -359,7 +391,7 @@ public final class RuntimeConfig {
             }
             return duration;
         } catch (RuntimeException exception) {
-            throw new CliException(2, field + " muss eine positive ISO-8601-Dauer sein");
+            throw new CliException(2, msg("cli.error.config.durationInvalid", field));
         }
     }
 
@@ -369,7 +401,7 @@ public final class RuntimeConfig {
             case "on-failure" -> KeepWork.ON_FAILURE;
             case "always" -> KeepWork.ALWAYS;
             default -> throw new CliException(2,
-                    "keepWork muss never, on-failure oder always sein");
+                    msg("cli.error.config.keepWorkInvalid"));
         };
     }
 
@@ -377,7 +409,7 @@ public final class RuntimeConfig {
         try {
             return LoggingConfig.Format.valueOf(value.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException exception) {
-            throw new CliException(2, "log-format muss text oder json sein");
+            throw new CliException(2, msg("cli.error.config.logFormatInvalid"));
         }
     }
 
@@ -385,7 +417,7 @@ public final class RuntimeConfig {
         try {
             return LogLevel.valueOf(value.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException exception) {
-            throw new CliException(2, "log-level muss TRACE, DEBUG, INFO, WARN oder ERROR sein");
+            throw new CliException(2, msg("cli.error.config.logLevelInvalid"));
         }
     }
 
@@ -394,7 +426,7 @@ public final class RuntimeConfig {
             return fallback;
         }
         if (!(value instanceof Boolean bool)) {
-            throw new CliException(2, field + " muss Boolean sein");
+            throw new CliException(2, msg("cli.error.config.booleanInvalid", field));
         }
         return bool;
     }
@@ -405,7 +437,7 @@ public final class RuntimeConfig {
         }
         if (!(value instanceof Long number) || number < Integer.MIN_VALUE
                 || number > Integer.MAX_VALUE) {
-            throw new CliException(2, field + " muss eine Ganzzahl sein");
+            throw new CliException(2, msg("cli.error.config.integerInvalid", field));
         }
         return number.intValue();
     }
@@ -415,7 +447,7 @@ public final class RuntimeConfig {
             return fallback;
         }
         if (!(value instanceof Long number)) {
-            throw new CliException(2, field + " muss eine Ganzzahl sein");
+            throw new CliException(2, msg("cli.error.config.integerInvalid", field));
         }
         return number;
     }
@@ -425,7 +457,7 @@ public final class RuntimeConfig {
         try {
             path = Path.of(value);
         } catch (RuntimeException exception) {
-            throw new CliException(2, "Ungueltiger Pfad: " + value);
+            throw new CliException(2, msg("cli.error.config.pathInvalid", value));
         }
         return (path.isAbsolute() ? path : base.resolve(path)).toAbsolutePath().normalize();
     }

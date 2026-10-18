@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.TaskRef;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
@@ -42,7 +43,7 @@ public abstract class GretlScript extends Script {
                 "description");
         if (description.isBlank()) {
             throw dsl("INVALID_PARAMETER_DECLARATION",
-                    "Parameter " + name + " benoetigt eine nichtleere description", null);
+                    msg("error.groovy.parameterDescription", name), null);
         }
         ParameterValueType type = ParameterValueType.parse(
                 optionalText(normalized.get("type"), "type"));
@@ -55,9 +56,7 @@ public abstract class GretlScript extends Script {
 
     public Object parameter(String name) {
         throw dsl("TOPLEVEL_PARAMETER_READ",
-                "parameter('" + name + "') liest erst im Task-/Action-Scope; "
-                        + "im Toplevel nur parameter('" + name
-                        + "', description: '...') deklarieren", name);
+                msg("error.groovy.toplevelParameterRead", name), name);
     }
 
     public <C, R> TaskRef<R> task(String id, OperationType<C, R> type, Closure<?> configure) {
@@ -68,20 +67,20 @@ public abstract class GretlScript extends Script {
             Map<String, ?> options, String id, OperationType<C, R> type, Closure<?> configure) {
         JobDslModel model = model();
         if (id == null || id.isBlank()) {
-            throw dsl("INVALID_TASK_ID", "Taskname darf nicht leer sein", null);
+            throw dsl("INVALID_TASK_ID", msg("error.groovy.taskNameEmpty"), null);
         }
         if (type == null) {
             throw dsl("UNKNOWN_OPERATION",
-                    "Task " + id + " verweist auf keine registrierte Taskart", id);
+                    msg("error.groovy.taskUnknownType", id), id);
         }
         if (configure == null) {
             throw dsl("MISSING_CONFIGURATION",
-                    "Task " + id + " benoetigt eine Konfigurationsclosure", id);
+                    msg("error.groovy.taskConfiguration", id), id);
         }
         OperationType<?, ?> registered = model.environment().registry().requireId(type.id());
         if (registered != type) {
             throw dsl("UNKNOWN_OPERATION",
-                    "Taskart " + type.id() + " stammt nicht aus dem geladenen Katalog", id);
+                    msg("error.groovy.taskTypeNotLoaded", type.id()), id);
         }
         Map<String, Object> normalized = options(options, TASK_OPTIONS, "task " + id);
         TaskRegistration.Builder<R> registration = TaskRegistration.builder(
@@ -106,10 +105,10 @@ public abstract class GretlScript extends Script {
     public TaskRef<Object> action(Map<String, ?> options, String id, Closure<?> body) {
         JobDslModel model = model();
         if (id == null || id.isBlank()) {
-            throw dsl("INVALID_TASK_ID", "Actionname darf nicht leer sein", null);
+            throw dsl("INVALID_TASK_ID", msg("error.groovy.actionNameEmpty"), null);
         }
         if (body == null) {
-            throw dsl("MISSING_ACTION_BODY", "Action " + id + " benoetigt eine Closure", id);
+            throw dsl("MISSING_ACTION_BODY", msg("error.groovy.actionBody", id), id);
         }
         Map<String, Object> normalized = options(options, TASK_OPTIONS, "action " + id);
         TaskRegistration.Builder<Object> registration = TaskRegistration.builder(id, Object.class)
@@ -148,7 +147,7 @@ public abstract class GretlScript extends Script {
         JobDslModel model = model();
         if (body == null) {
             throw dsl("MISSING_CLEANUP_BODY",
-                    "Cleanup " + name + " benoetigt eine Closure", name);
+                    msg("error.groovy.cleanupBody", name), name);
         }
         model.builder().cleanup(name, GroovyTaskAdapter.cleanupBody(body, model),
                 runnerSource(SourceLocations.current(model.scriptFile())));
@@ -179,18 +178,18 @@ public abstract class GretlScript extends Script {
         return model;
     }
 
-    private static Map<String, Object> options(
+    private Map<String, Object> options(
             Map<String, ?> options, Set<String> allowed, String context) {
         if (options == null) {
             throw new GroovyDslException("INVALID_OPTIONS",
-                    context + " benoetigt eine Optionsmap", null, null, null, List.of(), null);
+                    msg("error.groovy.optionsRequired", context), null, null, null, List.of(), null);
         }
         Map<String, Object> normalized = new LinkedHashMap<>();
         for (Map.Entry<String, ?> entry : options.entrySet()) {
             String key = String.valueOf(entry.getKey());
             if (!allowed.contains(key)) {
                 throw new GroovyDslException("UNKNOWN_OPTION",
-                        "Unbekannte Option " + key + " bei " + context,
+                        msg("error.groovy.unknownOption", key, context),
                         null, key, null, List.copyOf(allowed), null);
             }
             normalized.put(key, entry.getValue());
@@ -198,49 +197,49 @@ public abstract class GretlScript extends Script {
         return normalized;
     }
 
-    private static Object required(Map<String, Object> options, String key, String context) {
+    private Object required(Map<String, Object> options, String key, String context) {
         if (!options.containsKey(key) || options.get(key) == null) {
             throw new GroovyDslException("MISSING_OPTION",
-                    context + " benoetigt die Option " + key,
+                    msg("error.groovy.missingOption", context, key),
                     null, key, null, List.of(key), null);
         }
         return options.get(key);
     }
 
-    private static String description(Map<String, Object> options, String taskId) {
+    private String description(Map<String, Object> options, String taskId) {
         String value = optionalText(options.get("description"), "description");
         if (value != null && value.isBlank()) {
             throw new GroovyDslException("INVALID_OPTION",
-                    "description darf nicht leer sein",
+                    msg("error.groovy.descriptionEmpty"),
                     taskId, "description", null, List.of(), null);
         }
         return value;
     }
 
-    private static String optionalText(Object value, String field) {
+    private String optionalText(Object value, String field) {
         if (value == null) {
             return null;
         }
         if (!(value instanceof CharSequence text)) {
             throw new GroovyDslException("INVALID_OPTION_TYPE",
-                    "Option " + field + " muss Text sein",
+                    msg("error.groovy.optionText", field),
                     null, field, null, List.of(), null);
         }
         return text.toString();
     }
 
-    private static String text(Object value, String field) {
+    private String text(Object value, String field) {
         return optionalText(value, field);
     }
 
-    private static boolean booleanOption(Map<String, Object> options, String key, boolean fallback) {
+    private boolean booleanOption(Map<String, Object> options, String key, boolean fallback) {
         Object value = options.get(key);
         if (value == null) {
             return fallback;
         }
         if (!(value instanceof Boolean booleanValue)) {
             throw new GroovyDslException("INVALID_OPTION_TYPE",
-                    "Option " + key + " muss Boolean sein",
+                    msg("error.groovy.optionBoolean", key),
                     null, key, null, List.of(), null);
         }
         return booleanValue;
@@ -252,13 +251,13 @@ public abstract class GretlScript extends Script {
         }
         if (!(value instanceof Closure<?> closure)) {
             throw new GroovyDslException("INVALID_OPTION_TYPE",
-                    "Option when muss eine Closure sein",
+                    msg("error.groovy.optionWhenClosure"),
                     taskId, "when", null, List.of(), null);
         }
         return GroovyTaskAdapter.condition(closure, model());
     }
 
-    private static Duration duration(Object value, String taskId) {
+    private Duration duration(Object value, String taskId) {
         if (value == null) {
             return null;
         }
@@ -270,22 +269,23 @@ public abstract class GretlScript extends Script {
                 duration = Duration.parse(text.toString());
             } catch (RuntimeException exception) {
                 throw new GroovyDslException("INVALID_TIMEOUT",
-                        "timeout ist keine gueltige ISO-8601-Dauer: " + text,
+                        msg("error.groovy.timeoutInvalid", text),
                         taskId, "timeout", null, List.of(), exception);
             }
         } else {
             throw new GroovyDslException("INVALID_TIMEOUT",
-                    "timeout muss Duration oder ISO-8601-Text sein",
+                    msg("error.groovy.timeoutType"),
                     taskId, "timeout", null, List.of(), null);
         }
         if (duration.isZero() || duration.isNegative()) {
             throw new GroovyDslException("INVALID_TIMEOUT",
-                    "timeout muss positiv sein", taskId, "timeout", null, List.of(), null);
+                    msg("error.groovy.timeoutPositive"), taskId, "timeout", null,
+                    List.of(), null);
         }
         return duration;
     }
 
-    private static List<TaskLink> links(Object value, String option, String taskId) {
+    private List<TaskLink> links(Object value, String option, String taskId) {
         if (value == null) {
             return List.of();
         }
@@ -300,7 +300,7 @@ public abstract class GretlScript extends Script {
             values = Arrays.asList(array);
         } else {
             throw new GroovyDslException("INVALID_OPTION_TYPE",
-                    "Option " + option + " muss Name, TaskRef oder Liste sein",
+                    msg("error.groovy.optionLinks", option),
                     taskId, option, null, List.of(), null);
         }
         List<TaskLink> links = new ArrayList<>();
@@ -311,11 +311,15 @@ public abstract class GretlScript extends Script {
                 links.add(TaskLink.named(text.toString()));
             } else {
                 throw new GroovyDslException("INVALID_OPTION_TYPE",
-                        "Option " + option + " enthaelt ein ungueltiges Element: " + element,
+                        msg("error.groovy.optionLinkElement", option, element),
                         taskId, option, null, List.of(), null);
             }
         }
         return links;
+    }
+
+    private String msg(String key, Object... arguments) {
+        return Messages.format(model().environment().locale(), key, arguments);
     }
 
     private static ch.so.agi.gretl.runtime.runner.SourceLocation runnerSource(
@@ -324,7 +328,7 @@ public abstract class GretlScript extends Script {
                 source.file(), source.line(), source.column());
     }
 
-    private static GroovyDslException dsl(String code, String message, String taskId) {
+    private GroovyDslException dsl(String code, String message, String taskId) {
         return new GroovyDslException(code, message, taskId, null,
                 null, List.of(), null);
     }

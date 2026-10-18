@@ -57,6 +57,10 @@ final class RunEnvironment {
         return input.jobName();
     }
 
+    java.util.Locale locale() {
+        return input.locale();
+    }
+
     ResolvedParameters parameters() {
         return input.parameters();
     }

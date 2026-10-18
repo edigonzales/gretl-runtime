@@ -8,6 +8,7 @@
     "gretl-api",
     "gretl-runner",
     "gretl-groovy",
+    "gretl-i18n",
     "gretl-logging",
     "gretl-basic-tasks",
     "gretl-ilivalidator",

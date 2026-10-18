@@ -20,6 +20,7 @@
     <module>gretl-api</module>
     <module>gretl-runner</module>
     <module>gretl-groovy</module>
+    <module>gretl-i18n</module>
     <module>gretl-logging</module>
     <module>gretl-packager</module>
     <module>gretl-basic-tasks</module>

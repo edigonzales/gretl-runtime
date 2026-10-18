@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.runner;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.TaskRef;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public final class JobDefinitionBuilder {
     private final UUID definitionId = UUID.randomUUID();
     private final Path jobRoot;
+    private final java.util.Locale locale;
     private final List<Registered<?>> registered = new ArrayList<>();
     private final Map<String, Registered<?>> byId = new LinkedHashMap<>();
     private final List<ParameterDefinition> parameters = new ArrayList<>();
@@ -30,7 +32,12 @@ public final class JobDefinitionBuilder {
     private boolean frozen;
 
     public JobDefinitionBuilder(Path jobRoot) {
+        this(jobRoot, java.util.Locale.GERMAN);
+    }
+
+    public JobDefinitionBuilder(Path jobRoot, java.util.Locale locale) {
         this.jobRoot = Objects.requireNonNull(jobRoot, "jobRoot").toAbsolutePath().normalize();
+        this.locale = Objects.requireNonNull(locale, "locale");
     }
 
     public UUID definitionId() {
@@ -42,7 +49,7 @@ public final class JobDefinitionBuilder {
         ensureNotFrozen();
         if (byId.containsKey(registration.id())) {
             throw new DefinitionException("DUPLICATE_TASK_ID",
-                    "Doppelte Task-ID: " + registration.id());
+                    Messages.format(locale, "runner.duplicateTaskId", registration.id()));
         }
         JobTaskRef<R> ref = new JobTaskRef<>(
                 definitionId, registration.id(), registration.resultType(), registered.size());
@@ -57,7 +64,7 @@ public final class JobDefinitionBuilder {
         ensureNotFrozen();
         if (!parameterNames.add(parameter.name())) {
             throw new ParameterException("DUPLICATE_PARAMETER", parameter.name(),
-                    "Parameter ist doppelt deklariert: " + parameter.name());
+                    Messages.format(locale, "runner.duplicateParameter", parameter.name()));
         }
         parameters.add(parameter);
     }
@@ -79,7 +86,7 @@ public final class JobDefinitionBuilder {
                 || !definitionId.equals(jobRef.definitionId())
                 || !byId.containsKey(jobRef.id())) {
             throw new DefinitionException("FOREIGN_TASK_REFERENCE",
-                    "Default verwendet eine fremde TaskRef: " + ref);
+                    Messages.format(locale, "runner.foreignDefaultRef", ref));
         }
         return jobRef.id();
     }
@@ -87,11 +94,11 @@ public final class JobDefinitionBuilder {
     private void addDefault(String target) {
         if (target == null || target.isBlank()) {
             throw new DefinitionException("INVALID_DEFAULT_TARGET",
-                    "Default-Ziel darf nicht leer sein");
+                    Messages.get(locale, "runner.invalidDefaultTarget"));
         }
         if (!defaultTargetNames.add(target)) {
             throw new DefinitionException("DUPLICATE_DEFAULT_TARGET",
-                    "Default-Ziel ist doppelt: " + target);
+                    Messages.format(locale, "runner.duplicateDefaultTarget", target));
         }
         defaultTargets.add(target);
     }
@@ -105,7 +112,7 @@ public final class JobDefinitionBuilder {
         Objects.requireNonNull(body, "body");
         if (!cleanupNames.add(name)) {
             throw new DefinitionException("DUPLICATE_CLEANUP_NAME",
-                    "Cleanup-Name ist doppelt: " + name);
+                    Messages.format(locale, "runner.duplicateCleanupName", name));
         }
         cleanups.add(new CleanupDefinition(name, cleanups.size(), body, source));
     }
@@ -113,7 +120,7 @@ public final class JobDefinitionBuilder {
     public JobDefinition freeze() {
         if (frozen) {
             throw new DefinitionException("DEFINITION_ALREADY_FROZEN",
-                    "Die JobDefinition wurde bereits eingefroren");
+                    Messages.get(locale, "runner.definitionFrozen"));
         }
         List<TaskDefinition<?>> tasks = new ArrayList<>(registered.size());
         for (Registered<?> pending : registered) {
@@ -124,7 +131,7 @@ public final class JobDefinitionBuilder {
         for (String target : defaultTargets) {
             if (!byId.containsKey(target)) {
                 throw new DefinitionException("UNKNOWN_DEFAULT_TARGET",
-                        "Default-Ziel ist kein registrierter Task: " + target);
+                        Messages.format(locale, "runner.unknownDefaultTarget", target));
             }
         }
         frozen = true;
@@ -152,7 +159,7 @@ public final class JobDefinitionBuilder {
                 Registered<?> target = byId.get(link.name());
                 if (target == null) {
                     throw new DefinitionException("UNKNOWN_TASK_REFERENCE",
-                            "Task " + ownerId + " verweist auf unbekannten Task: " + link.name());
+                            Messages.format(locale, "runner.unknownTaskReference", ownerId, link.name()));
                 }
                 ref = target.ref;
             } else {
@@ -161,12 +168,12 @@ public final class JobDefinitionBuilder {
                         || !definitionId.equals(jobRef.definitionId())
                         || !byId.containsKey(jobRef.id())) {
                     throw new DefinitionException("FOREIGN_TASK_REFERENCE",
-                            "Task " + ownerId + " verwendet eine fremde TaskRef: " + ref);
+                            Messages.format(locale, "runner.foreignTaskReference", ownerId, ref));
                 }
             }
             if (resolved.putIfAbsent(ref.id(), ref) != null) {
                 throw new DefinitionException("DUPLICATE_TASK_LINK",
-                        "Task " + ownerId + " nennt " + ref.id() + " mehrfach");
+                        Messages.format(locale, "runner.duplicateTaskLink", ownerId, ref.id()));
             }
         }
         return List.copyOf(resolved.values());
@@ -175,7 +182,7 @@ public final class JobDefinitionBuilder {
     private void ensureNotFrozen() {
         if (frozen) {
             throw new DefinitionException("DYNAMIC_TASK_REGISTRATION_UNSUPPORTED",
-                    "Die Registrierung ist eingefroren; nachtraegliche Definitionen sind nicht erlaubt");
+                    Messages.get(locale, "runner.dynamicUnsupported"));
         }
     }
 

@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.TaskRef;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
@@ -73,7 +74,8 @@ final class JobDslModel {
         TaskRef<?> ref = taskRefs.get(name);
         if (ref == null) {
             throw new GroovyDslException("UNKNOWN_TASK_NAME",
-                    "Unbekannter Taskname: " + name, requestingTask, null,
+                    Messages.format(environment.locale(), "error.groovy.unknownTask", name),
+                    requestingTask, null,
                     SourceLocations.current(scriptFile), taskNames(), null);
         }
         return ref;

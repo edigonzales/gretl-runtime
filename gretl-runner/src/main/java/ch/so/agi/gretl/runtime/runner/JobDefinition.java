@@ -70,7 +70,7 @@ public record JobDefinition(
     public TaskDefinition<?> requireTask(TaskRef<?> ref) {
         return task(ref).orElseThrow(() -> new ResultAccessException(
                 "FOREIGN_OR_UNKNOWN_TASK_REF",
-                "TaskRef gehoert nicht zu dieser JobDefinition oder ist unbekannt: " + ref));
+                "TaskRef does not belong to this JobDefinition or is unknown: " + ref));
     }
 
     public boolean containsRef(TaskRef<?> ref) {

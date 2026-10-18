@@ -35,7 +35,7 @@ public final class LogbackBridge implements AutoCloseable {
         Object factory = LoggerFactory.getILoggerFactory();
         if (!(factory instanceof LoggerContext loggerContext)) {
             throw new IllegalStateException(
-                    "Es muss genau ein Logback-Provider aktiv sein, gefunden: "
+                    "Exactly one Logback provider must be active, found: "
                             + factory.getClass().getName());
         }
         loggerContext.reset();

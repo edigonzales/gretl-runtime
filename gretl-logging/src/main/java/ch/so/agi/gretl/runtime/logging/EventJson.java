@@ -29,6 +29,7 @@ public final class EventJson {
         result.put("event_name", event.eventName());
         result.put("message", event.message());
         result.put("command_id", event.commandId());
+        result.put("locale", context.locale().toLanguageTag());
         event.runId().ifPresent(value -> result.put("run_id", value.toString()));
         event.jobName().ifPresent(value -> result.put("job_name", value));
         event.taskId().ifPresent(value -> result.put("task_id", value));
@@ -69,6 +70,15 @@ public final class EventJson {
         result.put("id", failure.id());
         result.put("type", failure.type());
         result.put("message", failure.message());
+        failure.diagnostic().ifPresent(diagnostic -> {
+            result.put("code", diagnostic.code());
+            diagnostic.taskId().ifPresent(value -> result.put("task_id", value));
+            diagnostic.field().ifPresent(value -> result.put("field", value));
+            if (!diagnostic.available().isEmpty()) {
+                result.put("allowed", diagnostic.available());
+            }
+            diagnostic.hint().ifPresent(value -> result.put("hint", value));
+        });
         failure.source().ifPresent(source -> result.put("source", sourceMap(source)));
         if (!failure.frames().isEmpty()) {
             List<Map<String, Object>> frames = new ArrayList<>();

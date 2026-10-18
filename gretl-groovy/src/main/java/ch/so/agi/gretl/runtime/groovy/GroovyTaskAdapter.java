@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.TaskContext;
 import ch.so.agi.gretl.runtime.runner.CleanupBody;
@@ -21,7 +22,7 @@ public final class GroovyTaskAdapter {
         return context -> {
             if (!(context instanceof OperationCaller caller)) {
                 throw new GroovyDslException("NO_OPERATION_CALLER",
-                        "Typisierte Tasks benoetigen den Produkt-Runner");
+                        msg(model, "error.groovy.noCallerTyped"));
             }
             String taskId = context.identity().taskId().orElse(type.id());
             return caller.invoke(type, (invocationContext, taskContext) ->
@@ -47,8 +48,8 @@ public final class GroovyTaskAdapter {
                     "when", taskId);
             if (!(value instanceof Boolean booleanValue)) {
                 throw new GroovyDslException("CONDITION_NOT_BOOLEAN",
-                        "when muss einen Boolean liefern, erhielt "
-                                + (value == null ? "null" : value.getClass().getName()),
+                        msg(model, "error.groovy.conditionNotBoolean",
+                                value == null ? "null" : value.getClass().getName()),
                         taskId, null, SourceLocations.current(model.scriptFile()),
                         List.of(), null);
             }
@@ -68,7 +69,7 @@ public final class GroovyTaskAdapter {
             JobDslModel model, String role, String taskId) throws Exception {
         if (closure == null) {
             throw new GroovyDslException("MISSING_CLOSURE",
-                    role + " benoetigt eine Closure", taskId, null,
+                    msg(model, "error.groovy.missingClosure", role), taskId, null,
                     SourceLocations.current(model.scriptFile()), List.of(), null);
         }
         Closure<?> copy = (Closure<?>) closure.rehydrate(
@@ -83,23 +84,28 @@ public final class GroovyTaskAdapter {
                 return copy.call(parameter);
             }
             throw new GroovyDslException("CLOSURE_ARITY",
-                    role + " erlaubt null oder einen Closureparameter, nicht " + parameters,
+                    msg(model, "error.groovy.closureArity", role, parameters),
                     taskId, null, SourceLocations.current(model.scriptFile()),
                     List.of(), null);
         } catch (GroovyDslException exception) {
             throw withSource(exception, model);
         } catch (MissingPropertyException exception) {
             throw new GroovyDslException("UNKNOWN_PROPERTY",
-                    "Unbekannte Eigenschaft " + exception.getProperty() + " im " + role,
+                    msg(model, "error.groovy.unknownProperty",
+                            exception.getProperty(), role),
                     taskId, exception.getProperty(), SourceLocations.from(exception, model.scriptFile()),
                     List.of(), exception);
         } catch (MissingMethodException exception) {
             throw new GroovyDslException("UNKNOWN_HELPER",
-                    "Unbekannte Methode " + exception.getMethod() + " im " + role
-                            + "; Felder werden mit name = wert gesetzt",
+                    msg(model, "error.groovy.unknownHelper",
+                            exception.getMethod(), role),
                     taskId, exception.getMethod(), SourceLocations.from(exception, model.scriptFile()),
                     List.of(), exception);
         }
+    }
+
+    private static String msg(JobDslModel model, String key, Object... arguments) {
+        return Messages.format(model.environment().locale(), key, arguments);
     }
 
     private static GroovyDslException withSource(GroovyDslException exception, JobDslModel model) {

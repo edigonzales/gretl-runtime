@@ -196,14 +196,14 @@ public final class Json {
             while (true) {
                 whitespace();
                 if (!peek('"')) {
-                    throw error("JSON-Objektschlüssel muss ein String sein");
+                    throw error("JSON object key must be a string");
                 }
                 String key = string();
                 whitespace();
                 expect(':');
                 Object value = value(depth);
                 if (result.containsKey(key)) {
-                    throw error("Doppelter JSON-Schlüssel: " + key);
+                    throw error("Duplicate JSON key: " + key);
                 }
                 result.put(key, value);
                 whitespace();
@@ -244,7 +244,7 @@ public final class Json {
                 }
                 if (character == '\\') {
                     if (done()) {
-                        throw error("Unvollständige JSON-Escapefolge");
+                        throw error("Incomplete JSON escape sequence");
                     }
                     char escaped = text.charAt(index++);
                     switch (escaped) {
@@ -258,16 +258,16 @@ public final class Json {
                         case 't' -> result.append('\t');
                         case 'u' -> {
                             if (index + 4 > text.length()) {
-                                throw error("Unvollständige Unicode-Escapefolge");
+                                throw error("Incomplete Unicode escape sequence");
                             }
                             String hex = text.substring(index, index + 4);
                             if (!hex.matches("[0-9A-Fa-f]{4}")) {
-                                throw error("Ungültige Unicode-Escapefolge: " + hex);
+                                throw error("Invalid Unicode escape sequence: " + hex);
                             }
                             result.append((char) Integer.parseInt(hex, 16));
                             index += 4;
                         }
-                        default -> throw error("Ungültige JSON-Escapefolge: \\" + escaped);
+                        default -> throw error("Invalid JSON escape sequence: \\" + escaped);
                     }
                 } else if (character < 0x20) {
                     throw error("Unkontrolliertes Steuerzeichen im JSON-String");
@@ -284,7 +284,7 @@ public final class Json {
                 index++;
             }
             if (done()) {
-                throw error("Unvollständige JSON-Zahl");
+                throw error("Incomplete JSON number");
             }
             if (peek('0')) {
                 index++;
@@ -293,7 +293,7 @@ public final class Json {
                     index++;
                 }
             } else {
-                throw error("Ungültiger JSON-Wert");
+                throw error("Invalid JSON value");
             }
             boolean decimal = false;
             if (!done() && peek('.')) {
@@ -304,7 +304,7 @@ public final class Json {
                     index++;
                 }
                 if (index == digits) {
-                    throw error("Ungültige JSON-Dezimalzahl");
+                    throw error("Invalid JSON decimal number");
                 }
             }
             if (!done() && (peek('e') || peek('E'))) {
@@ -318,7 +318,7 @@ public final class Json {
                     index++;
                 }
                 if (index == digits) {
-                    throw error("Ungültiger JSON-Exponent");
+                    throw error("Invalid JSON exponent");
                 }
             }
             String raw = text.substring(start, index);
@@ -334,7 +334,7 @@ public final class Json {
 
         private Object literal(String literal, Object value) {
             if (!text.startsWith(literal, index)) {
-                throw error("Ungültiger JSON-Wert");
+                throw error("Invalid JSON value");
             }
             index += literal.length();
             return value;

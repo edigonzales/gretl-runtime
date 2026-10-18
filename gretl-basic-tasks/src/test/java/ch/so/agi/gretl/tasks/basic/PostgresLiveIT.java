@@ -86,7 +86,7 @@ class PostgresLiveIT {
         SqlTaskException exception = assertThrows(SqlTaskException.class,
                 () -> new SqlExecutorOperation.SqlHandler()
                         .execute(builder.build(), context(Map.of())));
-        assertTrue(exception.getMessage().contains("SQLSTATE"));
+        assertTrue(exception.sqlState() != null);
         try (Connection connection = DriverManager.getConnection(url, user, password);
              Statement statement = connection.createStatement();
              ResultSet rows = statement.executeQuery(

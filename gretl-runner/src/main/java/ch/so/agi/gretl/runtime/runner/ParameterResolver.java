@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.runner;
 
+import ch.so.agi.gretl.i18n.Messages;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,10 +14,16 @@ import java.util.Objects;
  */
 public final class ParameterResolver {
     private final Path startCwd;
+    private final java.util.Locale locale;
 
     public ParameterResolver(Path startCwd) {
+        this(startCwd, java.util.Locale.GERMAN);
+    }
+
+    public ParameterResolver(Path startCwd, java.util.Locale locale) {
         Objects.requireNonNull(startCwd, "startCwd");
         this.startCwd = startCwd.toAbsolutePath().normalize();
+        this.locale = Objects.requireNonNull(locale, "locale");
     }
 
     public ResolvedParameters resolve(
@@ -30,8 +37,10 @@ public final class ParameterResolver {
             declared.put(parameter.name(), parameter);
         }
 
-        rejectUnknown(sources.parameterFile(), declared, "Parameterdatei");
-        rejectUnknown(sources.commandLine(), declared, "CLI");
+        rejectUnknown(sources.parameterFile(), declared,
+                Messages.get(locale, "cli.source.parameterFile"));
+        rejectUnknown(sources.commandLine(), declared,
+                Messages.get(locale, "cli.source.commandLine"));
 
         Map<String, Object> values = new LinkedHashMap<>();
         Map<String, ResolvedParameters.ParameterSource> origins = new LinkedHashMap<>();
@@ -74,7 +83,7 @@ public final class ParameterResolver {
 
             if (parameter.required() && isEmptyValue(parameter.type(), value)) {
                 throw new ParameterException("INVALID_PARAMETER_VALUE", name,
-                        "Der erforderliche Parameter " + name + " darf nicht leer sein");
+                        Messages.format(locale, "error.parameter.emptyRequired", name));
             }
 
             values.put(name, value);
@@ -85,9 +94,12 @@ public final class ParameterResolver {
             String first = missingRequired.get(0);
             ParameterDefinition definitionOfFirst = declared.get(first);
             throw new ParameterException("MISSING_REQUIRED_PARAMETER", first,
-                    "Der erforderliche Parameter " + first + " fehlt"
-                            + (definitionOfFirst == null ? "" : ": " + definitionOfFirst.description())
-                            + ". Fehlende Pflichtparameter: " + String.join(", ", missingRequired));
+                    Messages.format(locale, "error.parameter.missing",
+                            first,
+                            definitionOfFirst == null ? ""
+                                    : Messages.format(locale, "error.parameter.missingHint",
+                                            definitionOfFirst.description()),
+                            String.join(", ", missingRequired)));
         }
 
         return new ResolvedParameters(values, origins, missingRequired, declared.keySet());
@@ -115,12 +127,12 @@ public final class ParameterResolver {
         };
     }
 
-    private static Object throwInvalid(String name, Object raw, ParameterValueType type) {
+    private Object throwInvalid(String name, Object raw, ParameterValueType type) {
         throw new ParameterException("INVALID_PARAMETER_VALUE", name,
-                "Defaultwert passt nicht zum Typ " + type + ": " + raw);
+                Messages.format(locale, "error.parameter.invalidDefault", type, raw));
     }
 
-    private static Boolean parseBoolean(String name, String raw) {
+    private Boolean parseBoolean(String name, String raw) {
         if ("true".equals(raw)) {
             return Boolean.TRUE;
         }
@@ -128,32 +140,32 @@ public final class ParameterResolver {
             return Boolean.FALSE;
         }
         throw new ParameterException("INVALID_PARAMETER_VALUE", name,
-                "Für " + name + " wird true oder false erwartet. Der angegebene Wert ist ungültig.");
+                Messages.format(locale, "error.parameter.boolean", name));
     }
 
-    private static Long parseInteger(String name, String raw) {
+    private Long parseInteger(String name, String raw) {
         if (!raw.matches("[+-]?[0-9]+")) {
             throw new ParameterException("INVALID_PARAMETER_VALUE", name,
-                    "Für " + name + " wird eine ganze Dezimalzahl erwartet.");
+                    Messages.format(locale, "error.parameter.integer", name));
         }
         try {
             return Long.valueOf(raw);
         } catch (NumberFormatException exception) {
             throw new ParameterException("INVALID_PARAMETER_VALUE", name,
-                    "Der Wert für " + name + " liegt ausserhalb des Long-Bereichs.");
+                    Messages.format(locale, "error.parameter.integerRange", name));
         }
     }
 
     private Path parsePath(String name, String raw) {
         if (raw.isBlank()) {
             throw new ParameterException("INVALID_PARAMETER_VALUE", name,
-                    "Der Pfadparameter " + name + " darf nicht leer sein.");
+                    Messages.format(locale, "error.parameter.pathEmpty", name));
         }
         try {
             return normalizePath(Path.of(raw));
         } catch (RuntimeException exception) {
             throw new ParameterException("INVALID_PARAMETER_VALUE", name,
-                    "Der Wert für " + name + " ist kein gueltiger Dateisystempfad.");
+                    Messages.format(locale, "error.parameter.pathInvalid", name));
         }
     }
 
@@ -169,7 +181,7 @@ public final class ParameterResolver {
         };
     }
 
-    private static void rejectUnknown(
+    private void rejectUnknown(
             Map<String, String> source, Map<String, ParameterDefinition> declared, String label) {
         for (String name : source.keySet()) {
             if (declared.containsKey(name)) {
@@ -177,9 +189,11 @@ public final class ParameterResolver {
             }
             String suggestion = closest(name, declared.keySet());
             throw new ParameterException("UNKNOWN_PARAMETER", name,
-                    "Der Job kennt den Parameter " + name + " nicht"
-                            + (suggestion == null ? "" : ". Meinten Sie " + suggestion + "?")
-                            + " (" + label + ").");
+                    Messages.format(locale, "error.parameter.unknown", name,
+                            suggestion == null ? ""
+                                    : Messages.format(locale,
+                                            "error.parameter.unknownSuggestion", suggestion),
+                            label));
         }
     }
 

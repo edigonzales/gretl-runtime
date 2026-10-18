@@ -188,7 +188,8 @@ class HttpDownloadOperationTest {
         directoryBuilder.setOverwrite(true);
         HttpTaskException directoryError = assertThrows(HttpTaskException.class,
                 () -> handler.execute(directoryBuilder.build(), context(Map.of())));
-        assertTrue(directoryError.getMessage().startsWith("HTTP_TARGET_UNSAFE:"));
+        assertEquals("HTTP_TARGET_UNSAFE", directoryError.code());
+        assertEquals("HTTP_TARGET_UNSAFE", directoryError.diagnostic().code());
 
         Path real = tempDir.resolve("real.bin");
         Files.writeString(real, "real");
@@ -202,7 +203,7 @@ class HttpDownloadOperationTest {
         linkBuilder.setOverwrite(true);
         HttpTaskException linkError = assertThrows(HttpTaskException.class,
                 () -> handler.execute(linkBuilder.build(), context(Map.of())));
-        assertTrue(linkError.getMessage().startsWith("HTTP_TARGET_UNSAFE:"));
+        assertEquals("HTTP_TARGET_UNSAFE", linkError.code());
         assertEquals("real", Files.readString(real));
     }
 

@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import ch.so.agi.gretl.runtime.runner.SecretRegistry;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -32,6 +33,38 @@ class RuntimeConfigTest {
         assertThrows(CliException.class, () -> RuntimeConfig.load(config, tempDir));
         Files.writeString(config, "{\"schemaVersion\":1,\"secrets\":{\"s\":{\"environment\":\"A\",\"file\":\"b\"}}}");
         assertThrows(CliException.class, () -> RuntimeConfig.load(config, tempDir));
+        Files.writeString(config, "{\"schemaVersion\":1,\"language\":\"fr\"}");
+        assertThrows(CliException.class, () -> RuntimeConfig.load(config, tempDir));
+        Files.writeString(config, "{\"schemaVersion\":1,\"language\":\"en\"}");
+        assertEquals("en", RuntimeConfig.load(config, tempDir).language().orElseThrow());
+    }
+
+    @Test
+    void topLevelConfigErrorsFollowTheRequestedLocale() throws Exception {
+        Path config = tempDir.resolve("runtime-broken.json");
+        Files.writeString(config, "{broken");
+        CliException english = assertThrows(CliException.class,
+                () -> RuntimeConfig.load(config, tempDir, Locale.ENGLISH));
+        assertTrue(english.getMessage().contains("Runtime configuration is invalid"),
+                english.getMessage());
+        CliException german = assertThrows(CliException.class,
+                () -> RuntimeConfig.load(config, tempDir, Locale.GERMAN));
+        assertTrue(german.getMessage().contains("Runtimekonfiguration ist ungueltig"),
+                german.getMessage());
+    }
+
+    @Test
+    void nestedConfigErrorsFollowTheRequestedLocale() throws Exception {
+        Path config = tempDir.resolve("runtime-nested.json");
+        Files.writeString(config, "{\"schemaVersion\":1,\"runtime\":{\"unknown\":true}}");
+        CliException english = assertThrows(CliException.class,
+                () -> RuntimeConfig.load(config, tempDir, Locale.ENGLISH));
+        assertTrue(english.getMessage().contains("Unknown field runtime.unknown"),
+                english.getMessage());
+        CliException german = assertThrows(CliException.class,
+                () -> RuntimeConfig.load(config, tempDir, Locale.GERMAN));
+        assertTrue(german.getMessage().contains("Unbekanntes Feld runtime.unknown"),
+                german.getMessage());
     }
 
     @Test

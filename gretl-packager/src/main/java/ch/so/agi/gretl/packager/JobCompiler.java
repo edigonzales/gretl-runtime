@@ -27,7 +27,7 @@ public final class JobCompiler {
     public CompiledJob compile(PackageDescriptor descriptor) throws PackageException {
         List<SourceFile> sources = sourceFiles(descriptor);
         if (sources.isEmpty()) {
-            throw new PackageException("PACKAGE_NO_SOURCES", "Keine Groovy-Quellen gefunden");
+            throw new PackageException("PACKAGE_NO_SOURCES", PackagerMessages.get("package.noSources"));
         }
         CompilationUnit unit = new CompilationUnit(CompilerSettings.create());
         for (SourceFile source : sources) {
@@ -37,7 +37,7 @@ public final class JobCompiler {
             unit.compile(Phases.CLASS_GENERATION);
         } catch (RuntimeException exception) {
             throw new PackageException("PACKAGE_COMPILE_FAILED",
-                    "Groovy-Job konnte nicht kompiliert werden: " + exception.getMessage(),
+                    PackagerMessages.format("package.compileFailed", exception.getMessage()),
                     exception);
         }
         ClassNode script = null;
@@ -48,21 +48,21 @@ public final class JobCompiler {
                 }
                 if (script != null) {
                     throw new PackageException("PACKAGE_MULTIPLE_SCRIPTS",
-                            "Nur entryScript darf ein Groovy-Script sein: "
-                                    + script.getName() + ", " + node.getName());
+                            PackagerMessages.format("package.multipleScripts",
+                                    script.getName(), node.getName()));
                 }
                 script = node;
             }
         }
         if (script == null) {
             throw new PackageException("PACKAGE_NO_SCRIPT",
-                    "entryScript enthaelt keine Groovy-Scriptklasse");
+                    PackagerMessages.get("package.noScript"));
         }
         if (!"ch.so.agi.gretl.runtime.groovy.GretlScript"
                 .equals(script.getSuperClass().getName())) {
             throw new PackageException("PACKAGE_WRONG_BASE_CLASS",
-                    "entryScript muss von GretlScript erben, gefunden: "
-                            + script.getSuperClass().getName());
+                    PackagerMessages.format("package.wrongBaseClass",
+                            script.getSuperClass().getName()));
         }
         Map<String, byte[]> classes = new TreeMap<>();
         for (GroovyClass groovyClass : unit.getClasses()) {
@@ -71,7 +71,7 @@ public final class JobCompiler {
         }
         if (!classes.containsKey(script.getName().replace('.', '/') + ".class")) {
             throw new PackageException("PACKAGE_ENTRY_BYTECODE_MISSING",
-                    "Kompilierte Scriptklasse fehlt: " + script.getName());
+                    PackagerMessages.format("package.entryBytecodeMissing", script.getName()));
         }
         return new CompiledJob(script.getName(), classes, sources,
                 sha256(descriptor.entryPath()));
@@ -91,7 +91,7 @@ public final class JobCompiler {
                     }
                 } catch (IOException exception) {
                     throw new PackageException("PACKAGE_SOURCE_READ",
-                            "Quellen konnten nicht gelesen werden: " + sourcePath, exception);
+                            PackagerMessages.format("package.sourcesRead", sourcePath), exception);
                 }
             } else {
                 addSource(descriptor, sourcePath, result);
@@ -113,7 +113,7 @@ public final class JobCompiler {
                     Files.readString(normalized, StandardCharsets.UTF_8)));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_SOURCE_READ",
-                    "Quelle konnte nicht gelesen werden: " + file, exception);
+                    PackagerMessages.format("package.sourceRead", file), exception);
         }
     }
 
@@ -123,7 +123,7 @@ public final class JobCompiler {
             return HexFormat.of().formatHex(digest.digest(Files.readAllBytes(file)));
         } catch (IOException | NoSuchAlgorithmException exception) {
             throw new PackageException("PACKAGE_SOURCE_READ",
-                    "entryScript konnte nicht gelesen werden: " + file, exception);
+                    PackagerMessages.format("package.entryRead", file), exception);
         }
     }
 

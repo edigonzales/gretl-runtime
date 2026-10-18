@@ -31,7 +31,7 @@ public final class ProviderInventory {
         Object factory = LoggerFactory.getILoggerFactory();
         if (!"ch.qos.logback.classic.LoggerContext".equals(factory.getClass().getName())) {
             throw new IllegalStateException(
-                    "Der aktive SLF4J-Provider ist nicht Logback: "
+                    "The active SLF4J provider is not Logback: "
                             + factory.getClass().getName());
         }
     }
