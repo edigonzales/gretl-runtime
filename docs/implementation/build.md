@@ -45,7 +45,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Kollisionsprüfung, 4 Tests,
 7. **gretl-basic-tasks** — HTTP, ZIP/GZIP, SQL, Provider, 23 Tests,
 8. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
-   Distribution-nahe Integration, 44 Tests,
+   Distribution-nahe Integration, 49 Tests,
 9. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
 10. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
 11. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
@@ -53,7 +53,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration sowie Job-JAR-Paket
     und -Start, 1 Surefire- und 7 Failsafe-Tests.
 
-Erwartet: **285 Tests**, 0 Fehler, `BUILD SUCCESS`.
+Erwartet: **290 Tests**, 0 Fehler, `BUILD SUCCESS`.
 
 ### Artefakte
 
@@ -268,7 +268,7 @@ Dollar-Quote, Prepared-Apostroph/null und Rollback nach dem zweiten Fehler.
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **289 Tests** (285 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **294 Tests** (290 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.

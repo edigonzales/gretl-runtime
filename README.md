@@ -20,6 +20,7 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - M6-Bericht: [`docs/implementation/m6-report.md`](docs/implementation/m6-report.md)
 - Snapshot-Veröffentlichung: [`docs/implementation/publish-snapshots.md`](docs/implementation/publish-snapshots.md)
 - Lokalisierung/Diagnose: [`docs/implementation/localization.md`](docs/implementation/localization.md)
+- DAG-Visualisierung: [`docs/implementation/plan-graphs.md`](docs/implementation/plan-graphs.md)
 - M5-Bericht (historisch): [`docs/implementation/m5-report.md`](docs/implementation/m5-report.md)
 - M5-Anwenderprotokoll: [`docs/implementation/m5-user-acceptance.md`](docs/implementation/m5-user-acceptance.md)
 - M4-Bericht (historisch): [`docs/implementation/m4-report.md`](docs/implementation/m4-report.md)
@@ -27,8 +28,8 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - M2-Bericht (historisch): [`docs/implementation/m2-report.md`](docs/implementation/m2-report.md)
 - M1-Bericht (historisch): [`docs/implementation/m1-report.md`](docs/implementation/m1-report.md)
 - M0-Bericht (historisch): [`docs/implementation/m0-report.md`](docs/implementation/m0-report.md)
-- Standardprüfung: `./mvnw verify` mit JDK 25 (**285 Tests**)
-- GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**289 Tests**)
+- Standardprüfung: `./mvnw verify` mit JDK 25 (**290 Tests**)
+- GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**294 Tests**)
 - Scriptdistribution: `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip`
 
 Paketieren und starten:

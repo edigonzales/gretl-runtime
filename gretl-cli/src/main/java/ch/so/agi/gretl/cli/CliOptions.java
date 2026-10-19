@@ -18,7 +18,8 @@ public record CliOptions(
         Path config, Path parameterFile, Map<String, String> parameters,
         Path workDir, Path report, Duration timeout,
         LoggingConfig.Format logFormat, LogLevel logLevel, KeepWork keepWork,
-        String operationSymbol, Path output, String language) {
+        String operationSymbol, Path output, String language,
+        PlanGraphFormat graphFormat) {
 
     public enum Command { HELP, VERSION, OPERATIONS, RUN, CHECK, PLAN, PACKAGE, COMMAND_HELP }
 
@@ -64,7 +65,8 @@ public record CliOptions(
                 }
             }
             return new CliOptions(Command.OPERATIONS, null, false, List.of(), null,
-                    null, Map.of(), null, null, null, null, null, null, symbol, null, language);
+                    null, Map.of(), null, null, null, null, null, null, symbol, null,
+                    language, null);
         }
         Command command = switch (first) {
             case "run" -> Command.RUN;
@@ -112,7 +114,8 @@ public record CliOptions(
         }
         if (help) {
             return new CliOptions(Command.PACKAGE, descriptor, true, List.of(), null,
-                    null, Map.of(), null, null, null, null, null, null, null, output, language);
+                    null, Map.of(), null, null, null, null, null, null, null, output,
+                    language, null);
         }
         if (descriptor == null) {
             throw new CliException(2, msg(locale,
@@ -123,7 +126,8 @@ public record CliOptions(
                     "cli.error.package.outputMissing"));
         }
         return new CliOptions(Command.PACKAGE, descriptor, false, List.of(), null,
-                null, Map.of(), null, null, null, null, null, null, null, output, language);
+                null, Map.of(), null, null, null, null, null, null, null, output, language,
+                null);
     }
 
     /** Parse options for a fixed packaged job (no job path or command). */
@@ -145,7 +149,7 @@ public record CliOptions(
 
     private static CliOptions command(Command command) {
         return new CliOptions(command, null, false, List.of(), null, null,
-                Map.of(), null, null, null, null, null, null, null, null, null);
+                Map.of(), null, null, null, null, null, null, null, null, null, null);
     }
 
     private static CliOptions parseJobCommand(Command command, String[] args, Path startCwd,
@@ -158,11 +162,13 @@ public record CliOptions(
         Map<String, String> parameters = new LinkedHashMap<>();
         Path workDir = null;
         Path report = null;
+        Path output = null;
         Duration timeout = null;
         LoggingConfig.Format format = null;
         LogLevel level = null;
         KeepWork keepWork = null;
         String language = null;
+        PlanGraphFormat graphFormat = null;
 
         int index = 1;
         while (index < args.length) {
@@ -244,6 +250,18 @@ public record CliOptions(
                     }
                     index++;
                 }
+                case "--graph" -> {
+                    String value = requireValue(args, ++index, argument, locale);
+                    graphFormat = PlanGraphFormat.parse(value).orElseThrow(() ->
+                            new CliException(2, msg(locale,
+                                    "cli.error.planGraphFormat", value)));
+                    index++;
+                }
+                case "--output" -> {
+                    output = resolve(startCwd,
+                            requireValue(args, ++index, argument, locale), locale);
+                    index++;
+                }
                 case "--lang" -> {
                     language = requireValue(args, ++index, argument, locale);
                     index++;
@@ -270,17 +288,26 @@ public record CliOptions(
                 throw new CliException(2, msg(locale, "cli.error.runOnly"));
             }
         }
+        if (graphFormat != null && command != Command.PLAN) {
+            throw new CliException(2, msg(locale, "cli.error.planGraphOnly"));
+        }
+        if (output != null && command != Command.PLAN) {
+            throw new CliException(2, msg(locale, "cli.error.planOutputOnly"));
+        }
+        if (output != null && graphFormat == null) {
+            throw new CliException(2, msg(locale, "cli.error.planOutputRequiresGraph"));
+        }
         if (job == null) {
             if (help) {
                 return new CliOptions(Command.COMMAND_HELP, null, true, List.of(), null,
-                        null, Map.of(), null, null, null, null, null, null, null, null, null);
+                        null, Map.of(), null, null, null, null, null, null, null, null, null, null);
             }
             throw new CliException(2, msg(locale, "cli.error.job.missing",
                     command.name().toLowerCase(Locale.ROOT)));
         }
         return new CliOptions(command, job, help, targets, config, parameterFile,
-                parameters, workDir, report, timeout, format, level, keepWork, null, null,
-                language);
+                parameters, workDir, report, timeout, format, level, keepWork, null, output,
+                language, graphFormat);
     }
 
     private static String requireValue(String[] args, int index, String option,

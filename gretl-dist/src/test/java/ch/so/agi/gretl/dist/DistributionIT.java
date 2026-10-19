@@ -367,6 +367,10 @@ class DistributionIT {
         assertEquals(0, help.code(), help.err());
         assertTrue(help.out().contains("wert"));
 
+        ProcessResult graph = runJava(foreignCwd, jar, "--plan", "--graph", "mermaid");
+        assertEquals(0, graph.code(), graph.err());
+        assertTrue(graph.out().startsWith("flowchart TB"), graph.out());
+
         ProcessResult missing = runJava(foreignCwd, jar);
         assertEquals(2, missing.code(), missing.err());
         assertTrue(missing.err().toLowerCase().contains("required parameter")

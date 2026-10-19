@@ -58,6 +58,10 @@ public final class HelpPrinter {
         out.println("  --log-level TRACE|DEBUG|INFO|WARN|ERROR");
         out.println("  --keep-work             " + text("help.global.keepWork"));
         out.println();
+        out.println(text("help.global.planOptions"));
+        out.println("  --graph mermaid|plantuml  " + text("help.plan.graph"));
+        out.println("  --output <file>           " + text("help.plan.output"));
+        out.println();
         out.println(text("help.global.note"));
         out.println(text("help.global.safe"));
     }

@@ -269,7 +269,23 @@ public final class GretlCli {
             return 0;
         }
         if (options.command() == CliOptions.Command.PLAN) {
-            new HelpPrinter(out, locale).plan(plan);
+            if (options.graphFormat() == null) {
+                new HelpPrinter(out, locale).plan(plan);
+            } else {
+                String graph = new PlanGraphRenderer().render(plan, options.graphFormat(),
+                        source.displayFile().getFileName().toString(), locale);
+                if (options.output() == null) {
+                    out.print(graph);
+                } else {
+                    try {
+                        Files.writeString(options.output(), graph,
+                                java.nio.charset.StandardCharsets.UTF_8);
+                    } catch (java.io.IOException exception) {
+                        throw new CliException(2, Messages.format(locale,
+                                "cli.error.planGraphWrite", options.output()), exception);
+                    }
+                }
+            }
             return 0;
         }
         return run(source, definition, plan, parameters, config, registry, sink,

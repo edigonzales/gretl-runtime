@@ -40,6 +40,8 @@ class CliHelpAndDefinitionTest {
         assertEquals(0, englishHelp.code());
         assertTrue(englishHelp.out().contains("Usage:"), englishHelp.out());
         assertTrue(englishHelp.out().contains("Runtime options for run:"));
+        assertTrue(englishHelp.out().contains("Plan options:"));
+        assertTrue(englishHelp.out().contains("--graph mermaid|plantuml"));
 
         Result operations = cli().run("operations");
         assertEquals(0, operations.code());
@@ -84,6 +86,21 @@ class CliHelpAndDefinitionTest {
         assertEquals(0, plan.code());
         assertTrue(plan.out().contains("download"));
         assertTrue(plan.out().contains("Reihenfolge"));
+        assertFalse(Files.exists(tempDir.resolve("work")));
+
+        Result mermaid = cli().run("plan", script.toString(), "--target", "download",
+                "--graph", "mermaid");
+        assertEquals(0, mermaid.code(), mermaid.err());
+        assertTrue(mermaid.out().startsWith("flowchart TB"), mermaid.out());
+        assertTrue(mermaid.out().contains("download"));
+        assertFalse(mermaid.out().contains("Reihenfolge"));
+
+        Path graphFile = tempDir.resolve("dag.puml");
+        Result plantuml = cli().run("plan", script.toString(), "--target", "download",
+                "--graph", "plantuml", "--output", graphFile.toString());
+        assertEquals(0, plantuml.code(), plantuml.err());
+        assertTrue(plantuml.out().isEmpty());
+        assertTrue(Files.readString(graphFile).startsWith("@startuml"));
         assertFalse(Files.exists(tempDir.resolve("work")));
     }
 

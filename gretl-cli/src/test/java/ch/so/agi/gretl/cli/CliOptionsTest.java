@@ -26,6 +26,38 @@ class CliOptionsTest {
     }
 
     @Test
+    void parsesPlanGraphAndOutputOptions() {
+        CliOptions options = CliOptions.parse(new String[]{
+                "plan", "job.groovy", "--graph", "Mermaid",
+                "--output", "plan.mmd"
+        }, Path.of("/tmp"));
+
+        assertEquals(CliOptions.Command.PLAN, options.command());
+        assertEquals(PlanGraphFormat.MERMAID, options.graphFormat());
+        assertEquals("plan.mmd", options.output().getFileName().toString());
+    }
+
+    @Test
+    void rejectsGraphOptionsOutsidePlan() {
+        CliException run = assertThrows(CliException.class, () -> CliOptions.parse(
+                new String[]{"run", "job.groovy", "--graph", "mermaid"}, Path.of("/tmp"),
+                java.util.Locale.ENGLISH));
+        assertTrue(run.getMessage().contains("only valid for plan"), run.getMessage());
+        CliException output = assertThrows(CliException.class, () -> CliOptions.parse(
+                new String[]{"check", "job.groovy", "--output", "x"}, Path.of("/tmp"),
+                java.util.Locale.ENGLISH));
+        assertTrue(output.getMessage().contains("only valid for plan"), output.getMessage());
+        CliException noGraph = assertThrows(CliException.class, () -> CliOptions.parse(
+                new String[]{"plan", "job.groovy", "--output", "x"}, Path.of("/tmp"),
+                java.util.Locale.ENGLISH));
+        assertTrue(noGraph.getMessage().contains("requires --graph"), noGraph.getMessage());
+        CliException format = assertThrows(CliException.class, () -> CliOptions.parse(
+                new String[]{"plan", "job.groovy", "--graph", "svg"}, Path.of("/tmp"),
+                java.util.Locale.ENGLISH));
+        assertTrue(format.getMessage().contains("Unsupported graph format"), format.getMessage());
+    }
+
+    @Test
     void parserErrorsFollowTheRequestedLocale() {
         CliException english = assertThrows(CliException.class, () -> CliOptions.parse(
                 new String[]{"run", "--lang", "en"}, Path.of("/tmp"), Locale.ENGLISH));
