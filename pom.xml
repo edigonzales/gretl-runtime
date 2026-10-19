@@ -53,6 +53,7 @@
     <testcontainers.version>1.21.4</testcontainers.version>
     <testcontainers-floci.version>1.10.0</testcontainers-floci.version>
     <aws-sdk.version>2.15.64</aws-sdk.version>
+    <duckdb.version>1.5.2.0</duckdb.version>
     <commons-compress.version>1.27.1</commons-compress.version>
   </properties>
 

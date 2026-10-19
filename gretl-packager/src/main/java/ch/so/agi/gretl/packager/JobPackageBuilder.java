@@ -40,7 +40,7 @@ import java.util.stream.Stream;
  */
 public final class JobPackageBuilder {
     public static final String MAIN_CLASS = "ch.so.agi.gretl.job.JobJarMain";
-    private static final long MAX_ENTRY_BYTES = 64L * 1024 * 1024;
+    private static final long MAX_ENTRY_BYTES = 256L * 1024 * 1024;
     private static final long MAX_TOTAL_BYTES = 1024L * 1024 * 1024;
     private static final Set<String> MERGED_METADATA = Set.of(
             "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE",

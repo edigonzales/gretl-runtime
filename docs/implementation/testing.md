@@ -12,7 +12,7 @@ einem separaten, explizit aktivierten Profil.
 | Ebene | Docker | Werkzeuge | Befehl |
 |---|---|---|---|
 | Unit und Komponente | nein | H2, JDK-`HttpServer`, `MockFtpServer`, lokale Dateien | `./mvnw verify` |
-| Backing-Service-Integration | ja | Testcontainers, PostgreSQL/PostGIS, echter FTP-Container | `./mvnw -Pbacking-services verify` |
+| Backing-Service-Integration | ja | Testcontainers, PostgreSQL/PostGIS, FTP, S3/Floci | `./mvnw -Pbacking-services verify` |
 | GeoTools-Probe | nein | separates Profil | `./mvnw -Pgeotools-probe verify` |
 
 `./mvnw verify` bleibt der schnelle Entwickler- und Standard-CI-Build.
@@ -24,17 +24,17 @@ oder einen In-Process-Mock abbilden lassen.
 
 | Service | Standardbuild | Backing-Service-Gate |
 |---|---|---|
-| PostgreSQL | H2 in `SqlExecutorOperationTest` | `PostgresSqlExecutorIT` mit echtem PostgreSQL 16 + PostGIS |
-| PostGIS | noch keine DB-Task | Container ist vorbereitet; echte PostGIS-Tasktests folgen mit `Ili2pg*`/Geodaten |
+| PostgreSQL | H2 in `SqlExecutorOperationTest` und `Db2DbOperationTest` | `PostgresSqlExecutorIT` und `Db2DbPostgresIT` mit echtem PostgreSQL 16 + PostGIS |
+| PostGIS | `Db2Db`-Geometrietest mit PostGIS-Funktionen | Container ist vorbereitet; echte PostGIS-Tasktests folgen mit `Ili2pg*`/Geodaten |
 | FTP | `MockFtpServer` in `FtpOperationTest` | `FtpTaskFamilyIT` mit `delfer/alpine-ftp-server` |
 | HTTP/Curl | JDK-`HttpServer` | derzeit kein Container nötig; Host-Tests decken den Netzwerkpfad ab |
 | S3 | keine Unit-Server; Builder-/Pfadtests | `S3TaskFamilyIT` mit Floci/Testcontainers |
 | XSLT/Gzip | lokale Temp-Dateien | kein Backing-Service |
 | INTERLIS-Validierung | lokale Modelle/XTF | kein Backing-Service |
-| DuckDB | dateibasiert | kein Docker; Extension-Fixture erst bei Bedarf |
+| DuckDB | `DuckDbSqlExecutorOperationTest` und CLI-Test, Datei/In-Memory | kein Docker; Föderation/Exporte noch nicht migriert |
 
-Der reale PostgreSQL-Nachweis ist ausschließlich `PostgresSqlExecutorIT` im
-Profil `backing-services`.
+Der reale PostgreSQL-Nachweis läuft ausschließlich über `PostgresSqlExecutorIT`
+und `Db2DbPostgresIT` im Profil `backing-services`.
 
 ## Integrationstests ausführen
 
@@ -108,7 +108,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**349 Tests** (339 Standard + 4 GeoTools + 6 Backing-Services).
+**361 Tests** (349 Standard + 4 GeoTools + 8 Backing-Services).
 
 ## Grenzen
 
@@ -116,6 +116,8 @@ Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
   dafür ist das Profil zuständig.
 - PostGIS-Tasktests existieren erst mit den Geodaten-/Ili2pg-Wellen; der
   PostGIS-Container steht bereits bereit.
+- `DuckDbSqlExecutor` deckt den SQL-Kern ab. Föderierte Quellen/Ziele und
+  Exporte aus gretl-next sind noch nicht Bestandteil der Runtime-Migration.
 - HTTP-Container werden erst benötigt, wenn Jobs aus einem Runtime-Image gegen
   den Fixture-Host laufen; die aktuellen Host-Tests nutzen den JDK-`HttpServer`.
 - Die Integrationstests laufen sequenziell (`forkCount=1`), damit geteilte

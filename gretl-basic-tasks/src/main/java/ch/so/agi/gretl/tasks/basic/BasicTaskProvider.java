@@ -12,6 +12,8 @@ public final class BasicTaskProvider implements OperationProvider {
         return List.of(
                 HttpDownloadOperation.type(),
                 CurlOperation.type(),
+                Db2DbOperation.type(),
+                DuckDbSqlExecutorOperation.type(),
                 GzipOperation.type(),
                 ExtractOperation.type(),
                 SqlExecutorOperation.type());

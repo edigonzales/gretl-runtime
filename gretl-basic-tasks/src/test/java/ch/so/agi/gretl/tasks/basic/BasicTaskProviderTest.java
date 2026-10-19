@@ -12,13 +12,16 @@ import org.junit.jupiter.api.Test;
 
 class BasicTaskProviderTest {
     @Test
-    void serviceLoaderExposesTheFiveStandardTasks() {
+    void serviceLoaderExposesTheSevenStandardTasks() {
         OperationRegistry registry = OperationRegistry.load(getClass().getClassLoader());
-        assertEquals(5, registry.all().size());
+        assertEquals(7, registry.all().size());
         assertEquals("HttpDownload", registry.requireSymbol("HttpDownload").symbol());
         assertEquals("Curl", registry.requireSymbol("Curl").symbol());
         assertEquals("Gzip", registry.requireSymbol("Gzip").symbol());
         assertEquals("Extract", registry.requireSymbol("Extract").symbol());
+        assertEquals("Db2Db", registry.requireSymbol("Db2Db").symbol());
+        assertEquals("DuckDbSqlExecutor",
+                registry.requireSymbol("DuckDbSqlExecutor").symbol());
         assertEquals("SqlExecutor", registry.requireSymbol("SqlExecutor").symbol());
         assertFalse(registry.all().stream().anyMatch(operation ->
                 operation.symbol().equals("Publisher")));

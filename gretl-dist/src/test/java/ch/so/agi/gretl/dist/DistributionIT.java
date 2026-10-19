@@ -70,6 +70,8 @@ class DistributionIT {
         assertTrue(operations.out().contains("S3Upload"));
         assertTrue(operations.out().contains("S3Delete"));
         assertTrue(operations.out().contains("S3Bucket2Bucket"));
+        assertTrue(operations.out().contains("Db2Db"));
+        assertTrue(operations.out().contains("DuckDbSqlExecutor"));
         assertTrue(operations.out().contains("IliValidator"));
         assertTrue(!operations.out().contains("FileSize"));
 

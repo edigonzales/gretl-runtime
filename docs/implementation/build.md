@@ -43,10 +43,10 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Runbericht, Logback-Bridge, 18 Tests,
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
-7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Provider, 38 Tests,
+7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB, Provider, 47 Tests,
 8. **gretl-core-tasks** — XSLT, FTP, S3, Saxon, Commons Net, AWS SDK, 23 Tests,
 9. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
-   AsciiDoc-Tabellen, Curl-Integration, Distribution-nahe Integration, 59 Tests,
+   AsciiDoc-Tabellen, Curl-/SQL-/DuckDB-Integration, Distribution-nahe Integration, 60 Tests,
 10. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
 11. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
 12. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
@@ -54,10 +54,10 @@ export PATH="$JAVA_HOME/bin:$PATH"
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
     und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests,
 14. **gretl-integration-tests** — nur mit `-Pbacking-services`:
-    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, 6 Failsafe-Tests.
+    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, 8 Failsafe-Tests.
 
-Erwartet: **339 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
-`backing-services` ergänzt 6 Docker-backed Integrationstests; Details stehen in
+Erwartet: **349 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+`backing-services` ergänzt 8 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
 ### Artefakte
@@ -278,6 +278,21 @@ Logging-Lücke ausgewiesen.
 - Ergebnisse: Dateilisten, Bytes, entfernter Pfad bzw. Löschzähler; keine
   Passwort- oder Inhaltslogs, keine automatischen Retries.
 
+### Datenbank-Tasks
+
+- `Db2Db` löst Quell- und Zielverbindung über `taskConfig`-Aliasse auf; die
+  Zugangsdaten bleiben aus dem Job und den Logs heraus.
+- Transfers bestehen aus SQL-Datei, Zieltabelle, `deleteAllRows` und optionalen
+  Geometriespalten (WKT/WKB/GeoJSON mit EPSG). Alle Transfers laufen in einer
+  Zieltransaktion.
+- `sqlParameters`/`sqlParameterSets`, `batchSize` und `fetchSize` entsprechen
+  der bisherigen Semantik.
+- `DuckDbSqlExecutor` führt SQL-Dateien gegen eine DuckDB-Datei oder
+  In-Memory-Datenbank aus. Der SQL-Kern ist migriert; die föderierten
+  Quellen/Ziele und Exporte aus gretl-next bleiben eine spätere Ausbaustufe.
+- DuckDB 1.5.2.0 bringt native Bibliotheken mit; das Job-JAR-Limit für einzelne
+  Einträge wurde deshalb auf 256 MiB angehoben.
+
 ### S3-Tasks
 
 - `S3Download`, `S3Upload`, `S3Delete` und `S3Bucket2Bucket` teilen
@@ -331,7 +346,7 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Kombiniert mit GeoTools und Backing-Services werden **349 Tests** ausgeführt.
+Kombiniert mit GeoTools und Backing-Services werden **361 Tests** ausgeführt.
 Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
@@ -340,7 +355,7 @@ Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **343 Tests** (339 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **353 Tests** (349 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.
@@ -354,7 +369,7 @@ Bestandteil der Scriptdistribution.
 | `gretl-groovy` | Groovy-6-DSL | ja |
 | `gretl-i18n` | englischer Quellkatalog, deutscher Katalog | ja |
 | `gretl-logging` | Events, Redaction, Report | ja |
-| `gretl-basic-tasks` | HTTP/Curl/Gzip/Extract/SQL | ja |
+| `gretl-basic-tasks` | HTTP/Curl/Gzip/Extract/SQL/Db2Db/DuckDB | ja |
 | `gretl-core-tasks` | XSLT, FTP, S3, Saxon, Commons Net, AWS SDK | ja |
 | `gretl-ilivalidator` | reale INTERLIS-Validierung (B) | ja |
 | `gretl-cli` | CLI/Config/Hilfe/Orchestrierung | ja |
@@ -365,7 +380,7 @@ Bestandteil der Scriptdistribution.
 Zentrale Versionen: Groovy 6.0.0 (`groovy`, `groovy-json`), SLF4J 2.0.20,
 Logback 1.6.5, Commons Compress 1.27.1, pgJDBC 42.7.14, H2 2.3.232 (nur Test),
 ilivalidator 1.15.0 / ehibasics 1.4.1, Saxon 11.4, xmlresolver 4.4.3,
-Commons Net 3.6, AWS SDK v2 2.15.64 (URL-Connection-Client),
+Commons Net 3.6, AWS SDK v2 2.15.64 (URL-Connection-Client), DuckDB 1.5.2.0,
 Testcontainers 1.21.4 (nur `backing-services`), Floci 1.10.0 (nur Test),
 JUnit 5.14.4, GeoTools 35.2 (nur Profil).
 
@@ -409,6 +424,9 @@ Erweiterungs-JAR im isolierten Distributionslauf.
 - Standardtests nutzen H2; der echte PostgreSQL-Lauf ist Teil des
   Docker-backed `backing-services`-Gates. Commit-Unbekanntheit nach
   Verbindungsverlust ist nicht fault-injiziert.
+- DuckDB bringt native Bibliotheken mit. Das Job-JAR erlaubt deshalb einzelne
+  Einträge bis 256 MiB; die JDBC-Nutzung erzeugt unter JDK 25 eine
+  Native-Access-Warnung, die den Lauf nicht beeinflusst.
 - M5 enthält keine EHI-spezifische Feldbrücke, keinen Massen-Sampling-Test und
   keine separate Validator-JVM.
 - Der M6-Packager löst im ersten Profil keine Maven-Koordinaten auf, sondern

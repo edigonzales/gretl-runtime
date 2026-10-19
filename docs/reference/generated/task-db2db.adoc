@@ -1,0 +1,33 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*sourceDatabase* = text#
+| Alias der Quell-Datenbankverbindung
+| [.required]#ja#
+
+| [.dsl-signature]#*targetDatabase* = text#
+| Alias der Ziel-Datenbankverbindung
+| [.required]#ja#
+
+| [.dsl-signature]#*transfers* = list#
+| Geordnete Transfers mit sqlFile, targetTable, deleteAllRows und geometryColumns
+| [.required]#ja#
+
+| [.dsl-signature]#*sqlParameters* = map#
+| [.acronym]#SQL#-Parameter fuer eine Ausfuehrung aller Transfers
+| [.optional]#nein#
+
+| [.dsl-signature]#*sqlParameterSets* = list#
+| [.acronym]#SQL#-Parameter-Maps; alle Transfers laufen pro Map
+| [.optional]#nein#
+
+| [.dsl-signature]#*batchSize* = integer#
+| [.acronym]#JDBC#-Batch-Groesse fuer Zieleinfuegungen
+| [.optional]#nein#
+
+| [.dsl-signature]#*fetchSize* = integer#
+| [.acronym]#JDBC#-Fetch-Groesse fuer Quell-Lesevorgaenge
+| [.optional]#nein#
+
+|===

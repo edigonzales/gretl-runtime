@@ -21,12 +21,14 @@ Im aktuellen Runtime-Katalog vorhanden:
 - `S3Upload`
 - `S3Delete`
 - `S3Bucket2Bucket`
+- `Db2Db`
+- `DuckDbSqlExecutor`
 - `SqlExecutor`
 - `XslTransformer`
 - `IliValidator`
 
-Damit sind **15 von 44** Operationen vorhanden. Aus `gretl-next` fehlen noch
-**29 Core-Tasks**. GeoTools, Publisher, XtfToGpkg und Native Image bleiben
+Damit sind **17 von 44** Operationen vorhanden. Aus `gretl-next` fehlen noch
+**27 Core-Tasks**. GeoTools, Publisher, XtfToGpkg und Native Image bleiben
 ausserhalb dieses Plans.
 
 ## Gruppierung und Lieferwellen
@@ -36,12 +38,12 @@ ausserhalb dieses Plans.
 | 1 | HTTP und einfache Dateien | `Curl` (erledigt), `Gzip` (erledigt), `XslTransformer` (erledigt) | JDK-HTTP, GZIP, Saxon |
 | 2 | FTP | `FtpList` (erledigt), `FtpDownload` (erledigt), `FtpUpload` (erledigt), `FtpDelete` (erledigt) | Commons Net |
 | 3 | S3 | `S3Download` (erledigt), `S3Upload` (erledigt), `S3Delete` (erledigt), `S3Bucket2Bucket` (erledigt) | AWS SDK v2 |
-| 4 | Datenbank | `Db2Db`, `DuckDbSqlExecutor` | JDBC, DuckDB |
+| 4 | Datenbank | `Db2Db` (erledigt), `DuckDbSqlExecutor` (SQL-Kern erledigt) | JDBC, DuckDB |
 | 5 | Tabellarisch | `Csv2Excel`, `CsvImport`, `CsvExport`, `CsvValidator`, `JsonImport`, `JsonValidator` | POI, Jackson, iox-wkf, ilivalidator |
 | 6 | Geodaten | `GpkgImport`, `GpkgExport`, `GpkgValidator`, `Gpkg2Shp`, `ShpImport`, `ShpExport`, `ShpValidator` | iox-wkf, JTS, Shapefile-Referenz |
 | 7 | INTERLIS/AV | `Ili2pgImportSchema`, `Ili2pgImport`, `Ili2pgExport`, `Ili2pgDelete`, `Ili2pgReplace`, `Ili2pgUpdate`, `Ili2pgValidate`, `Ili2gpkgImport`, `Ili2duckdbImportSchema`, `Ili2duckdbImport`, `Ili2duckdbExport`, `Av2ch`, `Av2geobau`, `Gpkg2Dxf` | ili2pg/ili2gpkg/ili2duckdb, av2ch, av2geobau |
 
-**Katalogstand:** 15 → 17 (W4) → 23 (W5) →
+**Katalogstand:** 17 → 23 (W5) →
 30 (W6) → 44 (W7).
 
 **Reihenfolge:** HTTP und einfache Dateien zuerst, dann Remote-Familien,
@@ -51,8 +53,9 @@ einer alphabetischen Taskliste.
 
 **Modulzuschnitt:** `Curl` und `Gzip` liegen im bestehenden
 `gretl-basic-tasks`; `XslTransformer`, die vier FTP-Tasks und die vier
-S3-Tasks liegen im neuen `gretl-core-tasks`. Die übrigen Gruppen kommen
-zunächst ebenfalls in
+S3-Tasks liegen im neuen `gretl-core-tasks`. `Db2Db` und
+`DuckDbSqlExecutor` liegen bei den bestehenden JDBC-Tasks in
+`gretl-basic-tasks`. Die übrigen Gruppen kommen zunächst ebenfalls in
 `gretl-core-tasks` mit Paketen je Gruppe. Ein Split in eigene Remote-/INTERLIS-Module erfolgt erst
 bei einem konkreten Dependency- oder Grössenproblem.
 
@@ -64,6 +67,8 @@ Der Standardbuild bleibt Docker-frei; echte Backing-Services laufen im Profil
 - PostgreSQL/PostGIS: Testcontainers, echtes PostgreSQL 16 mit PostGIS.
 - FTP: echter `delfer/alpine-ftp-server`-Container.
 - S3: Floci/Testcontainers; seit Welle 3 aktiv.
+- PostgreSQL: Db2Db läuft im `backing-services`-Gate gegen einen echten Container.
+- DuckDB: dateibasiert/In-Memory, kein Docker; Föderation/Exporte folgen.
 - HTTP: Host-Tests mit `HttpServer`; Container erst für Runtime-Image-Pfade.
 
 Eine Task gilt nicht als migriert, wenn sie einen Backing-Service nur mit H2
@@ -156,7 +161,10 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
 1. Welle 1 ist abgeschlossen: `Curl`, `Gzip`, `XslTransformer`.
 2. Welle 2 ist abgeschlossen: `FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete`.
 3. Welle 3 ist abgeschlossen: `S3Download`, `S3Upload`, `S3Delete`, `S3Bucket2Bucket`.
-4. Welle 4 umsetzen: DB-Tasks; danach tabellarische Formate und Geodaten.
-5. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die Shapefile-Regeln aus diesem
+4. Welle 4 ist abgeschlossen: `Db2Db` und der SQL-Kern von
+   `DuckDbSqlExecutor`; die DuckDB-Föderation/-Exporte bleiben eine spätere
+   Ausbaustufe.
+5. Welle 5 (tabellarische Formate) und danach Welle 6 (Geodaten) umsetzen.
+6. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die Shapefile-Regeln aus diesem
    Dokument als Testfälle übernehmen, bevor die Tasks als migriert gelten.
-6. Vor Welle 6 den PostGIS-Tasktest ergänzen.
+7. Vor Welle 6 den PostGIS-Tasktest ergänzen.

@@ -1,0 +1,25 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*database* = path#
+| DuckDB-Datenbankdatei
+| [.optional]#nein#
+
+| [.dsl-signature]#*inMemory* = boolean#
+| In-Memory-DuckDB-Datenbank verwenden
+| [.optional]#nein#
+
+| [.dsl-signature]#*sqlFiles* = list#
+| Geordnete [.acronym]#SQL#-Dateien
+| [.required]#ja#
+
+| [.dsl-signature]#*sqlParameters* = map#
+| [.acronym]#SQL#-Parameter fuer eine Ausfuehrung aller [.acronym]#SQL#-Dateien
+| [.optional]#nein#
+
+| [.dsl-signature]#*sqlParameterSets* = list#
+| [.acronym]#SQL#-Parameter-Maps; alle [.acronym]#SQL#-Dateien laufen pro Map
+| [.optional]#nein#
+
+|===

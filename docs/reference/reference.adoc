@@ -543,6 +543,62 @@ Die Property-Tabelle fasst die Felder zusammen:
 
 include::generated/task-s3bucket2bucket.adoc[]
 
+=== Db2Db
+
+`Db2Db` kopiert Zeilen aus einer Quell- in eine Zieltabelle. Die Verbindungen
+werden über Aliasse aus der Runtimekonfiguration (`taskConfig`) aufgelöst, nicht
+direkt im Job mit JDBC-URL und Passwort.
+
+[source,groovy]
+----
+task('copy', Db2Db) {
+    sourceDatabase = 'source'
+    targetDatabase = 'target'
+    transfers = [[
+        sqlFile: file('sql/select-colors.sql'),
+        targetTable: 'colors',
+        deleteAllRows: true
+    ]]
+}
+----
+
+Jede SQL-Datei liefert ein Resultset. Optional darf sie mit einem
+`SET search_path`-Statement beginnen. Die Transfers laufen in einer
+Zieltransaktion; bei einem Fehler wird alles zurückgerollt. Parameter werden
+mit `${name}` substituiert. `geometryColumns` unterstützt WKT, WKB und GeoJSON
+mit EPSG-Code, sofern die Zieldatenbank die entsprechenden PostGIS-Funktionen
+bereitstellt. Ergebnisse sind `executionCount`, `transferredRows` und
+`executions`.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-db2db.adoc[]
+
+=== DuckDbSqlExecutor
+
+`DuckDbSqlExecutor` führt SQL-Dateien gegen eine DuckDB-Datei oder eine
+In-Memory-Datenbank aus.
+
+[source,groovy]
+----
+task('analyse', DuckDbSqlExecutor) {
+    database = file('build/work.duckdb')
+    sqlFiles = [file('sql/analyse.sql')]
+}
+----
+
+Die SQL-Dateien werden in Reihenfolge ausgeführt. Parameter werden mit
+`${name}` substituiert; `sqlParameterSets` führt alle Dateien für jede
+Parameter-Map aus. Ergebnisse sind `executionCount` und `executions`.
+
+Die Runtime-Migration deckt den SQL-Kern ab. Die föderierten Quellen/Ziele und
+Exporte aus gretl-next (PostgreSQL/GPKG/CSV/Parquet/XLSX) sind nicht Bestandteil
+dieser Welle.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-duckdbsqlexecutor.adoc[]
+
 === SqlExecutor
 
 `SqlExecutor` führt SQL-Scripts oder vorbereitete Statements gegen eine
