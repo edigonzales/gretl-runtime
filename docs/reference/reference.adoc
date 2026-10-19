@@ -343,6 +343,109 @@ Die Property-Tabelle fasst die Felder zusammen:
 
 include::generated/task-xsltransformer.adoc[]
 
+=== FtpList
+
+`FtpList` listet die Dateien eines entfernten FTP-Verzeichnisses auf. Ordner
+werden nicht in die Ergebnisliste aufgenommen.
+
+[source,groovy]
+----
+task('list', FtpList) {
+    server = 'ftp.example.ch'
+    user = 'ftp-user'
+    password = secret('ftpPassword')
+    remoteDir = '/incoming'
+}
+----
+
+Alle FTP-Tasks teilen die Verbindungsfelder `server` (host oder host:port),
+`user`, `password` (SecretValue), `systemType` (Default `UNIX`),
+`fileSeparator`, `passiveMode` (Default `true`) und
+`controlKeepAliveTimeout` (Default 300 Sekunden). Das Passwort erscheint nicht
+im Klartext in Logs oder Fehlern. Ergebnis ist `files`.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-ftplist.adoc[]
+
+=== FtpDownload
+
+`FtpDownload` lädt Dateien aus einem entfernten Verzeichnis in ein lokales
+Verzeichnis. Ohne `remoteFiles` werden alle Dateien des Verzeichnisses geladen;
+sonst gelten Namen oder Wildcards wie `*.zip`.
+
+[source,groovy]
+----
+task('download', FtpDownload) {
+    server = 'ftp.example.ch'
+    user = 'ftp-user'
+    password = secret('ftpPassword')
+    remoteDir = '/incoming'
+    localDir = workPath('download')
+    remoteFiles = ['*.zip']
+    fileType = 'BINARY'
+}
+----
+
+Der lokale Zielpfad wird gegen Pfad-Traversal geprüft. Vorhandene Dateien
+werden mit `overwrite = true` (Default aus Kompatibilitätsgründen) ersetzt;
+`overwrite = false` lässt den Task bei einer vorhandenen Zieldatei scheitern.
+Ergebnisse sind `files` und `bytes`.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-ftpdownload.adoc[]
+
+=== FtpUpload
+
+`FtpUpload` lädt genau eine lokale Datei unter ihrem Dateinamen in ein
+entferntes Verzeichnis hoch.
+
+[source,groovy]
+----
+task('upload', FtpUpload) {
+    server = 'ftp.example.ch'
+    user = 'ftp-user'
+    password = secret('ftpPassword')
+    localFile = file('data/upload.zip')
+    remoteDir = '/incoming'
+    fileType = 'BINARY'
+}
+----
+
+`fileType` ist `ASCII` oder `BINARY` (Default `ASCII`). Der entfernte Pfad
+wird aus `remoteDir`, dem Dateinamen und dem Trennzeichen gebildet.
+Ergebnisse sind `remoteFile` und `bytes`.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-ftpupload.adoc[]
+
+=== FtpDelete
+
+`FtpDelete` löscht Dateien aus einem entfernten Verzeichnis. Ohne
+`remoteFiles` werden alle Dateien des Verzeichnisses gelöscht; mit
+`remoteFiles` gelten Namen oder Wildcards.
+
+[source,groovy]
+----
+task('delete', FtpDelete) {
+    server = 'ftp.example.ch'
+    user = 'ftp-user'
+    password = secret('ftpPassword')
+    remoteDir = '/incoming'
+    remoteFiles = ['*.tmp']
+}
+----
+
+Das Weglassen von `remoteFiles` löscht alle Dateien im Verzeichnis. Ein
+fehlgeschlagenes Löschen ist ein Taskfehler, kein stiller Teilerfolg.
+Ergebnisse sind `files` und `count`.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-ftpdelete.adoc[]
+
 === SqlExecutor
 
 `SqlExecutor` führt SQL-Scripts oder vorbereitete Statements gegen eine

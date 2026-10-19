@@ -44,7 +44,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
 7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Provider, 38 Tests,
-8. **gretl-core-tasks** — XSLT, Saxon, 9 Tests,
+8. **gretl-core-tasks** — XSLT, FTP, Saxon, Commons Net, 18 Tests,
 9. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
    AsciiDoc-Tabellen, Curl-Integration, Distribution-nahe Integration, 59 Tests,
 10. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
@@ -54,7 +54,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
     und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests.
 
-Erwartet: **325 Tests**, 0 Fehler, `BUILD SUCCESS`.
+Erwartet: **334 Tests**, 0 Fehler, `BUILD SUCCESS`.
 
 ### Artefakte
 
@@ -262,6 +262,18 @@ Logging-Lücke ausgewiesen.
 - Saxon 11.4, keine externen Entities/DOCTYPEs/Netzwerkzugriffe; lokale
   Stylesheet-Includes bleiben erlaubt. Ergebnisse: `files`, `count`.
 
+### FTP-Tasks
+
+- `FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete` teilen
+  `server`/`user`/`password` (SecretValue), `systemType`, `fileSeparator`,
+  `passiveMode` und `controlKeepAliveTimeout`.
+- Download/Upload unterstützen ASCII/BINARY; Download schützt lokale Pfade und
+  kann vorhandene Ziele mit `overwrite` ersetzen.
+- `remoteFiles` sind Namen oder Wildcards; leere Listen bedeuten „alle Dateien“
+  im entfernten Verzeichnis.
+- Ergebnisse: Dateilisten, Bytes, entfernter Pfad bzw. Löschzähler; keine
+  Passwort- oder Inhaltslogs, keine automatischen Retries.
+
 ### Extract
 
 - ZIP/GZIP-Modus explizit; 4-GiB- und 10'000-Eintrag-Default.
@@ -315,7 +327,7 @@ Dollar-Quote, Prepared-Apostroph/null und Rollback nach dem zweiten Fehler.
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **329 Tests** (325 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **338 Tests** (334 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.
@@ -330,7 +342,7 @@ Bestandteil der Scriptdistribution.
 | `gretl-i18n` | englischer Quellkatalog, deutscher Katalog | ja |
 | `gretl-logging` | Events, Redaction, Report | ja |
 | `gretl-basic-tasks` | HTTP/Curl/Gzip/Extract/SQL | ja |
-| `gretl-core-tasks` | XSLT, Saxon | ja |
+| `gretl-core-tasks` | XSLT, FTP, Saxon, Commons Net | ja |
 | `gretl-ilivalidator` | reale INTERLIS-Validierung (B) | ja |
 | `gretl-cli` | CLI/Config/Hilfe/Orchestrierung | ja |
 | `examples/file-size-extension` | separat gebautes Erweiterungs-JAR | ja |
@@ -340,6 +352,7 @@ Bestandteil der Scriptdistribution.
 Zentrale Versionen: Groovy 6.0.0 (`groovy`, `groovy-json`), SLF4J 2.0.20,
 Logback 1.6.5, Commons Compress 1.27.1, pgJDBC 42.7.14, H2 2.3.232 (nur Test),
 ilivalidator 1.15.0 / ehibasics 1.4.1, Saxon 11.4, xmlresolver 4.4.3,
+Commons Net 3.6,
 JUnit 5.14.4, GeoTools 35.2 (nur Profil).
 
 Zusätzliche Plugins: `maven-assembly-plugin` 3.7.1 für die Distribution,

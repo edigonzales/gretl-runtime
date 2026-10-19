@@ -62,6 +62,10 @@ class DistributionIT {
         assertTrue(operations.out().contains("Curl"));
         assertTrue(operations.out().contains("Gzip"));
         assertTrue(operations.out().contains("XslTransformer"));
+        assertTrue(operations.out().contains("FtpList"));
+        assertTrue(operations.out().contains("FtpDownload"));
+        assertTrue(operations.out().contains("FtpUpload"));
+        assertTrue(operations.out().contains("FtpDelete"));
         assertTrue(operations.out().contains("IliValidator"));
         assertTrue(!operations.out().contains("FileSize"));
 

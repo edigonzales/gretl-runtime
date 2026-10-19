@@ -1,0 +1,37 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*server* = text#
+| [.acronym]#FTP#-Server-Host, optional host:port
+| [.required]#ja#
+
+| [.dsl-signature]#*user* = text#
+| [.acronym]#FTP#-Benutzername
+| [.required]#ja#
+
+| [.dsl-signature]#*password* = secret#
+| [.acronym]#FTP#-Passwort aus einem Secret-Alias
+| [.required]#ja#
+
+| [.dsl-signature]#*systemType* = text#
+| [.acronym]#FTP#-Server-Systemtyp
+| [.optional]#nein#
+
+| [.dsl-signature]#*fileSeparator* = text#
+| Pfadtrennzeichen auf dem [.acronym]#FTP#-Server
+| [.optional]#nein#
+
+| [.dsl-signature]#*passiveMode* = boolean#
+| Passiven [.acronym]#FTP#-Modus verwenden
+| [.optional]#nein#
+
+| [.dsl-signature]#*controlKeepAliveTimeout* = integer#
+| Control-Keep-Alive-Timeout in Sekunden; 0 deaktiviert ihn
+| [.optional]#nein#
+
+| [.dsl-signature]#*remoteDir* = text#
+| Entferntes [.acronym]#FTP#-Verzeichnis
+| [.required]#ja#
+
+|===
