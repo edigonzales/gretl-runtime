@@ -48,6 +48,7 @@ class CliHelpAndDefinitionTest {
         assertTrue(operations.out().contains("HttpDownload"));
         assertTrue(operations.out().contains("Extract"));
         assertTrue(operations.out().contains("SqlExecutor"));
+        assertTrue(operations.out().contains("Curl"));
         assertFalse(operations.out().contains("Publisher"));
 
         Result englishDetail = cli().run("operations", "HttpDownload", "--lang", "en");

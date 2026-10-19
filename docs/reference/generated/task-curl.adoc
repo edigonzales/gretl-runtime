@@ -1,0 +1,57 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*serverUrl* = uri#
+| Absolute [.acronym]#HTTP#-/[.acronym]#HTTPS#-Adresse
+| [.required]#ja#
+
+| [.dsl-signature]#*method* = text#
+| GET oder POST; ohne Angabe aus dem Body abgeleitet
+| [.optional]#nein#
+
+| [.dsl-signature]#*expectedStatusCode* = integer#
+| Exakt erwarteter [.acronym]#HTTP#-Statuscode
+| [.required]#ja#
+
+| [.dsl-signature]#*expectedBody* = text#
+| Text, der im UTF-8-Antwort-Body vorkommen muss
+| [.optional]#nein#
+
+| [.dsl-signature]#*headers* = map#
+| [.acronym]#HTTP#-Header; Werte als Text oder SecretValue
+| [.optional]#nein#
+
+| [.dsl-signature]#*formData* = map#
+| Multipart-Formularfelder; Werte als Text oder Dateipfad
+| [.optional]#nein#
+
+| [.dsl-signature]#*data* = text#
+| Optionaler UTF-8-Text-Body
+| [.optional]#nein#
+
+| [.dsl-signature]#*dataBinary* = path#
+| Optionale binaere Request-Body-Datei
+| [.optional]#nein#
+
+| [.dsl-signature]#*outputFile* = path#
+| Optionale Zieldatei fuer den Antwort-Body
+| [.optional]#nein#
+
+| [.dsl-signature]#*overwrite* = boolean#
+| Vorhandene Zieldatei nach erfolgreicher Antwort ersetzen
+| [.optional]#nein#
+
+| [.dsl-signature]#*user* = text#
+| Basic-Auth-Benutzername
+| [.optional]#nein#
+
+| [.dsl-signature]#*password* = secret#
+| Basic-Auth-Passwort aus einem Secret-Alias
+| [.optional]#nein#
+
+| [.dsl-signature]#*maxBytes* = integer#
+| Maximale Bytes des Antwort-Bodys
+| [.optional]#nein#
+
+|===

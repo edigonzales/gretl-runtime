@@ -13,10 +13,13 @@ catalog under `lib/tasks`, and the documented extension directory
 placed in `lib/extensions` before the next start. No Maven or Gradle is needed
 at job runtime.
 
-The standard catalog of this release is `HttpDownload`, `Extract`,
+The standard catalog of this release is `HttpDownload`, `Curl`, `Extract`,
 `SqlExecutor` and `IliValidator`. Stufe A remains separately usable because the
 task libraries are separate modules. Publisher and XtfToGpkg are not registered
 stubs.
+
+`Curl` is a separate HTTP request/response task for API calls, uploads and
+response assertions. Use `HttpDownload` for streaming a file to a path.
 
 Compiled examples:
 - `examples/download-extract/job.groovy` needs a ZIP URL and an output directory.

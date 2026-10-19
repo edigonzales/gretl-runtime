@@ -33,6 +33,9 @@ class CliRunIntegrationTest {
     private final AtomicInteger calls = new AtomicInteger();
     private final AtomicReference<String> lastPath = new AtomicReference<>();
     private final AtomicReference<String> lastAuthorization = new AtomicReference<>();
+    private final AtomicReference<String> lastMethod = new AtomicReference<>();
+    private final AtomicReference<String> lastBody = new AtomicReference<>();
+    private final AtomicReference<String> lastHeader = new AtomicReference<>();
 
     @BeforeEach
     void start() throws IOException {
@@ -40,6 +43,17 @@ class CliRunIntegrationTest {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/hello", exchange -> {
             byte[] body = "hello-http".getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.createContext("/curl", exchange -> {
+            lastMethod.set(exchange.getRequestMethod());
+            lastBody.set(new String(exchange.getRequestBody().readAllBytes(),
+                    StandardCharsets.UTF_8));
+            lastHeader.set(exchange.getRequestHeaders().getFirst("X-Test"));
+            byte[] body = ("method=" + exchange.getRequestMethod()
+                    + ";body=" + lastBody.get()).getBytes(StandardCharsets.UTF_8);
             exchange.sendResponseHeaders(200, body.length);
             exchange.getResponseBody().write(body);
             exchange.close();
@@ -94,6 +108,33 @@ class CliRunIntegrationTest {
             Json.parse(line);
         }
         assertFalse(Files.readString(report).contains("zip-content"));
+    }
+
+    @Test
+    void runsCurlTaskWithAssignmentsAndExpectedBody() throws Exception {
+        Path script = tempDir.resolve("curl.groovy");
+        Files.writeString(script, """
+                task('request', Curl) {
+                    serverUrl = '%s/curl'
+                    method = 'POST'
+                    expectedStatusCode = 200
+                    expectedBody = 'method=POST'
+                    headers = ['X-Test': 'yes']
+                    data = 'hello'
+                }
+                defaults 'request'
+                """.formatted(base), StandardCharsets.UTF_8);
+        Path report = tempDir.resolve("curl-report.json");
+
+        Result result = cli().run("run", script.toString(),
+                "--work-dir", tempDir.resolve("curl-work").toString(),
+                "--report", report.toString());
+
+        assertEquals(0, result.code(), result.err());
+        assertEquals("POST", lastMethod.get());
+        assertEquals("hello", lastBody.get());
+        assertEquals("yes", lastHeader.get());
+        assertTrue(Files.readString(report).contains("SUCCEEDED"));
     }
 
     @Test

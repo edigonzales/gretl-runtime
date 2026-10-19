@@ -11,7 +11,7 @@
   <artifactId>gretl-basic-tasks</artifactId>
   <packaging>jar</packaging>
   <name>GRETL Basic Tasks</name>
-  <description>HttpDownload, Extract and SqlExecutor task library.</description>
+  <description>HttpDownload, Curl, Extract and SqlExecutor task library.</description>
   <dependencies>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>

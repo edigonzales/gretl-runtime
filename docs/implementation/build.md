@@ -43,9 +43,9 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Runbericht, Logback-Bridge, 18 Tests,
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
-7. **gretl-basic-tasks** — HTTP, ZIP/GZIP, SQL, Provider, 23 Tests,
+7. **gretl-basic-tasks** — HTTP, Curl, ZIP/GZIP, SQL, Provider, 32 Tests,
 8. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
-   AsciiDoc-Tabellen, Distribution-nahe Integration, 58 Tests,
+   AsciiDoc-Tabellen, Curl-Integration, Distribution-nahe Integration, 59 Tests,
 9. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
 10. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
 11. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
@@ -53,7 +53,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
     und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests.
 
-Erwartet: **300 Tests**, 0 Fehler, `BUILD SUCCESS`.
+Erwartet: **310 Tests**, 0 Fehler, `BUILD SUCCESS`.
 
 ### Artefakte
 
@@ -231,6 +231,16 @@ Logging-Lücke ausgewiesen.
   Symlinks bleiben als Ziel unzulässig.
 - Sichere Fehlerdiagnose mit Methode/Origin/Status/Bytes/Phase.
 
+### Curl
+
+- Eigener HTTP-Request-/Response-Task, nicht Teil von `HttpDownload`.
+- GET/POST, Text-/Binär-/Multipart-Body, Basic Auth, Header mit
+  `SecretValue`, exakter `expectedStatusCode`, optionaler `expectedBody`.
+- Response maximal `maxBytes` (Default 16 MiB); Output optional und atomar;
+  ohne `overwrite` wird eine vorhandene Datei nicht ersetzt.
+- Redirects aus, kein Auto-Retry, Passwort nicht im Klartext, kein Body-Dump
+  in Fehlern. Ergebnisse: `status`, `bytes`, `outputFile`.
+
 ### Extract
 
 - ZIP/GZIP-Modus explizit; 4-GiB- und 10'000-Eintrag-Default.
@@ -284,7 +294,7 @@ Dollar-Quote, Prepared-Apostroph/null und Rollback nach dem zweiten Fehler.
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **304 Tests** (300 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **314 Tests** (310 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.

@@ -16,7 +16,7 @@
     "gretl-packager",
     "gretl-job-runtime"
   ],
-  "tasks": ["HttpDownload", "Extract", "SqlExecutor", "IliValidator"],
+  "tasks": ["HttpDownload", "Curl", "Extract", "SqlExecutor", "IliValidator"],
   "extensionDirectory": "lib/extensions",
   "taskArtifacts": [
     "gretl-basic-tasks-${project.version}.jar",

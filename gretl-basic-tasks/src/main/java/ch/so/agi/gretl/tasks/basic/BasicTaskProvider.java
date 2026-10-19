@@ -11,6 +11,7 @@ public final class BasicTaskProvider implements OperationProvider {
     public Collection<OperationType<?, ?>> operations() {
         return List.of(
                 HttpDownloadOperation.type(),
+                CurlOperation.type(),
                 ExtractOperation.type(),
                 SqlExecutorOperation.type());
     }

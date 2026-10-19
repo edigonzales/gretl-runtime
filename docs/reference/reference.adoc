@@ -187,6 +187,77 @@ Die Property-Tabelle fasst die Felder zusammen:
 
 include::generated/task-httpdownload.adoc[]
 
+=== Curl
+
+`Curl` führt genau eine HTTP-Anfrage aus und prüft die Antwort. Der Task ist
+für API-Aufrufe, Uploads, Token-Abrufe und Response-Assertions gedacht. Im
+Gegensatz zu `HttpDownload` ist das Ziel optional und der Status wird exakt
+geprüft.
+
+[cols="2,3,3",options="header"]
+|===
+|Aspekt |`HttpDownload` |`Curl`
+|Rolle |Datei herunterladen und sicher veröffentlichen |HTTP-Anfrage ausführen und Antwort prüfen
+|Ausgabe |`output` Pflicht |`outputFile` optional
+|Request-Body |`bodyText` nur POST |`data`, `dataBinary` oder `formData` (multipart)
+|Authentifizierung |Header mit Text/`SecretValue` |Basic Auth plus Header/`SecretValue`
+|Response-Prüfung |Status 2xx, `maxBytes`, SHA-256 |exakter `expectedStatusCode`, `expectedBody`
+|Ergebnisse |`file`, `finalUri`, `status`, `bytes`, `sha256` |`status`, `bytes`, `outputFile`
+|===
+
+Ein Token-Abruf mit Text-Body und optionaler Zieldatei:
+
+[source,groovy]
+----
+task('token', Curl) {
+    serverUrl = 'https://example.invalid/oauth2/token'
+    method = 'POST'
+    expectedStatusCode = 200
+    data = 'grant_type=client_credentials'
+    user = 'api-user'
+    password = secret('apiPassword')
+    outputFile = workPath('token.json')
+}
+----
+
+Ein Multipart-Upload mit Text- und Dateifeld:
+
+[source,groovy]
+----
+task('upload', Curl) {
+    serverUrl = 'https://example.invalid/import'
+    method = 'POST'
+    expectedStatusCode = 200
+    expectedBody = '"success":true'
+    formData = [
+        topic: 'npl',
+        lv95_file: file('data.xtf.zip'),
+        publish: 'true'
+    ]
+}
+----
+
+Genau eines von `data`, `dataBinary` und `formData` ist zulässig. Ohne
+`method` wird GET für Anfragen ohne Body und POST für Anfragen mit Body
+verwendet; GET zusammen mit einem Body ist ein Fehler. Redirects werden nicht
+verfolgt, und ein fehlgeschlagener Request wird nicht automatisch wiederholt.
+
+Der Response-Body wird höchstens bis `maxBytes` gelesen (Vorgabe 16 MiB). Ein
+Status ausserhalb des erwarteten Codes, ein nicht gefundener `expectedBody`
+oder eine überschrittene Grenze führen zu einem Taskfehler. `outputFile` wird
+erst nach erfolgreicher Prüfung atomar veröffentlicht; vorhandene Dateien
+werden ohne `overwrite = true` nicht ersetzt. Ohne `outputFile` wird der Body
+nach der Prüfung verworfen und ist kein Resultatfeld.
+
+`password` ist ein `SecretValue` aus `secret('alias')` und erscheint nicht im
+Klartext in Logs oder Fehlern. Ein expliziter `Authorization`-Header und Basic
+Auth schliessen sich aus.
+
+Ergebnisse sind `status`, `bytes` und `outputFile` (nullable). Die
+Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-curl.adoc[]
+
 === Extract
 
 `Extract` entpackt ein ZIP- oder GZIP-Archiv. Der Modus wird ausdrücklich über
