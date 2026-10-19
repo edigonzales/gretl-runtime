@@ -1,0 +1,49 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*accessKey* = text#
+| [.acronym]#S3#-Zugriffsschluessel
+| [.required]#ja#
+
+| [.dsl-signature]#*secretKey* = secret#
+| Geheimer [.acronym]#S3#-Schluessel aus einem Secret-Alias
+| [.required]#ja#
+
+| [.dsl-signature]#*endpoint* = text#
+| [.acronym]#S3#-Endpunkt-URL
+| [.optional]#nein#
+
+| [.dsl-signature]#*region* = text#
+| [.acronym]#S3#-Region
+| [.optional]#nein#
+
+| [.dsl-signature]#*bucketName* = text#
+| [.acronym]#S3#-Bucket-Name
+| [.required]#ja#
+
+| [.dsl-signature]#*sourceFile* = path#
+| Einzelne hochzuladende Datei
+| [.optional]#nein#
+
+| [.dsl-signature]#*sourceDir* = path#
+| Verzeichnis, dessen direkte Dateien hochgeladen werden
+| [.optional]#nein#
+
+| [.dsl-signature]#*sourceFiles* = list#
+| Hochzuladende Dateien
+| [.optional]#nein#
+
+| [.dsl-signature]#*acl* = text#
+| [.acronym]#S3#-Canned-ACL
+| [.optional]#nein#
+
+| [.dsl-signature]#*contentType* = text#
+| Content-Type der hochgeladenen Objekte
+| [.optional]#nein#
+
+| [.dsl-signature]#*metadata* = map#
+| [.acronym]#S3#-Objekt-Metadaten
+| [.optional]#nein#
+
+|===

@@ -28,7 +28,7 @@ oder einen In-Process-Mock abbilden lassen.
 | PostGIS | noch keine DB-Task | Container ist vorbereitet; echte PostGIS-Tasktests folgen mit `Ili2pg*`/Geodaten |
 | FTP | `MockFtpServer` in `FtpOperationTest` | `FtpTaskFamilyIT` mit `delfer/alpine-ftp-server` |
 | HTTP/Curl | JDK-`HttpServer` | derzeit kein Container nötig; Host-Tests decken den Netzwerkpfad ab |
-| S3 | noch keine S3-Tasks | Floci/Testcontainers folgt mit Welle 3 |
+| S3 | keine Unit-Server; Builder-/Pfadtests | `S3TaskFamilyIT` mit Floci/Testcontainers |
 | XSLT/Gzip | lokale Temp-Dateien | kein Backing-Service |
 | INTERLIS-Validierung | lokale Modelle/XTF | kein Backing-Service |
 | DuckDB | dateibasiert | kein Docker; Extension-Fixture erst bei Bedarf |
@@ -70,16 +70,18 @@ schlägt das Profil mit einem klaren Fehler fehl; es gibt kein stilles Skip.
 ### FTP
 
 - Image: `docker.io/delfer/alpine-ftp-server` mit gepinntem Digest.
-- Fester Control-Port und fester Passive-Port pro Testlauf, damit
+- Dynamischer Control-Port und fester Passive-Port pro Testlauf, damit
   Passive-Mode-Datenverbindungen deterministisch sind.
 - Pro Test ein Lease-Verzeichnis unter `/home/gretl/<token>`; Cleanup löscht
   Dateien und Verzeichnis rekursiv.
 - `MockFtpServer` bleibt für schnelle Protokoll-/Fehlerfälle im Standardbuild.
 
-### S3 (geplant, Welle 3)
+### S3
 
 - Floci `io.floci:testcontainers-floci:1.10.0` mit `floci/floci:latest`.
 - Source-/Target-Buckets pro Lease; Cleanup aller Objekte und Buckets.
+- Der Test prüft Upload/Download/Delete/Bucket2Bucket, ACL, Content-Type,
+  Metadaten und Secret-Redaction über echte Groovy-Jobs.
 - Die fehlende Digest-Override-API von Floci 1.10.0 wird als Contract
   dokumentiert; kein falsches „digest-gepinnt“-Versprechen.
 
@@ -107,13 +109,14 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**342 Tests** (334 Standard + 4 GeoTools + 4 Backing-Services).
+**349 Tests** (339 Standard + 4 GeoTools + 6 Backing-Services).
 
 ## Grenzen
 
 - Der Standardbuild testet weiterhin keine echte PostgreSQL-/PostGIS-Dialektik;
   dafür ist das Profil zuständig.
-- S3- und PostGIS-Tasktests existieren erst mit den jeweiligen Migrationswellen.
+- PostGIS-Tasktests existieren erst mit den Geodaten-/Ili2pg-Wellen; der
+  PostGIS-Container steht bereits bereit.
 - HTTP-Container werden erst benötigt, wenn Jobs aus einem Runtime-Image gegen
   den Fixture-Host laufen; die aktuellen Host-Tests nutzen den JDK-`HttpServer`.
 - Die Integrationstests laufen sequenziell (`forkCount=1`), damit geteilte

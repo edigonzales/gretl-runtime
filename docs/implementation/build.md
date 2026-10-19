@@ -44,7 +44,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
 7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Provider, 38 Tests,
-8. **gretl-core-tasks** — XSLT, FTP, Saxon, Commons Net, 18 Tests,
+8. **gretl-core-tasks** — XSLT, FTP, S3, Saxon, Commons Net, AWS SDK, 23 Tests,
 9. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
    AsciiDoc-Tabellen, Curl-Integration, Distribution-nahe Integration, 59 Tests,
 10. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
@@ -54,10 +54,10 @@ export PATH="$JAVA_HOME/bin:$PATH"
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
     und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests,
 14. **gretl-integration-tests** — nur mit `-Pbacking-services`:
-    PostgreSQL/PostGIS und echter FTP-Container, 4 Failsafe-Tests.
+    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, 6 Failsafe-Tests.
 
-Erwartet: **334 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
-`backing-services` ergänzt 4 Docker-backed Integrationstests; Details stehen in
+Erwartet: **339 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+`backing-services` ergänzt 6 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
 ### Artefakte
@@ -278,6 +278,19 @@ Logging-Lücke ausgewiesen.
 - Ergebnisse: Dateilisten, Bytes, entfernter Pfad bzw. Löschzähler; keine
   Passwort- oder Inhaltslogs, keine automatischen Retries.
 
+### S3-Tasks
+
+- `S3Download`, `S3Upload`, `S3Delete` und `S3Bucket2Bucket` teilen
+  `accessKey`, `secretKey` (SecretValue), `endpoint` und `region`.
+- Upload akzeptiert `sourceFile`, `sourceDir` (nur direkte Dateien) oder
+  `sourceFiles`; Objekt-Schlüssel sind Dateinamen, Duplikate werden abgewiesen.
+- Download schützt lokale Pfade, unterstützt `key` oder den ganzen Bucket und
+  schreibt atomar; `overwrite` defaultet auf `true`.
+- Delete und Bucket2Bucket arbeiten paginiert; Ergebnisse sind Schlüssel und
+  Zähler. `acl` defaultet auf `private`.
+- AWS SDK v2 nutzt den URL-Connection-Client, damit die Job-JAR frei von
+  Netty-/Apache-HTTP-4-Konflikten bleibt.
+
 ### Extract
 
 - ZIP/GZIP-Modus explizit; 4-GiB- und 10'000-Eintrag-Default.
@@ -320,7 +333,7 @@ Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
 Der frühere manuelle `PostgresLiveIT` bleibt als optionaler Fallback
 (`-Dtest=PostgresLiveIT -Dgretl.postgres.*=...`) erhalten, ist aber nicht das
-Gate. Kombiniert mit GeoTools und Backing-Services werden **342 Tests**
+Gate. Kombiniert mit GeoTools und Backing-Services werden **349 Tests**
 ausgeführt. Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
@@ -329,7 +342,7 @@ ausgeführt. Die vollständige Teststrategie steht in [`testing.md`](testing.md)
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **338 Tests** (334 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **343 Tests** (339 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.
@@ -344,7 +357,7 @@ Bestandteil der Scriptdistribution.
 | `gretl-i18n` | englischer Quellkatalog, deutscher Katalog | ja |
 | `gretl-logging` | Events, Redaction, Report | ja |
 | `gretl-basic-tasks` | HTTP/Curl/Gzip/Extract/SQL | ja |
-| `gretl-core-tasks` | XSLT, FTP, Saxon, Commons Net | ja |
+| `gretl-core-tasks` | XSLT, FTP, S3, Saxon, Commons Net, AWS SDK | ja |
 | `gretl-ilivalidator` | reale INTERLIS-Validierung (B) | ja |
 | `gretl-cli` | CLI/Config/Hilfe/Orchestrierung | ja |
 | `examples/file-size-extension` | separat gebautes Erweiterungs-JAR | ja |
@@ -354,7 +367,8 @@ Bestandteil der Scriptdistribution.
 Zentrale Versionen: Groovy 6.0.0 (`groovy`, `groovy-json`), SLF4J 2.0.20,
 Logback 1.6.5, Commons Compress 1.27.1, pgJDBC 42.7.14, H2 2.3.232 (nur Test),
 ilivalidator 1.15.0 / ehibasics 1.4.1, Saxon 11.4, xmlresolver 4.4.3,
-Commons Net 3.6, Testcontainers 1.21.4 (nur `backing-services`),
+Commons Net 3.6, AWS SDK v2 2.15.64 (URL-Connection-Client),
+Testcontainers 1.21.4 (nur `backing-services`), Floci 1.10.0 (nur Test),
 JUnit 5.14.4, GeoTools 35.2 (nur Profil).
 
 Zusätzliche Plugins: `maven-assembly-plugin` 3.7.1 für die Distribution,

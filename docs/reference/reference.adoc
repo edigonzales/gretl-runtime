@@ -446,6 +446,103 @@ Die Property-Tabelle fasst die Felder zusammen:
 
 include::generated/task-ftpdelete.adoc[]
 
+=== S3Download
+
+`S3Download` lädt ein Objekt oder alle Objekte eines Buckets herunter. Die
+S3-Verbindung wird direkt am Task konfiguriert; `secretKey` muss als
+SecretValue über `secret('alias')` kommen.
+
+[source,groovy]
+----
+task('download', S3Download) {
+    accessKey = 'AKIA...'
+    secretKey = secret('s3SecretKey')
+    bucketName = 'my-bucket'
+    key = 'data/export.zip'
+    downloadDir = workPath('download')
+}
+----
+
+Ohne `key` werden alle Objekte geladen. Objekt-Schlüssel mit `/` bilden
+Unterverzeichnisse; Schlüssel, die aus dem Download-Verzeichnis ausbrechen
+würden, werden abgewiesen. Vorhandene Dateien werden mit `overwrite = true`
+(Default) ersetzt. Ergebnisse sind `files`, `count` und `bytes`.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-s3download.adoc[]
+
+=== S3Upload
+
+`S3Upload` lädt eine Datei, die direkten Dateien eines Verzeichnisses oder eine
+Dateiliste hoch. Der Objekt-Schlüssel ist jeweils der Dateiname; doppelte
+Dateinamen werden abgewiesen.
+
+[source,groovy]
+----
+task('upload', S3Upload) {
+    accessKey = 'AKIA...'
+    secretKey = secret('s3SecretKey')
+    bucketName = 'my-bucket'
+    sourceFile = file('data/export.zip')
+    acl = 'private'
+}
+----
+
+`sourceDir` liest nur direkte Dateien, nicht rekursiv. `contentType` und
+`metadata` gelten für alle hochgeladenen Objekte. `acl` ist optional und
+defaultet auf `private`. Ergebnisse sind `keys`, `count` und `bytes`.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-s3upload.adoc[]
+
+=== S3Delete
+
+`S3Delete` löscht ein Objekt oder alle Objekte eines Buckets.
+
+[source,groovy]
+----
+task('delete', S3Delete) {
+    accessKey = 'AKIA...'
+    secretKey = secret('s3SecretKey')
+    bucketName = 'my-bucket'
+    key = 'data/old.zip'
+}
+----
+
+Ohne `key` werden alle Objekte gelöscht. Das ist eine bewusste
+Massenlöschung; der Task liefert die gelöschten Schlüssel als `keys` und
+`count` zurück.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-s3delete.adoc[]
+
+=== S3Bucket2Bucket
+
+`S3Bucket2Bucket` kopiert alle Objekte von einem Quell- in einen Ziel-Bucket.
+Quell- und Ziel-Bucket verwenden dieselbe S3-Verbindung.
+
+[source,groovy]
+----
+task('copy', S3Bucket2Bucket) {
+    accessKey = 'AKIA...'
+    secretKey = secret('s3SecretKey')
+    sourceBucket = 'source-bucket'
+    targetBucket = 'target-bucket'
+    acl = 'private'
+}
+----
+
+Mit `metadata` werden die Metadaten der kopierten Objekte ersetzt; ohne
+`metadata` bleiben sie erhalten. `acl` ist optional und defaultet auf
+`private`. Ergebnisse sind `keys` und `count`.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-s3bucket2bucket.adoc[]
+
 === SqlExecutor
 
 `SqlExecutor` führt SQL-Scripts oder vorbereitete Statements gegen eine

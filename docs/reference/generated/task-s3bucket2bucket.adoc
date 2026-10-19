@@ -1,0 +1,37 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*accessKey* = text#
+| [.acronym]#S3#-Zugriffsschluessel
+| [.required]#ja#
+
+| [.dsl-signature]#*secretKey* = secret#
+| Geheimer [.acronym]#S3#-Schluessel aus einem Secret-Alias
+| [.required]#ja#
+
+| [.dsl-signature]#*endpoint* = text#
+| [.acronym]#S3#-Endpunkt-URL
+| [.optional]#nein#
+
+| [.dsl-signature]#*region* = text#
+| [.acronym]#S3#-Region
+| [.optional]#nein#
+
+| [.dsl-signature]#*sourceBucket* = text#
+| Quell-S3-Bucket
+| [.required]#ja#
+
+| [.dsl-signature]#*targetBucket* = text#
+| Ziel-S3-Bucket
+| [.required]#ja#
+
+| [.dsl-signature]#*acl* = text#
+| [.acronym]#S3#-Canned-ACL
+| [.optional]#nein#
+
+| [.dsl-signature]#*metadata* = map#
+| Ersatz-Metadaten fuer kopierte Objekte
+| [.optional]#nein#
+
+|===

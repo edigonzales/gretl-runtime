@@ -51,6 +51,8 @@
     <commons-net.version>3.6</commons-net.version>
     <mockftpserver.version>2.7.1</mockftpserver.version>
     <testcontainers.version>1.21.4</testcontainers.version>
+    <testcontainers-floci.version>1.10.0</testcontainers-floci.version>
+    <aws-sdk.version>2.15.64</aws-sdk.version>
     <commons-compress.version>1.27.1</commons-compress.version>
   </properties>
 

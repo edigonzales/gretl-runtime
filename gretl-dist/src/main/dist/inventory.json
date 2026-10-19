@@ -17,7 +17,7 @@
     "gretl-packager",
     "gretl-job-runtime"
   ],
-  "tasks": ["HttpDownload", "Curl", "Gzip", "Extract", "FtpList", "FtpDownload", "FtpUpload", "FtpDelete", "SqlExecutor", "XslTransformer", "IliValidator"],
+  "tasks": ["HttpDownload", "Curl", "Gzip", "Extract", "FtpList", "FtpDownload", "FtpUpload", "FtpDelete", "S3Download", "S3Upload", "S3Delete", "S3Bucket2Bucket", "SqlExecutor", "XslTransformer", "IliValidator"],
   "extensionDirectory": "lib/extensions",
   "taskArtifacts": [
     "gretl-basic-tasks-${project.version}.jar",
@@ -34,7 +34,8 @@
     "ilivalidator": "1.15.0",
     "saxon": "11.4",
     "xmlresolver": "4.4.3",
-    "commons-net": "3.6"
+    "commons-net": "3.6",
+    "aws-sdk": "2.15.64"
   },
   "sourceRevision": "working-tree; release build must provide the source commit",
   "checksumsFile": "SHA256SUMS"

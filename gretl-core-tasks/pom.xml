@@ -11,7 +11,7 @@
   <artifactId>gretl-core-tasks</artifactId>
   <packaging>jar</packaging>
   <name>GRETL Core Tasks</name>
-  <description>XSLT and FTP task library, with future core task families.</description>
+  <description>XSLT, FTP and S3 task library, with future core task families.</description>
 
   <dependencies>
     <dependency>
@@ -39,6 +39,26 @@
       <groupId>commons-net</groupId>
       <artifactId>commons-net</artifactId>
       <version>${commons-net.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>${aws-sdk.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>netty-nio-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>apache-client</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>url-connection-client</artifactId>
+      <version>${aws-sdk.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>

@@ -14,8 +14,9 @@ placed in `lib/extensions` before the next start. No Maven or Gradle is needed
 at job runtime.
 
 The standard catalog of this release is `HttpDownload`, `Curl`, `Gzip`,
-`Extract`, `FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete`,
-`SqlExecutor`, `XslTransformer` and `IliValidator`. Stufe A remains separately usable because the
+`Extract`, `FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete`, `S3Download`,
+`S3Upload`, `S3Delete`, `S3Bucket2Bucket`, `SqlExecutor`, `XslTransformer`
+and `IliValidator`. Stufe A remains separately usable because the
 task libraries are separate modules. Publisher and XtfToGpkg are not registered
 stubs.
 

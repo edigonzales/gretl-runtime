@@ -23,20 +23,14 @@ final class FtpFixture implements AutoCloseable {
     private static final String USER = "gretl";
     private static final String PASSWORD = "gretl-pass";
     private FixedHostPortGenericContainer<?> container;
-    private int controlPort;
 
     FtpFixture() {
         RuntimeException last = null;
         for (int attempt = 0; attempt < 3; attempt++) {
-            int control = freePort();
             int passive = freePort();
-            while (passive == control) {
-                passive = freePort();
-            }
             FixedHostPortGenericContainer<?> candidate = new FixedHostPortGenericContainer<>(
                     DockerImageName.parse(IMAGE).toString())
                     .withExposedPorts(21)
-                    .withFixedExposedPort(control, 21)
                     .withFixedExposedPort(passive, passive)
                     .withEnv("USERS", USER + "|" + PASSWORD + "|/home/gretl")
                     .withEnv("ADDRESS", "127.0.0.1")
@@ -48,7 +42,6 @@ final class FtpFixture implements AutoCloseable {
             try {
                 candidate.start();
                 container = candidate;
-                controlPort = control;
                 return;
             } catch (RuntimeException failure) {
                 last = failure;
@@ -77,7 +70,7 @@ final class FtpFixture implements AutoCloseable {
     }
 
     String server() {
-        return "127.0.0.1:" + controlPort;
+        return "127.0.0.1:" + container.getMappedPort(21);
     }
 
     String user() {
@@ -194,10 +187,10 @@ final class FtpFixture implements AutoCloseable {
 
     private FTPClient connect() throws IOException {
         IOException last = null;
-        for (int attempt = 0; attempt < 5; attempt++) {
+        for (int attempt = 0; attempt < 20; attempt++) {
             FTPClient client = new FTPClient();
             try {
-                client.connect("127.0.0.1", controlPort);
+                client.connect("127.0.0.1", container.getMappedPort(21));
                 if (!client.login(USER, PASSWORD)) {
                     throw new IOException("FTP fixture login failed");
                 }
@@ -207,7 +200,7 @@ final class FtpFixture implements AutoCloseable {
             } catch (IOException exception) {
                 last = exception;
                 disconnectQuietly(client);
-                sleep(200);
+                sleep(250);
             }
         }
         throw new IOException("FTP fixture is not reachable", last);

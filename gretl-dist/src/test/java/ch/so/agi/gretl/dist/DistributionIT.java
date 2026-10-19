@@ -66,6 +66,10 @@ class DistributionIT {
         assertTrue(operations.out().contains("FtpDownload"));
         assertTrue(operations.out().contains("FtpUpload"));
         assertTrue(operations.out().contains("FtpDelete"));
+        assertTrue(operations.out().contains("S3Download"));
+        assertTrue(operations.out().contains("S3Upload"));
+        assertTrue(operations.out().contains("S3Delete"));
+        assertTrue(operations.out().contains("S3Bucket2Bucket"));
         assertTrue(operations.out().contains("IliValidator"));
         assertTrue(!operations.out().contains("FileSize"));
 

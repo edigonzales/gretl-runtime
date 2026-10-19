@@ -1,0 +1,37 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*accessKey* = text#
+| [.acronym]#S3#-Zugriffsschluessel
+| [.required]#ja#
+
+| [.dsl-signature]#*secretKey* = secret#
+| Geheimer [.acronym]#S3#-Schluessel aus einem Secret-Alias
+| [.required]#ja#
+
+| [.dsl-signature]#*endpoint* = text#
+| [.acronym]#S3#-Endpunkt-URL
+| [.optional]#nein#
+
+| [.dsl-signature]#*region* = text#
+| [.acronym]#S3#-Region
+| [.optional]#nein#
+
+| [.dsl-signature]#*bucketName* = text#
+| [.acronym]#S3#-Bucket-Name
+| [.required]#ja#
+
+| [.dsl-signature]#*key* = text#
+| Objekt-Schluessel; leer bedeutet alle Objekte
+| [.optional]#nein#
+
+| [.dsl-signature]#*downloadDir* = path#
+| Lokales Download-Verzeichnis
+| [.required]#ja#
+
+| [.dsl-signature]#*overwrite* = boolean#
+| Vorhandene lokale Dateien ersetzen
+| [.optional]#nein#
+
+|===
