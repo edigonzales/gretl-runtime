@@ -331,10 +331,8 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Der frühere manuelle `PostgresLiveIT` bleibt als optionaler Fallback
-(`-Dtest=PostgresLiveIT -Dgretl.postgres.*=...`) erhalten, ist aber nicht das
-Gate. Kombiniert mit GeoTools und Backing-Services werden **349 Tests**
-ausgeführt. Die vollständige Teststrategie steht in [`testing.md`](testing.md).
+Kombiniert mit GeoTools und Backing-Services werden **349 Tests** ausgeführt.
+Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
 
@@ -408,8 +406,9 @@ Erweiterungs-JAR im isolierten Distributionslauf.
   Report-Inventarhash bleibt ein Katalogfingerabdruck, kein Hash aller JARs.
 - Heartbeat, Progress-Koaleszenz, taskgebundene MDC-Anreicherung und ein
   SIGTERM-/Flush-IT sind offene Logging-Arbeiten.
-- PostgreSQL-Live ist optional; Standardtests nutzen H2. Commit-Unbekanntheit
-  nach Verbindungsverlust ist nicht fault-injiziert.
+- Standardtests nutzen H2; der echte PostgreSQL-Lauf ist Teil des
+  Docker-backed `backing-services`-Gates. Commit-Unbekanntheit nach
+  Verbindungsverlust ist nicht fault-injiziert.
 - M5 enthält keine EHI-spezifische Feldbrücke, keinen Massen-Sampling-Test und
   keine separate Validator-JVM.
 - Der M6-Packager löst im ersten Profil keine Maven-Koordinaten auf, sondern

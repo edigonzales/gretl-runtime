@@ -33,9 +33,8 @@ oder einen In-Process-Mock abbilden lassen.
 | INTERLIS-Validierung | lokale Modelle/XTF | kein Backing-Service |
 | DuckDB | dateibasiert | kein Docker; Extension-Fixture erst bei Bedarf |
 
-Der frühere manuelle `PostgresLiveIT` bleibt als optionaler Fallback für
-Umgebungen ohne Docker erhalten. Er ist **nicht** das Gate und wird nicht im
-Standardbuild ausgeführt.
+Der reale PostgreSQL-Nachweis ist ausschließlich `PostgresSqlExecutorIT` im
+Profil `backing-services`.
 
 ## Integrationstests ausführen
 

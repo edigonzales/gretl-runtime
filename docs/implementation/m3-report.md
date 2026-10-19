@@ -166,6 +166,9 @@ Apostroph/null als PreparedStatement sowie Rollback nach dem zweiten Fehler
 bestanden. Der Standardbuild verwendet H2 als lokale Testdatenbank; der
 PostgreSQL-Lauf ist als optionaler `PostgresLiveIT` dokumentiert.
 
+> **Hinweis:** Der hier dokumentierte `PostgresLiveIT` wurde später entfernt.
+> Aktueller Nachweis ist `PostgresSqlExecutorIT` im `backing-services`-Profil.
+
 ## 6. Distribution, Erweiterungen und Beispiele
 
 `gretl-dist` erzeugt ein ZIP/TAR.GZ mit:
