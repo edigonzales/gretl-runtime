@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test;
 
 class BasicTaskProviderTest {
     @Test
-    void serviceLoaderExposesTheSevenStandardTasks() {
+    void serviceLoaderExposesTheThirteenStandardTasks() {
         OperationRegistry registry = OperationRegistry.load(getClass().getClassLoader());
-        assertEquals(7, registry.all().size());
+        assertEquals(13, registry.all().size());
         assertEquals("HttpDownload", registry.requireSymbol("HttpDownload").symbol());
         assertEquals("Curl", registry.requireSymbol("Curl").symbol());
         assertEquals("Gzip", registry.requireSymbol("Gzip").symbol());
@@ -22,6 +22,12 @@ class BasicTaskProviderTest {
         assertEquals("Db2Db", registry.requireSymbol("Db2Db").symbol());
         assertEquals("DuckDbSqlExecutor",
                 registry.requireSymbol("DuckDbSqlExecutor").symbol());
+        assertEquals("Csv2Excel", registry.requireSymbol("Csv2Excel").symbol());
+        assertEquals("CsvImport", registry.requireSymbol("CsvImport").symbol());
+        assertEquals("CsvExport", registry.requireSymbol("CsvExport").symbol());
+        assertEquals("JsonImport", registry.requireSymbol("JsonImport").symbol());
+        assertEquals("CsvValidator", registry.requireSymbol("CsvValidator").symbol());
+        assertEquals("JsonValidator", registry.requireSymbol("JsonValidator").symbol());
         assertEquals("SqlExecutor", registry.requireSymbol("SqlExecutor").symbol());
         assertFalse(registry.all().stream().anyMatch(operation ->
                 operation.symbol().equals("Publisher")));

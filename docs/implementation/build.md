@@ -43,7 +43,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Runbericht, Logback-Bridge, 18 Tests,
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
-7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB-Föderation, Provider, 51 Tests,
+7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB-Föderation, CSV/JSON/Excel, Provider, 56 Tests,
 8. **gretl-core-tasks** — XSLT, FTP, S3, Saxon, Commons Net, AWS SDK, 23 Tests,
 9. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
    AsciiDoc-Tabellen, Curl-/SQL-/DuckDB-Integration, Distribution-nahe Integration, 60 Tests,
@@ -54,10 +54,10 @@ export PATH="$JAVA_HOME/bin:$PATH"
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
     und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests,
 14. **gretl-integration-tests** — nur mit `-Pbacking-services`:
-    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, 18 Failsafe-Tests.
+    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, Tabellen/JSON, 19 Failsafe-Tests.
 
-Erwartet: **353 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
-`backing-services` ergänzt 18 Docker-backed Integrationstests; Details stehen in
+Erwartet: **358 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+`backing-services` ergänzt 19 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
 ### Artefakte
@@ -278,6 +278,20 @@ Logging-Lücke ausgewiesen.
 - Ergebnisse: Dateilisten, Bytes, entfernter Pfad bzw. Löschzähler; keine
   Passwort- oder Inhaltslogs, keine automatischen Retries.
 
+### CSV-/JSON-Tasks
+
+- `Csv2Excel` konvertiert CSV mit Apache POI nach XLSX; Trennzeichen,
+  Quote-Zeichen und Encoding sind konfigurierbar. INTERLIS-Modelle werden
+  nicht verwendet.
+- `CsvImport` und `CsvExport` arbeiten über `taskConfig`-Aliasse und JDBC.
+  Header werden case-insensitiv auf Zielspalten abgebildet; Import und Export
+  laufen in einer Transaktion.
+- `JsonImport` schreibt ein JSON-Objekt oder JSON-Array als Text in eine
+  Zielspalte und kann die Tabelle vorher leeren.
+- `CsvValidator` prüft Parsebarkeit, Spaltenkonsistenz und Header; `JsonValidator`
+  prüft die JSON-Syntax. Eine INTERLIS-Modellvalidierung ist noch nicht
+  Bestandteil der Runtime-Migration.
+
 ### Datenbank-Tasks
 
 - `Db2Db` löst Quell- und Zielverbindung über `taskConfig`-Aliasse auf; die
@@ -351,7 +365,7 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Kombiniert mit GeoTools und Backing-Services werden **375 Tests** ausgeführt.
+Kombiniert mit GeoTools und Backing-Services werden **381 Tests** ausgeführt.
 Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
@@ -360,7 +374,7 @@ Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **357 Tests** (353 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **362 Tests** (358 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.
@@ -374,7 +388,7 @@ Bestandteil der Scriptdistribution.
 | `gretl-groovy` | Groovy-6-DSL | ja |
 | `gretl-i18n` | englischer Quellkatalog, deutscher Katalog | ja |
 | `gretl-logging` | Events, Redaction, Report | ja |
-| `gretl-basic-tasks` | HTTP/Curl/Gzip/Extract/SQL/Db2Db/DuckDB | ja |
+| `gretl-basic-tasks` | HTTP/Curl/Gzip/Extract/SQL/Db2Db/DuckDB/CSV/JSON/Excel | ja |
 | `gretl-core-tasks` | XSLT, FTP, S3, Saxon, Commons Net, AWS SDK | ja |
 | `gretl-ilivalidator` | reale INTERLIS-Validierung (B) | ja |
 | `gretl-cli` | CLI/Config/Hilfe/Orchestrierung | ja |
@@ -386,6 +400,7 @@ Zentrale Versionen: Groovy 6.0.0 (`groovy`, `groovy-json`), SLF4J 2.0.20,
 Logback 1.6.5, Commons Compress 1.27.1, pgJDBC 42.7.14, H2 2.3.232 (nur Test),
 ilivalidator 1.15.0 / ehibasics 1.4.1, Saxon 11.4, xmlresolver 4.4.3,
 Commons Net 3.6, AWS SDK v2 2.15.64 (URL-Connection-Client), DuckDB 1.5.2.0,
+Commons CSV 1.12.0, Commons IO 2.18.0, Apache POI 5.2.5, Jackson 2.17.2,
 Testcontainers 1.21.4 (nur `backing-services`), Floci 1.10.0 (nur Test),
 JUnit 5.14.4, GeoTools 35.2 (nur Profil).
 

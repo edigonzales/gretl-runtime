@@ -17,7 +17,7 @@
     "gretl-packager",
     "gretl-job-runtime"
   ],
-  "tasks": ["HttpDownload", "Curl", "Gzip", "Extract", "FtpList", "FtpDownload", "FtpUpload", "FtpDelete", "S3Download", "S3Upload", "S3Delete", "S3Bucket2Bucket", "Db2Db", "DuckDbSqlExecutor", "SqlExecutor", "XslTransformer", "IliValidator"],
+  "tasks": ["HttpDownload", "Curl", "Gzip", "Extract", "FtpList", "FtpDownload", "FtpUpload", "FtpDelete", "S3Download", "S3Upload", "S3Delete", "S3Bucket2Bucket", "Db2Db", "DuckDbSqlExecutor", "Csv2Excel", "CsvImport", "CsvExport", "JsonImport", "CsvValidator", "JsonValidator", "SqlExecutor", "XslTransformer", "IliValidator"],
   "extensionDirectory": "lib/extensions",
   "taskArtifacts": [
     "gretl-basic-tasks-${project.version}.jar",
@@ -36,7 +36,11 @@
     "xmlresolver": "4.4.3",
     "commons-net": "3.6",
     "aws-sdk": "2.15.64",
-    "duckdb": "1.5.2.0"
+    "duckdb": "1.5.2.0",
+    "commons-csv": "1.12.0",
+    "commons-io": "2.18.0",
+    "poi": "5.2.5",
+    "jackson": "2.17.2"
   },
   "sourceRevision": "working-tree; release build must provide the source commit",
   "checksumsFile": "SHA256SUMS"

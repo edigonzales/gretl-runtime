@@ -1,0 +1,13 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*dataFiles* = list#
+| Zu validierende [.acronym]#JSON#-Dateien
+| [.required]#ja#
+
+| [.dsl-signature]#*failOnError* = boolean#
+| Task bei Validierungsfehler abbrechen
+| [.optional]#nein#
+
+|===

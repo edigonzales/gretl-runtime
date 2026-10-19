@@ -2,6 +2,7 @@ package ch.so.agi.gretl.it;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +27,7 @@ final class FtpFixture implements AutoCloseable {
 
     FtpFixture() {
         RuntimeException last = null;
-        for (int attempt = 0; attempt < 3; attempt++) {
+        for (int attempt = 0; attempt < 5; attempt++) {
             int passive = freePort();
             FixedHostPortGenericContainer<?> candidate = new FixedHostPortGenericContainer<>(
                     DockerImageName.parse(IMAGE).toString())
@@ -187,7 +188,7 @@ final class FtpFixture implements AutoCloseable {
 
     private FTPClient connect() throws IOException {
         IOException last = null;
-        for (int attempt = 0; attempt < 20; attempt++) {
+        for (int attempt = 0; attempt < 60; attempt++) {
             FTPClient client = new FTPClient();
             try {
                 client.connect("127.0.0.1", container.getMappedPort(21));

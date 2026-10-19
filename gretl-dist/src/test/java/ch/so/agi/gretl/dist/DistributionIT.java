@@ -72,6 +72,12 @@ class DistributionIT {
         assertTrue(operations.out().contains("S3Bucket2Bucket"));
         assertTrue(operations.out().contains("Db2Db"));
         assertTrue(operations.out().contains("DuckDbSqlExecutor"));
+        assertTrue(operations.out().contains("Csv2Excel"));
+        assertTrue(operations.out().contains("CsvImport"));
+        assertTrue(operations.out().contains("CsvExport"));
+        assertTrue(operations.out().contains("JsonImport"));
+        assertTrue(operations.out().contains("CsvValidator"));
+        assertTrue(operations.out().contains("JsonValidator"));
         assertTrue(operations.out().contains("IliValidator"));
         assertTrue(!operations.out().contains("FileSize"));
 

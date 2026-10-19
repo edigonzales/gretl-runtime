@@ -23,12 +23,18 @@ Im aktuellen Runtime-Katalog vorhanden:
 - `S3Bucket2Bucket`
 - `Db2Db`
 - `DuckDbSqlExecutor`
+- `Csv2Excel`
+- `CsvImport`
+- `CsvExport`
+- `JsonImport`
+- `CsvValidator`
+- `JsonValidator`
 - `SqlExecutor`
 - `XslTransformer`
 - `IliValidator`
 
-Damit sind **17 von 44** Operationen vorhanden. Aus `gretl-next` fehlen noch
-**27 Core-Tasks**. GeoTools, Publisher, XtfToGpkg und Native Image bleiben
+Damit sind **23 von 44** Operationen vorhanden. Aus `gretl-next` fehlen noch
+**21 Core-Tasks**. GeoTools, Publisher, XtfToGpkg und Native Image bleiben
 ausserhalb dieses Plans.
 
 ## Gruppierung und Lieferwellen
@@ -39,11 +45,11 @@ ausserhalb dieses Plans.
 | 2 | FTP | `FtpList` (erledigt), `FtpDownload` (erledigt), `FtpUpload` (erledigt), `FtpDelete` (erledigt) | Commons Net |
 | 3 | S3 | `S3Download` (erledigt), `S3Upload` (erledigt), `S3Delete` (erledigt), `S3Bucket2Bucket` (erledigt) | AWS SDK v2 |
 | 4 | Datenbank | `Db2Db` (erledigt), `DuckDbSqlExecutor` (Föderation erledigt) | JDBC, DuckDB |
-| 5 | Tabellarisch | `Csv2Excel`, `CsvImport`, `CsvExport`, `CsvValidator`, `JsonImport`, `JsonValidator` | POI, Jackson, iox-wkf, ilivalidator |
+| 5 | Tabellarisch | `Csv2Excel` (erledigt), `CsvImport` (erledigt), `CsvExport` (erledigt), `CsvValidator` (Struktur erledigt), `JsonImport` (erledigt), `JsonValidator` (Syntax erledigt) | POI, Jackson, CSV, ilivalidator |
 | 6 | Geodaten | `GpkgImport`, `GpkgExport`, `GpkgValidator`, `Gpkg2Shp`, `ShpImport`, `ShpExport`, `ShpValidator` | iox-wkf, JTS, Shapefile-Referenz |
 | 7 | INTERLIS/AV | `Ili2pgImportSchema`, `Ili2pgImport`, `Ili2pgExport`, `Ili2pgDelete`, `Ili2pgReplace`, `Ili2pgUpdate`, `Ili2pgValidate`, `Ili2gpkgImport`, `Ili2duckdbImportSchema`, `Ili2duckdbImport`, `Ili2duckdbExport`, `Av2ch`, `Av2geobau`, `Gpkg2Dxf` | ili2pg/ili2gpkg/ili2duckdb, av2ch, av2geobau |
 
-**Katalogstand:** 17 → 23 (W5) →
+**Katalogstand:** 23 → 30 (W6) →
 30 (W6) → 44 (W7).
 
 **Reihenfolge:** HTTP und einfache Dateien zuerst, dann Remote-Familien,
@@ -54,8 +60,9 @@ einer alphabetischen Taskliste.
 **Modulzuschnitt:** `Curl` und `Gzip` liegen im bestehenden
 `gretl-basic-tasks`; `XslTransformer`, die vier FTP-Tasks und die vier
 S3-Tasks liegen im neuen `gretl-core-tasks`. `Db2Db` und
-`DuckDbSqlExecutor` liegen bei den bestehenden JDBC-Tasks in
-`gretl-basic-tasks`. Die übrigen Gruppen kommen zunächst ebenfalls in
+`DuckDbSqlExecutor` sowie die sechs CSV-/JSON-Tasks liegen bei den
+bestehenden JDBC-/IO-Tasks in `gretl-basic-tasks`. Die übrigen Gruppen kommen
+zunächst ebenfalls in
 `gretl-core-tasks` mit Paketen je Gruppe. Ein Split in eigene Remote-/INTERLIS-Module erfolgt erst
 bei einem konkreten Dependency- oder Grössenproblem.
 
@@ -69,6 +76,7 @@ Der Standardbuild bleibt Docker-frei; echte Backing-Services laufen im Profil
 - S3: Floci/Testcontainers; seit Welle 3 aktiv.
 - PostgreSQL: Db2Db läuft im `backing-services`-Gate gegen einen echten Container.
 - DuckDB: dateibasiert/In-Memory; Föderation mit CSV/GPKG/PostgreSQL und Exporten.
+- Tabellarisch/JSON: CSV/Excel/JSON-Dateien über H2/PostgreSQL; Validatoren prüfen Struktur/Syntax, noch keine INTERLIS-Modellvalidierung.
 - HTTP: Host-Tests mit `HttpServer`; Container erst für Runtime-Image-Pfade.
 
 Eine Task gilt nicht als migriert, wenn sie einen Backing-Service nur mit H2
@@ -164,7 +172,9 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
 4. Welle 4 ist abgeschlossen: `Db2Db` und `DuckDbSqlExecutor` mit
    CSV-/GeoPackage-/PostgreSQL-Quellen, PostgreSQL-Zielen und
    Parquet-/GeoPackage-/XLSX-/PostgreSQL-Exporten.
-5. Welle 5 (tabellarische Formate) und danach Welle 6 (Geodaten) umsetzen.
-6. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die Shapefile-Regeln aus diesem
+5. Welle 5 ist abgeschlossen: CSV-/Excel-/JSON-Tasks; die Validatoren prüfen
+   Struktur/Syntax. Die INTERLIS-Modellvalidierung bleibt als Ausbaustufe offen.
+6. Welle 6 (Geodaten) umsetzen.
+7. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die Shapefile-Regeln aus diesem
    Dokument als Testfälle übernehmen, bevor die Tasks als migriert gelten.
-7. Vor Welle 6 den PostGIS-Tasktest ergänzen.
+8. Vor Welle 6 den PostGIS-Tasktest ergänzen.

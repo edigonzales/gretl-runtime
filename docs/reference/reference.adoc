@@ -625,6 +625,119 @@ Die Property-Tabelle fasst die Felder zusammen:
 
 include::generated/task-duckdbsqlexecutor.adoc[]
 
+=== Csv2Excel
+
+`Csv2Excel` konvertiert eine CSV-Datei in eine XLSX-Arbeitsmappe. Standard sind
+Semikolon als Trennzeichen, `"` als Quote-Zeichen und UTF-8.
+
+[source,groovy]
+----
+task('convert', Csv2Excel) {
+    csvFile = file('data/input.csv')
+    outputFile = file('build/output.xlsx')
+}
+----
+
+`firstLineIsHeader` defaultet auf `true`; die Kopfzeile wird als erste
+Excel-Zeile geschrieben. Ergebnisse sind `file` und `rows`.
+
+include::generated/task-csv2excel.adoc[]
+
+=== CsvImport
+
+`CsvImport` importiert eine CSV-Datei über einen `taskConfig`-Alias in eine
+Datenbanktabelle.
+
+[source,groovy]
+----
+task('import', CsvImport) {
+    database = 'db'
+    dataFile = file('data/input.csv')
+    tableName = 'colors'
+}
+----
+
+Mit `firstLineIsHeader = true` werden die CSV-Header den Zielspalten
+zugeordnet. Ohne Header müssen die CSV-Spalten der Zielspaltenreihenfolge
+entsprechen. `schemaName`, `encoding`, `valueDelimiter`, `valueSeparator` und
+`batchSize` sind optional. Ergebnis ist `rows`.
+
+include::generated/task-csvimport.adoc[]
+
+=== CsvExport
+
+`CsvExport` schreibt eine Datenbanktabelle oder ausgewählte Spalten in eine
+CSV-Datei.
+
+[source,groovy]
+----
+task('export', CsvExport) {
+    database = 'db'
+    dataFile = file('build/export.csv')
+    tableName = 'colors'
+    attributes = ['id', 'name']
+}
+----
+
+`firstLineIsHeader` defaultet auf `true`; `attributes` ist optional und leer
+bedeutet alle Spalten. Ergebnisse sind `file` und `rows`.
+
+include::generated/task-csvexport.adoc[]
+
+=== JsonImport
+
+`JsonImport` importiert ein JSON-Objekt oder ein JSON-Array in eine
+Textspalte. Bei einem Array wird pro Element ein Datensatz geschrieben.
+
+[source,groovy]
+----
+task('import', JsonImport) {
+    database = 'db'
+    jsonFile = file('data/documents.json')
+    qualifiedTableName = 'public.documents'
+    columnName = 'document'
+}
+----
+
+`deleteAllRows = true` leert die Zieltabelle vor dem Import. Ergebnis ist
+`rows`.
+
+include::generated/task-jsonimport.adoc[]
+
+=== CsvValidator
+
+`CsvValidator` prüft die Struktur einer CSV-Datei: Parsebarkeit, konsistente
+Spaltenzahl sowie eindeutige, nicht-leere Header. Eine INTERLIS-/Modell-
+Validierung ist in dieser Runtime-Welle nicht enthalten.
+
+[source,groovy]
+----
+task('validate', CsvValidator) {
+    dataFiles = [file('data/input.csv')]
+}
+----
+
+`failOnError` defaultet auf `true`; mit `false` werden `valid` und `errors`
+zurückgegeben, ohne den Task abzubrechen.
+
+include::generated/task-csvvalidator.adoc[]
+
+=== JsonValidator
+
+`JsonValidator` prüft die JSON-Syntax der angegebenen Dateien. Eine
+INTERLIS-/Modell-Validierung ist in dieser Runtime-Welle nicht enthalten.
+
+[source,groovy]
+----
+task('validate', JsonValidator) {
+    dataFiles = [file('data/input.json')]
+}
+----
+
+`failOnError` defaultet auf `true`; Ergebnisse sind `valid` und `errors`.
+
+include::generated/task-jsonvalidator.adoc[]
+
 === SqlExecutor
 
 `SqlExecutor` führt SQL-Scripts oder vorbereitete Statements gegen eine

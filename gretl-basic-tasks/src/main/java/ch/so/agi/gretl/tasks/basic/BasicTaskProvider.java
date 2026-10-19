@@ -14,6 +14,12 @@ public final class BasicTaskProvider implements OperationProvider {
                 CurlOperation.type(),
                 Db2DbOperation.type(),
                 DuckDbSqlExecutorOperation.type(),
+                Csv2ExcelOperation.type(),
+                CsvImportOperation.type(),
+                CsvExportOperation.type(),
+                JsonImportOperation.type(),
+                CsvValidatorOperation.type(),
+                JsonValidatorOperation.type(),
                 GzipOperation.type(),
                 ExtractOperation.type(),
                 SqlExecutorOperation.type());

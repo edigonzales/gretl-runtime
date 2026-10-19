@@ -32,6 +32,7 @@ oder einen In-Process-Mock abbilden lassen.
 | XSLT/Gzip | lokale Temp-Dateien | kein Backing-Service |
 | INTERLIS-Validierung | lokale Modelle/XTF | kein Backing-Service |
 | DuckDB | `DuckDbSqlExecutorOperationTest` und CLI-Test, Datei/In-Memory, CSV/GPKG/Parquet/XLSX | `DuckDbFederationPostgresIT` mit PostgreSQL und DuckDB-Extensions |
+| Tabellarisch/JSON | `TabularTaskTest` (CSV/Excel/JSON, H2), `DuckDbSqlExecutorOperationTest` | `TabularPostgresIT` mit PostgreSQL |
 
 Der reale PostgreSQL-Nachweis läuft über `PostgresSqlExecutorIT`,
 `Db2DbPostgresIT`, `DuckDbFederationPostgresIT` und
@@ -40,7 +41,7 @@ Der reale PostgreSQL-Nachweis läuft über `PostgresSqlExecutorIT`,
 
 ### Zusätzliche Docker-backed Szenarien
 
-Die 18 Tests in `gretl-integration-tests` sind bewusst breiter als reine
+Die 19 Tests in `gretl-integration-tests` sind bewusst breiter als reine
 Happy-Path-Aufrufe:
 
 - S3: verschachtelte und Unicode-Schlüssel, Überschreibschutz ohne
@@ -51,13 +52,14 @@ Happy-Path-Aufrufe:
   Parameter-Sets.
 - PostgreSQL: Script/Prepared/Rollback und echte PostGIS-Geometrie.
 - DuckDB: PostgreSQL-Quelle/-Ziel, `append`/`truncate`/`replace`.
+- Tabellarisch/JSON: CSV-Import/-Export und JSON-Import gegen PostgreSQL.
 - Packaging: gebautes Job-JAR läuft als eigener Prozess gegen PostgreSQL.
   Der Test setzt den Distributionsbuild voraus; im `backing-services`-Reaktor
   wird `gretl-dist` vorher gebaut.
 
 Die 8 Failsafe-Tests in `gretl-dist` kommen separat hinzu; sie prüfen
 Distribution, Launcher, Job-JAR-Paketierung und lokale Integrationen ohne
-Docker. Die Bezeichnung „18 Integrationstests“ meint daher ausschließlich das
+Docker. Die Bezeichnung „19 Integrationstests“ meint daher ausschließlich das
 Profil `backing-services`.
 
 
@@ -133,7 +135,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**375 Tests** (353 Standard + 4 GeoTools + 18 Backing-Services).
+**381 Tests** (358 Standard + 4 GeoTools + 19 Backing-Services).
 
 ## Grenzen
 
@@ -144,6 +146,10 @@ Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
 - `DuckDbSqlExecutor` deckt den SQL-Kern und die Föderation ab; ein
   PostGIS-Geometrie-Mapping für PostgreSQL-Quellen ist noch nicht separat
   getestet.
+- `CsvValidator` und `JsonValidator` prüfen in dieser Welle die Struktur bzw.
+  JSON-Syntax. Die INTERLIS-Modellvalidierung über iox-wkf/ilivalidator ist
+  noch nicht migriert.
+- `Csv2Excel` unterstützt die CSV-/XLSX-Konvertierung ohne INTERLIS-Modelle.
 - HTTP-Container werden erst benötigt, wenn Jobs aus einem Runtime-Image gegen
   den Fixture-Host laufen; die aktuellen Host-Tests nutzen den JDK-`HttpServer`.
 - Die Integrationstests laufen sequenziell (`forkCount=1`), damit geteilte

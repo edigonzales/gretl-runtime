@@ -1,0 +1,29 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*dataFiles* = list#
+| Zu validierende [.acronym]#CSV#-Dateien
+| [.required]#ja#
+
+| [.dsl-signature]#*firstLineIsHeader* = boolean#
+| Erste [.acronym]#CSV#-Zeile als Header verwenden
+| [.optional]#nein#
+
+| [.dsl-signature]#*valueDelimiter* = text#
+| [.acronym]#CSV#-Feldtrennzeichen
+| [.optional]#nein#
+
+| [.dsl-signature]#*valueSeparator* = text#
+| [.acronym]#CSV#-Anfuehrungszeichen
+| [.optional]#nein#
+
+| [.dsl-signature]#*encoding* = text#
+| [.acronym]#CSV#-Kodierung
+| [.optional]#nein#
+
+| [.dsl-signature]#*failOnError* = boolean#
+| Task bei Validierungsfehler abbrechen
+| [.optional]#nein#
+
+|===

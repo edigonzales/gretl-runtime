@@ -1,0 +1,25 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*database* = text#
+| Alias der Ziel-Datenbankverbindung
+| [.required]#ja#
+
+| [.dsl-signature]#*jsonFile* = path#
+| Zu importierende [.acronym]#JSON#-Datei
+| [.required]#ja#
+
+| [.dsl-signature]#*qualifiedTableName* = text#
+| Name der Zieltabelle
+| [.required]#ja#
+
+| [.dsl-signature]#*columnName* = text#
+| Ziel-Textspalte
+| [.required]#ja#
+
+| [.dsl-signature]#*deleteAllRows* = boolean#
+| Zuerst alle Zielzeilen loeschen
+| [.optional]#nein#
+
+|===
