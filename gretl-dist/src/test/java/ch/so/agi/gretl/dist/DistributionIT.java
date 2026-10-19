@@ -13,9 +13,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -274,6 +278,54 @@ class DistributionIT {
         assertEquals(0, run.code(), run.err());
         assertTrue(Files.isRegularFile(report));
         assertTrue(Files.readString(report).contains("SUCCEEDED"));
+    }
+
+    @Test
+    void generatedAsciiDocReferenceMatchesCheckedInDocs() throws Exception {
+        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path root = tempDir.resolve("dist-docs");
+        unzip(zip, root);
+        Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
+        Path generated = tempDir.resolve("generated-docs");
+        ProcessResult result = run(base, "operations", "--format", "adoc",
+                "--lang", "de", "--output", generated.toString());
+        assertEquals(0, result.code(), result.err());
+
+        Path expected = Path.of("..", "docs", "reference", "generated")
+                .toAbsolutePath().normalize();
+        assertTrue(Files.isDirectory(expected), "checked-in reference missing: " + expected);
+        List<String> expectedFiles = fileNames(expected);
+        List<String> actualFiles = fileNames(generated);
+        assertEquals(expectedFiles, actualFiles,
+                "generated reference file set differs; run scripts/generate-task-docs.sh");
+        for (String file : expectedFiles) {
+            assertEquals(Files.readString(expected.resolve(file), StandardCharsets.UTF_8),
+                    Files.readString(generated.resolve(file), StandardCharsets.UTF_8),
+                    "generated reference is stale: " + file
+                            + "; run scripts/generate-task-docs.sh");
+        }
+
+        Path master = expected.getParent().resolve("reference.adoc");
+        assertTrue(Files.isRegularFile(master), "editorial master missing: " + master);
+        Set<String> included = new HashSet<>();
+        Matcher matcher = Pattern.compile(
+                        "include::generated/(task-[A-Za-z0-9._-]+\\.adoc)\\[\\]")
+                .matcher(Files.readString(master, StandardCharsets.UTF_8));
+        while (matcher.find()) {
+            included.add(matcher.group(1));
+        }
+        assertEquals(new HashSet<>(expectedFiles), included,
+                "reference.adoc must include every generated table and no missing table; "
+                        + "run scripts/generate-task-docs.sh and update reference.adoc");
+    }
+
+    private static List<String> fileNames(Path directory) throws IOException {
+        try (var files = Files.list(directory)) {
+            return files.filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString())
+                    .sorted()
+                    .toList();
+        }
     }
 
     private static void assertApiArtifact(Path base) throws Exception {

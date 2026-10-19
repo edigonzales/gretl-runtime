@@ -45,15 +45,15 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Kollisionsprüfung, 4 Tests,
 7. **gretl-basic-tasks** — HTTP, ZIP/GZIP, SQL, Provider, 23 Tests,
 8. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
-   Distribution-nahe Integration, 49 Tests,
+   AsciiDoc-Tabellen, Distribution-nahe Integration, 58 Tests,
 9. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
 10. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
 11. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
 12. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
-    Extension-/HTTP-/IliValidator-/Token-/Action-Integration sowie Job-JAR-Paket
-    und -Start, 1 Surefire- und 7 Failsafe-Tests.
+    Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
+    und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests.
 
-Erwartet: **290 Tests**, 0 Fehler, `BUILD SUCCESS`.
+Erwartet: **300 Tests**, 0 Fehler, `BUILD SUCCESS`.
 
 ### Artefakte
 
@@ -117,6 +117,22 @@ examples/        Download/Extract, SQL, IliValidator, Token/Katalog, Action/NO_D
 inventory.json   Module, Tasks, Artefakte, Dependencyversionen
 SHA256SUMS       SHA-256 aller Distributionsdateien mit relativen Pfaden
 ```
+
+Die Property-Tabellen der AsciiDoc-Referenz werden aus derselben Distribution
+erzeugt:
+
+```sh
+./scripts/generate-task-docs.sh
+```
+
+Das Skript schreibt ausschliesslich `docs/reference/generated/task-*.adoc`.
+Jede Datei enthält nur die Property-Tabelle. Die redaktionelle Hauptdatei
+`docs/reference/reference.adoc` wird nicht generiert; sie bindet die Tabellen
+manuell ein. Die Distributions-IT prüft, dass jede Tabelle eingebunden ist und
+keine Include-Datei fehlt. Die Thoth-Konfiguration
+`docs/reference/biblios.yml` ist eingecheckt. Rendern mit Thoth Biblios ist in
+[`docs/reference/README.md`](../reference/README.md) beschrieben; Thoth bleibt ein
+externes Werkzeug und ist keine Maven-Abhängigkeit.
 
 Der Launcher verwendet einen gemeinsamen Klassenpfad und `exec java`, damit
 Signale den Java-Prozess erreichen. Ein eigener Task wird vor dem Start in
@@ -268,7 +284,7 @@ Dollar-Quote, Prepared-Apostroph/null und Rollback nach dem zweiten Fehler.
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **294 Tests** (290 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **304 Tests** (300 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.

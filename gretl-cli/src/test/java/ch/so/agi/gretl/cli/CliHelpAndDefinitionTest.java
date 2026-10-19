@@ -67,6 +67,34 @@ class CliHelpAndDefinitionTest {
     }
 
     @Test
+    void operationsCanRenderAsciiDocReference() throws Exception {
+        Path docs = tempDir.resolve("docs");
+        Result all = cli().run("operations", "--format", "adoc",
+                "--output", docs.toString());
+        assertEquals(0, all.code(), all.err());
+        assertTrue(Files.isRegularFile(docs.resolve("task-httpdownload.adoc")));
+        assertTrue(Files.isRegularFile(docs.resolve("task-extract.adoc")));
+        assertTrue(Files.isRegularFile(docs.resolve("task-sqlexecutor.adoc")));
+        assertFalse(Files.exists(docs.resolve("task-reference.adoc")));
+
+        String table = Files.readString(docs.resolve("task-httpdownload.adoc"),
+                StandardCharsets.UTF_8);
+        assertTrue(table.startsWith("[cols=\"4,6,1\""), table);
+        assertTrue(table.contains("*url* = uri"), table);
+        assertFalse(table.contains(".Beispiel"), table);
+        assertFalse(table.contains(".Ergebnisse"), table);
+
+        Result single = cli().run("operations", "HttpDownload", "--format", "adoc");
+        assertEquals(0, single.code(), single.err());
+        assertTrue(single.out().contains("Absolute"), single.out());
+        assertTrue(single.out().contains("*url* = uri"), single.out());
+
+        Result missingOutput = cli().run("operations", "--format", "adoc");
+        assertEquals(2, missingOutput.code());
+        assertTrue(missingOutput.err().contains("--output"), missingOutput.err());
+    }
+
+    @Test
     void jobHelpCheckAndPlanDoNotCreateWorkOrReports() throws Exception {
         Path script = writeJob();
         Result help = cli().run("run", script.toString(), "--help");

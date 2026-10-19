@@ -19,7 +19,7 @@ public record CliOptions(
         Path workDir, Path report, Duration timeout,
         LoggingConfig.Format logFormat, LogLevel logLevel, KeepWork keepWork,
         String operationSymbol, Path output, String language,
-        PlanGraphFormat graphFormat) {
+        PlanGraphFormat graphFormat, DocFormat docFormat) {
 
     public enum Command { HELP, VERSION, OPERATIONS, RUN, CHECK, PLAN, PACKAGE, COMMAND_HELP }
 
@@ -47,26 +47,51 @@ public record CliOptions(
         if (first.equals("operations")) {
             String symbol = null;
             String language = null;
+            DocFormat docFormat = DocFormat.TEXT;
+            Path output = null;
             int index = 1;
             while (index < args.length) {
                 String argument = args[index];
-                if (argument.equals("--lang")) {
-                    language = requireValue(args, ++index, argument, locale);
-                    index++;
-                } else if (argument.startsWith("-")) {
-                    throw new CliException(2,
-                            msg(locale, "cli.error.operations.unknownOption", argument));
-                } else if (symbol == null) {
-                    symbol = argument;
-                    index++;
-                } else {
-                    throw new CliException(2, msg(locale,
-                            "cli.error.operations.maxSymbol"));
+                switch (argument) {
+                    case "--lang" -> {
+                        language = requireValue(args, ++index, argument, locale);
+                        index++;
+                    }
+                    case "--format" -> {
+                        String value = requireValue(args, ++index, argument, locale);
+                        docFormat = docFormat(value, locale);
+                        index++;
+                    }
+                    case "--output", "-o" -> {
+                        output = resolve(startCwd,
+                                requireValue(args, ++index, argument, locale), locale);
+                        index++;
+                    }
+                    default -> {
+                        if (argument.startsWith("-")) {
+                            throw new CliException(2, msg(locale,
+                                    "cli.error.operations.unknownOption", argument));
+                        }
+                        if (symbol != null) {
+                            throw new CliException(2, msg(locale,
+                                    "cli.error.operations.maxSymbol"));
+                        }
+                        symbol = argument;
+                        index++;
+                    }
                 }
             }
+            if (docFormat == DocFormat.TEXT && output != null) {
+                throw new CliException(2, msg(locale,
+                        "cli.error.operations.outputRequiresAdoc"));
+            }
+            if (docFormat == DocFormat.ADOC && symbol == null && output == null) {
+                throw new CliException(2, msg(locale,
+                        "cli.error.operations.adocOutputMissing"));
+            }
             return new CliOptions(Command.OPERATIONS, null, false, List.of(), null,
-                    null, Map.of(), null, null, null, null, null, null, symbol, null,
-                    language, null);
+                    null, Map.of(), null, null, null, null, null, null, symbol, output,
+                    language, null, docFormat);
         }
         Command command = switch (first) {
             case "run" -> Command.RUN;
@@ -115,7 +140,7 @@ public record CliOptions(
         if (help) {
             return new CliOptions(Command.PACKAGE, descriptor, true, List.of(), null,
                     null, Map.of(), null, null, null, null, null, null, null, output,
-                    language, null);
+                    language, null, DocFormat.TEXT);
         }
         if (descriptor == null) {
             throw new CliException(2, msg(locale,
@@ -127,7 +152,7 @@ public record CliOptions(
         }
         return new CliOptions(Command.PACKAGE, descriptor, false, List.of(), null,
                 null, Map.of(), null, null, null, null, null, null, null, output, language,
-                null);
+                null, DocFormat.TEXT);
     }
 
     /** Parse options for a fixed packaged job (no job path or command). */
@@ -149,7 +174,8 @@ public record CliOptions(
 
     private static CliOptions command(Command command) {
         return new CliOptions(command, null, false, List.of(), null, null,
-                Map.of(), null, null, null, null, null, null, null, null, null, null);
+                Map.of(), null, null, null, null, null, null, null, null, null, null,
+                DocFormat.TEXT);
     }
 
     private static CliOptions parseJobCommand(Command command, String[] args, Path startCwd,
@@ -300,14 +326,15 @@ public record CliOptions(
         if (job == null) {
             if (help) {
                 return new CliOptions(Command.COMMAND_HELP, null, true, List.of(), null,
-                        null, Map.of(), null, null, null, null, null, null, null, null, null, null);
+                        null, Map.of(), null, null, null, null, null, null, null, null, null, null,
+                        DocFormat.TEXT);
             }
             throw new CliException(2, msg(locale, "cli.error.job.missing",
                     command.name().toLowerCase(Locale.ROOT)));
         }
         return new CliOptions(command, job, help, targets, config, parameterFile,
                 parameters, workDir, report, timeout, format, level, keepWork, null, output,
-                language, graphFormat);
+                language, graphFormat, DocFormat.TEXT);
     }
 
     private static String requireValue(String[] args, int index, String option,
@@ -327,6 +354,15 @@ public record CliOptions(
             throw new CliException(2, msg(locale, "cli.error.path.invalid", value));
         }
         return (path.isAbsolute() ? path : base.resolve(path)).toAbsolutePath().normalize();
+    }
+
+    private static DocFormat docFormat(String value, Locale locale) {
+        try {
+            return DocFormat.valueOf(value.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException exception) {
+            throw new CliException(2, msg(locale,
+                    "cli.error.operations.format", value));
+        }
     }
 
     private static String msg(Locale locale, String key, Object... arguments) {

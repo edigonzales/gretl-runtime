@@ -1,0 +1,17 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*dataFile* = path#
+| Vorhandene [.acronym]#INTERLIS#-XTF-Transferdatei
+| [.required]#ja#
+
+| [.dsl-signature]#*modelDirectory* = path#
+| Vollstaendiger lokaler Modellbestand
+| [.required]#ja#
+
+| [.dsl-signature]#*validationConfig* = path#
+| Optionale lokale Validierungskonfiguration
+| [.optional]#nein#
+
+|===

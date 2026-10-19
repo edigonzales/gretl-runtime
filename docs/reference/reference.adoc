@@ -1,0 +1,326 @@
+= GRETL-Referenzdokumentation
+
+Die GRETL-Runtime führt datenverarbeitende Jobs als gerichteten azyklischen
+Graphen aus benannten Tasks aus. Ein Task beschreibt eine fachliche Operation,
+seine Einstellungen und seine Vorgänger. Die Runtime plant die Reihenfolge,
+löst Parameter und Pfade auf und führt die Tasks sequenziell in einer JVM aus.
+
+Diese Referenz hat zwei Teile:
+
+- Die **Property-Tabellen** unter `generated/` werden aus den tatsächlich
+  registrierten Task-Metadaten erzeugt. Sie enthalten nur die Eingabefelder
+  eines Tasktyps und werden nicht manuell bearbeitet.
+- Die **redaktionellen Abschnitte** in dieser Datei erklären die Tasks,
+  zeigen vollständige Beispiele, dokumentieren Ergebnisse und Grenzen und
+  binden die generierten Tabellen ein.
+
+Die generierten Tabellen sind keine zweite Taskbeschreibung. `gretl
+operations <Symbol>` und die Job-Hilfe lesen dieselben Metadaten und bleiben
+die Laufzeitreferenz.
+
+== GRETL Runtime
+
+Ein Job wird als Groovy-Script geschrieben und mit `gretl run` gestartet. Die
+wesentlichen Bausteine sind:
+
+- `task('name', Taskart) { ... }` für eine fachliche Operation,
+- `action('name') { ... }` für gewöhnlichen ausführbaren Groovy-Code,
+- `dependsOn` für die Reihenfolge,
+- `defaults` für die Ziele, die ohne `--target` ausgeführt werden,
+- deklarierte Jobparameter, Jobressourcen und dokumentierte Ergebnisse.
+
+Die Standarddistribution liefert die in dieser Referenz beschriebenen
+Tasktypen mit. Eigene Taskbibliotheken verwenden dieselbe Schnittstelle und
+dieselbe Joboberfläche. Der Katalog ist releasebezogen und keine geschlossene
+Liste zukünftiger Tasks.
+
+== Job schreiben
+
+=== Tasks, Ziele und Abhängigkeiten
+
+Ein Task wird über seinen Namen und seine Taskart registriert. Die
+Einstellungen stehen als `name = wert` im Block. Die Konfiguration wird erst
+gelesen, wenn der Task nach seinen Vorgängern an der Reihe ist.
+
+[source,groovy]
+----
+task('update', SqlExecutor) {
+    database = 'edit'
+    scripts = [file('sql/update.sql')]
+}
+
+defaults 'update'
+----
+
+`dependsOn` nennt einen oder mehrere Vorgänger. Die Runtime ermittelt daraus
+die Auswahlhülle; sie errät keine Abhängigkeit aus einem späteren
+Ergebniszugriff.
+
+[source,groovy]
+----
+task('download', HttpDownload) {
+    url = 'https://example.invalid/data.zip'
+    output = workPath('data.zip')
+}
+
+task('extract', Extract, dependsOn: 'download') {
+    archive = result('download').file
+    compression = 'ZIP'
+    outputDirectory = workPath('entpackt')
+}
+
+defaults 'extract'
+----
+
+Quellreihenfolge im Script ist nur Lesbarkeit. Sie ersetzt keine
+`dependsOn`-Kante. `after` ist eine reine Reihenfolge zwischen bereits
+ausgewählten Tasks und erzeugt keinen Ergebniszugriff.
+
+=== Parameter
+
+Öffentliche Jobparameter werden einmal im Script deklariert. `description` ist
+Pflicht; `type` ist `text`, `boolean`, `integer` oder `path`.
+
+[source,groovy]
+----
+parameter('quelle', required: true,
+          description: 'Adresse der ZIP-Datei')
+parameter('entpacken', type: 'boolean', defaultValue: true,
+          description: 'Das Archiv nach dem Download entpacken')
+----
+
+Werte werden mit `--param name=wert` oder über eine Parameterdatei übergeben.
+Deklarierte Pfadparameter werden relativ zum ursprünglichen Startverzeichnis
+aufgelöst. `run` prüft alle verpflichtenden Parameter vor der ersten
+Taskarbeit. `check` und `plan` dürfen fehlende Pflichtwerte noch als offen
+anzeigen.
+
+=== Pfade
+
+Die Job-DSL kennt drei Pfadbereiche:
+
+- `file('...')` bezeichnet eine Datei oder ein Verzeichnis, das zum Job gehört.
+- `workPath('...')` bezeichnet eine temporäre Arbeitsdatei des aktuellen
+  Tasks. Der Pfad bleibt für nachfolgende Tasks bis zum Runende lesbar.
+- `path('...')` löst einen erst im Job entstandenen externen Pfad relativ zum
+  Startverzeichnis auf.
+
+Ein deklarierter Parameter vom Typ `path` liefert direkt einen aufgelösten
+`Path`. `file`, `workPath` und `path` öffnen die Datei nicht; sie liefern nur
+den Pfad. Ob eine Operation eine vorhandene Ausgabe überschreiben darf, regelt
+die jeweilige Taskart.
+
+=== Ergebnisse
+
+Ein Task kann dokumentierte Ergebnisse bereitstellen. Der Zugriff erfolgt über
+`result('name').feld` und ist nur entlang einer direkten oder transitiven
+`dependsOn`-Kette erlaubt.
+
+[source,groovy]
+----
+task('download', HttpDownload) {
+    url = 'https://example.invalid/data.zip'
+    output = workPath('data.zip')
+}
+
+task('extract', Extract, dependsOn: 'download') {
+    archive = result('download').file
+    compression = 'ZIP'
+    outputDirectory = workPath('entpackt')
+}
+----
+
+`result` startet keinen Task und ergänzt keine Kante. Unbekannte Felder,
+fehlende Vorgänger und ein Zugriff auf einen übersprungenen oder
+fehlgeschlagenen Task sind Fehler. Die Hilfe von `gretl operations <Symbol>`
+nennt die verfügbaren Ergebnisfelder.
+
+=== Actions
+
+Eine Action ist gewöhnlicher ausführbarer Groovy-Code. Sie kann Tasks synchron
+mit `ctx.run(...)` aufrufen und deren Javaresultate weiterverarbeiten. Eine
+Action kann mit `null` erfolgreich enden; ein nicht-void Taskhandler mit
+deklarierter Ergebnisstruktur darf dagegen nicht unbemerkt `null` liefern.
+
+[source,groovy]
+----
+action('pruefen') {
+    def result = ctx.run(IliValidator) {
+        dataFile = file('data/valid.xtf')
+        modelDirectory = file('models')
+    }
+    println 'Warnungen: ' + result.warnings()
+}
+----
+
+Actions und Tasks verwenden denselben Plan, dieselben Ergebnisse und dieselben
+Fehlerregeln. Eine Action ist keine zweite Ablauf-DSL.
+
+== Taskarten
+
+=== HttpDownload
+
+`HttpDownload` lädt eine Datei über HTTP oder HTTPS und veröffentlicht sie
+erst nach erfolgreichem Abschluss unter dem Zielpfad. Der Task unterstützt GET
+und POST, Header mit Text- oder Secretwerten und einen optionalen UTF-8-Body
+für POST.
+
+[source,groovy]
+----
+task('download', HttpDownload) {
+    url = 'https://example.invalid/data.zip'
+    output = workPath('daten.zip')
+    headers = ['Accept': 'application/zip']
+}
+----
+
+Redirects sind deaktiviert. Der Task wiederholt einen fehlgeschlagenen
+Request nicht automatisch. Ein HTTP-Status ausserhalb von 200 bis 299, eine
+überschrittene Byte-Grenze oder eine abgebrochene Übertragung führen zu einem
+Taskfehler; ein vorhandenes Ziel wird ohne `overwrite = true` nicht ersetzt.
+Der Response-Body wird nicht automatisch geloggt.
+
+Ergebnisse sind `file`, `finalUri`, `status`, `bytes` und `sha256`. `file`
+bezeichnet die abgeschlossene Zieldatei, `bytes` ihre tatsächliche Grösse.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-httpdownload.adoc[]
+
+=== Extract
+
+`Extract` entpackt ein ZIP- oder GZIP-Archiv. Der Modus wird ausdrücklich über
+`compression` gewählt; die Endung allein genügt nicht. ZIP schreibt in ein
+Ausgabeverzeichnis, GZIP in eine einzelne Zieldatei.
+
+[source,groovy]
+----
+task('extract', Extract, dependsOn: 'download') {
+    archive = result('download').file
+    compression = 'ZIP'
+    outputDirectory = workPath('entpackt')
+}
+----
+
+Der Task schützt vor Pfad-Traversal, absoluten Einträgen, Symlinks und
+kollidierenden Dateinamen. Vorhandene Zieldateien werden nicht still
+überschrieben. Die Standardgrenzen liegen bei 4 GiB entpackten Daten und
+10'000 ZIP-Einträgen; beide Werte sind konfigurierbar.
+
+Ergebnisse sind `file`, `files`, `directory` und `bytes`. Bei GZIP ist `file`
+die einzelne Ausgabedatei und `directory` ist `null`; bei ZIP ist `directory`
+das Ausgabeverzeichnis, `file` ist `null` und `files` enthält die
+abgeschlossenen regulären Dateien in stabiler Reihenfolge.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-extract.adoc[]
+
+=== SqlExecutor
+
+`SqlExecutor` führt SQL-Scripts oder vorbereitete Statements gegen eine
+vorbereitete PostgreSQL-Verbindung aus. Die Verbindung wird im Job nicht mit
+URL und Passwort konfiguriert, sondern über einen Alias aus der
+Runtimekonfiguration (`taskConfig`).
+
+[source,groovy]
+----
+task('update', SqlExecutor) {
+    database = 'edit'
+    scripts = [file('sql/update.sql')]
+}
+
+defaults 'update'
+----
+
+Genau eine der Listen `scripts` oder `statements` muss nicht leer sein. Die
+Reihenfolge der Einträge ist die Ausführungsreihenfolge. Ein Script wird als
+vollständige UTF-8-Datei an den Treiber übergeben; die Runtime zerlegt es nicht
+mit einem Regex in Einzelstatements. `statements` verwendet Maps mit genau den
+Feldern `sql` und `parameters`.
+
+[source,groovy]
+----
+task('kennzeichnen', SqlExecutor) {
+    database = 'edit'
+    statements = [
+        [sql: 'UPDATE demo.gemeinde SET geprueft = ? WHERE bfs_nr = ?',
+         parameters: [true, 2545]]
+    ]
+}
+----
+
+Alle Einträge eines Aufrufs laufen in einer Transaktion mit deaktiviertem
+Auto-commit. Ein normaler Abschluss führt zu einem Commit; bei einem Fehler
+wird ein Rollback versucht. Ein zusätzlicher Rollbackfehler bleibt sichtbar.
+Der Task führt keinen automatischen Vollretry aus und garantiert nicht, dass
+bereits erfolgte externe Wirkungen verschwinden.
+
+Ergebnisse sind `executionCount` und `executions`. `executionCount` zählt die
+übergebenen Script-/Statementeinträge, nicht einzelne SQL-Befehle.
+`executions` enthält pro Eintrag die Updatezahlen und die Anzahl der
+verarbeiteten ResultSets in Eingabereihenfolge.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-sqlexecutor.adoc[]
+
+=== IliValidator
+
+`IliValidator` validiert eine INTERLIS-Transferdatei (`.xtf` oder `.itf`)
+gegen einen vollständigen lokalen Modellbestand. Der Task verwendet die reale
+Validatorbibliothek und schreibt einen aufrufbezogenen Prüfbericht in den
+Arbeitsbereich.
+
+[source,groovy]
+----
+task('validate', IliValidator) {
+    dataFile = file('data/valid.xtf')
+    modelDirectory = file('models')
+}
+
+defaults 'validate'
+----
+
+`dataFile` und `modelDirectory` sind Pflicht. `validationConfig` ist optional
+und bezeichnet eine ausdrücklich unterstützte lokale Validierungskonfiguration.
+Weitere Engineoptionen oder Modellrepository-Fähigkeiten werden nicht
+durchgereicht; unbekannte Felder sind Fehler.
+
+Ein fachlich ungültiger Transfer lässt den Task fehlschlagen. Der Prüfbericht
+bleibt als Diagnoseartefakt zugänglich. Bei Erfolg sind `file`, `reportFile`
+und `warnings` dokumentiert; `warnings` zählt die vom Adapter eindeutig
+erfassten Warnungen.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-ilivalidator.adoc[]
+
+== Betrieb
+
+Die Runtimekonfiguration wird als UTF-8-JSON über `--config` übergeben. Sie
+enthält unter anderem den Arbeitsbereich, den Reportpfad, Secrets und
+`taskConfig`-Alisase für Datenbankverbindungen. Ein Datenbank-Alias wie
+`database = 'edit'` verweist auf einen Abschnitt in `taskConfig`; Passwörter
+kommen über Secretquellen und erscheinen nicht im Job.
+
+Die vollständige Konfiguration, die Pfadbasen, das Logging und der Runbericht
+sind in der [Build-Anleitung](../implementation/build.md) beschrieben. Die
+Laufzeitreferenz eines Tasks ist jederzeit über `gretl operations <Symbol>`
+verfügbar.
+
+== Hinweise zur Referenz
+
+Die Dateien unter `generated/` enthalten ausschliesslich die Property-Tabelle
+eines Tasks. Sie werden mit `./scripts/generate-task-docs.sh` aus der
+gepackten Distribution erzeugt und nicht manuell bearbeitet.
+
+Diese Hauptdatei ist redaktionell. Ein neuer Task ist erst dokumentiert, wenn
+er hier einen Abschnitt mit Beschreibung, Beispiel und Grenzen erhält und
+seine Tabelle mit `include::generated/task-<anchor>.adoc[]` eingebunden wird.
+`./mvnw verify` prüft, dass jede generierte Tabelle eingebunden ist und dass
+keine Include-Datei fehlt.
+
+Thoth Biblios rendert diese Datei als Single-Page-Referenz. Die
+Thoth-Konfiguration steht in `biblios.yml`; die lokale Vorschau ist in
+`README.md` beschrieben.

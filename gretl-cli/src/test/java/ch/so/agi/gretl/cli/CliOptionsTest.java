@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,6 +36,48 @@ class CliOptionsTest {
         assertEquals(CliOptions.Command.PLAN, options.command());
         assertEquals(PlanGraphFormat.MERMAID, options.graphFormat());
         assertEquals("plan.mmd", options.output().getFileName().toString());
+    }
+
+    @Test
+    void parsesAsciiDocOperationOptions() {
+        CliOptions options = CliOptions.parse(new String[]{
+                "operations", "HttpDownload", "--format", "adoc", "--output", "docs"
+        }, Path.of("/tmp"), Locale.GERMAN);
+        assertEquals(CliOptions.Command.OPERATIONS, options.command());
+        assertEquals(DocFormat.ADOC, options.docFormat());
+        assertEquals("HttpDownload", options.operationSymbol());
+        assertEquals("docs", options.output().getFileName().toString());
+
+        CliOptions single = CliOptions.parse(new String[]{
+                "operations", "HttpDownload", "--format", "adoc"
+        }, Path.of("/tmp"), Locale.GERMAN);
+        assertEquals(DocFormat.ADOC, single.docFormat());
+        assertNull(single.output());
+
+        CliOptions plain = CliOptions.parse(new String[]{
+                "operations", "HttpDownload"
+        }, Path.of("/tmp"), Locale.GERMAN);
+        assertEquals(DocFormat.TEXT, plain.docFormat());
+    }
+
+    @Test
+    void rejectsInvalidAsciiDocOperationOptions() {
+        CliException missingOutput = assertThrows(CliException.class, () -> CliOptions.parse(
+                new String[]{"operations", "--format", "adoc"}, Path.of("/tmp"),
+                Locale.GERMAN));
+        assertTrue(missingOutput.getMessage().contains("--output"), missingOutput.getMessage());
+
+        CliException outputWithoutFormat = assertThrows(CliException.class,
+                () -> CliOptions.parse(new String[]{"operations", "--output", "docs"},
+                        Path.of("/tmp"), Locale.GERMAN));
+        assertTrue(outputWithoutFormat.getMessage().contains("--format adoc"),
+                outputWithoutFormat.getMessage());
+
+        CliException unknownFormat = assertThrows(CliException.class, () -> CliOptions.parse(
+                new String[]{"operations", "--format", "yaml"}, Path.of("/tmp"),
+                Locale.GERMAN));
+        assertTrue(unknownFormat.getMessage().contains("Nicht unterstuetztes Format"),
+                unknownFormat.getMessage());
     }
 
     @Test

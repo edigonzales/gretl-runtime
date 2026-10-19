@@ -13,7 +13,6 @@ import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /** Human help sourced from the same operation/definition metadata as the runtime. */
 public final class HelpPrinter {
@@ -39,7 +38,7 @@ public final class HelpPrinter {
         out.println(text("help.global.usage"));
         out.println("  gretl --help");
         out.println("  gretl --version");
-        out.println("  gretl operations [Symbol]");
+        out.println("  gretl operations [Symbol] [--format text|adoc] [--output <dir>]");
         out.println("  gretl check job.groovy [Optionen]");
         out.println("  gretl plan job.groovy [Optionen]");
         out.println("  gretl run job.groovy [Optionen]");
@@ -79,7 +78,7 @@ public final class HelpPrinter {
         for (OperationRegistry.RegisteredOperation entry : registry.registered()) {
             OperationType<?, ?> operation = entry.operation();
             out.printf("  %-16s %-28s %s (%s)%n", operation.symbol(), operation.id(),
-                    operationDescription(operation), entry.origin());
+                    OperationHelpText.description(operation, locale), entry.origin());
         }
     }
 
@@ -87,7 +86,7 @@ public final class HelpPrinter {
         OperationType<?, ?> operation = entry.operation();
         out.println(text("help.buildingBlock") + ": " + operation.symbol()
                 + " (" + operation.id() + ")");
-        out.println(operationDescription(operation));
+        out.println(OperationHelpText.description(operation, locale));
         out.println(text("help.origin") + ": " + entry.origin());
         out.println();
         out.println(text("help.inputFields") + ":");
@@ -95,8 +94,8 @@ public final class HelpPrinter {
             out.printf("  %-20s %-10s %s%s%n", field.name(), field.valueType(),
                     field.required() ? text("help.required") : text("help.optional"),
                     field.defaultValue().isPresent()
-                            ? ", " + text("help.default") + "=" + display(field.defaultValue().orElseThrow()) : "");
-            out.println("      " + fieldDescription(operation, field.name()));
+                            ? ", " + text("help.default") + "=" + OperationHelpText.displayDefault(field.defaultValue().orElseThrow()) : "");
+            out.println("      " + OperationHelpText.fieldDescription(operation, field.name(), locale));
             if (!field.allowedValues().isEmpty()) {
                 out.println("      " + text("help.allowed") + ": " + String.join(", ", field.allowedValues()));
             }
@@ -107,7 +106,7 @@ public final class HelpPrinter {
         for (OutputField<?, ?> field : operation.outputs()) {
             out.printf("  %-20s %-10s %s%n", field.name(), field.valueType(),
                     field.nullable() ? text("help.nullable") : text("help.notNull"));
-            out.println("      " + outputDescription(operation, field.name()));
+            out.println("      " + OperationHelpText.outputDescription(operation, field.name(), locale));
         }
         out.println();
         out.println(text("help.example") + ":");
@@ -127,7 +126,7 @@ public final class HelpPrinter {
                         parameter.type().name().toLowerCase(),
                         parameter.required() ? text("help.required") : text("help.optional"),
                         parameter.defaultValue().isPresent()
-                                ? ", " + text("help.default") + "=" + display(parameter.defaultValue().orElseThrow()) : "");
+                                ? ", " + text("help.default") + "=" + OperationHelpText.displayDefault(parameter.defaultValue().orElseThrow()) : "");
                 out.println("      " + parameter.description());
             }
         }
@@ -158,37 +157,5 @@ public final class HelpPrinter {
                     task.dependsOn().stream().map(ref -> ref.id()).toList(),
                     task.after().stream().map(ref -> ref.id()).toList());
         }
-    }
-
-    private String fieldDescription(OperationType<?, ?> operation, String field) {
-        String key = "operation." + operation.id() + ".field." + field + ".description";
-        return Messages.contains(locale, key)
-                ? Messages.get(locale, key)
-                : operation.inputs().stream().filter(value -> value.name().equals(field))
-                        .findFirst().map(value -> value.description()).orElse(field);
-    }
-
-    private String outputDescription(OperationType<?, ?> operation, String field) {
-        String key = "operation." + operation.id() + ".output." + field + ".description";
-        return Messages.contains(locale, key)
-                ? Messages.get(locale, key)
-                : operation.outputs().stream().filter(value -> value.name().equals(field))
-                        .findFirst().map(value -> value.description()).orElse(field);
-    }
-
-    private String operationDescription(OperationType<?, ?> operation) {
-        String key = "operation." + operation.id() + ".description";
-        return Messages.contains(locale, key)
-                ? Messages.get(locale, key) : operation.description();
-    }
-
-    private static String display(Object value) {
-        if (value instanceof Map<?, ?> map) {
-            return map.toString();
-        }
-        if (value instanceof String text) {
-            return "'" + text + "'";
-        }
-        return String.valueOf(value);
     }
 }

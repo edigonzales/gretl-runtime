@@ -191,6 +191,9 @@ public final class GretlCli {
 
     private int operations(CliOptions options) {
         OperationRegistry registry = loadRegistry();
+        if (options.docFormat() == DocFormat.ADOC) {
+            return asciiDocOperations(registry, options);
+        }
         HelpPrinter help = new HelpPrinter(out, locale);
         if (options.operationSymbol() == null) {
             help.operations(registry);
@@ -206,6 +209,31 @@ public final class GretlCli {
             return 0;
         } catch (DefinitionException exception) {
             throw new CliException(2, safeMessage(exception), exception);
+        }
+    }
+
+    private int asciiDocOperations(OperationRegistry registry, CliOptions options) {
+        AsciiDocTaskRenderer renderer = new AsciiDocTaskRenderer();
+        try {
+            if (options.operationSymbol() == null) {
+                renderer.render(registry, options.output(), locale);
+                return 0;
+            }
+            var operation = registry.registered().stream()
+                    .map(OperationRegistry.RegisteredOperation::operation)
+                    .filter(entry -> entry.symbol().equals(options.operationSymbol()))
+                    .findFirst()
+                    .orElseThrow(() -> new CliException(2,
+                            unknownSymbol(registry, options.operationSymbol())));
+            if (options.output() == null) {
+                out.print(renderer.renderTaskTable(operation, locale));
+            } else {
+                renderer.writeTask(operation, options.output(), locale);
+            }
+            return 0;
+        } catch (IOException exception) {
+            throw new CliException(2, Messages.format(locale,
+                    "cli.error.operations.write", safeMessage(exception)), exception);
         }
     }
 

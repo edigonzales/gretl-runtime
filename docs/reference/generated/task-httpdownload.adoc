@@ -1,0 +1,33 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*url* = uri#
+| Absolute [.acronym]#HTTP#-/[.acronym]#HTTPS#-Adresse
+| [.required]#ja#
+
+| [.dsl-signature]#*output* = path#
+| Ziel einer vollstaendig heruntergeladenen Datei
+| [.required]#ja#
+
+| [.dsl-signature]#*overwrite* = boolean#
+| Vorhandene Zieldatei nach erfolgreichem Download ersetzen
+| [.optional]#nein#
+
+| [.dsl-signature]#*method* = text#
+| GET oder POST
+| [.optional]#nein#
+
+| [.dsl-signature]#*headers* = map#
+| [.acronym]#HTTP#-Header; Werte als Text oder SecretValue
+| [.optional]#nein#
+
+| [.dsl-signature]#*bodyText* = text#
+| Optionaler UTF-8-Body nur fuer POST
+| [.optional]#nein#
+
+| [.dsl-signature]#*maxBytes* = integer#
+| Maximal gelesene Bytes
+| [.optional]#nein#
+
+|===

@@ -1,0 +1,29 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*archive* = path#
+| Vorhandene Archivdatei
+| [.required]#ja#
+
+| [.dsl-signature]#*compression* = text#
+| ZIP oder [.acronym]#GZIP#
+| [.required]#ja#
+
+| [.dsl-signature]#*outputDirectory* = path#
+| Zielverzeichnis fuer ZIP
+| [.optional]#nein#
+
+| [.dsl-signature]#*outputFile* = path#
+| Zieldatei fuer [.acronym]#GZIP#
+| [.optional]#nein#
+
+| [.dsl-signature]#*maxExpandedBytes* = integer#
+| Maximal entpackte Bytes
+| [.optional]#nein#
+
+| [.dsl-signature]#*maxEntries* = integer#
+| Maximale ZIP-Eintraege
+| [.optional]#nein#
+
+|===

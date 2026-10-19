@@ -5,3 +5,6 @@ target/
 .idea/
 *.iml
 .vscode/
+build/
+docs/reference/biblios.local.yml
+docs/reference/.thoth/

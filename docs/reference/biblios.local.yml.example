@@ -1,0 +1,33 @@
+site:
+  title: GRETL-Referenzdokumentation
+  default_language: de
+  default_component: gretl-runtime
+  default_version: main
+
+output:
+  dir: ../../build/thoth-site
+  clean: true
+
+ui:
+  theme: default
+  show_version_badge: true
+  show_edit_link: false
+  show_source_link: false
+  content_toc: off
+  content_section_numbers: on
+  sidebar_toc_depth: 3
+
+content:
+  sources:
+    - id: gretl-runtime
+      display_name: GRETL Runtime
+      url: /pfad/zu/gretl-runtime
+      branches:
+        - name: main
+          display_version: Working tree
+      start_path: docs/reference
+      default_version: main
+      start_page: reference.adoc
+      render_mode: single_page
+      master_file: reference.adoc
+      sidebar_toc_numbers: on

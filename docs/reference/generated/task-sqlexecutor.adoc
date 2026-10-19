@@ -1,0 +1,17 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*database* = text#
+| Alias einer vorbereiteten PostgreSQL-Verbindung
+| [.required]#ja#
+
+| [.dsl-signature]#*scripts* = list#
+| Geordnete vollstaendige UTF-8-SQL-Scriptdateien
+| [.optional]#nein#
+
+| [.dsl-signature]#*statements* = list#
+| Geordnete PreparedStatements
+| [.optional]#nein#
+
+|===
