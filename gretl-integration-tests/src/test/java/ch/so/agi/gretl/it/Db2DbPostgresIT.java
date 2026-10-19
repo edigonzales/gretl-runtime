@@ -111,6 +111,70 @@ class Db2DbPostgresIT {
         }
     }
 
+
+    @Test
+    void copiesBetweenIndependentPostgresConnections() throws Exception {
+        try (PostgresFixture.Lease target = PostgresFixture.lease()) {
+            try (Connection connection = connection(target);
+                 Statement statement = connection.createStatement()) {
+                statement.execute("create table colors_copy (id int primary key, name text)");
+            }
+            Files.writeString(root.resolve("independent.sql"),
+                    "SELECT id, name FROM colors ORDER BY id", StandardCharsets.UTF_8);
+            JobRunner.Result result = JobRunner.run(root, """
+                    task('copy', Db2Db) {
+                        sourceDatabase = 'source'
+                        targetDatabase = 'target'
+                        transfers = [[
+                            sqlFile: file('independent.sql'),
+                            targetTable: 'colors_copy'
+                        ]]
+                    }
+                    defaults 'copy'
+                    """, config(lease, target));
+
+            assertEquals(0, result.code(), result.err());
+            try (Connection connection = connection(target);
+                 Statement statement = connection.createStatement();
+                 ResultSet rows = statement.executeQuery(
+                         "SELECT COUNT(*) FROM colors_copy")) {
+                rows.next();
+                assertEquals(2, rows.getInt(1));
+            }
+        }
+    }
+
+    @Test
+    void parameterSetFailureRollsBackAllSets() throws Exception {
+        try (Connection connection = connection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DELETE FROM colors_copy");
+        }
+        Files.writeString(root.resolve("parameterized.sql"),
+                "SELECT id, name FROM colors WHERE id = ${id}",
+                StandardCharsets.UTF_8);
+        JobRunner.Result result = JobRunner.run(root, """
+                task('copy', Db2Db) {
+                    sourceDatabase = 'db'
+                    targetDatabase = 'db'
+                    transfers = [[
+                        sqlFile: file('parameterized.sql'),
+                        targetTable: 'colors_copy'
+                    ]]
+                    sqlParameterSets = [[id: '1'], [id: '1']]
+                }
+                defaults 'copy'
+                """, config());
+
+        assertEquals(10, result.code(), result.out());
+        try (Connection connection = connection();
+             Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery("SELECT COUNT(*) FROM colors_copy")) {
+            rows.next();
+            assertEquals(0, rows.getInt(1));
+        }
+    }
+
     private Map<String, Object> config() throws Exception {
         Map<String, Object> config = JobRunner.baseConfig(root);
         JobRunner.secret(root, config, "dbPassword", lease.password());
@@ -122,7 +186,28 @@ class Db2DbPostgresIT {
         return config;
     }
 
+    private Map<String, Object> config(PostgresFixture.Lease source,
+                                       PostgresFixture.Lease target) throws Exception {
+        Map<String, Object> config = JobRunner.baseConfig(root);
+        JobRunner.secret(root, config, "dbPassword", source.password());
+        Map<String, Object> sourceDb = new LinkedHashMap<>();
+        sourceDb.put("jdbcUrl", source.jdbcUrl());
+        sourceDb.put("user", source.user());
+        sourceDb.put("passwordSecret", "dbPassword");
+        JobRunner.taskConfig(config, "source", sourceDb);
+        Map<String, Object> targetDb = new LinkedHashMap<>();
+        targetDb.put("jdbcUrl", target.jdbcUrl());
+        targetDb.put("user", target.user());
+        targetDb.put("passwordSecret", "dbPassword");
+        JobRunner.taskConfig(config, "target", targetDb);
+        return config;
+    }
+
     private Connection connection() throws Exception {
-        return DriverManager.getConnection(lease.jdbcUrl(), lease.user(), lease.password());
+        return connection(lease);
+    }
+
+    private Connection connection(PostgresFixture.Lease value) throws Exception {
+        return DriverManager.getConnection(value.jdbcUrl(), value.user(), value.password());
     }
 }

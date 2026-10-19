@@ -195,6 +195,53 @@ class DuckDbSqlExecutorOperationTest {
         assertThrows(IllegalArgumentException.class, params::build);
     }
 
+
+    @Test
+    void exportFailureLeavesNoFinalOrTempFile() throws Exception {
+        Path sql = Files.writeString(root.resolve("export.sql"), """
+                create schema if not exists result;
+                create table result.records as select 1 as id;
+                """, StandardCharsets.UTF_8);
+        Path good = root.resolve("good.parquet");
+        Path broken = root.resolve("broken.parquet");
+        DuckDbSqlExecutorOperation.DuckDbBuilder builder =
+                new DuckDbSqlExecutorOperation.DuckDbBuilder();
+        builder.setInMemory(true).setSqlFiles(List.of(sql))
+                .setExports(List.of(
+                        Map.of("type", "parquet", "name", "good",
+                                "query", "select * from result.records",
+                                "file", good, "overwrite", true),
+                        Map.of("type", "parquet", "name", "broken",
+                                "query", "select * from result.missing",
+                                "file", broken, "overwrite", true)));
+
+        assertThrows(DuckDbTaskException.class,
+                () -> new DuckDbSqlExecutorOperation.DuckDbHandler()
+                        .execute(builder.build(), context()));
+
+        assertTrue(Files.notExists(good));
+        assertTrue(Files.notExists(broken));
+        try (var files = Files.list(root)) {
+            assertEquals(0, files.filter(path -> path.getFileName().toString()
+                    .contains(".tmp.parquet")).count());
+        }
+    }
+
+    @Test
+    void rejectsUnsupportedSourceConfiguration() throws Exception {
+        Path sql = Files.writeString(root.resolve("valid.sql"), "select 1;",
+                StandardCharsets.UTF_8);
+        DuckDbSqlExecutorOperation.DuckDbBuilder builder =
+                new DuckDbSqlExecutorOperation.DuckDbBuilder();
+        builder.setInMemory(true).setSqlFiles(List.of(sql))
+                .setSources(List.of(Map.of("type", "xml", "alias", "input",
+                        "file", sql)));
+
+        assertThrows(DuckDbTaskException.class,
+                () -> new DuckDbSqlExecutorOperation.DuckDbHandler()
+                        .execute(builder.build(), context()));
+    }
+
     @Test
     void rejectsUnreadableAndNonSqlFiles() {
         DuckDbSqlExecutorOperation.DuckDbBuilder builder =

@@ -122,6 +122,88 @@ class S3TaskFamilyIT {
         assertTrue(lease.keys(lease.targetBucket()).isEmpty());
     }
 
+
+    @Test
+    void downloadsNestedSpecialKeysAndHonorsOverwrite() throws Exception {
+        lease = fixture.lease();
+        lease.put(lease.sourceBucket(), "folder/a b.txt", "alpha");
+        lease.put(lease.sourceBucket(), "folder/ümlaut.txt", "umlaut");
+        Path existing = root.resolve("downloads/folder/a b.txt");
+        Files.createDirectories(existing.getParent());
+        Files.writeString(existing, "old", StandardCharsets.UTF_8);
+        Map<String, Object> config = config();
+
+        JobRunner.Result blocked = JobRunner.run(root, s3Job("downloadBlocked", "S3Download",
+                "    bucketName = '" + lease.sourceBucket() + "'\n"
+                        + "    downloadDir = path('downloads')\n"
+                        + "    overwrite = false\n"), config);
+        assertEquals(10, blocked.code(), blocked.out());
+        assertEquals("old", Files.readString(existing, StandardCharsets.UTF_8));
+        try (var paths = Files.walk(root.resolve("downloads"))) {
+            assertFalse(paths.anyMatch(path -> path.getFileName().toString()
+                    .endsWith(".part")));
+        }
+
+        JobRunner.Result overwrite = JobRunner.run(root, s3Job("downloadOverwrite", "S3Download",
+                "    bucketName = '" + lease.sourceBucket() + "'\n"
+                        + "    downloadDir = path('downloads')\n"
+                        + "    overwrite = true\n"), config);
+        assertEquals(0, overwrite.code(), overwrite.err());
+        assertEquals("alpha", Files.readString(existing, StandardCharsets.UTF_8));
+        assertEquals("umlaut", Files.readString(
+                root.resolve("downloads/folder/ümlaut.txt"), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void bucketCopyPreservesSpecialKeysAndMetadata() throws Exception {
+        lease = fixture.lease();
+        Files.writeString(root.resolve("räumlich.txt"), "special", StandardCharsets.UTF_8);
+        lease.put(lease.sourceBucket(), "folder/with space.txt", "nested");
+        Map<String, Object> config = config();
+
+        JobRunner.Result upload = JobRunner.run(root, s3Job("uploadSpecial", "S3Upload",
+                "    bucketName = '" + lease.sourceBucket() + "'\n"
+                        + "    sourceFile = file('räumlich.txt')\n"
+                        + "    acl = 'private'\n"
+                        + "    metadata = [source: 'special']\n"), config);
+        assertEquals(0, upload.code(), upload.err());
+
+        JobRunner.Result copy = JobRunner.run(root, s3Job("copySpecial", "S3Bucket2Bucket",
+                "    sourceBucket = '" + lease.sourceBucket() + "'\n"
+                        + "    targetBucket = '" + lease.targetBucket() + "'\n"
+                        + "    acl = 'private'\n"), config);
+        assertEquals(0, copy.code(), copy.err());
+        assertEquals(List.of("folder/with space.txt", "räumlich.txt"),
+                lease.keys(lease.targetBucket()));
+        assertEquals("special", lease.head(lease.targetBucket(), "räumlich.txt")
+                .metadata().get("source"));
+        assertEquals("nested", lease.read(lease.targetBucket(), "folder/with space.txt"));
+    }
+
+    @Test
+    void uploadsAndDownloadsLargeObject() throws Exception {
+        lease = fixture.lease();
+        byte[] data = new byte[8 * 1024 * 1024];
+        for (int index = 0; index < data.length; index++) {
+            data[index] = (byte) (index * 31);
+        }
+        Files.write(root.resolve("large.bin"), data);
+        Map<String, Object> config = config();
+
+        JobRunner.Result upload = JobRunner.run(root, s3Job("uploadLarge", "S3Upload",
+                "    bucketName = '" + lease.sourceBucket() + "'\n"
+                        + "    sourceFile = file('large.bin')\n"
+                        + "    acl = 'private'\n"), config);
+        assertEquals(0, upload.code(), upload.err());
+        JobRunner.Result download = JobRunner.run(root, s3Job("downloadLarge", "S3Download",
+                "    bucketName = '" + lease.sourceBucket() + "'\n"
+                        + "    key = 'large.bin'\n"
+                        + "    downloadDir = path('large-download')\n"), config);
+        assertEquals(0, download.code(), download.err());
+        assertTrue(java.util.Arrays.equals(data,
+                Files.readAllBytes(root.resolve("large-download/large.bin"))));
+    }
+
     @Test
     void missingBucketFailsWithoutLeakingSecret() throws Exception {
         lease = fixture.lease();

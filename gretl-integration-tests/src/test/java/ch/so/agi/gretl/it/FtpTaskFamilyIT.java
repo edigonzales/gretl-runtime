@@ -78,6 +78,56 @@ class FtpTaskFamilyIT {
         assertFalse(lease.exists("upload.txt"));
     }
 
+
+    @Test
+    void deletesAllFilesAndHandlesEmptyDirectory() throws Exception {
+        lease = fixture.lease();
+        Files.writeString(root.resolve("one.txt"), "one", StandardCharsets.UTF_8);
+        Files.writeString(root.resolve("two.txt"), "two", StandardCharsets.UTF_8);
+        Map<String, Object> config = config(fixture.password());
+        assertEquals(0, JobRunner.run(root, ftpJob("uploadOne", "FtpUpload",
+                "    localFile = file('one.txt')\n"), config).code());
+        assertEquals(0, JobRunner.run(root, ftpJob("uploadTwo", "FtpUpload",
+                "    localFile = file('two.txt')\n"), config).code());
+
+        JobRunner.Result delete = JobRunner.run(root,
+                ftpJob("deleteAll", "FtpDelete", ""), config);
+        assertEquals(0, delete.code(), delete.err());
+        assertTrue(lease.list().isEmpty());
+        JobRunner.Result empty = JobRunner.run(root,
+                ftpJob("deleteEmpty", "FtpDelete", ""), config);
+        assertEquals(0, empty.code(), empty.err());
+    }
+
+    @Test
+    void binaryTransferPreservesBytesAndHonorsOverwrite() throws Exception {
+        lease = fixture.lease();
+        byte[] data = new byte[] {0, 1, 2, 13, 10, 27, (byte) 255};
+        Files.write(root.resolve("binary.bin"), data);
+        Map<String, Object> config = config(fixture.password());
+        JobRunner.Result upload = JobRunner.run(root, ftpJob("uploadBinary", "FtpUpload",
+                "    localFile = file('binary.bin')\n"
+                        + "    fileType = 'BINARY'\n"), config);
+        assertEquals(0, upload.code(), upload.err());
+        Path local = root.resolve("download/binary.bin");
+        Files.createDirectories(local.getParent());
+        Files.write(local, new byte[] {9, 9});
+        JobRunner.Result blocked = JobRunner.run(root, ftpJob("downloadBlocked", "FtpDownload",
+                "    localDir = path('download')\n"
+                        + "    remoteFiles = ['binary.bin']\n"
+                        + "    fileType = 'BINARY'\n"
+                        + "    overwrite = false\n"), config);
+        assertEquals(10, blocked.code(), blocked.out());
+        assertEquals(2, Files.size(local));
+        JobRunner.Result download = JobRunner.run(root, ftpJob("downloadBinary", "FtpDownload",
+                "    localDir = path('download')\n"
+                        + "    remoteFiles = ['binary.bin']\n"
+                        + "    fileType = 'BINARY'\n"
+                        + "    overwrite = true\n"), config);
+        assertEquals(0, download.code(), download.err());
+        assertTrue(java.util.Arrays.equals(data, Files.readAllBytes(local)));
+    }
+
     @Test
     void wrongPasswordFailsWithoutLeakingSecret() throws Exception {
         lease = fixture.lease();

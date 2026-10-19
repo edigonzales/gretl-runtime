@@ -33,8 +33,33 @@ oder einen In-Process-Mock abbilden lassen.
 | INTERLIS-Validierung | lokale Modelle/XTF | kein Backing-Service |
 | DuckDB | `DuckDbSqlExecutorOperationTest` und CLI-Test, Datei/In-Memory, CSV/GPKG/Parquet/XLSX | `DuckDbFederationPostgresIT` mit PostgreSQL und DuckDB-Extensions |
 
-Der reale PostgreSQL-Nachweis läuft ausschließlich über `PostgresSqlExecutorIT`
-und `Db2DbPostgresIT` im Profil `backing-services`.
+Der reale PostgreSQL-Nachweis läuft über `PostgresSqlExecutorIT`,
+`Db2DbPostgresIT`, `DuckDbFederationPostgresIT` und
+`PackagedSqlJobPostgresIT` im Profil `backing-services`.
+
+
+### Zusätzliche Docker-backed Szenarien
+
+Die 18 Tests in `gretl-integration-tests` sind bewusst breiter als reine
+Happy-Path-Aufrufe:
+
+- S3: verschachtelte und Unicode-Schlüssel, Überschreibschutz ohne
+  Temp-Reste, Bucket-Kopie mit Sonderzeichen/Metadaten, 8-MiB-Objekt.
+- FTP: Löschen aller Dateien und leeres Verzeichnis, binäre Bytes,
+  Überschreibschutz.
+- Db2Db: getrennte Quell-/Zielverbindungen und Rollback über mehrere
+  Parameter-Sets.
+- PostgreSQL: Script/Prepared/Rollback und echte PostGIS-Geometrie.
+- DuckDB: PostgreSQL-Quelle/-Ziel, `append`/`truncate`/`replace`.
+- Packaging: gebautes Job-JAR läuft als eigener Prozess gegen PostgreSQL.
+  Der Test setzt den Distributionsbuild voraus; im `backing-services`-Reaktor
+  wird `gretl-dist` vorher gebaut.
+
+Die 8 Failsafe-Tests in `gretl-dist` kommen separat hinzu; sie prüfen
+Distribution, Launcher, Job-JAR-Paketierung und lokale Integrationen ohne
+Docker. Die Bezeichnung „18 Integrationstests“ meint daher ausschließlich das
+Profil `backing-services`.
+
 
 ## Integrationstests ausführen
 
@@ -108,7 +133,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**365 Tests** (351 Standard + 4 GeoTools + 10 Backing-Services).
+**375 Tests** (353 Standard + 4 GeoTools + 18 Backing-Services).
 
 ## Grenzen
 
