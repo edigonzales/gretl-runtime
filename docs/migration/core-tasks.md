@@ -51,6 +51,20 @@ einer alphabetischen Taskliste.
 `gretl-core-tasks` mit Paketen je Gruppe. Ein Split in eigene Remote-/INTERLIS-Module erfolgt erst
 bei einem konkreten Dependency- oder Grössenproblem.
 
+## Backing-Service-Abnahme
+
+Der Standardbuild bleibt Docker-frei; echte Backing-Services laufen im Profil
+`backing-services` (siehe [`testing.md`](../implementation/testing.md)).
+
+- PostgreSQL/PostGIS: Testcontainers, echtes PostgreSQL 16 mit PostGIS.
+- FTP: echter `delfer/alpine-ftp-server`-Container.
+- S3: Floci/Testcontainers ab Welle 3.
+- HTTP: Host-Tests mit `HttpServer`; Container erst für Runtime-Image-Pfade.
+
+Eine Task gilt nicht als migriert, wenn sie einen Backing-Service nur mit H2
+oder einem Mock testet. Mindestens ein positiver Contract-Pfad und die
+kritischen Fehlerfälle müssen gegen den echten Dienst laufen.
+
 ## Shapefile-Referenz
 
 Für die Shapefile-Tasks (`ShpImport`, `ShpExport`, `ShpValidator`, `Gpkg2Shp`)
@@ -140,3 +154,5 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
 4. Danach DB, tabellarische Formate und Geodaten.
 5. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die Shapefile-Regeln aus diesem
    Dokument als Testfälle übernehmen, bevor die Tasks als migriert gelten.
+6. Vor Welle 3 den S3-Backing-Service-Test (Floci), vor Welle 6 den
+   PostGIS-Test ergänzen.

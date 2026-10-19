@@ -50,6 +50,7 @@
     <xmlresolver.version>4.4.3</xmlresolver.version>
     <commons-net.version>3.6</commons-net.version>
     <mockftpserver.version>2.7.1</mockftpserver.version>
+    <testcontainers.version>1.21.4</testcontainers.version>
     <commons-compress.version>1.27.1</commons-compress.version>
   </properties>
 
@@ -210,6 +211,17 @@
       <id>geotools-probe</id>
       <modules>
         <module>gretl-geotools-probe</module>
+      </modules>
+    </profile>
+
+    <!--
+      Docker-backed integration tests for real backing services. Deliberately
+      opt-in: the default verify build stays Docker-free.
+    -->
+    <profile>
+      <id>backing-services</id>
+      <modules>
+        <module>gretl-integration-tests</module>
       </modules>
     </profile>
   </profiles>

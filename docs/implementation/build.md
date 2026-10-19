@@ -52,9 +52,13 @@ export PATH="$JAVA_HOME/bin:$PATH"
 12. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
 13. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
-    und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests.
+    und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests,
+14. **gretl-integration-tests** — nur mit `-Pbacking-services`:
+    PostgreSQL/PostGIS und echter FTP-Container, 4 Failsafe-Tests.
 
-Erwartet: **334 Tests**, 0 Fehler, `BUILD SUCCESS`.
+Erwartet: **334 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+`backing-services` ergänzt 4 Docker-backed Integrationstests; Details stehen in
+[`testing.md`](testing.md).
 
 ### Artefakte
 
@@ -301,25 +305,23 @@ Logging-Lücke ausgewiesen.
   und restricted Reportartefakt; gültige Läufe melden eine INFO-Diagnose.
 - Kein EHI-Feldadapter, kein Sampling und keine separate Validator-JVM in M5.
 
-## 7. Optionaler Live-PostgreSQL-Nachweis
+## 7. Backing-Service-Integration
 
 ```sh
-docker run --rm -d --name gretl-pg \
-  -e POSTGRES_PASSWORD=gretl -e POSTGRES_USER=gretl -e POSTGRES_DB=gretl \
-  -p 55432:5432 postgres:17-alpine
-
-./mvnw -pl gretl-basic-tasks -am test \
-  -Dtest=PostgresLiveIT \
-  -Dgretl.postgres.url=jdbc:postgresql://127.0.0.1:55432/gretl \
-  -Dgretl.postgres.user=gretl \
-  -Dgretl.postgres.password=gretl
-
-docker stop gretl-pg
+./mvnw -Pbacking-services verify
 ```
 
-Der Lauf prüft mehrere Statements in einem Script, Semikolon im String,
-Dollar-Quote, Prepared-Apostroph/null und Rollback nach dem zweiten Fehler.
-`PostgresLiveIT` ist kein Bestandteil des Standard-`verify`.
+Das Profil bindet `gretl-integration-tests` ein und startet über Testcontainers
+einen PostgreSQL-16-/PostGIS-Container sowie einen echten FTP-Container. Die
+Tests prüfen echte Groovy-Jobs über die CLI, inklusive Schema-Isolation,
+Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
+Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
+Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
+
+Der frühere manuelle `PostgresLiveIT` bleibt als optionaler Fallback
+(`-Dtest=PostgresLiveIT -Dgretl.postgres.*=...`) erhalten, ist aber nicht das
+Gate. Kombiniert mit GeoTools und Backing-Services werden **342 Tests**
+ausgeführt. Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
 
@@ -352,7 +354,7 @@ Bestandteil der Scriptdistribution.
 Zentrale Versionen: Groovy 6.0.0 (`groovy`, `groovy-json`), SLF4J 2.0.20,
 Logback 1.6.5, Commons Compress 1.27.1, pgJDBC 42.7.14, H2 2.3.232 (nur Test),
 ilivalidator 1.15.0 / ehibasics 1.4.1, Saxon 11.4, xmlresolver 4.4.3,
-Commons Net 3.6,
+Commons Net 3.6, Testcontainers 1.21.4 (nur `backing-services`),
 JUnit 5.14.4, GeoTools 35.2 (nur Profil).
 
 Zusätzliche Plugins: `maven-assembly-plugin` 3.7.1 für die Distribution,
@@ -384,6 +386,9 @@ Erweiterungs-JAR im isolierten Distributionslauf.
 - Die Distributionsassembly kann den internen `gretl-dist`-Projektartefakt-
   Hinweis ausgeben; das ZIP enthält dennoch Launcher, Runtime, Tasks, Beispiele
   und Erweiterungsbereich.
+- Das Profil `backing-services` benötigt Docker und lädt die gepinnten
+  PostGIS-/FTP-Images; ohne Docker schlägt es bewusst fehl. Der Standard-`verify`
+  bleibt Docker-frei.
 - `inventory.json` und `SHA256SUMS` sind vorhanden. Die Prüfsummen sind keine
   Signatur; `sourceRevision` ist im Working-Tree-Build kein Commit. Der
   Report-Inventarhash bleibt ein Katalogfingerabdruck, kein Hash aller JARs.

@@ -27,8 +27,8 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Run all tests including GeoTools profile
-        run: ./mvnw -B -Pgeotools-probe clean verify
+      - name: Run all tests including GeoTools and backing-service profiles
+        run: ./mvnw -B -Pgeotools-probe,backing-services clean verify
 
       - name: Publish snapshot artefacts
         env:

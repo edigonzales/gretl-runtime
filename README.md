@@ -34,6 +34,9 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - M0-Bericht (historisch): [`docs/implementation/m0-report.md`](docs/implementation/m0-report.md)
 - Standardprüfung: `./mvnw verify` mit JDK 25 (**334 Tests**)
 - GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**338 Tests**)
+- Backing-Services (Docker): `./mvnw -Pbacking-services verify` (4 Integrationstests)
+- Kombiniert mit GeoTools: `./mvnw -Pgeotools-probe,backing-services verify` (**342 Tests**)
+- Teststrategie: [`docs/implementation/testing.md`](docs/implementation/testing.md)
 - Scriptdistribution: `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip`
 
 Paketieren und starten:
