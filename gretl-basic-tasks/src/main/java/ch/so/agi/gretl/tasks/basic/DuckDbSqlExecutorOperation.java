@@ -1,34 +1,32 @@
 package ch.so.agi.gretl.tasks.basic;
 
-import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.Fields;
 import ch.so.agi.gretl.runtime.api.InputField;
-import ch.so.agi.gretl.runtime.api.LogLevel;
 import ch.so.agi.gretl.runtime.api.OperationContext;
 import ch.so.agi.gretl.runtime.api.OperationHandler;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.OutputField;
-import ch.so.agi.gretl.runtime.api.Progress;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalLong;
+import java.util.Set;
 
-/** DuckDbSqlExecutor task: execute SQL files against a DuckDB database. */
+/** DuckDbSqlExecutor task: DuckDB SQL plus federated sources and exports. */
 public final class DuckDbSqlExecutorOperation {
     public static final String ID = "gretl.duckdb-sql-executor";
     public static final String SYMBOL = "DuckDbSqlExecutor";
+    private static final Set<String> SOURCE_KEYS = Set.of(
+            "type", "alias", "file", "table", "layer", "mode", "header",
+            "delimiter", "allVarchar", "database", "tables");
+    private static final Set<String> TARGET_KEYS = Set.of(
+            "type", "alias", "database");
+    private static final Set<String> EXPORT_KEYS = Set.of(
+            "type", "name", "query", "file", "layer", "srs", "sheet",
+            "header", "sheetRowLimit", "overwrite", "target", "table",
+            "mode", "create", "writePath");
 
     private DuckDbSqlExecutorOperation() {
     }
@@ -44,11 +42,40 @@ public final class DuckDbSqlExecutorOperation {
                 Optional.of(false), List.of(), "inMemory = true",
                 DuckDbSqlExecutorOperation::bool,
                 (builder, value) -> ((DuckDbBuilder) builder).setInMemory(value));
+        InputField<DuckDbRequest, Boolean> installExtensions = new InputField<>(
+                "installExtensions", "boolean",
+                "Install required DuckDB extensions before loading them", false,
+                Optional.of(false), List.of(), "installExtensions = true",
+                DuckDbSqlExecutorOperation::bool,
+                (builder, value) -> ((DuckDbBuilder) builder)
+                        .setInstallExtensions(value));
         InputField<DuckDbRequest, List<Path>> sqlFiles = new InputField<>(
                 "sqlFiles", "list", "Ordered SQL files", true,
                 Optional.empty(), List.of(), "sqlFiles = [file('sql/analyse.sql')]",
                 DuckDbSqlExecutorOperation::paths,
                 (builder, value) -> ((DuckDbBuilder) builder).setSqlFiles(value));
+        InputField<DuckDbRequest, List<Map<String, Object>>> sources = new InputField<>(
+                "sources", "list",
+                "Federated CSV, GeoPackage or PostgreSQL sources",
+                false, Optional.of(List.of()), List.of(),
+                "sources = [[type: 'csv', alias: 'input', file: file('data.csv')]]",
+                value -> mapList(value, SOURCE_KEYS, "sources"),
+                (builder, value) -> ((DuckDbBuilder) builder).setSources(value));
+        InputField<DuckDbRequest, List<Map<String, Object>>> exports = new InputField<>(
+                "exports", "list",
+                "Parquet, GeoPackage, XLSX or PostgreSQL exports",
+                false, Optional.of(List.of()), List.of(),
+                "exports = [[type: 'parquet', name: 'out', query: 'select * from input.data', "
+                        + "file: file('out.parquet'), overwrite: true]]",
+                value -> mapList(value, EXPORT_KEYS, "exports"),
+                (builder, value) -> ((DuckDbBuilder) builder).setExports(value));
+        InputField<DuckDbRequest, List<Map<String, Object>>> targets = new InputField<>(
+                "targets", "list",
+                "Writable PostgreSQL targets",
+                false, Optional.of(List.of()), List.of(),
+                "targets = [[type: 'postgres', alias: 'target', database: 'pg']]",
+                value -> mapList(value, TARGET_KEYS, "targets"),
+                (builder, value) -> ((DuckDbBuilder) builder).setTargets(value));
         InputField<DuckDbRequest, Map<String, String>> parameters = new InputField<>(
                 "sqlParameters", "map", "SQL parameters for one execution of all SQL files",
                 false, Optional.of(Map.of()), List.of(), "sqlParameters = [year: '2024']",
@@ -66,16 +93,38 @@ public final class DuckDbSqlExecutorOperation {
         OutputField<DuckDbResult, List<DuckDbExecution>> executions = Fields.output(
                 "executions", "list", "Statement results in execution order", false,
                 DuckDbResult::executions);
+        OutputField<DuckDbResult, List<Path>> exportFiles = Fields.output(
+                "exportFiles", "list", "Written export files", false,
+                DuckDbResult::exportFiles);
         return new OperationType<>(
-                ID, SYMBOL, "Execute SQL files against DuckDB",
+                ID, SYMBOL, "Execute SQL with DuckDB federation and exports",
                 DuckDbRequest.class, DuckDbResult.class,
                 DuckDbBuilder::new, DuckDbHandler::new,
-                List.of(database, inMemory, sqlFiles, parameters, parameterSets),
-                List.of(executionCount, executions),
+                List.of(database, inMemory, installExtensions, sqlFiles, sources,
+                        targets, exports, parameters, parameterSets),
+                List.of(executionCount, executions, exportFiles),
                 """
                 task('analyse', DuckDbSqlExecutor) {
                     database = file('build/work.duckdb')
                     sqlFiles = [file('sql/analyse.sql')]
+                    sources = [[
+                        type: 'csv',
+                        alias: 'input',
+                        file: file('data/input.csv'),
+                        table: 'data'
+                    ]]
+                    targets = [[
+                        type: 'postgres',
+                        alias: 'target',
+                        database: 'pg'
+                    ]]
+                    exports = [[
+                        type: 'parquet',
+                        name: 'result',
+                        query: 'SELECT * FROM input.data',
+                        file: file('build/result.parquet'),
+                        overwrite: true
+                    ]]
                 }
                 """);
     }
@@ -86,18 +135,25 @@ public final class DuckDbSqlExecutorOperation {
         }
     }
 
-    public record DuckDbResult(int executionCount, List<DuckDbExecution> executions) {
+    public record DuckDbResult(
+            int executionCount, List<DuckDbExecution> executions, List<Path> exportFiles) {
         public DuckDbResult {
             executions = List.copyOf(executions);
+            exportFiles = List.copyOf(exportFiles);
         }
     }
 
     public record DuckDbRequest(
-            Path database, boolean inMemory, List<Path> sqlFiles,
+            Path database, boolean inMemory, boolean installExtensions,
+            List<Path> sqlFiles, List<Map<String, Object>> sources,
+            List<Map<String, Object>> targets, List<Map<String, Object>> exports,
             Map<String, String> sqlParameters,
             List<Map<String, String>> sqlParameterSets) {
         public DuckDbRequest {
             sqlFiles = List.copyOf(sqlFiles);
+            sources = copyMaps(sources);
+            targets = copyMaps(targets);
+            exports = copyMaps(exports);
             sqlParameters = Map.copyOf(sqlParameters);
             sqlParameterSets = sqlParameterSets.stream().map(Map::copyOf).toList();
         }
@@ -107,7 +163,11 @@ public final class DuckDbSqlExecutorOperation {
             implements ch.so.agi.gretl.runtime.api.ConfigBuilder<DuckDbRequest> {
         private Path database;
         private boolean inMemory;
+        private boolean installExtensions;
         private List<Path> sqlFiles = List.of();
+        private List<Map<String, Object>> sources = List.of();
+        private List<Map<String, Object>> targets = List.of();
+        private List<Map<String, Object>> exports = List.of();
         private Map<String, String> sqlParameters = Map.of();
         private List<Map<String, String>> sqlParameterSets = List.of();
 
@@ -121,8 +181,28 @@ public final class DuckDbSqlExecutorOperation {
             return this;
         }
 
+        public DuckDbBuilder setInstallExtensions(Boolean value) {
+            installExtensions = Boolean.TRUE.equals(value);
+            return this;
+        }
+
         public DuckDbBuilder setSqlFiles(List<Path> value) {
             sqlFiles = value == null ? List.of() : value;
+            return this;
+        }
+
+        public DuckDbBuilder setSources(List<Map<String, Object>> value) {
+            sources = value == null ? List.of() : value;
+            return this;
+        }
+
+        public DuckDbBuilder setTargets(List<Map<String, Object>> value) {
+            targets = value == null ? List.of() : value;
+            return this;
+        }
+
+        public DuckDbBuilder setExports(List<Map<String, Object>> value) {
+            exports = value == null ? List.of() : value;
             return this;
         }
 
@@ -150,8 +230,8 @@ public final class DuckDbSqlExecutorOperation {
                         "Use either sqlParameters or sqlParameterSets, not both");
             }
             return new DuckDbRequest(database == null ? null
-                    : database.toAbsolutePath().normalize(), inMemory, sqlFiles,
-                    sqlParameters, sqlParameterSets);
+                    : database.toAbsolutePath().normalize(), inMemory, installExtensions,
+                    sqlFiles, sources, targets, exports, sqlParameters, sqlParameterSets);
         }
     }
 
@@ -159,123 +239,7 @@ public final class DuckDbSqlExecutorOperation {
             implements OperationHandler<DuckDbRequest, DuckDbResult> {
         @Override
         public DuckDbResult execute(DuckDbRequest request, OperationContext context) {
-            List<Map<String, String>> parameterSets = request.sqlParameterSets().isEmpty()
-                    ? List.of(Map.of()) : request.sqlParameterSets();
-            if (!request.sqlParameters().isEmpty()) {
-                parameterSets = List.of(request.sqlParameters());
-            }
-            List<DuckDbExecution> executions = new ArrayList<>();
-            int index = 0;
-            try {
-                if (request.database() != null) {
-                    Files.createDirectories(request.database().getParent());
-                }
-                String url = request.inMemory()
-                        ? "jdbc:duckdb:" : "jdbc:duckdb:" + request.database();
-                try (Connection connection = DriverManager.getConnection(url)) {
-                    connection.setAutoCommit(false);
-                    try {
-                        for (Map<String, String> parameters : parameterSets) {
-                            for (Path sqlFile : request.sqlFiles()) {
-                                List<String> statements = statements(sqlFile, parameters, context);
-                                for (String statement : statements) {
-                                    context.cancellation().throwIfCancellationRequested();
-                                    executions.add(execute(connection, statement, index++));
-                                    context.progress(new Progress("duckdb", index,
-                                            OptionalLong.empty(), "statements"));
-                                }
-                            }
-                        }
-                        connection.commit();
-                    } catch (Exception exception) {
-                        rollback(connection);
-                        throw exception;
-                    }
-                }
-                context.log().log(LogLevel.INFO, "gretl.duckdb.finished",
-                        msg(context, "task.duckdb.finished"),
-                        Map.of("duckdb.statements", Integer.toString(index)), null);
-                return new DuckDbResult(index, executions);
-            } catch (DuckDbTaskException exception) {
-                logFailure(context, exception);
-                throw exception;
-            } catch (SQLException | IOException exception) {
-                DuckDbTaskException wrapped = new DuckDbTaskException("DUCKDB_EXECUTION",
-                        msg(context, "task.duckdb.failed"), "execute", exception);
-                logFailure(context, wrapped);
-                throw wrapped;
-            }
-        }
-
-        private static List<String> statements(Path sqlFile, Map<String, String> parameters,
-                                               OperationContext context) throws IOException {
-            if (!Files.isReadable(sqlFile)
-                    || !sqlFile.getFileName().toString().toLowerCase(java.util.Locale.ROOT)
-                    .endsWith(".sql")) {
-                throw new DuckDbTaskException("DUCKDB_FILE",
-                        msg(context, "task.duckdb.file", sqlFile), "prepare", null);
-            }
-            String sql = Files.readString(sqlFile, StandardCharsets.UTF_8);
-            if (sql.isBlank()) {
-                throw new DuckDbTaskException("DUCKDB_FILE",
-                        msg(context, "task.duckdb.file", sqlFile), "prepare", null);
-            }
-            try {
-                return Db2DbSupport.split(
-                        Db2DbSupport.substitute(sql, parameters, context));
-            } catch (Db2DbTaskException exception) {
-                throw new DuckDbTaskException("DUCKDB_PARAMETER",
-                        exception.getMessage(), "prepare", exception);
-            }
-        }
-
-        private static DuckDbExecution execute(Connection connection, String sql, int index)
-                throws SQLException {
-            try (Statement statement = connection.createStatement()) {
-                boolean hasResult = statement.execute(sql);
-                List<Long> updates = new ArrayList<>();
-                int resultSets = 0;
-                boolean current = hasResult;
-                while (true) {
-                    if (current) {
-                        try (ResultSet rows = statement.getResultSet()) {
-                            if (rows != null) {
-                                resultSets++;
-                                while (rows.next()) {
-                                    // Consume and close result sets.
-                                }
-                            }
-                        }
-                    } else {
-                        long updateCount = statement.getUpdateCount();
-                        if (updateCount < 0) {
-                            break;
-                        }
-                        updates.add(updateCount);
-                    }
-                    current = statement.getMoreResults();
-                }
-                return new DuckDbExecution(index, updates, resultSets);
-            }
-        }
-
-        private static void rollback(Connection connection) {
-            try {
-                connection.rollback();
-            } catch (SQLException ignored) {
-                // Preserve the primary failure.
-            }
-        }
-
-        private static void logFailure(OperationContext context,
-                                       DuckDbTaskException exception) {
-            context.log().log(LogLevel.WARN, "gretl.duckdb.failed",
-                    msg(context, "task.duckdb.failed"),
-                    Map.of("duckdb.phase", exception.phase()), exception);
-        }
-
-        private static String msg(OperationContext context, String key, Object... args) {
-            return Messages.format(context.locale(), key, args);
+            return new DuckDbFederationEngine().execute(request, context);
         }
     }
 
@@ -301,6 +265,31 @@ public final class DuckDbSqlExecutorOperation {
         List<Path> result = new ArrayList<>();
         for (Object element : raw) {
             result.add(path(element));
+        }
+        return List.copyOf(result);
+    }
+
+    private static List<Map<String, Object>> mapList(Object value, Set<String> allowed,
+                                                      String field) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Object element : list(value)) {
+            if (!(element instanceof Map<?, ?> map)) {
+                throw new IllegalArgumentException(field + " contains no map");
+            }
+            Map<String, Object> converted = new LinkedHashMap<>();
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                String key = String.valueOf(entry.getKey());
+                if (!allowed.contains(key)) {
+                    throw new IllegalArgumentException(
+                            field + " contains unknown field: " + key);
+                }
+                if (entry.getValue() == null) {
+                    throw new IllegalArgumentException(
+                            field + " field must not be null: " + key);
+                }
+                converted.put(key, entry.getValue());
+            }
+            result.add(Map.copyOf(converted));
         }
         return List.copyOf(result);
     }
@@ -343,5 +332,19 @@ public final class DuckDbSqlExecutorOperation {
             throw new IllegalArgumentException("List expected");
         }
         return result;
+    }
+
+    private static List<Map<String, Object>> copyMaps(List<Map<String, Object>> values) {
+        return values.stream().map(map -> {
+            Map<String, Object> copy = new LinkedHashMap<>();
+            map.forEach((key, value) -> {
+                if (value == null) {
+                    throw new IllegalArgumentException(
+                            "DuckDB map value must not be null: " + key);
+                }
+                copy.put(key, value);
+            });
+            return Map.copyOf(copy);
+        }).toList();
     }
 }

@@ -31,7 +31,7 @@ oder einen In-Process-Mock abbilden lassen.
 | S3 | keine Unit-Server; Builder-/Pfadtests | `S3TaskFamilyIT` mit Floci/Testcontainers |
 | XSLT/Gzip | lokale Temp-Dateien | kein Backing-Service |
 | INTERLIS-Validierung | lokale Modelle/XTF | kein Backing-Service |
-| DuckDB | `DuckDbSqlExecutorOperationTest` und CLI-Test, Datei/In-Memory | kein Docker; Föderation/Exporte noch nicht migriert |
+| DuckDB | `DuckDbSqlExecutorOperationTest` und CLI-Test, Datei/In-Memory, CSV/GPKG/Parquet/XLSX | `DuckDbFederationPostgresIT` mit PostgreSQL und DuckDB-Extensions |
 
 Der reale PostgreSQL-Nachweis läuft ausschließlich über `PostgresSqlExecutorIT`
 und `Db2DbPostgresIT` im Profil `backing-services`.
@@ -108,7 +108,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**361 Tests** (349 Standard + 4 GeoTools + 8 Backing-Services).
+**365 Tests** (351 Standard + 4 GeoTools + 10 Backing-Services).
 
 ## Grenzen
 
@@ -116,8 +116,9 @@ Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
   dafür ist das Profil zuständig.
 - PostGIS-Tasktests existieren erst mit den Geodaten-/Ili2pg-Wellen; der
   PostGIS-Container steht bereits bereit.
-- `DuckDbSqlExecutor` deckt den SQL-Kern ab. Föderierte Quellen/Ziele und
-  Exporte aus gretl-next sind noch nicht Bestandteil der Runtime-Migration.
+- `DuckDbSqlExecutor` deckt den SQL-Kern und die Föderation ab; ein
+  PostGIS-Geometrie-Mapping für PostgreSQL-Quellen ist noch nicht separat
+  getestet.
 - HTTP-Container werden erst benötigt, wenn Jobs aus einem Runtime-Image gegen
   den Fixture-Host laufen; die aktuellen Host-Tests nutzen den JDK-`HttpServer`.
 - Die Integrationstests laufen sequenziell (`forkCount=1`), damit geteilte

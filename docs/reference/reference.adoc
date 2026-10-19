@@ -577,23 +577,49 @@ include::generated/task-db2db.adoc[]
 === DuckDbSqlExecutor
 
 `DuckDbSqlExecutor` führt SQL-Dateien gegen eine DuckDB-Datei oder eine
-In-Memory-Datenbank aus.
+In-Memory-Datenbank aus und kann föderierte Quellen, PostgreSQL-Ziele und
+Exporte einbinden.
 
 [source,groovy]
 ----
-task('analyse', DuckDbSqlExecutor) {
-    database = file('build/work.duckdb')
-    sqlFiles = [file('sql/analyse.sql')]
+task('federation', DuckDbSqlExecutor) {
+    inMemory = true
+    installExtensions = true
+    sqlFiles = [file('sql/transform.sql')]
+
+    sources = [[
+        type: 'postgres',
+        alias: 'src',
+        database: 'sourceDb',
+        tables: [[table: 'public.colors', alias: 'colors']]
+    ]]
+
+    targets = [[
+        type: 'postgres',
+        alias: 'target',
+        database: 'targetDb'
+    ]]
+
+    exports = [[
+        type: 'postgres',
+        name: 'result',
+        target: 'target',
+        table: 'public.colors_copy',
+        query: 'SELECT * FROM result.colors',
+        mode: 'replace',
+        create: true
+    ]]
 }
 ----
 
-Die SQL-Dateien werden in Reihenfolge ausgeführt. Parameter werden mit
-`${name}` substituiert; `sqlParameterSets` führt alle Dateien für jede
-Parameter-Map aus. Ergebnisse sind `executionCount` und `executions`.
-
-Die Runtime-Migration deckt den SQL-Kern ab. Die föderierten Quellen/Ziele und
-Exporte aus gretl-next (PostgreSQL/GPKG/CSV/Parquet/XLSX) sind nicht Bestandteil
-dieser Welle.
+Unterstützte Quellen sind `csv`, `gpkg` und `postgres`, Ziele sind
+`postgres`. Exporte unterstützen `parquet`, `gpkg`, `xlsx` und `postgres`.
+`mode` steuert bei Quellen `view` oder `materialize`; PostgreSQL-Exporte
+kennen `append`, `truncate` und `replace`. `installExtensions` installiert
+fehlende DuckDB-Extensions, andernfalls werden sie nur geladen. Die SQL-Dateien
+werden in Reihenfolge ausgeführt; `${name}` wird aus `sqlParameters` bzw.
+`sqlParameterSets` substituiert. Ergebnisse sind `executionCount`, `executions`
+und `exportFiles`.
 
 Die Property-Tabelle fasst die Felder zusammen:
 

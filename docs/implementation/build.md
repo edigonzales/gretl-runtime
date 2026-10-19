@@ -43,7 +43,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Runbericht, Logback-Bridge, 18 Tests,
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
-7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB, Provider, 47 Tests,
+7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB-Föderation, Provider, 49 Tests,
 8. **gretl-core-tasks** — XSLT, FTP, S3, Saxon, Commons Net, AWS SDK, 23 Tests,
 9. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
    AsciiDoc-Tabellen, Curl-/SQL-/DuckDB-Integration, Distribution-nahe Integration, 60 Tests,
@@ -54,10 +54,10 @@ export PATH="$JAVA_HOME/bin:$PATH"
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
     und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests,
 14. **gretl-integration-tests** — nur mit `-Pbacking-services`:
-    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, 8 Failsafe-Tests.
+    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, 10 Failsafe-Tests.
 
-Erwartet: **349 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
-`backing-services` ergänzt 8 Docker-backed Integrationstests; Details stehen in
+Erwartet: **351 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+`backing-services` ergänzt 10 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
 ### Artefakte
@@ -288,8 +288,13 @@ Logging-Lücke ausgewiesen.
 - `sqlParameters`/`sqlParameterSets`, `batchSize` und `fetchSize` entsprechen
   der bisherigen Semantik.
 - `DuckDbSqlExecutor` führt SQL-Dateien gegen eine DuckDB-Datei oder
-  In-Memory-Datenbank aus. Der SQL-Kern ist migriert; die föderierten
-  Quellen/Ziele und Exporte aus gretl-next bleiben eine spätere Ausbaustufe.
+  In-Memory-Datenbank aus und unterstützt die gretl-next-Föderation:
+  CSV-, GeoPackage- und PostgreSQL-Quellen, beschreibbare PostgreSQL-Ziele
+  sowie Parquet-, GeoPackage-, XLSX- und PostgreSQL-Exporte.
+- Quellen und Ziele werden über `view` oder `materialize` aufgebaut; Exporte
+  laufen nach den SQL-Dateien, Dateiexporte atomar über Temp-Dateien.
+- DuckDB-Extensions (`spatial`, `postgres`, `excel`) werden geladen und mit
+  `installExtensions` bei Bedarf installiert.
 - DuckDB 1.5.2.0 bringt native Bibliotheken mit; das Job-JAR-Limit für einzelne
   Einträge wurde deshalb auf 256 MiB angehoben.
 
@@ -346,7 +351,7 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Kombiniert mit GeoTools und Backing-Services werden **361 Tests** ausgeführt.
+Kombiniert mit GeoTools und Backing-Services werden **365 Tests** ausgeführt.
 Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
@@ -355,7 +360,7 @@ Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **353 Tests** (349 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **355 Tests** (351 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.

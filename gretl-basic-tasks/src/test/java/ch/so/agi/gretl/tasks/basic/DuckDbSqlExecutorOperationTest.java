@@ -90,6 +90,88 @@ class DuckDbSqlExecutorOperationTest {
         }
     }
 
+
+    @Test
+    void readsCsvAndExportsParquet() throws Exception {
+        Path csv = Files.writeString(root.resolve("input.csv"), """
+                id;name
+                1;red
+                2;blue
+                """, StandardCharsets.UTF_8);
+        Path sql = Files.writeString(root.resolve("transform.sql"), """
+                create schema if not exists result;
+                create table result.records as select * from input.data order by id;
+                """, StandardCharsets.UTF_8);
+        Path parquet = root.resolve("records.parquet");
+        DuckDbSqlExecutorOperation.DuckDbBuilder builder =
+                new DuckDbSqlExecutorOperation.DuckDbBuilder();
+        builder.setInMemory(true).setSqlFiles(List.of(sql))
+                .setSources(List.of(Map.of("type", "csv", "alias", "input",
+                        "file", csv, "table", "data", "header", true, "delimiter", ";")))
+                .setExports(List.of(Map.of("type", "parquet", "name", "records",
+                        "query", "select * from result.records", "file", parquet,
+                        "overwrite", true)));
+
+        DuckDbSqlExecutorOperation.DuckDbResult result =
+                new DuckDbSqlExecutorOperation.DuckDbHandler()
+                        .execute(builder.build(), context());
+
+        assertEquals(List.of(parquet), result.exportFiles());
+        try (Connection connection = DriverManager.getConnection("jdbc:duckdb:");
+             Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery(
+                     "select count(*) from read_parquet('" + parquet + "')")) {
+            rows.next();
+            assertEquals(2, rows.getInt(1));
+        }
+    }
+
+    @Test
+    void readsGpkgAndExportsGpkgAndXlsx() throws Exception {
+        Path input = root.resolve("input.gpkg");
+        try (Connection connection = DriverManager.getConnection("jdbc:duckdb:");
+             Statement statement = connection.createStatement()) {
+            statement.execute("install spatial");
+            statement.execute("load spatial");
+            statement.execute("copy (select 1 as id, 'red' as name, "
+                    + "ST_Point(8, 47) as geom) to '" + input
+                    + "' with (format gdal, driver 'GPKG', srs '4326')");
+        }
+        Path sql = Files.writeString(root.resolve("gpkg.sql"), """
+                create schema if not exists result;
+                create table result.records as select * from input.input;
+                """, StandardCharsets.UTF_8);
+        Path gpkg = root.resolve("result.gpkg");
+        Path xlsx = root.resolve("result.xlsx");
+        DuckDbSqlExecutorOperation.DuckDbBuilder builder =
+                new DuckDbSqlExecutorOperation.DuckDbBuilder();
+        builder.setInMemory(true).setInstallExtensions(true).setSqlFiles(List.of(sql))
+                .setSources(List.of(Map.of("type", "gpkg", "alias", "input",
+                        "file", input, "layer", "input")))
+                .setExports(List.of(
+                        Map.of("type", "gpkg", "name", "records", "layer", "records",
+                                "query", "select * from result.records",
+                                "file", gpkg, "overwrite", true),
+                        Map.of("type", "xlsx", "name", "sheet", "sheet", "Records",
+                                "query", "select * from result.records",
+                                "file", xlsx, "overwrite", true)));
+
+        DuckDbSqlExecutorOperation.DuckDbResult result =
+                new DuckDbSqlExecutorOperation.DuckDbHandler()
+                        .execute(builder.build(), context());
+
+        assertEquals(List.of(gpkg, xlsx), result.exportFiles());
+        try (Connection connection = DriverManager.getConnection("jdbc:duckdb:");
+             Statement statement = connection.createStatement()) {
+            statement.execute("load spatial");
+            try (ResultSet rows = statement.executeQuery(
+                    "select count(*) from ST_Read('" + gpkg + "')")) {
+                rows.next();
+                assertEquals(1, rows.getInt(1));
+            }
+        }
+    }
+
     @Test
     void validatesDatabaseSelectionAndParameters() throws Exception {
         Path sql = Files.writeString(root.resolve("valid.sql"),

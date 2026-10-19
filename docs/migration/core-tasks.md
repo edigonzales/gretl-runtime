@@ -38,7 +38,7 @@ ausserhalb dieses Plans.
 | 1 | HTTP und einfache Dateien | `Curl` (erledigt), `Gzip` (erledigt), `XslTransformer` (erledigt) | JDK-HTTP, GZIP, Saxon |
 | 2 | FTP | `FtpList` (erledigt), `FtpDownload` (erledigt), `FtpUpload` (erledigt), `FtpDelete` (erledigt) | Commons Net |
 | 3 | S3 | `S3Download` (erledigt), `S3Upload` (erledigt), `S3Delete` (erledigt), `S3Bucket2Bucket` (erledigt) | AWS SDK v2 |
-| 4 | Datenbank | `Db2Db` (erledigt), `DuckDbSqlExecutor` (SQL-Kern erledigt) | JDBC, DuckDB |
+| 4 | Datenbank | `Db2Db` (erledigt), `DuckDbSqlExecutor` (Föderation erledigt) | JDBC, DuckDB |
 | 5 | Tabellarisch | `Csv2Excel`, `CsvImport`, `CsvExport`, `CsvValidator`, `JsonImport`, `JsonValidator` | POI, Jackson, iox-wkf, ilivalidator |
 | 6 | Geodaten | `GpkgImport`, `GpkgExport`, `GpkgValidator`, `Gpkg2Shp`, `ShpImport`, `ShpExport`, `ShpValidator` | iox-wkf, JTS, Shapefile-Referenz |
 | 7 | INTERLIS/AV | `Ili2pgImportSchema`, `Ili2pgImport`, `Ili2pgExport`, `Ili2pgDelete`, `Ili2pgReplace`, `Ili2pgUpdate`, `Ili2pgValidate`, `Ili2gpkgImport`, `Ili2duckdbImportSchema`, `Ili2duckdbImport`, `Ili2duckdbExport`, `Av2ch`, `Av2geobau`, `Gpkg2Dxf` | ili2pg/ili2gpkg/ili2duckdb, av2ch, av2geobau |
@@ -68,7 +68,7 @@ Der Standardbuild bleibt Docker-frei; echte Backing-Services laufen im Profil
 - FTP: echter `delfer/alpine-ftp-server`-Container.
 - S3: Floci/Testcontainers; seit Welle 3 aktiv.
 - PostgreSQL: Db2Db läuft im `backing-services`-Gate gegen einen echten Container.
-- DuckDB: dateibasiert/In-Memory, kein Docker; Föderation/Exporte folgen.
+- DuckDB: dateibasiert/In-Memory; Föderation mit CSV/GPKG/PostgreSQL und Exporten.
 - HTTP: Host-Tests mit `HttpServer`; Container erst für Runtime-Image-Pfade.
 
 Eine Task gilt nicht als migriert, wenn sie einen Backing-Service nur mit H2
@@ -161,9 +161,9 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
 1. Welle 1 ist abgeschlossen: `Curl`, `Gzip`, `XslTransformer`.
 2. Welle 2 ist abgeschlossen: `FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete`.
 3. Welle 3 ist abgeschlossen: `S3Download`, `S3Upload`, `S3Delete`, `S3Bucket2Bucket`.
-4. Welle 4 ist abgeschlossen: `Db2Db` und der SQL-Kern von
-   `DuckDbSqlExecutor`; die DuckDB-Föderation/-Exporte bleiben eine spätere
-   Ausbaustufe.
+4. Welle 4 ist abgeschlossen: `Db2Db` und `DuckDbSqlExecutor` mit
+   CSV-/GeoPackage-/PostgreSQL-Quellen, PostgreSQL-Zielen und
+   Parquet-/GeoPackage-/XLSX-/PostgreSQL-Exporten.
 5. Welle 5 (tabellarische Formate) und danach Welle 6 (Geodaten) umsetzen.
 6. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die Shapefile-Regeln aus diesem
    Dokument als Testfälle übernehmen, bevor die Tasks als migriert gelten.

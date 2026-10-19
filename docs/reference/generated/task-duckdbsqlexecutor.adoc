@@ -10,9 +10,25 @@
 | In-Memory-DuckDB-Datenbank verwenden
 | [.optional]#nein#
 
+| [.dsl-signature]#*installExtensions* = boolean#
+| Install required DuckDB extensions before loading them
+| [.optional]#nein#
+
 | [.dsl-signature]#*sqlFiles* = list#
 | Geordnete [.acronym]#SQL#-Dateien
 | [.required]#ja#
+
+| [.dsl-signature]#*sources* = list#
+| Federated [.acronym]#CSV#, GeoPackage or PostgreSQL sources
+| [.optional]#nein#
+
+| [.dsl-signature]#*targets* = list#
+| Writable PostgreSQL targets
+| [.optional]#nein#
+
+| [.dsl-signature]#*exports* = list#
+| Parquet, GeoPackage, [.acronym]#XLSX# or PostgreSQL exports
+| [.optional]#nein#
 
 | [.dsl-signature]#*sqlParameters* = map#
 | [.acronym]#SQL#-Parameter fuer eine Ausfuehrung aller [.acronym]#SQL#-Dateien
