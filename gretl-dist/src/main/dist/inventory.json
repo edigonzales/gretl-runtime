@@ -11,15 +11,17 @@
     "gretl-i18n",
     "gretl-logging",
     "gretl-basic-tasks",
+    "gretl-core-tasks",
     "gretl-ilivalidator",
     "gretl-cli",
     "gretl-packager",
     "gretl-job-runtime"
   ],
-  "tasks": ["HttpDownload", "Curl", "Extract", "SqlExecutor", "IliValidator"],
+  "tasks": ["HttpDownload", "Curl", "Gzip", "Extract", "SqlExecutor", "XslTransformer", "IliValidator"],
   "extensionDirectory": "lib/extensions",
   "taskArtifacts": [
     "gretl-basic-tasks-${project.version}.jar",
+    "gretl-core-tasks-${project.version}.jar",
     "gretl-ilivalidator-${project.version}.jar"
   ],
   "packager": "gretl package job-package.json --output job.jar",
@@ -29,7 +31,9 @@
     "logback": "1.6.5",
     "commons-compress": "1.27.1",
     "postgresql": "42.7.14",
-    "ilivalidator": "1.15.0"
+    "ilivalidator": "1.15.0",
+    "saxon": "11.4",
+    "xmlresolver": "4.4.3"
   },
   "sourceRevision": "working-tree; release build must provide the source commit",
   "checksumsFile": "SHA256SUMS"

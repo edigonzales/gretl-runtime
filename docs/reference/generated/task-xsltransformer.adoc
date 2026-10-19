@@ -1,0 +1,29 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*xmlFiles* = list#
+| Zu transformierende [.acronym]#XML#-Eingabedateien
+| [.required]#ja#
+
+| [.dsl-signature]#*xslFile* = path#
+| Lokales [.acronym]#XSLT#-Stylesheet; xslFile oder xslResource verwenden
+| [.optional]#nein#
+
+| [.dsl-signature]#*xslResource* = text#
+| [.acronym]#XSLT#-Klassenpfad-Ressource unter xslt/
+| [.optional]#nein#
+
+| [.dsl-signature]#*outDirectory* = path#
+| Verzeichnis fuer die transformierten Dateien
+| [.required]#ja#
+
+| [.dsl-signature]#*fileExtension* = text#
+| Dateierweiterung ohne fuehrenden Punkt
+| [.optional]#nein#
+
+| [.dsl-signature]#*overwrite* = boolean#
+| Vorhandene Ausgabedateien ersetzen
+| [.optional]#nein#
+
+|===

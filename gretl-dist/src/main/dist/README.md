@@ -13,8 +13,8 @@ catalog under `lib/tasks`, and the documented extension directory
 placed in `lib/extensions` before the next start. No Maven or Gradle is needed
 at job runtime.
 
-The standard catalog of this release is `HttpDownload`, `Curl`, `Extract`,
-`SqlExecutor` and `IliValidator`. Stufe A remains separately usable because the
+The standard catalog of this release is `HttpDownload`, `Curl`, `Gzip`,
+`Extract`, `SqlExecutor`, `XslTransformer` and `IliValidator`. Stufe A remains separately usable because the
 task libraries are separate modules. Publisher and XtfToGpkg are not registered
 stubs.
 

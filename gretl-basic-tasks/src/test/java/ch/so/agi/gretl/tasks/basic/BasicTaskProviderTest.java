@@ -12,11 +12,12 @@ import org.junit.jupiter.api.Test;
 
 class BasicTaskProviderTest {
     @Test
-    void serviceLoaderExposesTheFourStandardTasks() {
+    void serviceLoaderExposesTheFiveStandardTasks() {
         OperationRegistry registry = OperationRegistry.load(getClass().getClassLoader());
-        assertEquals(4, registry.all().size());
+        assertEquals(5, registry.all().size());
         assertEquals("HttpDownload", registry.requireSymbol("HttpDownload").symbol());
         assertEquals("Curl", registry.requireSymbol("Curl").symbol());
+        assertEquals("Gzip", registry.requireSymbol("Gzip").symbol());
         assertEquals("Extract", registry.requireSymbol("Extract").symbol());
         assertEquals("SqlExecutor", registry.requireSymbol("SqlExecutor").symbol());
         assertFalse(registry.all().stream().anyMatch(operation ->
@@ -58,6 +59,16 @@ class BasicTaskProviderTest {
         assertTrue(curl.outputs().stream().anyMatch(field -> field.name().equals("outputFile")
                 && field.nullable()));
         assertTrue(curl.example().contains("Curl"));
+
+        OperationType<?, ?> gzip = registry.requireSymbol("Gzip");
+        assertTrue(gzip.inputs().stream().anyMatch(field -> field.name().equals("dataFile")
+                && field.required()));
+        assertTrue(gzip.inputs().stream().anyMatch(field -> field.name().equals("gzipFile")
+                && field.required()));
+        assertEquals(true, gzip.inputs().stream()
+                .filter(field -> field.name().equals("overwrite"))
+                .findFirst().orElseThrow().defaultValue().orElseThrow());
+        assertTrue(gzip.outputs().stream().anyMatch(field -> field.name().equals("bytes")));
 
         var formData = curl.inputs().stream()
                 .filter(field -> field.name().equals("formData"))

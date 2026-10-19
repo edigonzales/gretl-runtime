@@ -287,6 +287,62 @@ Die Property-Tabelle fasst die Felder zusammen:
 
 include::generated/task-extract.adoc[]
 
+=== Gzip
+
+`Gzip` schreibt eine GZIP-komprimierte Kopie einer einzelnen Datei.
+
+[source,groovy]
+----
+task('compress', Gzip) {
+    dataFile = file('data/input.xml')
+    gzipFile = workPath('out/input.xml.gz')
+}
+----
+
+Die Ausgabe wird in eine temporäre Datei geschrieben und erst nach
+erfolgreichem Abschluss veröffentlicht. `overwrite` ist aus
+Kompatibilitätsgründen standardmässig `true`; mit `overwrite = false`
+scheitert der Task, wenn die Zieldatei bereits existiert. `dataFile` und
+`gzipFile` müssen verschiedene Pfade bezeichnen, und die Eingabe muss eine
+lesbare reguläre Datei sein.
+
+Ergebnisse sind `file` und `bytes` (Grösse der geschriebenen GZIP-Datei).
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-gzip.adoc[]
+
+=== XslTransformer
+
+`XslTransformer` transformiert eine oder mehrere XML-Dateien mit einem
+XSLT-Stylesheet. Das Stylesheet kommt entweder aus einer lokalen Datei oder aus
+einer Klassenpfad-Ressource unter `xslt/`.
+
+[source,groovy]
+----
+task('transform', XslTransformer) {
+    xmlFiles = [file('data/input.xml')]
+    xslFile = file('xsl/transform.xsl')
+    outDirectory = workPath('out')
+    fileExtension = 'xtf'
+}
+----
+
+Für mehrere Dateien wird `xmlFiles` mit allen Eingaben gefüllt. Der Ausgabename
+ist der Basisname der XML-Datei plus `fileExtension`. Zwei Eingaben mit
+demselben Basisnamen sind ein Fehler, auch wenn `overwrite = true` gesetzt ist.
+Vorhandene Ausgaben werden standardmässig ersetzt; `overwrite = false` lässt
+den Task bei einer vorhandenen Zieldatei scheitern.
+
+Externe Entities, DOCTYPE-Deklarationen und Netzwerkzugriffe sind deaktiviert.
+Lokale Stylesheet-Includes relativ zur Stylesheetdatei bleiben zulässig.
+Ergebnisse sind `files` (geschriebene Dateien in Eingabereihenfolge) und
+`count`.
+
+Die Property-Tabelle fasst die Felder zusammen:
+
+include::generated/task-xsltransformer.adoc[]
+
 === SqlExecutor
 
 `SqlExecutor` führt SQL-Scripts oder vorbereitete Statements gegen eine

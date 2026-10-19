@@ -24,6 +24,7 @@
     <module>gretl-logging</module>
     <module>gretl-packager</module>
     <module>gretl-basic-tasks</module>
+    <module>gretl-core-tasks</module>
     <module>gretl-cli</module>
     <module>gretl-job-runtime</module>
     <module>gretl-ilivalidator</module>
@@ -45,6 +46,8 @@
     <postgresql.version>42.7.14</postgresql.version>
     <ilivalidator.version>1.15.0</ilivalidator.version>
     <geotools.version>35.2</geotools.version>
+    <saxon.version>11.4</saxon.version>
+    <xmlresolver.version>4.4.3</xmlresolver.version>
     <commons-compress.version>1.27.1</commons-compress.version>
   </properties>
 

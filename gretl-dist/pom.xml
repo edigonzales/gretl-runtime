@@ -26,6 +26,11 @@
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-core-tasks</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
       <artifactId>gretl-ilivalidator</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -67,7 +72,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/dist/lib/runtime</outputDirectory>
               <includeScope>runtime</includeScope>
-              <excludeArtifactIds>gretl-basic-tasks,gretl-ilivalidator</excludeArtifactIds>
+              <excludeArtifactIds>gretl-basic-tasks,gretl-core-tasks,gretl-ilivalidator</excludeArtifactIds>
             </configuration>
           </execution>
           <execution>
@@ -80,6 +85,11 @@
                 <artifactItem>
                   <groupId>ch.so.agi.gretl</groupId>
                   <artifactId>gretl-basic-tasks</artifactId>
+                  <version>${project.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>ch.so.agi.gretl</groupId>
+                  <artifactId>gretl-core-tasks</artifactId>
                   <version>${project.version}</version>
                 </artifactItem>
                 <artifactItem>

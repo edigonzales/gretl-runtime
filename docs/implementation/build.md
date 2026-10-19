@@ -43,17 +43,18 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Runbericht, Logback-Bridge, 18 Tests,
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
-7. **gretl-basic-tasks** — HTTP, Curl, ZIP/GZIP, SQL, Provider, 32 Tests,
-8. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
+7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Provider, 38 Tests,
+8. **gretl-core-tasks** — XSLT, Saxon, 9 Tests,
+9. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
    AsciiDoc-Tabellen, Curl-Integration, Distribution-nahe Integration, 59 Tests,
-9. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
-10. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
-11. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
-12. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
+10. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
+11. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
+12. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
+13. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
     und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests.
 
-Erwartet: **310 Tests**, 0 Fehler, `BUILD SUCCESS`.
+Erwartet: **325 Tests**, 0 Fehler, `BUILD SUCCESS`.
 
 ### Artefakte
 
@@ -65,6 +66,7 @@ Erwartet: **310 Tests**, 0 Fehler, `BUILD SUCCESS`.
 | Logging | `gretl-logging/target/gretl-logging-0.1.0-SNAPSHOT.jar` |
 | Lokalisierung | `gretl-i18n/target/gretl-i18n-0.1.0-SNAPSHOT.jar` |
 | Standard-Tasks | `gretl-basic-tasks/target/gretl-basic-tasks-0.1.0-SNAPSHOT.jar` |
+| Core-Tasks | `gretl-core-tasks/target/gretl-core-tasks-0.1.0-SNAPSHOT.jar` |
 | IliValidator | `gretl-ilivalidator/target/gretl-ilivalidator-0.1.0-SNAPSHOT.jar` |
 | CLI | `gretl-cli/target/gretl-cli-0.1.0-SNAPSHOT.jar` |
 | Packager | `gretl-packager/target/gretl-packager-0.1.0-SNAPSHOT.jar` |
@@ -78,6 +80,7 @@ Erwartet: **310 Tests**, 0 Fehler, `BUILD SUCCESS`.
 ```sh
 ./mvnw -pl gretl-cli -am test
 ./mvnw -pl gretl-basic-tasks -am test
+./mvnw -pl gretl-core-tasks -am test
 ./mvnw -pl gretl-ilivalidator -am test
 ./mvnw -pl gretl-dist -am verify
 ./mvnw -Pgeotools-probe verify -Dmaven.repo.local=/tmp/m5-fresh-final
@@ -111,7 +114,7 @@ Layout:
 ```text
 bin/gretl
 lib/runtime/     CLI, Groovy, Runner, API, Logging, Logback, Groovy-JSON
-lib/tasks/       gretl-basic-tasks, gretl-ilivalidator
+lib/tasks/       gretl-basic-tasks, gretl-core-tasks, gretl-ilivalidator
 lib/extensions/  eigene Task-JARs und kompatible Dependencies
 examples/        Download/Extract, SQL, IliValidator, Token/Katalog, Action/NO_DATA
 inventory.json   Module, Tasks, Artefakte, Dependencyversionen
@@ -241,6 +244,24 @@ Logging-Lücke ausgewiesen.
 - Redirects aus, kein Auto-Retry, Passwort nicht im Klartext, kein Body-Dump
   in Fehlern. Ergebnisse: `status`, `bytes`, `outputFile`.
 
+### Gzip
+
+- Komprimiert genau eine Eingabedatei; temporäre Ausgabe und atomare
+  Veröffentlichung.
+- `overwrite` ist aus Kompatibilitätsgründen standardmässig `true`;
+  `overwrite = false` schützt vorhandene Ziele.
+- Ergebnisse: `file`, `bytes`; Quelle und Ziel müssen verschieden sein.
+
+### XslTransformer
+
+- Transformiert eine Liste von XML-Dateien mit lokalem Stylesheet oder
+  Klassenpfad-Ressource unter `xslt/`.
+- Standarderweiterung `xtf`; Ausgabekollisionen sind Fehler.
+- `overwrite` standardmässig `true`; vorhandene Ziele werden nach erfolgreicher
+  Transformation ersetzt.
+- Saxon 11.4, keine externen Entities/DOCTYPEs/Netzwerkzugriffe; lokale
+  Stylesheet-Includes bleiben erlaubt. Ergebnisse: `files`, `count`.
+
 ### Extract
 
 - ZIP/GZIP-Modus explizit; 4-GiB- und 10'000-Eintrag-Default.
@@ -294,7 +315,7 @@ Dollar-Quote, Prepared-Apostroph/null und Rollback nach dem zweiten Fehler.
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **314 Tests** (310 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **329 Tests** (325 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.
@@ -308,7 +329,8 @@ Bestandteil der Scriptdistribution.
 | `gretl-groovy` | Groovy-6-DSL | ja |
 | `gretl-i18n` | englischer Quellkatalog, deutscher Katalog | ja |
 | `gretl-logging` | Events, Redaction, Report | ja |
-| `gretl-basic-tasks` | HTTP/Extract/SQL | ja |
+| `gretl-basic-tasks` | HTTP/Curl/Gzip/Extract/SQL | ja |
+| `gretl-core-tasks` | XSLT, Saxon | ja |
 | `gretl-ilivalidator` | reale INTERLIS-Validierung (B) | ja |
 | `gretl-cli` | CLI/Config/Hilfe/Orchestrierung | ja |
 | `examples/file-size-extension` | separat gebautes Erweiterungs-JAR | ja |
@@ -317,7 +339,8 @@ Bestandteil der Scriptdistribution.
 
 Zentrale Versionen: Groovy 6.0.0 (`groovy`, `groovy-json`), SLF4J 2.0.20,
 Logback 1.6.5, Commons Compress 1.27.1, pgJDBC 42.7.14, H2 2.3.232 (nur Test),
-ilivalidator 1.15.0 / ehibasics 1.4.1, JUnit 5.14.4, GeoTools 35.2 (nur Profil).
+ilivalidator 1.15.0 / ehibasics 1.4.1, Saxon 11.4, xmlresolver 4.4.3,
+JUnit 5.14.4, GeoTools 35.2 (nur Profil).
 
 Zusätzliche Plugins: `maven-assembly-plugin` 3.7.1 für die Distribution,
 `maven-failsafe-plugin` 3.6.0 für die Distributions-IT. Kein Groovy-
@@ -330,6 +353,7 @@ Produktcompiler, kein Shade-Plugin, keine globale Fachdependency in API/Runner.
 ./mvnw -pl gretl-runner dependency:tree -Dscope=compile
 ./mvnw -pl gretl-cli dependency:tree
 ./mvnw -pl gretl-basic-tasks dependency:tree
+./mvnw -pl gretl-core-tasks dependency:tree
 jdeps --multi-release 25 --ignore-missing-deps -summary \
   gretl-runner/target/gretl-runner-0.1.0-SNAPSHOT.jar
 jdeps --multi-release 25 --ignore-missing-deps -summary \

@@ -1,0 +1,17 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*dataFile* = path#
+| Vorhandene Eingabedatei
+| [.required]#ja#
+
+| [.dsl-signature]#*gzipFile* = path#
+| [.acronym]#GZIP#-Ausgabedatei
+| [.required]#ja#
+
+| [.dsl-signature]#*overwrite* = boolean#
+| Vorhandene Ausgabedatei ersetzen
+| [.optional]#nein#
+
+|===

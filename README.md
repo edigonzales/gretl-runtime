@@ -6,8 +6,9 @@ Implementierung der GRETL Runtime auf Basis der Spezifikation 4.1 in
 **Aktueller Stand: M6-Snapshot `0.1.0-SNAPSHOT` – Script-MVP plus optionaler
 Job-Fat-JAR-Packager.** Die
 öffentliche Java-API, der sequenzielle Runner, die Groovy-6-Fassade,
-Logging/Runbericht, die Tasks `HttpDownload`, `Curl`, `Extract`, `SqlExecutor`
-und `IliValidator` sowie die Scriptdistribution sind umgesetzt. M5-Anwenderabnahme
+Logging/Runbericht, die Tasks `HttpDownload`, `Curl`, `Gzip`, `Extract`,
+`SqlExecutor`, `XslTransformer` und `IliValidator` sowie die Scriptdistribution
+sind umgesetzt. M5-Anwenderabnahme
 ist bestanden. M6 ergänzt `gretl package`, vorkompilierte Job-JARs und eine
 JAR-Laufzeit mit materialisierten Jobressourcen.
 
@@ -30,8 +31,8 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - M2-Bericht (historisch): [`docs/implementation/m2-report.md`](docs/implementation/m2-report.md)
 - M1-Bericht (historisch): [`docs/implementation/m1-report.md`](docs/implementation/m1-report.md)
 - M0-Bericht (historisch): [`docs/implementation/m0-report.md`](docs/implementation/m0-report.md)
-- Standardprüfung: `./mvnw verify` mit JDK 25 (**310 Tests**)
-- GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**314 Tests**)
+- Standardprüfung: `./mvnw verify` mit JDK 25 (**325 Tests**)
+- GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**329 Tests**)
 - Scriptdistribution: `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip`
 
 Paketieren und starten:

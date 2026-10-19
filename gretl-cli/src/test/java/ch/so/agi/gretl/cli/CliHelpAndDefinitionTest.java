@@ -49,6 +49,7 @@ class CliHelpAndDefinitionTest {
         assertTrue(operations.out().contains("Extract"));
         assertTrue(operations.out().contains("SqlExecutor"));
         assertTrue(operations.out().contains("Curl"));
+        assertTrue(operations.out().contains("Gzip"));
         assertFalse(operations.out().contains("Publisher"));
 
         Result englishDetail = cli().run("operations", "HttpDownload", "--lang", "en");
@@ -76,6 +77,7 @@ class CliHelpAndDefinitionTest {
         assertTrue(Files.isRegularFile(docs.resolve("task-httpdownload.adoc")));
         assertTrue(Files.isRegularFile(docs.resolve("task-extract.adoc")));
         assertTrue(Files.isRegularFile(docs.resolve("task-sqlexecutor.adoc")));
+        assertTrue(Files.isRegularFile(docs.resolve("task-gzip.adoc")));
         assertFalse(Files.exists(docs.resolve("task-reference.adoc")));
 
         String table = Files.readString(docs.resolve("task-httpdownload.adoc"),
