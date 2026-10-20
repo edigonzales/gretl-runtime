@@ -26,6 +26,10 @@ final class FtpFixture implements AutoCloseable {
     private FixedHostPortGenericContainer<?> container;
 
     FtpFixture() {
+        container = startContainer();
+    }
+
+    private FixedHostPortGenericContainer<?> startContainer() {
         RuntimeException last = null;
         for (int attempt = 0; attempt < 5; attempt++) {
             int passive = freePort();
@@ -42,8 +46,7 @@ final class FtpFixture implements AutoCloseable {
                     .waitingFor(Wait.forListeningPort());
             try {
                 candidate.start();
-                container = candidate;
-                return;
+                return candidate;
             } catch (RuntimeException failure) {
                 last = failure;
                 try {
@@ -56,10 +59,30 @@ final class FtpFixture implements AutoCloseable {
         throw new IllegalStateException("Could not start FTP fixture", last);
     }
 
+    private void restart() {
+        FixedHostPortGenericContainer<?> previous = container;
+        if (previous != null) {
+            try {
+                previous.stop();
+            } catch (RuntimeException ignored) {
+                // Restart below; stale container is discarded.
+            }
+        }
+        container = startContainer();
+    }
+
     Lease lease() throws IOException {
         String directory = "/home/gretl/" + UUID.randomUUID().toString()
                 .replace("-", "").substring(0, 12);
-        FTPClient client = connect();
+        FTPClient client;
+        try {
+            client = connect();
+        } catch (IOException failure) {
+            // Docker Desktop occasionally loses the host port mapping after
+            // startup. A fresh container restores a usable control port.
+            restart();
+            client = connect();
+        }
         try {
             if (!client.makeDirectory(directory)) {
                 throw new IOException("Could not create FTP lease directory: " + directory);

@@ -94,6 +94,36 @@ class JobPackageBuilderTest {
         assertTrue(error.getMessage().contains("conflict-b"));
     }
 
+    @Test
+    void prefersCanonicalIoxIliModelClassesOverEmbeddedCopies() throws Exception {
+        Files.writeString(tempDir.resolve("job.groovy"),
+                "action('run') { }\ndefaults 'run'\n");
+        Path descriptorFile = tempDir.resolve("job-package.json");
+        Files.writeString(descriptorFile, """
+                {"schemaVersion":1,"name":"model-copy-demo","version":"1",
+                 "runtimeVersion":"0.1.0-SNAPSHOT","entryScript":"job.groovy",
+                 "sources":[],"resources":[],"dependencies":[]}
+                """);
+        PackageDescriptor descriptor = PackageDescriptor.load(descriptorFile);
+        Path canonical = Files.createDirectories(tempDir.resolve("iox-ili-1.24.4"));
+        Path embedded = Files.createDirectories(tempDir.resolve("av2geobau-1.4.2"));
+        writeMainClass(canonical);
+        write(embedded, "ch/so/agi/gretl/job/JobJarMain.class", "main");
+        write(canonical, "ch/interlis/models/INTERLIS/VALIGNMENT.class", "canonical");
+        write(embedded, "ch/interlis/models/INTERLIS/VALIGNMENT.class", "embedded");
+        JobCompiler.CompiledJob compiled = new JobCompiler.CompiledJob("job",
+                Map.of("job.class", new byte[] {1}), List.of(), "a".repeat(64));
+        Path output = tempDir.resolve("model-copy.jar");
+        new JobPackageBuilder(List.of(canonical, embedded), "0.1.0-SNAPSHOT")
+                .build(descriptor, compiled, output);
+        try (JarFile jar = new JarFile(output.toFile())) {
+            String value = new String(jar.getInputStream(jar.getEntry(
+                    "ch/interlis/models/INTERLIS/VALIGNMENT.class")).readAllBytes(),
+                    StandardCharsets.UTF_8);
+            assertEquals("canonical", value);
+        }
+    }
+
     private static void writeMainClass(Path root) throws Exception {
         write(root, "ch/so/agi/gretl/job/JobJarMain.class", "main");
     }

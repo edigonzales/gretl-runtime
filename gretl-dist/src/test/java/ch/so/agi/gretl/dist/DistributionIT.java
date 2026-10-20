@@ -126,6 +126,19 @@ class DistributionIT {
     }
 
     @Test
+    void inventoryListsAllCoreTasksAndTaskArtifacts() throws Exception {
+        Path inventory = Path.of("src/main/dist/inventory.json");
+        String text = Files.readString(inventory);
+        for (String task : List.of("Ili2pgImportSchema", "Ili2pgImport", "Ili2pgExport",
+                "Ili2pgDelete", "Ili2pgReplace", "Ili2pgUpdate", "Ili2pgValidate",
+                "Ili2gpkgImport", "Ili2duckdbImportSchema", "Ili2duckdbImport",
+                "Ili2duckdbExport", "Av2ch", "Av2geobau", "Gpkg2Dxf")) {
+            assertTrue(text.contains("\"" + task + "\""), task);
+        }
+        assertTrue(text.contains("gretl-interlis-tasks-${project.version}.jar"));
+    }
+
+    @Test
     void extractedDistributionDownloadsAndExtractsWithLocalServer() throws Exception {
         Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist2");

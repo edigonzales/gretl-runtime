@@ -54,4 +54,224 @@
 | Fail on ili2db exception
 | [.optional]#nein#
 
+| [.dsl-signature]#*baskets* = list#
+| Baskets
+| [.optional]#nein#
+
+| [.dsl-signature]#*topics* = list#
+| Topics
+| [.optional]#nein#
+
+| [.dsl-signature]#*exportTid* = boolean#
+| Export t_id
+| [.optional]#nein#
+
+| [.dsl-signature]#*importBid* = boolean#
+| Import basket id
+| [.optional]#nein#
+
+| [.dsl-signature]#*preScript* = path#
+| Pre script
+| [.optional]#nein#
+
+| [.dsl-signature]#*postScript* = path#
+| Post script
+| [.optional]#nein#
+
+| [.dsl-signature]#*trace* = boolean#
+| Enable trace
+| [.optional]#nein#
+
+| [.dsl-signature]#*disableValidation* = boolean#
+| Disable validation
+| [.optional]#nein#
+
+| [.dsl-signature]#*disableAreaValidation* = boolean#
+| Disable area validation
+| [.optional]#nein#
+
+| [.dsl-signature]#*forceTypeValidation* = boolean#
+| Force type validation
+| [.optional]#nein#
+
+| [.dsl-signature]#*strokeArcs* = boolean#
+| Stroke arcs
+| [.optional]#nein#
+
+| [.dsl-signature]#*skipPolygonBuilding* = boolean#
+| Skip polygon building
+| [.optional]#nein#
+
+| [.dsl-signature]#*skipGeometryErrors* = boolean#
+| Skip geometry errors
+| [.optional]#nein#
+
+| [.dsl-signature]#*iligml20* = boolean#
+| ILIGML 2.0
+| [.optional]#nein#
+
+| [.dsl-signature]#*disableRounding* = boolean#
+| Disable rounding
+| [.optional]#nein#
+
+| [.dsl-signature]#*proxy* = text#
+| [.acronym]#HTTP# proxy
+| [.optional]#nein#
+
+| [.dsl-signature]#*proxyPort* = integer#
+| [.acronym]#HTTP# proxy port
+| [.optional]#nein#
+
+| [.dsl-signature]#*validConfigFile* = path#
+| Validation config file
+| [.optional]#nein#
+
+| [.dsl-signature]#*oneGeomPerTable* = boolean#
+| One geometry per table
+| [.optional]#nein#
+
+| [.dsl-signature]#*setupPgExt* = boolean#
+| Setup PostGIS extension
+| [.optional]#nein#
+
+| [.dsl-signature]#*dropScript* = path#
+| Drop script
+| [.optional]#nein#
+
+| [.dsl-signature]#*createScript* = path#
+| Create script
+| [.optional]#nein#
+
+| [.dsl-signature]#*metaConfig* = text#
+| Meta configuration
+| [.optional]#nein#
+
+| [.dsl-signature]#*defaultSrsAuth* = text#
+| Default SRS authority
+| [.optional]#nein#
+
+| [.dsl-signature]#*createSingleEnumTab* = boolean#
+| Single enum table
+| [.optional]#nein#
+
+| [.dsl-signature]#*createEnumTxtCol* = boolean#
+| Enum text column
+| [.optional]#nein#
+
+| [.dsl-signature]#*createEnumColAsItfCode* = boolean#
+| Enum column as [.acronym]#ITF# code
+| [.optional]#nein#
+
+| [.dsl-signature]#*createEnumTabsWithId* = boolean#
+| Enum tables with id
+| [.optional]#nein#
+
+| [.dsl-signature]#*createImportTabs* = boolean#
+| Create import tables
+| [.optional]#nein#
+
+| [.dsl-signature]#*beautifyEnumDispName* = boolean#
+| Beautify enum display names
+| [.optional]#nein#
+
+| [.dsl-signature]#*noSmartMapping* = boolean#
+| No smart mapping
+| [.optional]#nein#
+
+| [.dsl-signature]#*smart1Inheritance* = boolean#
+| Smart1 inheritance
+| [.optional]#nein#
+
+| [.dsl-signature]#*smart2Inheritance* = boolean#
+| Smart2 inheritance
+| [.optional]#nein#
+
+| [.dsl-signature]#*coalesceCatalogueRef* = boolean#
+| Coalesce catalogue references
+| [.optional]#nein#
+
+| [.dsl-signature]#*coalesceMultiSurface* = boolean#
+| Coalesce multi surfaces
+| [.optional]#nein#
+
+| [.dsl-signature]#*coalesceMultiLine* = boolean#
+| Coalesce multi lines
+| [.optional]#nein#
+
+| [.dsl-signature]#*expandMultilingual* = boolean#
+| Expand multilingual
+| [.optional]#nein#
+
+| [.dsl-signature]#*expandStruct* = boolean#
+| Expand structures
+| [.optional]#nein#
+
+| [.dsl-signature]#*coalesceArray* = boolean#
+| Coalesce arrays
+| [.optional]#nein#
+
+| [.dsl-signature]#*createTypeConstraint* = boolean#
+| Create type constraints
+| [.optional]#nein#
+
+| [.dsl-signature]#*createNumChecks* = boolean#
+| Numeric checks
+| [.optional]#nein#
+
+| [.dsl-signature]#*createTextChecks* = boolean#
+| Text checks
+| [.optional]#nein#
+
+| [.dsl-signature]#*createDateTimeChecks* = boolean#
+| Date/time checks
+| [.optional]#nein#
+
+| [.dsl-signature]#*createTypeDiscriminator* = boolean#
+| Type discriminator
+| [.optional]#nein#
+
+| [.dsl-signature]#*disableNameOptimization* = boolean#
+| Disable name optimization
+| [.optional]#nein#
+
+| [.dsl-signature]#*sqlEnableNull* = boolean#
+| [.acronym]#SQL# NULL enabled
+| [.optional]#nein#
+
+| [.dsl-signature]#*sqlColsAsText* = boolean#
+| [.acronym]#SQL# columns as text
+| [.optional]#nein#
+
+| [.dsl-signature]#*sqlExtRefCols* = boolean#
+| [.acronym]#SQL# external ref columns
+| [.optional]#nein#
+
+| [.dsl-signature]#*keepAreaRef* = boolean#
+| Keep area references
+| [.optional]#nein#
+
+| [.dsl-signature]#*createDatasetCol* = boolean#
+| Create dataset column
+| [.optional]#nein#
+
+| [.dsl-signature]#*translation* = text#
+| Translation
+| [.optional]#nein#
+
+| [.dsl-signature]#*tidColumnName* = text#
+| t_id column name
+| [.optional]#nein#
+
+| [.dsl-signature]#*idSeqMin* = integer#
+| ID sequence minimum
+| [.optional]#nein#
+
+| [.dsl-signature]#*idSeqMax* = integer#
+| ID sequence maximum
+| [.optional]#nein#
+
+| [.dsl-signature]#*maxNameLength* = integer#
+| Maximum [.acronym]#SQL# name length
+| [.optional]#nein#
+
 |===

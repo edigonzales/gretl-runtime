@@ -68,6 +68,8 @@ public final class Ili2DbExecutionSupport {
             Config config = flavor.createConfig(request);
             applyCommon(config, request, Config.FC_EXPORT);
             if (request.export3()) config.setVer3_export(true);
+            java.util.List<String> exportModels = optionList(request, "exportModels", java.util.List.of());
+            if (!exportModels.isEmpty()) config.setExportModels(String.join(";", exportModels));
             config.setDatasetName(dataset(request, index));
             config.setXtffile(output.toString());
             config.setItfTransferfile(Ili2db.isItfFilename(output.toString()));
@@ -100,23 +102,32 @@ public final class Ili2DbExecutionSupport {
             config.setModeldir(String.join(";", request.modelDirectories()));
         }
         if (!request.modelNames().isEmpty()) config.setModels(String.join(";", request.modelNames()));
-        if (!request.baskets().isEmpty()) config.setBaskets(String.join(";", request.baskets()));
-        if (!request.topics().isEmpty()) config.setTopics(String.join(";", request.topics()));
+        java.util.List<String> baskets = optionList(request, "baskets", request.baskets());
+        java.util.List<String> topics = optionList(request, "topics", request.topics());
+        if (!baskets.isEmpty()) config.setBaskets(String.join(";", baskets));
+        if (!topics.isEmpty()) config.setTopics(String.join(";", topics));
         if (request.importTid()) config.setImportTid(true);
-        if (request.exportTid()) config.setExportTid(true);
-        if (request.importBid()) config.setImportBid(true);
-        if (request.preScript() != null) config.setPreScript(request.preScript().toString());
-        if (request.postScript() != null) config.setPostScript(request.postScript().toString());
+        if (request.exportTid() || optionBool(request, "exportTid", false)) config.setExportTid(true);
+        if (request.importBid() || optionBool(request, "importBid", false)) config.setImportBid(true);
+        Path pre = optionPath(request, "preScript", request.preScript());
+        Path post = optionPath(request, "postScript", request.postScript());
+        if (pre != null) config.setPreScript(pre.toString());
+        if (post != null) config.setPostScript(post.toString());
         if (request.deleteData()) config.setDeleteMode(Config.DELETE_DATA);
-        if (request.validConfigFile() != null) config.setValidConfigFile(request.validConfigFile().toString());
-        if (request.disableValidation()) config.setValidation(false);
-        if (request.disableAreaValidation()) config.setDisableAreaValidation(true);
-        if (request.forceTypeValidation()) config.setOnlyMultiplicityReduction(true);
-        if (request.strokeArcs()) config.setStrokeArcs(Config.STROKE_ARCS_ENABLE);
-        if (request.skipPolygonBuilding()) Ili2db.setSkipPolygonBuilding(config);
-        if (request.skipGeometryErrors()) config.setSkipGeometryErrors(true);
-        if (request.iligml20()) config.setTransferFileFormat(Config.ILIGML20);
-        if (request.disableRounding()) config.setDisableRounding(true);
+        Path validConfig = optionPath(request, "validConfigFile", request.validConfigFile());
+        if (validConfig != null) config.setValidConfigFile(validConfig.toString());
+        if (request.disableValidation() || optionBool(request, "disableValidation", false)) config.setValidation(false);
+        if (request.disableAreaValidation() || optionBool(request, "disableAreaValidation", false)) config.setDisableAreaValidation(true);
+        if (request.forceTypeValidation() || optionBool(request, "forceTypeValidation", false)) config.setOnlyMultiplicityReduction(true);
+        if (request.strokeArcs() || optionBool(request, "strokeArcs", false)) config.setStrokeArcs(Config.STROKE_ARCS_ENABLE);
+        if (request.skipPolygonBuilding() || optionBool(request, "skipPolygonBuilding", false)) Ili2db.setSkipPolygonBuilding(config);
+        if (request.skipGeometryErrors() || optionBool(request, "skipGeometryErrors", false)) config.setSkipGeometryErrors(true);
+        if (request.iligml20() || optionBool(request, "iligml20", false)) config.setTransferFileFormat(Config.ILIGML20);
+        if (request.disableRounding() || optionBool(request, "disableRounding", false)) config.setDisableRounding(true);
+        String proxy = optionText(request, "proxy", null);
+        Integer proxyPort = optionInt(request, "proxyPort", null);
+        if (proxy != null) config.setValue(UserSettings.HTTP_PROXY_HOST, proxy);
+        if (proxyPort != null) config.setValue(UserSettings.HTTP_PROXY_PORT, proxyPort.toString());
     }
 
     private void applySchema(Config config, Ili2DbRequest request) {
@@ -143,6 +154,79 @@ public final class Ili2DbExecutionSupport {
         if (request.createDatasetCol()) config.setCreateDatasetCols(Config.CREATE_DATASET_COL);
         if (request.createMetaInfo()) config.setCreateMetaInfo(true);
         if (request.maxNameLength() != null) config.setMaxSqlNameLength(request.maxNameLength().toString());
+        if (optionBool(request, "oneGeomPerTable", false)) config.setOneGeomPerTable(true);
+        if (optionBool(request, "setupPgExt", false)) config.setSetupPgExt(true);
+        Path dropScript = optionPath(request, "dropScript", request.dropScript());
+        Path createScript = optionPath(request, "createScript", request.createScript());
+        if (dropScript != null) config.setDropscript(dropScript.toString());
+        if (createScript != null) config.setCreatescript(createScript.toString());
+        String metaConfig = optionText(request, "metaConfig", request.metaConfig());
+        if (metaConfig != null) config.setMetaConfigFile(metaConfig);
+        String srsAuth = optionText(request, "defaultSrsAuth", request.defaultSrsAuth());
+        if (srsAuth != null) config.setDefaultSrsAuthority("NULL".equalsIgnoreCase(srsAuth) ? null : srsAuth);
+        String srsCode = request.defaultSrsCode();
+        if (srsCode != null) config.setDefaultSrsCode(srsCode);
+        if (optionBool(request, "createSingleEnumTab", false)) config.setCreateEnumDefs(Config.CREATE_ENUM_DEFS_SINGLE);
+        if (optionBool(request, "createEnumTxtCol", false)) config.setCreateEnumCols(Config.CREATE_ENUM_TXT_COL);
+        if (optionBool(request, "createEnumColAsItfCode", false)) config.setCreateEnumColAsItfCode(Config.CREATE_ENUMCOL_AS_ITFCODE_YES);
+        if (optionBool(request, "createEnumTabsWithId", false)) config.setCreateEnumDefs(Config.CREATE_ENUM_DEFS_MULTI_WITH_ID);
+        if (optionBool(request, "createImportTabs", false)) config.setCreateImportTabs(true);
+        if (optionBool(request, "beautifyEnumDispName", false)) config.setBeautifyEnumDispName(Config.BEAUTIFY_ENUM_DISPNAME_UNDERSCORE);
+        if (optionBool(request, "noSmartMapping", false)) Ili2db.setNoSmartMapping(config);
+        if (optionBool(request, "smart1Inheritance", false)) config.setInheritanceTrafo(Config.INHERITANCE_TRAFO_SMART1);
+        if (optionBool(request, "smart2Inheritance", false)) config.setInheritanceTrafo(Config.INHERITANCE_TRAFO_SMART2);
+        if (optionBool(request, "coalesceCatalogueRef", false)) config.setCatalogueRefTrafo(Config.CATALOGUE_REF_TRAFO_COALESCE);
+        if (optionBool(request, "coalesceMultiSurface", false)) config.setMultiSurfaceTrafo(Config.MULTISURFACE_TRAFO_COALESCE);
+        if (optionBool(request, "coalesceMultiLine", false)) config.setMultiLineTrafo(Config.MULTILINE_TRAFO_COALESCE);
+        if (optionBool(request, "expandMultilingual", false)) config.setMultilingualTrafo(Config.MULTILINGUAL_TRAFO_EXPAND);
+        if (optionBool(request, "expandStruct", false)) config.setStructTrafo(Config.STRUCT_TRAFO_EXPAND);
+        if (optionBool(request, "coalesceArray", false)) config.setArrayTrafo(Config.ARRAY_TRAFO_COALESCE);
+        if (optionBool(request, "createTypeConstraint", false)) config.setCreateTypeConstraint(true);
+        if (optionBool(request, "createNumChecks", false)) config.setCreateNumChecks(true);
+        if (optionBool(request, "createTextChecks", false)) config.setCreateTextChecks(true);
+        if (optionBool(request, "createDateTimeChecks", false)) config.setCreateDateTimeChecks(true);
+        if (optionBool(request, "createTypeDiscriminator", false)) config.setCreateTypeDiscriminator(Config.CREATE_TYPE_DISCRIMINATOR_ALWAYS);
+        if (optionBool(request, "disableNameOptimization", false)) config.setNameOptimization(Config.NAME_OPTIMIZATION_DISABLE);
+        if (optionBool(request, "sqlEnableNull", false)) config.setSqlNull(Config.SQL_NULL_ENABLE);
+        if (optionBool(request, "sqlColsAsText", false)) config.setSqlColsAsText(Config.SQL_COLS_AS_TEXT_ENABLE);
+        if (optionBool(request, "sqlExtRefCols", false)) config.setSqlExtRefCols(Config.SQL_EXTREF_ENABLE);
+        if (optionBool(request, "keepAreaRef", false)) config.setAreaRef(Config.AREA_REF_KEEP);
+        if (optionBool(request, "createDatasetCol", false)) config.setCreateDatasetCols(Config.CREATE_DATASET_COL);
+        String translation = optionText(request, "translation", null);
+        if (translation != null) config.setIli1Translation(translation);
+        String tid = optionText(request, "tidColumnName", null);
+        if (tid != null) config.setColT_ID(tid);
+        Integer idMin = optionInt(request, "idSeqMin", null);
+        Integer idMax = optionInt(request, "idSeqMax", null);
+        if (idMin != null) config.setMinIdSeqValue(idMin.longValue());
+        if (idMax != null) config.setMaxIdSeqValue(idMax.longValue());
+        Integer maxName = optionInt(request, "maxNameLength", null);
+        if (maxName != null) config.setMaxSqlNameLength(maxName.toString());
+    }
+
+    private static boolean optionBool(Ili2DbRequest request, String name, boolean fallback) {
+        Object value = request.options().get(name);
+        return value instanceof Boolean flag ? flag : fallback;
+    }
+    private static String optionText(Ili2DbRequest request, String name, String fallback) {
+        Object value = request.options().get(name);
+        return value instanceof CharSequence text ? text.toString() : fallback;
+    }
+    private static Integer optionInt(Ili2DbRequest request, String name, Integer fallback) {
+        Object value = request.options().get(name);
+        return value instanceof Number number ? number.intValue() : fallback;
+    }
+    private static Path optionPath(Ili2DbRequest request, String name, Path fallback) {
+        Object value = request.options().get(name);
+        return value instanceof Path path ? path : fallback;
+    }
+    private static java.util.List<String> optionList(Ili2DbRequest request, String name,
+                                                     java.util.List<String> fallback) {
+        Object value = request.options().get(name);
+        if (value instanceof java.util.List<?> list) {
+            return list.stream().map(Object::toString).toList();
+        }
+        return fallback;
     }
 
     private void applyGpkg(Config config, Ili2DbRequest request) {

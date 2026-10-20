@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tasks.formats;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
 import org.junit.jupiter.api.Test;
@@ -37,5 +38,17 @@ class InterlisTaskProviderTest {
         assertEquals("Av2ch", registry.requireSymbol("Av2ch").symbol());
         assertEquals("Av2geobau", registry.requireSymbol("Av2geobau").symbol());
         assertEquals("Gpkg2Dxf", registry.requireSymbol("Gpkg2Dxf").symbol());
+        var schemaFields = registry.requireSymbol("Ili2pgImportSchema").inputs().stream()
+                .map(field -> field.name()).toList();
+        assertTrue(schemaFields.containsAll(java.util.List.of(
+                "oneGeomPerTable", "setupPgExt", "createSingleEnumTab",
+                "smart2Inheritance", "sqlExtRefCols", "createTypeDiscriminator",
+                "defaultSrsAuth", "dropScript", "exportTid", "baskets",
+                "proxy", "validConfigFile")));
+        var exportFields = registry.requireSymbol("Ili2pgExport").inputs().stream()
+                .map(field -> field.name()).toList();
+        assertTrue(exportFields.contains("exportModels"));
+        assertTrue(registry.requireSymbol("Ili2pgImport").inputs().stream()
+                .anyMatch(field -> field.name().equals("repositoryDataIds")));
     }
 }

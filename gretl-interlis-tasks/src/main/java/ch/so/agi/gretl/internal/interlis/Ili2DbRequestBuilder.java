@@ -61,6 +61,7 @@ public final class Ili2DbRequestBuilder {
     public Long idSeqMin;
     public Long idSeqMax;
     public String translation;
+    public java.util.Map<String, Object> options = java.util.Map.of();
 
     public Ili2DbRequest build() {
         return new Ili2DbRequest(database, databaseFile, schema, modelNames, modelDirectories,
@@ -73,6 +74,6 @@ public final class Ili2DbRequestBuilder {
                 coalesceJson, nameByTopic, createBasketCol, createTidCol, createDatasetCol,
                 createFk, createFkIdx, createUnique, createStdCols, defaultSrsAuth,
                 defaultSrsCode, dropScript, createScript, metaConfig, tidColumnName,
-                maxNameLength, idSeqMin, idSeqMax, translation);
+                maxNameLength, idSeqMin, idSeqMax, translation, options);
     }
 }

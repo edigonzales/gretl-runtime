@@ -34,7 +34,7 @@ oder einen In-Process-Mock abbilden lassen.
 | DuckDB | `DuckDbSqlExecutorOperationTest` und CLI-Test, Datei/In-Memory, CSV/GPKG/Parquet/XLSX | `DuckDbFederationPostgresIT` mit PostgreSQL und DuckDB-Extensions |
 | CSV/JSON/Excel | `InterlisTaskProviderTest`, `NativeShapefileTest`, `Gpkg2ShpEngineTest`, `InterlisValidatorTest` | `FormatPostgresIT` (CSV, JSON, GPKG, SHP) |
 | Geo-Dateien | nativer Shapefile-/DBF-Code in `NativeShapefileTest` | `FormatPostgresIT` (SHP/GPKG Import/Export) |
-| ili2db/AV/DXF | `Ili2DbFileTest` (DuckDB/GPKG), `AvOperationsTest` (Av2ch/Av2geobau/Gpkg2Dxf) | `FormatPostgresIT` (Ili2pg-Lebenszyklus) |
+| ili2db/AV/DXF | `Ili2DbFileTest` (DuckDB/GPKG), `AvOperationsTest` (Av2ch/Av2geobau/Gpkg2Dxf), Options-/Inventar-Tests | `FormatPostgresIT` (Ili2pg-Lebenszyklus) |
 
 Der reale PostgreSQL-Nachweis läuft über `PostgresSqlExecutorIT`,
 `Db2DbPostgresIT`, `DuckDbFederationPostgresIT`, `FormatPostgresIT` und
@@ -59,7 +59,7 @@ Happy-Path-Aufrufe:
   Der Test setzt den Distributionsbuild voraus; im `backing-services`-Reaktor
   wird `gretl-dist` vorher gebaut.
 
-Die 8 Failsafe-Tests in `gretl-dist` kommen separat hinzu; sie prüfen
+Die 9 Failsafe-Tests in `gretl-dist` kommen separat hinzu; sie prüfen
 Distribution, Launcher, Job-JAR-Paketierung und lokale Integrationen ohne
 Docker. Die Bezeichnung „28 Integrationstests“ meint daher ausschließlich das
 Profil `backing-services`.
@@ -137,7 +137,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**406 Tests** (374 Standard + 4 GeoTools + 28 Backing-Services).
+**408 Tests** (376 Standard + 4 GeoTools + 28 Backing-Services).
 
 ## Grenzen
 
@@ -158,7 +158,9 @@ Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
   `NativeShapefileTest` und `FormatPostgresIT` getestet. Z/M-Shapefile-
   Geometrien und Z/M-GeoPackage-Importe werden explizit abgelehnt.
 - Welle 7 deckt den ili2pg-Lebenszyklus, ili2gpkg-/ili2duckdb-Importe,
-  Av2ch, Av2geobau und Gpkg2Dxf ab.
+  Av2ch, Av2geobau und Gpkg2Dxf ab. Die ili2db-Optionsfläche ist als
+  DSL-Feldfläche mit Defaults abgebildet; der Packager-Test sichert die
+  bevorzugte iox-ili-Modellklasse bei av2geobau.
 - HTTP-Container werden erst benötigt, wenn Jobs aus einem Runtime-Image gegen
   den Fixture-Host laufen; die aktuellen Host-Tests nutzen den JDK-`HttpServer`.
 - Die Integrationstests laufen sequenziell (`forkCount=1`), damit geteilte

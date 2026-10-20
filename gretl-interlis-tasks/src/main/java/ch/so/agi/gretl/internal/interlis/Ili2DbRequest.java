@@ -24,7 +24,8 @@ public record Ili2DbRequest(
         boolean createFkIdx, boolean createUnique, boolean createStdCols,
         String defaultSrsAuth, String defaultSrsCode, Path dropScript,
         Path createScript, String metaConfig, String tidColumnName,
-        Integer maxNameLength, Long idSeqMin, Long idSeqMax, String translation) {
+        Integer maxNameLength, Long idSeqMin, Long idSeqMax, String translation,
+        java.util.Map<String, Object> options) {
     public Ili2DbRequest {
         modelNames = List.copyOf(modelNames);
         modelDirectories = List.copyOf(modelDirectories);
@@ -33,5 +34,6 @@ public record Ili2DbRequest(
         datasetNames = List.copyOf(datasetNames);
         dataFiles = List.copyOf(dataFiles);
         repositoryDataIds = List.copyOf(repositoryDataIds);
+        options = options == null ? java.util.Map.of() : java.util.Map.copyOf(options);
     }
 }

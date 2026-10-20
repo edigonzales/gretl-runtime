@@ -196,5 +196,6 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
    Code, nativen Shapefile-I/O und INTERLIS-Validierung. GDAL ist aus diesen
    Pfaden entfernt.
 7. Welle 7 ist abgeschlossen: ili2pg/ili2gpkg/ili2duckdb, Av2ch, Av2geobau
-   und Gpkg2Dxf sind portiert und getestet. Der Core-Task-Katalog ist mit
-   44/44 vollständig.
+   und Gpkg2Dxf sind portiert und getestet. Die ili2db-Optionsfläche ist
+   gehärtet; Distribution und Job-Paketierung sind auf 44/44 geprüft. Der
+   Core-Task-Katalog ist vollständig.

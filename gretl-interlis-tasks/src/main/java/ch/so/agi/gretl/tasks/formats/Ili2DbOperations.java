@@ -115,10 +115,108 @@ public final class Ili2DbOperations {
                 "logFile = file('build/ili2db.log')", FormatTaskSupport::path, (b, v) -> b.logFile = v));
         fields.add(field("failOnException", "boolean", "Fail on ili2db exception", false, true,
                 "failOnException = false", FormatTaskSupport::bool, (b, v) -> b.failOnException = v));
+        addOptions(fields, commonOptions());
+        if (schema) {
+            addOptions(fields, schemaOptions());
+        }
+        if (export) {
+            addOptions(fields, List.of(new OptionSpec("exportModels", "list",
+                    "Export models", List.<String>of(), "exportModels = ['Model']")));
+        }
         OutputField<Result, Path> log = Fields.output("logFile", "path", "ili2db log file", false, Result::logFile);
         return new OperationType<>(id, symbol, desc, Request.class, Result.class,
                 Builder::new, () -> new Handler(kind), fields, List.of(log),
                 "task('run', " + symbol + ") {\n    database = 'db'\n}\n");
+    }
+
+    private record OptionSpec(String name, String type, String description, Object defaultValue,
+                              String example) {}
+
+    private static List<OptionSpec> commonOptions() {
+        return List.of(
+                new OptionSpec("baskets", "list", "Baskets", List.<String>of(), "baskets = ['b1']"),
+                new OptionSpec("topics", "list", "Topics", List.<String>of(), "topics = ['Topic']"),
+                new OptionSpec("exportTid", "boolean", "Export t_id", false, "exportTid = true"),
+                new OptionSpec("importBid", "boolean", "Import basket id", false, "importBid = true"),
+                new OptionSpec("preScript", "path", "Pre script", null, "preScript = file('pre.sql')"),
+                new OptionSpec("postScript", "path", "Post script", null, "postScript = file('post.sql')"),
+                new OptionSpec("trace", "boolean", "Enable trace", false, "trace = true"),
+                new OptionSpec("disableValidation", "boolean", "Disable validation", false, "disableValidation = true"),
+                new OptionSpec("disableAreaValidation", "boolean", "Disable area validation", false, "disableAreaValidation = true"),
+                new OptionSpec("forceTypeValidation", "boolean", "Force type validation", false, "forceTypeValidation = true"),
+                new OptionSpec("strokeArcs", "boolean", "Stroke arcs", false, "strokeArcs = true"),
+                new OptionSpec("skipPolygonBuilding", "boolean", "Skip polygon building", false, "skipPolygonBuilding = true"),
+                new OptionSpec("skipGeometryErrors", "boolean", "Skip geometry errors", false, "skipGeometryErrors = true"),
+                new OptionSpec("iligml20", "boolean", "ILIGML 2.0", false, "iligml20 = true"),
+                new OptionSpec("disableRounding", "boolean", "Disable rounding", false, "disableRounding = true"),
+                new OptionSpec("proxy", "text", "HTTP proxy", null, "proxy = 'proxy.example'"),
+                new OptionSpec("proxyPort", "integer", "HTTP proxy port", null, "proxyPort = 8080"),
+                new OptionSpec("validConfigFile", "path", "Validation config file", null,
+                        "validConfigFile = file('validation.toml')"));
+    }
+
+    private static List<OptionSpec> schemaOptions() {
+        return List.of(
+                new OptionSpec("oneGeomPerTable", "boolean", "One geometry per table", false, "oneGeomPerTable = true"),
+                new OptionSpec("setupPgExt", "boolean", "Setup PostGIS extension", false, "setupPgExt = true"),
+                new OptionSpec("dropScript", "path", "Drop script", null, "dropScript = file('drop.sql')"),
+                new OptionSpec("createScript", "path", "Create script", null, "createScript = file('create.sql')"),
+                new OptionSpec("metaConfig", "text", "Meta configuration", null, "metaConfig = file('meta.ini')"),
+                new OptionSpec("defaultSrsAuth", "text", "Default SRS authority", null, "defaultSrsAuth = 'EPSG'"),
+                new OptionSpec("createSingleEnumTab", "boolean", "Single enum table", false, "createSingleEnumTab = true"),
+                new OptionSpec("createEnumTxtCol", "boolean", "Enum text column", false, "createEnumTxtCol = true"),
+                new OptionSpec("createEnumColAsItfCode", "boolean", "Enum column as ITF code", false, "createEnumColAsItfCode = true"),
+                new OptionSpec("createEnumTabsWithId", "boolean", "Enum tables with id", false, "createEnumTabsWithId = true"),
+                new OptionSpec("createImportTabs", "boolean", "Create import tables", false, "createImportTabs = true"),
+                new OptionSpec("beautifyEnumDispName", "boolean", "Beautify enum display names", false, "beautifyEnumDispName = true"),
+                new OptionSpec("noSmartMapping", "boolean", "No smart mapping", false, "noSmartMapping = true"),
+                new OptionSpec("smart1Inheritance", "boolean", "Smart1 inheritance", false, "smart1Inheritance = true"),
+                new OptionSpec("smart2Inheritance", "boolean", "Smart2 inheritance", false, "smart2Inheritance = true"),
+                new OptionSpec("coalesceCatalogueRef", "boolean", "Coalesce catalogue references", false, "coalesceCatalogueRef = true"),
+                new OptionSpec("coalesceMultiSurface", "boolean", "Coalesce multi surfaces", false, "coalesceMultiSurface = true"),
+                new OptionSpec("coalesceMultiLine", "boolean", "Coalesce multi lines", false, "coalesceMultiLine = true"),
+                new OptionSpec("expandMultilingual", "boolean", "Expand multilingual", false, "expandMultilingual = true"),
+                new OptionSpec("expandStruct", "boolean", "Expand structures", false, "expandStruct = true"),
+                new OptionSpec("coalesceArray", "boolean", "Coalesce arrays", false, "coalesceArray = true"),
+                new OptionSpec("createTypeConstraint", "boolean", "Create type constraints", false, "createTypeConstraint = true"),
+                new OptionSpec("createNumChecks", "boolean", "Numeric checks", false, "createNumChecks = true"),
+                new OptionSpec("createTextChecks", "boolean", "Text checks", false, "createTextChecks = true"),
+                new OptionSpec("createDateTimeChecks", "boolean", "Date/time checks", false, "createDateTimeChecks = true"),
+                new OptionSpec("createTypeDiscriminator", "boolean", "Type discriminator", false, "createTypeDiscriminator = true"),
+                new OptionSpec("disableNameOptimization", "boolean", "Disable name optimization", false, "disableNameOptimization = true"),
+                new OptionSpec("sqlEnableNull", "boolean", "SQL NULL enabled", false, "sqlEnableNull = true"),
+                new OptionSpec("sqlColsAsText", "boolean", "SQL columns as text", false, "sqlColsAsText = true"),
+                new OptionSpec("sqlExtRefCols", "boolean", "SQL external ref columns", false, "sqlExtRefCols = true"),
+                new OptionSpec("keepAreaRef", "boolean", "Keep area references", false, "keepAreaRef = true"),
+                new OptionSpec("createDatasetCol", "boolean", "Create dataset column", false, "createDatasetCol = true"),
+                new OptionSpec("translation", "text", "Translation", null, "translation = 'de'"),
+                new OptionSpec("tidColumnName", "text", "t_id column name", null, "tidColumnName = 't_id'"),
+                new OptionSpec("idSeqMin", "integer", "ID sequence minimum", null, "idSeqMin = 1"),
+                new OptionSpec("idSeqMax", "integer", "ID sequence maximum", null, "idSeqMax = 999999"),
+                new OptionSpec("maxNameLength", "integer", "Maximum SQL name length", null, "maxNameLength = 60"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void addOptions(List<InputField<Request, ?>> fields, List<OptionSpec> specs) {
+        for (OptionSpec spec : specs) {
+            fields.add(optionField(spec));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static InputField<Request, ?> optionField(OptionSpec spec) {
+        Object defaultValue = spec.defaultValue();
+        Function<Object, Object> converter = switch (spec.type()) {
+            case "boolean" -> FormatTaskSupport::bool;
+            case "integer" -> FormatTaskSupport::integer;
+            case "path" -> FormatTaskSupport::path;
+            case "list" -> FormatTaskSupport::strings;
+            default -> FormatTaskSupport::text;
+        };
+        return new InputField<Request, Object>(spec.name(), spec.type(), spec.description(), false,
+                defaultValue == null ? Optional.empty() : Optional.of(defaultValue),
+                List.of(), spec.example(), converter,
+                (builder, value) -> ((Builder) builder).options.put(spec.name(), value));
     }
 
     @SuppressWarnings("unchecked")
@@ -138,13 +236,15 @@ public final class Ili2DbOperations {
             boolean importTid, boolean deleteData, boolean export3,
             boolean coalesceJson, boolean nameByTopic, boolean createEnumTabs,
             boolean createMetaInfo, boolean createGeomIdx, boolean createBasketCol,
-            boolean createTidCol, Path logFile, boolean failOnException) {
+            boolean createTidCol, Path logFile, boolean failOnException,
+            java.util.Map<String, Object> options) {
         public Request {
             dataFiles = List.copyOf(dataFiles);
             repositoryDataIds = List.copyOf(repositoryDataIds);
             modelNames = List.copyOf(modelNames);
             modelDirectories = List.copyOf(modelDirectories);
             datasetNames = List.copyOf(datasetNames);
+            options = options == null ? java.util.Map.of() : java.util.Map.copyOf(options);
         }
     }
     public record Result(Path logFile) {}
@@ -172,6 +272,7 @@ public final class Ili2DbOperations {
         private boolean createTidCol;
         private Path logFile;
         private boolean failOnException = true;
+        private final java.util.Map<String, Object> options = new java.util.LinkedHashMap<>();
 
         public void setDatabase(String value) { database = value; }
         public void setDatabaseFile(Path value) { databaseFile = value; }
@@ -201,7 +302,7 @@ public final class Ili2DbOperations {
                     dataFiles, repositoryDataIds, modelNames, modelDirectories, datasetNames,
                     importTid, deleteData, export3, coalesceJson, nameByTopic,
                     createEnumTabs, createMetaInfo, createGeomIdx, createBasketCol,
-                    createTidCol, logFile, failOnException);
+                    createTidCol, logFile, failOnException, options);
         }
     }
 
@@ -236,6 +337,7 @@ public final class Ili2DbOperations {
             builder.createBasketCol = request.createBasketCol();
             builder.createTidCol = request.createTidCol();
             builder.defaultSrsCode = request.defaultSrsCode();
+            builder.options = request.options();
             ch.so.agi.gretl.internal.interlis.Ili2DbRequest normalized = builder.build();
             ch.so.agi.gretl.internal.interlis.Ili2DbExecutionSupport support =
                     new ch.so.agi.gretl.internal.interlis.Ili2DbExecutionSupport();
