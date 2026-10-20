@@ -70,6 +70,7 @@ public final class IoxWkfDatabaseEngine {
         requireNonBlank(request.sourceTableName(), "srcTableName");
         requireNonBlank(request.targetTableName(), "dstTableName");
 
+        rejectGpkgZm(request.dataFile(), request.sourceTableName());
         Connection connection = null;
         try {
             connection = open(request.database());
@@ -229,6 +230,24 @@ public final class IoxWkfDatabaseEngine {
             settings.setValue(CsvReader.ENCODING, encoding);
         }
         return settings;
+    }
+
+    private void rejectGpkgZm(Path file, String tableName) throws Exception {
+        try (Connection sqlite = DriverManager.getConnection("jdbc:sqlite:" + file);
+             PreparedStatement statement = sqlite.prepareStatement(
+                     "SELECT z, m FROM gpkg_geometry_columns "
+                             + "WHERE lower(table_name) = lower(?)")) {
+            statement.setString(1, tableName);
+            try (java.sql.ResultSet rows = statement.executeQuery()) {
+                if (rows.next() && (rows.getInt(1) != 0 || rows.getInt(2) != 0)) {
+                    throw new IllegalArgumentException(
+                            "GeoPackage Z/M geometries are not supported by GpkgImport: "
+                                    + tableName);
+                }
+            }
+        } catch (java.sql.SQLException ignored) {
+            // No geometry metadata table: nothing to reject here.
+        }
     }
 
     private Settings gpkgImportSettings(GpkgImportRequest request) {

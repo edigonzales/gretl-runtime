@@ -748,7 +748,9 @@ include::generated/task-jsonvalidator.adoc[]
 
 `Gpkg2Shp` konvertiert die ili2gpkg-Klassentabellen eines GeoPackages mit dem
 nativen gretl-next-Shapefile-Writer in Shapefiles. Pro Klasse entsteht eine
-`.shp`-Datei mit `.shx`, `.dbf`, `.cpg` und optional `.prj`.
+`.shp`-Datei mit `.shx`, `.dbf`, `.cpg` und optional `.prj`. Der Writer
+unterstützt 2D-Geometrien; Z/M-Layer werden mit einer klaren Fehlermeldung
+abgelehnt.
 
 [source,groovy]
 ----
@@ -765,7 +767,8 @@ include::generated/task-gpkg2shp.adoc[]
 === GpkgImport
 
 `GpkgImport` importiert einen GeoPackage-Layer mit iox-wkf `Gpkg2db` in eine
-Datenbanktabelle.
+Datenbanktabelle. Layer mit Z/M-Dimension werden abgelehnt, weil der
+Importpfad sie nicht zuverlässig erhält.
 
 [source,groovy]
 ----
@@ -805,7 +808,8 @@ include::generated/task-gpkgexport.adoc[]
 `ShpImport` importiert ein Shapefile mit dem nativen gretl-next-Shapefile-
 Reader und `Shp2Db` in eine Datenbanktabelle. Die DBF-Attribute werden mit der
 Hop-Reihenfolge explizit → CPG → LDID → ISO-8859-1 gelesen; NUL-, Datums- und
-Numerik-NULLs werden nach den Hop-Regeln behandelt.
+Numerik-NULLs werden nach den Hop-Regeln behandelt. Der Reader unterstützt
+2D-Point, MultiPoint, PolyLine und Polygon; Z/M-Shapes werden abgelehnt.
 
 [source,groovy]
 ----
@@ -824,7 +828,9 @@ include::generated/task-shpimport.adoc[]
 
 `ShpExport` exportiert eine Datenbanktabelle mit dem nativen gretl-next-
 Shapefile-Writer. Die DBF-Datei wird inklusive NULL-Markern geschrieben; CPG,
-Sidecars und atomisches Überschreiben werden vom Writer verwaltet.
+Sidecars und atomisches Überschreiben werden vom Writer verwaltet. Z/M-
+Geometrien werden mit einer klaren Fehlermeldung abgelehnt; 2D-Multipart und
+Polygon-Löcher werden unterstützt.
 
 [source,groovy]
 ----

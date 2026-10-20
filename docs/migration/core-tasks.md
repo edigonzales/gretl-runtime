@@ -80,7 +80,7 @@ Der Standardbuild bleibt Docker-frei; echte Backing-Services laufen im Profil
 - PostgreSQL: Db2Db läuft im `backing-services`-Gate gegen einen echten Container.
 - DuckDB: dateibasiert/In-Memory; Föderation mit CSV/GPKG/PostgreSQL und Exporten.
 - Tabellarisch/JSON: gretl-next-Engines; Validatoren prüfen INTERLIS-Modelle mit ilivalidator und IOX-Readern.
-- Geo-Dateien: gretl-next/nativer Shapefile-Code und iox-wkf; DBF-NULLs, Encoding, CPG und Sidecars sind umgesetzt. Multi-Layer-GPKG läuft über `Db2Gpkg`. Z/M- und komplexe Multipart-/Loch-Geometrien sind noch nicht separat getestet.
+- Geo-Dateien: gretl-next/nativer Shapefile-Code und iox-wkf; DBF-NULLs, Encoding, CPG und Sidecars sind umgesetzt. Multi-Layer-GPKG läuft über `Db2Gpkg`. 2D-Multipart, Polygon-Löcher, MultiPoint und MultiLine sind getestet; Z/M-Shapefile und Z/M-GPKG-Import werden explizit abgelehnt.
 - HTTP: Host-Tests mit `HttpServer`; Container erst für Runtime-Image-Pfade.
 
 Eine Task gilt nicht als migriert, wenn sie einen Backing-Service nur mit H2
@@ -181,5 +181,4 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
 6. Welle 6 ist abgeschlossen: GeoPackage-/Shapefile-Tasks nutzen gretl-next-
    Code, nativen Shapefile-I/O und INTERLIS-Validierung. GDAL ist aus diesen
    Pfaden entfernt.
-7. Verbleibender Testausbau: Z/M- und komplexe Multipart-/Loch-Geometrien.
-8. Welle 7 (INTERLIS/AV) vorbereiten.
+7. Welle 7 (INTERLIS/AV) vorbereiten.

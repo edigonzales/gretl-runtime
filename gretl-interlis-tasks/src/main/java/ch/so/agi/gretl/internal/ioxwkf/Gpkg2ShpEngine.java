@@ -5,6 +5,7 @@ import ch.interlis.iox.ObjectEvent;
 import ch.interlis.iox_j.EndTransferEvent;
 import ch.interlis.ioxwkf.gpkg.GeoPackageReader;
 import ch.so.agi.gretl.internal.shapefile.ShapefileConstants;
+import ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
 import ch.so.agi.gretl.internal.shapefile.ShapefileDescriptorMapper;
 import ch.so.agi.gretl.internal.shapefile.ShapefileIoxWriter;
 
@@ -35,6 +36,11 @@ public final class Gpkg2ShpEngine {
             DatabaseMetaData metaData = connection.getMetaData();
             for (String tableName : classTables(connection)) {
                 GeometryInfo geometryInfo = geometryInfo(connection, tableName);
+                if (geometryInfo != null && (geometryInfo.z() || geometryInfo.m())) {
+                    throw new ShapefileMappingException(
+                            "GeoPackage layer " + tableName
+                                    + " contains Z/M geometries; Shapefile output supports 2D only");
+                }
                 Path target = request.outputDirectory().resolve(tableName + ".shp");
                 ShapefileIoxWriter writer = new ShapefileIoxWriter(
                         target, StandardCharsets.UTF_8, Optional.of(ShapefileConstants.LV95_PRJ));
@@ -63,7 +69,7 @@ public final class Gpkg2ShpEngine {
 
     private GeometryInfo geometryInfo(Connection connection, String tableName) throws Exception {
         String sql = """
-                SELECT column_name, geometry_type_name, srs_id
+                SELECT column_name, geometry_type_name, srs_id, z, m
                 FROM gpkg_geometry_columns
                 WHERE lower(table_name) = lower('%s')
                 """.formatted(tableName.replace("'", "''"));
@@ -72,7 +78,9 @@ public final class Gpkg2ShpEngine {
             if (rs.next()) {
                 return new GeometryInfo(rs.getString("column_name"),
                         rs.getString("geometry_type_name"),
-                        rs.getInt("srs_id"));
+                        rs.getInt("srs_id"),
+                        rs.getInt("z") != 0,
+                        rs.getInt("m") != 0);
             }
         }
         return null;
@@ -98,7 +106,8 @@ public final class Gpkg2ShpEngine {
         }
     }
 
-    private record GeometryInfo(String columnName, String geometryType, Integer srid) {
+    private record GeometryInfo(String columnName, String geometryType, Integer srid,
+                                boolean z, boolean m) {
     }
 
     public record Gpkg2ShpRequest(Path gpkgFile, Path outputDirectory) {

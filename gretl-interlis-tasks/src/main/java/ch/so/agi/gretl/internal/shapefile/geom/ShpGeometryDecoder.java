@@ -37,8 +37,13 @@ public final class ShpGeometryDecoder {
             case MULTIPOINT -> decodeMultiPoint(buf);
             case POLYLINE -> decodePolyLine(buf);
             case POLYGON -> decodePolygon(buf);
+            case POINT_Z, POLYLINE_Z, POLYGON_Z, MULTIPOINT_Z,
+                    POINT_M, POLYLINE_M, POLYGON_M, MULTIPOINT_M ->
+                throw new ShapefileMappingException(
+                        "Z/M Shapefile geometries are not supported: " + shapeType);
             default ->
-                throw new ShapefileMappingException("Unsupported shape type for geometry decoding: " + shapeType);
+                throw new ShapefileMappingException(
+                        "Unsupported shape type for geometry decoding: " + shapeType);
         };
     }
 

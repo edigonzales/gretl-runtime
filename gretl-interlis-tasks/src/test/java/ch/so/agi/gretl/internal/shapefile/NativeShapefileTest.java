@@ -12,6 +12,7 @@ import ch.interlis.iox_j.ObjectEvent;
 import ch.so.agi.gretl.internal.shapefile.core.DbfField;
 import ch.so.agi.gretl.internal.shapefile.core.DbfFieldType;
 import ch.so.agi.gretl.internal.shapefile.core.ShapeType;
+import ch.so.agi.gretl.internal.shapefile.core.ShapeRecord;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -109,11 +110,137 @@ class NativeShapefileTest {
         assertNotNull(read.getattrobj("the_geom", 0));
     }
 
+    @Test
+    void writesMultipartPolylineAndPolygonWithHole() throws Exception {
+        Path shp = root.resolve("multipart.shp");
+        ShapefileIoxWriter writer = new ShapefileIoxWriter(shp, StandardCharsets.UTF_8,
+                Optional.empty());
+        writer.setAttributeDescriptors(List.of(
+                new ShapefileAttributeDescriptor("name", "NAME", DbfFieldType.CHARACTER,
+                        10, 0, null, null, false),
+                new ShapefileAttributeDescriptor("the_geom", "the_geom", null, 0, 0,
+                        ShapeType.POLYGON, 2056, false)));
+        Iom_jObject object = new Iom_jObject("Topic.Class1", "o1");
+        object.setattrvalue("name", "multi");
+        object.addattrobj("the_geom", multiPolygon());
+        writer.write(new ObjectEvent(object));
+        writer.write(new ch.interlis.iox_j.EndTransferEvent());
+        writer.close();
+
+        ShapefileIoxReader reader = new ShapefileIoxReader(shp.toFile(),
+                new ch.ehi.basics.settings.Settings());
+        IomObject read = null;
+        for (int i = 0; i < 20; i++) {
+            IoxEvent event = reader.read();
+            if (event instanceof ObjectEvent objectEvent) {
+                read = objectEvent.getIomObject();
+                break;
+            }
+        }
+        reader.close();
+        assertNotNull(read);
+        IomObject geometry = read.getattrobj("the_geom", 0);
+        assertNotNull(geometry);
+        assertEquals("MULTISURFACE", geometry.getobjecttag());
+    }
+
+    @Test
+    void writesMultiPointAndMultiLine() throws Exception {
+        GeometryFactory factory = new GeometryFactory();
+        String multiPoint = writeAndReadGeometry("multipoint.shp", ShapeType.MULTIPOINT,
+                ch.interlis.iox_j.jts.Jts2iox.JTS2multicoord(new Coordinate[]{
+                        new Coordinate(1, 2), new Coordinate(3, 4)}));
+        assertEquals("MULTICOORD", multiPoint);
+        String multiLine = writeAndReadGeometry("multiline.shp", ShapeType.POLYLINE,
+                ch.interlis.iox_j.jts.Jts2iox.JTS2multipolyline(
+                        factory.createMultiLineString(new com.vividsolutions.jts.geom.LineString[]{
+                                factory.createLineString(new Coordinate[]{
+                                        new Coordinate(0, 0), new Coordinate(1, 1)}),
+                                factory.createLineString(new Coordinate[]{
+                                        new Coordinate(2, 2), new Coordinate(3, 3)})})));
+        assertEquals("MULTIPOLYLINE", multiLine);
+    }
+
+    @Test
+    void rejectsZCoordinatesInWriter() throws Exception {
+        ShapefileIoxWriter writer = new ShapefileIoxWriter(root.resolve("z.shp"),
+                StandardCharsets.UTF_8, Optional.empty());
+        writer.setAttributeDescriptors(List.of(
+                new ShapefileAttributeDescriptor("the_geom", "the_geom", null, 0, 0,
+                        ShapeType.POINT, 2056, false)));
+        Iom_jObject object = new Iom_jObject("Topic.Class1", "o1");
+        IomObject coord = new Iom_jObject("COORD", null);
+        coord.setattrvalue("C1", "1");
+        coord.setattrvalue("C2", "2");
+        coord.setattrvalue("C3", "3");
+        object.addattrobj("the_geom", coord);
+        org.junit.jupiter.api.Assertions.assertThrows(ch.interlis.iox.IoxException.class,
+                () -> writer.write(new ObjectEvent(object)));
+        writer.close();
+    }
+
+    @Test
+    void rejectsZShapeTypeInDecoder() {
+        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocate(4);
+        content.putInt(11);
+        content.flip();
+        ShapeRecord record = new ShapeRecord(1, ShapeType.POINT_Z,
+                content, null);
+        org.junit.jupiter.api.Assertions.assertThrows(ShapefileMappingException.class,
+                () -> new ch.so.agi.gretl.internal.shapefile.geom.ShpGeometryDecoder()
+                        .decode(record));
+        ShapeRecord m = new ShapeRecord(1, ShapeType.POINT_M,
+                java.nio.ByteBuffer.allocate(4).putInt(21).flip(), null);
+        org.junit.jupiter.api.Assertions.assertThrows(ShapefileMappingException.class,
+                () -> new ch.so.agi.gretl.internal.shapefile.geom.ShpGeometryDecoder()
+                        .decode(m));
+    }
+
+    private String writeAndReadGeometry(String name, ShapeType type, IomObject geometry)
+            throws Exception {
+        Path shp = root.resolve(name);
+        ShapefileIoxWriter writer = new ShapefileIoxWriter(shp, StandardCharsets.UTF_8,
+                Optional.empty());
+        writer.setAttributeDescriptors(List.of(
+                new ShapefileAttributeDescriptor("the_geom", "the_geom", null, 0, 0,
+                        type, 2056, false)));
+        Iom_jObject object = new Iom_jObject("Topic.Class1", "o1");
+        object.addattrobj("the_geom", geometry);
+        writer.write(new ObjectEvent(object));
+        writer.write(new ch.interlis.iox_j.EndTransferEvent());
+        writer.close();
+        ShapefileIoxReader reader = new ShapefileIoxReader(shp.toFile(),
+                new ch.ehi.basics.settings.Settings());
+        IomObject read = null;
+        for (int i = 0; i < 20; i++) {
+            IoxEvent event = reader.read();
+            if (event instanceof ObjectEvent objectEvent) {
+                read = objectEvent.getIomObject();
+                break;
+            }
+        }
+        reader.close();
+        assertNotNull(read);
+        return read.getattrobj("the_geom", 0).getobjecttag();
+    }
+
     private static IomObject point(double x, double y) {
         IomObject coord = new Iom_jObject("COORD", null);
         coord.setattrvalue("C1", Double.toString(x));
         coord.setattrvalue("C2", Double.toString(y));
         return coord;
+    }
+
+    private static IomObject multiPolygon() {
+        GeometryFactory factory = new GeometryFactory();
+        Polygon first = factory.createPolygon(factory.createLinearRing(new Coordinate[]{
+                new Coordinate(0, 0), new Coordinate(0, 10), new Coordinate(10, 10),
+                new Coordinate(10, 0), new Coordinate(0, 0)}));
+        Polygon second = factory.createPolygon(factory.createLinearRing(new Coordinate[]{
+                new Coordinate(20, 0), new Coordinate(20, 10), new Coordinate(30, 10),
+                new Coordinate(30, 0), new Coordinate(20, 0)}));
+        return ch.interlis.iox_j.jts.Jts2iox.JTS2multisurface(
+                factory.createMultiPolygon(new Polygon[]{first, second}));
     }
 
     private static IomObject polygon() {

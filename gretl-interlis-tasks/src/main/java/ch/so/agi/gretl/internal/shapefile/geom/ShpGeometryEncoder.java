@@ -47,6 +47,7 @@ public final class ShpGeometryEncoder {
         if (geometry == null || geometry.isEmpty()) {
             return encodeNull();
         }
+        rejectZ(geometry);
         if (geometry instanceof Point point) {
             return encodePoint(point);
         }
@@ -62,6 +63,16 @@ public final class ShpGeometryEncoder {
         throw new ShapefileMappingException("Cannot encode geometry of type '"
                 + geometry.getGeometryType() + "'. Supported: Point, MultiPoint, LineString, MultiLineString, "
                 + "Polygon, MultiPolygon.");
+    }
+
+    private void rejectZ(Geometry geometry) throws ShapefileMappingException {
+        for (Coordinate coordinate : geometry.getCoordinates()) {
+            if (!Double.isNaN(coordinate.z)) {
+                throw new ShapefileMappingException(
+                        "Z coordinates are not supported by the Shapefile writer; "
+                                + "use a 2D geometry");
+            }
+        }
     }
 
     private EncodedShape encodeNull() {

@@ -42,7 +42,7 @@ Der reale PostgreSQL-Nachweis läuft über `PostgresSqlExecutorIT`,
 
 ### Zusätzliche Docker-backed Szenarien
 
-Die 23 Tests in `gretl-integration-tests` sind bewusst breiter als reine
+Die 27 Tests in `gretl-integration-tests` sind bewusst breiter als reine
 Happy-Path-Aufrufe:
 
 - S3: verschachtelte und Unicode-Schlüssel, Überschreibschutz ohne
@@ -60,7 +60,7 @@ Happy-Path-Aufrufe:
 
 Die 8 Failsafe-Tests in `gretl-dist` kommen separat hinzu; sie prüfen
 Distribution, Launcher, Job-JAR-Paketierung und lokale Integrationen ohne
-Docker. Die Bezeichnung „23 Integrationstests“ meint daher ausschließlich das
+Docker. Die Bezeichnung „27 Integrationstests“ meint daher ausschließlich das
 Profil `backing-services`.
 
 
@@ -136,7 +136,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**391 Tests** (368 Standard + 4 GeoTools + 23 Backing-Services).
+**400 Tests** (369 Standard + 4 GeoTools + 27 Backing-Services).
 
 ## Grenzen
 
@@ -153,8 +153,9 @@ Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
 - Shapefile-I/O nutzt den nativen gretl-next-Code; die Hop-Regeln für
   DBF-NULLs und Encoding sind in `ShapefileIoxReader`/`DbfEncoding` umgesetzt
   und durch `NativeShapefileTest`/`InterlisValidatorTest` abgedeckt.
-- Z/M- und komplexe Multipart-/Loch-Geometrien sind noch nicht separat
-  getestet.
+- 2D-Multipart, Polygon-Löcher, MultiPoint und MultiLine sind in
+  `NativeShapefileTest` und `FormatPostgresIT` getestet. Z/M-Shapefile-
+  Geometrien und Z/M-GeoPackage-Importe werden explizit abgelehnt.
 - HTTP-Container werden erst benötigt, wenn Jobs aus einem Runtime-Image gegen
   den Fixture-Host laufen; die aktuellen Host-Tests nutzen den JDK-`HttpServer`.
 - Die Integrationstests laufen sequenziell (`forkCount=1`), damit geteilte

@@ -39,6 +39,21 @@ class FormatPostgresIT {
                     + "(2, 'blau', ST_SetSRID(ST_Point(2600010, 1200010), 2056))");
             statement.execute("create table csv_colors (id int primary key, name text)");
             statement.execute("create table documents (document text)");
+            statement.execute("create table shp_multipolygons "
+                    + "(id int primary key, geom geometry(MultiPolygon,2056))");
+            statement.execute("insert into shp_multipolygons values (1, ST_Multi("
+                    + "ST_GeomFromText('POLYGON((0 0,0 10,10 10,10 0,0 0),"
+                    + "(2 2,2 4,4 4,4 2,2 2))',2056)))");
+            statement.execute("create table shp_multipolygons_import "
+                    + "(id int primary key, geom geometry(MultiPolygon,2056))");
+            statement.execute("create table gpkg_multi_import "
+                    + "(id int primary key, geom geometry(MultiPolygon,2056))");
+            statement.execute("create table shp_z "
+                    + "(id int primary key, geom geometry(PointZ,2056))");
+            statement.execute("create table gpkg_z_import "
+                    + "(id int primary key, geom geometry(PointZ,2056))");
+            statement.execute("insert into shp_z values (1, "
+                    + "ST_GeomFromText('POINT Z(2600000 1200000 500)',2056))");
             statement.execute("create table gpkg_attributes ("
                     + "fid bigint, geom geometry(Point,2056), t_id bigint, t_ili_tid text, "
                     + "objektname text, orientierung numeric, hali text, vali text, "
@@ -165,6 +180,95 @@ class FormatPostgresIT {
             rows.next();
             assertEquals(2, rows.getInt(1));
         }
+    }
+
+    @Test
+    void roundTripsMultipartPolygonWithHole() throws Exception {
+        JobRunner.Result exported = JobRunner.run(root, """
+                task('export', ShpExport) {
+                    database = 'db'
+                    dataFile = file('multipolygon.shp')
+                    tableName = 'shp_multipolygons'
+                }
+                defaults 'export'
+                """, config());
+        assertEquals(0, exported.code(), exported.err());
+        JobRunner.Result imported = JobRunner.run(root, """
+                task('import', ShpImport) {
+                    database = 'db'
+                    dataFile = file('multipolygon.shp')
+                    tableName = 'shp_multipolygons_import'
+                }
+                defaults 'import'
+                """, config());
+        assertEquals(0, imported.code(), imported.err());
+        assertEquals(1, scalar("select ST_NumGeometries(geom) from shp_multipolygons_import"));
+        assertEquals(1, scalar("select ST_NumInteriorRings(ST_GeometryN(geom, 1)) "
+                + "from shp_multipolygons_import"));
+    }
+
+    @Test
+    void rejectsZGeometryExportToShapefile() throws Exception {
+        JobRunner.Result result = JobRunner.run(root, """
+                task('export', ShpExport) {
+                    database = 'db'
+                    dataFile = file('z.shp')
+                    tableName = 'shp_z'
+                }
+                defaults 'export'
+                """, config());
+        org.junit.jupiter.api.Assertions.assertNotEquals(0, result.code());
+        assertTrue(result.err().contains("Z") || result.err().contains("Z/M"));
+    }
+
+    @Test
+    void roundTripsMultipartPolygonThroughGeoPackage() throws Exception {
+        JobRunner.Result exported = JobRunner.run(root, """
+                task('export', GpkgExport) {
+                    database = 'db'
+                    dataFile = file('multipolygon.gpkg')
+                    srcTableName = ['shp_multipolygons']
+                    dstTableName = ['multipolygons']
+                }
+                defaults 'export'
+                """, config());
+        assertEquals(0, exported.code(), exported.err());
+        JobRunner.Result imported = JobRunner.run(root, """
+                task('import', GpkgImport) {
+                    database = 'db'
+                    dataFile = file('multipolygon.gpkg')
+                    srcTableName = 'multipolygons'
+                    dstTableName = 'gpkg_multi_import'
+                }
+                defaults 'import'
+                """, config());
+        assertEquals(0, imported.code(), imported.err());
+        assertEquals(1, scalar("select ST_NumGeometries(geom) from gpkg_multi_import"));
+    }
+
+    @Test
+    void rejectsZPointGeoPackageImport() throws Exception {
+        JobRunner.Result exported = JobRunner.run(root, """
+                task('export', GpkgExport) {
+                    database = 'db'
+                    dataFile = file('z.gpkg')
+                    srcTableName = ['shp_z']
+                    dstTableName = ['zpoints']
+                }
+                defaults 'export'
+                """, config());
+        assertEquals(0, exported.code(), exported.err());
+        JobRunner.Result imported = JobRunner.run(root, """
+                task('import', GpkgImport) {
+                    database = 'db'
+                    dataFile = file('z.gpkg')
+                    srcTableName = 'zpoints'
+                    dstTableName = 'gpkg_z_import'
+                }
+                defaults 'import'
+                """, config());
+        org.junit.jupiter.api.Assertions.assertNotEquals(0, imported.code());
+        assertTrue(imported.err().contains("Z/M"));
     }
 
     @Test
