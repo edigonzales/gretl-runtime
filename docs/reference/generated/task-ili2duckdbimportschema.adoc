@@ -122,6 +122,22 @@
 | Validation config file
 | [.optional]#nein#
 
+| [.dsl-signature]#*datasetNamesFromTransferFiles* = boolean#
+| Derive dataset names from transfer file names
+| [.optional]#nein#
+
+| [.dsl-signature]#*datasetNameSliceStart* = integer#
+| Dataset name slice start
+| [.optional]#nein#
+
+| [.dsl-signature]#*datasetNameSliceEnd* = integer#
+| Dataset name slice end
+| [.optional]#nein#
+
+| [.dsl-signature]#*datasetSubstring* = list#
+| Dataset name substring indices
+| [.optional]#nein#
+
 | [.dsl-signature]#*oneGeomPerTable* = boolean#
 | One geometry per table
 | [.optional]#nein#
@@ -208,6 +224,30 @@
 
 | [.dsl-signature]#*createTypeConstraint* = boolean#
 | Create type constraints
+| [.optional]#nein#
+
+| [.dsl-signature]#*createFk* = boolean#
+| Create foreign keys
+| [.optional]#nein#
+
+| [.dsl-signature]#*createFkIdx* = boolean#
+| Create FK indexes
+| [.optional]#nein#
+
+| [.dsl-signature]#*createUnique* = boolean#
+| Create unique constraints
+| [.optional]#nein#
+
+| [.dsl-signature]#*createStdCols* = boolean#
+| Create standard columns
+| [.optional]#nein#
+
+| [.dsl-signature]#*coalesceJson* = boolean#
+| Coalesce [.acronym]#JSON#
+| [.optional]#nein#
+
+| [.dsl-signature]#*nameByTopic* = boolean#
+| Name by topic
 | [.optional]#nein#
 
 | [.dsl-signature]#*createNumChecks* = boolean#

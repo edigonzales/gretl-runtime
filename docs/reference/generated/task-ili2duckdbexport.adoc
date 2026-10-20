@@ -106,6 +106,22 @@
 | Validation config file
 | [.optional]#nein#
 
+| [.dsl-signature]#*datasetNamesFromTransferFiles* = boolean#
+| Derive dataset names from transfer file names
+| [.optional]#nein#
+
+| [.dsl-signature]#*datasetNameSliceStart* = integer#
+| Dataset name slice start
+| [.optional]#nein#
+
+| [.dsl-signature]#*datasetNameSliceEnd* = integer#
+| Dataset name slice end
+| [.optional]#nein#
+
+| [.dsl-signature]#*datasetSubstring* = list#
+| Dataset name substring indices
+| [.optional]#nein#
+
 | [.dsl-signature]#*exportModels* = list#
 | Export models
 | [.optional]#nein#

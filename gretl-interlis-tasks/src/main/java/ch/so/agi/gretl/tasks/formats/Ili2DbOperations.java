@@ -152,7 +152,16 @@ public final class Ili2DbOperations {
                 new OptionSpec("proxy", "text", "HTTP proxy", null, "proxy = 'proxy.example'"),
                 new OptionSpec("proxyPort", "integer", "HTTP proxy port", null, "proxyPort = 8080"),
                 new OptionSpec("validConfigFile", "path", "Validation config file", null,
-                        "validConfigFile = file('validation.toml')"));
+                        "validConfigFile = file('validation.toml')"),
+                new OptionSpec("datasetNamesFromTransferFiles", "boolean",
+                        "Derive dataset names from transfer file names", false,
+                        "datasetNamesFromTransferFiles = true"),
+                new OptionSpec("datasetNameSliceStart", "integer", "Dataset name slice start", null,
+                        "datasetNameSliceStart = 0"),
+                new OptionSpec("datasetNameSliceEnd", "integer", "Dataset name slice end", null,
+                        "datasetNameSliceEnd = 8"),
+                new OptionSpec("datasetSubstring", "list", "Dataset name substring indices", List.<String>of(),
+                        "datasetSubstring = ['0', '4']"));
     }
 
     private static List<OptionSpec> schemaOptions() {
@@ -179,6 +188,12 @@ public final class Ili2DbOperations {
                 new OptionSpec("expandStruct", "boolean", "Expand structures", false, "expandStruct = true"),
                 new OptionSpec("coalesceArray", "boolean", "Coalesce arrays", false, "coalesceArray = true"),
                 new OptionSpec("createTypeConstraint", "boolean", "Create type constraints", false, "createTypeConstraint = true"),
+                new OptionSpec("createFk", "boolean", "Create foreign keys", false, "createFk = true"),
+                new OptionSpec("createFkIdx", "boolean", "Create FK indexes", false, "createFkIdx = true"),
+                new OptionSpec("createUnique", "boolean", "Create unique constraints", false, "createUnique = true"),
+                new OptionSpec("createStdCols", "boolean", "Create standard columns", false, "createStdCols = true"),
+                new OptionSpec("coalesceJson", "boolean", "Coalesce JSON", false, "coalesceJson = true"),
+                new OptionSpec("nameByTopic", "boolean", "Name by topic", false, "nameByTopic = true"),
                 new OptionSpec("createNumChecks", "boolean", "Numeric checks", false, "createNumChecks = true"),
                 new OptionSpec("createTextChecks", "boolean", "Text checks", false, "createTextChecks = true"),
                 new OptionSpec("createDateTimeChecks", "boolean", "Date/time checks", false, "createDateTimeChecks = true"),

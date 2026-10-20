@@ -145,10 +145,12 @@ public final class Ili2DbExecutionSupport {
         if (request.createGeomIdx()) config.setValue(Config.CREATE_GEOM_INDEX, Config.TRUE);
         if (request.coalesceJson()) config.setJsonTrafo(Config.JSON_TRAFO_COALESCE);
         if (request.nameByTopic()) config.setNameOptimization(Config.NAME_OPTIMIZATION_TOPIC);
-        if (request.createFk()) config.setCreateFk(Config.CREATE_FK_YES);
-        if (request.createFkIdx()) config.setCreateFkIdx(Config.CREATE_FKIDX_YES);
-        if (request.createUnique()) config.setCreateUniqueConstraints(true);
-        if (request.createStdCols()) config.setCreateStdCols(Config.CREATE_STD_COLS_ALL);
+        if (request.createFk() || optionBool(request, "createFk", false)) config.setCreateFk(Config.CREATE_FK_YES);
+        if (request.createFkIdx() || optionBool(request, "createFkIdx", false)) config.setCreateFkIdx(Config.CREATE_FKIDX_YES);
+        if (request.createUnique() || optionBool(request, "createUnique", false)) config.setCreateUniqueConstraints(true);
+        if (request.createStdCols() || optionBool(request, "createStdCols", false)) config.setCreateStdCols(Config.CREATE_STD_COLS_ALL);
+        if (optionBool(request, "coalesceJson", false)) config.setJsonTrafo(Config.JSON_TRAFO_COALESCE);
+        if (optionBool(request, "nameByTopic", false)) config.setNameOptimization(Config.NAME_OPTIMIZATION_TOPIC);
         if (request.createTidCol()) config.setTidHandling(Config.TID_HANDLING_PROPERTY);
         if (request.createBasketCol()) config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
         if (request.createDatasetCol()) config.setCreateDatasetCols(Config.CREATE_DATASET_COL);
@@ -240,8 +242,34 @@ public final class Ili2DbExecutionSupport {
     }
 
     private String dataset(Ili2DbRequest request, int index) {
-        if (request.datasetNames().isEmpty()) return null;
-        return request.datasetNames().get(Math.min(index, request.datasetNames().size() - 1));
+        if (!request.datasetNames().isEmpty()) {
+            return request.datasetNames().get(Math.min(index, request.datasetNames().size() - 1));
+        }
+        if (!optionBool(request, "datasetNamesFromTransferFiles", false)
+                || request.dataFiles().isEmpty()) {
+            return null;
+        }
+        String base = request.dataFiles().get(Math.min(index, request.dataFiles().size() - 1))
+                .getFileName().toString();
+        int dot = base.lastIndexOf('.');
+        if (dot > 0) base = base.substring(0, dot);
+        java.util.List<String> substring = optionList(request, "datasetSubstring", java.util.List.of());
+        Integer start = optionInt(request, "datasetNameSliceStart", null);
+        Integer end = optionInt(request, "datasetNameSliceEnd", null);
+        if (substring.size() >= 2) {
+            try {
+                start = Integer.parseInt(substring.get(0));
+                end = Integer.parseInt(substring.get(1));
+            } catch (NumberFormatException ignored) {
+                // Keep explicitly configured slice if the legacy list is malformed.
+            }
+        }
+        if (start != null) {
+            int from = Math.max(0, Math.min(start, base.length()));
+            int to = end == null ? base.length() : Math.max(from, Math.min(end, base.length()));
+            return base.substring(from, to);
+        }
+        return base;
     }
 
     private void runOnce(Ili2DbRequest request, Ili2DbFlavor flavor, Config config) {
