@@ -17,7 +17,7 @@
     "gretl-packager",
     "gretl-job-runtime"
   ],
-  "tasks": ["HttpDownload", "Curl", "Gzip", "Extract", "FtpList", "FtpDownload", "FtpUpload", "FtpDelete", "S3Download", "S3Upload", "S3Delete", "S3Bucket2Bucket", "Db2Db", "DuckDbSqlExecutor", "Csv2Excel", "CsvImport", "CsvExport", "JsonImport", "CsvValidator", "JsonValidator", "SqlExecutor", "XslTransformer", "IliValidator"],
+  "tasks": ["HttpDownload", "Curl", "Gzip", "Extract", "FtpList", "FtpDownload", "FtpUpload", "FtpDelete", "S3Download", "S3Upload", "S3Delete", "S3Bucket2Bucket", "Db2Db", "DuckDbSqlExecutor", "Csv2Excel", "CsvImport", "CsvExport", "JsonImport", "CsvValidator", "JsonValidator", "Gpkg2Shp", "GpkgValidator", "ShpValidator", "SqlExecutor", "XslTransformer", "IliValidator"],
   "extensionDirectory": "lib/extensions",
   "taskArtifacts": [
     "gretl-basic-tasks-${project.version}.jar",
@@ -40,7 +40,8 @@
     "commons-csv": "1.12.0",
     "commons-io": "2.18.0",
     "poi": "5.2.5",
-    "jackson": "2.17.2"
+    "jackson": "2.17.2",
+    "sqlite-jdbc": "3.53.2.0"
   },
   "sourceRevision": "working-tree; release build must provide the source commit",
   "checksumsFile": "SHA256SUMS"

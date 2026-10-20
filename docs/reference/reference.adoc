@@ -738,6 +738,59 @@ task('validate', JsonValidator) {
 
 include::generated/task-jsonvalidator.adoc[]
 
+=== Gpkg2Shp
+
+`Gpkg2Shp` konvertiert alle Feature-/Attribut-Layer eines GeoPackages über
+DuckDB spatial/GDAL in Shapefiles. Pro Layer entsteht eine `.shp`-Datei mit den
+zugehörigen Sidecars.
+
+[source,groovy]
+----
+task('convert', Gpkg2Shp) {
+    dataFile = file('data/input.gpkg')
+    outputDir = path('build/shp')
+}
+----
+
+Ergebnisse sind `files` und `layers`.
+
+include::generated/task-gpkg2shp.adoc[]
+
+=== GpkgValidator
+
+`GpkgValidator` prüft, ob ein GeoPackage-Layer lesbar ist. Die Prüfung ist
+strukturell; eine INTERLIS-Modellvalidierung ist in dieser Runtime-Welle nicht
+enthalten.
+
+[source,groovy]
+----
+task('validate', GpkgValidator) {
+    dataFiles = [file('data/input.gpkg')]
+    tableName = 'abbaustelle'
+}
+----
+
+Ergebnisse sind `valid` und `errors`.
+
+include::generated/task-gpkgvalidator.adoc[]
+
+=== ShpValidator
+
+`ShpValidator` prüft die erforderlichen Shapefile-Bestandteile und die
+Lesbarkeit über DuckDB spatial. Eine INTERLIS-Modellvalidierung ist in dieser
+Runtime-Welle nicht enthalten.
+
+[source,groovy]
+----
+task('validate', ShpValidator) {
+    dataFiles = [file('data/input.shp')]
+}
+----
+
+Ergebnisse sind `valid` und `errors`.
+
+include::generated/task-shpvalidator.adoc[]
+
 === SqlExecutor
 
 `SqlExecutor` führt SQL-Scripts oder vorbereitete Statements gegen eine

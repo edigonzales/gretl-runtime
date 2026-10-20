@@ -43,7 +43,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Runbericht, Logback-Bridge, 18 Tests,
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
-7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB-Föderation, CSV/JSON/Excel, Provider, 56 Tests,
+7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB-Föderation, CSV/JSON/Excel, Geo-Dateien, Provider, 57 Tests,
 8. **gretl-core-tasks** — XSLT, FTP, S3, Saxon, Commons Net, AWS SDK, 23 Tests,
 9. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
    AsciiDoc-Tabellen, Curl-/SQL-/DuckDB-Integration, Distribution-nahe Integration, 60 Tests,
@@ -56,7 +56,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 14. **gretl-integration-tests** — nur mit `-Pbacking-services`:
     PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, Tabellen/JSON, 19 Failsafe-Tests.
 
-Erwartet: **358 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+Erwartet: **359 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
 `backing-services` ergänzt 19 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
@@ -292,6 +292,16 @@ Logging-Lücke ausgewiesen.
   prüft die JSON-Syntax. Eine INTERLIS-Modellvalidierung ist noch nicht
   Bestandteil der Runtime-Migration.
 
+### Geo-Datei-Tasks (Welle 6, in Arbeit)
+
+- `Gpkg2Shp` konvertiert GeoPackage-Layer über DuckDB spatial/GDAL in
+  Shapefiles; Sidecars werden vor dem Schreiben entfernt.
+- `GpkgValidator` und `ShpValidator` prüfen die Lesbarkeit und die
+  erforderlichen Sidecars strukturell. Eine INTERLIS-Modellvalidierung ist
+  noch nicht enthalten.
+- `GpkgImport`, `GpkgExport`, `ShpImport` und `ShpExport` folgen in dieser
+  Welle.
+
 ### Datenbank-Tasks
 
 - `Db2Db` löst Quell- und Zielverbindung über `taskConfig`-Aliasse auf; die
@@ -365,7 +375,7 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Kombiniert mit GeoTools und Backing-Services werden **381 Tests** ausgeführt.
+Kombiniert mit GeoTools und Backing-Services werden **382 Tests** ausgeführt.
 Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
@@ -374,7 +384,7 @@ Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **362 Tests** (358 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **363 Tests** (359 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.

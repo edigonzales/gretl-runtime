@@ -20,6 +20,9 @@ public final class BasicTaskProvider implements OperationProvider {
                 JsonImportOperation.type(),
                 CsvValidatorOperation.type(),
                 JsonValidatorOperation.type(),
+                Gpkg2ShpOperation.type(),
+                GpkgValidatorOperation.type(),
+                ShpValidatorOperation.type(),
                 GzipOperation.type(),
                 ExtractOperation.type(),
                 SqlExecutorOperation.type());

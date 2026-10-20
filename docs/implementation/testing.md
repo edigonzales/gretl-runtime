@@ -33,6 +33,7 @@ oder einen In-Process-Mock abbilden lassen.
 | INTERLIS-Validierung | lokale Modelle/XTF | kein Backing-Service |
 | DuckDB | `DuckDbSqlExecutorOperationTest` und CLI-Test, Datei/In-Memory, CSV/GPKG/Parquet/XLSX | `DuckDbFederationPostgresIT` mit PostgreSQL und DuckDB-Extensions |
 | Tabellarisch/JSON | `TabularTaskTest` (CSV/Excel/JSON, H2), `DuckDbSqlExecutorOperationTest` | `TabularPostgresIT` mit PostgreSQL |
+| Geo-Dateien | `GeoFileTaskTest` (GPKG→SHP, Strukturvalidierung) | noch keine DB-Import-/Export-Tests |
 
 Der reale PostgreSQL-Nachweis läuft über `PostgresSqlExecutorIT`,
 `Db2DbPostgresIT`, `DuckDbFederationPostgresIT` und
@@ -135,7 +136,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**381 Tests** (358 Standard + 4 GeoTools + 19 Backing-Services).
+**382 Tests** (359 Standard + 4 GeoTools + 19 Backing-Services).
 
 ## Grenzen
 
@@ -150,6 +151,9 @@ Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
   JSON-Syntax. Die INTERLIS-Modellvalidierung über iox-wkf/ilivalidator ist
   noch nicht migriert.
 - `Csv2Excel` unterstützt die CSV-/XLSX-Konvertierung ohne INTERLIS-Modelle.
+- Die Geo-Datei-Tasks sind in Welle 6 noch in Arbeit: `Gpkg2Shp` und die
+  strukturellen Validatoren sind vorhanden; DB-Import/-Export und die
+  vollständigen Shapefile-Sonderregeln folgen.
 - HTTP-Container werden erst benötigt, wenn Jobs aus einem Runtime-Image gegen
   den Fixture-Host laufen; die aktuellen Host-Tests nutzen den JDK-`HttpServer`.
 - Die Integrationstests laufen sequenziell (`forkCount=1`), damit geteilte
