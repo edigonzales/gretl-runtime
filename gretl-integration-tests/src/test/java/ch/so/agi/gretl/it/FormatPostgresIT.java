@@ -39,6 +39,7 @@ class FormatPostgresIT {
                     + "(2, 'blau', ST_SetSRID(ST_Point(2600010, 1200010), 2056))");
             statement.execute("create table csv_colors (id int primary key, name text)");
             statement.execute("create table documents (document text)");
+            statement.execute("create schema if not exists ili2pgtest");
             statement.execute("create table shp_multipolygons "
                     + "(id int primary key, geom geometry(MultiPolygon,2056))");
             statement.execute("insert into shp_multipolygons values (1, ST_Multi("
@@ -286,6 +287,69 @@ class FormatPostgresIT {
                 """, config());
         assertEquals(0, imported.code(), imported.err());
         assertEquals(2, scalar("select count(*) from documents"));
+    }
+
+    @Test
+    void runsIli2pgLifecycle() throws Exception {
+        Path model = Path.of(ClassLoader.getSystemResource(
+                "fixtures/interlis/Beispiel2.ili").toURI());
+        Path inputA = Path.of(ClassLoader.getSystemResource(
+                "fixtures/interlis/Beispiel2a.xtf").toURI());
+        Path inputB = Path.of(ClassLoader.getSystemResource(
+                "fixtures/interlis/Beispiel2b.xtf").toURI());
+        String schemaJob = "task('schema', Ili2pgImportSchema) {\n"
+                + "    database = 'db'\n    schema = 'ili2pgtest'\n"
+                + "    modelNames = ['Beispiel2']\n"
+                + "    modelDirectories = [file('" + model.getParent() + "')]\n"
+                + "    defaultSrsCode = '2056'\n"
+                + "    createBasketCol = true\n    createTidCol = true\n}\n"
+                + "defaults 'schema'\n";
+        JobRunner.Result schema = JobRunner.run(root, schemaJob, config());
+        assertEquals(0, schema.code(), schema.err());
+
+        String importJob = "task('import', Ili2pgImport) {\n"
+                + "    database = 'db'\n    schema = 'ili2pgtest'\n"
+                + "    dataFiles = [file('" + inputA + "'), file('" + inputB + "')]\n"
+                + "    datasetNames = ['DatasetA', 'DatasetB']\n"
+                + "    importTid = true\n}\n"
+                + "defaults 'import'\n";
+        JobRunner.Result imported = JobRunner.run(root, importJob, config());
+        assertEquals(0, imported.code(), imported.err());
+
+        String exportJob = "task('export', Ili2pgExport) {\n"
+                + "    database = 'db'\n    schema = 'ili2pgtest'\n"
+                + "    dataFiles = [file('build/DatasetA.xtf')]\n"
+                + "    datasetNames = ['DatasetA']\n}\n"
+                + "defaults 'export'\n";
+        JobRunner.Result exported = JobRunner.run(root, exportJob, config());
+        assertEquals(0, exported.code(), exported.err());
+        assertTrue(Files.isRegularFile(root.resolve("build/DatasetA.xtf")));
+
+        String replaceJob = "task('replace', Ili2pgReplace) {\n"
+                + "    database = 'db'\n    schema = 'ili2pgtest'\n"
+                + "    dataFiles = [file('" + inputA + "')]\n"
+                + "    datasetNames = ['DatasetA']\n    importTid = true\n}\n"
+                + "defaults 'replace'\n";
+        assertEquals(0, JobRunner.run(root, replaceJob, config()).code());
+        String updateJob = "task('update', Ili2pgUpdate) {\n"
+                + "    database = 'db'\n    schema = 'ili2pgtest'\n"
+                + "    dataFiles = [file('" + inputA + "')]\n"
+                + "    datasetNames = ['DatasetA']\n    importTid = true\n}\n"
+                + "defaults 'update'\n";
+        assertEquals(0, JobRunner.run(root, updateJob, config()).code());
+        String validateJob = "task('validate', Ili2pgValidate) {\n"
+                + "    database = 'db'\n    schema = 'ili2pgtest'\n"
+                + "    modelNames = ['Beispiel2']\n"
+                + "    modelDirectories = [file('" + model.getParent() + "')]\n"
+                + "    datasetNames = ['DatasetA']\n}\n"
+                + "defaults 'validate'\n";
+        assertEquals(0, JobRunner.run(root, validateJob, config()).code());
+        String deleteJob = "task('delete', Ili2pgDelete) {\n"
+                + "    database = 'db'\n    schema = 'ili2pgtest'\n"
+                + "    datasetNames = ['DatasetA', 'DatasetB']\n}\n"
+                + "defaults 'delete'\n";
+        assertEquals(0, JobRunner.run(root, deleteJob, config()).code());
+        assertEquals(0, scalar("select count(*) from ili2pgtest.t_ili2db_dataset"));
     }
 
     private Map<String, Object> config() throws Exception {

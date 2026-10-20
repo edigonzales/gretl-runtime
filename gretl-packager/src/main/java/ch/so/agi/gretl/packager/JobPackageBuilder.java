@@ -175,6 +175,14 @@ public final class JobPackageBuilder {
             return;
         }
         if (normalized.endsWith(".class")) {
+            // av2geobau embeds a private copy of the generated INTERLIS model
+            // classes. Prefer the canonical iox-ili copy in the runtime image.
+            if (normalized.startsWith("ch/interlis/models/")) {
+                if (origin.contains("iox-ili")) {
+                    entries.put(normalized, new Entry(bytes, origin));
+                }
+                return;
+            }
             throw new PackageException("PACKAGE_CLASS_CONFLICT",
                     PackagerMessages.format("package.classConflict", normalized, previous.origin(), origin));
         }

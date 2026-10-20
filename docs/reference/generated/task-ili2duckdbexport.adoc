@@ -1,0 +1,37 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*databaseFile* = path#
+| Database file
+| [.required]#ja#
+
+| [.dsl-signature]#*dataFiles* = list#
+| Transfer files
+| [.optional]#nein#
+
+| [.dsl-signature]#*modelNames* = list#
+| [.acronym]#INTERLIS# model names
+| [.optional]#nein#
+
+| [.dsl-signature]#*modelDirectories* = list#
+| Model directories
+| [.optional]#nein#
+
+| [.dsl-signature]#*datasetNames* = list#
+| Dataset names
+| [.optional]#nein#
+
+| [.dsl-signature]#*export3* = boolean#
+| Export [.acronym]#INTERLIS# 2.4
+| [.optional]#nein#
+
+| [.dsl-signature]#*logFile* = path#
+| ili2db log file
+| [.optional]#nein#
+
+| [.dsl-signature]#*failOnException* = boolean#
+| Fail on ili2db exception
+| [.optional]#nein#
+
+|===

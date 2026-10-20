@@ -1,0 +1,65 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*databaseFile* = path#
+| Database file
+| [.required]#ja#
+
+| [.dsl-signature]#*coalesceJson* = boolean#
+| Coalesce [.acronym]#JSON# structures
+| [.optional]#nein#
+
+| [.dsl-signature]#*nameByTopic* = boolean#
+| Use topic-qualified names
+| [.optional]#nein#
+
+| [.dsl-signature]#*createEnumTabs* = boolean#
+| Create enum tables
+| [.optional]#nein#
+
+| [.dsl-signature]#*createMetaInfo* = boolean#
+| Create meta information
+| [.optional]#nein#
+
+| [.dsl-signature]#*createGeomIdx* = boolean#
+| Create geometry index
+| [.optional]#nein#
+
+| [.dsl-signature]#*dataFiles* = list#
+| Transfer files
+| [.required]#ja#
+
+| [.dsl-signature]#*modelNames* = list#
+| [.acronym]#INTERLIS# model names
+| [.optional]#nein#
+
+| [.dsl-signature]#*modelDirectories* = list#
+| Model directories
+| [.optional]#nein#
+
+| [.dsl-signature]#*datasetNames* = list#
+| Dataset names
+| [.optional]#nein#
+
+| [.dsl-signature]#*repositoryDataIds* = list#
+| ilidata repository ids
+| [.optional]#nein#
+
+| [.dsl-signature]#*importTid* = boolean#
+| Import t_id
+| [.optional]#nein#
+
+| [.dsl-signature]#*deleteData* = boolean#
+| Delete data before import
+| [.optional]#nein#
+
+| [.dsl-signature]#*logFile* = path#
+| ili2db log file
+| [.optional]#nein#
+
+| [.dsl-signature]#*failOnException* = boolean#
+| Fail on ili2db exception
+| [.optional]#nein#
+
+|===

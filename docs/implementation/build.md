@@ -45,7 +45,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Kollisionsprüfung, 4 Tests,
 7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB-Föderation, Provider, 51 Tests,
 8. **gretl-core-tasks** — XSLT, FTP, S3, Saxon, Commons Net, AWS SDK, 23 Tests,
-9. **gretl-interlis-tasks** — gretl-next-Formatengines, nativer Shapefile-Code, INTERLIS-Validierung, 16 Tests,
+9. **gretl-interlis-tasks** — gretl-next-Formatengines, nativer Shapefile-Code, INTERLIS-Validierung, ili2db/AV/DXF, 21 Tests,
 10. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
    AsciiDoc-Tabellen, Curl-/SQL-/DuckDB-Integration, Distribution-nahe Integration, 60 Tests,
 11. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
@@ -55,10 +55,10 @@ export PATH="$JAVA_HOME/bin:$PATH"
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
     und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests,
 15. **gretl-integration-tests** — nur mit `-Pbacking-services`:
-    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, Tabellen/JSON, Geo-Dateien, 27 Failsafe-Tests.
+    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, Tabellen/JSON, Geo-Dateien, ili2pg/ili2gpkg/ili2duckdb/AV/DXF, 28 Failsafe-Tests.
 
-Erwartet: **369 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
-`backing-services` ergänzt 27 Docker-backed Integrationstests; Details stehen in
+Erwartet: **374 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+`backing-services` ergänzt 28 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
 ### Artefakte
@@ -300,6 +300,16 @@ Logging-Lücke ausgewiesen.
 - GDAL/DuckDB-spatial wird in diesen Tasks nicht mehr verwendet;
   `DuckDbSqlExecutor` bleibt davon getrennt.
 
+### ili2db-/AV-/DXF-Tasks
+
+- `Ili2pg*`, `Ili2gpkgImport` und `Ili2duckdb*` sind Ports der gretl-next-
+  ili2db-Engines. PostgreSQL läuft über JDBC, GeoPackage und DuckDB über
+  Dateidatenbanken.
+- `Av2ch` und `Av2geobau` nutzen av2ch/av2geobau; `Gpkg2Dxf` schreibt
+  ili2gpkg-Klassentabellen als DXF.
+- Der Packager bevorzugt bei identischen INTERLIS-Modellklassen die
+  kanonische iox-ili-Version, weil av2geobau eine private Kopie einbettet.
+
 ### Datenbank-Tasks
 
 - `Db2Db` löst Quell- und Zielverbindung über `taskConfig`-Aliasse auf; die
@@ -373,7 +383,7 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Kombiniert mit GeoTools und Backing-Services werden **400 Tests** ausgeführt.
+Kombiniert mit GeoTools und Backing-Services werden **406 Tests** ausgeführt.
 Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
@@ -382,7 +392,7 @@ Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **373 Tests** (369 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **378 Tests** (374 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.

@@ -1,0 +1,25 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*inputFiles* = list#
+| [.acronym]#ITF# files to convert
+| [.required]#ja#
+
+| [.dsl-signature]#*outputDirectory* = path#
+| Output directory
+| [.required]#ja#
+
+| [.dsl-signature]#*modeldir* = text#
+| Model directory
+| [.optional]#nein#
+
+| [.dsl-signature]#*language* = text#
+| Language (de or it)
+| [.optional]#nein#
+
+| [.dsl-signature]#*zip* = boolean#
+| Write ZIP files
+| [.optional]#nein#
+
+|===

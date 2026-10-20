@@ -85,6 +85,20 @@ class DistributionIT {
         assertTrue(operations.out().contains("ShpExport"));
         assertTrue(operations.out().contains("GpkgValidator"));
         assertTrue(operations.out().contains("ShpValidator"));
+        assertTrue(operations.out().contains("Ili2pgImportSchema"));
+        assertTrue(operations.out().contains("Ili2pgImport"));
+        assertTrue(operations.out().contains("Ili2pgExport"));
+        assertTrue(operations.out().contains("Ili2pgDelete"));
+        assertTrue(operations.out().contains("Ili2pgReplace"));
+        assertTrue(operations.out().contains("Ili2pgUpdate"));
+        assertTrue(operations.out().contains("Ili2pgValidate"));
+        assertTrue(operations.out().contains("Ili2gpkgImport"));
+        assertTrue(operations.out().contains("Ili2duckdbImportSchema"));
+        assertTrue(operations.out().contains("Ili2duckdbImport"));
+        assertTrue(operations.out().contains("Ili2duckdbExport"));
+        assertTrue(operations.out().contains("Av2ch"));
+        assertTrue(operations.out().contains("Av2geobau"));
+        assertTrue(operations.out().contains("Gpkg2Dxf"));
         assertTrue(operations.out().contains("IliValidator"));
         assertTrue(!operations.out().contains("FileSize"));
 

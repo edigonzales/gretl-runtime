@@ -104,6 +104,22 @@ final class FormatTaskSupport {
         return List.copyOf(result);
     }
 
+    static List<String> pathStrings(Object value) {
+        List<String> result = new ArrayList<>();
+        if (value instanceof Iterable<?> iterable) {
+            for (Object element : iterable) {
+                result.add(path(element).toString());
+            }
+        } else if (value instanceof Object[] array) {
+            for (Object element : array) {
+                result.add(path(element).toString());
+            }
+        } else {
+            throw new IllegalArgumentException("List expected");
+        }
+        return List.copyOf(result);
+    }
+
     static List<Path> paths(Object value) {
         List<Path> result = new ArrayList<>();
         if (value instanceof Iterable<?> iterable) {

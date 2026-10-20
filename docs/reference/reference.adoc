@@ -882,6 +882,104 @@ Es wird genau eine Datei akzeptiert. Ergebnisse sind `valid` und `logFile`.
 
 include::generated/task-shpvalidator.adoc[]
 
+=== Ili2pgImportSchema
+
+Importiert ein INTERLIS-Schema mit ili2pg in PostgreSQL/PostGIS.
+
+[source,groovy]
+----
+task('schema', Ili2pgImportSchema) {
+    database = 'db'
+    schema = 'public'
+    modelNames = ['Beispiel2']
+    modelDirectories = [file('models')]
+    defaultSrsCode = '2056'
+    createBasketCol = true
+    createTidCol = true
+}
+----
+
+include::generated/task-ili2pgimportschema.adoc[]
+
+=== Ili2pgImport
+
+Importiert INTERLIS-Transferdateien in PostgreSQL/PostGIS.
+
+include::generated/task-ili2pgimport.adoc[]
+
+=== Ili2pgReplace
+
+Ersetzt Datasets in PostgreSQL/PostGIS mit INTERLIS-Transferdateien.
+
+include::generated/task-ili2pgreplace.adoc[]
+
+=== Ili2pgUpdate
+
+Aktualisiert Datasets in PostgreSQL/PostGIS aus INTERLIS-Transferdateien.
+
+include::generated/task-ili2pgupdate.adoc[]
+
+=== Ili2pgExport
+
+Exportiert PostgreSQL/PostGIS-Daten in INTERLIS-Transferdateien.
+
+include::generated/task-ili2pgexport.adoc[]
+
+=== Ili2pgDelete
+
+Löscht Datasets aus PostgreSQL/PostGIS.
+
+include::generated/task-ili2pgdelete.adoc[]
+
+=== Ili2pgValidate
+
+Validiert PostgreSQL/PostGIS-Daten mit ili2pg.
+
+include::generated/task-ili2pgvalidate.adoc[]
+
+=== Ili2gpkgImport
+
+Importiert INTERLIS-Transferdateien in ein GeoPackage; das Schema wird bei
+Bedarf implizit angelegt.
+
+include::generated/task-ili2gpkgimport.adoc[]
+
+=== Ili2duckdbImportSchema
+
+Importiert ein INTERLIS-Schema in eine DuckDB-Datei.
+
+include::generated/task-ili2duckdbimportschema.adoc[]
+
+=== Ili2duckdbImport
+
+Importiert INTERLIS-Transferdateien in eine DuckDB-Datei.
+
+include::generated/task-ili2duckdbimport.adoc[]
+
+=== Ili2duckdbExport
+
+Exportiert INTERLIS-Transferdateien aus einer DuckDB-Datei.
+
+include::generated/task-ili2duckdbexport.adoc[]
+
+=== Av2ch
+
+Konvertiert AV-ITF-Dateien ins Bundes-AV-Modell.
+
+include::generated/task-av2ch.adoc[]
+
+=== Av2geobau
+
+Konvertiert AV-ITF-Dateien in GeoBau-DXF-Dateien.
+
+include::generated/task-av2geobau.adoc[]
+
+=== Gpkg2Dxf
+
+Konvertiert ili2gpkg-Klassentabellen in DXF-Dateien.
+
+include::generated/task-gpkg2dxf.adoc[]
+
 === SqlExecutor
 
 `SqlExecutor` führt SQL-Scripts oder vorbereitete Statements gegen eine

@@ -140,6 +140,36 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>ch.ehi</groupId>
+      <artifactId>ehisqlgen</artifactId>
+      <version>${ehisqlgen.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.interlis</groupId>
+      <artifactId>ili2duckdb</artifactId>
+      <version>${ili2duckdb.version}</version>
+      <exclusions>
+        <exclusion><groupId>ch.ehi</groupId><artifactId>ehisqlgen</artifactId></exclusion>
+        <exclusion><groupId>ch.interlis</groupId><artifactId>iox-ili</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.github.sogis</groupId>
+      <artifactId>av2ch</artifactId>
+      <version>${av2ch.version}</version>
+      <exclusions>
+        <exclusion><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>ch.interlis</groupId>
+      <artifactId>av2geobau</artifactId>
+      <version>${av2geobau.version}</version>
+      <exclusions>
+        <exclusion><groupId>org.slf4j</groupId><artifactId>slf4j-simple</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>ch.interlis</groupId>
       <artifactId>ili2gpkg</artifactId>
       <exclusions>
@@ -179,6 +209,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.duckdb</groupId>
+      <artifactId>duckdb_jdbc</artifactId>
+      <version>${duckdb.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.xerial</groupId>

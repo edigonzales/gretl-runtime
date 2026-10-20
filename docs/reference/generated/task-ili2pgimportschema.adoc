@@ -1,0 +1,57 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*database* = text#
+| PostgreSQL database alias
+| [.required]#ja#
+
+| [.dsl-signature]#*schema* = text#
+| Database schema
+| [.optional]#nein#
+
+| [.dsl-signature]#*modelNames* = list#
+| [.acronym]#INTERLIS# model names
+| [.optional]#nein#
+
+| [.dsl-signature]#*modelDirectories* = list#
+| Model directories
+| [.optional]#nein#
+
+| [.dsl-signature]#*iliFile* = path#
+| [.acronym]#INTERLIS# model file
+| [.optional]#nein#
+
+| [.dsl-signature]#*defaultSrsCode* = text#
+| Default SRS code
+| [.optional]#nein#
+
+| [.dsl-signature]#*createBasketCol* = boolean#
+| Create basket column
+| [.optional]#nein#
+
+| [.dsl-signature]#*createTidCol* = boolean#
+| Create t_id column
+| [.optional]#nein#
+
+| [.dsl-signature]#*createEnumTabs* = boolean#
+| Create enum tables
+| [.optional]#nein#
+
+| [.dsl-signature]#*createGeomIdx* = boolean#
+| Create geometry index
+| [.optional]#nein#
+
+| [.dsl-signature]#*createMetaInfo* = boolean#
+| Create meta information
+| [.optional]#nein#
+
+| [.dsl-signature]#*logFile* = path#
+| ili2db log file
+| [.optional]#nein#
+
+| [.dsl-signature]#*failOnException* = boolean#
+| Fail on ili2db exception
+| [.optional]#nein#
+
+|===

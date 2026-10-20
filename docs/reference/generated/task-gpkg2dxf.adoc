@@ -1,0 +1,13 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*dataFile* = path#
+| GeoPackage file
+| [.required]#ja#
+
+| [.dsl-signature]#*outputDir* = path#
+| [.acronym]#DXF# output directory
+| [.required]#ja#
+
+|===

@@ -1,0 +1,33 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*itfFiles* = list#
+| [.acronym]#ITF# files to convert
+| [.required]#ja#
+
+| [.dsl-signature]#*dxfDirectory* = path#
+| [.acronym]#DXF# output directory
+| [.required]#ja#
+
+| [.dsl-signature]#*modeldir* = text#
+| Model directory
+| [.optional]#nein#
+
+| [.dsl-signature]#*logFile* = path#
+| Log file
+| [.optional]#nein#
+
+| [.dsl-signature]#*proxy* = text#
+| [.acronym]#HTTP# proxy
+| [.optional]#nein#
+
+| [.dsl-signature]#*proxyPort* = integer#
+| [.acronym]#HTTP# proxy port
+| [.optional]#nein#
+
+| [.dsl-signature]#*zip* = boolean#
+| Write ZIP files
+| [.optional]#nein#
+
+|===

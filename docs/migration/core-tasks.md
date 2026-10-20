@@ -36,13 +36,26 @@ Im aktuellen Runtime-Katalog vorhanden:
 - `ShpExport`
 - `GpkgValidator`
 - `ShpValidator`
+- `Ili2pgImportSchema`
+- `Ili2pgImport`
+- `Ili2pgExport`
+- `Ili2pgDelete`
+- `Ili2pgReplace`
+- `Ili2pgUpdate`
+- `Ili2pgValidate`
+- `Ili2gpkgImport`
+- `Ili2duckdbImportSchema`
+- `Ili2duckdbImport`
+- `Ili2duckdbExport`
+- `Av2ch`
+- `Av2geobau`
+- `Gpkg2Dxf`
 - `SqlExecutor`
 - `XslTransformer`
 - `IliValidator`
 
-Damit sind **30 von 44** Operationen vorhanden. Aus `gretl-next` fehlen noch
-**14 Core-Tasks**. GeoTools, Publisher, XtfToGpkg und Native Image bleiben
-ausserhalb dieses Plans.
+Damit sind **44 von 44** Operationen vorhanden. GeoTools, Publisher,
+XtfToGpkg und Native Image bleiben ausserhalb dieses Plans.
 
 ## Gruppierung und Lieferwellen
 
@@ -54,9 +67,9 @@ ausserhalb dieses Plans.
 | 4 | Datenbank | `Db2Db` (erledigt), `DuckDbSqlExecutor` (Föderation erledigt) | JDBC, DuckDB |
 | 5 | Tabellarisch | `Csv2Excel`, `CsvImport`, `CsvExport`, `JsonImport`, `CsvValidator`, `JsonValidator` (alle gretl-next-portiert) | iox-wkf, iox-formats, ilivalidator |
 | 6 | Geodaten | `Gpkg2Shp`, `GpkgImport`, `GpkgExport`, `ShpImport`, `ShpExport`, `GpkgValidator`, `ShpValidator` (alle gretl-next-portiert) | iox-wkf, nativer Shapefile-Code, ilivalidator |
-| 7 | INTERLIS/AV | `Ili2pgImportSchema`, `Ili2pgImport`, `Ili2pgExport`, `Ili2pgDelete`, `Ili2pgReplace`, `Ili2pgUpdate`, `Ili2pgValidate`, `Ili2gpkgImport`, `Ili2duckdbImportSchema`, `Ili2duckdbImport`, `Ili2duckdbExport`, `Av2ch`, `Av2geobau`, `Gpkg2Dxf` | ili2pg/ili2gpkg/ili2duckdb, av2ch, av2geobau |
+| 7 | INTERLIS/AV | `Ili2pgImportSchema`, `Ili2pgImport`, `Ili2pgExport`, `Ili2pgDelete`, `Ili2pgReplace`, `Ili2pgUpdate`, `Ili2pgValidate`, `Ili2gpkgImport`, `Ili2duckdbImportSchema`, `Ili2duckdbImport`, `Ili2duckdbExport`, `Av2ch`, `Av2geobau`, `Gpkg2Dxf` (alle erledigt) | ili2pg/ili2gpkg/ili2duckdb, av2ch, av2geobau |
 
-**Katalogstand:** 30 → 44 (W7).
+**Katalogstand:** 44/44 – vollständig.
 
 **Reihenfolge:** HTTP und einfache Dateien zuerst, dann Remote-Familien,
 Datenbank, tabellarische Formate, Geodaten und zuletzt INTERLIS/AV. Die
@@ -66,8 +79,8 @@ einer alphabetischen Taskliste.
 **Modulzuschnitt:** `Curl`, `Gzip`, `Db2Db` und `DuckDbSqlExecutor` liegen in
 `gretl-basic-tasks`; `XslTransformer`, FTP und S3 in `gretl-core-tasks`. Die
 13 CSV-/JSON-/Geo-/Validator-Tasks liegen im neuen
-`gretl-interlis-tasks`, weil sie iox-wkf, den nativen Shapefile-Code und
-ilivalidator gemeinsam nutzen.
+`gretl-interlis-tasks`, weil sie iox-wkf, den nativen Shapefile-Code,
+ilivalidator und die ili2db-/AV-Bibliotheken gemeinsam nutzen.
 
 ## Backing-Service-Abnahme
 
@@ -80,6 +93,7 @@ Der Standardbuild bleibt Docker-frei; echte Backing-Services laufen im Profil
 - PostgreSQL: Db2Db läuft im `backing-services`-Gate gegen einen echten Container.
 - DuckDB: dateibasiert/In-Memory; Föderation mit CSV/GPKG/PostgreSQL und Exporten.
 - Tabellarisch/JSON: gretl-next-Engines; Validatoren prüfen INTERLIS-Modelle mit ilivalidator und IOX-Readern.
+- ili2db/AV: ili2pg-Lebenszyklus gegen PostGIS, ili2gpkg-/ili2duckdb-Importe, Av2ch/Av2geobau und Gpkg2Dxf.
 - Geo-Dateien: gretl-next/nativer Shapefile-Code und iox-wkf; DBF-NULLs, Encoding, CPG und Sidecars sind umgesetzt. Multi-Layer-GPKG läuft über `Db2Gpkg`. 2D-Multipart, Polygon-Löcher, MultiPoint und MultiLine sind getestet; Z/M-Shapefile und Z/M-GPKG-Import werden explizit abgelehnt.
 - HTTP: Host-Tests mit `HttpServer`; Container erst für Runtime-Image-Pfade.
 
@@ -181,4 +195,6 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
 6. Welle 6 ist abgeschlossen: GeoPackage-/Shapefile-Tasks nutzen gretl-next-
    Code, nativen Shapefile-I/O und INTERLIS-Validierung. GDAL ist aus diesen
    Pfaden entfernt.
-7. Welle 7 (INTERLIS/AV) vorbereiten.
+7. Welle 7 ist abgeschlossen: ili2pg/ili2gpkg/ili2duckdb, Av2ch, Av2geobau
+   und Gpkg2Dxf sind portiert und getestet. Der Core-Task-Katalog ist mit
+   44/44 vollständig.

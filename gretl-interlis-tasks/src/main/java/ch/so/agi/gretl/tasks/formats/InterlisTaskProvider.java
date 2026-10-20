@@ -21,6 +21,20 @@ public final class InterlisTaskProvider implements OperationProvider {
                 ValidatorOperations.csv(),
                 ValidatorOperations.json(),
                 ValidatorOperations.gpkg(),
-                ValidatorOperations.shp());
+                ValidatorOperations.shp(),
+                Ili2DbOperations.pgSchema(),
+                Ili2DbOperations.pgImport(),
+                Ili2DbOperations.pgReplace(),
+                Ili2DbOperations.pgUpdate(),
+                Ili2DbOperations.pgExport(),
+                Ili2DbOperations.pgDelete(),
+                Ili2DbOperations.pgValidate(),
+                Ili2DbOperations.gpkgImport(),
+                Ili2DbOperations.duckdbSchema(),
+                Ili2DbOperations.duckdbImport(),
+                Ili2DbOperations.duckdbExport(),
+                AvOperations.av2ch(),
+                AvOperations.av2geobau(),
+                AvOperations.gpkg2dxf());
     }
 }
