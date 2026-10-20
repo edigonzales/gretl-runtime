@@ -778,9 +778,9 @@ include::generated/task-gpkgimport.adoc[]
 
 === GpkgExport
 
-`GpkgExport` exportiert Datenbanktabellen in ein GeoPackage. Die
-Layer-Metadaten werden nach dem GDAL-Schreiben auf den Zielnamen umgestellt.
-Mehrere Layer in einer Datei sind noch nicht vollständig abgedeckt.
+`GpkgExport` exportiert eine oder mehrere Datenbanktabellen in ein
+GeoPackage. Einzelne GDAL-Zwischenlayer werden anschliessend in eine Datei
+zusammengeführt; die Layer-Metadaten werden auf die Zielnamen umgestellt.
 
 [source,groovy]
 ----
@@ -811,16 +811,17 @@ task('import', ShpImport) {
 }
 ----
 
-Ergebnis ist `rows`. Die explizite Encoding-Angabe wird noch nicht an den
-GDAL-Leser durchgereicht; eine vorhandene CPG-Datei wird berücksichtigt.
+Ergebnis ist `rows`. Die DBF-Attribute werden mit der Reihenfolge explizite
+Angabe, CPG, LDID und ISO-8859-1-Fallback gelesen. Die Hop-NULL-Regeln für
+Character-, Datums- und Numerikfelder werden angewendet.
 
 include::generated/task-shpimport.adoc[]
 
 === ShpExport
 
 `ShpExport` exportiert eine Datenbanktabelle als Shapefile. Vorhandene
-Sidecars werden entfernt; eine CPG-Datei wird mit der vom GDAL-Writer
-verwendeten ISO-8859-1-Kodierung geschrieben.
+Sidecars werden entfernt; die DBF-Datei wird aus den Quellwerten neu
+geschrieben (inklusive NULL-Markern) und eine passende CPG-Datei erzeugt.
 
 [source,groovy]
 ----

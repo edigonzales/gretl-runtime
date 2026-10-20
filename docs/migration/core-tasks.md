@@ -84,7 +84,7 @@ Der Standardbuild bleibt Docker-frei; echte Backing-Services laufen im Profil
 - PostgreSQL: Db2Db läuft im `backing-services`-Gate gegen einen echten Container.
 - DuckDB: dateibasiert/In-Memory; Föderation mit CSV/GPKG/PostgreSQL und Exporten.
 - Tabellarisch/JSON: CSV/Excel/JSON-Dateien über H2/PostgreSQL; Validatoren prüfen Struktur/Syntax, noch keine INTERLIS-Modellvalidierung.
-- Geo-Dateien: GPKG↔SHP, Import/Export über DuckDB spatial/GDAL und strukturelle Validatoren; Hop-Sonderregeln (DBF-NULLs, Reader-Encoding, Multi-Layer-GPKG) sind noch nicht vollständig abgedeckt.
+- Geo-Dateien: GPKG↔SHP, Import/Export über DuckDB spatial/GDAL und strukturelle Validatoren. Gehärtet: Multi-Layer-GPKG, DBF-NULLs und Encoding-Reihenfolge; Z/M- und komplexe Multipart-/Loch-Geometrien sind noch nicht separat getestet.
 - HTTP: Host-Tests mit `HttpServer`; Container erst für Runtime-Image-Pfade.
 
 Eine Task gilt nicht als migriert, wenn sie einen Backing-Service nur mit H2
@@ -182,10 +182,10 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
    Parquet-/GeoPackage-/XLSX-/PostgreSQL-Exporten.
 5. Welle 5 ist abgeschlossen: CSV-/Excel-/JSON-Tasks; die Validatoren prüfen
    Struktur/Syntax. Die INTERLIS-Modellvalidierung bleibt als Ausbaustufe offen.
-6. Welle 6 ist umgesetzt: GeoPackage-/Shapefile-Import/-Export, `Gpkg2Shp`
-   und strukturelle Validatoren. Die Hop-Sonderregeln für DBF-NULLs,
-   explizites Reader-Encoding und Multi-Layer-GPKG bleiben als Härtung offen.
-7. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die Shapefile-Regeln aus diesem
-   Dokument als Testfälle übernehmen, bevor die Tasks als vollständig
-   migrationsgleich gelten.
+6. Welle 6 ist umgesetzt und gehärtet: GeoPackage-/Shapefile-Import/-Export,
+   `Gpkg2Shp`, strukturelle Validatoren, Multi-Layer-GPKG sowie DBF-NULL- und
+   Encoding-Regeln. Z/M- und komplexe Multipart-/Loch-Geometrien bleiben als
+   Testausbau offen.
+7. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die verbleibenden Shapefile-Regeln
+   (Z/M, Multipart/Löcher, MultiPatch-Ablehnung) als Testfälle ergänzen.
 8. Welle 7 (INTERLIS) vorbereiten.

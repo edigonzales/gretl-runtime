@@ -28,6 +28,7 @@ final class GeoImportSupport {
         Db2DbSupport.DatabaseConfig config = Db2DbSupport.config(context, databaseAlias);
         try (Connection duck = GeoFileSupport.openSpatial(context);
              Connection target = Db2DbSupport.open(config)) {
+            validateGeometryTypes(duck, file, layer, context);
             List<Column> sourceColumns = sourceColumns(duck, file, layer);
             String geometryColumn = sourceColumns.stream()
                     .filter(column -> "GEOMETRY".equalsIgnoreCase(column.typeName())
@@ -90,6 +91,136 @@ final class GeoImportSupport {
         } catch (Exception exception) {
             throw new TabularTaskException("GEO_IMPORT",
                     msg(context, "task.geo.import.failed"), "import", exception);
+        }
+    }
+
+
+    static long importShapefile(OperationContext context, String databaseAlias,
+                               Path file, String schemaName, String tableName,
+                               int batchSize, String encoding) {
+        String table = TabularDbSupport.qualifiedTable(schemaName, tableName);
+        Db2DbSupport.DatabaseConfig config = Db2DbSupport.config(context, databaseAlias);
+        try (Connection duck = GeoFileSupport.openSpatial(context);
+             Connection target = Db2DbSupport.open(config)) {
+            validateGeometryTypes(duck, file, null, context);
+            DbfCodec.Table dbf = DbfCodec.read(GeoFileSupport.sibling(file, ".dbf"), encoding);
+            List<TabularDbSupport.Column> targetColumns =
+                    ensureShapefileTarget(target, table, dbf.fields(), context);
+            Map<String, TabularDbSupport.Column> byName = new java.util.LinkedHashMap<>();
+            for (TabularDbSupport.Column column : targetColumns) {
+                byName.put(column.name().toLowerCase(Locale.ROOT), column);
+            }
+            TabularDbSupport.Column geometry = targetColumns.stream()
+                    .filter(column -> "geom".equalsIgnoreCase(column.name())
+                            || column.typeName().toUpperCase(Locale.ROOT).contains("GEOM"))
+                    .findFirst().orElseThrow(() -> new TabularTaskException(
+                            "GEO_GEOMETRY", msg(context, "task.geo.geometry", table),
+                            "prepare", null));
+            List<TabularDbSupport.Column> attributes = new ArrayList<>();
+            for (DbfCodec.Field field : dbf.fields()) {
+                TabularDbSupport.Column column = byName.get(
+                        field.name().toLowerCase(Locale.ROOT));
+                if (column == null) {
+                    throw new TabularTaskException("GEO_COLUMN",
+                            msg(context, "task.geo.column", field.name(), table),
+                            "prepare", null);
+                }
+                attributes.add(column);
+            }
+            String insertSql = insertSql(target, table, attributes, geometry);
+            String select = "SELECT ST_AsText(geom) FROM ST_Read("
+                    + GeoFileSupport.literal(file.toAbsolutePath().toString()) + ")";
+            long count = 0;
+            try (Statement statement = duck.createStatement();
+                 ResultSet geometries = statement.executeQuery(select);
+                 PreparedStatement insert = target.prepareStatement(insertSql)) {
+                for (DbfCodec.Row row : dbf.rows()) {
+                    if (!geometries.next()) {
+                        throw new TabularTaskException("GEO_GEOMETRY",
+                                msg(context, "task.geo.geometry.count"), "import", null);
+                    }
+                    int parameter = 1;
+                    for (DbfCodec.Field field : dbf.fields()) {
+                        insert.setObject(parameter++, row.values().get(field.name()));
+                    }
+                    insert.setString(parameter, geometries.getString(1));
+                    insert.addBatch();
+                    count++;
+                    if (count % batchSize == 0) {
+                        insert.executeBatch();
+                    }
+                }
+                if (geometries.next()) {
+                    throw new TabularTaskException("GEO_GEOMETRY",
+                            msg(context, "task.geo.geometry.count"), "import", null);
+                }
+                insert.executeBatch();
+            }
+            target.commit();
+            return count;
+        } catch (TabularTaskException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw new TabularTaskException("GEO_IMPORT",
+                    msg(context, "task.geo.import.failed"), "import", exception);
+        }
+    }
+
+    private static List<TabularDbSupport.Column> ensureShapefileTarget(
+            Connection target, String table, List<DbfCodec.Field> fields,
+            OperationContext context) throws SQLException {
+        java.sql.Savepoint savepoint = target.setSavepoint();
+        try {
+            return TabularDbSupport.columns(target, table);
+        } catch (SQLException missing) {
+            target.rollback(savepoint);
+            List<String> definitions = new ArrayList<>();
+            for (DbfCodec.Field field : fields) {
+                definitions.add(Db2DbSupport.quoteIdentifier(target, field.name())
+                        + " " + shapefileType(field));
+            }
+            definitions.add("geom geometry");
+            try (Statement statement = target.createStatement()) {
+                statement.execute("CREATE TABLE " + table + " ("
+                        + String.join(", ", definitions) + ")");
+            }
+            return TabularDbSupport.columns(target, table);
+        }
+    }
+
+    private static String shapefileType(DbfCodec.Field field) {
+        return switch (field.type()) {
+            case 'N' -> field.decimal() > 0 ? "numeric" : "bigint";
+            case 'F' -> "double precision";
+            case 'D' -> "date";
+            case 'L' -> "boolean";
+            default -> "text";
+        };
+    }
+
+    private static void validateGeometryTypes(Connection duck, Path file, String layer,
+                                              OperationContext context) throws SQLException {
+        String source = "ST_Read(" + GeoFileSupport.literal(
+                file.toAbsolutePath().toString());
+        if (layer != null && !layer.isBlank()) {
+            source += ", layer = " + GeoFileSupport.literal(layer);
+        }
+        source += ")";
+        try (Statement statement = duck.createStatement();
+             ResultSet rows = statement.executeQuery(
+                     "SELECT DISTINCT ST_GeometryType(geom) FROM " + source)) {
+            java.util.Set<String> types = new java.util.LinkedHashSet<>();
+            while (rows.next()) {
+                String type = rows.getString(1);
+                if (type != null) {
+                    types.add(type.toUpperCase(Locale.ROOT));
+                }
+            }
+            if (types.stream().anyMatch(type -> type.contains("COLLECTION")
+                    || type.contains("MULTIPATCH"))) {
+                throw new TabularTaskException("GEO_GEOMETRY_TYPE",
+                        msg(context, "task.geo.geometry.type", types), "prepare", null);
+            }
         }
     }
 

@@ -107,6 +107,10 @@ public final class Gpkg2ShpOperation {
                         Path target = request.outputDir().resolve(fileName + ".shp");
                         GeoFileSupport.copyToShapefile(connection, request.dataFile(),
                                 layer, target);
+                        java.nio.charset.Charset charset = DbfCodec.transcode(
+                                GeoFileSupport.sibling(target, ".dbf"), "UTF-8");
+                        java.nio.file.Files.writeString(
+                                GeoFileSupport.sibling(target, ".cpg"), charset.name());
                         files.add(target);
                     }
                 }

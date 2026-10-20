@@ -121,8 +121,8 @@ public final class ShpImportOperation {
                 throw new TabularTaskException("SHP_FILE",
                         msg(context, "task.geo.file", request.dataFile()), "prepare", null);
             }
-            long rows = GeoImportSupport.importFile(context, request.database(),
-                    request.dataFile(), null, request.schemaName(), request.tableName(),
+            long rows = GeoImportSupport.importShapefile(context, request.database(),
+                    request.dataFile(), request.schemaName(), request.tableName(),
                     request.batchSize(), request.encoding());
             context.log().log(LogLevel.INFO, "gretl.shpimport.finished",
                     msg(context, "task.shpimport.finished"),

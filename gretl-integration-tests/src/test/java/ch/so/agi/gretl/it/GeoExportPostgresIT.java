@@ -84,6 +84,42 @@ class GeoExportPostgresIT {
     }
 
     @Test
+    void exportsMultipleLayersIntoOneGeoPackage() throws Exception {
+        try (Connection connection = connection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("create table export_extra "
+                    + "(id int primary key, label text, geom geometry(Point,4326))");
+            statement.execute("insert into export_extra values "
+                    + "(7, 'extra', ST_SetSRID(ST_Point(7, 46), 4326))");
+        }
+        JobRunner.Result result = JobRunner.run(root, """
+                task('export', GpkgExport) {
+                    database = 'db'
+                    dataFile = file('multi.gpkg')
+                    srcTableNames = ['export_points', 'export_extra']
+                    dstTableNames = ['points', 'extra']
+                }
+                defaults 'export'
+                """, config());
+        assertEquals(0, result.code(), result.err());
+        Path gpkg = root.resolve("multi.gpkg");
+        assertTrue(Files.isRegularFile(gpkg));
+        try (Connection duck = DriverManager.getConnection("jdbc:duckdb:");
+             Statement statement = duck.createStatement()) {
+            statement.execute("install spatial");
+            statement.execute("load spatial");
+            for (String layer : new String[]{"points", "extra"}) {
+                try (ResultSet rows = statement.executeQuery(
+                        "select count(*) from ST_Read('" + gpkg + "', layer='"
+                                + layer + "')")) {
+                    rows.next();
+                    assertEquals(1, rows.getInt(1), layer);
+                }
+            }
+        }
+    }
+
+    @Test
     void roundTripsNullAndUtf8AttributesThroughShapefile() throws Exception {
         try (Connection connection = connection();
              Statement statement = connection.createStatement()) {

@@ -62,9 +62,12 @@ final class GeoExportSupport {
             if (gpkg && layer != null && !layer.isBlank()) {
                 renameLayer(target, layer);
             }
-            if (!gpkg && encoding != null && !encoding.isBlank()) {
+            if (!gpkg) {
+                java.nio.charset.Charset charset = DbfCodec.charsetFor(
+                        encoding == null ? "UTF-8" : encoding);
+                rewriteDbfFromSource(source, select, attributes, target, charset);
                 Path cpg = GeoFileSupport.sibling(target, ".cpg");
-                Files.writeString(cpg, "ISO-8859-1");
+                Files.writeString(cpg, charset.name());
             }
             return rows;
         } catch (TabularTaskException exception) {
@@ -73,6 +76,40 @@ final class GeoExportSupport {
             throw new TabularTaskException("GEO_EXPORT",
                     msg(context, "task.geo.export.failed"), "export", exception);
         }
+    }
+
+    private static void rewriteDbfFromSource(Connection source, String select,
+                                              List<TabularDbSupport.Column> attributes,
+                                              Path shapefile, java.nio.charset.Charset charset)
+            throws SQLException, java.io.IOException {
+        Path dbfFile = GeoFileSupport.sibling(shapefile, ".dbf");
+        DbfCodec.Table template = DbfCodec.read(dbfFile, "ISO-8859-1");
+        List<DbfCodec.Row> rows = new ArrayList<>();
+        try (Statement statement = source.createStatement();
+             ResultSet result = statement.executeQuery(select)) {
+            while (result.next()) {
+                java.util.Map<String, Object> values = new java.util.LinkedHashMap<>();
+                for (DbfCodec.Field field : template.fields()) {
+                    values.put(field.name(), null);
+                }
+                for (int index = 0; index < attributes.size(); index++) {
+                    Object value = result.getObject(index + 2);
+                    if (value instanceof java.sql.Date date) {
+                        value = date.toLocalDate();
+                    } else if (value instanceof java.sql.Timestamp timestamp) {
+                        value = timestamp.toLocalDateTime();
+                    }
+                    String name = attributes.get(index).name();
+                    for (DbfCodec.Field field : template.fields()) {
+                        if (field.name().equalsIgnoreCase(name)) {
+                            values.put(field.name(), value);
+                        }
+                    }
+                }
+                rows.add(new DbfCodec.Row(values));
+            }
+        }
+        DbfCodec.write(dbfFile, template.fields(), rows, charset);
     }
 
     private static void renameLayer(Path gpkg, String layer) throws SQLException {

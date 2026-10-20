@@ -33,7 +33,7 @@ oder einen In-Process-Mock abbilden lassen.
 | INTERLIS-Validierung | lokale Modelle/XTF | kein Backing-Service |
 | DuckDB | `DuckDbSqlExecutorOperationTest` und CLI-Test, Datei/In-Memory, CSV/GPKG/Parquet/XLSX | `DuckDbFederationPostgresIT` mit PostgreSQL und DuckDB-Extensions |
 | Tabellarisch/JSON | `TabularTaskTest` (CSV/Excel/JSON, H2), `DuckDbSqlExecutorOperationTest` | `TabularPostgresIT` mit PostgreSQL |
-| Geo-Dateien | `GeoFileTaskTest` (GPKG→SHP, Strukturvalidierung) | `GeoImportPostgresIT`, `GeoExportPostgresIT` |
+| Geo-Dateien | `GeoFileTaskTest`, `DbfCodecTest` (DBF-NULLs/Encoding) | `GeoImportPostgresIT`, `GeoExportPostgresIT` (inkl. Multi-Layer) |
 
 Der reale PostgreSQL-Nachweis läuft über `PostgresSqlExecutorIT`,
 `Db2DbPostgresIT`, `DuckDbFederationPostgresIT` und
@@ -42,7 +42,7 @@ Der reale PostgreSQL-Nachweis läuft über `PostgresSqlExecutorIT`,
 
 ### Zusätzliche Docker-backed Szenarien
 
-Die 22 Tests in `gretl-integration-tests` sind bewusst breiter als reine
+Die 23 Tests in `gretl-integration-tests` sind bewusst breiter als reine
 Happy-Path-Aufrufe:
 
 - S3: verschachtelte und Unicode-Schlüssel, Überschreibschutz ohne
@@ -60,7 +60,7 @@ Happy-Path-Aufrufe:
 
 Die 8 Failsafe-Tests in `gretl-dist` kommen separat hinzu; sie prüfen
 Distribution, Launcher, Job-JAR-Paketierung und lokale Integrationen ohne
-Docker. Die Bezeichnung „22 Integrationstests“ meint daher ausschließlich das
+Docker. Die Bezeichnung „23 Integrationstests“ meint daher ausschließlich das
 Profil `backing-services`.
 
 
@@ -136,7 +136,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**385 Tests** (359 Standard + 4 GeoTools + 22 Backing-Services).
+**390 Tests** (363 Standard + 4 GeoTools + 23 Backing-Services).
 
 ## Grenzen
 
@@ -151,9 +151,10 @@ Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
   JSON-Syntax. Die INTERLIS-Modellvalidierung über iox-wkf/ilivalidator ist
   noch nicht migriert.
 - `Csv2Excel` unterstützt die CSV-/XLSX-Konvertierung ohne INTERLIS-Modelle.
-- Die Geo-Datei-Tasks sind in Welle 6 vorhanden. Die Hop-Sonderregeln für
-  DBF-NULLs, explizites Reader-Encoding und Multi-Layer-GeoPackages sind noch
-  nicht vollständig abgedeckt.
+- Die Geo-Datei-Tasks sind gehärtet: DBF-NULLs und Encoding-Reihenfolge sind
+  durch `DbfCodecTest` abgedeckt, Multi-Layer-GeoPackages durch
+  `GeoExportPostgresIT`. Z/M- und komplexe Multipart-/Loch-Geometrien sind
+  noch nicht separat getestet.
 - HTTP-Container werden erst benötigt, wenn Jobs aus einem Runtime-Image gegen
   den Fixture-Host laufen; die aktuellen Host-Tests nutzen den JDK-`HttpServer`.
 - Die Integrationstests laufen sequenziell (`forkCount=1`), damit geteilte

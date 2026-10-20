@@ -139,18 +139,19 @@ public final class GpkgExportOperation {
             implements OperationHandler<GpkgExportRequest, GpkgExportResult> {
         @Override
         public GpkgExportResult execute(GpkgExportRequest request, OperationContext context) {
-            if (request.srcTableNames().size() != 1) {
-                throw new TabularTaskException("GPKG_EXPORT",
-                        msg(context, "task.gpkgexport.single"), "prepare", null);
-            }
+            List<java.nio.file.Path> temporaryLayers = new ArrayList<>();
             try {
                 long rows = 0;
                 for (int index = 0; index < request.srcTableNames().size(); index++) {
+                    java.nio.file.Path temporary = request.dataFile().getParent()
+                            .resolve(".gretl-w6-" + java.util.UUID.randomUUID()
+                                    + "-" + index + ".gpkg");
+                    temporaryLayers.add(temporary);
                     rows += GeoExportSupport.export(context, request.database(),
                             request.schemaName(), request.srcTableNames().get(index),
-                            request.dataFile(), true,
-                            request.dstTableNames().get(index), null);
+                            temporary, true, request.dstTableNames().get(index), null);
                 }
+                GeoPackageMerger.merge(temporaryLayers, request.dataFile());
                 context.log().log(LogLevel.INFO, "gretl.gpkgexport.finished",
                         msg(context, "task.gpkgexport.finished"),
                         Map.of("geo.rows", Long.toString(rows)), null);
@@ -160,6 +161,14 @@ public final class GpkgExportOperation {
             } catch (Exception exception) {
                 throw new TabularTaskException("GPKG_EXPORT",
                         msg(context, "task.gpkgexport.failed"), "export", exception);
+            } finally {
+                for (java.nio.file.Path temporary : temporaryLayers) {
+                    try {
+                        java.nio.file.Files.deleteIfExists(temporary);
+                    } catch (java.io.IOException ignored) {
+                        // Best-effort cleanup of intermediate layers.
+                    }
+                }
             }
         }
 

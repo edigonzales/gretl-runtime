@@ -44,7 +44,7 @@ public final class ShpExportOperation {
                 (builder, value) -> ((ShpExportBuilder) builder).setSchemaName(value));
         InputField<ShpExportRequest, String> encoding = new InputField<>(
                 "encoding", "text", "Shapefile encoding", false,
-                Optional.of("ISO-8859-1"), List.of(), "encoding = 'UTF-8'",
+                Optional.of("UTF-8"), List.of(), "encoding = 'ISO-8859-1'",
                 ShpExportOperation::text,
                 (builder, value) -> ((ShpExportBuilder) builder).setEncoding(value));
         OutputField<ShpExportResult, Path> file = Fields.output(
@@ -80,7 +80,7 @@ public final class ShpExportOperation {
         private Path dataFile;
         private String tableName;
         private String schemaName;
-        private String encoding = "ISO-8859-1";
+        private String encoding = "UTF-8";
 
         public ShpExportBuilder setDatabase(String value) { database = value; return this; }
         public ShpExportBuilder setDataFile(Path value) { dataFile = value; return this; }
@@ -98,7 +98,7 @@ public final class ShpExportOperation {
                 throw new IllegalArgumentException("tableName is missing");
             }
             return new ShpExportRequest(database, dataFile.toAbsolutePath().normalize(),
-                    tableName, schemaName, encoding == null ? "ISO-8859-1" : encoding);
+                    tableName, schemaName, encoding == null ? "UTF-8" : encoding);
         }
     }
 
