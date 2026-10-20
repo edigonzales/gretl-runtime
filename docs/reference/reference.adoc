@@ -903,7 +903,9 @@ include::generated/task-ili2pgimportschema.adoc[]
 
 === Ili2pgImport
 
-Importiert INTERLIS-Transferdateien in PostgreSQL/PostGIS.
+Importiert INTERLIS-Transferdateien in PostgreSQL/PostGIS. Mit `datasetFiles`
+werden Dataset-Namen aus den sortierten Dateinamen ohne Endung abgeleitet;
+`datasetNameSlice`/`datasetSubstring` schneiden die Namen zu.
 
 include::generated/task-ili2pgimport.adoc[]
 
@@ -921,7 +923,8 @@ include::generated/task-ili2pgupdate.adoc[]
 
 === Ili2pgExport
 
-Exportiert PostgreSQL/PostGIS-Daten in INTERLIS-Transferdateien.
+Exportiert PostgreSQL/PostGIS-Daten in INTERLIS-Transferdateien. `datasetFiles`
+und die Slice-Optionen funktionieren wie bei `Ili2pgImport`.
 
 include::generated/task-ili2pgexport.adoc[]
 
