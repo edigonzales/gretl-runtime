@@ -28,6 +28,7 @@
     <module>gretl-cli</module>
     <module>gretl-job-runtime</module>
     <module>gretl-ilivalidator</module>
+    <module>gretl-interlis-tasks</module>
     <module>examples/file-size-extension</module>
     <module>gretl-dist</module>
   </modules>
@@ -45,6 +46,16 @@
     <logback.version>1.6.5</logback.version>
     <postgresql.version>42.7.14</postgresql.version>
     <ilivalidator.version>1.15.0</ilivalidator.version>
+    <ili2c.version>5.6.8</ili2c.version>
+    <iox-ili.version>1.24.4</iox-ili.version>
+    <ili2pg.version>5.5.1</ili2pg.version>
+    <ili2gpkg.version>5.5.1</ili2gpkg.version>
+    <iox-wkf.version>2.0.1-20250417.084407-2</iox-wkf.version>
+    <iox-formats.version>1.0.3</iox-formats.version>
+    <ilivalidator-custom-functions.version>1.1.50</ilivalidator-custom-functions.version>
+    <ilivalidator-custom-functions-geometries.version>0.0.8</ilivalidator-custom-functions-geometries.version>
+    <geow-interlis-functions.version>0.2.1</geow-interlis-functions.version>
+    <interlis-functions-ngk-so.version>1.0.3</interlis-functions-ngk-so.version>
     <geotools.version>35.2</geotools.version>
     <saxon.version>11.4</saxon.version>
     <xmlresolver.version>4.4.3</xmlresolver.version>
@@ -54,7 +65,6 @@
     <testcontainers-floci.version>1.10.0</testcontainers-floci.version>
     <aws-sdk.version>2.15.64</aws-sdk.version>
     <duckdb.version>1.5.2.0</duckdb.version>
-    <commons-csv.version>1.12.0</commons-csv.version>
     <commons-io.version>2.18.0</commons-io.version>
     <poi.version>5.2.5</poi.version>
     <jackson.version>2.17.2</jackson.version>
@@ -70,6 +80,21 @@
         <version>${junit.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -19,11 +19,11 @@
 | [.optional]#nein#
 
 | [.dsl-signature]#*valueDelimiter* = text#
-| [.acronym]#CSV#-Feldtrennzeichen
+| [.acronym]#CSV#-Anfuehrungszeichen
 | [.optional]#nein#
 
 | [.dsl-signature]#*valueSeparator* = text#
-| [.acronym]#CSV#-Anfuehrungszeichen
+| [.acronym]#CSV#-Feldtrennzeichen
 | [.optional]#nein#
 
 | [.dsl-signature]#*schemaName* = text#

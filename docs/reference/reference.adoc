@@ -627,25 +627,27 @@ include::generated/task-duckdbsqlexecutor.adoc[]
 
 === Csv2Excel
 
-`Csv2Excel` konvertiert eine CSV-Datei in eine XLSX-Arbeitsmappe. Standard sind
-Semikolon als Trennzeichen, `"` als Quote-Zeichen und UTF-8.
+`Csv2Excel` nutzt den gretl-next-CSV-Reader und den IOX-Excel-Writer. Optional
+kann ein INTERLIS-Modell geladen werden.
 
 [source,groovy]
 ----
 task('convert', Csv2Excel) {
     csvFile = file('data/input.csv')
     outputFile = file('build/output.xlsx')
+    models = 'CsvModel'
+    modeldir = 'models'
 }
 ----
 
-`firstLineIsHeader` defaultet auf `true`; die Kopfzeile wird als erste
-Excel-Zeile geschrieben. Ergebnisse sind `file` und `rows`.
+`firstLineIsHeader`, `valueDelimiter`, `valueSeparator` und `encoding` steuern
+den CSV-Reader. Ergebnis ist `file`.
 
 include::generated/task-csv2excel.adoc[]
 
 === CsvImport
 
-`CsvImport` importiert eine CSV-Datei über einen `taskConfig`-Alias in eine
+`CsvImport` importiert eine CSV-Datei mit iox-wkf `Csv2db` in eine
 Datenbanktabelle.
 
 [source,groovy]
@@ -657,16 +659,15 @@ task('import', CsvImport) {
 }
 ----
 
-Mit `firstLineIsHeader = true` werden die CSV-Header den Zielspalten
-zugeordnet. Ohne Header müssen die CSV-Spalten der Zielspaltenreihenfolge
-entsprechen. `schemaName`, `encoding`, `valueDelimiter`, `valueSeparator` und
-`batchSize` sind optional. Ergebnis ist `rows`.
+Die CSV-Header werden den Zielspalten zugeordnet; ohne Header werden die
+Spalten positional übernommen. `schemaName`, `encoding`, `valueDelimiter`,
+`valueSeparator` und `batchSize` sind optional. Ergebnis ist `file`.
 
 include::generated/task-csvimport.adoc[]
 
 === CsvExport
 
-`CsvExport` schreibt eine Datenbanktabelle oder ausgewählte Spalten in eine
+`CsvExport` schreibt eine Datenbanktabelle mit iox-wkf `Db2Csv` in eine
 CSV-Datei.
 
 [source,groovy]
@@ -679,8 +680,8 @@ task('export', CsvExport) {
 }
 ----
 
-`firstLineIsHeader` defaultet auf `true`; `attributes` ist optional und leer
-bedeutet alle Spalten. Ergebnisse sind `file` und `rows`.
+`attributes` ist optional; `firstLineIsHeader` defaultet auf `true`. Ergebnis
+ist `file`.
 
 include::generated/task-csvexport.adoc[]
 
@@ -706,43 +707,48 @@ include::generated/task-jsonimport.adoc[]
 
 === CsvValidator
 
-`CsvValidator` prüft die Struktur einer CSV-Datei: Parsebarkeit, konsistente
-Spaltenzahl sowie eindeutige, nicht-leere Header. Eine INTERLIS-/Modell-
-Validierung ist in dieser Runtime-Welle nicht enthalten.
+`CsvValidator` validiert eine CSV-Datei mit ilivalidator und dem CSV-Reader
+gegen ein INTERLIS-Modell. Die Datei muss genau einmal angegeben werden.
 
 [source,groovy]
 ----
 task('validate', CsvValidator) {
     dataFiles = [file('data/input.csv')]
+    modelNames = ['CsvModel']
+    modelDirectories = [file('models')]
 }
 ----
 
-`failOnError` defaultet auf `true`; mit `false` werden `valid` und `errors`
-zurückgegeben, ohne den Task abzubrechen.
+`firstLineIsHeader`, `valueDelimiter`, `valueSeparator` und `encoding` werden
+an den CSV-Reader durchgereicht. `failOnError=false` liefert `valid=false`
+ohne Taskabbruch.
 
 include::generated/task-csvvalidator.adoc[]
 
 === JsonValidator
 
-`JsonValidator` prüft die JSON-Syntax der angegebenen Dateien. Eine
-INTERLIS-/Modell-Validierung ist in dieser Runtime-Welle nicht enthalten.
+`JsonValidator` validiert JSON-Dateien mit ilivalidator und dem JSON-Reader
+gegen ein INTERLIS-Modell. Die JSON-Vorverarbeitung ergänzt `@type`, `@topic`,
+`@id` und `@bid`, wie in gretl-next.
 
 [source,groovy]
 ----
 task('validate', JsonValidator) {
     dataFiles = [file('data/input.json')]
+    modelNames = ['Test2']
+    modelDirectories = [file('models')]
 }
 ----
 
-`failOnError` defaultet auf `true`; Ergebnisse sind `valid` und `errors`.
+Ergebnisse sind `valid` und `logFile`; `failOnError` defaultet auf `true`.
 
 include::generated/task-jsonvalidator.adoc[]
 
 === Gpkg2Shp
 
-`Gpkg2Shp` konvertiert alle Feature-/Attribut-Layer eines GeoPackages über
-DuckDB spatial/GDAL in Shapefiles. Pro Layer entsteht eine `.shp`-Datei mit den
-zugehörigen Sidecars.
+`Gpkg2Shp` konvertiert die ili2gpkg-Klassentabellen eines GeoPackages mit dem
+nativen gretl-next-Shapefile-Writer in Shapefiles. Pro Klasse entsteht eine
+`.shp`-Datei mit `.shx`, `.dbf`, `.cpg` und optional `.prj`.
 
 [source,groovy]
 ----
@@ -752,15 +758,14 @@ task('convert', Gpkg2Shp) {
 }
 ----
 
-Ergebnisse sind `files` und `layers`.
+Ergebnis ist `directory`.
 
 include::generated/task-gpkg2shp.adoc[]
 
 === GpkgImport
 
-`GpkgImport` importiert einen GeoPackage-Layer über DuckDB spatial in eine
-Datenbanktabelle. Die Zieltabelle wird bei Bedarf mit einer PostGIS-Geometrie-
-spalte angelegt.
+`GpkgImport` importiert einen GeoPackage-Layer mit iox-wkf `Gpkg2db` in eine
+Datenbanktabelle.
 
 [source,groovy]
 ----
@@ -772,35 +777,35 @@ task('import', GpkgImport) {
 }
 ----
 
-Ergebnis ist `rows`.
+Ergebnis ist `file`.
 
 include::generated/task-gpkgimport.adoc[]
 
 === GpkgExport
 
-`GpkgExport` exportiert eine oder mehrere Datenbanktabellen in ein
-GeoPackage. Einzelne GDAL-Zwischenlayer werden anschliessend in eine Datei
-zusammengeführt; die Layer-Metadaten werden auf die Zielnamen umgestellt.
+`GpkgExport` exportiert eine oder mehrere Datenbanktabellen mit iox-wkf
+`Db2Gpkg` in ein GeoPackage.
 
 [source,groovy]
 ----
 task('export', GpkgExport) {
     database = 'db'
     dataFile = file('build/output.gpkg')
-    srcTableNames = ['abbaustelle']
-    dstTableNames = ['abbaustelle']
+    srcTableName = ['abbaustelle']
+    dstTableName = ['abbaustelle']
 }
 ----
 
-Ergebnisse sind `file` und `rows`.
+Ergebnis ist `file`.
 
 include::generated/task-gpkgexport.adoc[]
 
 === ShpImport
 
-`ShpImport` importiert ein Shapefile über DuckDB spatial in eine
-Datenbanktabelle. Die Zieltabelle wird bei Bedarf mit einer PostGIS-
-Geometriespalte angelegt.
+`ShpImport` importiert ein Shapefile mit dem nativen gretl-next-Shapefile-
+Reader und `Shp2Db` in eine Datenbanktabelle. Die DBF-Attribute werden mit der
+Hop-Reihenfolge explizit → CPG → LDID → ISO-8859-1 gelesen; NUL-, Datums- und
+Numerik-NULLs werden nach den Hop-Regeln behandelt.
 
 [source,groovy]
 ----
@@ -811,17 +816,15 @@ task('import', ShpImport) {
 }
 ----
 
-Ergebnis ist `rows`. Die DBF-Attribute werden mit der Reihenfolge explizite
-Angabe, CPG, LDID und ISO-8859-1-Fallback gelesen. Die Hop-NULL-Regeln für
-Character-, Datums- und Numerikfelder werden angewendet.
+Ergebnis ist `file`.
 
 include::generated/task-shpimport.adoc[]
 
 === ShpExport
 
-`ShpExport` exportiert eine Datenbanktabelle als Shapefile. Vorhandene
-Sidecars werden entfernt; die DBF-Datei wird aus den Quellwerten neu
-geschrieben (inklusive NULL-Markern) und eine passende CPG-Datei erzeugt.
+`ShpExport` exportiert eine Datenbanktabelle mit dem nativen gretl-next-
+Shapefile-Writer. Die DBF-Datei wird inklusive NULL-Markern geschrieben; CPG,
+Sidecars und atomisches Überschreiben werden vom Writer verwaltet.
 
 [source,groovy]
 ----
@@ -832,42 +835,44 @@ task('export', ShpExport) {
 }
 ----
 
-Ergebnisse sind `file` und `rows`.
+Ergebnis ist `file`.
 
 include::generated/task-shpexport.adoc[]
 
 === GpkgValidator
 
-`GpkgValidator` prüft, ob ein GeoPackage-Layer lesbar ist. Die Prüfung ist
-strukturell; eine INTERLIS-Modellvalidierung ist in dieser Runtime-Welle nicht
-enthalten.
+`GpkgValidator` validiert eine GeoPackage-Tabelle mit ilivalidator und dem
+GeoPackage-Reader gegen ein INTERLIS-Modell.
 
 [source,groovy]
 ----
 task('validate', GpkgValidator) {
     dataFiles = [file('data/input.gpkg')]
-    tableName = 'abbaustelle'
+    tableName = 'Attributes'
+    modelNames = ['GpkgModel']
+    modelDirectories = [file('models')]
 }
 ----
 
-Ergebnisse sind `valid` und `errors`.
+`tableName` ist erforderlich. Ergebnisse sind `valid` und `logFile`.
 
 include::generated/task-gpkgvalidator.adoc[]
 
 === ShpValidator
 
-`ShpValidator` prüft die erforderlichen Shapefile-Bestandteile und die
-Lesbarkeit über DuckDB spatial. Eine INTERLIS-Modellvalidierung ist in dieser
-Runtime-Welle nicht enthalten.
+`ShpValidator` validiert ein Shapefile mit ilivalidator und dem nativen
+Shapefile-Reader gegen ein INTERLIS-Modell.
 
 [source,groovy]
 ----
 task('validate', ShpValidator) {
     dataFiles = [file('data/input.shp')]
+    modelNames = ['ShpModel']
+    modelDirectories = [file('models')]
 }
 ----
 
-Ergebnisse sind `valid` und `errors`.
+Es wird genau eine Datei akzeptiert. Ergebnisse sind `valid` und `logFile`.
 
 include::generated/task-shpvalidator.adoc[]
 

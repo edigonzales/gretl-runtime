@@ -52,26 +52,22 @@ ausserhalb dieses Plans.
 | 2 | FTP | `FtpList` (erledigt), `FtpDownload` (erledigt), `FtpUpload` (erledigt), `FtpDelete` (erledigt) | Commons Net |
 | 3 | S3 | `S3Download` (erledigt), `S3Upload` (erledigt), `S3Delete` (erledigt), `S3Bucket2Bucket` (erledigt) | AWS SDK v2 |
 | 4 | Datenbank | `Db2Db` (erledigt), `DuckDbSqlExecutor` (Föderation erledigt) | JDBC, DuckDB |
-| 5 | Tabellarisch | `Csv2Excel` (erledigt), `CsvImport` (erledigt), `CsvExport` (erledigt), `CsvValidator` (Struktur erledigt), `JsonImport` (erledigt), `JsonValidator` (Syntax erledigt) | POI, Jackson, CSV, ilivalidator |
-| 6 | Geodaten | `Gpkg2Shp`, `GpkgImport`, `GpkgExport`, `ShpImport`, `ShpExport`, `GpkgValidator` (Struktur), `ShpValidator` (Struktur) | DuckDB spatial/GDAL, Shapefile-Referenz |
+| 5 | Tabellarisch | `Csv2Excel`, `CsvImport`, `CsvExport`, `JsonImport`, `CsvValidator`, `JsonValidator` (alle gretl-next-portiert) | iox-wkf, iox-formats, ilivalidator |
+| 6 | Geodaten | `Gpkg2Shp`, `GpkgImport`, `GpkgExport`, `ShpImport`, `ShpExport`, `GpkgValidator`, `ShpValidator` (alle gretl-next-portiert) | iox-wkf, nativer Shapefile-Code, ilivalidator |
 | 7 | INTERLIS/AV | `Ili2pgImportSchema`, `Ili2pgImport`, `Ili2pgExport`, `Ili2pgDelete`, `Ili2pgReplace`, `Ili2pgUpdate`, `Ili2pgValidate`, `Ili2gpkgImport`, `Ili2duckdbImportSchema`, `Ili2duckdbImport`, `Ili2duckdbExport`, `Av2ch`, `Av2geobau`, `Gpkg2Dxf` | ili2pg/ili2gpkg/ili2duckdb, av2ch, av2geobau |
 
-**Katalogstand:** 30 → 37 (W7) →
-30 (W6) → 44 (W7).
+**Katalogstand:** 30 → 44 (W7).
 
 **Reihenfolge:** HTTP und einfache Dateien zuerst, dann Remote-Familien,
 Datenbank, tabellarische Formate, Geodaten und zuletzt INTERLIS/AV. Die
 Gruppen folgen gemeinsamen Engines, Abhängigkeiten und Testfixtures, nicht
 einer alphabetischen Taskliste.
 
-**Modulzuschnitt:** `Curl` und `Gzip` liegen im bestehenden
-`gretl-basic-tasks`; `XslTransformer`, die vier FTP-Tasks und die vier
-S3-Tasks liegen im neuen `gretl-core-tasks`. `Db2Db` und
-`DuckDbSqlExecutor` sowie die sechs CSV-/JSON-Tasks liegen bei den
-bestehenden JDBC-/IO-Tasks in `gretl-basic-tasks`. Die übrigen Gruppen kommen
-zunächst ebenfalls in
-`gretl-core-tasks` mit Paketen je Gruppe. Ein Split in eigene Remote-/INTERLIS-Module erfolgt erst
-bei einem konkreten Dependency- oder Grössenproblem.
+**Modulzuschnitt:** `Curl`, `Gzip`, `Db2Db` und `DuckDbSqlExecutor` liegen in
+`gretl-basic-tasks`; `XslTransformer`, FTP und S3 in `gretl-core-tasks`. Die
+13 CSV-/JSON-/Geo-/Validator-Tasks liegen im neuen
+`gretl-interlis-tasks`, weil sie iox-wkf, den nativen Shapefile-Code und
+ilivalidator gemeinsam nutzen.
 
 ## Backing-Service-Abnahme
 
@@ -83,8 +79,8 @@ Der Standardbuild bleibt Docker-frei; echte Backing-Services laufen im Profil
 - S3: Floci/Testcontainers; seit Welle 3 aktiv.
 - PostgreSQL: Db2Db läuft im `backing-services`-Gate gegen einen echten Container.
 - DuckDB: dateibasiert/In-Memory; Föderation mit CSV/GPKG/PostgreSQL und Exporten.
-- Tabellarisch/JSON: CSV/Excel/JSON-Dateien über H2/PostgreSQL; Validatoren prüfen Struktur/Syntax, noch keine INTERLIS-Modellvalidierung.
-- Geo-Dateien: GPKG↔SHP, Import/Export über DuckDB spatial/GDAL und strukturelle Validatoren. Gehärtet: Multi-Layer-GPKG, DBF-NULLs und Encoding-Reihenfolge; Z/M- und komplexe Multipart-/Loch-Geometrien sind noch nicht separat getestet.
+- Tabellarisch/JSON: gretl-next-Engines; Validatoren prüfen INTERLIS-Modelle mit ilivalidator und IOX-Readern.
+- Geo-Dateien: gretl-next/nativer Shapefile-Code und iox-wkf; DBF-NULLs, Encoding, CPG und Sidecars sind umgesetzt. Multi-Layer-GPKG läuft über `Db2Gpkg`. Z/M- und komplexe Multipart-/Loch-Geometrien sind noch nicht separat getestet.
 - HTTP: Host-Tests mit `HttpServer`; Container erst für Runtime-Image-Pfade.
 
 Eine Task gilt nicht als migriert, wenn sie einen Backing-Service nur mit H2
@@ -180,12 +176,10 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
 4. Welle 4 ist abgeschlossen: `Db2Db` und `DuckDbSqlExecutor` mit
    CSV-/GeoPackage-/PostgreSQL-Quellen, PostgreSQL-Zielen und
    Parquet-/GeoPackage-/XLSX-/PostgreSQL-Exporten.
-5. Welle 5 ist abgeschlossen: CSV-/Excel-/JSON-Tasks; die Validatoren prüfen
-   Struktur/Syntax. Die INTERLIS-Modellvalidierung bleibt als Ausbaustufe offen.
-6. Welle 6 ist umgesetzt und gehärtet: GeoPackage-/Shapefile-Import/-Export,
-   `Gpkg2Shp`, strukturelle Validatoren, Multi-Layer-GPKG sowie DBF-NULL- und
-   Encoding-Regeln. Z/M- und komplexe Multipart-/Loch-Geometrien bleiben als
-   Testausbau offen.
-7. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die verbleibenden Shapefile-Regeln
-   (Z/M, Multipart/Löcher, MultiPatch-Ablehnung) als Testfälle ergänzen.
-8. Welle 7 (INTERLIS) vorbereiten.
+5. Welle 5 ist abgeschlossen: CSV-/Excel-/JSON-Tasks sind gretl-next-Ports;
+   `CsvValidator` und `JsonValidator` validieren gegen INTERLIS-Modelle.
+6. Welle 6 ist abgeschlossen: GeoPackage-/Shapefile-Tasks nutzen gretl-next-
+   Code, nativen Shapefile-I/O und INTERLIS-Validierung. GDAL ist aus diesen
+   Pfaden entfernt.
+7. Verbleibender Testausbau: Z/M- und komplexe Multipart-/Loch-Geometrien.
+8. Welle 7 (INTERLIS/AV) vorbereiten.

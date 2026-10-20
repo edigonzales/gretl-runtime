@@ -1,0 +1,217 @@
+package ch.so.agi.gretl.it;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.TempDir;
+
+@Timeout(300)
+class FormatPostgresIT {
+    @TempDir Path root;
+    private PostgresFixture.Lease lease;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        lease = PostgresFixture.lease();
+        try (Connection connection = connection(); Statement statement = connection.createStatement()) {
+            statement.execute("create table shp_points "
+                    + "(id int primary key, name text, geom geometry(Point,2056))");
+            statement.execute("insert into shp_points values "
+                    + "(1, 'Grün', ST_SetSRID(ST_Point(2600000, 1200000), 2056))");
+            statement.execute("create table shp_points_import "
+                    + "(id int primary key, name text, geom geometry(Point,2056))");
+            statement.execute("create table shp_points2 "
+                    + "(id int primary key, name text, geom geometry(Point,2056))");
+            statement.execute("insert into shp_points2 values "
+                    + "(2, 'blau', ST_SetSRID(ST_Point(2600010, 1200010), 2056))");
+            statement.execute("create table csv_colors (id int primary key, name text)");
+            statement.execute("create table documents (document text)");
+            statement.execute("create table gpkg_attributes ("
+                    + "fid bigint, geom geometry(Point,2056), t_id bigint, t_ili_tid text, "
+                    + "objektname text, orientierung numeric, hali text, vali text, "
+                    + "art integer, art_txt text, herkunft text, bfs_nr integer, "
+                    + "importdatum text, nachfuehrung text, status text, aboolean boolean)");
+        }
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (lease != null) lease.close();
+    }
+
+    @Test
+    void exportsAndImportsNativeShapefile() throws Exception {
+        JobRunner.Result exported = JobRunner.run(root, """
+                task('export', ShpExport) {
+                    database = 'db'
+                    dataFile = file('points.shp')
+                    tableName = 'shp_points'
+                }
+                defaults 'export'
+                """, config());
+        assertEquals(0, exported.code(), exported.err());
+        assertTrue(Files.isRegularFile(root.resolve("points.shp")));
+        assertTrue(Files.isRegularFile(root.resolve("points.shx")));
+        assertTrue(Files.isRegularFile(root.resolve("points.dbf")));
+        assertTrue(Files.isRegularFile(root.resolve("points.cpg")));
+
+        JobRunner.Result imported = JobRunner.run(root, """
+                task('import', ShpImport) {
+                    database = 'db'
+                    dataFile = file('points.shp')
+                    tableName = 'shp_points_import'
+                }
+                defaults 'import'
+                """, config());
+        assertEquals(0, imported.code(), imported.err());
+        assertEquals(1, scalar("select count(*) from shp_points_import"));
+        assertEquals("Grün", string("select name from shp_points_import"));
+    }
+
+    @Test
+    void importsAndExportsCsvThroughIoxWkf() throws Exception {
+        Files.writeString(root.resolve("colors.csv"), """
+                id;name
+                1;red
+                2;blue
+                """, StandardCharsets.UTF_8);
+        JobRunner.Result imported = JobRunner.run(root, """
+                task('import', CsvImport) {
+                    database = 'db'
+                    dataFile = file('colors.csv')
+                    tableName = 'csv_colors'
+                    valueSeparator = ';'
+                }
+                defaults 'import'
+                """, config());
+        assertEquals(0, imported.code(), imported.err());
+        assertEquals(2, scalar("select count(*) from csv_colors"));
+
+        JobRunner.Result exported = JobRunner.run(root, """
+                task('export', CsvExport) {
+                    database = 'db'
+                    dataFile = file('colors-export.csv')
+                    tableName = 'csv_colors'
+                    valueSeparator = ';'
+                }
+                defaults 'export'
+                """, config());
+        assertEquals(0, exported.code(), exported.err());
+        String csv = Files.readString(root.resolve("colors-export.csv"));
+        assertTrue(csv.contains("red"));
+        assertTrue(csv.contains("blue"));
+    }
+
+    @Test
+    void importsAndExportsGeoPackageThroughIoxWkf() throws Exception {
+        Path fixture = Path.of(ClassLoader.getSystemResource(
+                "fixtures/gpkg/attributes.gpkg").toURI());
+        Files.copy(fixture, root.resolve("attributes.gpkg"));
+        JobRunner.Result imported = JobRunner.run(root, """
+                task('import', GpkgImport) {
+                    database = 'db'
+                    dataFile = file('attributes.gpkg')
+                    srcTableName = 'Attributes'
+                    dstTableName = 'gpkg_attributes'
+                }
+                defaults 'import'
+                """, config());
+        assertEquals(0, imported.code(), imported.err());
+        assertEquals(1, scalar("select count(*) from gpkg_attributes"));
+
+        JobRunner.Result exported = JobRunner.run(root, """
+                task('export', GpkgExport) {
+                    database = 'db'
+                    dataFile = file('export.gpkg')
+                    srcTableName = ['shp_points']
+                    dstTableName = ['shp_points']
+                }
+                defaults 'export'
+                """, config());
+        assertEquals(0, exported.code(), exported.err());
+        assertTrue(Files.isRegularFile(root.resolve("export.gpkg")));
+    }
+
+    @Test
+    void exportsMultipleGeoPackageLayers() throws Exception {
+        JobRunner.Result exported = JobRunner.run(root, """
+                task('export', GpkgExport) {
+                    database = 'db'
+                    dataFile = file('multi.gpkg')
+                    srcTableName = ['shp_points', 'shp_points2']
+                    dstTableName = ['points', 'points2']
+                }
+                defaults 'export'
+                """, config());
+        assertEquals(0, exported.code(), exported.err());
+        try (Connection sqlite = DriverManager.getConnection(
+                "jdbc:sqlite:" + root.resolve("multi.gpkg"));
+             Statement statement = sqlite.createStatement();
+             ResultSet rows = statement.executeQuery(
+                     "select count(*) from gpkg_contents")) {
+            rows.next();
+            assertEquals(2, rows.getInt(1));
+        }
+    }
+
+    @Test
+    void importsJsonIntoTextColumn() throws Exception {
+        Files.writeString(root.resolve("data.json"), "[{\"a\":1},{\"b\":2}]",
+                StandardCharsets.UTF_8);
+        JobRunner.Result imported = JobRunner.run(root, """
+                task('import', JsonImport) {
+                    database = 'db'
+                    jsonFile = file('data.json')
+                    qualifiedTableName = 'documents'
+                    columnName = 'document'
+                }
+                defaults 'import'
+                """, config());
+        assertEquals(0, imported.code(), imported.err());
+        assertEquals(2, scalar("select count(*) from documents"));
+    }
+
+    private Map<String, Object> config() throws Exception {
+        Map<String, Object> config = JobRunner.baseConfig(root);
+        JobRunner.secret(root, config, "dbPassword", lease.password());
+        Map<String, Object> db = new LinkedHashMap<>();
+        db.put("jdbcUrl", lease.jdbcUrl());
+        db.put("user", lease.user());
+        db.put("passwordSecret", "dbPassword");
+        JobRunner.taskConfig(config, "db", db);
+        return config;
+    }
+
+    private int scalar(String sql) throws Exception {
+        try (Connection connection = connection(); Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery(sql)) {
+            rows.next();
+            return rows.getInt(1);
+        }
+    }
+
+    private String string(String sql) throws Exception {
+        try (Connection connection = connection(); Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery(sql)) {
+            rows.next();
+            return rows.getString(1);
+        }
+    }
+
+    private Connection connection() throws Exception {
+        return DriverManager.getConnection(lease.jdbcUrl(), lease.user(), lease.password());
+    }
+}

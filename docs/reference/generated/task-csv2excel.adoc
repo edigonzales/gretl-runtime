@@ -15,15 +15,23 @@
 | [.optional]#nein#
 
 | [.dsl-signature]#*valueDelimiter* = text#
-| [.acronym]#CSV#-Feldtrennzeichen
+| [.acronym]#CSV#-Anfuehrungszeichen
 | [.optional]#nein#
 
 | [.dsl-signature]#*valueSeparator* = text#
-| [.acronym]#CSV#-Anfuehrungszeichen
+| [.acronym]#CSV#-Feldtrennzeichen
 | [.optional]#nein#
 
 | [.dsl-signature]#*encoding* = text#
 | [.acronym]#CSV#-Kodierung
+| [.optional]#nein#
+
+| [.dsl-signature]#*models* = text#
+| [.acronym]#INTERLIS# model names
+| [.optional]#nein#
+
+| [.dsl-signature]#*modeldir* = text#
+| [.acronym]#INTERLIS# model directories
 | [.optional]#nein#
 
 |===

@@ -12,6 +12,7 @@
     "gretl-logging",
     "gretl-basic-tasks",
     "gretl-core-tasks",
+    "gretl-interlis-tasks",
     "gretl-ilivalidator",
     "gretl-cli",
     "gretl-packager",
@@ -22,7 +23,8 @@
   "taskArtifacts": [
     "gretl-basic-tasks-${project.version}.jar",
     "gretl-core-tasks-${project.version}.jar",
-    "gretl-ilivalidator-${project.version}.jar"
+    "gretl-ilivalidator-${project.version}.jar",
+    "gretl-interlis-tasks-${project.version}.jar"
   ],
   "packager": "gretl package job-package.json --output job.jar",
   "dependencyVersions": {
@@ -31,17 +33,24 @@
     "logback": "1.6.5",
     "commons-compress": "1.27.1",
     "postgresql": "42.7.14",
-    "ilivalidator": "1.15.0",
     "saxon": "11.4",
     "xmlresolver": "4.4.3",
     "commons-net": "3.6",
     "aws-sdk": "2.15.64",
     "duckdb": "1.5.2.0",
-    "commons-csv": "1.12.0",
     "commons-io": "2.18.0",
     "poi": "5.2.5",
     "jackson": "2.17.2",
-    "sqlite-jdbc": "3.53.2.0"
+    "sqlite-jdbc": "3.53.2.0",
+    "iox-wkf": "2.0.1-20250417.084407-2",
+    "iox-formats": "1.0.3",
+    "ili2c": "5.6.8",
+    "iox-ili": "1.24.4",
+    "ili2pg": "5.5.1",
+    "ili2gpkg": "5.5.1",
+    "ilivalidator": "1.15.0",
+    "ilivalidator-custom-functions": "1.1.50",
+    "geow-interlis-functions": "0.2.1"
   },
   "sourceRevision": "working-tree; release build must provide the source commit",
   "checksumsFile": "SHA256SUMS"

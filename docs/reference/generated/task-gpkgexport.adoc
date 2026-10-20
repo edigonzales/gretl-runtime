@@ -10,12 +10,12 @@
 | GeoPackage-Ausgabedatei
 | [.required]#ja#
 
-| [.dsl-signature]#*srcTableNames* = list#
-| Quelltabellen
+| [.dsl-signature]#*srcTableName* = list#
+| Source tables
 | [.required]#ja#
 
-| [.dsl-signature]#*dstTableNames* = list#
-| Ziel-Layer-Namen
+| [.dsl-signature]#*dstTableName* = list#
+| Destination tables
 | [.required]#ja#
 
 | [.dsl-signature]#*schemaName* = text#

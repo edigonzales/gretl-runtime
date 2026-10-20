@@ -25,18 +25,18 @@ oder einen In-Process-Mock abbilden lassen.
 | Service | Standardbuild | Backing-Service-Gate |
 |---|---|---|
 | PostgreSQL | H2 in `SqlExecutorOperationTest` und `Db2DbOperationTest` | `PostgresSqlExecutorIT` und `Db2DbPostgresIT` mit echtem PostgreSQL 16 + PostGIS |
-| PostGIS | `Db2Db`-Geometrietest mit PostGIS-Funktionen | Container ist vorbereitet; echte PostGIS-Tasktests folgen mit `Ili2pg*`/Geodaten |
+| PostGIS | `Db2Db`-Geometrietest mit PostGIS-Funktionen | `FormatPostgresIT` für Shapefile/GPKG/CSV/JSON |
 | FTP | `MockFtpServer` in `FtpOperationTest` | `FtpTaskFamilyIT` mit `delfer/alpine-ftp-server` |
 | HTTP/Curl | JDK-`HttpServer` | derzeit kein Container nötig; Host-Tests decken den Netzwerkpfad ab |
 | S3 | keine Unit-Server; Builder-/Pfadtests | `S3TaskFamilyIT` mit Floci/Testcontainers |
 | XSLT/Gzip | lokale Temp-Dateien | kein Backing-Service |
-| INTERLIS-Validierung | lokale Modelle/XTF | kein Backing-Service |
+| INTERLIS-Validierung | `IliValidatorOperationTest`, `InterlisValidatorTest` mit Modellen/CSV/JSON/GPKG/SHP | kein Backing-Service |
 | DuckDB | `DuckDbSqlExecutorOperationTest` und CLI-Test, Datei/In-Memory, CSV/GPKG/Parquet/XLSX | `DuckDbFederationPostgresIT` mit PostgreSQL und DuckDB-Extensions |
-| Tabellarisch/JSON | `TabularTaskTest` (CSV/Excel/JSON, H2), `DuckDbSqlExecutorOperationTest` | `TabularPostgresIT` mit PostgreSQL |
-| Geo-Dateien | `GeoFileTaskTest`, `DbfCodecTest` (DBF-NULLs/Encoding) | `GeoImportPostgresIT`, `GeoExportPostgresIT` (inkl. Multi-Layer) |
+| CSV/JSON/Excel | `InterlisTaskProviderTest`, `NativeShapefileTest`, `Gpkg2ShpEngineTest`, `InterlisValidatorTest` | `FormatPostgresIT` (CSV, JSON, GPKG, SHP) |
+| Geo-Dateien | nativer Shapefile-/DBF-Code in `NativeShapefileTest` | `FormatPostgresIT` (SHP/GPKG Import/Export) |
 
 Der reale PostgreSQL-Nachweis läuft über `PostgresSqlExecutorIT`,
-`Db2DbPostgresIT`, `DuckDbFederationPostgresIT` und
+`Db2DbPostgresIT`, `DuckDbFederationPostgresIT`, `FormatPostgresIT` und
 `PackagedSqlJobPostgresIT` im Profil `backing-services`.
 
 
@@ -53,7 +53,7 @@ Happy-Path-Aufrufe:
   Parameter-Sets.
 - PostgreSQL: Script/Prepared/Rollback und echte PostGIS-Geometrie.
 - DuckDB: PostgreSQL-Quelle/-Ziel, `append`/`truncate`/`replace`.
-- Tabellarisch/JSON: CSV-Import/-Export und JSON-Import gegen PostgreSQL.
+- CSV/JSON/GPKG/SHP: Import/Export und INTERLIS-Validierung gegen PostgreSQL/PostGIS.
 - Packaging: gebautes Job-JAR läuft als eigener Prozess gegen PostgreSQL.
   Der Test setzt den Distributionsbuild voraus; im `backing-services`-Reaktor
   wird `gretl-dist` vorher gebaut.
@@ -136,7 +136,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**390 Tests** (363 Standard + 4 GeoTools + 23 Backing-Services).
+**391 Tests** (368 Standard + 4 GeoTools + 23 Backing-Services).
 
 ## Grenzen
 
@@ -147,14 +147,14 @@ Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
 - `DuckDbSqlExecutor` deckt den SQL-Kern und die Föderation ab; ein
   PostGIS-Geometrie-Mapping für PostgreSQL-Quellen ist noch nicht separat
   getestet.
-- `CsvValidator` und `JsonValidator` prüfen in dieser Welle die Struktur bzw.
-  JSON-Syntax. Die INTERLIS-Modellvalidierung über iox-wkf/ilivalidator ist
-  noch nicht migriert.
-- `Csv2Excel` unterstützt die CSV-/XLSX-Konvertierung ohne INTERLIS-Modelle.
-- Die Geo-Datei-Tasks sind gehärtet: DBF-NULLs und Encoding-Reihenfolge sind
-  durch `DbfCodecTest` abgedeckt, Multi-Layer-GeoPackages durch
-  `GeoExportPostgresIT`. Z/M- und komplexe Multipart-/Loch-Geometrien sind
-  noch nicht separat getestet.
+- `CsvValidator`, `JsonValidator`, `GpkgValidator` und `ShpValidator` nutzen
+  ilivalidator und IOX-Reader gegen INTERLIS-Modelle. Die Testfixtures liegen
+  unter `gretl-interlis-tasks/src/test/resources`.
+- Shapefile-I/O nutzt den nativen gretl-next-Code; die Hop-Regeln für
+  DBF-NULLs und Encoding sind in `ShapefileIoxReader`/`DbfEncoding` umgesetzt
+  und durch `NativeShapefileTest`/`InterlisValidatorTest` abgedeckt.
+- Z/M- und komplexe Multipart-/Loch-Geometrien sind noch nicht separat
+  getestet.
 - HTTP-Container werden erst benötigt, wenn Jobs aus einem Runtime-Image gegen
   den Fixture-Host laufen; die aktuellen Host-Tests nutzen den JDK-`HttpServer`.
 - Die Integrationstests laufen sequenziell (`forkCount=1`), damit geteilte

@@ -2,12 +2,12 @@
 |===
 | Feld | Beschreibung | Erforderlich
 
-| [.dsl-signature]#*dataFile* = path#
-| Zu importierende GeoPackage-Datei
-| [.required]#ja#
-
 | [.dsl-signature]#*database* = text#
 | Alias der Ziel-Datenbankverbindung
+| [.required]#ja#
+
+| [.dsl-signature]#*dataFile* = path#
+| Zu importierende GeoPackage-Datei
 | [.required]#ja#
 
 | [.dsl-signature]#*srcTableName* = text#

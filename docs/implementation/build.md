@@ -43,20 +43,21 @@ export PATH="$JAVA_HOME/bin:$PATH"
    Runbericht, Logback-Bridge, 18 Tests,
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
    Kollisionsprüfung, 4 Tests,
-7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB-Föderation, CSV/JSON/Excel, Geo-Dateien, Provider, 61 Tests,
+7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB-Föderation, Provider, 51 Tests,
 8. **gretl-core-tasks** — XSLT, FTP, S3, Saxon, Commons Net, AWS SDK, 23 Tests,
-9. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
+9. **gretl-interlis-tasks** — gretl-next-Formatengines, nativer Shapefile-Code, INTERLIS-Validierung, 11 Tests,
+10. **gretl-cli** — Hilfe, Plan, Parameter, Secrets, Pfade, Timeout, Reports,
    AsciiDoc-Tabellen, Curl-/SQL-/DuckDB-Integration, Distribution-nahe Integration, 60 Tests,
-10. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
-11. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
-12. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
-13. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
+11. **gretl-ilivalidator** — reale lokale INTERLIS-Validierung, 3 Tests,
+12. **gretl-job-runtime** — JAR-Einstieg, Ressourcenmaterialisierung,
+13. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
+14. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
     und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 8 Failsafe-Tests,
-14. **gretl-integration-tests** — nur mit `-Pbacking-services`:
-    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, Tabellen/JSON, 19 Failsafe-Tests.
+15. **gretl-integration-tests** — nur mit `-Pbacking-services`:
+    PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, Tabellen/JSON, Geo-Dateien, 23 Failsafe-Tests.
 
-Erwartet: **363 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+Erwartet: **368 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
 `backing-services` ergänzt 23 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
@@ -280,32 +281,24 @@ Logging-Lücke ausgewiesen.
 
 ### CSV-/JSON-Tasks
 
-- `Csv2Excel` konvertiert CSV mit Apache POI nach XLSX; Trennzeichen,
-  Quote-Zeichen und Encoding sind konfigurierbar. INTERLIS-Modelle werden
-  nicht verwendet.
-- `CsvImport` und `CsvExport` arbeiten über `taskConfig`-Aliasse und JDBC.
-  Header werden case-insensitiv auf Zielspalten abgebildet; Import und Export
-  laufen in einer Transaktion.
-- `JsonImport` schreibt ein JSON-Objekt oder JSON-Array als Text in eine
-  Zielspalte und kann die Tabelle vorher leeren.
-- `CsvValidator` prüft Parsebarkeit, Spaltenkonsistenz und Header; `JsonValidator`
-  prüft die JSON-Syntax. Eine INTERLIS-Modellvalidierung ist noch nicht
-  Bestandteil der Runtime-Migration.
+- `Csv2Excel`, `CsvImport`, `CsvExport` und `JsonImport` sind Ports der
+  gretl-next-Engines. CSV und Excel laufen über `iox-wkf`/`iox-formats`,
+  JSON über Jackson.
+- `CsvValidator` und `JsonValidator` validieren mit ilivalidator und den
+  IOX-Readern gegen INTERLIS-Modelle. Die früheren Strukturprüfungen sind
+  entfernt.
 
-### Geo-Datei-Tasks (Welle 6)
+### Geo-Datei-Tasks
 
-- `Gpkg2Shp` konvertiert GeoPackage-Layer über DuckDB spatial/GDAL in
-  Shapefiles; Sidecars werden vor dem Schreiben entfernt.
-- `GpkgImport`/`ShpImport` lesen Geo-Dateien über DuckDB spatial und legen
-  bei Bedarf eine PostGIS-Zieltabelle an.
-- `GpkgExport`/`ShpExport` schreiben Datenbanktabellen über GDAL; `ShpExport`
-  schreibt eine CPG-Datei.
-- `GpkgValidator` und `ShpValidator` prüfen die Lesbarkeit und die
-  erforderlichen Sidecars strukturell. Eine INTERLIS-Modellvalidierung ist
-  noch nicht enthalten.
-- DBF-NULLs, Encoding-Reihenfolge und Multi-Layer-GeoPackages sind gehärtet;
-  Z/M- und komplexe Multipart-/Loch-Geometrien sind noch nicht separat
-  getestet.
+- `Gpkg2Shp`, `GpkgImport`, `GpkgExport`, `ShpImport`, `ShpExport`,
+  `GpkgValidator` und `ShpValidator` sind Ports aus gretl-next.
+- Shapefile-I/O nutzt den nativen gretl-next-Reader/Writer. Die Hop-Regeln für
+  DBF-NULLs, Encoding-Auswahl, CPG, Sidecars und atomisches Überschreiben sind
+  zurückportiert.
+- `GpkgValidator` und `ShpValidator` validieren mit ilivalidator und den
+  jeweiligen IOX-Readern gegen INTERLIS-Modelle.
+- GDAL/DuckDB-spatial wird in diesen Tasks nicht mehr verwendet;
+  `DuckDbSqlExecutor` bleibt davon getrennt.
 
 ### Datenbank-Tasks
 
@@ -380,7 +373,7 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Kombiniert mit GeoTools und Backing-Services werden **390 Tests** ausgeführt.
+Kombiniert mit GeoTools und Backing-Services werden **391 Tests** ausgeführt.
 Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
@@ -389,7 +382,7 @@ Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **367 Tests** (363 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **372 Tests** (368 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.
@@ -403,7 +396,8 @@ Bestandteil der Scriptdistribution.
 | `gretl-groovy` | Groovy-6-DSL | ja |
 | `gretl-i18n` | englischer Quellkatalog, deutscher Katalog | ja |
 | `gretl-logging` | Events, Redaction, Report | ja |
-| `gretl-basic-tasks` | HTTP/Curl/Gzip/Extract/SQL/Db2Db/DuckDB/CSV/JSON/Excel | ja |
+| `gretl-basic-tasks` | HTTP/Curl/Gzip/Extract/SQL/Db2Db/DuckDB | ja |
+| `gretl-interlis-tasks` | gretl-next CSV/JSON/GPKG/SHP + INTERLIS-Validierung | ja |
 | `gretl-core-tasks` | XSLT, FTP, S3, Saxon, Commons Net, AWS SDK | ja |
 | `gretl-ilivalidator` | reale INTERLIS-Validierung (B) | ja |
 | `gretl-cli` | CLI/Config/Hilfe/Orchestrierung | ja |
@@ -415,7 +409,8 @@ Zentrale Versionen: Groovy 6.0.0 (`groovy`, `groovy-json`), SLF4J 2.0.20,
 Logback 1.6.5, Commons Compress 1.27.1, pgJDBC 42.7.14, H2 2.3.232 (nur Test),
 ilivalidator 1.15.0 / ehibasics 1.4.1, Saxon 11.4, xmlresolver 4.4.3,
 Commons Net 3.6, AWS SDK v2 2.15.64 (URL-Connection-Client), DuckDB 1.5.2.0,
-Commons CSV 1.12.0, Commons IO 2.18.0, Apache POI 5.2.5, Jackson 2.17.2,
+iox-wkf 2.0.1-20250417.084407-2, iox-formats 1.0.3, ili2c 5.6.8, iox-ili 1.24.4,
+Apache POI 5.2.5, Jackson 2.17.2,
 Testcontainers 1.21.4 (nur `backing-services`), Floci 1.10.0 (nur Test),
 JUnit 5.14.4, GeoTools 35.2 (nur Profil).
 

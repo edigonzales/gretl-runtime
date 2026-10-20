@@ -39,6 +39,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-interlis-tasks</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
       <version>${testcontainers.version}</version>
