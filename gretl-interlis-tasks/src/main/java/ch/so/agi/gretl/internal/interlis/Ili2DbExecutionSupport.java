@@ -45,14 +45,14 @@ public final class Ili2DbExecutionSupport {
             inputs = request.repositoryDataIds();
         }
         if (inputs.isEmpty()) return;
+        java.util.List<String> datasetNames = Ili2DbDatasetNames.resolve(request, inputs);
         for (int index = 0; index < inputs.size(); index++) {
             Config config = flavor.createConfig(request);
             applyCommon(config, request, operation);
             if (flavor == Ili2DbFlavor.GEOPACKAGE) {
                 applyGpkg(config, request);
             }
-            String dataset = dataset(request, index);
-            config.setDatasetName(dataset);
+            config.setDatasetName(datasetNames.isEmpty() ? null : datasetNames.get(index));
             config.setXtffile(inputs.get(index));
             config.setItfTransferfile(!request.dataFiles().isEmpty()
                     && Ili2db.isItfFilename(inputs.get(index)));
@@ -62,6 +62,8 @@ public final class Ili2DbExecutionSupport {
 
     public void executeExport(Ili2DbRequest request, Ili2DbFlavor flavor) {
         if (request.dataFiles().isEmpty()) return;
+        java.util.List<String> datasetNames = Ili2DbDatasetNames.resolve(request,
+                request.dataFiles().stream().map(Path::toString).toList());
         for (int index = 0; index < request.dataFiles().size(); index++) {
             Path output = request.dataFiles().get(index).toAbsolutePath().normalize();
             createParent(output);
@@ -70,7 +72,7 @@ public final class Ili2DbExecutionSupport {
             if (request.export3()) config.setVer3_export(true);
             java.util.List<String> exportModels = optionList(request, "exportModels", java.util.List.of());
             if (!exportModels.isEmpty()) config.setExportModels(String.join(";", exportModels));
-            config.setDatasetName(dataset(request, index));
+            config.setDatasetName(datasetNames.isEmpty() ? null : datasetNames.get(index));
             config.setXtffile(output.toString());
             config.setItfTransferfile(Ili2db.isItfFilename(output.toString()));
             runOnce(request, flavor, config);

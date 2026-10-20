@@ -26,6 +26,10 @@
 | Dataset names
 | [.optional]#nein#
 
+| [.dsl-signature]#*datasetFiles* = list#
+| Files whose names provide dataset names
+| [.optional]#nein#
+
 | [.dsl-signature]#*logFile* = path#
 | ili2db log file
 | [.optional]#nein#

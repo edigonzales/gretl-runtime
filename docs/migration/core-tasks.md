@@ -197,5 +197,6 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
    Pfaden entfernt.
 7. Welle 7 ist abgeschlossen: ili2pg/ili2gpkg/ili2duckdb, Av2ch, Av2geobau
    und Gpkg2Dxf sind portiert und getestet. Die ili2db-Optionsfläche ist
-   gehärtet; Distribution und Job-Paketierung sind auf 44/44 geprüft. Der
-   Core-Task-Katalog ist vollständig.
+   gehärtet; Distribution und Job-Paketierung sind auf 44/44 geprüft.
+   `datasetFiles` leitet Dataset-Namen aus Dateinamen ab. Der Core-Task-Katalog
+   ist vollständig.

@@ -97,6 +97,9 @@ public final class Ili2DbOperations {
             fields.add(field("datasetNames", "list", "Dataset names", false, List.<String>of(),
                     "datasetNames = ['DatasetA']", FormatTaskSupport::strings,
                     (b, v) -> b.datasetNames = v));
+            fields.add(field("datasetFiles", "list", "Files whose names provide dataset names",
+                    false, List.<Path>of(), "datasetFiles = [file('DatasetA.txt')]",
+                    FormatTaskSupport::paths, (b, v) -> b.datasetFiles = v));
         }
         if (kind == Kind.PG_IMPORT || kind == Kind.PG_REPLACE || kind == Kind.PG_UPDATE || kind == Kind.GPKG_IMPORT || kind == Kind.DUCKDB_IMPORT) {
             fields.add(field("repositoryDataIds", "list", "ilidata repository ids", false, List.<String>of(),
@@ -248,6 +251,7 @@ public final class Ili2DbOperations {
             Path iliFile, String defaultSrsCode, List<Path> dataFiles,
             List<String> repositoryDataIds, List<String> modelNames,
             List<String> modelDirectories, List<String> datasetNames,
+            List<Path> datasetFiles,
             boolean importTid, boolean deleteData, boolean export3,
             boolean coalesceJson, boolean nameByTopic, boolean createEnumTabs,
             boolean createMetaInfo, boolean createGeomIdx, boolean createBasketCol,
@@ -259,6 +263,7 @@ public final class Ili2DbOperations {
             modelNames = List.copyOf(modelNames);
             modelDirectories = List.copyOf(modelDirectories);
             datasetNames = List.copyOf(datasetNames);
+            datasetFiles = List.copyOf(datasetFiles);
             options = options == null ? java.util.Map.of() : java.util.Map.copyOf(options);
         }
     }
@@ -275,6 +280,7 @@ public final class Ili2DbOperations {
         private List<String> modelNames = List.of();
         private List<String> modelDirectories = List.of();
         private List<String> datasetNames = List.of();
+        private List<Path> datasetFiles = List.of();
         private boolean importTid;
         private boolean deleteData;
         private boolean export3;
@@ -299,6 +305,7 @@ public final class Ili2DbOperations {
         public void setModelNames(List<String> value) { modelNames = value == null ? List.of() : value; }
         public void setModelDirectories(List<String> value) { modelDirectories = value == null ? List.of() : value; }
         public void setDatasetNames(List<String> value) { datasetNames = value == null ? List.of() : value; }
+        public void setDatasetFiles(List<Path> value) { datasetFiles = value == null ? List.of() : value; }
         public void setImportTid(Boolean value) { importTid = Boolean.TRUE.equals(value); }
         public void setDeleteData(Boolean value) { deleteData = Boolean.TRUE.equals(value); }
         public void setExport3(Boolean value) { export3 = Boolean.TRUE.equals(value); }
@@ -315,7 +322,7 @@ public final class Ili2DbOperations {
         @Override public Request build() {
             return new Request(database, databaseFile, schema, iliFile, defaultSrsCode,
                     dataFiles, repositoryDataIds, modelNames, modelDirectories, datasetNames,
-                    importTid, deleteData, export3, coalesceJson, nameByTopic,
+                    datasetFiles, importTid, deleteData, export3, coalesceJson, nameByTopic,
                     createEnumTabs, createMetaInfo, createGeomIdx, createBasketCol,
                     createTidCol, logFile, failOnException, options);
         }
@@ -336,6 +343,7 @@ public final class Ili2DbOperations {
             builder.modelNames = request.modelNames();
             builder.modelDirectories = request.modelDirectories();
             builder.datasetNames = request.datasetNames();
+            builder.datasetFiles = request.datasetFiles();
             builder.dataFiles = request.dataFiles();
             builder.repositoryDataIds = request.repositoryDataIds();
             builder.iliFile = request.iliFile();

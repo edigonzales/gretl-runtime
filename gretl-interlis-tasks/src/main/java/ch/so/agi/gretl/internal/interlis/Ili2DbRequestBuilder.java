@@ -14,6 +14,7 @@ public final class Ili2DbRequestBuilder {
     public List<String> baskets = List.of();
     public List<String> topics = List.of();
     public List<String> datasetNames = List.of();
+    public List<Path> datasetFiles = List.of();
     public List<Path> dataFiles = List.of();
     public List<String> repositoryDataIds = List.of();
     public Path iliFile;
@@ -65,7 +66,7 @@ public final class Ili2DbRequestBuilder {
 
     public Ili2DbRequest build() {
         return new Ili2DbRequest(database, databaseFile, schema, modelNames, modelDirectories,
-                baskets, topics, datasetNames, dataFiles, repositoryDataIds, iliFile,
+                baskets, topics, datasetNames, datasetFiles, dataFiles, repositoryDataIds, iliFile,
                 iliMetaAttrsFile, preScript, postScript, logFile, validConfigFile,
                 importTid, exportTid, importBid, deleteData, trace, disableValidation,
                 disableAreaValidation, forceTypeValidation, strokeArcs, skipPolygonBuilding,

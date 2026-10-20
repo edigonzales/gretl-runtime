@@ -9,7 +9,7 @@ public record Ili2DbRequest(
         DatabaseSpec database, Path databaseFile, String schema,
         List<String> modelNames, List<String> modelDirectories,
         List<String> baskets, List<String> topics, List<String> datasetNames,
-        List<Path> dataFiles, List<String> repositoryDataIds,
+        List<Path> datasetFiles, List<Path> dataFiles, List<String> repositoryDataIds,
         Path iliFile, Path iliMetaAttrsFile, Path preScript, Path postScript,
         Path logFile, Path validConfigFile,
         boolean importTid, boolean exportTid, boolean importBid,
@@ -32,6 +32,7 @@ public record Ili2DbRequest(
         baskets = List.copyOf(baskets);
         topics = List.copyOf(topics);
         datasetNames = List.copyOf(datasetNames);
+        datasetFiles = List.copyOf(datasetFiles);
         dataFiles = List.copyOf(dataFiles);
         repositoryDataIds = List.copyOf(repositoryDataIds);
         options = options == null ? java.util.Map.of() : java.util.Map.copyOf(options);

@@ -297,6 +297,8 @@ class FormatPostgresIT {
                 "fixtures/interlis/Beispiel2a.xtf").toURI());
         Path inputB = Path.of(ClassLoader.getSystemResource(
                 "fixtures/interlis/Beispiel2b.xtf").toURI());
+        Files.writeString(root.resolve("DatasetA.txt"), "A");
+        Files.writeString(root.resolve("DatasetB.txt"), "B");
         String schemaJob = "task('schema', Ili2pgImportSchema) {\n"
                 + "    database = 'db'\n    schema = 'ili2pgtest'\n"
                 + "    modelNames = ['Beispiel2']\n"
@@ -310,7 +312,7 @@ class FormatPostgresIT {
         String importJob = "task('import', Ili2pgImport) {\n"
                 + "    database = 'db'\n    schema = 'ili2pgtest'\n"
                 + "    dataFiles = [file('" + inputA + "'), file('" + inputB + "')]\n"
-                + "    datasetNames = ['DatasetA', 'DatasetB']\n"
+                + "    datasetFiles = [file('DatasetA.txt'), file('DatasetB.txt')]\n"
                 + "    importTid = true\n}\n"
                 + "defaults 'import'\n";
         JobRunner.Result imported = JobRunner.run(root, importJob, config());

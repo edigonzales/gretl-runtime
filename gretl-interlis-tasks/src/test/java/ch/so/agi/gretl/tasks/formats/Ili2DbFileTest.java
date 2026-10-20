@@ -21,6 +21,7 @@ class Ili2DbFileTest {
         Path db = work.resolve("test.gpkg");
         Path modelDir = fixture("Beispiel2.ili").getParent();
         Path input = fixture("Beispiel2a.xtf");
+        Path datasetFile = Files.writeString(work.resolve("DatasetA.txt"), "A");
         run(Ili2DbOperations.gpkgImport(), b -> {
             b.setDatabaseFile(db);
             b.setModelNames(List.of("Beispiel2"));
@@ -36,6 +37,7 @@ class Ili2DbFileTest {
         Path db = work.resolve("test.duckdb");
         Path modelDir = fixture("Beispiel2.ili").getParent();
         Path input = fixture("Beispiel2a.xtf");
+        Path datasetFile = Files.writeString(work.resolve("DatasetA.txt"), "A");
         run(Ili2DbOperations.duckdbSchema(), b -> {
             b.setDatabaseFile(db);
             b.setModelNames(List.of("Beispiel2"));
@@ -49,7 +51,7 @@ class Ili2DbFileTest {
             b.setModelNames(List.of("Beispiel2"));
             b.setModelDirectories(List.of(modelDir.toString()));
             b.setDataFiles(List.of(input));
-            b.setDatasetNames(List.of("DatasetA"));
+            b.setDatasetFiles(List.of(datasetFile));
             b.setImportTid(true);
         });
         Path output = work.resolve("out.xtf");
