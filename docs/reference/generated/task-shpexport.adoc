@@ -1,0 +1,25 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*database* = text#
+| Alias der Quell-Datenbankverbindung
+| [.required]#ja#
+
+| [.dsl-signature]#*dataFile* = path#
+| Shapefile-Ausgabepfad
+| [.required]#ja#
+
+| [.dsl-signature]#*tableName* = text#
+| Name der Quelltabelle
+| [.required]#ja#
+
+| [.dsl-signature]#*schemaName* = text#
+| Optionales Quell-Schema
+| [.optional]#nein#
+
+| [.dsl-signature]#*encoding* = text#
+| Shapefile-Kodierung
+| [.optional]#nein#
+
+|===

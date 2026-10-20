@@ -756,6 +756,85 @@ Ergebnisse sind `files` und `layers`.
 
 include::generated/task-gpkg2shp.adoc[]
 
+=== GpkgImport
+
+`GpkgImport` importiert einen GeoPackage-Layer über DuckDB spatial in eine
+Datenbanktabelle. Die Zieltabelle wird bei Bedarf mit einer PostGIS-Geometrie-
+spalte angelegt.
+
+[source,groovy]
+----
+task('import', GpkgImport) {
+    dataFile = file('data/input.gpkg')
+    database = 'db'
+    srcTableName = 'abbaustelle'
+    dstTableName = 'abbaustelle'
+}
+----
+
+Ergebnis ist `rows`.
+
+include::generated/task-gpkgimport.adoc[]
+
+=== GpkgExport
+
+`GpkgExport` exportiert Datenbanktabellen in ein GeoPackage. Die
+Layer-Metadaten werden nach dem GDAL-Schreiben auf den Zielnamen umgestellt.
+Mehrere Layer in einer Datei sind noch nicht vollständig abgedeckt.
+
+[source,groovy]
+----
+task('export', GpkgExport) {
+    database = 'db'
+    dataFile = file('build/output.gpkg')
+    srcTableNames = ['abbaustelle']
+    dstTableNames = ['abbaustelle']
+}
+----
+
+Ergebnisse sind `file` und `rows`.
+
+include::generated/task-gpkgexport.adoc[]
+
+=== ShpImport
+
+`ShpImport` importiert ein Shapefile über DuckDB spatial in eine
+Datenbanktabelle. Die Zieltabelle wird bei Bedarf mit einer PostGIS-
+Geometriespalte angelegt.
+
+[source,groovy]
+----
+task('import', ShpImport) {
+    dataFile = file('data/input.shp')
+    database = 'db'
+    tableName = 'abbaustelle'
+}
+----
+
+Ergebnis ist `rows`. Die explizite Encoding-Angabe wird noch nicht an den
+GDAL-Leser durchgereicht; eine vorhandene CPG-Datei wird berücksichtigt.
+
+include::generated/task-shpimport.adoc[]
+
+=== ShpExport
+
+`ShpExport` exportiert eine Datenbanktabelle als Shapefile. Vorhandene
+Sidecars werden entfernt; eine CPG-Datei wird mit der vom GDAL-Writer
+verwendeten ISO-8859-1-Kodierung geschrieben.
+
+[source,groovy]
+----
+task('export', ShpExport) {
+    database = 'db'
+    dataFile = file('build/output.shp')
+    tableName = 'abbaustelle'
+}
+----
+
+Ergebnisse sind `file` und `rows`.
+
+include::generated/task-shpexport.adoc[]
+
 === GpkgValidator
 
 `GpkgValidator` prüft, ob ein GeoPackage-Layer lesbar ist. Die Prüfung ist

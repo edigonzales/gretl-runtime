@@ -57,7 +57,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
     PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, Tabellen/JSON, 19 Failsafe-Tests.
 
 Erwartet: **359 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
-`backing-services` ergänzt 19 Docker-backed Integrationstests; Details stehen in
+`backing-services` ergänzt 22 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
 ### Artefakte
@@ -292,15 +292,19 @@ Logging-Lücke ausgewiesen.
   prüft die JSON-Syntax. Eine INTERLIS-Modellvalidierung ist noch nicht
   Bestandteil der Runtime-Migration.
 
-### Geo-Datei-Tasks (Welle 6, in Arbeit)
+### Geo-Datei-Tasks (Welle 6)
 
 - `Gpkg2Shp` konvertiert GeoPackage-Layer über DuckDB spatial/GDAL in
   Shapefiles; Sidecars werden vor dem Schreiben entfernt.
+- `GpkgImport`/`ShpImport` lesen Geo-Dateien über DuckDB spatial und legen
+  bei Bedarf eine PostGIS-Zieltabelle an.
+- `GpkgExport`/`ShpExport` schreiben Datenbanktabellen über GDAL; `ShpExport`
+  schreibt eine CPG-Datei.
 - `GpkgValidator` und `ShpValidator` prüfen die Lesbarkeit und die
   erforderlichen Sidecars strukturell. Eine INTERLIS-Modellvalidierung ist
   noch nicht enthalten.
-- `GpkgImport`, `GpkgExport`, `ShpImport` und `ShpExport` folgen in dieser
-  Welle.
+- Die Hop-Sonderregeln für DBF-NULLs, explizites Reader-Encoding und
+  Multi-Layer-GeoPackages sind noch nicht vollständig abgedeckt.
 
 ### Datenbank-Tasks
 
@@ -375,7 +379,7 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Kombiniert mit GeoTools und Backing-Services werden **382 Tests** ausgeführt.
+Kombiniert mit GeoTools und Backing-Services werden **385 Tests** ausgeführt.
 Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`

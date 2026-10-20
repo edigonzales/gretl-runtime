@@ -1,0 +1,33 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*dataFile* = path#
+| Zu importierende GeoPackage-Datei
+| [.required]#ja#
+
+| [.dsl-signature]#*database* = text#
+| Alias der Ziel-Datenbankverbindung
+| [.required]#ja#
+
+| [.dsl-signature]#*srcTableName* = text#
+| GeoPackage-Layer-Name
+| [.required]#ja#
+
+| [.dsl-signature]#*dstTableName* = text#
+| Name der Zieltabelle
+| [.required]#ja#
+
+| [.dsl-signature]#*schemaName* = text#
+| Optionales Ziel-Schema
+| [.optional]#nein#
+
+| [.dsl-signature]#*batchSize* = integer#
+| [.acronym]#JDBC#-Batch-Groesse
+| [.optional]#nein#
+
+| [.dsl-signature]#*fetchSize* = integer#
+| DuckDB-Fetch-Groesse
+| [.optional]#nein#
+
+|===

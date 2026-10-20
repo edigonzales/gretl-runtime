@@ -1,0 +1,29 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*dataFile* = path#
+| Zu importierender Shapefile-Pfad
+| [.required]#ja#
+
+| [.dsl-signature]#*database* = text#
+| Alias der Ziel-Datenbankverbindung
+| [.required]#ja#
+
+| [.dsl-signature]#*tableName* = text#
+| Name der Zieltabelle
+| [.required]#ja#
+
+| [.dsl-signature]#*schemaName* = text#
+| Optionales Ziel-Schema
+| [.optional]#nein#
+
+| [.dsl-signature]#*encoding* = text#
+| Optionale Shapefile-Kodierung
+| [.optional]#nein#
+
+| [.dsl-signature]#*batchSize* = integer#
+| [.acronym]#JDBC#-Batch-Groesse
+| [.optional]#nein#
+
+|===

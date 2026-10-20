@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test;
 
 class BasicTaskProviderTest {
     @Test
-    void serviceLoaderExposesTheSixteenStandardTasks() {
+    void serviceLoaderExposesTheTwentyStandardTasks() {
         OperationRegistry registry = OperationRegistry.load(getClass().getClassLoader());
-        assertEquals(16, registry.all().size());
+        assertEquals(20, registry.all().size());
         assertEquals("HttpDownload", registry.requireSymbol("HttpDownload").symbol());
         assertEquals("Curl", registry.requireSymbol("Curl").symbol());
         assertEquals("Gzip", registry.requireSymbol("Gzip").symbol());
@@ -29,6 +29,10 @@ class BasicTaskProviderTest {
         assertEquals("CsvValidator", registry.requireSymbol("CsvValidator").symbol());
         assertEquals("JsonValidator", registry.requireSymbol("JsonValidator").symbol());
         assertEquals("Gpkg2Shp", registry.requireSymbol("Gpkg2Shp").symbol());
+        assertEquals("GpkgImport", registry.requireSymbol("GpkgImport").symbol());
+        assertEquals("GpkgExport", registry.requireSymbol("GpkgExport").symbol());
+        assertEquals("ShpImport", registry.requireSymbol("ShpImport").symbol());
+        assertEquals("ShpExport", registry.requireSymbol("ShpExport").symbol());
         assertEquals("GpkgValidator", registry.requireSymbol("GpkgValidator").symbol());
         assertEquals("ShpValidator", registry.requireSymbol("ShpValidator").symbol());
         assertEquals("SqlExecutor", registry.requireSymbol("SqlExecutor").symbol());

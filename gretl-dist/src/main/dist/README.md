@@ -17,7 +17,8 @@ The standard catalog of this release is `HttpDownload`, `Curl`, `Gzip`,
 `Extract`, `FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete`, `S3Download`,
 `S3Upload`, `S3Delete`, `S3Bucket2Bucket`, `Db2Db`, `DuckDbSqlExecutor`,
 `Csv2Excel`, `CsvImport`, `CsvExport`, `JsonImport`, `CsvValidator`,
-`JsonValidator`, `Gpkg2Shp`, `GpkgValidator`, `ShpValidator`, `SqlExecutor`,
+`JsonValidator`, `Gpkg2Shp`, `GpkgImport`, `GpkgExport`, `ShpImport`,
+`ShpExport`, `GpkgValidator`, `ShpValidator`, `SqlExecutor`,
 `XslTransformer` and `IliValidator`. Stufe A remains separately usable because the
 task libraries are separate modules. Publisher and XtfToGpkg are not registered
 stubs.

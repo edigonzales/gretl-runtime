@@ -17,7 +17,7 @@
     "gretl-packager",
     "gretl-job-runtime"
   ],
-  "tasks": ["HttpDownload", "Curl", "Gzip", "Extract", "FtpList", "FtpDownload", "FtpUpload", "FtpDelete", "S3Download", "S3Upload", "S3Delete", "S3Bucket2Bucket", "Db2Db", "DuckDbSqlExecutor", "Csv2Excel", "CsvImport", "CsvExport", "JsonImport", "CsvValidator", "JsonValidator", "Gpkg2Shp", "GpkgValidator", "ShpValidator", "SqlExecutor", "XslTransformer", "IliValidator"],
+  "tasks": ["HttpDownload", "Curl", "Gzip", "Extract", "FtpList", "FtpDownload", "FtpUpload", "FtpDelete", "S3Download", "S3Upload", "S3Delete", "S3Bucket2Bucket", "Db2Db", "DuckDbSqlExecutor", "Csv2Excel", "CsvImport", "CsvExport", "JsonImport", "CsvValidator", "JsonValidator", "Gpkg2Shp", "GpkgImport", "GpkgExport", "ShpImport", "ShpExport", "GpkgValidator", "ShpValidator", "SqlExecutor", "XslTransformer", "IliValidator"],
   "extensionDirectory": "lib/extensions",
   "taskArtifacts": [
     "gretl-basic-tasks-${project.version}.jar",

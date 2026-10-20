@@ -1,0 +1,33 @@
+[cols="4,6,1", options="header"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*database* = text#
+| Alias der Quell-Datenbankverbindung
+| [.required]#ja#
+
+| [.dsl-signature]#*dataFile* = path#
+| GeoPackage-Ausgabedatei
+| [.required]#ja#
+
+| [.dsl-signature]#*srcTableNames* = list#
+| Quelltabellen
+| [.required]#ja#
+
+| [.dsl-signature]#*dstTableNames* = list#
+| Ziel-Layer-Namen
+| [.required]#ja#
+
+| [.dsl-signature]#*schemaName* = text#
+| Optionales Quell-Schema
+| [.optional]#nein#
+
+| [.dsl-signature]#*batchSize* = integer#
+| [.acronym]#JDBC#-Batch-Groesse
+| [.optional]#nein#
+
+| [.dsl-signature]#*fetchSize* = integer#
+| [.acronym]#JDBC#-Fetch-Groesse
+| [.optional]#nein#
+
+|===

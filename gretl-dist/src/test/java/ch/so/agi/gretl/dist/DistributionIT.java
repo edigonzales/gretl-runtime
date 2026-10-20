@@ -79,6 +79,10 @@ class DistributionIT {
         assertTrue(operations.out().contains("CsvValidator"));
         assertTrue(operations.out().contains("JsonValidator"));
         assertTrue(operations.out().contains("Gpkg2Shp"));
+        assertTrue(operations.out().contains("GpkgImport"));
+        assertTrue(operations.out().contains("GpkgExport"));
+        assertTrue(operations.out().contains("ShpImport"));
+        assertTrue(operations.out().contains("ShpExport"));
         assertTrue(operations.out().contains("GpkgValidator"));
         assertTrue(operations.out().contains("ShpValidator"));
         assertTrue(operations.out().contains("IliValidator"));

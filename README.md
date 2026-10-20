@@ -10,8 +10,9 @@ Logging/Runbericht, die Tasks `HttpDownload`, `Curl`, `Gzip`, `Extract`,
 `FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete`, `S3Download`, `S3Upload`,
 `S3Delete`, `S3Bucket2Bucket`, `Db2Db`, `DuckDbSqlExecutor`, `Csv2Excel`,
 `CsvImport`, `CsvExport`, `JsonImport`, `CsvValidator`, `JsonValidator`,
-`Gpkg2Shp`, `GpkgValidator`, `ShpValidator`, `SqlExecutor`, `XslTransformer`
-und `IliValidator` sowie die Scriptdistribution sind
+`Gpkg2Shp`, `GpkgImport`, `GpkgExport`, `ShpImport`, `ShpExport`,
+`GpkgValidator`, `ShpValidator`, `SqlExecutor`, `XslTransformer` und
+`IliValidator` sowie die Scriptdistribution sind
 umgesetzt. M5-Anwenderabnahme
 ist bestanden. M6 ergänzt `gretl package`, vorkompilierte Job-JARs und eine
 JAR-Laufzeit mit materialisierten Jobressourcen.
@@ -37,8 +38,8 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - M0-Bericht (historisch): [`docs/implementation/m0-report.md`](docs/implementation/m0-report.md)
 - Standardprüfung: `./mvnw verify` mit JDK 25 (**359 Tests**)
 - GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**363 Tests**)
-- Backing-Services (Docker): `./mvnw -Pbacking-services verify` (19 Integrationstests)
-- Kombiniert mit GeoTools: `./mvnw -Pgeotools-probe,backing-services verify` (**382 Tests**)
+- Backing-Services (Docker): `./mvnw -Pbacking-services verify` (22 Integrationstests)
+- Kombiniert mit GeoTools: `./mvnw -Pgeotools-probe,backing-services verify` (**385 Tests**)
 - Teststrategie: [`docs/implementation/testing.md`](docs/implementation/testing.md)
 - Scriptdistribution: `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip`
 

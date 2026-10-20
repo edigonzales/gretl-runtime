@@ -30,14 +30,18 @@ Im aktuellen Runtime-Katalog vorhanden:
 - `CsvValidator`
 - `JsonValidator`
 - `Gpkg2Shp`
+- `GpkgImport`
+- `GpkgExport`
+- `ShpImport`
+- `ShpExport`
 - `GpkgValidator`
 - `ShpValidator`
 - `SqlExecutor`
 - `XslTransformer`
 - `IliValidator`
 
-Damit sind **26 von 44** Operationen vorhanden. Aus `gretl-next` fehlen noch
-**18 Core-Tasks**. GeoTools, Publisher, XtfToGpkg und Native Image bleiben
+Damit sind **30 von 44** Operationen vorhanden. Aus `gretl-next` fehlen noch
+**14 Core-Tasks**. GeoTools, Publisher, XtfToGpkg und Native Image bleiben
 ausserhalb dieses Plans.
 
 ## Gruppierung und Lieferwellen
@@ -49,10 +53,10 @@ ausserhalb dieses Plans.
 | 3 | S3 | `S3Download` (erledigt), `S3Upload` (erledigt), `S3Delete` (erledigt), `S3Bucket2Bucket` (erledigt) | AWS SDK v2 |
 | 4 | Datenbank | `Db2Db` (erledigt), `DuckDbSqlExecutor` (Föderation erledigt) | JDBC, DuckDB |
 | 5 | Tabellarisch | `Csv2Excel` (erledigt), `CsvImport` (erledigt), `CsvExport` (erledigt), `CsvValidator` (Struktur erledigt), `JsonImport` (erledigt), `JsonValidator` (Syntax erledigt) | POI, Jackson, CSV, ilivalidator |
-| 6 | Geodaten | `Gpkg2Shp` (Datei erledigt), `GpkgValidator` (Struktur erledigt), `ShpValidator` (Struktur erledigt), `GpkgImport`, `GpkgExport`, `ShpImport`, `ShpExport` (offen) | DuckDB spatial/GDAL, Shapefile-Referenz |
+| 6 | Geodaten | `Gpkg2Shp`, `GpkgImport`, `GpkgExport`, `ShpImport`, `ShpExport`, `GpkgValidator` (Struktur), `ShpValidator` (Struktur) | DuckDB spatial/GDAL, Shapefile-Referenz |
 | 7 | INTERLIS/AV | `Ili2pgImportSchema`, `Ili2pgImport`, `Ili2pgExport`, `Ili2pgDelete`, `Ili2pgReplace`, `Ili2pgUpdate`, `Ili2pgValidate`, `Ili2gpkgImport`, `Ili2duckdbImportSchema`, `Ili2duckdbImport`, `Ili2duckdbExport`, `Av2ch`, `Av2geobau`, `Gpkg2Dxf` | ili2pg/ili2gpkg/ili2duckdb, av2ch, av2geobau |
 
-**Katalogstand:** 26 → 30 (W6) →
+**Katalogstand:** 30 → 37 (W7) →
 30 (W6) → 44 (W7).
 
 **Reihenfolge:** HTTP und einfache Dateien zuerst, dann Remote-Familien,
@@ -80,7 +84,7 @@ Der Standardbuild bleibt Docker-frei; echte Backing-Services laufen im Profil
 - PostgreSQL: Db2Db läuft im `backing-services`-Gate gegen einen echten Container.
 - DuckDB: dateibasiert/In-Memory; Föderation mit CSV/GPKG/PostgreSQL und Exporten.
 - Tabellarisch/JSON: CSV/Excel/JSON-Dateien über H2/PostgreSQL; Validatoren prüfen Struktur/Syntax, noch keine INTERLIS-Modellvalidierung.
-- Geo-Dateien: GPKG→SHP und strukturelle GPKG-/SHP-Validatoren; DB-Import/-Export und vollständige Shapefile-Sonderregeln folgen.
+- Geo-Dateien: GPKG↔SHP, Import/Export über DuckDB spatial/GDAL und strukturelle Validatoren; Hop-Sonderregeln (DBF-NULLs, Reader-Encoding, Multi-Layer-GPKG) sind noch nicht vollständig abgedeckt.
 - HTTP: Host-Tests mit `HttpServer`; Container erst für Runtime-Image-Pfade.
 
 Eine Task gilt nicht als migriert, wenn sie einen Backing-Service nur mit H2
@@ -178,8 +182,10 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
    Parquet-/GeoPackage-/XLSX-/PostgreSQL-Exporten.
 5. Welle 5 ist abgeschlossen: CSV-/Excel-/JSON-Tasks; die Validatoren prüfen
    Struktur/Syntax. Die INTERLIS-Modellvalidierung bleibt als Ausbaustufe offen.
-6. Welle 6 ist begonnen: `Gpkg2Shp` und die strukturellen Validatoren sind
-   vorhanden; `GpkgImport`, `GpkgExport`, `ShpImport` und `ShpExport` folgen.
+6. Welle 6 ist umgesetzt: GeoPackage-/Shapefile-Import/-Export, `Gpkg2Shp`
+   und strukturelle Validatoren. Die Hop-Sonderregeln für DBF-NULLs,
+   explizites Reader-Encoding und Multi-Layer-GPKG bleiben als Härtung offen.
 7. Bei `ShpImport`/`ShpExport`/`Gpkg2Shp` die Shapefile-Regeln aus diesem
-   Dokument als Testfälle übernehmen, bevor die Tasks als migriert gelten.
-8. Vor Welle 6 den PostGIS-Tasktest ergänzen.
+   Dokument als Testfälle übernehmen, bevor die Tasks als vollständig
+   migrationsgleich gelten.
+8. Welle 7 (INTERLIS) vorbereiten.

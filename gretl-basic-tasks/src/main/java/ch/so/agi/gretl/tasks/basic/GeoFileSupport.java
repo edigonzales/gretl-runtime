@@ -79,6 +79,13 @@ final class GeoFileSupport {
         }
     }
 
+    static Path sibling(Path shapefile, String extension) {
+        String name = shapefile.getFileName().toString();
+        int dot = name.lastIndexOf('.');
+        return shapefile.getParent().resolve((dot < 0 ? name : name.substring(0, dot))
+                + extension);
+    }
+
     static void deleteSidecars(Path shapefile) throws IOException {
         String name = shapefile.getFileName().toString();
         int dot = name.lastIndexOf('.');

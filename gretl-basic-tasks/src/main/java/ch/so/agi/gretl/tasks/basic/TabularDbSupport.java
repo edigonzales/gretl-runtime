@@ -38,7 +38,8 @@ final class TabularDbSupport {
             var metadata = resultSet.getMetaData();
             for (int index = 1; index <= metadata.getColumnCount(); index++) {
                 columns.add(new Column(metadata.getColumnName(index),
-                        metadata.getColumnType(index)));
+                        metadata.getColumnType(index),
+                        metadata.getColumnTypeName(index)));
             }
         }
         return List.copyOf(columns);
@@ -52,6 +53,9 @@ final class TabularDbSupport {
         return result;
     }
 
-    record Column(String name, int type) {
+    record Column(String name, int type, String typeName) {
+        Column(String name, int type) {
+            this(name, type, "");
+        }
     }
 }
