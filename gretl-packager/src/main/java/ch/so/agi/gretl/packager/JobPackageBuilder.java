@@ -44,7 +44,8 @@ public final class JobPackageBuilder {
     private static final long MAX_TOTAL_BYTES = 1024L * 1024 * 1024;
     private static final Set<String> MERGED_METADATA = Set.of(
             "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE",
-            "META-INF/NOTICE.txt", "META-INF/DEPENDENCIES");
+            "META-INF/NOTICE.txt", "META-INF/DEPENDENCIES",
+            "META-INF/sisu/javax.inject.Named");
 
     private final List<Path> classpath;
     private final String packagerVersion;

@@ -1,0 +1,47 @@
+name: release candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-x86_64:
+    name: Linux x86-64 release candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Full verification
+        run: ./mvnw -B -Pgeotools-probe,backing-services clean verify
+
+      - name: Build distribution
+        run: ./mvnw -B -DskipTests package
+
+      - name: Verify distribution checksums
+        run: |
+          unzip -q gretl-dist/target/gretl-runtime-*-bin.zip -d /tmp/gretl-dist
+          cd /tmp/gretl-dist/gretl-runtime-*
+          sha256sum -c SHA256SUMS
+
+      - name: Package and start a job
+        run: |
+          cd /tmp/gretl-dist/gretl-runtime-*
+          ./bin/gretl package examples/ili-validator/job-package.json --output /tmp/ili-job.jar
+          java -jar /tmp/ili-job.jar --report /tmp/ili-job-report.json
+
+      - name: Upload distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: gretl-runtime-linux-x86_64
+          path: gretl-dist/target/gretl-runtime-*-bin.zip

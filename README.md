@@ -20,13 +20,15 @@ umgesetzt. M5-Anwenderabnahme
 ist bestanden. M6 ergänzt `gretl package`, vorkompilierte Job-JARs und eine
 JAR-Laufzeit mit materialisierten Jobressourcen.
 
-Die M5-Release-/Pilotentscheidung bleibt offen. Der Packager bündelt im ersten
-Profil den bereitgestellten Runtime-Klassenpfad; eine Auflösung von
-Maven-Koordinaten aus dem Deskriptor ist noch nicht enthalten. Publisher,
+Die M5-Release-/Pilotentscheidung bleibt offen. Der Packager löst deklarierte
+Maven-Koordinaten aus dem lokalen Repository/Central auf; eine vollständig
+minimale Runtime-Auswahl und der Linux-x86-64-Nachweis stehen noch aus
+(siehe [`m7-report.md`](docs/implementation/m7-report.md)). Publisher,
 XtfToGpkg und Native Image bleiben spätere Aufträge.
 
 - Build-Anleitung: [`docs/implementation/build.md`](docs/implementation/build.md)
 - M6-Bericht: [`docs/implementation/m6-report.md`](docs/implementation/m6-report.md)
+- M7-Release-/Packager-Bericht: [`docs/implementation/m7-report.md`](docs/implementation/m7-report.md)
 - Snapshot-Veröffentlichung: [`docs/implementation/publish-snapshots.md`](docs/implementation/publish-snapshots.md)
 - Lokalisierung/Diagnose: [`docs/implementation/localization.md`](docs/implementation/localization.md)
 - DAG-Visualisierung: [`docs/implementation/plan-graphs.md`](docs/implementation/plan-graphs.md)
@@ -39,10 +41,10 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - M2-Bericht (historisch): [`docs/implementation/m2-report.md`](docs/implementation/m2-report.md)
 - M1-Bericht (historisch): [`docs/implementation/m1-report.md`](docs/implementation/m1-report.md)
 - M0-Bericht (historisch): [`docs/implementation/m0-report.md`](docs/implementation/m0-report.md)
-- Standardprüfung: `./mvnw verify` mit JDK 25 (**380 Tests**)
-- GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**384 Tests**)
+- Standardprüfung: `./mvnw verify` mit JDK 25 (**383 Tests**)
+- GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**387 Tests**)
 - Backing-Services (Docker): `./mvnw -Pbacking-services verify` (28 Integrationstests)
-- Kombiniert mit GeoTools: `./mvnw -Pgeotools-probe,backing-services verify` (**412 Tests**)
+- Kombiniert mit GeoTools: `./mvnw -Pgeotools-probe,backing-services verify` (**415 Tests**)
 - Teststrategie: [`docs/implementation/testing.md`](docs/implementation/testing.md)
 - Scriptdistribution: `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip`
 

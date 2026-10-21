@@ -42,7 +42,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 5. **gretl-logging** — Text/JSON, JSONL-Limits, Redaction, Causegraph,
    Runbericht, Logback-Bridge, 18 Tests,
 6. **gretl-packager** — Paketdeskriptor, Groovy-Vorkompilation, Shade-Merge,
-   Kollisionsprüfung, 5 Tests,
+   Kollisionsprüfung, 8 Tests,
 7. **gretl-basic-tasks** — HTTP, Curl, Gzip, ZIP/GZIP, SQL, Db2Db, DuckDB-Föderation, Provider, 51 Tests,
 8. **gretl-core-tasks** — XSLT, FTP, S3, Saxon, Commons Net, AWS SDK, 23 Tests,
 9. **gretl-interlis-tasks** — gretl-next-Formatengines, nativer Shapefile-Code, INTERLIS-Validierung, ili2db/AV/DXF, 25 Tests,
@@ -57,7 +57,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 15. **gretl-integration-tests** — nur mit `-Pbacking-services`:
     PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, Tabellen/JSON, Geo-Dateien, ili2pg/ili2gpkg/ili2duckdb/AV/DXF, 28 Failsafe-Tests.
 
-Erwartet: **380 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+Erwartet: **383 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
 `backing-services` ergänzt 28 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
@@ -300,6 +300,16 @@ Logging-Lücke ausgewiesen.
 - GDAL/DuckDB-spatial wird in diesen Tasks nicht mehr verwendet;
   `DuckDbSqlExecutor` bleibt davon getrennt.
 
+### M7-Release-/Packager-Härtung
+
+- Der Packager löst deklarierte Maven-Koordinaten über den Maven-CLI aus dem
+  lokalen Repository und Maven Central auf;
+  `-Dgretl.packager.offline=true` erzwingt den Offline-Modus. Bereits im
+  Runtime-Klassenpfad vorhandene Artefakte werden nicht erneut aufgelöst.
+  Maven wird nur beim Paketieren benötigt.
+- Der Linux-x86-64-Workflow liegt unter `.github/workflows/release-candidate.yml`.
+- Offene Release-Bedingungen stehen in [`m7-report.md`](m7-report.md).
+
 ### ili2db-/AV-/DXF-Tasks
 
 - `Ili2pg*`, `Ili2gpkgImport` und `Ili2duckdb*` sind Ports der gretl-next-
@@ -388,7 +398,7 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Kombiniert mit GeoTools und Backing-Services werden **412 Tests** ausgeführt.
+Kombiniert mit GeoTools und Backing-Services werden **415 Tests** ausgeführt.
 Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
@@ -397,7 +407,7 @@ Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **384 Tests** (380 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **387 Tests** (383 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.

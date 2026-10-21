@@ -36,8 +36,28 @@ public final class JobPackager {
                             descriptor.runtimeVersion(), packagerVersion));
         }
         JobCompiler.CompiledJob compiled = new JobCompiler().compile(descriptor);
-        return new JobPackageBuilder(currentClasspath(), packagerVersion)
+        List<Path> classpath = new ArrayList<>(currentClasspath());
+        List<PackageDescriptor.Dependency> missing = descriptor.dependencies().stream()
+                .filter(dependency -> !isOnClasspath(dependency, classpath))
+                .toList();
+        classpath.addAll(new MavenArtifactResolver().resolve(missing));
+        return new JobPackageBuilder(classpath, packagerVersion)
                 .build(descriptor, compiled, output);
+    }
+
+    private static boolean isOnClasspath(PackageDescriptor.Dependency dependency,
+                                         List<Path> classpath) {
+        String name = dependency.artifactId() + "-" + dependency.version();
+        for (Path path : classpath) {
+            String fileName = path.getFileName() == null ? "" : path.getFileName().toString();
+            if (fileName.equals(dependency.artifactId() + ".jar")
+                    || fileName.startsWith(name)
+                    || (fileName.endsWith(".jar")
+                    && fileName.contains(dependency.artifactId()))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static List<Path> currentClasspath() {

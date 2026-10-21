@@ -137,7 +137,7 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**412 Tests** (380 Standard + 4 GeoTools + 28 Backing-Services).
+**415 Tests** (383 Standard + 4 GeoTools + 28 Backing-Services).
 
 ## Grenzen
 
