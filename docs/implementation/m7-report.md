@@ -4,12 +4,13 @@
 **Status:** Release-Kandidat in Vorbereitung; Linux-x86-64-Nachweis als
 GitHub-Actions-Workflow angelegt, aber in dieser Arbeitsumgebung nicht
 ausgeführt. Die M5-Release-/Pilotentscheidung bleibt eine Betreiberentscheidung.
-Standardprüfung: 383 Tests; GeoTools: 387; Backing-Services: 28; kombiniert:
-415 Tests.
+Standardprüfung: 384 Tests; GeoTools: 388; Backing-Services: 28; kombiniert:
+416 Tests.
 
 ## 1. Umfang
 
 - Maven-Koordinatenauflösung im Job-Packager
+- GeoTools-Guard (`ban-geotools`) und ZIP-Prüfung der Distribution
 - Prüfung der Distribution auf 44 Tasks
 - Linux-x86-64-Verifikationsworkflow
 - Release-/Pilotunterlagen

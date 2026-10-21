@@ -53,11 +53,11 @@ export PATH="$JAVA_HOME/bin:$PATH"
 13. **examples/file-size-extension** — separat gebautes Erweiterungs-JAR,
 14. **gretl-dist** — ZIP/TAR.GZ, Launcher, Inventar/Prüfsummen,
     Extension-/HTTP-/IliValidator-/Token-/Action-Integration, Job-JAR-Paket
-    und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 9 Failsafe-Tests,
+    und -Start sowie AsciiDoc-Drift- und Include-Prüfung, 1 Surefire- und 10 Failsafe-Tests,
 15. **gretl-integration-tests** — nur mit `-Pbacking-services`:
     PostgreSQL/PostGIS, echter FTP- und S3/Floci-Container, Db2Db/PostgreSQL, DuckDB-Föderation, Tabellen/JSON, Geo-Dateien, ili2pg/ili2gpkg/ili2duckdb/AV/DXF, 28 Failsafe-Tests.
 
-Erwartet: **383 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
+Erwartet: **384 Tests**, 0 Fehler, `BUILD SUCCESS`. Das Profil
 `backing-services` ergänzt 28 Docker-backed Integrationstests; Details stehen in
 [`testing.md`](testing.md).
 
@@ -300,6 +300,16 @@ Logging-Lücke ausgewiesen.
 - GDAL/DuckDB-spatial wird in diesen Tasks nicht mehr verwendet;
   `DuckDbSqlExecutor` bleibt davon getrennt.
 
+### GeoTools-Abgrenzung
+
+- `gretl-next` hält `gretl-core` frei von GeoTools und führt GeoTools im
+  separaten `gretl-geotools`-Plugin. Die Runtime übernimmt diese Grenze:
+  `iox-wkf` und `iox-formats` excludieren `org.geotools:*`; ein
+  Enforcer-Guard `ban-geotools` verbietet `org.geotools` und
+  `org.geotools.ogc` in allen produktiven Modulen.
+- Nur das explizite Testprofil `-Pgeotools-probe` überschreibt den Guard.
+- `DistributionIT` prüft zusätzlich das ZIP auf GeoTools-JARs.
+
 ### M7-Release-/Packager-Härtung
 
 - Der Packager löst deklarierte Maven-Koordinaten über den Maven-CLI aus dem
@@ -398,7 +408,7 @@ Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
 Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
 Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
 
-Kombiniert mit GeoTools und Backing-Services werden **415 Tests** ausgeführt.
+Kombiniert mit GeoTools und Backing-Services werden **416 Tests** ausgeführt.
 Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 
 ## 8. Profil `geotools-probe`
@@ -407,7 +417,7 @@ Die vollständige Teststrategie steht in [`testing.md`](testing.md).
 ./mvnw -Pgeotools-probe verify
 ```
 
-Erwartet: **387 Tests** (383 Standard + 4 GeoTools). Die gezielte Probe
+Erwartet: **388 Tests** (384 Standard + 4 GeoTools). Die gezielte Probe
 `-pl gretl-geotools-probe -am verify` umfasst 21 Tests (17 API + 4 GeoTools).
 GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
 Bestandteil der Scriptdistribution.

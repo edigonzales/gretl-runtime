@@ -33,6 +33,20 @@ class DistributionIT {
     Path tempDir;
 
     @Test
+    void distributionDoesNotContainGeoTools() throws Exception {
+        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        assertTrue(Files.isRegularFile(zip), "distribution zip missing: " + zip);
+        try (ZipInputStream input = new ZipInputStream(Files.newInputStream(zip))) {
+            ZipEntry entry;
+            while ((entry = input.getNextEntry()) != null) {
+                String name = entry.getName().replace('\\', '/').toLowerCase();
+                assertTrue(!name.contains("geotools"), "GeoTools entry in distribution: " + name);
+                assertTrue(!name.matches(".*/gt-[^/]+\\.jar"), "GeoTools JAR in distribution: " + name);
+            }
+        }
+    }
+
+    @Test
     void extractedDistributionStartsAndLoadsStandardAndExtensionTasks() throws Exception {
         Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         assertTrue(Files.isRegularFile(zip), "distribution zip missing: " + zip);

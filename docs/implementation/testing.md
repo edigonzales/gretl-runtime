@@ -59,7 +59,7 @@ Happy-Path-Aufrufe:
   Der Test setzt den Distributionsbuild voraus; im `backing-services`-Reaktor
   wird `gretl-dist` vorher gebaut.
 
-Die 9 Failsafe-Tests in `gretl-dist` kommen separat hinzu; sie prüfen
+Die 10 Failsafe-Tests in `gretl-dist` kommen separat hinzu; sie prüfen
 Distribution, Launcher, Job-JAR-Paketierung und lokale Integrationen ohne
 Docker. Die Bezeichnung „28 Integrationstests“ meint daher ausschließlich das
 Profil `backing-services`.
@@ -137,12 +137,15 @@ Der Publish-Workflow führt beide Ebenen aus:
 
 Damit ist der Docker-backed Gate vor der Snapshot-Publikation verpflichtend.
 Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
-**415 Tests** (383 Standard + 4 GeoTools + 28 Backing-Services).
+**416 Tests** (384 Standard + 4 GeoTools + 28 Backing-Services).
 
 ## Grenzen
 
 - Der Standardbuild testet weiterhin keine echte PostgreSQL-/PostGIS-Dialektik;
   dafür ist das Profil zuständig.
+- Der Enforcer-Guard `ban-geotools` und der ZIP-Test in `DistributionIT`
+  sichern die GeoTools-Abgrenzung; das Testprofil `geotools-probe` ist die
+  einzige Ausnahme.
 - Der ili2pg-Lebenszyklus (Schema, Import, Export, Replace, Update, Validate,
   Delete) läuft gegen den echten PostgreSQL/PostGIS-Container.
 - `DuckDbSqlExecutor` deckt den SQL-Kern und die Föderation ab; ein

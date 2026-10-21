@@ -204,6 +204,29 @@
               </rules>
             </configuration>
           </execution>
+          <execution>
+            <id>ban-geotools</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <excludes>
+                    <exclude>org.geotools:*</exclude>
+                    <exclude>org.geotools.ogc:*</exclude>
+                  </excludes>
+                  <message>
+                    GeoTools is restricted to the explicit -Pgeotools-probe
+                    qualification profile. Core and task modules must stay free
+                    of GeoTools dependencies.
+                  </message>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
