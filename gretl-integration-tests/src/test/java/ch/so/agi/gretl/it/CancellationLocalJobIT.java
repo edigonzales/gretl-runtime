@@ -17,7 +17,7 @@ class CancellationLocalJobIT {
         try (var watch = FileSystems.getDefault().newWatchService()) {
             root.resolve("output").register(watch, StandardWatchEventKinds.ENTRY_CREATE);
             var request = new ArtifactJobRunner.Request("cancel", ArtifactJobRunner.fixture("cancellation"),
-                    root, List.of(), Map.of("signals", root.resolve("output").toString()), Map.of(),
+                    root, List.of(), Map.of("signals", root.resolve("output")), Map.of(),
                     JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
             var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request), script);
             try {
@@ -48,7 +48,7 @@ class CancellationLocalJobIT {
         try (var watch = FileSystems.getDefault().newWatchService()) {
             root.resolve("output").register(watch, StandardWatchEventKinds.ENTRY_CREATE);
             var request = new ArtifactJobRunner.Request("failed-shutdown", ArtifactJobRunner.fixture("cancellation"),
-                    root, List.of(), Map.of("signals", root.resolve("output").toString(), "fail", "true"), Map.of(),
+                    root, List.of(), Map.of("signals", root.resolve("output"), "fail", "true"), Map.of(),
                     JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
             var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request), script);
             try {
@@ -74,7 +74,7 @@ class CancellationLocalJobIT {
         try (var watch = FileSystems.getDefault().newWatchService()) {
             root.resolve("output").register(watch, StandardWatchEventKinds.ENTRY_CREATE);
             var request = new ArtifactJobRunner.Request("runner-timeout", ArtifactJobRunner.fixture("cancellation"),
-                    root, List.of(), Map.of("signals", root.resolve("output").toString()), Map.of(),
+                    root, List.of(), Map.of("signals", root.resolve("output")), Map.of(),
                     JobRunner.baseConfig(root), Map.of(), Duration.ofMillis(10));
             var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request), script);
             try {

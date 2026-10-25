@@ -104,7 +104,7 @@ class InterlisArtifactIT {
     private ArtifactJobRunner.Result run(PostgresFixture.Lease lease, String target, Map<String, String> extra) throws Exception {
         Path root = ArtifactJobRunner.directory("ili2pg-" + target); var config = JobRunner.baseConfig(root); JobRunner.secret(root, config, "dbPassword", lease.password());
         JobRunner.taskConfig(config, "db", Map.of("jdbcUrl", lease.jdbcUrl(), "user", lease.user(), "passwordSecret", "dbPassword"));
-        var params = new LinkedHashMap<>(extra); params.put("schema", lease.schema()); params.put("output", root.resolve("output").toString());
+        var params = new LinkedHashMap<String, Object>(extra); params.put("schema", lease.schema()); params.put("output", root.resolve("output"));
         return ArtifactJobRunner.run(new ArtifactJobRunner.Request("ili2pg-" + target, ArtifactJobRunner.fixture("ili2pg"), root, List.of(target), params, Map.of(), config,
                 Map.of("postgres", new ArtifactJobRunner.Endpoint(lease.jdbcUrl(), lease.imageJdbcUrl())), Duration.ofSeconds(120)));
     }

@@ -69,6 +69,6 @@ class InterlisLocalJobIT {
     private ArtifactJobRunner.Result run(List<String> targets, String variant) throws Exception {
         Path root = ArtifactJobRunner.directory("ili-" + targets.getFirst() + "-" + variant);
         return ArtifactJobRunner.run(new ArtifactJobRunner.Request("ili-" + targets.getFirst() + "-" + variant, ArtifactJobRunner.fixture("ili"), root, targets,
-                Map.of("output", root.resolve("output").toString(), "variant", variant), Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(120)));
+                Map.of("output", root.resolve("output"), "variant", variant), Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(120)));
     }
 }

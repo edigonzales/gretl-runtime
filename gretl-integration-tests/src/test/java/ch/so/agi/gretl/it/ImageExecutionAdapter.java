@@ -89,7 +89,8 @@ final class ImageExecutionAdapter {
         if (request.config().get("secrets") instanceof Map<?, ?> secrets) {
             for (var entry : secrets.entrySet()) {
                 if (entry.getValue() instanceof Map<?, ?> environmentSecret && environmentSecret.get("environment") instanceof String key) {
-                    String value = request.environment().getOrDefault(key, System.getenv(key));
+                    Object supplied = request.environment().get(key);
+                    String value = supplied == null ? System.getenv(key) : supplied.toString();
                     if (value == null) throw new IOException("Missing IMAGE secret environment: " + key);
                     secretEnvironment.put(key, value);
                 }
@@ -101,7 +102,21 @@ final class ImageExecutionAdapter {
                 }
             }
         }
-        Map<String, Object> config = translateMap(request.config(), paths, request.endpoints());
+        Map<String, Object> config = new LinkedHashMap<>();
+        request.config().forEach((key, value) -> config.put(key,
+                key.equals("runtime") ? value : translateValue(value, paths, request.endpoints())));
+        // Runtime identity is opaque text, even if it starts with a slash or resembles an endpoint.
+        if (request.config().get("runtime") instanceof Map<?, ?> runtime) {
+            Map<String, Object> translated = new LinkedHashMap<>();
+            runtime.forEach((key, value) -> translated.put(key.toString(), ArtifactJobRunner.jsonValue(value)));
+            for (String field : List.of("workRoot", "reportRoot")) {
+                if (runtime.get(field) != null) {
+                    Path host = request.directory().resolve(runtime.get(field).toString()).normalize();
+                    translated.put(field, translate(host.toString(), paths, request.endpoints()));
+                }
+            }
+            config.put("runtime", translated);
+        }
         // A relative secret source is relative to the host config, never to /run.
         if (config.get("secrets") instanceof Map<?, ?> secrets) {
             Map<String, Object> translated = new LinkedHashMap<>();
@@ -117,9 +132,15 @@ final class ImageExecutionAdapter {
         mount(args, paths, configFile, "/config/runtime.json", true);
         Files.createDirectories(request.directory().resolve("work/home"));
         Files.createDirectories(request.directory().resolve("work/tmp"));
-        Map<String, String> environment = new LinkedHashMap<>(request.environment());
+        Map<String, String> environment = new LinkedHashMap<>();
+        request.environment().forEach((key, value) -> {
+            if (secretEnvironment.containsKey(key)) { environment.put(key, secretEnvironment.get(key)); return; }
+            boolean opaque = List.of("GRETL_JOB_NAME", "GRETL_CORRELATION_ID", "GRETL_JOB_REVISION", "GRETL_DEPLOYMENT_ENVIRONMENT").contains(key);
+            String translated = opaque ? value.toString() : String.valueOf(translateValue(value, paths, request.endpoints()));
+            if (key.equals("GRETL_TERMINATION_MESSAGE_PATH")) translated = translate(value.toString(), paths, request.endpoints());
+            environment.put(key, translated);
+        });
         environment.putAll(secretEnvironment);
-        environment.replaceAll((key, value) -> secretEnvironment.containsKey(key) ? value : translate(value, paths, request.endpoints()));
         environment.put("HOME", "/work/home"); environment.put("TMPDIR", "/work/tmp");
         environment.put("JAVA_TOOL_OPTIONS", "-Duser.home=/work/home -Djava.io.tmpdir=/work/tmp "
                 + environment.getOrDefault("JAVA_TOOL_OPTIONS", ""));
@@ -129,7 +150,7 @@ final class ImageExecutionAdapter {
                 "--report", "/reports/report.json", "--log-format", "json"));
         for (String target : request.targets()) args.addAll(List.of("--target", target));
         request.parameters().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e ->
-                args.addAll(List.of("--param", e.getKey() + "=" + translate(e.getValue(), paths, request.endpoints()))));
+                args.addAll(List.of("--param", e.getKey() + "=" + translateValue(e.getValue(), paths, request.endpoints()))));
         return new Launch(engine, name, imageId, List.copyOf(args), Map.copyOf(environment), config);
     }
     private static void mount(List<String> args, Map<Path, String> paths, Path host, String image, boolean readOnly) throws IOException {
@@ -148,22 +169,26 @@ final class ImageExecutionAdapter {
     private static Object translateValue(Object value, Map<Path, String> paths, Map<String, ArtifactJobRunner.Endpoint> endpoints) {
         if (value instanceof Map<?, ?> map) return translateMap(map, paths, endpoints);
         if (value instanceof List<?> list) return list.stream().map(v -> translateValue(v, paths, endpoints)).toList();
-        return value instanceof String text ? translate(text, paths, endpoints) : value;
+        if (value instanceof Path path) return translate(path.toString(), paths, endpoints);
+        return value instanceof String text ? translateEndpoint(text, endpoints) : value;
     }
     static String translate(String value, Map<Path, String> paths, Map<String, ArtifactJobRunner.Endpoint> endpoints) {
-        for (var endpoint : endpoints.values()) {
-            if (value.equals(endpoint.host()) || value.startsWith(endpoint.host() + "/") || value.startsWith(endpoint.host() + "?")) {
-                if (endpoint.image() == null || endpoint.image().isBlank()
-                        || endpoint.image().matches("(?i).*(localhost|127\\.0\\.0\\.1).*")) throw new IllegalArgumentException("Missing or host-only IMAGE endpoint mapping");
-                return endpoint.image() + value.substring(endpoint.host().length());
-            }
-        }
         if (value.startsWith("/")) {
             Path path = Path.of(value).normalize();
             return paths.entrySet().stream().filter(e -> path.startsWith(e.getKey()))
                     .max(java.util.Comparator.comparingInt(e -> e.getKey().getNameCount()))
                     .map(e -> e.getValue() + (path.equals(e.getKey()) ? "" : "/" + e.getKey().relativize(path)))
                     .orElseThrow(() -> new IllegalArgumentException("Unmapped IMAGE path: " + value));
+        }
+        return translateEndpoint(value, endpoints);
+    }
+    private static String translateEndpoint(String value, Map<String, ArtifactJobRunner.Endpoint> endpoints) {
+        for (var endpoint : endpoints.values()) {
+            if (value.equals(endpoint.host()) || value.startsWith(endpoint.host() + "/") || value.startsWith(endpoint.host() + "?")) {
+                if (endpoint.image() == null || endpoint.image().isBlank()
+                        || endpoint.image().matches("(?i).*(localhost|127\\.0\\.0\\.1).*")) throw new IllegalArgumentException("Missing or host-only IMAGE endpoint mapping");
+                return endpoint.image() + value.substring(endpoint.host().length());
+            }
         }
         if (value.matches("(?i)(localhost|127\\.0\\.0\\.1)(:[0-9]+)?([/?].*)?"))
             throw new IllegalArgumentException("Unmapped host-only IMAGE endpoint: " + value);

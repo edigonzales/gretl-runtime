@@ -38,7 +38,7 @@ class S3OriginalArtifactIT {
         try (var client = lease.client()) { for (String key : lease.keys(bucket)) client.deleteObject(b -> b.bucket(bucket).key(key)); }
     }
     private ArtifactJobRunner.Result run(S3Fixture.Lease lease, String target, Map<String, String> extra) throws Exception {
-        Path root = ArtifactJobRunner.directory("original-" + target); var params = new LinkedHashMap<>(extra); params.put("output", root.resolve("output").toString());
+        Path root = ArtifactJobRunner.directory("original-" + target); var params = new LinkedHashMap<String, Object>(extra); params.put("output", root.resolve("output"));
         var config = JobRunner.baseConfig(root); JobRunner.secret(root, config, "s3SecretKey", lease.secretKey());
         return ArtifactJobRunner.run(new ArtifactJobRunner.Request("original-" + target, ArtifactJobRunner.fixture("services"), root, List.of(target), params, Map.of(), config,
                 Map.of("s3", new ArtifactJobRunner.Endpoint(lease.endpoint(), "http://s3:4566")), Duration.ofSeconds(90)));

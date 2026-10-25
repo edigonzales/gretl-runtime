@@ -16,9 +16,8 @@ class ImageExecutionAdapterTest {
     final ImageExecutionAdapter.Settings settings = new ImageExecutionAdapter.Settings(
             "registry.example/gretl:qualified", "/product/bin/gretl", "gretl-test-network", currentUser(), "services:host-gateway");
     static String currentUser() {
-        try {
-            return Files.getAttribute(Path.of("."), "unix:uid") + ":" + Files.getAttribute(Path.of("."), "unix:gid");
-        } catch (Exception exception) { throw new IllegalStateException(exception); }
+        var user = new com.sun.security.auth.module.UnixSystem();
+        return user.getUid() + ":" + user.getGid();
     }
     static final class RecordingEngine implements ImageExecutionAdapter.Engine {
         final List<List<String>> calls = new ArrayList<>();
@@ -42,9 +41,10 @@ class ImageExecutionAdapterTest {
         @SuppressWarnings("unchecked") var secrets = (Map<String, Object>) config.get("secrets");
         secrets.put("envPassword", Map.of("environment", "SECRET_ENV"));
         JobRunner.taskConfig(config, "db", Map.of("jdbcUrl", "jdbc:postgresql://localhost:4567/db?currentSchema=test", "user", "a", "passwordSecret", "password"));
+        JobRunner.taskConfig(config, "paths", Map.of("localFile", source.resolve("data.txt"), "serverPath", "/home/gretl/remote"));
         return new ArtifactJobRunner.Request("contract", source, root, List.of("first", "second"),
-                Map.of("output", root.resolve("output/a b.txt").toString(), "count", "12"),
-                Map.of("SECRET_ENV", "/do not log this", "GRETL_TERMINATION_MESSAGE_PATH", root.resolve("output/termination.json").toString()),
+                Map.of("output", root.resolve("output/a b.txt"), "count", "12"),
+                Map.of("SECRET_ENV", "/do not log this", "GRETL_TERMINATION_MESSAGE_PATH", root.resolve("output/termination.json")),
                 config, Map.of("postgres", new ArtifactJobRunner.Endpoint("jdbc:postgresql://localhost:4567/db", "jdbc:postgresql://postgres:5432/db")), Duration.ofSeconds(1));
     }
     @Test void immutableImageAndCompleteNonStartingCommand() throws Exception {
@@ -74,6 +74,9 @@ class ImageExecutionAdapterTest {
         String config = Files.readString(request.directory().resolve("image-runtime.json"));
         assertTrue(config.contains("jdbc:postgresql://postgres:5432/db?currentSchema=test"), config);
         assertTrue(config.contains("/secrets/password")); assertFalse(config.contains("localhost"));
+        assertTrue(config.contains("/job/data.txt")); assertTrue(config.contains("/home/gretl/remote"));
+        assertTrue(ch.so.agi.gretl.runtime.logging.Json.write(ArtifactJobRunner.jsonValue(request.config()))
+                .contains(request.jobDirectory().resolve("data.txt").toString()));
         launch.cancel(); launch.remove();
         assertTrue(engine.calls.contains(List.of("stop", "--time", "35", launch.name())));
         assertTrue(engine.calls.contains(List.of("rm", "--force", launch.name())));
@@ -117,6 +120,55 @@ class ImageExecutionAdapterTest {
         var request = request(); var engine = new RecordingEngine(); engine.failed = true;
         assertThrows(java.io.IOException.class, () -> ImageExecutionAdapter.prepare(request, request.jobDirectory(), settings, engine));
         assertEquals(1, engine.calls.size());
+    }
+    @Test void ftpServerPathKeepsItsMeaningWhileLocalPathsAndEndpointAreTranslated() throws Exception {
+        var base = request();
+        var parameters = new java.util.LinkedHashMap<String, Object>(base.parameters());
+        parameters.put("remoteDir", "/home/gretl/lease with spaces");
+        parameters.put("server", "127.0.0.1:2121");
+        var endpoints = new java.util.LinkedHashMap<>(base.endpoints());
+        endpoints.put("ftp", new ArtifactJobRunner.Endpoint("127.0.0.1:2121", "ftp:21"));
+        var request = new ArtifactJobRunner.Request("ftp-contract", base.jobDirectory(), base.directory(),
+                List.of("ftp-upload"), parameters, base.environment(), base.config(), endpoints, base.timeout());
+        var engine = new RecordingEngine();
+        var args = ImageExecutionAdapter.prepare(request, request.jobDirectory(), settings, engine).arguments();
+        assertTrue(args.contains("remoteDir=/home/gretl/lease with spaces"));
+        assertTrue(args.contains("output=/outputs/a b.txt"));
+        assertTrue(args.contains("server=ftp:21"));
+        assertEquals("/home/gretl/lease with spaces", request.parameters().get("remoteDir"));
+        assertFalse(engine.calls.stream().anyMatch(c -> c.getFirst().equals("run")));
+    }
+    @Test void opaqueConfigAndEnvironmentIdentityRemainUnchanged() throws Exception {
+        var base = request();
+        Map<String, Object> runtime = new java.util.LinkedHashMap<>();
+        ((Map<?, ?>) base.config().get("runtime")).forEach((key, value) -> runtime.put(key.toString(), value));
+        String opaque = "/ci/review/42";
+        runtime.put("correlationId", opaque); runtime.put("jobName", "/ci/job");
+        base.config().put("runtime", runtime);
+        var environment = new java.util.LinkedHashMap<String, Object>(base.environment());
+        environment.put("GRETL_CORRELATION_ID", opaque); environment.put("GRETL_JOB_REVISION", "/refs/review/42");
+        var request = new ArtifactJobRunner.Request(base.id(), base.jobDirectory(), base.directory(), base.targets(),
+                base.parameters(), environment, base.config(), base.endpoints(), base.timeout());
+        var launch = ImageExecutionAdapter.prepare(request, request.jobDirectory(), settings, new RecordingEngine());
+        assertEquals(opaque, ((Map<?, ?>) launch.config().get("runtime")).get("correlationId"));
+        assertEquals("/ci/job", ((Map<?, ?>) launch.config().get("runtime")).get("jobName"));
+        assertEquals(opaque, launch.environment().get("GRETL_CORRELATION_ID"));
+        assertEquals("/refs/review/42", launch.environment().get("GRETL_JOB_REVISION"));
+        assertEquals("/work", ((Map<?, ?>) launch.config().get("runtime")).get("workRoot"));
+    }
+    @Test void explicitlyLocalParameterAndEnvironmentPathsMustBeMounted() throws Exception {
+        var base = request();
+        for (boolean parameter : List.of(true, false)) {
+            var parameters = new java.util.LinkedHashMap<String, Object>(base.parameters());
+            var environment = new java.util.LinkedHashMap<String, Object>(base.environment());
+            if (parameter) parameters.put("input", Path.of("/unmounted/data"));
+            else environment.put("LOCAL_INPUT", Path.of("/unmounted/data"));
+            var request = new ArtifactJobRunner.Request(base.id(), base.jobDirectory(), base.directory(), base.targets(),
+                    parameters, environment, base.config(), base.endpoints(), base.timeout());
+            var exception = assertThrows(IllegalArgumentException.class,
+                    () -> ImageExecutionAdapter.prepare(request, request.jobDirectory(), settings, new RecordingEngine()));
+            assertTrue(exception.getMessage().contains("Unmapped IMAGE path"));
+        }
     }
     @Test void missingDeclaredEnvironmentSecretFailsBeforeContainerStart() throws Exception {
         var request = request();

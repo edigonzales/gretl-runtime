@@ -75,7 +75,7 @@ class ValidatorLocalJobIT {
         Path output = root.resolve("output/result.gpkg");
         var result = ArtifactJobRunner.run(new ArtifactJobRunner.Request("gpkg-srid",
                 ArtifactJobRunner.fixture("gpkg-import"), root, List.of(),
-                Map.of("output", output.toString(), "srs", srs), Map.of(),
+                Map.of("output", output, "srs", srs), Map.of(),
                 JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(90)));
         assertEquals(0, result.code(), result.err());
         try (var connection = DriverManager.getConnection("jdbc:sqlite:" + output);
@@ -96,7 +96,7 @@ class ValidatorLocalJobIT {
         Path root = ArtifactJobRunner.directory("original-gzip");
         Path output = root.resolve("output/planregister.xml");
         var result = ArtifactJobRunner.run(new ArtifactJobRunner.Request("original-gzip",
-                ArtifactJobRunner.fixture("archive"), root, List.of(), Map.of("output", output.toString()),
+                ArtifactJobRunner.fixture("archive"), root, List.of(), Map.of("output", output),
                 Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(60)));
         assertEquals(0, result.code(), result.err());
         assertArrayEquals(Files.readAllBytes(ArtifactJobRunner.fixture("archive").resolve("planregister.xml")),
@@ -118,7 +118,7 @@ class ValidatorLocalJobIT {
         Files.writeString(fixture.resolve("job.groovy"), operation.example());
         Path output = root.resolve("output/example.gpkg");
         var result = ArtifactJobRunner.run(new ArtifactJobRunner.Request("gpkg-help-example",
-                fixture, root, List.of(), Map.of("output", output.toString()), Map.of(),
+                fixture, root, List.of(), Map.of("output", output), Map.of(),
                 JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(90)));
         assertEquals(0, result.code(), result.err());
         try (var connection = DriverManager.getConnection("jdbc:sqlite:" + output);
@@ -174,8 +174,8 @@ class ValidatorLocalJobIT {
     }
 
     private ArtifactJobRunner.Result validators(Path root, String target, Map<String, String> parameters) throws Exception {
-        var params = new java.util.LinkedHashMap<>(parameters);
-        params.put("log", root.resolve("output/validation.log").toString());
+        var params = new java.util.LinkedHashMap<String, Object>(parameters);
+        params.put("log", root.resolve("output/validation.log"));
         return ArtifactJobRunner.run(new ArtifactJobRunner.Request(root.getFileName().toString().substring(0, root.getFileName().toString().length() - 37),
                 ArtifactJobRunner.fixture("validators"), root, List.of(target), params, Map.of(),
                 JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(60)));

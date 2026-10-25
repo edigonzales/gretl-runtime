@@ -91,7 +91,7 @@ class FormatArtifactPostgresIT {
     private ArtifactJobRunner.Result run(PostgresFixture.Lease lease, String target, Map<String, String> extra) throws Exception {
         Path root = ArtifactJobRunner.directory("format-" + target); var config = JobRunner.baseConfig(root); JobRunner.secret(root, config, "dbPassword", lease.password());
         JobRunner.taskConfig(config, "db", Map.of("jdbcUrl", lease.jdbcUrl(), "user", lease.user(), "passwordSecret", "dbPassword"));
-        var params = new LinkedHashMap<>(extra); params.put("output", root.resolve("output").toString());
+        var params = new LinkedHashMap<String, Object>(extra); params.put("output", root.resolve("output"));
         return ArtifactJobRunner.run(new ArtifactJobRunner.Request("format-" + target, ArtifactJobRunner.fixture("postgres-formats"), root, List.of(target), params, Map.of(), config,
                 Map.of("postgres", new ArtifactJobRunner.Endpoint(lease.jdbcUrl(), lease.imageJdbcUrl())), Duration.ofSeconds(90)));
     }

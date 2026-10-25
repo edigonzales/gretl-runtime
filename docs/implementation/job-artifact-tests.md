@@ -80,8 +80,20 @@ Dateien erfüllt die Voraussetzung nicht.
 | übersetzte Runtimekonfiguration | /config/runtime.json | nur lesen |
 | ausdrücklich konfigurierte Secretdateien | /secrets/Alias | nur lesen |
 
-Der Adapter übersetzt Parameter, Konfiguration und Pfad-Umgebungswerte anhand
-dieser Mounts. Unbekannte absolute Hostpfade scheitern. Dienstendpoints erhalten
+Lokale Pfadwerte in Parametern, Environment und Fachkonfiguration werden im
+gemeinsamen Java-Request als `java.nio.file.Path` übergeben. JAR serialisiert
+sie zu denselben CLI-/JSON-Textwerten; IMAGE übersetzt sie anhand dieser
+Mounts. Ein nicht gemounteter absoluter `Path` scheitert. Relative
+Parameterpfade bleiben relativ zum jeweiligen Arbeitsverzeichnis.
+
+Strings bleiben Textwerte. Der FTP-Serverpfad `remoteDir=/home/gretl/<lease>`
+ist beispielsweise in beiden Modi derselbe String und keine lokale
+Mountquelle. Runtimeidentität und die entsprechenden GRETL-ENV-Werte sind
+opaque, auch bei führendem `/`. Die normativ bekannten lokalen Pfadfelder
+`runtime.workRoot`, `runtime.reportRoot`, Secretdateien und
+`GRETL_TERMINATION_MESSAGE_PATH` werden ausdrücklich als Pfade behandelt;
+relative Runtimepfade beziehen sich weiterhin auf das Konfigurationsverzeichnis.
+Dienstendpoints erhalten
 explizite Host-/Image-Paare; localhost-Endpunkte ohne Zuordnung scheitern.
 PostgreSQL-, FTP- und S3-Fixtures treten dem benannten Netz als `postgres`, `ftp`
 und `s3` bei. FTP verwendet dort die passive Adresse `ftp`; der unabhängige

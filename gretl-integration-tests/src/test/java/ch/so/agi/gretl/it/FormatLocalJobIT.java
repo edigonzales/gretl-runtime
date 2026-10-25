@@ -73,6 +73,6 @@ class FormatLocalJobIT {
     private ArtifactJobRunner.Result run(String target, String variant) throws Exception {
         Path root = ArtifactJobRunner.directory(target + "-" + variant);
         return ArtifactJobRunner.run(new ArtifactJobRunner.Request(target + "-" + variant, ArtifactJobRunner.fixture("formats"), root, List.of(target),
-                Map.of("output", root.resolve("output").toString(), "variant", variant), Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(180)));
+                Map.of("output", root.resolve("output"), "variant", variant), Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(180)));
     }
 }

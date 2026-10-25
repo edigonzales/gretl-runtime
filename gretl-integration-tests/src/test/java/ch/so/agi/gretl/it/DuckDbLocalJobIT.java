@@ -12,7 +12,7 @@ class DuckDbLocalJobIT {
     @Test void originalSqlParquetAndGeoPackageImportPlusIndependentExportRead() throws Exception {
         Path root = ArtifactJobRunner.directory("original-duckdb");
         var result = ArtifactJobRunner.run(new ArtifactJobRunner.Request("original-duckdb", ArtifactJobRunner.fixture("duckdb"), root, List.of(),
-                Map.of("output", root.resolve("output").toString()), Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(120)));
+                Map.of("output", root.resolve("output")), Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(120)));
         assertEquals(0, result.code(), result.err());
         try (var db = DriverManager.getConnection("jdbc:duckdb:" + root.resolve("output/foo.duckdb")); var query = db.createStatement()) {
             try (var rows = query.executeQuery("select count(*),sum(i) from tbl")) { assertTrue(rows.next()); assertEquals(3, rows.getInt(1)); assertEquals(6, rows.getInt(2)); }

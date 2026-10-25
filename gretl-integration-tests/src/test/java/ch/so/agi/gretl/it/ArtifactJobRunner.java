@@ -25,7 +25,7 @@ final class ArtifactJobRunner {
     private static final Map<String, Path> BUILT_FIXTURES = new LinkedHashMap<>();
     record Endpoint(String host, String image) {}
     record Request(String id, Path jobDirectory, Path directory, List<String> targets,
-                   Map<String, String> parameters, Map<String, String> environment,
+                   Map<String, ?> parameters, Map<String, ?> environment,
                    Map<String, Object> config, Map<String, Endpoint> endpoints,
                    Duration timeout) {
         Request {
@@ -33,6 +33,10 @@ final class ArtifactJobRunner {
             parameters = Map.copyOf(parameters);
             environment = Map.copyOf(environment);
             endpoints = Map.copyOf(endpoints);
+            for (var values : List.of(parameters, environment)) values.forEach((key, value) -> {
+                if (!(value instanceof String || value instanceof Path))
+                    throw new IllegalArgumentException("Request value must be text or a local Path: " + key);
+            });
             if (!id.matches("[A-Za-z0-9._-]+") || timeout.isNegative() || timeout.isZero()) {
                 throw new IllegalArgumentException("Invalid scenario identity or timeout");
             }
@@ -74,7 +78,7 @@ final class ArtifactJobRunner {
         }
         Files.createDirectories(request.directory().resolve("cwd"));
         Files.createDirectories(request.directory().resolve("reports"));
-        Files.writeString(request.directory().resolve("runtime.json"), Json.write(request.config()));
+        Files.writeString(request.directory().resolve("runtime.json"), Json.write(jsonValue(request.config())));
         Path report = request.directory().resolve("reports/report.json");
         if (mode == Mode.IMAGE) {
             var image = ImageExecutionAdapter.prepare(request, source, ImageExecutionAdapter.Settings.configured(), new ImageExecutionAdapter.Docker());
@@ -132,7 +136,7 @@ final class ArtifactJobRunner {
             while ((count = input.read(buffer)) >= 0) digest.update(buffer, 0, count);
             hash = HexFormat.of().formatHex(digest.digest());
         }
-        Files.writeString(request.directory().resolve("runtime.json"), Json.write(request.config()));
+        Files.writeString(request.directory().resolve("runtime.json"), Json.write(jsonValue(request.config())));
         return new Prepared(request, source, jar, hash, report, null);
     }
 
@@ -195,7 +199,8 @@ final class ArtifactJobRunner {
                         if (clear.endsWith("\r\n")) clear = clear.substring(0, clear.length() - 2);
                         else if (clear.endsWith("\n")) clear = clear.substring(0, clear.length() - 1);
                     } else if (secret.get("environment") instanceof String key) {
-                        clear = request.environment().getOrDefault(key, System.getenv(key));
+                        Object environmentValue = request.environment().get(key);
+                        clear = environmentValue == null ? System.getenv(key) : environmentValue.toString();
                     }
                     if (clear != null) registry.register(clear);
                 }
@@ -249,7 +254,7 @@ final class ArtifactJobRunner {
     }
 
     static ProcessBuilder process(List<String> command, Path directory,
-                                           Map<String, String> environment, String prefix) {
+                                           Map<String, ?> environment, String prefix) {
         ProcessBuilder builder = new ProcessBuilder(command).directory(directory.toFile());
         for (String key : List.of("CLASSPATH", "JAVA_TOOL_OPTIONS", "_JAVA_OPTIONS", "JDK_JAVA_OPTIONS", "JAVA_OPTS")) {
             builder.environment().remove(key);
@@ -259,12 +264,24 @@ final class ArtifactJobRunner {
             builder.environment().remove(key);
         }
         builder.environment().put("GRETL_LANGUAGE", "de");
-        builder.environment().putAll(environment);
+        environment.forEach((key, value) -> builder.environment().put(key, value.toString()));
         builder.environment().put("JAVA_HOME", System.getProperty("java.home"));
         builder.environment().put("TZ", "UTC");
         builder.environment().put("LANG", "C.UTF-8");
         return builder.redirectOutput(directory.resolve(prefix + ".stdout.log").toFile())
                 .redirectError(directory.resolve(prefix + ".stderr.log").toFile());
+    }
+
+    /** Keep Path as a type in the request; serialize it only at the JAR/config boundary. */
+    static Object jsonValue(Object value) {
+        if (value instanceof Path path) return path.toString();
+        if (value instanceof Map<?, ?> map) {
+            Map<String, Object> result = new LinkedHashMap<>();
+            map.forEach((key, entry) -> result.put(key.toString(), jsonValue(entry)));
+            return result;
+        }
+        if (value instanceof List<?> list) return list.stream().map(ArtifactJobRunner::jsonValue).toList();
+        return value;
     }
 
     private static void privateDirectory(Path directory) throws IOException {

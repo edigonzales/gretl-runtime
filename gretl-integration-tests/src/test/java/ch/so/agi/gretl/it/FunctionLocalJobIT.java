@@ -54,6 +54,6 @@ class FunctionLocalJobIT {
     private ArtifactJobRunner.Result run(String target, String url, Map<String, String> environment, Map<String, ArtifactJobRunner.Endpoint> endpoints) throws Exception {
         Path root = ArtifactJobRunner.directory("additional-function");
         return ArtifactJobRunner.run(new ArtifactJobRunner.Request("additional-function", ArtifactJobRunner.fixture("functions"), root, List.of(target),
-                Map.of("output", root.resolve("output").toString(), "url", url), environment, JobRunner.baseConfig(root), endpoints, Duration.ofSeconds(60)));
+                Map.of("output", root.resolve("output"), "url", url), environment, JobRunner.baseConfig(root), endpoints, Duration.ofSeconds(60)));
     }
 }
