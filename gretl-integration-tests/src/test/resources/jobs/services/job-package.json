@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "name": "services",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [
+    "io"
+  ],
+  "standardFunctions": false,
+  "resources": [
+    "LICENSE-sogis-gretl.txt",
+    "dir",
+    "one.txt",
+    "original",
+    "tree"
+  ],
+  "dependencies": []
+}

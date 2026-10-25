@@ -25,6 +25,9 @@ jobs:
       - name: Standard verification
         run: ./mvnw -B clean verify
 
+      - name: Audit standard artifact identities
+        run: python3 scripts/audit-job-evidence.py --source "${{ github.sha }}"
+
       - name: Preserve standard verification evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -34,7 +37,16 @@ jobs:
             **/target/surefire-reports/
             **/target/failsafe-reports/
             **/target/site/jacoco*/
+            **/target/qualification/
             **/target/job-evidence/**/execution.json
+            **/target/job-evidence/**/package-inventory.json
+            **/target/job-evidence/**/package-descriptor.json
+            **/target/job-evidence/**/job-metadata.json
+            **/target/job-evidence/**/isolation.json
+            **/target/job-evidence/**/*.events.jsonl
+            gretl-dist/target/dist/package-catalog.json
+            gretl-dist/target/dist/inventory.json
+            gretl-dist/target/dist/SHA256SUMS
             **/target/job-evidence/**/report.json
             **/target/job-evidence/**/*.stdout.log
             **/target/job-evidence/**/*.stderr.log
@@ -42,6 +54,9 @@ jobs:
 
       - name: Full verification
         run: ./mvnw -B -Pgeotools-probe,backing-services clean verify
+
+      - name: Audit full artifact identities and all 44 operations
+        run: python3 scripts/audit-job-evidence.py --full --source "${{ github.sha }}"
 
       - name: Preserve full verification evidence
         if: always()
@@ -53,14 +68,20 @@ jobs:
             **/target/failsafe-reports/
             **/target/site/jacoco*/
             **/target/service-evidence/
+            **/target/qualification/
             **/target/job-evidence/**/execution.json
+            **/target/job-evidence/**/package-inventory.json
+            **/target/job-evidence/**/package-descriptor.json
+            **/target/job-evidence/**/job-metadata.json
+            **/target/job-evidence/**/isolation.json
+            **/target/job-evidence/**/*.events.jsonl
+            gretl-dist/target/dist/package-catalog.json
+            gretl-dist/target/dist/inventory.json
+            gretl-dist/target/dist/SHA256SUMS
             **/target/job-evidence/**/report.json
             **/target/job-evidence/**/*.stdout.log
             **/target/job-evidence/**/*.stderr.log
             **/target/job-evidence/**/output/
-
-      - name: Build distribution
-        run: ./mvnw -B -DskipTests package
 
       - name: Verify distribution checksums
         run: |

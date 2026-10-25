@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "name": "postgres-formats",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [
+    "interlis"
+  ],
+  "standardFunctions": false,
+  "resources": [
+    "CsvImport",
+    "CsvImportBatchSize",
+    "GpkgImport",
+    "JsonImportArray",
+    "JsonImportObject",
+    "LICENSE-sogis-gretl.txt",
+    "ShpImportBatchSize"
+  ],
+  "dependencies": []
+}

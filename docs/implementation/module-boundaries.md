@@ -1,6 +1,6 @@
 # Module und produktive Grenzen
 
-Stand: Umbauphase 2, Spezifikation 4.1. Die historischen M0–M7-Berichte
+Stand: Umbauphase 3, Spezifikation 4.1. Die historischen M0–M7-Berichte
 beschreiben ihre damaligen Commits. Für den aktuellen Zuschnitt gilt diese Seite.
 
 | Artefakt (`ch.so.agi.gretl`, Version `0.1.0-SNAPSHOT`) | Verantwortung | Erlaubte interne Produktionsabhängigkeiten |
@@ -41,3 +41,8 @@ Siehe [Validator-Erweiterungen](validator-functions.md).
 
 [Java-/Maven-Migration](../migration/phase-2-java-maven.md) und
 [Jobtest-Verträge](job-artifact-tests.md) beschreiben Verbraucher und Nachweise.
+
+Der [Paketierungsvertrag](job-packaging.md) macht die vier Taskmodule auch als
+Auslieferungsauswahl nutzbar. Die vollständige Standarddistribution bleibt
+erhalten. Die Compilerisolation ist auf den Authoring-Schritt begrenzt; sie
+führt keinen allgemeinen Plugincontainer in die Runtime ein.

@@ -1,0 +1,1512 @@
+{
+  "unchangedPhase2Files": 220,
+  "files": [
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/.DS_Store",
+      "sha256": "26acec2caa63d5e73299452c569556ee3ceca51d15a4eef3b69c6a7a99e3bbac",
+      "bytes": 6148
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/archive/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/archive/job-package.json",
+      "sha256": "c319ec1d479f42d2bb8eee0d436db0071524229f86b7ff3eb6fee593090d692d",
+      "bytes": 294
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/archive/job.groovy",
+      "sha256": "4070d7ed766d5104d001668f3aaa9ddcb15d019dfbc14be356e4d2dfa638feeb",
+      "bytes": 358
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/archive/planregister.xml",
+      "sha256": "828876fdd9ce142bbe350124e21ab567f1ad54c1a73816139dcb4c7b76b872b9",
+      "bytes": 2775
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/cancellation/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/cancellation/job-package.json",
+      "sha256": "9b50985c6de33d7130985fc9af60beac1721202f3bfd73e6f55e9f8cd434b583",
+      "bytes": 263
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/cancellation/job.groovy",
+      "sha256": "75f9bf9ef596fe6858aa89c99e0a6450ba3610b8591112bc5f45a482b179d375",
+      "bytes": 1171
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/federation.sql",
+      "sha256": "946f17697496628041e8dc3ed75bd80a7055a1b150a3225fc789e3e9d6a68ee8",
+      "bytes": 91
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/job-package.json",
+      "sha256": "6d2ffa2774c2c78c02cec65ff65279ef7ef32c55933cd5e21ec3707ef13fbe75",
+      "bytes": 404
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/job.groovy",
+      "sha256": "1ba4af84f30ed3ddbde20b9cac7ba22c831b1a35d9ebfabf5daa417cdf53981d",
+      "bytes": 2769
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/noop.sql",
+      "sha256": "4a45092ccf992ea92250053a80b931b787924ba61648f420555511b84f10ab6c",
+      "bytes": 10
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/parameter-select.sql",
+      "sha256": "70fc9e0541a9dfde71f649440439c3b8d173faf959a5bf5d740cc9efa15d7909",
+      "bytes": 43
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/seed.sql",
+      "sha256": "3d579077617e117574222aa24c12080dfc3167b3bd62af7b4b7c928e11150d06",
+      "bytes": 205
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/select.sql",
+      "sha256": "6ebed428950251498c2a356e5ddadaa5afda006e5a375d47fb51a42c5e6590db",
+      "bytes": 41
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/slow.sql",
+      "sha256": "cf2b75878246327424cdf510472bb2a5b825d291f297df309e2178d212f4b98f",
+      "bytes": 72
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/sql/typed-back.sql",
+      "sha256": "c6032788afd168280858b16a2f01683db2c964bd4749c10cc0f824b5558133df",
+      "bytes": 41
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/sql/typed-select.sql",
+      "sha256": "551b224685081fb0a57bc0844331986ca89bd202a63872f4d6cd8c929435174b",
+      "bytes": 41
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/duckdb/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/duckdb/create_insert.sql",
+      "sha256": "efd71873d0bb51e44fb1ab8aabbc4bdf4e506997ef9695a5d63b957a8b9be50f",
+      "bytes": 69
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/duckdb/data/ch.so.afu.abbaustellen.gpkg",
+      "sha256": "58b96b8bcc6debad5c128185b5fccc219ce57876d1b7b9aa73e8b7b8e9ba3744",
+      "bytes": 262144
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/duckdb/data/ch.so.afu.bewilligte_erdwaermeanlagen.parquet",
+      "sha256": "a919c5aa35a8158d910eec558574fb2e415b3da2bc33b404b4a4eb3b6b8410d3",
+      "bytes": 3602
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/duckdb/import_parquet.sql",
+      "sha256": "976bd8ec75029b0b180868a76b97f35d7acfd30d72cd07a9322ff8f06fd012fa",
+      "bytes": 328
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/duckdb/job-package.json",
+      "sha256": "fa43e73ca259cdce68cdf7ad08763aa108923392e8a8e88213f58f3b9a9e4315",
+      "bytes": 338
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/duckdb/job.groovy",
+      "sha256": "7c68b59a139b254efa2abbcb18d0d49846528e56e6e221b7ca50480a2fa0ea4d",
+      "bytes": 528
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2ch/.gitignore",
+      "sha256": "b5726d3ec9335a09c124469eca039523847a6b0f08a083efaefd002b83326600",
+      "bytes": 8
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2ch/254900.itf",
+      "sha256": "6d64380caef2a2e9ba19c71b1ba08d3fd47e06b0c50486980a3306f8a2a6daf8",
+      "bytes": 592155
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2chFail/fubar.itf",
+      "sha256": "4b4bbee842bd44a919dfa391417ddec8e0fa1c8632f6b3541fb1a915ce44611a",
+      "bytes": 21
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2chFileSet/.gitignore",
+      "sha256": "9aff6ba4b042b9d09991a9fbf8c80ddbd2a9c433638339cd831bed955e39f106",
+      "bytes": 7
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2chFileSet/252400.itf",
+      "sha256": "629a8e4fc11c4e988de0632cec505624671552ee4f9d3ab4c748e78be658c3d4",
+      "bytes": 627095
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2chFileSet/254900.itf",
+      "sha256": "6d64380caef2a2e9ba19c71b1ba08d3fd47e06b0c50486980a3306f8a2a6daf8",
+      "bytes": 592155
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2geobau/.gitignore",
+      "sha256": "08bfa335580d5444abd581ae1f247614c1a4334b8aabec08245f3b7498a6bfa4",
+      "bytes": 10
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2geobau/DM01AVCH24LV95D.ili",
+      "sha256": "5fbe8c1ba3bbd95b3cc425f91a3fea488dc2adc5bf0ccf13d0b5bc7492fbd21b",
+      "bytes": 70453
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2geobau/empty.itf",
+      "sha256": "86f38a42e60aa8b1d61b9a2b9fbe24de68b18185416076311122965d49a1d9f3",
+      "bytes": 560
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2geobauFileSet/.gitignore",
+      "sha256": "abb91f840ab4d6aabd6558effe8b941d7ce9e0347b0232f5212121aaedbffcc7",
+      "bytes": 22
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2geobauFileSet/DM01AVCH24LV95D.ili",
+      "sha256": "5fbe8c1ba3bbd95b3cc425f91a3fea488dc2adc5bf0ccf13d0b5bc7492fbd21b",
+      "bytes": 70453
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2geobauFileSet/empty1.itf",
+      "sha256": "86f38a42e60aa8b1d61b9a2b9fbe24de68b18185416076311122965d49a1d9f3",
+      "bytes": 560
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Av2geobauFileSet/empty2.itf",
+      "sha256": "86f38a42e60aa8b1d61b9a2b9fbe24de68b18185416076311122965d49a1d9f3",
+      "bytes": 560
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Csv2Excel/.gitignore",
+      "sha256": "563ac5ba7d33989ca2f6cef539faacbe18c6f7afb97d76596ce9c2ea5fd10d08",
+      "bytes": 40
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Csv2Excel/20230124_sap_Gebaeude.csv",
+      "sha256": "c76042dc9df463ec8214140172ba8425c71c4748444844148d3fe5d039491e5e",
+      "bytes": 14679
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Csv2Excel/SO_HBA_Gebaeude_20230111.ili",
+      "sha256": "59ccbbe54350f62e3419911749dca21aee82e03a53139d2513417a3975580f96",
+      "bytes": 1415
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Csv2ExcelEmptyFile/.gitignore",
+      "sha256": "563ac5ba7d33989ca2f6cef539faacbe18c6f7afb97d76596ce9c2ea5fd10d08",
+      "bytes": 40
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Csv2ExcelEmptyFile/superflous_publication_formats.csv",
+      "sha256": "936a42016f04b309836c61b6e9cfccc701dc08764abd9e6c4986e35a2f1f15b9",
+      "bytes": 17
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Csv2ExcelEmptyFile/superflous_publication_formats.xlsx",
+      "sha256": "5151cae0356799714bb76844556728798e5b12d44e12f043979ac24de1f49614",
+      "bytes": 3320
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Gpkg2Shp/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg",
+      "sha256": "c6608b76851b492825930b0d23c152cfd41e621b4f5ef746437a48e8561f64f5",
+      "bytes": 1991680
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Gpkg2Shp/out/.gitignore",
+      "sha256": "7f22dcbad055519e4f8c472ea24957f791a88b1de04e997e9b1abb29793b00e9",
+      "bytes": 29
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/Gpkg2Shp/out/dummy.txt",
+      "sha256": "8a9dc04e9d039b6fa1387e0e9716b8db08416502311d27bdb312d9d0a6ca9f7b",
+      "bytes": 29
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/admin.gpkg",
+      "sha256": "7d9d2b608af8ed6e370ff40c39697ac66666c55b388128313dedd097f96b0e01",
+      "bytes": 2012160
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/aggloprogramme.gpkg",
+      "sha256": "5e7a2c37fead0095b0f572e76aba2ef1ca39fa821d1ded00970450ea9065ef8b",
+      "bytes": 1562624
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/job-package.json",
+      "sha256": "7ff7bd0f4641a33809066141ae0bdfed1b548bf9be2d4df12c89af808ea144f5",
+      "bytes": 471
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/job.groovy",
+      "sha256": "a6977e8402c212c867367e350464d317d0af0ecf21dd34eb03d64c5ccdbe3059",
+      "bytes": 1419
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/functions/FunctionProbe.ili",
+      "sha256": "20d4195ccb3e368c09d8013f17a63cbb2ffd52bb3f0b147a2e4b8f4fc59d031c",
+      "bytes": 309
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/functions/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/functions/SO_FunctionsExt.ili",
+      "sha256": "0342d1f12958713d902142057e60a7b14ab3860550652d1d8337e9750cb298b9",
+      "bytes": 3168
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/functions/job-package.json",
+      "sha256": "4bf9d23dca343defe5312ffd554340d6ee33617adc0385d9f54e1aa313ba0068",
+      "bytes": 349
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/functions/job.groovy",
+      "sha256": "daa22074de950c6796e547b440d3a78c8494ddc36074dab7c120d89f25a6bea9",
+      "bytes": 1230
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/gpkg-import/Beispiel2a.xtf",
+      "sha256": "791944ee00078b543507031a7aadf7e2c7d9b7f65f204e9d7be8c84e6147591d",
+      "bytes": 1039
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/gpkg-import/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/gpkg-import/job-package.json",
+      "sha256": "b13d2660c3d027f78852e97cbd00f2ee6cfb0b3a19a0b022cd5d449373c709c6",
+      "bytes": 316
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/gpkg-import/job.groovy",
+      "sha256": "d3b159586a438813c0b59e2c5a4bffa6fa0769fd779c440a61252cc75955ec26",
+      "bytes": 398
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/gpkg-import/models/Beispiel2.ili",
+      "sha256": "9e3633a51168d306bcc00300dae8a12fd93f84c37c7de6170b7c71ae04ccaf3a",
+      "bytes": 1707
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/Ili2duckdbImport/KS3-20060703.ili",
+      "sha256": "e5f5df3b69edbe2262671d4a814a1f5b10ca68c8dc6ac7833dc910c181f1d1ee",
+      "bytes": 22686
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/Ili2duckdbImport/VOLLZUG_SO0200002401_1531_20180105113131.xml",
+      "sha256": "bc5ea61cbee969570a0610b49e59afcb05a6d25ef5403a031cabdb5abcf79af7",
+      "bytes": 1017
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/Ili2duckdbImportSchema/KS3-20060703.ili",
+      "sha256": "e5f5df3b69edbe2262671d4a814a1f5b10ca68c8dc6ac7833dc910c181f1d1ee",
+      "bytes": 22686
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/Ili2gpkgImport/SO_AGI_AV_GB_Administrative_Einteilungen_20180613.ili",
+      "sha256": "c0ae14ff634d063c37f05e6984a26d502464cb7d0b80dc33b82dae59907a5d0f",
+      "bytes": 4036
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/Ili2gpkgImport/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.xtf",
+      "sha256": "788a745ef64bb0905d611eab6bb1b513f3deb5b66a4b6abeb387748e09cb95a6",
+      "bytes": 104744
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/Ili2gpkgImportFileSet/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/Ili2gpkgImportFileSet/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/Ili2gpkgImportFileSet/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidator/Beispiel2.ili",
+      "sha256": "b9a5b93cfec27cfbe1de986a77a077de5bbc011d7869cb03f777f8b6acd7cbbf",
+      "bytes": 1809
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidator/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorFail/Beispiel2.ili",
+      "sha256": "cabe229c7e8b37c9a59a283f432a4e8d9c69818ecabd8e8665aeb424ff32f305",
+      "bytes": 1737
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorFail/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorFileSet/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorFileSet/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorFileSet/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorNgk/GeoW_FunctionsExt_23.ili",
+      "sha256": "842f7e29d6ed26c42c8cf836a83fe4406fc170d9d5eb491d8f846664bfcda8f9",
+      "bytes": 10090
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorNgk/NGK_SO_FunctionsExt_23.ili",
+      "sha256": "9160e23b7d1975d682b524bcc8630a8ce29328632a1eb8e90af1b08f5f3c837e",
+      "bytes": 897
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorNgk/NGK_SO_Testbeddata.xtf",
+      "sha256": "a65dba380ebb6d779386d7a7e690c398359ffeecf14b8743da3dcedb562d6594",
+      "bytes": 151025
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorNgk/SO_AFU_Naturgefahren_20240515-gretl-meta.ini",
+      "sha256": "a3460701508e792afbb65a3d939756fa38844ebe3acb249817dd4664c5ce647d",
+      "bytes": 180
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorNgk/SO_AFU_Naturgefahren_20240515-gretl.ini",
+      "sha256": "9cd3969b9014c5a5b7eb6dda5e8a90e6c0dcf22edfeda487ea602504cf048b6f",
+      "bytes": 74
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorNgk/SO_AFU_Naturgefahren_20240515.ili",
+      "sha256": "49a6c42e1d10d54ed43c5c07b7ac8bbb7a8b316f225d18e2f1790a92eb5eb30d",
+      "bytes": 62250
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/IliValidatorNgk/SO_AFU_Naturgefahren_Validierung_20240515.ili",
+      "sha256": "4b9c82d8bea04f748f3dc94a9a8ee7e79d7b378a0568e13c398e2c2e656bf4bf",
+      "bytes": 1476
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/job-package.json",
+      "sha256": "584b56e6cf3e222dede1aca2eddd66e97ef1c024c40dec7a0315ac395b2afed5",
+      "bytes": 521
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/job.groovy",
+      "sha256": "c57dcd12ef4d8dd329f0e9acda024c1bd857d015366ce295e8ef3bf0674e4684",
+      "bytes": 2261
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/CHBase_Part1_GEOMETRY_V1.ili",
+      "sha256": "f6979b3e349ddb30601a01a6d0e03c5285add8cc63c6f3d99b72101e16a82fbd",
+      "bytes": 6531
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/CHBase_Part2_LOCALISATION_V1.ili",
+      "sha256": "dd8e36f02d3f6b12b0f5fd3a7e4b2276cea7bcfecacdd6a489b86ee400f880c7",
+      "bytes": 6473
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/CHBase_Part3_CATALOGUEOBJECTS_V1.ili",
+      "sha256": "ea993be9b0f92ab971edf3df9237126f5bc051619e90f342b971e50597c23654",
+      "bytes": 2919
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/CHBase_Part4_ADMINISTRATIVEUNITS_V1.ili",
+      "sha256": "bc097a21f8aef04adecf8603c0547a44003bc4568a18a9d88a464c90f53c8b5f",
+      "bytes": 7900
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/CoordSys-20151124.ili",
+      "sha256": "8d097d71f82745e4ab07d2ccd1b70ed0c7f3e54e97e7f25855eb4c604fd51fd4",
+      "bytes": 6601
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/INTERLIS_ext.ili",
+      "sha256": "52c8c76c076ed0b9a169816b22c5c56385a2cbfd1bbee67c28b8a856e5505f65",
+      "bytes": 426
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/MinimalRuntimeSystem01.ili",
+      "sha256": "27f6fd79ed6fcc650d2b7dea98e68875d3261518ff82c7a78f97a986fe5357eb",
+      "bytes": 717
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/Text.ili",
+      "sha256": "d26284bcdf67bcaf3622238a48b4a7261c1be58b64c773fbee3d03d2c33336ff",
+      "bytes": 1590
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/Time-20200219.ili",
+      "sha256": "cfb931287c3b5f542eafc942f0fede0058d169011374162fe98fd03861546ea7",
+      "bytes": 2881
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/models/Units-20120220.ili",
+      "sha256": "45a233d3f2a681f2573965fb9ee6a98d279bdadbca94107874a22aa0c733a92d",
+      "bytes": 3226
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/CHBase_Part1_GEOMETRY_V1.ili",
+      "sha256": "f6979b3e349ddb30601a01a6d0e03c5285add8cc63c6f3d99b72101e16a82fbd",
+      "bytes": 6531
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/CHBase_Part2_LOCALISATION_V1.ili",
+      "sha256": "dd8e36f02d3f6b12b0f5fd3a7e4b2276cea7bcfecacdd6a489b86ee400f880c7",
+      "bytes": 6473
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/CHBase_Part3_CATALOGUEOBJECTS_V1.ili",
+      "sha256": "ea993be9b0f92ab971edf3df9237126f5bc051619e90f342b971e50597c23654",
+      "bytes": 2919
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/CHBase_Part4_ADMINISTRATIVEUNITS_V1.ili",
+      "sha256": "bc097a21f8aef04adecf8603c0547a44003bc4568a18a9d88a464c90f53c8b5f",
+      "bytes": 7900
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/CoordSys-20151124.ili",
+      "sha256": "8d097d71f82745e4ab07d2ccd1b70ed0c7f3e54e97e7f25855eb4c604fd51fd4",
+      "bytes": 6601
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/GeoW_FunctionsExt_23.ili",
+      "sha256": "842f7e29d6ed26c42c8cf836a83fe4406fc170d9d5eb491d8f846664bfcda8f9",
+      "bytes": 10090
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/INTERLIS_ext.ili",
+      "sha256": "52c8c76c076ed0b9a169816b22c5c56385a2cbfd1bbee67c28b8a856e5505f65",
+      "bytes": 426
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/MinimalRuntimeSystem01.ili",
+      "sha256": "27f6fd79ed6fcc650d2b7dea98e68875d3261518ff82c7a78f97a986fe5357eb",
+      "bytes": 717
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/NGK_SO_FunctionsExt_23.ili",
+      "sha256": "9160e23b7d1975d682b524bcc8630a8ce29328632a1eb8e90af1b08f5f3c837e",
+      "bytes": 897
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/SO_AFU_Naturgefahren_20240515.ili",
+      "sha256": "49a6c42e1d10d54ed43c5c07b7ac8bbb7a8b316f225d18e2f1790a92eb5eb30d",
+      "bytes": 62250
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/SO_AFU_Naturgefahren_Validierung_20240515.ili",
+      "sha256": "4b9c82d8bea04f748f3dc94a9a8ee7e79d7b378a0568e13c398e2c2e656bf4bf",
+      "bytes": 1476
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/Text.ili",
+      "sha256": "d26284bcdf67bcaf3622238a48b4a7261c1be58b64c773fbee3d03d2c33336ff",
+      "bytes": 1590
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/Time-20200219.ili",
+      "sha256": "cfb931287c3b5f542eafc942f0fede0058d169011374162fe98fd03861546ea7",
+      "bytes": 2881
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/Units-20120220.ili",
+      "sha256": "45a233d3f2a681f2573965fb9ee6a98d279bdadbca94107874a22aa0c733a92d",
+      "bytes": 3226
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/ngk-local/validation.ini",
+      "sha256": "3b300c3e2ae2c20ae588a021631825a71fb231774a3b552aef86d5b711fef4ed",
+      "bytes": 103
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/A_Dataset.txt",
+      "sha256": "1b6c097b4414bd57205b58fa34af7e75ab9ed0b22603e5ae7f80c52116a80c6f",
+      "bytes": 9
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/B_Dataset.txt",
+      "sha256": "6380273e77d4d766fa48168db0282999d66291b64f63d7a7832794da1316e328",
+      "bytes": 9
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgDeleteDataset/254900.itf",
+      "sha256": "cefe39ec095ed9b9ec3100a3c82eb28aef25bfc9f30da3d34f8c112edfc5117f",
+      "bytes": 589718
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgDeleteDatasets/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgDeleteDatasets/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgDeleteDatasets/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgExportDatasets/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgExportDatasets/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgExportDatasets/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportFileSet/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportFileSet/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportFileSet/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportSchema/KS3-20060703.ili",
+      "sha256": "e5f5df3b69edbe2262671d4a814a1f5b10ca68c8dc6ac7833dc910c181f1d1ee",
+      "bytes": 22686
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportSchema/VOLLZUG_SO0200002401_1531_20180105113131.xml",
+      "sha256": "bc5ea61cbee969570a0610b49e59afcb05a6d25ef5403a031cabdb5abcf79af7",
+      "bytes": 1017
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportSchema_MetaConfigFile/SimpleTable.ili",
+      "sha256": "1cf561898e256b4bb503b9fbcb2465c29b7f77285f74799106e37138bf9ec333",
+      "bytes": 435
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportSchema_MetaConfigFile/simple_table_ini_20240502.ini",
+      "sha256": "995563b1b910fc6525ce04c2b93c11bf2ab0ee2de71aec93adf8884c9ef719f2",
+      "bytes": 575
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportSchema_MetaConfigIliData/SimpleTable.ili",
+      "sha256": "1cf561898e256b4bb503b9fbcb2465c29b7f77285f74799106e37138bf9ec333",
+      "bytes": 435
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportSchema_MetaConfigIliData/files/simple_table_ini_20240502.ini",
+      "sha256": "995563b1b910fc6525ce04c2b93c11bf2ab0ee2de71aec93adf8884c9ef719f2",
+      "bytes": 575
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportSchema_MetaConfigIliData/ilidata.xml",
+      "sha256": "ef5b280bb5d187240779c921160244bd9b75f2dd9f096a97d635aab8c13ca5a6",
+      "bytes": 2592
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgImportSchema_Options/SO_AFU_ABBAUSTELLEN_20210630.ili",
+      "sha256": "3caf2f3222ce19f6d36c777e414119ee47a136299517e54eb288f8afc8c91ba4",
+      "bytes": 3760
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgReplaceFile/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgReplaceFile/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgReplaceIlidataFile/SO_AGI_MOpublic_20190424.ili",
+      "sha256": "c531fd856d46a89d822375202449272e286dd3d8f57b95b643e04ad464bcab08",
+      "bytes": 19683
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgReplaceIlidataFile/files/2549.ch.so.agi.av.mopublic.xtf",
+      "sha256": "4699e4cccb9f442d602ba3483014cbab7d45122e5572c17052be4a6b052863fd",
+      "bytes": 1060
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgReplaceIlidataFile/ilidata.xml",
+      "sha256": "ee37b65567d1ca1f6a9cdf97b350a48e52d2ed2ff92c90185f756d01f4a7f769",
+      "bytes": 3571
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidate/SO_AGI_AV_GB_Administrative_Einteilungen_20180613.ili",
+      "sha256": "c0ae14ff634d063c37f05e6984a26d502464cb7d0b80dc33b82dae59907a5d0f",
+      "bytes": 4036
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidate/ch.so.agi.av_gb_admin_einteilung_edit_ok.xtf",
+      "sha256": "788a745ef64bb0905d611eab6bb1b513f3deb5b66a4b6abeb387748e09cb95a6",
+      "bytes": 104744
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateDatasetFail/SO_AFU_Schutzbauten_20231212.ili",
+      "sha256": "e14c9ea17f3547c6bf6aaa31c00d17eb03bb83a8341b818d8d5c8ea062519661",
+      "bytes": 22632
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateDatasetFail/ch.so.agi.testeinzelobjekt_valid1.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateDatasetFail/ch.so.agi.testeinzelobjekt_valid2.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateFail/SO_AGI_AV_GB_Administrative_Einteilungen_20180613.ili",
+      "sha256": "c0ae14ff634d063c37f05e6984a26d502464cb7d0b80dc33b82dae59907a5d0f",
+      "bytes": 4036
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateFail/ch.so.agi.av_gb_admin_einteilung_edit_fail.xtf",
+      "sha256": "e0b2b1b670e2a15b0a5f158418b7d1d191916de05c19820db6ef63f336e9ba4c",
+      "bytes": 104741
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateMultipleDatasets/SO_AFU_Schutzbauten_20231212.ili",
+      "sha256": "e14c9ea17f3547c6bf6aaa31c00d17eb03bb83a8341b818d8d5c8ea062519661",
+      "bytes": 22632
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateMultipleDatasets/ch.so.agi.testeinzelobjekt_valid1.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateMultipleDatasets/ch.so.agi.testeinzelobjekt_valid2.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateSingleDataset/SO_AFU_Schutzbauten_20231212.ili",
+      "sha256": "e14c9ea17f3547c6bf6aaa31c00d17eb03bb83a8341b818d8d5c8ea062519661",
+      "bytes": 22632
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateSingleDataset/ch.so.agi.testeinzelobjekt_valid1.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/Ili2pgValidateSingleDataset/ch.so.agi.testeinzelobjekt_valid2.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/job-package.json",
+      "sha256": "d9cf660ba7f9dafd8229a5b1e511a544660ff80bcc017c8d03c75fca6c1f5e4a",
+      "bytes": 797
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/job.groovy",
+      "sha256": "9a6bdc7b6937210b3a859c04ef94a4edaeeaac7cf316d4e69f2a5efca1a88aee",
+      "bytes": 4726
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/CHBase_Part1_GEOMETRY_V1.ili",
+      "sha256": "f6979b3e349ddb30601a01a6d0e03c5285add8cc63c6f3d99b72101e16a82fbd",
+      "bytes": 6531
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/CHBase_Part2_LOCALISATION_V1.ili",
+      "sha256": "dd8e36f02d3f6b12b0f5fd3a7e4b2276cea7bcfecacdd6a489b86ee400f880c7",
+      "bytes": 6473
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/CHBase_Part3_CATALOGUEOBJECTS_V1.ili",
+      "sha256": "ea993be9b0f92ab971edf3df9237126f5bc051619e90f342b971e50597c23654",
+      "bytes": 2919
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/CHBase_Part4_ADMINISTRATIVEUNITS_V1.ili",
+      "sha256": "bc097a21f8aef04adecf8603c0547a44003bc4568a18a9d88a464c90f53c8b5f",
+      "bytes": 7900
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/CoordSys-20151124.ili",
+      "sha256": "8d097d71f82745e4ab07d2ccd1b70ed0c7f3e54e97e7f25855eb4c604fd51fd4",
+      "bytes": 6601
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/INTERLIS_ext.ili",
+      "sha256": "52c8c76c076ed0b9a169816b22c5c56385a2cbfd1bbee67c28b8a856e5505f65",
+      "bytes": 426
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/MinimalRuntimeSystem01.ili",
+      "sha256": "27f6fd79ed6fcc650d2b7dea98e68875d3261518ff82c7a78f97a986fe5357eb",
+      "bytes": 717
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/Text.ili",
+      "sha256": "d26284bcdf67bcaf3622238a48b4a7261c1be58b64c773fbee3d03d2c33336ff",
+      "bytes": 1590
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/Time-20200219.ili",
+      "sha256": "cfb931287c3b5f542eafc942f0fede0058d169011374162fe98fd03861546ea7",
+      "bytes": 2881
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/models/Units-20120220.ili",
+      "sha256": "45a233d3f2a681f2573965fb9ee6a98d279bdadbca94107874a22aa0c733a92d",
+      "bytes": 3226
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/XslTransformerFile/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml",
+      "sha256": "0779d2adab6127eeb26eef915f09b9208189c4157c39140bd0501789a44a844c",
+      "bytes": 5579
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/XslTransformerFile/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl",
+      "sha256": "0d2febd25a9662c40a4bbfe3b8b2a155bb02eb2df1a0369c14fcdd12daa66895",
+      "bytes": 11006
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/XslTransformerFileSet/.gitignore",
+      "sha256": "c263e9add751acf981dec7a9c3a62cb10359b1fcc38560b57e9a1aaeb03fe078",
+      "bytes": 5
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/XslTransformerFileSet/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml",
+      "sha256": "0779d2adab6127eeb26eef915f09b9208189c4157c39140bd0501789a44a844c",
+      "bytes": 5579
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/XslTransformerFileSet/MeldungAnGeometer_mehrere_gebaeude_mehrere_grundstuecke.xml",
+      "sha256": "bf4bd5ca0aed7c01c76532dcf35e579a3128a5bb495ec9c3c81a545dbc71c60f",
+      "bytes": 9704
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/XslTransformerResource/.gitignore",
+      "sha256": "c263e9add751acf981dec7a9c3a62cb10359b1fcc38560b57e9a1aaeb03fe078",
+      "bytes": 5
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/XslTransformerResource/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml",
+      "sha256": "0779d2adab6127eeb26eef915f09b9208189c4157c39140bd0501789a44a844c",
+      "bytes": 5579
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/download.md",
+      "sha256": "dca128a0af4bce768029fa92be1366511a237c1458d37b9c038f2a2fd09c67f4",
+      "bytes": 1054
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/foo.xml.gz",
+      "sha256": "7bc6f552bb566b6c2003dd330fc1f2d0474ab5ca6cd85553186e65d29a6450fc",
+      "bytes": 717
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/job-package.json",
+      "sha256": "6be8a1943ef5bfbebbcba4278b01db76e0c39f58ffb6d42713aaef184940dea3",
+      "bytes": 445
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/job.groovy",
+      "sha256": "b476af008fdb641adf5cfe520fbc5cb6f3fb928c4c4d776bdb6de73727645350",
+      "bytes": 2180
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/payload.txt",
+      "sha256": "7d876edbee47051cfe7aa5fa596f5ffbdb441c872000efe83c34aac66ec8fa6f",
+      "bytes": 20
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/payload.zip",
+      "sha256": "199603cd3a77ea1b1c437cd1c837e2cf02ca74106d1b6074904eb7c7e9037150",
+      "bytes": 154
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/test.xtf.zip",
+      "sha256": "6a317798c560e558a766c28a21852d2ee78d5e45f753962fff47e6f7685c626c",
+      "bytes": 200
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/packages/action/job.groovy",
+      "sha256": "dbb46b751192b09ca62f554156097cccce67acbb078f58e1c35f626757f11679",
+      "bytes": 420
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/packages/action/message.txt",
+      "sha256": "337531d6b2c6e3e6a89bac03215ebb68454f2f6ee603502ac246df08b3135971",
+      "bytes": 19
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/packages/interlis/job.groovy",
+      "sha256": "0f45e9b0724da50fa8a375283b8ace98787c023873ff746a3fa25cacc0504781",
+      "bytes": 1174
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/packages/slim-ili/job.groovy",
+      "sha256": "14e16cb218761bb00d88b1122d6fac84c58233e8af9432612d6f7fc2587a90d9",
+      "bytes": 394
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/CsvImport/data1.csv",
+      "sha256": "96bf98dd14c6f1d7e2b4d807d9ffc4710f6bfb77b4fcedaab0a4ecf75cc730dc",
+      "bytes": 162
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/CsvImportBatchSize/data1.csv",
+      "sha256": "96bf98dd14c6f1d7e2b4d807d9ffc4710f6bfb77b4fcedaab0a4ecf75cc730dc",
+      "bytes": 162
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/GpkgImport/point.gpkg",
+      "sha256": "238ca41573a68b975defb9530caa2a092e5f80a20345cdc8d26e63496b3a9019",
+      "bytes": 118784
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/JsonImportArray/data.json",
+      "sha256": "af2d5431e8b11eb1f44087a62685e408e38cfc838c073ff76cb6e18ba4fa6c14",
+      "bytes": 124
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/JsonImportObject/data.json",
+      "sha256": "c1bb771c0b46078838cad85c913ba616f017aee6cc710b99da5a8bfc70adc45e",
+      "bytes": 2201
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/ShpImportBatchSize/data.dbf",
+      "sha256": "29860239c32530dd5d485cf611190e4f478c5eb6317dbc80973321de44f072e5",
+      "bytes": 614
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/ShpImportBatchSize/data.prj",
+      "sha256": "99b86fd1844abbef755d712c1ee13e3d49c3bfa17f9100fbfbdfb781b1c0299c",
+      "bytes": 462
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/ShpImportBatchSize/data.shp",
+      "sha256": "957178aaf70c4cad8b5469cbf97cd8ee1eb50542a56b48a27e0a9b6548bc7c53",
+      "bytes": 140
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/ShpImportBatchSize/data.shx",
+      "sha256": "751f48d9c75df09c23f264225b4d289230085659675abb37606cd575c734f3aa",
+      "bytes": 116
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/job-package.json",
+      "sha256": "d0f09b73eb2a9c6479550d23e87456b50038b824557ffee1bc6679a25bfa893f",
+      "bytes": 419
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/job.groovy",
+      "sha256": "9060ed6af70ae0aa5edb102cca9ab37248751fa620b3933f9962a6e33b0d654b",
+      "bytes": 1743
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/dir/two.txt",
+      "sha256": "3fc4ccfe745870e2c0d99f71f30ff0656c8dedd41cc1d7d3d376b0dbe685e2f3",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/job-package.json",
+      "sha256": "2f8c5500f582852adcd641c581566745777b8dd60b80efbb1762701b9c6209b7",
+      "bytes": 325
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/job.groovy",
+      "sha256": "b0b91ddd6c7310d806f6f20bf3f7aa953eaf2411038c9d0b4941056d9f5ced23",
+      "bytes": 3917
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/one.txt",
+      "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3DownloadDirectory/upload/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3DownloadDirectory/upload/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3DownloadFile/upload/download.txt",
+      "sha256": "cc7b318a05d752cb1183d89545bc39017fdd811565520073fd17e323b738c283",
+      "bytes": 5
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3UploadDirectory/docs/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3UploadDirectory/docs/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3UploadFile/docs/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3UploadFile/docs/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3UploadFileTree/docs/bar.csv",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3UploadFileTree/docs/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3UploadFileTree/docs/foo.csv",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/original/S3UploadFileTree/docs/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/tree/ignored.txt",
+      "sha256": "3514cf816e5407a39cb7a1c1e1243f176dda121e06398a8934edb1dc426b0b34",
+      "bytes": 7
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/tree/three.csv",
+      "sha256": "8b5b9db0c13db24256c829aa364aa90c6d2eba318b9232a4ab9313b954d3555f",
+      "bytes": 5
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/CsvValidator/CsvModel.ili",
+      "sha256": "7e816ad25bd8a7b6f9dd1a9bed9f01cf5c10cd9e984ec7729f318768626b6caa",
+      "bytes": 277
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/CsvValidator/data1.csv",
+      "sha256": "2690e351d85f4dc5c723a6e6828f8b0dd1feced1ad4579e83987409be03a9d84",
+      "bytes": 26
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/CsvValidatorFail/CsvModel.ili",
+      "sha256": "7e816ad25bd8a7b6f9dd1a9bed9f01cf5c10cd9e984ec7729f318768626b6caa",
+      "bytes": 277
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/CsvValidatorFail/dataFail.csv",
+      "sha256": "ba6cf204d74dca72da067d0781c08f9b3246d3e6369b9f76deadd5bf8a468542",
+      "bytes": 17
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/GpkgValidator/GpkgModelAttrs.ili",
+      "sha256": "e170cea08cc3eaa13af8d1b2b2d165bdba03f144790ce0b48763593fa4cd3407",
+      "bytes": 914
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/GpkgValidator/attributes.gpkg",
+      "sha256": "126bb1034d7a1e5c6a0f1274913d0e65fe4243a7ac69c3a034551023989925ea",
+      "bytes": 118784
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/GpkgValidatorFail/GpkgModelAttrs.ili",
+      "sha256": "888f77b73f758af00d4537d0e6fbab995ab361d37858389cc83590a2167b2bed",
+      "bytes": 915
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/GpkgValidatorFail/attributes.gpkg",
+      "sha256": "126bb1034d7a1e5c6a0f1274913d0e65fe4243a7ac69c3a034551023989925ea",
+      "bytes": 118784
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/JsonValidatorFail/Test2.ili",
+      "sha256": "317c8c15f4156486110672264fb8f8391bf7b254486b40ec45315599f3d39f40",
+      "bytes": 661
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/JsonValidatorFail/structAttrList.json",
+      "sha256": "ab84eb7dac72fe506706faba38948d2a2f2f8cf3e011c260368231a5a6ad8b4d",
+      "bytes": 1041
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/JsonValidatorOk/Test2.ili",
+      "sha256": "317c8c15f4156486110672264fb8f8391bf7b254486b40ec45315599f3d39f40",
+      "bytes": 661
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/JsonValidatorOk/structAttrList.json",
+      "sha256": "7051fb988a05fae70e08e5fc83b2cc308b67ea7223154a522b1353d5024f8a7b",
+      "bytes": 399
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/LICENSE-sogis-gretl.txt",
+      "sha256": "02e42b315ef18c89d30b93e68cd2dfebd1743eaa199331422e07407be2c2d349",
+      "bytes": 1071
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidator/ShpModel.ili",
+      "sha256": "cf19ba4e1019dbc3c2cbc40907f08d41b95088630003c3b98c18e02c059b6f77",
+      "bytes": 538
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidator/data.dbf",
+      "sha256": "29860239c32530dd5d485cf611190e4f478c5eb6317dbc80973321de44f072e5",
+      "bytes": 614
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidator/data.prj",
+      "sha256": "99b86fd1844abbef755d712c1ee13e3d49c3bfa17f9100fbfbdfb781b1c0299c",
+      "bytes": 462
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidator/data.shp",
+      "sha256": "957178aaf70c4cad8b5469cbf97cd8ee1eb50542a56b48a27e0a9b6548bc7c53",
+      "bytes": 140
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidator/data.shx",
+      "sha256": "751f48d9c75df09c23f264225b4d289230085659675abb37606cd575c734f3aa",
+      "bytes": 116
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidatorFail/ShpModel.ili",
+      "sha256": "7e25081774ad99b75b7ee89232e8fb4f6bf40974cbd10b026cdfd82a30b5eec4",
+      "bytes": 604
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidatorFail/data.dbf",
+      "sha256": "29860239c32530dd5d485cf611190e4f478c5eb6317dbc80973321de44f072e5",
+      "bytes": 614
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidatorFail/data.prj",
+      "sha256": "99b86fd1844abbef755d712c1ee13e3d49c3bfa17f9100fbfbdfb781b1c0299c",
+      "bytes": 462
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidatorFail/data.shp",
+      "sha256": "957178aaf70c4cad8b5469cbf97cd8ee1eb50542a56b48a27e0a9b6548bc7c53",
+      "bytes": 140
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/ShpValidatorFail/data.shx",
+      "sha256": "751f48d9c75df09c23f264225b4d289230085659675abb37606cd575c734f3aa",
+      "bytes": 116
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/job-package.json",
+      "sha256": "0bafc6029018f62dad7c3b00c8f25dda0166a839e961402b2109f2c59f3abeae",
+      "bytes": 461
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/job.groovy",
+      "sha256": "4c0d53d4ec87a1f90d1a39906fa6bd82fcdb95b75f96201bbeb82cbcd28789dc",
+      "bytes": 2102
+    }
+  ],
+  "selections": [
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/archive/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "archive",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "io"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "LICENSE-sogis-gretl.txt",
+          "planregister.xml"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/cancellation/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "cancellation",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [],
+        "standardFunctions": false,
+        "resources": [
+          "LICENSE-sogis-gretl.txt"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/database/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "database",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "database"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "LICENSE-sogis-gretl.txt",
+          "federation.sql",
+          "noop.sql",
+          "parameter-select.sql",
+          "seed.sql",
+          "select.sql",
+          "slow.sql",
+          "sql"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/duckdb/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "duckdb",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "database"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "LICENSE-sogis-gretl.txt",
+          "create_insert.sql",
+          "data",
+          "import_parquet.sql"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/formats/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "formats",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "interlis"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "Av2ch",
+          "Av2chFail",
+          "Av2chFileSet",
+          "Av2geobau",
+          "Av2geobauFileSet",
+          "Csv2Excel",
+          "Csv2ExcelEmptyFile",
+          "Gpkg2Shp",
+          "LICENSE-sogis-gretl.txt",
+          "admin.gpkg",
+          "aggloprogramme.gpkg"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/functions/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "functions",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "interlis",
+          "ilivalidator"
+        ],
+        "standardFunctions": true,
+        "resources": [
+          "FunctionProbe.ili",
+          "LICENSE-sogis-gretl.txt",
+          "SO_FunctionsExt.ili"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/gpkg-import/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "gpkg-import",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "interlis"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "Beispiel2a.xtf",
+          "LICENSE-sogis-gretl.txt",
+          "models"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "ili",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "interlis",
+          "ilivalidator"
+        ],
+        "standardFunctions": true,
+        "resources": [
+          "Ili2duckdbImport",
+          "Ili2duckdbImportSchema",
+          "Ili2gpkgImport",
+          "Ili2gpkgImportFileSet",
+          "IliValidator",
+          "IliValidatorFail",
+          "IliValidatorFileSet",
+          "IliValidatorNgk",
+          "LICENSE-sogis-gretl.txt",
+          "models",
+          "ngk-local"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/ili2pg/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "ili2pg",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "interlis"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "A_Dataset.txt",
+          "B_Dataset.txt",
+          "Ili2pgDeleteDataset",
+          "Ili2pgDeleteDatasets",
+          "Ili2pgExportDatasets",
+          "Ili2pgImportFileSet",
+          "Ili2pgImportSchema",
+          "Ili2pgImportSchema_MetaConfigFile",
+          "Ili2pgImportSchema_MetaConfigIliData",
+          "Ili2pgImportSchema_Options",
+          "Ili2pgReplaceFile",
+          "Ili2pgReplaceIlidataFile",
+          "Ili2pgValidate",
+          "Ili2pgValidateDatasetFail",
+          "Ili2pgValidateFail",
+          "Ili2pgValidateMultipleDatasets",
+          "Ili2pgValidateSingleDataset",
+          "LICENSE-sogis-gretl.txt",
+          "models"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/io/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "io",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "io"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "LICENSE-sogis-gretl.txt",
+          "XslTransformerFile",
+          "XslTransformerFileSet",
+          "XslTransformerResource",
+          "download.md",
+          "foo.xml.gz",
+          "payload.txt",
+          "payload.zip",
+          "test.xtf.zip"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/postgres-formats/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "postgres-formats",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "interlis"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "CsvImport",
+          "CsvImportBatchSize",
+          "GpkgImport",
+          "JsonImportArray",
+          "JsonImportObject",
+          "LICENSE-sogis-gretl.txt",
+          "ShpImportBatchSize"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/services/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "services",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "io"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "LICENSE-sogis-gretl.txt",
+          "dir",
+          "one.txt",
+          "original",
+          "tree"
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "path": "gretl-integration-tests/src/test/resources/jobs/validators/job-package.json",
+      "descriptor": {
+        "schemaVersion": 2,
+        "name": "validators",
+        "version": "1",
+        "runtimeVersion": "0.1.0-SNAPSHOT",
+        "entryScript": "job.groovy",
+        "taskModules": [
+          "interlis"
+        ],
+        "standardFunctions": false,
+        "resources": [
+          "CsvValidator",
+          "CsvValidatorFail",
+          "GpkgValidator",
+          "GpkgValidatorFail",
+          "JsonValidatorFail",
+          "JsonValidatorOk",
+          "LICENSE-sogis-gretl.txt",
+          "ShpValidator",
+          "ShpValidatorFail"
+        ],
+        "dependencies": []
+      }
+    }
+  ],
+  "originalScenarioMapping": "phase-2-scenario-mapping.json",
+  "note": "Original jobs, SQL, models, data and assertions retained. Added explicit schema-2 descriptors and packaging qualification fixtures."
+}

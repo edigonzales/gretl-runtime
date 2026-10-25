@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 2,
+  "name": "database",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [
+    "database"
+  ],
+  "standardFunctions": false,
+  "resources": [
+    "LICENSE-sogis-gretl.txt",
+    "federation.sql",
+    "noop.sql",
+    "parameter-select.sql",
+    "seed.sql",
+    "select.sql",
+    "slow.sql",
+    "sql"
+  ],
+  "dependencies": []
+}

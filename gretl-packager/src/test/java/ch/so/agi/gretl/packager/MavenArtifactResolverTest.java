@@ -23,9 +23,11 @@ class MavenArtifactResolverTest {
                 for arg in "$@"; do
                   case "$arg" in
                     -Dmdep.outputFile=*) out="${arg#-Dmdep.outputFile=}" ;;
+                    -DoutputFile=*) tree="${arg#-DoutputFile=}" ;;
                   esac
                 done
                 printf "%%s" "%s" > "$out"
+                printf '%%s' '{"children":[{"groupId":"org.example","artifactId":"demo","version":"1.0","classifier":"","type":"jar"}]}' > "$tree"
                 """.formatted(artifact));
         List<Path> paths = new MavenArtifactResolver(work.resolve("repo"), true,
                 maven.toString()).resolve(List.of(

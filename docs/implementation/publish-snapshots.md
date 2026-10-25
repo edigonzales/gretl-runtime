@@ -42,9 +42,11 @@ läuft bei **jedem Push** sowie manuell über `workflow_dispatch`.
 Ablauf:
 
 1. Java 25 wird bereitgestellt.
-2. `./mvnw -B -Pgeotools-probe clean verify` führt die vollständige
-   Standard- und GeoTools-Testmatrix aus.
-3. Erst danach werden die getesteten Artefakte mit
+2. `./mvnw -B clean verify` und
+   `./mvnw -B -Pgeotools-probe,backing-services clean verify` führen die beiden
+   vollständigen Gates aus, einschliesslich echter Dienstcontainer. Die
+   Artefaktidentitäten und alle 44 positiven Operationsnachweise werden geprüft.
+3. Nur auf `main` werden danach die getesteten Artefakte mit
    `-Ppublish-snapshots -DskipTests -DskipITs deploy` veröffentlicht.
 
 Manuell starten:

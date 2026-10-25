@@ -114,7 +114,9 @@ class JobPackageBuilderTest {
         JobCompiler.CompiledJob compiled = new JobCompiler.CompiledJob("job",
                 Map.of("job.class", new byte[] {1}), List.of(), "a".repeat(64));
         Path output = tempDir.resolve("model-copy.jar");
-        new JobPackageBuilder(List.of(canonical, embedded), "0.1.0-SNAPSHOT")
+        new JobPackageBuilder(List.of(canonical, embedded), "0.1.0-SNAPSHOT", Map.of(
+                canonical, new PackageDescriptor.Dependency("ch.interlis", "iox-ili", "1.24.4"),
+                embedded, new PackageDescriptor.Dependency("ch.interlis", "av2geobau", "1.4.2")))
                 .build(descriptor, compiled, output);
         try (JarFile jar = new JarFile(output.toFile())) {
             String value = new String(jar.getInputStream(jar.getEntry(

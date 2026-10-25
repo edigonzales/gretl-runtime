@@ -65,7 +65,11 @@ final class ArtifactJobRunner {
     }
 
     static Prepared prepare(Request request) throws Exception {
-        Mode mode = Mode.valueOf(System.getProperty("gretl.test.executionMode", "JAR"));
+        return prepare(request, Mode.valueOf(System.getProperty("gretl.test.executionMode", "JAR")));
+    }
+
+    /** Explicit JAR selection is used only by tests of the packager artifact itself. */
+    static Prepared prepare(Request request, Mode mode) throws Exception {
         Path source = request.directory().resolve("source");
         if (Files.exists(source)) throw new IOException("Scenario work copy already exists: " + source);
         try (var paths = Files.walk(request.jobDirectory())) {
@@ -137,6 +141,7 @@ final class ArtifactJobRunner {
             hash = HexFormat.of().formatHex(digest.digest());
         }
         Files.writeString(request.directory().resolve("runtime.json"), Json.write(jsonValue(request.config())));
+        PackageArtifactAssertions.verify(jar, descriptor);
         return new Prepared(request, source, jar, hash, report, null);
     }
 

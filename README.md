@@ -47,6 +47,7 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - Java-/Maven-Migration: [`phase-2-java-maven.md`](docs/migration/phase-2-java-maven.md)
 - Fachliche JAR-Jobs und IMAGE-Vorbereitung: [`job-artifact-tests.md`](docs/implementation/job-artifact-tests.md)
 - Phasenplan und versionsbezogene Testzahlen: [`improvement-plan/`](docs/implementation/improvement-plan/)
+- Versionierte Paket-/Modulauswahl: [`job-packaging.md`](docs/implementation/job-packaging.md)
 - Teststrategie: [`docs/implementation/testing.md`](docs/implementation/testing.md)
 - Scriptdistribution: `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip`
 

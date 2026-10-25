@@ -125,12 +125,21 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
+            <id>resolved-package-identities</id><phase>prepare-package</phase><goals><goal>tree</goal></goals>
+            <configuration><scope>runtime</scope><outputType>json</outputType><verbose>false</verbose><outputFile>${project.build.directory}/package-resolved.json</outputFile></configuration>
+          </execution>
+          <execution>
+            <id>resolved-package-edges</id><phase>prepare-package</phase><goals><goal>tree</goal></goals>
+            <configuration><scope>runtime</scope><outputType>json</outputType><verbose>true</verbose><outputFile>${project.build.directory}/package-edges.json</outputFile></configuration>
+          </execution>
+          <execution>
             <id>copy-runtime-dependencies</id>
             <phase>prepare-package</phase>
             <goals><goal>copy-dependencies</goal></goals>
             <configuration>
               <outputDirectory>${project.build.directory}/dist/lib/runtime</outputDirectory>
               <includeScope>runtime</includeScope>
+              <useBaseVersion>false</useBaseVersion>
               <excludeArtifactIds>gretl-database-tasks,gretl-io-tasks,gretl-ilivalidator,gretl-interlis-tasks</excludeArtifactIds>
             </configuration>
           </execution>
@@ -218,6 +227,13 @@
             <configuration>
               <target>
                 <chmod file="${project.build.directory}/dist/bin/gretl" perm="755"/>
+                <java classname="ch.so.agi.gretl.dist.PackageCatalogGenerator" fork="true" failonerror="true">
+                  <classpath><pathelement location="${project.build.outputDirectory}"/><path refid="maven.runtime.classpath"/></classpath>
+                  <arg value="${project.build.directory}/dist"/>
+                  <arg value="${project.build.directory}/package-resolved.json"/>
+                  <arg value="${project.build.directory}/package-edges.json"/>
+                  <arg value="${project.version}"/><arg value="${gretl.sourceRevision}"/>
+                </java>
                 <java classname="ch.so.agi.gretl.dist.ChecksumManifest" fork="true" failonerror="true">
                   <classpath>
                     <pathelement location="${project.build.outputDirectory}"/>

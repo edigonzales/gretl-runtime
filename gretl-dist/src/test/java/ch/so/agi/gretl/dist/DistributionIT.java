@@ -33,6 +33,27 @@ class DistributionIT {
     Path tempDir;
 
     @Test
+    void selectedMinimalExampleRunsFromVerifiedDistribution() throws Exception {
+        Path root = tempDir.resolve("minimal distribution");
+        unzip(Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip"), root);
+        Path base;
+        try (var files = Files.list(root)) { base = files.filter(Files::isDirectory).findFirst().orElseThrow(); }
+        Path job = tempDir.resolve("minimal.jar");
+        ProcessResult packed = run(base, "package", base.resolve("examples/minimal-action/job-package.json").toString(), "--output", job.toString());
+        assertEquals(0, packed.code(), packed.err());
+        Path output = tempDir.resolve("foreign cwd/output.txt");
+        Files.createDirectories(output.getParent());
+        ProcessResult result = runJava(output.getParent(), job, "--param", "output=" + output);
+        assertEquals(0, result.code(), result.err());
+        assertEquals("Minimaler Job: Grüezi\n", Files.readString(output));
+        try (JarFile jar = new JarFile(job.toFile())) {
+            assertTrue(jar.getJarEntry("ch/so/agi/gretl/cli/GretlCli.class") == null);
+            assertTrue(jar.getJarEntry("org/postgresql/Driver.class") == null);
+            assertTrue(jar.getJarEntry("META-INF/services/ch.so.agi.gretl.api.operation.OperationProvider") == null);
+        }
+    }
+
+    @Test
     void distributionDoesNotContainGeoTools() throws Exception {
         Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         assertTrue(Files.isRegularFile(zip), "distribution zip missing: " + zip);
@@ -446,16 +467,26 @@ class DistributionIT {
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
         Path extension = Path.of(Class.forName("example.ExampleProvider")
                 .getProtectionDomain().getCodeSource().getLocation().toURI());
-        Files.copy(extension, base.resolve("lib/extensions/file-size-extension.jar"));
+        Path repository = tempDir.resolve("controlled-package-repository");
+        Path artifact = repository.resolve("ch/so/agi/gretl/examples/file-size-extension/0.1.0-SNAPSHOT");
+        Files.createDirectories(artifact);
+        Files.copy(extension, artifact.resolve("file-size-extension-0.1.0-SNAPSHOT.jar"));
+        try (JarFile jarFile = new JarFile(extension.toFile())) {
+            Files.copy(jarFile.getInputStream(jarFile.getJarEntry("META-INF/maven/ch.so.agi.gretl.examples/file-size-extension/pom.xml")),
+                    artifact.resolve("file-size-extension-0.1.0-SNAPSHOT.pom"));
+        }
 
         Path jobDir = Files.createDirectories(tempDir.resolve("package-param-job"));
         Path marker = tempDir.resolve("toplevel-marker.txt");
         Files.writeString(jobDir.resolve("data.txt"), "12345");
         Files.writeString(jobDir.resolve("job.groovy"), """
+                import example.ExampleProvider.Result
                 parameter('wert', required: true, description: 'Wert')
                 new java.io.File('%s').text = 'top-level'
                 task('size', FileSize) { input = file('data.txt') }
                 action('run', dependsOn: 'size') {
+                    Result measured = new Result(result('size').bytes)
+                    assert measured.bytes() == 5
                     println 'WERT=' + parameter('wert')
                 }
                 defaults 'run'
@@ -476,8 +507,9 @@ class DistributionIT {
                 }
                 """);
         Path jar = tempDir.resolve("parameter-job.jar");
-        ProcessResult packaged = run(base, "package", descriptor.toString(),
-                "--output", jar.toString());
+        ProcessResult packaged = execute(tempDir, List.of(base.resolve("bin/gretl").toString(), "package", descriptor.toString(),
+                "--output", jar.toString()), Map.of("JAVA_TOOL_OPTIONS", "-Dgretl.packager.maven=" + Path.of("../mvnw").toAbsolutePath().normalize()
+                + " -Dgretl.packager.repositories=" + repository.toUri()));
         assertEquals(0, packaged.code(), packaged.err());
         assertTrue(!Files.exists(marker), "packaging must not execute the job");
 
@@ -519,7 +551,12 @@ class DistributionIT {
     }
 
     private ProcessResult execute(Path cwd, List<String> command) throws Exception {
+        return execute(cwd, command, Map.of());
+    }
+
+    private ProcessResult execute(Path cwd, List<String> command, Map<String, String> environment) throws Exception {
         ProcessBuilder builder = new ProcessBuilder(command);
+        builder.environment().putAll(environment);
         builder.environment().put("JAVA_HOME", System.getProperty("java.home"));
         builder.directory(cwd.toFile());
         builder.redirectErrorStream(false);

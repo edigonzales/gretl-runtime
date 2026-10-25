@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "name": "ili",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [
+    "interlis",
+    "ilivalidator"
+  ],
+  "standardFunctions": true,
+  "resources": [
+    "Ili2duckdbImport",
+    "Ili2duckdbImportSchema",
+    "Ili2gpkgImport",
+    "Ili2gpkgImportFileSet",
+    "IliValidator",
+    "IliValidatorFail",
+    "IliValidatorFileSet",
+    "IliValidatorNgk",
+    "LICENSE-sogis-gretl.txt",
+    "models",
+    "ngk-local"
+  ],
+  "dependencies": []
+}

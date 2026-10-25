@@ -1,0 +1,2148 @@
+[
+  {
+    "scenario": "selected-database",
+    "sha256": "84c6e95dce729ac1dc9063297312ac3961de63b0f669b0919ed9ffdc476ef791",
+    "exitCode": 0,
+    "inventory": {
+      "schemaVersion": 2,
+      "descriptorSchemaVersion": 2,
+      "taskModules": [
+        "database"
+      ],
+      "standardFunctions": false,
+      "declared": [],
+      "included": [
+        {
+          "name": "logback-classic-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "2e8c73aadad525e854af1ac95793af3dc75ecedd53c010ea2389de44c08e729b",
+          "coordinate": "ch.qos.logback:logback-classic:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-classic",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "logback-core-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "03dcbf053b40166849b8eb0a30cbde40c04a448820e9a7589c4b0a2ec3a9db63",
+          "coordinate": "ch.qos.logback:logback-core:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-core",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-api-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a0c66a077f6055f9ffa31fd73aec039dc0030adeac95ef37786b402ca803ecb2",
+          "coordinate": "ch.so.agi.gretl:gretl-api:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-api",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-database-tasks-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "68d803763341014088194d6b0d2b38134d4fb2b136c481c67f0c3f950031a0dd",
+          "coordinate": "ch.so.agi.gretl:gretl-database-tasks:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-database-tasks",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-groovy-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a27c030ae7dea3f3440450067991eef38ead3e904db4b0fefc477988d6235441",
+          "coordinate": "ch.so.agi.gretl:gretl-groovy:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-groovy",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-i18n-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "0f9380635f47866c9244fe34f8f85b756281583aca1ba9b749165051d44feba8",
+          "coordinate": "ch.so.agi.gretl:gretl-i18n:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-i18n",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-job-runtime-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "4c68e0744ade22ce23b33612dbc54cd2f445bb78ef18dd5432ff2df90561c855",
+          "coordinate": "ch.so.agi.gretl:gretl-job-runtime:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-job-runtime",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-logging-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "09e2d997d4de6843271d021c61e3de8b0ef3952837adc57edace816f1120d34e",
+          "coordinate": "ch.so.agi.gretl:gretl-logging:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-logging",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-runner-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "6122b12e19b3d884294a4de28857d8776c2aa21431d7779efa8cc4e9ebc1ae85",
+          "coordinate": "ch.so.agi.gretl:gretl-runner:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-runner",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-json-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "86eb1e7767136369f92680ef4956b6c02f1f6db7d13aeca7b7174d1986a8c25a",
+          "coordinate": "org.apache.groovy:groovy-json:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy-json",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "6bcbec490ac1ade0dca6566dca9d02897cbb8fc31ee4008e950451aa83b1ac76",
+          "coordinate": "org.apache.groovy:groovy:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "checker-qual-3.55.1.jar",
+          "kind": "jar",
+          "sha256": "857658c8bdcbff794949a8d9922f88d63ee3751c203c7cd7d21ea97f9e745288",
+          "coordinate": "org.checkerframework:checker-qual:3.55.1",
+          "groupId": "org.checkerframework",
+          "artifactId": "checker-qual",
+          "version": "3.55.1",
+          "classifier": ""
+        },
+        {
+          "name": "duckdb_jdbc-1.5.2.0.jar",
+          "kind": "jar",
+          "sha256": "77afc7fc6c828b7ed4bdb9b65607e4e924d92c3164143451de6180a19e9aec6b",
+          "coordinate": "org.duckdb:duckdb_jdbc:1.5.2.0",
+          "groupId": "org.duckdb",
+          "artifactId": "duckdb_jdbc",
+          "version": "1.5.2.0",
+          "classifier": ""
+        },
+        {
+          "name": "postgresql-42.7.14.jar",
+          "kind": "jar",
+          "sha256": "73914527305a40cce504b0d3d90b23caf565136912d607ae8ae7c5895512332c",
+          "coordinate": "org.postgresql:postgresql:42.7.14",
+          "groupId": "org.postgresql",
+          "artifactId": "postgresql",
+          "version": "42.7.14",
+          "classifier": ""
+        },
+        {
+          "name": "jul-to-slf4j-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "062249d0677a0e08039120a2292a8db064c69d04282bf562af2e54c53ff06976",
+          "coordinate": "org.slf4j:jul-to-slf4j:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "jul-to-slf4j",
+          "version": "2.0.20",
+          "classifier": ""
+        },
+        {
+          "name": "slf4j-api-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439",
+          "coordinate": "org.slf4j:slf4j-api:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "slf4j-api",
+          "version": "2.0.20",
+          "classifier": ""
+        }
+      ]
+    },
+    "classCount": 7378,
+    "presence": {
+      "ch/so/agi/gretl/cli/GretlCli.class": false,
+      "ch/so/agi/gretl/packager/JobPackager.class": false,
+      "org/postgresql/Driver.class": true,
+      "org/duckdb/DuckDBDriver.class": true,
+      "org/sqlite/JDBC.class": false,
+      "org/apache/poi/xssf/usermodel/XSSFWorkbook.class": false,
+      "ch/interlis/ili2db/base/AbstractMain.class": false,
+      "org/interlis2/validator/Validator.class": false,
+      "software/amazon/awssdk/services/s3/S3Client.class": false,
+      "net/sf/saxon/TransformerFactoryImpl.class": false,
+      "org/apache/commons/net/ftp/FTPClient.class": false,
+      "xslt/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl": false,
+      "ch/so/agi/gretl/i18n/messages_de.properties": true,
+      "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
+    },
+    "operationProviders": [],
+    "isolation": {
+      "emptyMavenCache": true,
+      "sourceDeleted": true,
+      "path": "/gretl-no-build-tools",
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-5481163901976871872"
+    }
+  },
+  {
+    "scenario": "selected-external",
+    "sha256": "009b3f1aa14280c852448d0741be866e5c8ae49c5fae5fc62fea4a164658a34b",
+    "exitCode": 0,
+    "inventory": {
+      "schemaVersion": 2,
+      "descriptorSchemaVersion": 2,
+      "taskModules": [],
+      "standardFunctions": false,
+      "declared": [
+        "fixture.gf2dadd1573564c468cf05ea70d2ed318:external-file-size:1.0"
+      ],
+      "included": [
+        {
+          "name": "logback-classic-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "2e8c73aadad525e854af1ac95793af3dc75ecedd53c010ea2389de44c08e729b",
+          "coordinate": "ch.qos.logback:logback-classic:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-classic",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "logback-core-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "03dcbf053b40166849b8eb0a30cbde40c04a448820e9a7589c4b0a2ec3a9db63",
+          "coordinate": "ch.qos.logback:logback-core:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-core",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-api-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a0c66a077f6055f9ffa31fd73aec039dc0030adeac95ef37786b402ca803ecb2",
+          "coordinate": "ch.so.agi.gretl:gretl-api:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-api",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-groovy-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a27c030ae7dea3f3440450067991eef38ead3e904db4b0fefc477988d6235441",
+          "coordinate": "ch.so.agi.gretl:gretl-groovy:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-groovy",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-i18n-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "0f9380635f47866c9244fe34f8f85b756281583aca1ba9b749165051d44feba8",
+          "coordinate": "ch.so.agi.gretl:gretl-i18n:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-i18n",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-job-runtime-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "4c68e0744ade22ce23b33612dbc54cd2f445bb78ef18dd5432ff2df90561c855",
+          "coordinate": "ch.so.agi.gretl:gretl-job-runtime:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-job-runtime",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-logging-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "09e2d997d4de6843271d021c61e3de8b0ef3952837adc57edace816f1120d34e",
+          "coordinate": "ch.so.agi.gretl:gretl-logging:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-logging",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-runner-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "6122b12e19b3d884294a4de28857d8776c2aa21431d7779efa8cc4e9ebc1ae85",
+          "coordinate": "ch.so.agi.gretl:gretl-runner:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-runner",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "external-file-size-1.0.jar",
+          "kind": "jar",
+          "sha256": "f0bf3bc822fb3d849cb4b135ab8482eab4a6a2b0c6103e036e0c381121af29ab",
+          "coordinate": "fixture.gf2dadd1573564c468cf05ea70d2ed318:external-file-size:1.0",
+          "groupId": "fixture.gf2dadd1573564c468cf05ea70d2ed318",
+          "artifactId": "external-file-size",
+          "version": "1.0",
+          "classifier": ""
+        },
+        {
+          "name": "helper-1.0.jar",
+          "kind": "jar",
+          "sha256": "4f4a8f046c2e42fca8d388385184a1ecb4d8a9d60091aafafdfd520b3aec94a0",
+          "coordinate": "fixture.gf2dadd1573564c468cf05ea70d2ed318:helper:1.0",
+          "groupId": "fixture.gf2dadd1573564c468cf05ea70d2ed318",
+          "artifactId": "helper",
+          "version": "1.0",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-json-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "86eb1e7767136369f92680ef4956b6c02f1f6db7d13aeca7b7174d1986a8c25a",
+          "coordinate": "org.apache.groovy:groovy-json:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy-json",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "6bcbec490ac1ade0dca6566dca9d02897cbb8fc31ee4008e950451aa83b1ac76",
+          "coordinate": "org.apache.groovy:groovy:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "jul-to-slf4j-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "062249d0677a0e08039120a2292a8db064c69d04282bf562af2e54c53ff06976",
+          "coordinate": "org.slf4j:jul-to-slf4j:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "jul-to-slf4j",
+          "version": "2.0.20",
+          "classifier": ""
+        },
+        {
+          "name": "slf4j-api-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439",
+          "coordinate": "org.slf4j:slf4j-api:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "slf4j-api",
+          "version": "2.0.20",
+          "classifier": ""
+        }
+      ]
+    },
+    "classCount": 6381,
+    "presence": {
+      "ch/so/agi/gretl/cli/GretlCli.class": false,
+      "ch/so/agi/gretl/packager/JobPackager.class": false,
+      "org/postgresql/Driver.class": false,
+      "org/duckdb/DuckDBDriver.class": false,
+      "org/sqlite/JDBC.class": false,
+      "org/apache/poi/xssf/usermodel/XSSFWorkbook.class": false,
+      "ch/interlis/ili2db/base/AbstractMain.class": false,
+      "org/interlis2/validator/Validator.class": false,
+      "software/amazon/awssdk/services/s3/S3Client.class": false,
+      "net/sf/saxon/TransformerFactoryImpl.class": false,
+      "org/apache/commons/net/ftp/FTPClient.class": false,
+      "xslt/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl": false,
+      "ch/so/agi/gretl/i18n/messages_de.properties": true,
+      "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
+    },
+    "operationProviders": [],
+    "isolation": {
+      "emptyMavenCache": true,
+      "sourceDeleted": true,
+      "path": "/gretl-no-build-tools",
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-18138489622123439476"
+    }
+  },
+  {
+    "scenario": "selected-interlis",
+    "sha256": "4df33356910a094114d5b4f12b7d2ba5a5cb64b016cf31230570e0d98aee9956",
+    "exitCode": 0,
+    "inventory": {
+      "schemaVersion": 2,
+      "descriptorSchemaVersion": 2,
+      "taskModules": [
+        "interlis"
+      ],
+      "standardFunctions": true,
+      "declared": [],
+      "included": [
+        {
+          "name": "antlr-2.7.7.jar",
+          "kind": "jar",
+          "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
+          "coordinate": "antlr:antlr:2.7.7",
+          "groupId": "antlr",
+          "artifactId": "antlr",
+          "version": "2.7.7",
+          "classifier": ""
+        },
+        {
+          "name": "ehibasics-1.4.1.jar",
+          "kind": "jar",
+          "sha256": "16e60db8d18224b72ad95f369dbca3bd4df4f15546e4f1afd95b88a15f62d456",
+          "coordinate": "ch.ehi:ehibasics:1.4.1",
+          "groupId": "ch.ehi",
+          "artifactId": "ehibasics",
+          "version": "1.4.1",
+          "classifier": ""
+        },
+        {
+          "name": "ehisqlgen-1.16.3.jar",
+          "kind": "jar",
+          "sha256": "18a71525e692afd9873b1c650894a2a2e5de5f17399e41282a893af258bc006d",
+          "coordinate": "ch.ehi:ehisqlgen:1.16.3",
+          "groupId": "ch.ehi",
+          "artifactId": "ehisqlgen",
+          "version": "1.16.3",
+          "classifier": ""
+        },
+        {
+          "name": "geow-interlis-functions-0.2.1.jar",
+          "kind": "jar",
+          "sha256": "6a66a4ac3d506e64e2d5ea29d208d85118c813617c146ac0c7944fc542cb402c",
+          "coordinate": "ch.geowerkstatt.ilivalidator.extensions.functions:geow-interlis-functions:0.2.1",
+          "groupId": "ch.geowerkstatt.ilivalidator.extensions.functions",
+          "artifactId": "geow-interlis-functions",
+          "version": "0.2.1",
+          "classifier": ""
+        },
+        {
+          "name": "interlis-functions-ngk-so-1.0.3.jar",
+          "kind": "jar",
+          "sha256": "c1f0d8279fe9b8e849d8e056408ad47403c57ee385296c50fdfc452fdbb4cbd2",
+          "coordinate": "ch.geowerkstatt.ilivalidator.extensions.functions:interlis-functions-ngk-so:1.0.3",
+          "groupId": "ch.geowerkstatt.ilivalidator.extensions.functions",
+          "artifactId": "interlis-functions-ngk-so",
+          "version": "1.0.3",
+          "classifier": ""
+        },
+        {
+          "name": "av2geobau-1.4.2.jar",
+          "kind": "jar",
+          "sha256": "b870761d1aa7124d1e5bdcda6c110f503db76e55b3423f0598acf97b3afbdbf0",
+          "coordinate": "ch.interlis:av2geobau:1.4.2",
+          "groupId": "ch.interlis",
+          "artifactId": "av2geobau",
+          "version": "1.4.2",
+          "classifier": ""
+        },
+        {
+          "name": "ili2c-core-5.6.8.jar",
+          "kind": "jar",
+          "sha256": "cbf610c0b38839cb2d3574c531216275af673f1d5738b531ef93d88034344cd5",
+          "coordinate": "ch.interlis:ili2c-core:5.6.8",
+          "groupId": "ch.interlis",
+          "artifactId": "ili2c-core",
+          "version": "5.6.8",
+          "classifier": ""
+        },
+        {
+          "name": "ili2c-tool-5.6.8.jar",
+          "kind": "jar",
+          "sha256": "4f0cc6622182fdcf4475fa4aa3a32e2a288a9446b9ea05a322eaeb4e5b5340c3",
+          "coordinate": "ch.interlis:ili2c-tool:5.6.8",
+          "groupId": "ch.interlis",
+          "artifactId": "ili2c-tool",
+          "version": "5.6.8",
+          "classifier": ""
+        },
+        {
+          "name": "ili2db-5.5.1.jar",
+          "kind": "jar",
+          "sha256": "fd7ebbe1607906eaf411a884691acceb070e873ad42f15ec15400e6afe606024",
+          "coordinate": "ch.interlis:ili2db:5.5.1",
+          "groupId": "ch.interlis",
+          "artifactId": "ili2db",
+          "version": "5.5.1",
+          "classifier": ""
+        },
+        {
+          "name": "ili2duckdb-5.5.1.jar",
+          "kind": "jar",
+          "sha256": "9bf7449363c9310d61fddbc4fe58b14b5cee9e498e8cf997014ceb5aea502418",
+          "coordinate": "ch.interlis:ili2duckdb:5.5.1",
+          "groupId": "ch.interlis",
+          "artifactId": "ili2duckdb",
+          "version": "5.5.1",
+          "classifier": ""
+        },
+        {
+          "name": "ili2gpkg-5.5.1.jar",
+          "kind": "jar",
+          "sha256": "3391782e35361383b21b75112da92170e805c96d2801f7ca4bd6786f1cd12e6c",
+          "coordinate": "ch.interlis:ili2gpkg:5.5.1",
+          "groupId": "ch.interlis",
+          "artifactId": "ili2gpkg",
+          "version": "5.5.1",
+          "classifier": ""
+        },
+        {
+          "name": "ili2pg-5.5.1.jar",
+          "kind": "jar",
+          "sha256": "7206834524ab2481693f9129072e9855b187fb0e72e042dab6d47e8404757d7c",
+          "coordinate": "ch.interlis:ili2pg:5.5.1",
+          "groupId": "ch.interlis",
+          "artifactId": "ili2pg",
+          "version": "5.5.1",
+          "classifier": ""
+        },
+        {
+          "name": "ilivalidator-1.15.0.jar",
+          "kind": "jar",
+          "sha256": "93be2ba749c8125092db4f51dd2cff09367d8a43e6411621cd9640414f452c1a",
+          "coordinate": "ch.interlis:ilivalidator:1.15.0",
+          "groupId": "ch.interlis",
+          "artifactId": "ilivalidator",
+          "version": "1.15.0",
+          "classifier": ""
+        },
+        {
+          "name": "iox-api-1.0.4.jar",
+          "kind": "jar",
+          "sha256": "b907c23309df9ce63aeb4dca845fda09e1784e8396eab4d62573358a73febd68",
+          "coordinate": "ch.interlis:iox-api:1.0.4",
+          "groupId": "ch.interlis",
+          "artifactId": "iox-api",
+          "version": "1.0.4",
+          "classifier": ""
+        },
+        {
+          "name": "iox-ili-1.24.4.jar",
+          "kind": "jar",
+          "sha256": "7c315dcb2f2f0ac6dfa535db06eb52bc100395b73d570a5612609acf7da5eeef",
+          "coordinate": "ch.interlis:iox-ili:1.24.4",
+          "groupId": "ch.interlis",
+          "artifactId": "iox-ili",
+          "version": "1.24.4",
+          "classifier": ""
+        },
+        {
+          "name": "iox-wkf-2.0.1-20250417.084407-2.jar",
+          "kind": "jar",
+          "sha256": "6aea94ef3471231fd10157907830e9314e92b19cefc1c0e1f3ac344dc74489b6",
+          "coordinate": "ch.interlis:iox-wkf:2.0.1-20250417.084407-2",
+          "groupId": "ch.interlis",
+          "artifactId": "iox-wkf",
+          "version": "2.0.1-20250417.084407-2",
+          "classifier": ""
+        },
+        {
+          "name": "logback-classic-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "2e8c73aadad525e854af1ac95793af3dc75ecedd53c010ea2389de44c08e729b",
+          "coordinate": "ch.qos.logback:logback-classic:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-classic",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "logback-core-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "03dcbf053b40166849b8eb0a30cbde40c04a448820e9a7589c4b0a2ec3a9db63",
+          "coordinate": "ch.qos.logback:logback-core:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-core",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-api-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a0c66a077f6055f9ffa31fd73aec039dc0030adeac95ef37786b402ca803ecb2",
+          "coordinate": "ch.so.agi.gretl:gretl-api:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-api",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-groovy-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a27c030ae7dea3f3440450067991eef38ead3e904db4b0fefc477988d6235441",
+          "coordinate": "ch.so.agi.gretl:gretl-groovy:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-groovy",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-i18n-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "0f9380635f47866c9244fe34f8f85b756281583aca1ba9b749165051d44feba8",
+          "coordinate": "ch.so.agi.gretl:gretl-i18n:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-i18n",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-interlis-tasks-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "bf9b9cbf189069f1e31ebfc3ed50b7f870b065f68933d8aa40cc324ace000319",
+          "coordinate": "ch.so.agi.gretl:gretl-interlis-tasks:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-interlis-tasks",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-interlis-tasks-0.1.0-SNAPSHOT-standard-functions.jar",
+          "kind": "jar",
+          "sha256": "d47c287c786c3a041560f3d88541f4ac434391aa14a9b115ece93e6238fcdb8b",
+          "coordinate": "ch.so.agi.gretl:gretl-interlis-tasks:jar:standard-functions:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-interlis-tasks",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": "standard-functions"
+        },
+        {
+          "name": "gretl-job-runtime-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "4c68e0744ade22ce23b33612dbc54cd2f445bb78ef18dd5432ff2df90561c855",
+          "coordinate": "ch.so.agi.gretl:gretl-job-runtime:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-job-runtime",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-logging-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "09e2d997d4de6843271d021c61e3de8b0ef3952837adc57edace816f1120d34e",
+          "coordinate": "ch.so.agi.gretl:gretl-logging:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-logging",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-runner-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "6122b12e19b3d884294a4de28857d8776c2aa21431d7779efa8cc4e9ebc1ae85",
+          "coordinate": "ch.so.agi.gretl:gretl-runner:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-runner",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "jackson-annotations-2.17.2.jar",
+          "kind": "jar",
+          "sha256": "873a606e23507969f9bbbea939d5e19274a88775ea5a169ba7e2d795aa5156e1",
+          "coordinate": "com.fasterxml.jackson.core:jackson-annotations:2.17.2",
+          "groupId": "com.fasterxml.jackson.core",
+          "artifactId": "jackson-annotations",
+          "version": "2.17.2",
+          "classifier": ""
+        },
+        {
+          "name": "jackson-core-2.17.2.jar",
+          "kind": "jar",
+          "sha256": "721a189241dab0525d9e858e5cb604d3ecc0ede081e2de77d6f34fa5779a5b46",
+          "coordinate": "com.fasterxml.jackson.core:jackson-core:2.17.2",
+          "groupId": "com.fasterxml.jackson.core",
+          "artifactId": "jackson-core",
+          "version": "2.17.2",
+          "classifier": ""
+        },
+        {
+          "name": "jackson-databind-2.17.2.jar",
+          "kind": "jar",
+          "sha256": "c04993f33c0f845342653784f14f38373d005280e6359db5f808701cfae73c0c",
+          "coordinate": "com.fasterxml.jackson.core:jackson-databind:2.17.2",
+          "groupId": "com.fasterxml.jackson.core",
+          "artifactId": "jackson-databind",
+          "version": "2.17.2",
+          "classifier": ""
+        },
+        {
+          "name": "curvesapi-1.08.jar",
+          "kind": "jar",
+          "sha256": "ad95b08b8bbf9d7d17e5e00814898fa23324f32bc5b62f1a37801e6a56ce0079",
+          "coordinate": "com.github.virtuald:curvesapi:1.08",
+          "groupId": "com.github.virtuald",
+          "artifactId": "curvesapi",
+          "version": "1.08",
+          "classifier": ""
+        },
+        {
+          "name": "json-simple-1.1.jar",
+          "kind": "jar",
+          "sha256": "2d9484f4c649f708f47f9a479465fc729770ee65617dca3011836602264f6439",
+          "coordinate": "com.googlecode.json-simple:json-simple:1.1",
+          "groupId": "com.googlecode.json-simple",
+          "artifactId": "json-simple",
+          "version": "1.1",
+          "classifier": ""
+        },
+        {
+          "name": "jaxb-impl-2.3.2.jar",
+          "kind": "jar",
+          "sha256": "b3a3d3aeaa5503cadc24dca9539b87efcd7bc3bd8c48018887a1489f2a77bdc0",
+          "coordinate": "com.sun.xml.bind:jaxb-impl:2.3.2",
+          "groupId": "com.sun.xml.bind",
+          "artifactId": "jaxb-impl",
+          "version": "2.3.2",
+          "classifier": ""
+        },
+        {
+          "name": "jts-core-1.14.0.jar",
+          "kind": "jar",
+          "sha256": "2667c80bdef0e879f8c78f659ae6d24e8d0a9006f29c6a4e824345c677a1b1d1",
+          "coordinate": "com.vividsolutions:jts-core:1.14.0",
+          "groupId": "com.vividsolutions",
+          "artifactId": "jts-core",
+          "version": "1.14.0",
+          "classifier": ""
+        },
+        {
+          "name": "jts-io-1.14.0.jar",
+          "kind": "jar",
+          "sha256": "9c2ce14edc4ecd94e6370dc64cd25142a5ab48fab041a993dd9f856a28fbe898",
+          "coordinate": "com.vividsolutions:jts-io:1.14.0",
+          "groupId": "com.vividsolutions",
+          "artifactId": "jts-io",
+          "version": "1.14.0",
+          "classifier": ""
+        },
+        {
+          "name": "SparseBitSet-1.3.jar",
+          "kind": "jar",
+          "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a",
+          "coordinate": "com.zaxxer:SparseBitSet:1.3",
+          "groupId": "com.zaxxer",
+          "artifactId": "SparseBitSet",
+          "version": "1.3",
+          "classifier": ""
+        },
+        {
+          "name": "commons-codec-1.17.1.jar",
+          "kind": "jar",
+          "sha256": "f9f6cb103f2ddc3c99a9d80ada2ae7bf0685111fd6bffccb72033d1da4e6ff23",
+          "coordinate": "commons-codec:commons-codec:1.17.1",
+          "groupId": "commons-codec",
+          "artifactId": "commons-codec",
+          "version": "1.17.1",
+          "classifier": ""
+        },
+        {
+          "name": "commons-io-2.18.0.jar",
+          "kind": "jar",
+          "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+          "coordinate": "commons-io:commons-io:2.18.0",
+          "groupId": "commons-io",
+          "artifactId": "commons-io",
+          "version": "2.18.0",
+          "classifier": ""
+        },
+        {
+          "name": "av2ch-1.1.8.jar",
+          "kind": "jar",
+          "sha256": "1b01363f1c0f435b5f6452c2f17271c44de8154c87f086cfadb9585e909c8039",
+          "coordinate": "io.github.sogis:av2ch:1.1.8",
+          "groupId": "io.github.sogis",
+          "artifactId": "av2ch",
+          "version": "1.1.8",
+          "classifier": ""
+        },
+        {
+          "name": "ilivalidator-custom-functions-geometries-0.0.8.jar",
+          "kind": "jar",
+          "sha256": "34090dc8952363fb38d80f74c7f6c2e1724cb9665111e7045d44da9b2b72219f",
+          "coordinate": "io.github.sogis:ilivalidator-custom-functions-geometries:0.0.8",
+          "groupId": "io.github.sogis",
+          "artifactId": "ilivalidator-custom-functions-geometries",
+          "version": "0.0.8",
+          "classifier": ""
+        },
+        {
+          "name": "ilivalidator-custom-functions-1.1.50.jar",
+          "kind": "jar",
+          "sha256": "d0513d679f9c5eacf7f1ff07c454d249ea1289576bb777b96c4a10940045c5f0",
+          "coordinate": "io.github.sogis:ilivalidator-custom-functions:1.1.50",
+          "groupId": "io.github.sogis",
+          "artifactId": "ilivalidator-custom-functions",
+          "version": "1.1.50",
+          "classifier": ""
+        },
+        {
+          "name": "iox-formats-1.0.3.jar",
+          "kind": "jar",
+          "sha256": "054b574814c000ca5c506012d70fcc216c1ccde5d092b1ad00ef8d40e4641fbc",
+          "coordinate": "io.github.sogis:iox-formats:1.0.3",
+          "groupId": "io.github.sogis",
+          "artifactId": "iox-formats",
+          "version": "1.0.3",
+          "classifier": ""
+        },
+        {
+          "name": "javax.activation-api-1.2.0.jar",
+          "kind": "jar",
+          "sha256": "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393",
+          "coordinate": "javax.activation:javax.activation-api:1.2.0",
+          "groupId": "javax.activation",
+          "artifactId": "javax.activation-api",
+          "version": "1.2.0",
+          "classifier": ""
+        },
+        {
+          "name": "jaxb-api-2.3.1.jar",
+          "kind": "jar",
+          "sha256": "88b955a0df57880a26a74708bc34f74dcaf8ebf4e78843a28b50eae945732b06",
+          "coordinate": "javax.xml.bind:jaxb-api:2.3.1",
+          "groupId": "javax.xml.bind",
+          "artifactId": "jaxb-api",
+          "version": "2.3.1",
+          "classifier": ""
+        },
+        {
+          "name": "base64-2.3.9.jar",
+          "kind": "jar",
+          "sha256": "f1a0e359eee29a5939c35e5fdedc574dd7e8ca065b056fc14b2b29e3ed3cd54d",
+          "coordinate": "net.iharder:base64:2.3.9",
+          "groupId": "net.iharder",
+          "artifactId": "base64",
+          "version": "2.3.9",
+          "classifier": ""
+        },
+        {
+          "name": "commons-collections4-4.4.jar",
+          "kind": "jar",
+          "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1",
+          "coordinate": "org.apache.commons:commons-collections4:4.4",
+          "groupId": "org.apache.commons",
+          "artifactId": "commons-collections4",
+          "version": "4.4",
+          "classifier": ""
+        },
+        {
+          "name": "commons-compress-1.27.1.jar",
+          "kind": "jar",
+          "sha256": "293d80f54b536b74095dcd7ea3cf0a29bbfc3402519281332495f4420d370d16",
+          "coordinate": "org.apache.commons:commons-compress:1.27.1",
+          "groupId": "org.apache.commons",
+          "artifactId": "commons-compress",
+          "version": "1.27.1",
+          "classifier": ""
+        },
+        {
+          "name": "commons-lang3-3.16.0.jar",
+          "kind": "jar",
+          "sha256": "08709dd74d602b705ce4017d26544210056a4ba583d5b20c09373406fe7a00f8",
+          "coordinate": "org.apache.commons:commons-lang3:3.16.0",
+          "groupId": "org.apache.commons",
+          "artifactId": "commons-lang3",
+          "version": "3.16.0",
+          "classifier": ""
+        },
+        {
+          "name": "commons-math3-3.6.1.jar",
+          "kind": "jar",
+          "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308",
+          "coordinate": "org.apache.commons:commons-math3:3.6.1",
+          "groupId": "org.apache.commons",
+          "artifactId": "commons-math3",
+          "version": "3.6.1",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-json-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "86eb1e7767136369f92680ef4956b6c02f1f6db7d13aeca7b7174d1986a8c25a",
+          "coordinate": "org.apache.groovy:groovy-json:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy-json",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "6bcbec490ac1ade0dca6566dca9d02897cbb8fc31ee4008e950451aa83b1ac76",
+          "coordinate": "org.apache.groovy:groovy:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "log4j-api-2.21.1.jar",
+          "kind": "jar",
+          "sha256": "1db48e180881bef1deb502022006a025a248d8f6a26186789b0c7ce487c602d6",
+          "coordinate": "org.apache.logging.log4j:log4j-api:2.21.1",
+          "groupId": "org.apache.logging.log4j",
+          "artifactId": "log4j-api",
+          "version": "2.21.1",
+          "classifier": ""
+        },
+        {
+          "name": "poi-ooxml-lite-5.2.5.jar",
+          "kind": "jar",
+          "sha256": "6d4ce6736c422c52e47ffbfa08c784e1b8c188efb69583ac001a0ab16022d774",
+          "coordinate": "org.apache.poi:poi-ooxml-lite:5.2.5",
+          "groupId": "org.apache.poi",
+          "artifactId": "poi-ooxml-lite",
+          "version": "5.2.5",
+          "classifier": ""
+        },
+        {
+          "name": "poi-ooxml-5.2.5.jar",
+          "kind": "jar",
+          "sha256": "c6ad01a10cefa1d2a9c1b552bd4293a3eca29b513353f1ec814041d38da9ec5b",
+          "coordinate": "org.apache.poi:poi-ooxml:5.2.5",
+          "groupId": "org.apache.poi",
+          "artifactId": "poi-ooxml",
+          "version": "5.2.5",
+          "classifier": ""
+        },
+        {
+          "name": "poi-5.2.5.jar",
+          "kind": "jar",
+          "sha256": "352e1b44a5777af2df3d7dc408cda9f75f932d0e0125fa1a7d336a13c0a663a7",
+          "coordinate": "org.apache.poi:poi:5.2.5",
+          "groupId": "org.apache.poi",
+          "artifactId": "poi",
+          "version": "5.2.5",
+          "classifier": ""
+        },
+        {
+          "name": "xmlbeans-5.2.0.jar",
+          "kind": "jar",
+          "sha256": "5a344f323c049b7024edd39bbd58a38e77eb44218aad2794879e7f4ac3ca1de1",
+          "coordinate": "org.apache.xmlbeans:xmlbeans:5.2.0",
+          "groupId": "org.apache.xmlbeans",
+          "artifactId": "xmlbeans",
+          "version": "5.2.0",
+          "classifier": ""
+        },
+        {
+          "name": "checker-qual-3.55.1.jar",
+          "kind": "jar",
+          "sha256": "857658c8bdcbff794949a8d9922f88d63ee3751c203c7cd7d21ea97f9e745288",
+          "coordinate": "org.checkerframework:checker-qual:3.55.1",
+          "groupId": "org.checkerframework",
+          "artifactId": "checker-qual",
+          "version": "3.55.1",
+          "classifier": ""
+        },
+        {
+          "name": "duckdb_jdbc-1.5.2.0.jar",
+          "kind": "jar",
+          "sha256": "77afc7fc6c828b7ed4bdb9b65607e4e924d92c3164143451de6180a19e9aec6b",
+          "coordinate": "org.duckdb:duckdb_jdbc:1.5.2.0",
+          "groupId": "org.duckdb",
+          "artifactId": "duckdb_jdbc",
+          "version": "1.5.2.0",
+          "classifier": ""
+        },
+        {
+          "name": "jgrapht-core-1.3.1.jar",
+          "kind": "jar",
+          "sha256": "71dc44221c43ae89e59e42d024cce9d1dfaef844afb544ca1cdbf96a4bdf2736",
+          "coordinate": "org.jgrapht:jgrapht-core:1.3.1",
+          "groupId": "org.jgrapht",
+          "artifactId": "jgrapht-core",
+          "version": "1.3.1",
+          "classifier": ""
+        },
+        {
+          "name": "jheaps-0.10.jar",
+          "kind": "jar",
+          "sha256": "1c04ab9ed8bb649fe70baa9996dae58c987da87b91ee21b82db023d98b2af59f",
+          "coordinate": "org.jheaps:jheaps:0.10",
+          "groupId": "org.jheaps",
+          "artifactId": "jheaps",
+          "version": "0.10",
+          "classifier": ""
+        },
+        {
+          "name": "postgresql-42.7.14.jar",
+          "kind": "jar",
+          "sha256": "73914527305a40cce504b0d3d90b23caf565136912d607ae8ae7c5895512332c",
+          "coordinate": "org.postgresql:postgresql:42.7.14",
+          "groupId": "org.postgresql",
+          "artifactId": "postgresql",
+          "version": "42.7.14",
+          "classifier": ""
+        },
+        {
+          "name": "jul-to-slf4j-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "062249d0677a0e08039120a2292a8db064c69d04282bf562af2e54c53ff06976",
+          "coordinate": "org.slf4j:jul-to-slf4j:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "jul-to-slf4j",
+          "version": "2.0.20",
+          "classifier": ""
+        },
+        {
+          "name": "slf4j-api-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439",
+          "coordinate": "org.slf4j:slf4j-api:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "slf4j-api",
+          "version": "2.0.20",
+          "classifier": ""
+        },
+        {
+          "name": "sqlite-jdbc-3.53.2.0.jar",
+          "kind": "jar",
+          "sha256": "dc320e4102884c135ccc30c3c6fc3fb190b750e1586a100e3aba3be783cf33a9",
+          "coordinate": "org.xerial:sqlite-jdbc:3.53.2.0",
+          "groupId": "org.xerial",
+          "artifactId": "sqlite-jdbc",
+          "version": "3.53.2.0",
+          "classifier": ""
+        }
+      ]
+    },
+    "classCount": 21969,
+    "presence": {
+      "ch/so/agi/gretl/cli/GretlCli.class": false,
+      "ch/so/agi/gretl/packager/JobPackager.class": false,
+      "org/postgresql/Driver.class": true,
+      "org/duckdb/DuckDBDriver.class": true,
+      "org/sqlite/JDBC.class": true,
+      "org/apache/poi/xssf/usermodel/XSSFWorkbook.class": true,
+      "ch/interlis/ili2db/base/AbstractMain.class": false,
+      "org/interlis2/validator/Validator.class": true,
+      "software/amazon/awssdk/services/s3/S3Client.class": false,
+      "net/sf/saxon/TransformerFactoryImpl.class": false,
+      "org/apache/commons/net/ftp/FTPClient.class": false,
+      "xslt/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl": false,
+      "ch/so/agi/gretl/i18n/messages_de.properties": true,
+      "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
+    },
+    "operationProviders": [],
+    "isolation": {
+      "emptyMavenCache": true,
+      "sourceDeleted": true,
+      "path": "/gretl-no-build-tools",
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-5325121769645195732"
+    }
+  },
+  {
+    "scenario": "selected-io",
+    "sha256": "2783fef21de30a8f24b51990913d5f378fe046bd8ea97d8827f9a87129f22d10",
+    "exitCode": 0,
+    "inventory": {
+      "schemaVersion": 2,
+      "descriptorSchemaVersion": 2,
+      "taskModules": [
+        "io"
+      ],
+      "standardFunctions": false,
+      "declared": [],
+      "included": [
+        {
+          "name": "logback-classic-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "2e8c73aadad525e854af1ac95793af3dc75ecedd53c010ea2389de44c08e729b",
+          "coordinate": "ch.qos.logback:logback-classic:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-classic",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "logback-core-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "03dcbf053b40166849b8eb0a30cbde40c04a448820e9a7589c4b0a2ec3a9db63",
+          "coordinate": "ch.qos.logback:logback-core:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-core",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-api-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a0c66a077f6055f9ffa31fd73aec039dc0030adeac95ef37786b402ca803ecb2",
+          "coordinate": "ch.so.agi.gretl:gretl-api:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-api",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-groovy-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a27c030ae7dea3f3440450067991eef38ead3e904db4b0fefc477988d6235441",
+          "coordinate": "ch.so.agi.gretl:gretl-groovy:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-groovy",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-i18n-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "0f9380635f47866c9244fe34f8f85b756281583aca1ba9b749165051d44feba8",
+          "coordinate": "ch.so.agi.gretl:gretl-i18n:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-i18n",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-io-tasks-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "2ef69444142eba37892c2b16c5b86fa4bfbef88fc7769e30de93073e1128b359",
+          "coordinate": "ch.so.agi.gretl:gretl-io-tasks:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-io-tasks",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-job-runtime-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "4c68e0744ade22ce23b33612dbc54cd2f445bb78ef18dd5432ff2df90561c855",
+          "coordinate": "ch.so.agi.gretl:gretl-job-runtime:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-job-runtime",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-logging-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "09e2d997d4de6843271d021c61e3de8b0ef3952837adc57edace816f1120d34e",
+          "coordinate": "ch.so.agi.gretl:gretl-logging:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-logging",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-runner-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "6122b12e19b3d884294a4de28857d8776c2aa21431d7779efa8cc4e9ebc1ae85",
+          "coordinate": "ch.so.agi.gretl:gretl-runner:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-runner",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "jackson-annotations-2.17.2.jar",
+          "kind": "jar",
+          "sha256": "873a606e23507969f9bbbea939d5e19274a88775ea5a169ba7e2d795aa5156e1",
+          "coordinate": "com.fasterxml.jackson.core:jackson-annotations:2.17.2",
+          "groupId": "com.fasterxml.jackson.core",
+          "artifactId": "jackson-annotations",
+          "version": "2.17.2",
+          "classifier": ""
+        },
+        {
+          "name": "jackson-core-2.17.2.jar",
+          "kind": "jar",
+          "sha256": "721a189241dab0525d9e858e5cb604d3ecc0ede081e2de77d6f34fa5779a5b46",
+          "coordinate": "com.fasterxml.jackson.core:jackson-core:2.17.2",
+          "groupId": "com.fasterxml.jackson.core",
+          "artifactId": "jackson-core",
+          "version": "2.17.2",
+          "classifier": ""
+        },
+        {
+          "name": "jackson-databind-2.17.2.jar",
+          "kind": "jar",
+          "sha256": "c04993f33c0f845342653784f14f38373d005280e6359db5f808701cfae73c0c",
+          "coordinate": "com.fasterxml.jackson.core:jackson-databind:2.17.2",
+          "groupId": "com.fasterxml.jackson.core",
+          "artifactId": "jackson-databind",
+          "version": "2.17.2",
+          "classifier": ""
+        },
+        {
+          "name": "commons-codec-1.17.1.jar",
+          "kind": "jar",
+          "sha256": "f9f6cb103f2ddc3c99a9d80ada2ae7bf0685111fd6bffccb72033d1da4e6ff23",
+          "coordinate": "commons-codec:commons-codec:1.17.1",
+          "groupId": "commons-codec",
+          "artifactId": "commons-codec",
+          "version": "1.17.1",
+          "classifier": ""
+        },
+        {
+          "name": "commons-io-2.18.0.jar",
+          "kind": "jar",
+          "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+          "coordinate": "commons-io:commons-io:2.18.0",
+          "groupId": "commons-io",
+          "artifactId": "commons-io",
+          "version": "2.18.0",
+          "classifier": ""
+        },
+        {
+          "name": "commons-net-3.6.jar",
+          "kind": "jar",
+          "sha256": "d3b3866c61a47ba3bf040ab98e60c3010d027da0e7a99e1755e407dd47bc2702",
+          "coordinate": "commons-net:commons-net:3.6",
+          "groupId": "commons-net",
+          "artifactId": "commons-net",
+          "version": "3.6",
+          "classifier": ""
+        },
+        {
+          "name": "Saxon-HE-11.4.jar",
+          "kind": "jar",
+          "sha256": "42e35494dc2e6b5e97256ae7cdf2b7ce30439c352566f35de02bed3a06a2b169",
+          "coordinate": "net.sf.saxon:Saxon-HE:11.4",
+          "groupId": "net.sf.saxon",
+          "artifactId": "Saxon-HE",
+          "version": "11.4",
+          "classifier": ""
+        },
+        {
+          "name": "commons-compress-1.27.1.jar",
+          "kind": "jar",
+          "sha256": "293d80f54b536b74095dcd7ea3cf0a29bbfc3402519281332495f4420d370d16",
+          "coordinate": "org.apache.commons:commons-compress:1.27.1",
+          "groupId": "org.apache.commons",
+          "artifactId": "commons-compress",
+          "version": "1.27.1",
+          "classifier": ""
+        },
+        {
+          "name": "commons-lang3-3.16.0.jar",
+          "kind": "jar",
+          "sha256": "08709dd74d602b705ce4017d26544210056a4ba583d5b20c09373406fe7a00f8",
+          "coordinate": "org.apache.commons:commons-lang3:3.16.0",
+          "groupId": "org.apache.commons",
+          "artifactId": "commons-lang3",
+          "version": "3.16.0",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-json-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "86eb1e7767136369f92680ef4956b6c02f1f6db7d13aeca7b7174d1986a8c25a",
+          "coordinate": "org.apache.groovy:groovy-json:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy-json",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "6bcbec490ac1ade0dca6566dca9d02897cbb8fc31ee4008e950451aa83b1ac76",
+          "coordinate": "org.apache.groovy:groovy:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "httpclient5-5.1.3.jar",
+          "kind": "jar",
+          "sha256": "28c759254f4e35319e078bb6ffea75676608dc12cb243b24fb3c8732522977fe",
+          "coordinate": "org.apache.httpcomponents.client5:httpclient5:5.1.3",
+          "groupId": "org.apache.httpcomponents.client5",
+          "artifactId": "httpclient5",
+          "version": "5.1.3",
+          "classifier": ""
+        },
+        {
+          "name": "httpcore5-h2-5.1.3.jar",
+          "kind": "jar",
+          "sha256": "d0e78ba15aa8ebe77982b660ac4b09a95d6e035dbdbea762577dc1c8e2935807",
+          "coordinate": "org.apache.httpcomponents.core5:httpcore5-h2:5.1.3",
+          "groupId": "org.apache.httpcomponents.core5",
+          "artifactId": "httpcore5-h2",
+          "version": "5.1.3",
+          "classifier": ""
+        },
+        {
+          "name": "httpcore5-5.1.3.jar",
+          "kind": "jar",
+          "sha256": "f2bf2f2c7772169c9e30699719667ad30f9b46c4e9d7841907deb2d12d9923fe",
+          "coordinate": "org.apache.httpcomponents.core5:httpcore5:5.1.3",
+          "groupId": "org.apache.httpcomponents.core5",
+          "artifactId": "httpcore5",
+          "version": "5.1.3",
+          "classifier": ""
+        },
+        {
+          "name": "reactive-streams-1.0.2.jar",
+          "kind": "jar",
+          "sha256": "cc09ab0b140e0d0496c2165d4b32ce24f4d6446c0a26c5dc77b06bdf99ee8fae",
+          "coordinate": "org.reactivestreams:reactive-streams:1.0.2",
+          "groupId": "org.reactivestreams",
+          "artifactId": "reactive-streams",
+          "version": "1.0.2",
+          "classifier": ""
+        },
+        {
+          "name": "jul-to-slf4j-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "062249d0677a0e08039120a2292a8db064c69d04282bf562af2e54c53ff06976",
+          "coordinate": "org.slf4j:jul-to-slf4j:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "jul-to-slf4j",
+          "version": "2.0.20",
+          "classifier": ""
+        },
+        {
+          "name": "slf4j-api-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439",
+          "coordinate": "org.slf4j:slf4j-api:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "slf4j-api",
+          "version": "2.0.20",
+          "classifier": ""
+        },
+        {
+          "name": "xmlresolver-4.4.3.jar",
+          "kind": "jar",
+          "sha256": "9d642c96c3f6811e20a9f6cfee3ca15ec84ecb939f6be639fee065670773a7d1",
+          "coordinate": "org.xmlresolver:xmlresolver:4.4.3",
+          "groupId": "org.xmlresolver",
+          "artifactId": "xmlresolver",
+          "version": "4.4.3",
+          "classifier": ""
+        },
+        {
+          "name": "xmlresolver-4.4.3-data.jar",
+          "kind": "jar",
+          "sha256": "a57db23d75c3580cb15eb6e1a854683f4579cfd265f5cf1011a6983d9aed0f1f",
+          "coordinate": "org.xmlresolver:xmlresolver:jar:data:4.4.3",
+          "groupId": "org.xmlresolver",
+          "artifactId": "xmlresolver",
+          "version": "4.4.3",
+          "classifier": "data"
+        },
+        {
+          "name": "annotations-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "be05e72915492103edeacad675f1594d096317d8193661efc0d68f7cac84e8f7",
+          "coordinate": "software.amazon.awssdk:annotations:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "annotations",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "arns-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "1a84a7de61aa8e9623695864426d59566b2b303c933e32704b9bc84f3dfa35e4",
+          "coordinate": "software.amazon.awssdk:arns:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "arns",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "auth-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "9cd487e21eb0be246598d8f56eb5a821525a9a1ed78d28d5b6616707958e674f",
+          "coordinate": "software.amazon.awssdk:auth:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "auth",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "aws-core-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "d9bfcfc4da327b249cd654562e0b7ef3c72ecc2869fac0533d72b9c138874e23",
+          "coordinate": "software.amazon.awssdk:aws-core:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "aws-core",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "aws-query-protocol-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "47a2efe36c0c296289e05e462a73e1f86e276c5b618a8751c8dca0a425101c61",
+          "coordinate": "software.amazon.awssdk:aws-query-protocol:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "aws-query-protocol",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "aws-xml-protocol-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "7ed4484fe1ff948161e6a46a289c973ba935b61046aa72b36f11d42405837359",
+          "coordinate": "software.amazon.awssdk:aws-xml-protocol:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "aws-xml-protocol",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "http-client-spi-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "9db9e2bf3e727b631db2d2018504f72a42a69369b9cfe516d6d7655b0ecb87fa",
+          "coordinate": "software.amazon.awssdk:http-client-spi:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "http-client-spi",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "metrics-spi-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "a50b2b20b27926a51e075cad4f1f1097824d839ffb4cb7e3e90d03b72a056f11",
+          "coordinate": "software.amazon.awssdk:metrics-spi:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "metrics-spi",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "profiles-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "6d0b5a8b98c6d370703dbe28c779c55a52927e23bb4a827a08472ad6daf2bec8",
+          "coordinate": "software.amazon.awssdk:profiles:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "profiles",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "protocol-core-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "285dd698515e0f3264ea2392b3a6b81058da8644d33d983f74353f1154ce3e4d",
+          "coordinate": "software.amazon.awssdk:protocol-core:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "protocol-core",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "regions-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "18c5b4551924d50746f08094b916dbce996e2684fda2fda92d72cbad1ece4476",
+          "coordinate": "software.amazon.awssdk:regions:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "regions",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "s3-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "4d988284b7be9ebbba7ef3f6e0afbe110038721e6b15a2bedd9aa703d2db0b57",
+          "coordinate": "software.amazon.awssdk:s3:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "s3",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "sdk-core-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "87776fcf9d72714c5f920b676ddbf408d268a4bfcd61cbdaa8d328b8c90c46eb",
+          "coordinate": "software.amazon.awssdk:sdk-core:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "sdk-core",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "url-connection-client-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "45b1b5ab4089c672509d281590e39b2e9adc571cfd6f6f9a9bba963f70145f2b",
+          "coordinate": "software.amazon.awssdk:url-connection-client:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "url-connection-client",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "utils-2.15.64.jar",
+          "kind": "jar",
+          "sha256": "03e2763f4cd9277294c921a708d22d133e2ba3858c01910dd7ab6fe7f351f915",
+          "coordinate": "software.amazon.awssdk:utils:2.15.64",
+          "groupId": "software.amazon.awssdk",
+          "artifactId": "utils",
+          "version": "2.15.64",
+          "classifier": ""
+        },
+        {
+          "name": "eventstream-1.0.1.jar",
+          "kind": "jar",
+          "sha256": "0c37d8e696117f02c302191b8110b0d0eb20fa412fce34c3a269ec73c16ce822",
+          "coordinate": "software.amazon.eventstream:eventstream:1.0.1",
+          "groupId": "software.amazon.eventstream",
+          "artifactId": "eventstream",
+          "version": "1.0.1",
+          "classifier": ""
+        },
+        {
+          "name": "xml-apis-1.4.01.jar",
+          "kind": "jar",
+          "sha256": "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
+          "coordinate": "xml-apis:xml-apis:1.4.01",
+          "groupId": "xml-apis",
+          "artifactId": "xml-apis",
+          "version": "1.4.01",
+          "classifier": ""
+        }
+      ]
+    },
+    "classCount": 16032,
+    "presence": {
+      "ch/so/agi/gretl/cli/GretlCli.class": false,
+      "ch/so/agi/gretl/packager/JobPackager.class": false,
+      "org/postgresql/Driver.class": false,
+      "org/duckdb/DuckDBDriver.class": false,
+      "org/sqlite/JDBC.class": false,
+      "org/apache/poi/xssf/usermodel/XSSFWorkbook.class": false,
+      "ch/interlis/ili2db/base/AbstractMain.class": false,
+      "org/interlis2/validator/Validator.class": false,
+      "software/amazon/awssdk/services/s3/S3Client.class": true,
+      "net/sf/saxon/TransformerFactoryImpl.class": true,
+      "org/apache/commons/net/ftp/FTPClient.class": true,
+      "xslt/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl": true,
+      "ch/so/agi/gretl/i18n/messages_de.properties": true,
+      "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
+    },
+    "operationProviders": [],
+    "isolation": {
+      "emptyMavenCache": true,
+      "sourceDeleted": true,
+      "path": "/gretl-no-build-tools",
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-4232041904268595635"
+    }
+  },
+  {
+    "scenario": "selected-minimal-failure",
+    "sha256": "9a2b2c88ccde4f652554fafec497a909feb6665f9e3821c7a31ce043a19243d1",
+    "exitCode": 10,
+    "inventory": {
+      "schemaVersion": 2,
+      "descriptorSchemaVersion": 2,
+      "taskModules": [],
+      "standardFunctions": false,
+      "declared": [],
+      "included": [
+        {
+          "name": "logback-classic-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "2e8c73aadad525e854af1ac95793af3dc75ecedd53c010ea2389de44c08e729b",
+          "coordinate": "ch.qos.logback:logback-classic:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-classic",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "logback-core-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "03dcbf053b40166849b8eb0a30cbde40c04a448820e9a7589c4b0a2ec3a9db63",
+          "coordinate": "ch.qos.logback:logback-core:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-core",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-api-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a0c66a077f6055f9ffa31fd73aec039dc0030adeac95ef37786b402ca803ecb2",
+          "coordinate": "ch.so.agi.gretl:gretl-api:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-api",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-groovy-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a27c030ae7dea3f3440450067991eef38ead3e904db4b0fefc477988d6235441",
+          "coordinate": "ch.so.agi.gretl:gretl-groovy:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-groovy",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-i18n-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "0f9380635f47866c9244fe34f8f85b756281583aca1ba9b749165051d44feba8",
+          "coordinate": "ch.so.agi.gretl:gretl-i18n:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-i18n",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-job-runtime-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "4c68e0744ade22ce23b33612dbc54cd2f445bb78ef18dd5432ff2df90561c855",
+          "coordinate": "ch.so.agi.gretl:gretl-job-runtime:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-job-runtime",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-logging-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "09e2d997d4de6843271d021c61e3de8b0ef3952837adc57edace816f1120d34e",
+          "coordinate": "ch.so.agi.gretl:gretl-logging:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-logging",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-runner-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "6122b12e19b3d884294a4de28857d8776c2aa21431d7779efa8cc4e9ebc1ae85",
+          "coordinate": "ch.so.agi.gretl:gretl-runner:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-runner",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-json-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "86eb1e7767136369f92680ef4956b6c02f1f6db7d13aeca7b7174d1986a8c25a",
+          "coordinate": "org.apache.groovy:groovy-json:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy-json",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "6bcbec490ac1ade0dca6566dca9d02897cbb8fc31ee4008e950451aa83b1ac76",
+          "coordinate": "org.apache.groovy:groovy:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "jul-to-slf4j-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "062249d0677a0e08039120a2292a8db064c69d04282bf562af2e54c53ff06976",
+          "coordinate": "org.slf4j:jul-to-slf4j:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "jul-to-slf4j",
+          "version": "2.0.20",
+          "classifier": ""
+        },
+        {
+          "name": "slf4j-api-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439",
+          "coordinate": "org.slf4j:slf4j-api:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "slf4j-api",
+          "version": "2.0.20",
+          "classifier": ""
+        }
+      ]
+    },
+    "classCount": 6376,
+    "presence": {
+      "ch/so/agi/gretl/cli/GretlCli.class": false,
+      "ch/so/agi/gretl/packager/JobPackager.class": false,
+      "org/postgresql/Driver.class": false,
+      "org/duckdb/DuckDBDriver.class": false,
+      "org/sqlite/JDBC.class": false,
+      "org/apache/poi/xssf/usermodel/XSSFWorkbook.class": false,
+      "ch/interlis/ili2db/base/AbstractMain.class": false,
+      "org/interlis2/validator/Validator.class": false,
+      "software/amazon/awssdk/services/s3/S3Client.class": false,
+      "net/sf/saxon/TransformerFactoryImpl.class": false,
+      "org/apache/commons/net/ftp/FTPClient.class": false,
+      "xslt/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl": false,
+      "ch/so/agi/gretl/i18n/messages_de.properties": true,
+      "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
+    },
+    "operationProviders": [],
+    "isolation": {
+      "emptyMavenCache": true,
+      "sourceDeleted": true,
+      "path": "/gretl-no-build-tools",
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-7208619666822804088"
+    }
+  },
+  {
+    "scenario": "selected-minimal-success",
+    "sha256": "9a2b2c88ccde4f652554fafec497a909feb6665f9e3821c7a31ce043a19243d1",
+    "exitCode": 0,
+    "inventory": {
+      "schemaVersion": 2,
+      "descriptorSchemaVersion": 2,
+      "taskModules": [],
+      "standardFunctions": false,
+      "declared": [],
+      "included": [
+        {
+          "name": "logback-classic-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "2e8c73aadad525e854af1ac95793af3dc75ecedd53c010ea2389de44c08e729b",
+          "coordinate": "ch.qos.logback:logback-classic:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-classic",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "logback-core-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "03dcbf053b40166849b8eb0a30cbde40c04a448820e9a7589c4b0a2ec3a9db63",
+          "coordinate": "ch.qos.logback:logback-core:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-core",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-api-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a0c66a077f6055f9ffa31fd73aec039dc0030adeac95ef37786b402ca803ecb2",
+          "coordinate": "ch.so.agi.gretl:gretl-api:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-api",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-groovy-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a27c030ae7dea3f3440450067991eef38ead3e904db4b0fefc477988d6235441",
+          "coordinate": "ch.so.agi.gretl:gretl-groovy:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-groovy",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-i18n-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "0f9380635f47866c9244fe34f8f85b756281583aca1ba9b749165051d44feba8",
+          "coordinate": "ch.so.agi.gretl:gretl-i18n:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-i18n",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-job-runtime-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "4c68e0744ade22ce23b33612dbc54cd2f445bb78ef18dd5432ff2df90561c855",
+          "coordinate": "ch.so.agi.gretl:gretl-job-runtime:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-job-runtime",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-logging-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "09e2d997d4de6843271d021c61e3de8b0ef3952837adc57edace816f1120d34e",
+          "coordinate": "ch.so.agi.gretl:gretl-logging:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-logging",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-runner-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "6122b12e19b3d884294a4de28857d8776c2aa21431d7779efa8cc4e9ebc1ae85",
+          "coordinate": "ch.so.agi.gretl:gretl-runner:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-runner",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-json-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "86eb1e7767136369f92680ef4956b6c02f1f6db7d13aeca7b7174d1986a8c25a",
+          "coordinate": "org.apache.groovy:groovy-json:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy-json",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "6bcbec490ac1ade0dca6566dca9d02897cbb8fc31ee4008e950451aa83b1ac76",
+          "coordinate": "org.apache.groovy:groovy:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "jul-to-slf4j-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "062249d0677a0e08039120a2292a8db064c69d04282bf562af2e54c53ff06976",
+          "coordinate": "org.slf4j:jul-to-slf4j:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "jul-to-slf4j",
+          "version": "2.0.20",
+          "classifier": ""
+        },
+        {
+          "name": "slf4j-api-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439",
+          "coordinate": "org.slf4j:slf4j-api:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "slf4j-api",
+          "version": "2.0.20",
+          "classifier": ""
+        }
+      ]
+    },
+    "classCount": 6376,
+    "presence": {
+      "ch/so/agi/gretl/cli/GretlCli.class": false,
+      "ch/so/agi/gretl/packager/JobPackager.class": false,
+      "org/postgresql/Driver.class": false,
+      "org/duckdb/DuckDBDriver.class": false,
+      "org/sqlite/JDBC.class": false,
+      "org/apache/poi/xssf/usermodel/XSSFWorkbook.class": false,
+      "ch/interlis/ili2db/base/AbstractMain.class": false,
+      "org/interlis2/validator/Validator.class": false,
+      "software/amazon/awssdk/services/s3/S3Client.class": false,
+      "net/sf/saxon/TransformerFactoryImpl.class": false,
+      "org/apache/commons/net/ftp/FTPClient.class": false,
+      "xslt/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl": false,
+      "ch/so/agi/gretl/i18n/messages_de.properties": true,
+      "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
+    },
+    "operationProviders": [],
+    "isolation": {
+      "emptyMavenCache": true,
+      "sourceDeleted": true,
+      "path": "/gretl-no-build-tools",
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-14619441124643734446"
+    }
+  },
+  {
+    "scenario": "selected-narrow-validator",
+    "sha256": "756536ddd6c92dfee8e442d84e13b80b404efe09af58da492c63ab553a005f6b",
+    "exitCode": 0,
+    "inventory": {
+      "schemaVersion": 2,
+      "descriptorSchemaVersion": 2,
+      "taskModules": [
+        "ilivalidator"
+      ],
+      "standardFunctions": false,
+      "declared": [],
+      "included": [
+        {
+          "name": "antlr-2.7.7.jar",
+          "kind": "jar",
+          "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
+          "coordinate": "antlr:antlr:2.7.7",
+          "groupId": "antlr",
+          "artifactId": "antlr",
+          "version": "2.7.7",
+          "classifier": ""
+        },
+        {
+          "name": "ehibasics-1.4.1.jar",
+          "kind": "jar",
+          "sha256": "16e60db8d18224b72ad95f369dbca3bd4df4f15546e4f1afd95b88a15f62d456",
+          "coordinate": "ch.ehi:ehibasics:1.4.1",
+          "groupId": "ch.ehi",
+          "artifactId": "ehibasics",
+          "version": "1.4.1",
+          "classifier": ""
+        },
+        {
+          "name": "ili2c-core-5.6.8.jar",
+          "kind": "jar",
+          "sha256": "cbf610c0b38839cb2d3574c531216275af673f1d5738b531ef93d88034344cd5",
+          "coordinate": "ch.interlis:ili2c-core:5.6.8",
+          "groupId": "ch.interlis",
+          "artifactId": "ili2c-core",
+          "version": "5.6.8",
+          "classifier": ""
+        },
+        {
+          "name": "ili2c-tool-5.6.8.jar",
+          "kind": "jar",
+          "sha256": "4f0cc6622182fdcf4475fa4aa3a32e2a288a9446b9ea05a322eaeb4e5b5340c3",
+          "coordinate": "ch.interlis:ili2c-tool:5.6.8",
+          "groupId": "ch.interlis",
+          "artifactId": "ili2c-tool",
+          "version": "5.6.8",
+          "classifier": ""
+        },
+        {
+          "name": "ilivalidator-1.15.0.jar",
+          "kind": "jar",
+          "sha256": "93be2ba749c8125092db4f51dd2cff09367d8a43e6411621cd9640414f452c1a",
+          "coordinate": "ch.interlis:ilivalidator:1.15.0",
+          "groupId": "ch.interlis",
+          "artifactId": "ilivalidator",
+          "version": "1.15.0",
+          "classifier": ""
+        },
+        {
+          "name": "iox-api-1.0.4.jar",
+          "kind": "jar",
+          "sha256": "b907c23309df9ce63aeb4dca845fda09e1784e8396eab4d62573358a73febd68",
+          "coordinate": "ch.interlis:iox-api:1.0.4",
+          "groupId": "ch.interlis",
+          "artifactId": "iox-api",
+          "version": "1.0.4",
+          "classifier": ""
+        },
+        {
+          "name": "iox-ili-1.24.4.jar",
+          "kind": "jar",
+          "sha256": "7c315dcb2f2f0ac6dfa535db06eb52bc100395b73d570a5612609acf7da5eeef",
+          "coordinate": "ch.interlis:iox-ili:1.24.4",
+          "groupId": "ch.interlis",
+          "artifactId": "iox-ili",
+          "version": "1.24.4",
+          "classifier": ""
+        },
+        {
+          "name": "logback-classic-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "2e8c73aadad525e854af1ac95793af3dc75ecedd53c010ea2389de44c08e729b",
+          "coordinate": "ch.qos.logback:logback-classic:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-classic",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "logback-core-1.6.5.jar",
+          "kind": "jar",
+          "sha256": "03dcbf053b40166849b8eb0a30cbde40c04a448820e9a7589c4b0a2ec3a9db63",
+          "coordinate": "ch.qos.logback:logback-core:1.6.5",
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-core",
+          "version": "1.6.5",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-api-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a0c66a077f6055f9ffa31fd73aec039dc0030adeac95ef37786b402ca803ecb2",
+          "coordinate": "ch.so.agi.gretl:gretl-api:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-api",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-groovy-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "a27c030ae7dea3f3440450067991eef38ead3e904db4b0fefc477988d6235441",
+          "coordinate": "ch.so.agi.gretl:gretl-groovy:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-groovy",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-i18n-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "0f9380635f47866c9244fe34f8f85b756281583aca1ba9b749165051d44feba8",
+          "coordinate": "ch.so.agi.gretl:gretl-i18n:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-i18n",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-ilivalidator-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "436e28f065f47e3d4d45dd574ea8332e823ac394ff036ef580f767334686e84a",
+          "coordinate": "ch.so.agi.gretl:gretl-ilivalidator:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-ilivalidator",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-job-runtime-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "4c68e0744ade22ce23b33612dbc54cd2f445bb78ef18dd5432ff2df90561c855",
+          "coordinate": "ch.so.agi.gretl:gretl-job-runtime:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-job-runtime",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-logging-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "09e2d997d4de6843271d021c61e3de8b0ef3952837adc57edace816f1120d34e",
+          "coordinate": "ch.so.agi.gretl:gretl-logging:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-logging",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "gretl-runner-0.1.0-SNAPSHOT.jar",
+          "kind": "jar",
+          "sha256": "6122b12e19b3d884294a4de28857d8776c2aa21431d7779efa8cc4e9ebc1ae85",
+          "coordinate": "ch.so.agi.gretl:gretl-runner:0.1.0-SNAPSHOT",
+          "groupId": "ch.so.agi.gretl",
+          "artifactId": "gretl-runner",
+          "version": "0.1.0-SNAPSHOT",
+          "classifier": ""
+        },
+        {
+          "name": "jaxb-impl-2.3.2.jar",
+          "kind": "jar",
+          "sha256": "b3a3d3aeaa5503cadc24dca9539b87efcd7bc3bd8c48018887a1489f2a77bdc0",
+          "coordinate": "com.sun.xml.bind:jaxb-impl:2.3.2",
+          "groupId": "com.sun.xml.bind",
+          "artifactId": "jaxb-impl",
+          "version": "2.3.2",
+          "classifier": ""
+        },
+        {
+          "name": "jts-core-1.14.0.jar",
+          "kind": "jar",
+          "sha256": "2667c80bdef0e879f8c78f659ae6d24e8d0a9006f29c6a4e824345c677a1b1d1",
+          "coordinate": "com.vividsolutions:jts-core:1.14.0",
+          "groupId": "com.vividsolutions",
+          "artifactId": "jts-core",
+          "version": "1.14.0",
+          "classifier": ""
+        },
+        {
+          "name": "javax.activation-api-1.2.0.jar",
+          "kind": "jar",
+          "sha256": "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393",
+          "coordinate": "javax.activation:javax.activation-api:1.2.0",
+          "groupId": "javax.activation",
+          "artifactId": "javax.activation-api",
+          "version": "1.2.0",
+          "classifier": ""
+        },
+        {
+          "name": "jaxb-api-2.3.1.jar",
+          "kind": "jar",
+          "sha256": "88b955a0df57880a26a74708bc34f74dcaf8ebf4e78843a28b50eae945732b06",
+          "coordinate": "javax.xml.bind:jaxb-api:2.3.1",
+          "groupId": "javax.xml.bind",
+          "artifactId": "jaxb-api",
+          "version": "2.3.1",
+          "classifier": ""
+        },
+        {
+          "name": "base64-2.3.9.jar",
+          "kind": "jar",
+          "sha256": "f1a0e359eee29a5939c35e5fdedc574dd7e8ca065b056fc14b2b29e3ed3cd54d",
+          "coordinate": "net.iharder:base64:2.3.9",
+          "groupId": "net.iharder",
+          "artifactId": "base64",
+          "version": "2.3.9",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-json-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "86eb1e7767136369f92680ef4956b6c02f1f6db7d13aeca7b7174d1986a8c25a",
+          "coordinate": "org.apache.groovy:groovy-json:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy-json",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "groovy-6.0.0.jar",
+          "kind": "jar",
+          "sha256": "6bcbec490ac1ade0dca6566dca9d02897cbb8fc31ee4008e950451aa83b1ac76",
+          "coordinate": "org.apache.groovy:groovy:6.0.0",
+          "groupId": "org.apache.groovy",
+          "artifactId": "groovy",
+          "version": "6.0.0",
+          "classifier": ""
+        },
+        {
+          "name": "jul-to-slf4j-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "062249d0677a0e08039120a2292a8db064c69d04282bf562af2e54c53ff06976",
+          "coordinate": "org.slf4j:jul-to-slf4j:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "jul-to-slf4j",
+          "version": "2.0.20",
+          "classifier": ""
+        },
+        {
+          "name": "slf4j-api-2.0.20.jar",
+          "kind": "jar",
+          "sha256": "7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439",
+          "coordinate": "org.slf4j:slf4j-api:2.0.20",
+          "groupId": "org.slf4j",
+          "artifactId": "slf4j-api",
+          "version": "2.0.20",
+          "classifier": ""
+        }
+      ]
+    },
+    "classCount": 8888,
+    "presence": {
+      "ch/so/agi/gretl/cli/GretlCli.class": false,
+      "ch/so/agi/gretl/packager/JobPackager.class": false,
+      "org/postgresql/Driver.class": false,
+      "org/duckdb/DuckDBDriver.class": false,
+      "org/sqlite/JDBC.class": false,
+      "org/apache/poi/xssf/usermodel/XSSFWorkbook.class": false,
+      "ch/interlis/ili2db/base/AbstractMain.class": false,
+      "org/interlis2/validator/Validator.class": true,
+      "software/amazon/awssdk/services/s3/S3Client.class": false,
+      "net/sf/saxon/TransformerFactoryImpl.class": false,
+      "org/apache/commons/net/ftp/FTPClient.class": false,
+      "xslt/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl": false,
+      "ch/so/agi/gretl/i18n/messages_de.properties": true,
+      "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
+    },
+    "operationProviders": [],
+    "isolation": {
+      "emptyMavenCache": true,
+      "sourceDeleted": true,
+      "path": "/gretl-no-build-tools",
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-7296737668620642900"
+    }
+  }
+]

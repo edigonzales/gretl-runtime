@@ -1,0 +1,3092 @@
+[
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 342,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-15849b9c-b0c5-4f97-8504-5529ce12cd04/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-15849b9c-b0c5-4f97-8504-5529ce12cd04",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 341,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-256e4779-3889-49cf-8889-5469ccc8e1c7/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-256e4779-3889-49cf-8889-5469ccc8e1c7",
+    "operations": [
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 260,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-322494f0-03f7-49f9-b063-6bd4bcc311a4/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-322494f0-03f7-49f9-b063-6bd4bcc311a4",
+    "operations": [
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 351,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-445d6488-04c9-4bfd-bfbc-e499b8e6209c/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-445d6488-04c9-4bfd-bfbc-e499b8e6209c",
+    "operations": [
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 346,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-6fd48833-fc32-4534-a309-a570d9bcd91a/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-6fd48833-fc32-4534-a309-a570d9bcd91a",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 316,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-81b3e78c-807b-41a1-9d30-cc0b44c4708b/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-81b3e78c-807b-41a1-9d30-cc0b44c4708b",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 265,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-9fff93db-b0aa-4d6c-8409-3d73f87f30f6/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-9fff93db-b0aa-4d6c-8409-3d73f87f30f6",
+    "operations": [
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 356,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-cc6eeb14-2a55-48fc-b840-5971008f57ef/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-cc6eeb14-2a55-48fc-b840-5971008f57ef",
+    "operations": [
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 275,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-edae10fb-5bf8-4c5c-83a5-36bb869dfa2e/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-edae10fb-5bf8-4c5c-83a5-36bb869dfa2e",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "additional-function",
+    "mode": "JAR",
+    "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 258,
+    "endpoints": {
+      "http": "http://127.0.0.1:63618"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/additional-function-f3fb3683-d49d-4423-a1c6-74d617be1de2/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/additional-function-f3fb3683-d49d-4423-a1c6-74d617be1de2",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "av2ch-fail",
+    "mode": "JAR",
+    "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 278,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/av2ch-fail-157af84d-5bb7-43da-a4c1-537b1f219e13/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/av2ch-fail-157af84d-5bb7-43da-a4c1-537b1f219e13",
+    "operations": [
+      {
+        "operationId": "gretl.av2ch",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "av2ch-set",
+    "mode": "JAR",
+    "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 1261,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/av2ch-set-dd9252be-bd8a-491b-991d-edd4fff894f2/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/av2ch-set-dd9252be-bd8a-491b-991d-edd4fff894f2",
+    "operations": [
+      {
+        "operationId": "gretl.av2ch",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "av2ch-single",
+    "mode": "JAR",
+    "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 976,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/av2ch-single-72b0c404-2c26-4303-be31-05cf7e9cb23b/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/av2ch-single-72b0c404-2c26-4303-be31-05cf7e9cb23b",
+    "operations": [
+      {
+        "operationId": "gretl.av2ch",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "av2geobau-set",
+    "mode": "JAR",
+    "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 471,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/av2geobau-set-a7ba28eb-1e82-41ce-b362-b4e9bb6bb7d6/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/av2geobau-set-a7ba28eb-1e82-41ce-b362-b4e9bb6bb7d6",
+    "operations": [
+      {
+        "operationId": "gretl.av2geobau",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "av2geobau-single",
+    "mode": "JAR",
+    "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 400,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/av2geobau-single-1bd7f4a5-4927-420b-9d29-cea7bda0634c/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/av2geobau-single-1bd7f4a5-4927-420b-9d29-cea7bda0634c",
+    "operations": [
+      {
+        "operationId": "gretl.av2geobau",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "cancel",
+    "mode": "JAR",
+    "sha256": "57ad6762e6e47d4274c83be831ed06d35d2fc18014370a8365592d0a775c93eb",
+    "exitCode": 20,
+    "timedOut": false,
+    "aborted": true,
+    "durationMillis": 1041,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/cancel-false-false-a9951fdb-762b-43ce-a23f-83a97cff017c/reports/report.json",
+    "reportExitCode": 20,
+    "directory": "gretl-integration-tests/target/job-evidence/cancel-false-false-a9951fdb-762b-43ce-a23f-83a97cff017c",
+    "operations": []
+  },
+  {
+    "scenario": "cancel",
+    "mode": "JAR",
+    "sha256": "57ad6762e6e47d4274c83be831ed06d35d2fc18014370a8365592d0a775c93eb",
+    "exitCode": 143,
+    "timedOut": false,
+    "aborted": true,
+    "durationMillis": 1034,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/cancel-false-true-697f7e3b-31bc-444b-bd9c-adef9d7cfe1a/reports/report.json",
+    "reportExitCode": 20,
+    "directory": "gretl-integration-tests/target/job-evidence/cancel-false-true-697f7e3b-31bc-444b-bd9c-adef9d7cfe1a",
+    "operations": []
+  },
+  {
+    "scenario": "cancel",
+    "mode": "SCRIPT",
+    "sha256": "75f9bf9ef596fe6858aa89c99e0a6450ba3610b8591112bc5f45a482b179d375",
+    "exitCode": 20,
+    "timedOut": false,
+    "aborted": true,
+    "durationMillis": 1048,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/cancel-true-false-d2c81d6e-2728-42d6-a5c6-aa49af0bafe7/reports/report.json",
+    "reportExitCode": 20,
+    "directory": "gretl-integration-tests/target/job-evidence/cancel-true-false-d2c81d6e-2728-42d6-a5c6-aa49af0bafe7",
+    "operations": []
+  },
+  {
+    "scenario": "cancel",
+    "mode": "SCRIPT",
+    "sha256": "75f9bf9ef596fe6858aa89c99e0a6450ba3610b8591112bc5f45a482b179d375",
+    "exitCode": 143,
+    "timedOut": false,
+    "aborted": true,
+    "durationMillis": 1045,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/cancel-true-true-fe130e1b-01cd-4b90-9edf-7b289e396e23/reports/report.json",
+    "reportExitCode": 20,
+    "directory": "gretl-integration-tests/target/job-evidence/cancel-true-true-fe130e1b-01cd-4b90-9edf-7b289e396e23",
+    "operations": []
+  },
+  {
+    "scenario": "csv-unsupported-table",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 319,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/csv-unsupported-table-c7367f58-5af0-4521-98c9-78e8c9120075/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/csv-unsupported-table-c7367f58-5af0-4521-98c9-78e8c9120075",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "database",
+    "mode": "JAR",
+    "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1",
+    "exitCode": 143,
+    "timedOut": false,
+    "aborted": true,
+    "durationMillis": 2381,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_47e6a018e4014f07,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/database-cancel-38ac7f09-a748-478f-97bd-7c889a2143f5/reports/report.json",
+    "reportExitCode": 20,
+    "directory": "gretl-integration-tests/target/job-evidence/database-cancel-38ac7f09-a748-478f-97bd-7c889a2143f5",
+    "operations": [
+      {
+        "operationId": "gretl.db2db",
+        "status": "CANCELLED"
+      }
+    ]
+  },
+  {
+    "scenario": "database",
+    "mode": "JAR",
+    "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 444,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_47e6a018e4014f07,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/database-chain-72601290-515c-441e-ba15-23ac2cd4d515/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/database-chain-72601290-515c-441e-ba15-23ac2cd4d515",
+    "operations": [
+      {
+        "operationId": "gretl.sql-executor",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.db2db",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.sql-executor",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "excel-empty",
+    "mode": "JAR",
+    "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 445,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/excel-empty-03698811-b4ba-4661-855e-d495dda74329/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/excel-empty-03698811-b4ba-4661-855e-d495dda74329",
+    "operations": [
+      {
+        "operationId": "gretl.csv2excel",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "excel-single",
+    "mode": "JAR",
+    "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 574,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/excel-single-dad9caab-2d48-441e-acd1-73f46fb1c66e/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/excel-single-dad9caab-2d48-441e-acd1-73f46fb1c66e",
+    "operations": [
+      {
+        "operationId": "gretl.csv2excel",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "failed-shutdown",
+    "mode": "JAR",
+    "sha256": "57ad6762e6e47d4274c83be831ed06d35d2fc18014370a8365592d0a775c93eb",
+    "exitCode": 143,
+    "timedOut": false,
+    "aborted": true,
+    "durationMillis": 1034,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/failed-shutdown-false-b91206c9-a173-487c-8161-b9f96168d8a5/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/failed-shutdown-false-b91206c9-a173-487c-8161-b9f96168d8a5",
+    "operations": []
+  },
+  {
+    "scenario": "failed-shutdown",
+    "mode": "SCRIPT",
+    "sha256": "75f9bf9ef596fe6858aa89c99e0a6450ba3610b8591112bc5f45a482b179d375",
+    "exitCode": 143,
+    "timedOut": false,
+    "aborted": true,
+    "durationMillis": 1043,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/failed-shutdown-true-4d81fd76-62ce-431d-82df-9d33b85fbad7/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/failed-shutdown-true-4d81fd76-62ce-431d-82df-9d33b85fbad7",
+    "operations": []
+  },
+  {
+    "scenario": "format-csv-export",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 504,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_9b6df4b7a9f44b27,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-csv-export-75d24df4-54cc-4c1e-ac87-229f7068dcf2/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-csv-export-75d24df4-54cc-4c1e-ac87-229f7068dcf2",
+    "operations": [
+      {
+        "operationId": "gretl.csv-export",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "format-csv-import",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 522,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_9b6df4b7a9f44b27,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-csv-import-9afe511b-e064-46c2-ac10-026521965abd/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-csv-import-9afe511b-e064-46c2-ac10-026521965abd",
+    "operations": [
+      {
+        "operationId": "gretl.csv-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "format-csv-import",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 539,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_9b6df4b7a9f44b27,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-csv-import-d2e3a8ae-fde6-45c1-b697-5c08c8966e66/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-csv-import-d2e3a8ae-fde6-45c1-b697-5c08c8966e66",
+    "operations": [
+      {
+        "operationId": "gretl.csv-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "format-gpkg-export",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 584,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_4abd3dfe408348cd,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-gpkg-export-7802c2b4-b707-4d19-8c75-b2d5ae2308ce/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-export-7802c2b4-b707-4d19-8c75-b2d5ae2308ce",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg-export",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "format-gpkg-export",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 612,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_4abd3dfe408348cd,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-gpkg-export-ce149a53-e5d9-44a2-bd88-838f86166668/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-export-ce149a53-e5d9-44a2-bd88-838f86166668",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg-export",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "format-gpkg-import",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 582,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_afdb3ca4316d4218,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-gpkg-import-3ef1c6da-850f-4631-82fc-1ba0a282c185/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-import-3ef1c6da-850f-4631-82fc-1ba0a282c185",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "format-json-import",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 437,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_afdb3ca4316d4218,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-json-import-973f9833-1979-45b1-aaad-7ec88e9a9906/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-json-import-973f9833-1979-45b1-aaad-7ec88e9a9906",
+    "operations": [
+      {
+        "operationId": "gretl.json-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "format-json-import",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 441,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_afdb3ca4316d4218,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-json-import-bd726a2c-158f-42ca-ad96-6361fdfff873/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-json-import-bd726a2c-158f-42ca-ad96-6361fdfff873",
+    "operations": [
+      {
+        "operationId": "gretl.json-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "format-shp-export",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 492,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_4abd3dfe408348cd,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-shp-export-0da50205-5eef-4065-9faf-eab52947d4d0/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-shp-export-0da50205-5eef-4065-9faf-eab52947d4d0",
+    "operations": [
+      {
+        "operationId": "gretl.shp-export",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "format-shp-import",
+    "mode": "JAR",
+    "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 511,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_4abd3dfe408348cd,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/format-shp-import-7f6ac09d-8a82-44b4-b40b-9dbc0b631b41/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/format-shp-import-7f6ac09d-8a82-44b4-b40b-9dbc0b631b41",
+    "operations": [
+      {
+        "operationId": "gretl.shp-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ftp-delete",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 266,
+    "endpoints": {
+      "ftp": "127.0.0.1:63444"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ftp-delete-4d7707ed-0671-449d-933f-0ba2babb3296/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ftp-delete-4d7707ed-0671-449d-933f-0ba2babb3296",
+    "operations": [
+      {
+        "operationId": "gretl.ftp-delete",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ftp-delete",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 259,
+    "endpoints": {
+      "ftp": "127.0.0.1:63444"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ftp-delete-ad633879-3632-45bf-9d31-4917fdf5d7d2/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ftp-delete-ad633879-3632-45bf-9d31-4917fdf5d7d2",
+    "operations": [
+      {
+        "operationId": "gretl.ftp-delete",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ftp-download",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 264,
+    "endpoints": {
+      "ftp": "127.0.0.1:63444"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ftp-download-2d097806-8306-4970-9f5e-4a1f14f07439/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ftp-download-2d097806-8306-4970-9f5e-4a1f14f07439",
+    "operations": [
+      {
+        "operationId": "gretl.ftp-download",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ftp-list",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 3809,
+    "endpoints": {
+      "ftp": "127.0.0.1:63444"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ftp-list-92c13b72-7d24-4b3e-8c83-f5edc6b0ff00/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/ftp-list-92c13b72-7d24-4b3e-8c83-f5edc6b0ff00",
+    "operations": [
+      {
+        "operationId": "gretl.ftp-list",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "ftp-list-result",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 329,
+    "endpoints": {
+      "ftp": "127.0.0.1:63444"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ftp-list-result-89bf1a56-66ab-4835-9487-27014aee1a0f/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ftp-list-result-89bf1a56-66ab-4835-9487-27014aee1a0f",
+    "operations": [
+      {
+        "operationId": "gretl.ftp-list",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ftp-upload",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 263,
+    "endpoints": {
+      "ftp": "127.0.0.1:63444"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ftp-upload-7f63afc3-8102-4fd5-a420-b88f3f9f8420/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ftp-upload-7f63afc3-8102-4fd5-a420-b88f3f9f8420",
+    "operations": [
+      {
+        "operationId": "gretl.ftp-upload",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "gpkg-help-example",
+    "mode": "JAR",
+    "sha256": "000f310e79ab7b628e845230e1d8bf8857a50b76af03040a0da069d0b4e171ca",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 545,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/gpkg-help-example-3552c6ef-601a-4b2f-8e50-614c18bc1537/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/gpkg-help-example-3552c6ef-601a-4b2f-8e50-614c18bc1537",
+    "operations": [
+      {
+        "operationId": "gretl.ili2gpkg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "gpkg-missing-table",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 312,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/gpkg-missing-table-a4baff08-4779-4c27-a74b-f60f709a6086/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/gpkg-missing-table-a4baff08-4779-4c27-a74b-f60f709a6086",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "gpkg-srid",
+    "mode": "JAR",
+    "sha256": "218424075c7bb390c2024051b83eb30d3317f0eaf83f50ac6539111c43de3697",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 470,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/gpkg-srid-8c9b31ea-5635-409c-8ca5-82eb08fc9221/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/gpkg-srid-8c9b31ea-5635-409c-8ca5-82eb08fc9221",
+    "operations": [
+      {
+        "operationId": "gretl.ili2gpkg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "gpkg-srid",
+    "mode": "JAR",
+    "sha256": "218424075c7bb390c2024051b83eb30d3317f0eaf83f50ac6539111c43de3697",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 465,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/gpkg-srid-d1252191-113a-4e7c-8d9a-cecb683d6acf/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/gpkg-srid-d1252191-113a-4e7c-8d9a-cecb683d6acf",
+    "operations": [
+      {
+        "operationId": "gretl.ili2gpkg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "gpkg2dxf-single",
+    "mode": "JAR",
+    "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 607,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/gpkg2dxf-single-12184904-310c-4229-a9e6-391bb37d31c7/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/gpkg2dxf-single-12184904-310c-4229-a9e6-391bb37d31c7",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg2dxf",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "gpkg2shp-single",
+    "mode": "JAR",
+    "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 480,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/gpkg2shp-single-588771b7-8412-4557-91da-bf544cf310bd/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/gpkg2shp-single-588771b7-8412-4557-91da-bf544cf310bd",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg2shp",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili-duck-export-single",
+    "mode": "JAR",
+    "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 1795,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili-duck-export-single-b770417a-7dd9-4bc1-ae87-917077050dc4/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-b770417a-7dd9-4bc1-ae87-917077050dc4",
+    "operations": [
+      {
+        "operationId": "gretl.ili2duckdb-import-schema",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.ili2duckdb-import",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.ili2duckdb-export",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili-gpkg-set",
+    "mode": "JAR",
+    "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 517,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili-gpkg-set-e0fd3679-985a-4c0e-9eff-24f32760943d/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili-gpkg-set-e0fd3679-985a-4c0e-9eff-24f32760943d",
+    "operations": [
+      {
+        "operationId": "gretl.ili2gpkg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili-gpkg-single",
+    "mode": "JAR",
+    "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 661,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili-gpkg-single-7dad55db-745c-4fcc-a532-6653c3f1eb57/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili-gpkg-single-7dad55db-745c-4fcc-a532-6653c3f1eb57",
+    "operations": [
+      {
+        "operationId": "gretl.ili2gpkg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili-ili-fail",
+    "mode": "JAR",
+    "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 341,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili-ili-fail-8eaa9275-92c8-4ac0-956a-217334a18e80/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/ili-ili-fail-8eaa9275-92c8-4ac0-956a-217334a18e80",
+    "operations": [
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili-ili-report-single",
+    "mode": "JAR",
+    "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 357,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili-ili-report-single-473c8e97-7e3d-4b6a-a2c1-7e39459ea5f1/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili-ili-report-single-473c8e97-7e3d-4b6a-a2c1-7e39459ea5f1",
+    "operations": [
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili-ngk-single",
+    "mode": "JAR",
+    "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 751,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili-ngk-single-77f0292d-5fee-414f-a826-c94c256f3afd/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/ili-ngk-single-77f0292d-5fee-414f-a826-c94c256f3afd",
+    "operations": [
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-delete",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 535,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-delete-6b39e8ad-a710-4292-b514-f59769094133/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-delete-6b39e8ad-a710-4292-b514-f59769094133",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-delete",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-delete",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 719,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-delete-70c007b0-fb9a-406a-a63a-ebcc71f1f5f4/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-delete-70c007b0-fb9a-406a-a63a-ebcc71f1f5f4",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-delete",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-export",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 737,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-export-c8ff28f8-9f24-4d4e-95bf-e429ec82dc4e/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-export-c8ff28f8-9f24-4d4e-95bf-e429ec82dc4e",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-export",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-import",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 812,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_72af222bc2264000,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-import-0e6c5716-4b48-48c0-a34f-c24ace5b7252/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-0e6c5716-4b48-48c0-a34f-c24ace5b7252",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-import",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 858,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_a156f38a6df74040,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-import-29dde1ed-55dc-4e4a-8c5d-73abaf85945c/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-29dde1ed-55dc-4e4a-8c5d-73abaf85945c",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-import",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 903,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_44df1a3a8fc24299,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-import-69d35c16-d3aa-419d-a0b5-affc782df6cd/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-69d35c16-d3aa-419d-a0b5-affc782df6cd",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-import",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 860,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_aca49076ce8c43f5,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-import-79923de4-f7e1-41ec-ad40-0ca590cb41ed/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-79923de4-f7e1-41ec-ad40-0ca590cb41ed",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-import",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 711,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-import-ad02ea01-300f-48dd-90dd-06d1877b99a1/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-ad02ea01-300f-48dd-90dd-06d1877b99a1",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-import",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 724,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_11beb7fe6daa431f,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-import-c4eb374f-7306-4214-b6ca-0419aa4a37c5/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-c4eb374f-7306-4214-b6ca-0419aa4a37c5",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-import",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 849,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_47b6f39350e042d5,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-import-c93b8d9b-bcc0-4cb0-a800-4539c190081b/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-c93b8d9b-bcc0-4cb0-a800-4539c190081b",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-replace",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 579,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-replace-1846ec16-58c1-465c-a03f-8db58afaaf44/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-1846ec16-58c1-465c-a03f-8db58afaaf44",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-replace",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-replace",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 596,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8c75f56d744c4170,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-replace-7dfbfebd-684e-4379-8cbc-ae85d3b68302/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-7dfbfebd-684e-4379-8cbc-ae85d3b68302",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-replace",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-replace",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 605,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-replace-fce43497-c881-44b5-8a0b-7e5363bb3185/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-fce43497-c881-44b5-8a0b-7e5363bb3185",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-replace",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-replace-repository",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 633,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_f08ccd74f8da43a8,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-replace-repository-0bbe00c7-5579-4707-96cf-65d58cb50252/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-repository-0bbe00c7-5579-4707-96cf-65d58cb50252",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-replace",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 592,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-0633ba8b-dd58-40da-81d7-317642d649d8/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-0633ba8b-dd58-40da-81d7-317642d649d8",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 570,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_11beb7fe6daa431f,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-3067683e-54d3-4416-9cff-199ec5a5074a/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-3067683e-54d3-4416-9cff-199ec5a5074a",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 596,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8c75f56d744c4170,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-4a843183-abc9-48de-aec3-22365dd14b35/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-4a843183-abc9-48de-aec3-22365dd14b35",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 676,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_44df1a3a8fc24299,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-85cb514f-fcec-4f08-b8b2-63148d726251/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-85cb514f-fcec-4f08-b8b2-63148d726251",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 1007,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_47b6f39350e042d5,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-9485f21b-620f-44c0-9db6-c30eee097e39/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-9485f21b-620f-44c0-9db6-c30eee097e39",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 632,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_72af222bc2264000,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-9f16b5cc-e437-4056-9662-f643fdf8cca4/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-9f16b5cc-e437-4056-9662-f643fdf8cca4",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 603,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_eabb1ea2e0b9436a,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-af90eb30-0d93-430d-bb71-5366153183f5/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-af90eb30-0d93-430d-bb71-5366153183f5",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 660,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_34643ddcb0014122,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-c259cf83-e137-4585-83dd-c5137a7adbae/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-c259cf83-e137-4585-83dd-c5137a7adbae",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 747,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_a735608767bb4028,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-cda80403-8910-4c1f-8a12-8ee122d69851/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-cda80403-8910-4c1f-8a12-8ee122d69851",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 593,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_4c71d58f47574c99,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-d3a9f12b-4dd1-4856-bc00-4bb5fb064848/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-d3a9f12b-4dd1-4856-bc00-4bb5fb064848",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 991,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_a156f38a6df74040,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-e2510931-01b5-47f1-b6bc-6bd4265465de/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-e2510931-01b5-47f1-b6bc-6bd4265465de",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 826,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_f08ccd74f8da43a8,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-eb83d0d8-d656-4056-8c7c-db62fc363f0b/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-eb83d0d8-d656-4056-8c7c-db62fc363f0b",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-schema",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 1012,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_aca49076ce8c43f5,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-schema-f0ff066c-bde7-42ec-8656-64e0f8c885d0/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-f0ff066c-bde7-42ec-8656-64e0f8c885d0",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-import-schema",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-update",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 597,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-update-cb403188-7c91-405a-95e8-c7f09ac7a061/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-update-cb403188-7c91-405a-95e8-c7f09ac7a061",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-update",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-validate",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 656,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_aca49076ce8c43f5,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-validate-0b0fac8f-150a-47e6-98c8-dae6941609d1/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-0b0fac8f-150a-47e6-98c8-dae6941609d1",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-validate",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-validate",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 548,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-validate-1e497ab4-366b-4837-b45d-882d0449e839/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-1e497ab4-366b-4837-b45d-882d0449e839",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-validate",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-validate",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 693,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-validate-43e4d790-5ab0-4cf7-9285-7739cb0d8b86/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-43e4d790-5ab0-4cf7-9285-7739cb0d8b86",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-validate",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-validate",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 686,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_47b6f39350e042d5,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-validate-4ed293ae-d754-4679-b390-bbfe06e2fde4/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-4ed293ae-d754-4679-b390-bbfe06e2fde4",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-validate",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-validate",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 707,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_72af222bc2264000,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-validate-75f502ee-bfb7-4d79-a5bd-4febb35be426/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-75f502ee-bfb7-4d79-a5bd-4febb35be426",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-validate",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-validate",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 880,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_a156f38a6df74040,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-validate-7ab54efa-9a45-4bd7-89d4-08c4ba90c915/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-7ab54efa-9a45-4bd7-89d4-08c4ba90c915",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-validate",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-validate",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 581,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_8934daeaada74bc0,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-validate-c3f43124-4ed2-4dad-b402-48314f975219/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-c3f43124-4ed2-4dad-b402-48314f975219",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-validate",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "ili2pg-validate",
+    "mode": "JAR",
+    "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 717,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_44df1a3a8fc24299,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/ili2pg-validate-f1c376e5-5cc1-46d1-91f5-6aee4eae20e2/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-f1c376e5-5cc1-46d1-91f5-6aee4eae20e2",
+    "operations": [
+      {
+        "operationId": "gretl.ili2pg-validate",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "invalid-csv",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 335,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/invalid-csv-481cf378-5d7f-4edd-96d8-b3b2ebe4ff8a/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/invalid-csv-481cf378-5d7f-4edd-96d8-b3b2ebe4ff8a",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "invalid-model-repository",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 359,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/invalid-model-repository-5abdc25c-3616-4365-b9f2-dafc4dc8db12/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/invalid-model-repository-5abdc25c-3616-4365-b9f2-dafc4dc8db12",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-curl-binary",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 618,
+    "endpoints": {
+      "http": "http://127.0.0.1:63312"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-curl-binary-7c63ba07-21fd-47d2-94e6-d0e99ae50899/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-curl-binary-7c63ba07-21fd-47d2-94e6-d0e99ae50899",
+    "operations": [
+      {
+        "operationId": "gretl.curl",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-curl-data",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 611,
+    "endpoints": {
+      "http": "http://127.0.0.1:63312"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-curl-data-26033dbf-55ea-436d-b437-0a0f8be08f07/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-curl-data-26033dbf-55ea-436d-b437-0a0f8be08f07",
+    "operations": [
+      {
+        "operationId": "gretl.curl",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-curl-form",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 619,
+    "endpoints": {
+      "http": "http://127.0.0.1:63312"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-curl-form-a81e6f1a-9696-45ee-ad92-e516441ef91c/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-curl-form-a81e6f1a-9696-45ee-ad92-e516441ef91c",
+    "operations": [
+      {
+        "operationId": "gretl.curl",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-curl-get",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 617,
+    "endpoints": {
+      "http": "http://127.0.0.1:63312"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-curl-get-df893e39-d529-44f2-9cd1-79346749231f/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-curl-get-df893e39-d529-44f2-9cd1-79346749231f",
+    "operations": [
+      {
+        "operationId": "gretl.curl",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-curl-get",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 618,
+    "endpoints": {
+      "http": "http://127.0.0.1:63312"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-curl-get-e081d58f-4d86-4d84-9a15-1214c33171ec/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/io-curl-get-e081d58f-4d86-4d84-9a15-1214c33171ec",
+    "operations": [
+      {
+        "operationId": "gretl.curl",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-curl-original-download",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 628,
+    "endpoints": {
+      "http": "http://127.0.0.1:63305"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-curl-original-download-f9fa02ac-5248-4842-924d-345b2724fcad/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-download-f9fa02ac-5248-4842-924d-345b2724fcad",
+    "operations": [
+      {
+        "operationId": "gretl.curl",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-curl-original-form",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 699,
+    "endpoints": {
+      "http": "http://127.0.0.1:63305"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-curl-original-form-8a6afb09-55f5-4746-8fcc-6f806aa6e07e/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-form-8a6afb09-55f5-4746-8fcc-6f806aa6e07e",
+    "operations": [
+      {
+        "operationId": "gretl.curl",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-curl-original-form",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 609,
+    "endpoints": {
+      "http": "http://127.0.0.1:63305"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-curl-original-form-e54ccd4e-a295-48e6-b665-5de36f3bb74b/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-form-e54ccd4e-a295-48e6-b665-5de36f3bb74b",
+    "operations": [
+      {
+        "operationId": "gretl.curl",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-curl-original-planregister",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 620,
+    "endpoints": {
+      "http": "http://127.0.0.1:63305"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-curl-original-planregister-bce1d464-2d96-479f-8460-b00aaed4dc90/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-planregister-bce1d464-2d96-479f-8460-b00aaed4dc90",
+    "operations": [
+      {
+        "operationId": "gretl.curl",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-download-file",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 618,
+    "endpoints": {
+      "http": "http://127.0.0.1:63312"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-download-file-63d75413-6904-42b9-bbaa-6920cda82f15/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-download-file-63d75413-6904-42b9-bbaa-6920cda82f15",
+    "operations": [
+      {
+        "operationId": "gretl.http-download",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-extract-file",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 253,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-extract-file-42d5ff15-7c5a-4879-aae0-374503a84167/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-extract-file-42d5ff15-7c5a-4879-aae0-374503a84167",
+    "operations": [
+      {
+        "operationId": "gretl.extract",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-xsl-file",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 480,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-xsl-file-cdfbdd17-23af-475a-b1bd-fcdbc9dd92c4/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-xsl-file-cdfbdd17-23af-475a-b1bd-fcdbc9dd92c4",
+    "operations": [
+      {
+        "operationId": "gretl.xsl-transformer",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-xsl-resource",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 474,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-xsl-resource-3f005ff4-cb40-4388-9f1b-21455983209a/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-xsl-resource-3f005ff4-cb40-4388-9f1b-21455983209a",
+    "operations": [
+      {
+        "operationId": "gretl.xsl-transformer",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "io-xsl-set",
+    "mode": "JAR",
+    "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 490,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/io-xsl-set-056c791b-36c4-4751-90dc-34dee0133133/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/io-xsl-set-056c791b-36c4-4751-90dc-34dee0133133",
+    "operations": [
+      {
+        "operationId": "gretl.xsl-transformer",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-duckdb",
+    "mode": "JAR",
+    "sha256": "e2fc769e208789b9beb9c594af9f8a26a207c827781bd9a3b177b2b1329aed33",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 1538,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-duckdb-de44d248-5640-4dd0-ac8d-dfa87766be1b/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-duckdb-de44d248-5640-4dd0-ac8d-dfa87766be1b",
+    "operations": [
+      {
+        "operationId": "gretl.duckdb-sql-executor",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-gzip",
+    "mode": "JAR",
+    "sha256": "c12b187f68c488821519540cc19f734f0d1afc376b171eda62ba9a6066b8ae53",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 240,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-gzip-fb984012-12a2-4c04-82f8-744fb3e0460f/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-gzip-fb984012-12a2-4c04-82f8-744fb3e0460f",
+    "operations": [
+      {
+        "operationId": "gretl.gzip",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.extract",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-invalid-gpkg",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 467,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-invalid-gpkg-206948f6-17e1-4175-bee1-15fc7cdd3781/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/original-invalid-gpkg-206948f6-17e1-4175-bee1-15fc7cdd3781",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-invalid-json",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 408,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-invalid-json-ad6832af-2745-42e2-9f88-41376b1c7460/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/original-invalid-json-ad6832af-2745-42e2-9f88-41376b1c7460",
+    "operations": [
+      {
+        "operationId": "gretl.json-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-invalid-shp",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 364,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-invalid-shp-41666c81-5152-4227-b78f-42748937229d/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/original-invalid-shp-41666c81-5152-4227-b78f-42748937229d",
+    "operations": [
+      {
+        "operationId": "gretl.shp-validator",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-s3-copy",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 396,
+    "endpoints": {
+      "s3": "http://localhost:63729"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-s3-copy-183d6711-2493-4223-9b9d-f38c6cb0867f/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-s3-copy-183d6711-2493-4223-9b9d-f38c6cb0867f",
+    "operations": [
+      {
+        "operationId": "gretl.s3-bucket2bucket",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-s3-delete",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 378,
+    "endpoints": {
+      "s3": "http://localhost:63729"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-s3-delete-a83bedc9-3457-4250-8db3-b6c7395e548c/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-s3-delete-a83bedc9-3457-4250-8db3-b6c7395e548c",
+    "operations": [
+      {
+        "operationId": "gretl.s3-delete",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-s3-delete",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 373,
+    "endpoints": {
+      "s3": "http://localhost:63729"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-s3-delete-fa7b5a02-95fa-4c83-8606-c5477b2320e8/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-s3-delete-fa7b5a02-95fa-4c83-8606-c5477b2320e8",
+    "operations": [
+      {
+        "operationId": "gretl.s3-delete",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-s3-download",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 368,
+    "endpoints": {
+      "s3": "http://localhost:63729"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-s3-download-0fe334a0-83f1-488a-b880-3eabac95299d/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-s3-download-0fe334a0-83f1-488a-b880-3eabac95299d",
+    "operations": [
+      {
+        "operationId": "gretl.s3-download",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-s3-download",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 399,
+    "endpoints": {
+      "s3": "http://localhost:63729"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-s3-download-a427ed5f-39ee-4215-9338-8c17434e0779/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-s3-download-a427ed5f-39ee-4215-9338-8c17434e0779",
+    "operations": [
+      {
+        "operationId": "gretl.s3-download",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-s3-upload",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 414,
+    "endpoints": {
+      "s3": "http://localhost:63729"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-s3-upload-1384b868-965a-4637-a4f9-9c035d969b2a/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-1384b868-965a-4637-a4f9-9c035d969b2a",
+    "operations": [
+      {
+        "operationId": "gretl.s3-upload",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-s3-upload",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 371,
+    "endpoints": {
+      "s3": "http://localhost:63729"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-s3-upload-1c3d2f5a-54dc-44be-8210-bafb90f703f3/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-1c3d2f5a-54dc-44be-8210-bafb90f703f3",
+    "operations": [
+      {
+        "operationId": "gretl.s3-upload",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-s3-upload",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 386,
+    "endpoints": {
+      "s3": "http://localhost:63729"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-s3-upload-685f1afe-dbe9-4ea5-8d74-bfd02335796f/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-685f1afe-dbe9-4ea5-8d74-bfd02335796f",
+    "operations": [
+      {
+        "operationId": "gretl.s3-upload",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "original-s3-upload",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 390,
+    "endpoints": {
+      "s3": "http://localhost:63729"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/original-s3-upload-907f5f14-69e7-4ae5-aca4-7d9ab9a68f7e/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-907f5f14-69e7-4ae5-aca4-7d9ab9a68f7e",
+    "operations": [
+      {
+        "operationId": "gretl.s3-upload",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "parameter-copy-list",
+    "mode": "JAR",
+    "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 363,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_562c8abf3f1f42cb,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/parameter-copy-list-96fc3931-18f6-421d-aec7-0b85a18ac533/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/parameter-copy-list-96fc3931-18f6-421d-aec7-0b85a18ac533",
+    "operations": [
+      {
+        "operationId": "gretl.db2db",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "parameter-copy-scalar",
+    "mode": "JAR",
+    "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 350,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_562c8abf3f1f42cb,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/parameter-copy-scalar-dd3019a7-d99d-4c9e-9725-af44919895d4/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/parameter-copy-scalar-dd3019a7-d99d-4c9e-9725-af44919895d4",
+    "operations": [
+      {
+        "operationId": "gretl.db2db",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "parameter-sql-list",
+    "mode": "JAR",
+    "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 352,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_562c8abf3f1f42cb,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/parameter-sql-list-e518aa23-7e90-4e81-a829-52ac8754134c/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/parameter-sql-list-e518aa23-7e90-4e81-a829-52ac8754134c",
+    "operations": [
+      {
+        "operationId": "gretl.sql-executor",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "parameter-sql-scalar",
+    "mode": "JAR",
+    "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 347,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_562c8abf3f1f42cb,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/parameter-sql-scalar-768fd836-f176-4b4f-a115-8a8c097063ba/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/parameter-sql-scalar-768fd836-f176-4b4f-a115-8a8c097063ba",
+    "operations": [
+      {
+        "operationId": "gretl.sql-executor",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "database",
+    "mode": "JAR",
+    "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 1607,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_562c8abf3f1f42cb,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/positive-federation-02829a15-2600-40d5-9d9f-21772c9febd2/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/positive-federation-02829a15-2600-40d5-9d9f-21772c9febd2",
+    "operations": [
+      {
+        "operationId": "gretl.duckdb-sql-executor",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "database",
+    "mode": "JAR",
+    "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 1398,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_74248b4d86d04c65,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/postgis-geometry-contract-8de25cb3-b2cd-4b94-8f1b-84294cd91981/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/postgis-geometry-contract-8de25cb3-b2cd-4b94-8f1b-84294cd91981",
+    "operations": [
+      {
+        "operationId": "gretl.duckdb-sql-executor",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "runner-timeout",
+    "mode": "JAR",
+    "sha256": "57ad6762e6e47d4274c83be831ed06d35d2fc18014370a8365592d0a775c93eb",
+    "exitCode": 143,
+    "timedOut": true,
+    "aborted": false,
+    "durationMillis": 1039,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/runner-timeout-false-53878530-f1a5-4cac-804e-d2043f78deeb/reports/report.json",
+    "reportExitCode": 20,
+    "directory": "gretl-integration-tests/target/job-evidence/runner-timeout-false-53878530-f1a5-4cac-804e-d2043f78deeb",
+    "operations": []
+  },
+  {
+    "scenario": "runner-timeout",
+    "mode": "SCRIPT",
+    "sha256": "75f9bf9ef596fe6858aa89c99e0a6450ba3610b8591112bc5f45a482b179d375",
+    "exitCode": 143,
+    "timedOut": true,
+    "aborted": false,
+    "durationMillis": 1057,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/runner-timeout-true-8b88062d-1188-40ab-9071-b1da3372a6a6/reports/report.json",
+    "reportExitCode": 20,
+    "directory": "gretl-integration-tests/target/job-evidence/runner-timeout-true-8b88062d-1188-40ab-9071-b1da3372a6a6",
+    "operations": []
+  },
+  {
+    "scenario": "s3-copy",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 373,
+    "endpoints": {
+      "s3": "http://localhost:63483"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/s3-copy-4836e904-7e61-4018-bbbc-e51357a11e05/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/s3-copy-4836e904-7e61-4018-bbbc-e51357a11e05",
+    "operations": [
+      {
+        "operationId": "gretl.s3-bucket2bucket",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "s3-delete",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 367,
+    "endpoints": {
+      "s3": "http://localhost:63483"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/s3-delete-a913f58f-6c43-4382-8c90-2de2c99a3a8e/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/s3-delete-a913f58f-6c43-4382-8c90-2de2c99a3a8e",
+    "operations": [
+      {
+        "operationId": "gretl.s3-delete",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "s3-delete",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 347,
+    "endpoints": {
+      "s3": "http://localhost:63483"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/s3-delete-b28767ef-c291-462d-aa89-8c08f56e38f0/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/s3-delete-b28767ef-c291-462d-aa89-8c08f56e38f0",
+    "operations": [
+      {
+        "operationId": "gretl.s3-delete",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "s3-download",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 365,
+    "endpoints": {
+      "s3": "http://localhost:63483"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/s3-download-943cdcf7-c307-4557-b737-8a87fd203a49/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/s3-download-943cdcf7-c307-4557-b737-8a87fd203a49",
+    "operations": [
+      {
+        "operationId": "gretl.s3-download",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "s3-download",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 376,
+    "endpoints": {
+      "s3": "http://localhost:63483"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/s3-download-c6de34e4-93cf-4450-8b15-643ca9bec014/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/s3-download-c6de34e4-93cf-4450-8b15-643ca9bec014",
+    "operations": [
+      {
+        "operationId": "gretl.s3-download",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "s3-upload",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 389,
+    "endpoints": {
+      "s3": "http://localhost:63483"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/s3-upload-43e27281-fa2e-43a6-9db9-9e5a2d5fc1d0/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/s3-upload-43e27281-fa2e-43a6-9db9-9e5a2d5fc1d0",
+    "operations": [
+      {
+        "operationId": "gretl.s3-upload",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "s3-upload",
+    "mode": "JAR",
+    "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 379,
+    "endpoints": {
+      "s3": "http://localhost:63483"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/s3-upload-b052d6b6-f123-4111-8bd2-3d222d41dcd3/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/s3-upload-b052d6b6-f123-4111-8bd2-3d222d41dcd3",
+    "operations": [
+      {
+        "operationId": "gretl.s3-upload",
+        "status": "FAILED"
+      }
+    ]
+  },
+  {
+    "scenario": "selected-database",
+    "mode": "JAR",
+    "sha256": "84c6e95dce729ac1dc9063297312ac3961de63b0f669b0919ed9ffdc476ef791",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 1454,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_980620f716a64f3d,public"
+    },
+    "report": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-5481163901976871872/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/selected-database-9b9569f3-2770-4db6-991a-eb3947b32ba9",
+    "operations": [
+      {
+        "operationId": "gretl.sql-executor",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.db2db",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.sql-executor",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.duckdb-sql-executor",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "selected-external",
+    "mode": "JAR",
+    "sha256": "009b3f1aa14280c852448d0741be866e5c8ae49c5fae5fc62fea4a164658a34b",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 221,
+    "endpoints": {},
+    "report": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-18138489622123439476/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/selected-external-0e4eb8f2-a32a-4ef3-b21c-e077f36821ba",
+    "operations": [
+      {
+        "operationId": "example.file-size",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "selected-interlis",
+    "mode": "JAR",
+    "sha256": "4df33356910a094114d5b4f12b7d2ba5a5cb64b016cf31230570e0d98aee9956",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 892,
+    "endpoints": {},
+    "report": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-5325121769645195732/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-7e5976e5-3ae0-4599-a572-88278d2b906e",
+    "operations": [
+      {
+        "operationId": "gretl.ili2gpkg-import",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.csv2excel",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "selected-io",
+    "mode": "JAR",
+    "sha256": "2783fef21de30a8f24b51990913d5f378fe046bd8ea97d8827f9a87129f22d10",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 509,
+    "endpoints": {},
+    "report": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-4232041904268595635/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/selected-io-46458309-8cd8-4982-a11d-9ce8f7c173a6",
+    "operations": [
+      {
+        "operationId": "gretl.http-download",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.extract",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.xsl-transformer",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "selected-minimal-failure",
+    "mode": "JAR",
+    "sha256": "9a2b2c88ccde4f652554fafec497a909feb6665f9e3821c7a31ce043a19243d1",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 206,
+    "endpoints": {},
+    "report": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-7208619666822804088/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/selected-minimal-failure-89234b40-974e-44ed-861a-c7720068cb96",
+    "operations": []
+  },
+  {
+    "scenario": "selected-minimal-success",
+    "mode": "JAR",
+    "sha256": "9a2b2c88ccde4f652554fafec497a909feb6665f9e3821c7a31ce043a19243d1",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 212,
+    "endpoints": {},
+    "report": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-14619441124643734446/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/selected-minimal-success-e1789fe2-6a09-43a7-bef8-8925f7e2bec6",
+    "operations": []
+  },
+  {
+    "scenario": "selected-narrow-validator",
+    "mode": "JAR",
+    "sha256": "756536ddd6c92dfee8e442d84e13b80b404efe09af58da492c63ab553a005f6b",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 293,
+    "endpoints": {},
+    "report": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-7296737668620642900/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/selected-narrow-validator-b2ad6047-bbf3-488f-95bb-c1b9f81de8f1",
+    "operations": [
+      {
+        "operationId": "gretl.ilivalidator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "database",
+    "mode": "JAR",
+    "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 472,
+    "endpoints": {
+      "postgres": "jdbc:postgresql://localhost:63003/gretl?loggerLevel=OFF&currentSchema=gretl_bf5527ea73804462,public"
+    },
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/typed-db2db-chain-6ba312da-a851-469b-a286-b2c069f50fde/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/typed-db2db-chain-6ba312da-a851-469b-a286-b2c069f50fde",
+    "operations": [
+      {
+        "operationId": "gretl.db2db",
+        "status": "SUCCEEDED"
+      },
+      {
+        "operationId": "gretl.db2db",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "valid-csv-path",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 375,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/valid-csv-path-adf641a8-226c-492e-a4d0-201328d30491/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/valid-csv-path-adf641a8-226c-492e-a4d0-201328d30491",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "valid-csv-string",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 388,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/valid-csv-string-b5beaf9a-f9e4-476d-aba9-0c9363acf75a/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/valid-csv-string-b5beaf9a-f9e4-476d-aba9-0c9363acf75a",
+    "operations": [
+      {
+        "operationId": "gretl.csv-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "valid-gpkg-path",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 530,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/valid-gpkg-path-94a266c5-1cdb-4af4-92fb-3caf8eafdf0c/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/valid-gpkg-path-94a266c5-1cdb-4af4-92fb-3caf8eafdf0c",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "valid-gpkg-string",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 511,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/valid-gpkg-string-43ea9556-4fa4-48f1-8cae-846ce47c4cd6/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/valid-gpkg-string-43ea9556-4fa4-48f1-8cae-846ce47c4cd6",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "valid-json-path",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 424,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/valid-json-path-4d89b84e-0308-4dcc-8bb7-5a22cd5063e0/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/valid-json-path-4d89b84e-0308-4dcc-8bb7-5a22cd5063e0",
+    "operations": [
+      {
+        "operationId": "gretl.json-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "valid-json-string",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 441,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/valid-json-string-845fe526-a9aa-42d2-9747-b85c1509b0ed/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/valid-json-string-845fe526-a9aa-42d2-9747-b85c1509b0ed",
+    "operations": [
+      {
+        "operationId": "gretl.json-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "valid-shp-path",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 397,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/valid-shp-path-ec7c6394-1e69-4251-9815-0ea64e720e52/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/valid-shp-path-ec7c6394-1e69-4251-9815-0ea64e720e52",
+    "operations": [
+      {
+        "operationId": "gretl.shp-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "valid-shp-string",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 0,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 416,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/valid-shp-string-15527b43-b5de-4886-b441-f1e19f63cb0e/reports/report.json",
+    "reportExitCode": 0,
+    "directory": "gretl-integration-tests/target/job-evidence/valid-shp-string-15527b43-b5de-4886-b441-f1e19f63cb0e",
+    "operations": [
+      {
+        "operationId": "gretl.shp-validator",
+        "status": "SUCCEEDED"
+      }
+    ]
+  },
+  {
+    "scenario": "wrong-gpkg-table",
+    "mode": "JAR",
+    "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c",
+    "exitCode": 10,
+    "timedOut": false,
+    "aborted": false,
+    "durationMillis": 473,
+    "endpoints": {},
+    "report": "/private/tmp/gretl-phase3-A-profiles/gretl-integration-tests/target/job-evidence/wrong-gpkg-table-1a9d3bdd-d8c9-46ed-a59a-52e248295314/reports/report.json",
+    "reportExitCode": 10,
+    "directory": "gretl-integration-tests/target/job-evidence/wrong-gpkg-table-1a9d3bdd-d8c9-46ed-a59a-52e248295314",
+    "operations": [
+      {
+        "operationId": "gretl.gpkg-validator",
+        "status": "FAILED"
+      }
+    ]
+  }
+]

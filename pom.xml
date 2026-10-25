@@ -35,6 +35,7 @@
   </modules>
 
   <properties>
+    <gretl.sourceRevision></gretl.sourceRevision>
     <!-- Product baseline, spec 07. The wrapper pins Maven 3.10.0 separately. -->
     <java.version>25</java.version>
     <gretl.test.includes>**/*JobIT.java</gretl.test.includes>

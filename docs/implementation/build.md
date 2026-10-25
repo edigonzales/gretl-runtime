@@ -1,6 +1,6 @@
 # Build-Anleitung GRETL Runtime
 
-**Stand:** Umsetzungsphase 2, Spezifikation 4.1. Die aktuellen
+**Stand:** Umsetzungsphase 3, Spezifikation 4.1. Die aktuellen
 [Modulgrenzen](module-boundaries.md), [Java-/Maven-Migration](../migration/phase-2-java-maven.md)
 und [Artefaktjobtests](job-artifact-tests.md) ergänzen die ursprüngliche
 M0–M7-Entwicklung. Die damaligen Meilensteinberichte bleiben historische Nachweise.
@@ -105,7 +105,8 @@ lib/runtime/     CLI, Groovy, Runner, API, Logging, Logback, Groovy-JSON
 lib/tasks/       IO-, Datenbank-, INTERLIS-/Format-Tasks, IliValidator
 lib/extensions/  Standardfunktionsauswahl und eigene Task-JARs / Dependencies
 examples/        Download/Extract, SQL, IliValidator, Token/Katalog, Action/NO_DATA
-inventory.json   Module, Tasks, Artefakte, Dependencyversionen
+inventory.json   Module, Tasks, Artefakte, Dependencyversionen, Quellcommit
+package-catalog.json Maven-Identitäten, qualifizierte Kanten und Eingabehashes
 SHA256SUMS       SHA-256 aller Distributionsdateien mit relativen Pfaden
 ```
 
@@ -133,7 +134,7 @@ JAR-Auswahl aus einem laufenden Job sind nicht vorgesehen.
 `gretl package descriptor.json --output job.jar` prüft den Deskriptor,
 kompiliert den Job und deklarierte Groovy-Helfer zu Bytecode, prüft Klassen-
 und Ressourcenkollisionen und schreibt ein ausführbares JAR. Das JAR enthält
-die Runtime und den qualifizierten Klassenpfad; `java -jar` benötigt weder
+die gemeinsame Job-Runtime und die gewählten vollständigen Maven-Artefakte; `java -jar` benötigt weder
 Maven noch Gradle noch eine installierte GRETL-Distribution. Beim Packen wird
 der Job nicht ausgeführt.
 
@@ -295,10 +296,10 @@ Logging-Lücke ausgewiesen.
 
 ### M7-Release-/Packager-Härtung
 
-- Der Packager löst deklarierte Maven-Koordinaten über den Maven-CLI aus dem
-  lokalen Repository und Maven Central auf;
-  `-Dgretl.packager.offline=true` erzwingt den Offline-Modus. Bereits im
-  Runtime-Klassenpfad vorhandene Artefakte werden nicht erneut aufgelöst.
+- Der aktuelle [Auswahlvertrag](job-packaging.md) verwendet einen generierten,
+  qualifizierten Maven-Katalog. Schema 1 erhält den Vollkatalog; Schema 2 wählt
+  Taskmodule ausdrücklich. Externe deklarierte Artefakte werden vor dem
+  Kompilieren aufgelöst. Der Host-Classpath ergänzt keine fehlende Deklaration.
   Maven wird nur beim Paketieren benötigt.
 - Der Linux-x86-64-Workflow liegt unter `.github/workflows/release-candidate.yml`.
 - Offene Release-Bedingungen stehen in [`m7-report.md`](m7-report.md).
@@ -468,7 +469,7 @@ Erweiterungs-JAR im isolierten Distributionslauf.
   PostGIS-/FTP-Images; ohne Docker schlägt es bewusst fehl. Der Standard-`verify`
   bleibt Docker-frei.
 - `inventory.json` und `SHA256SUMS` sind vorhanden. Die Prüfsummen sind keine
-  Signatur; `sourceRevision` ist im Working-Tree-Build kein Commit. Der
+  Signatur; `sourceRevision` nennt den Quellcommit, `sourceDirty` kennzeichnet lokale Änderungen. Der
   Report-Inventarhash bleibt ein Katalogfingerabdruck, kein Hash aller JARs.
 - Weiterführende Logging-Arbeiten wie Heartbeat und Progress-Koaleszenz sind
   kein Erweiterungsauftrag dieses Umsetzungsplans. Der vorhandene
@@ -481,11 +482,9 @@ Erweiterungs-JAR im isolierten Distributionslauf.
   Native-Access-Warnung, die den Lauf nicht beeinflusst.
 - M5 enthält keine EHI-spezifische Feldbrücke, keinen Massen-Sampling-Test und
   keine separate Validator-JVM.
-- Der M6-Packager löst im ersten Profil keine Maven-Koordinaten auf, sondern
-  bündelt den bereitgestellten, qualifizierten Runtime-Klassenpfad. Die
-  Deskriptor-Dependencies werden gegen die enthaltenen Artefaktnamen geprüft.
-  Das JAR enthält daher den vollständigen Standardkatalog statt einer minimalen
-  Aufgabenauswahl.
+- Der ursprüngliche M6-Vollclasspath wurde in Phase 3 durch den
+  [versionierten Auswahlvertrag](job-packaging.md) ersetzt. Die damaligen
+  Meilensteinberichte bleiben historische Nachweise.
 - Das Job-JAR wird mit einem eigenen, getesteten Java-Merger statt mit einem
   Maven-Shade-Mojo gebaut; Service-, Groovy- und Lizenz-Merges sowie
   Klassen-/Ressourcenkollisionen sind implementiert. Publisher, XtfToGpkg und
@@ -510,7 +509,9 @@ Die vollständige Anleitung steht in
 Der GitHub-Actions-Workflow `.github/workflows/publish-snapshots.yml` heisst
 **publish artefacts** und läuft bei jedem Push sowie manuell über
 `workflow_dispatch`. Er führt zuerst
-`./mvnw -B -Pgeotools-probe clean verify` aus und deployt anschliessend mit
+`./mvnw -B clean verify` und
+`./mvnw -B -Pgeotools-probe,backing-services clean verify` aus. Nur auf `main`
+deployt er anschliessend mit
 `-DskipTests -DskipITs`; die Repository-Secrets `MAVEN_USERNAME` und
 `MAVEN_PASSWORD` werden nur im Deploy-Schritt injiziert.
 
@@ -557,3 +558,8 @@ Die JAR-Szenarien liegen unter `gretl-integration-tests/src/test/resources/jobs/
 gebauten Distribution auf und startet `java -jar` ohne Testclasspath. Prozessdaten,
 SHA-256, Report, Logs und Outputs bleiben unter `target/job-evidence/` erhalten.
 Vor einem erneuten `clean` müssen benötigte Nachweise gesichert werden.
+
+Der Release-Workflow verwendet die Distribution des vollständigen verifizierten
+Builds ohne erneuten Package-Build. `scripts/audit-job-evidence.py` kontrolliert
+Prüfsummen, Commitprovenienz und im vollständigen Lauf alle 44 positiven JAR-
+Operationsnachweise. Der separate IMAGE-Workflow ist ausschliesslich manuell.

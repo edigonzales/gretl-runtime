@@ -1,64 +1,58 @@
 package ch.so.agi.gretl.packager;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.io.OutputStream;
+import static org.junit.jupiter.api.Assertions.*;
+import ch.so.agi.gretl.runtime.logging.Json;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermissions;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+/** Selection contracts; genuine Maven extension compilation is qualified by the artifact suite. */
 class JobPackagerResolutionTest {
     @TempDir Path work;
-
-    @Test
-    void packagesResolvedDependencyThatIsNotOnTheRuntimeClasspath() throws Exception {
-        Path artifact = work.resolve("repo/org/example/demo/1.0/demo-1.0.jar");
-        Files.createDirectories(artifact.getParent());
-        try (OutputStream output = Files.newOutputStream(artifact);
-             JarOutputStream jar = new JarOutputStream(output)) {
-            jar.putNextEntry(new JarEntry("demo/Marker.class"));
-            jar.write(new byte[] {1, 2, 3});
-            jar.closeEntry();
-        }
-        Path maven = work.resolve("mvn");
-        Files.writeString(maven, """
-                #!/bin/sh
-                for arg in "$@"; do
-                  case "$arg" in
-                    -Dmdep.outputFile=*) out="${arg#-Dmdep.outputFile=}" ;;
-                  esac
-                done
-                printf "%%s" "%s" > "$out"
-                """.formatted(artifact));
-        Files.setPosixFilePermissions(maven, PosixFilePermissions.fromString("rwx------"));
-        String previous = System.getProperty("gretl.packager.maven");
-        System.setProperty("gretl.packager.maven", maven.toString());
-        try {
-            Path testClasses = Path.of("target/test-classes")
-                    .resolve("ch/so/agi/gretl/job/JobJarMain.class");
-            Files.createDirectories(testClasses.getParent());
-            Files.writeString(testClasses, "main");
-            Files.writeString(work.resolve("job.groovy"),
-                    "action('run') { }\ndefaults 'run'\n");
-            Path descriptor = work.resolve("job-package.json");
-            Files.writeString(descriptor, """
-                    {"schemaVersion":1,"name":"resolver-demo","version":"1",
-                     "runtimeVersion":"0.1.0-SNAPSHOT","entryScript":"job.groovy",
-                     "sources":[],"resources":[],
-                     "dependencies":["org.example:demo:1.0"]}
-                    """);
-            Path output = work.resolve("job.jar");
-            new JobPackager("0.1.0-SNAPSHOT").packageJob(descriptor, output);
-            try (var jar = new java.util.jar.JarFile(output.toFile())) {
-                assertNotNull(jar.getEntry("demo/Marker.class"));
+    private Path catalog() throws Exception {
+        var artifacts = new java.util.ArrayList<Map<String, Object>>();
+        for (String name : List.of("runtime", "io", "foreign")) {
+            Path jar = work.resolve("renamed-" + name + ".jar");
+            try (var output = new JarOutputStream(Files.newOutputStream(jar))) {
+                output.putNextEntry(new JarEntry("marker/" + name)); output.write(name.getBytes()); output.closeEntry();
             }
-        } finally {
-            if (previous == null) System.clearProperty("gretl.packager.maven");
-            else System.setProperty("gretl.packager.maven", previous);
+            artifacts.add(Map.of("groupId", "test", "artifactId", name, "version", "1", "type", "jar", "classifier", "",
+                    "file", jar.getFileName().toString(), "sha256", ResolvedArtifact.hash(jar), "dependencies", List.of()));
         }
+        Path file = work.resolve("package-catalog.json");
+        Files.writeString(file, Json.write(Map.of("schemaVersion", 1, "runtimeVersion", "0.1.0-SNAPSHOT", "runtime", "test:runtime:1",
+                "taskModules", Map.of("io", "test:io:1"), "standardFunctions", List.of(), "artifacts", artifacts)));
+        return file;
+    }
+    private PackageDescriptor descriptor(String fields) throws Exception {
+        Files.writeString(work.resolve("job.groovy"), "action('run') { }\ndefaults 'run'\n");
+        Path file = work.resolve("job-package.json");
+        Files.writeString(file, "{\"schemaVersion\":2,\"name\":\"selection\",\"version\":\"1\",\"runtimeVersion\":\"0.1.0-SNAPSHOT\",\"entryScript\":\"job.groovy\"" + fields + "}");
+        return PackageDescriptor.load(file, true);
+    }
+    @Test void missingSelectionIsMinimalAndRenamedInputsRetainMavenIdentity() throws Exception {
+        var selected = new PackageCatalog(catalog(), "0.1.0-SNAPSHOT").select(descriptor(""));
+        assertEquals(List.of("test:runtime:1"), selected.stream().map(a -> a.identity().coordinate()).toList());
+        assertEquals("renamed-runtime.jar", selected.getFirst().file().getFileName().toString());
+    }
+    @Test void explicitSelectionIgnoresForeignHostClasspath() throws Exception {
+        Path catalog = catalog(); var descriptor = descriptor(",\"taskModules\":[\"io\"]");
+        String old = System.getProperty("java.class.path");
+        try {
+            var before = new PackageCatalog(catalog, "0.1.0-SNAPSHOT").select(descriptor);
+            System.setProperty("java.class.path", old + java.io.File.pathSeparator + work.resolve("renamed-foreign.jar"));
+            assertEquals(before, new PackageCatalog(catalog, "0.1.0-SNAPSHOT").select(descriptor));
+            assertEquals(List.of("test:io:1", "test:runtime:1"), before.stream().map(a -> a.identity().coordinate()).toList());
+        } finally { System.setProperty("java.class.path", old); }
+    }
+    @Test void changedQualifiedBytesAreRejectedBeforeCompilation() throws Exception {
+        Path catalog = catalog(); Files.writeString(work.resolve("renamed-runtime.jar"), "changed");
+        var error = assertThrows(PackageException.class, () -> new PackageCatalog(catalog, "0.1.0-SNAPSHOT").select(descriptor("")));
+        assertEquals("PACKAGE_ARTIFACT_CHECKSUM", error.code());
     }
 }

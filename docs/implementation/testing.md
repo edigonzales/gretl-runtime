@@ -28,6 +28,7 @@ GeoTools-Probe nimmt keine GeoTools-JARs in die Standarddistribution auf.
 | Sieben ili2pg-Operationen, Schema-/Dataset-/Metakonfigurationsvarianten | InterlisArtifactIT mit ursprünglichen Modellen und Transfers |
 | FTP und S3 | ArtifactServicesIT; unabhängige FTP-/AWS-Clients |
 | Abbruch, SIGTERM und Abschlussreihenfolge | CancellationLocalJobIT und DatabaseArtifactIT |
+| Ausgewählte vollständige Pakete, externe Extension, Hostverunreinigung und Lauf ohne Buildumgebung | SelectedPackageLocalJobIT, SelectedPackageArtifactIT und DistributionIT; [Auswahlvertrag](job-packaging.md) |
 | IMAGE-Vorbereitung | ImageExecutionAdapterTest ohne echten GRETL-Image-Start |
 
 Die älteren `PostgresSqlExecutorIT`, `Db2DbPostgresIT`,
@@ -65,3 +66,9 @@ JaCoCo misst die Test-JVMs und aggregiert die aktiven Produktmodule. Nicht
 instrumentierte Job-/Launcherprozesse werden separat fachlich geprüft und
 liefern keine erfundene Coverage. Testanzahl und Codeabdeckung werden getrennt
 im jeweiligen Phasenbericht angegeben; siehe [Build](build.md).
+
+Nach jedem CI-Gate läuft `scripts/audit-job-evidence.py --source <Commit-SHA>`;
+der vollständige Lauf ergänzt `--full`. Der Audit prüft die vorhandenen
+verifizierten Artefakte, ohne neue JARs zu bauen. Das separate manuelle
+`image-qualification.yml` ist vorbereitet und wurde in diesem Auftrag nicht
+ausgeführt. Die zusätzlichen Paketqualifikationen bleiben ausdrücklich JAR.

@@ -21,7 +21,7 @@ kanonisches Fixture-JAR erneut verwendet werden. Pro Ausführung entstehen
 eigene Quellkopie, leere Ausgabe, Konfiguration, Prozess und Report. Die
 Prüfsumme wird am tatsächlich gestarteten JAR berechnet; die Wiederverwendung
 steht in `package-reuse.txt`. Dieser rein testseitige Build spart wiederholtes
-Bündeln des Vollkatalogs, ohne einen Produkt-Runtimecache einzuführen.
+Bündeln derselben expliziten Modulauswahl, ohne einen Produkt-Runtimecache einzuführen.
 
 `target/job-evidence/<Szenario>-<UUID>/` enthält `execution.json` mit Modus,
 SHA-256 bzw. Image-ID, Exitcode, Timeout, Abbruch und Dauer, den Aufruf,
@@ -108,3 +108,34 @@ Testcontainer werden ausdrücklich entfernt. Normales Ende bewahrt Exitcode,
 Ausgaben und Report. Die zusätzlichen ausdrücklich als SCRIPT geführten
 Phase-1-Regressionen bleiben Host-Skriptstarts und werden so protokolliert.
 Die IMAGE-Fälle starten ausschliesslich den Produktlauncher im Produktimage.
+
+## Auswahlpakete und CI-Evidenz
+
+Die 13 kanonischen Fixturewurzeln besitzen Schema-2-Deskriptoren. Originaldaten,
+SQL, Modelle und fachliche Assertions bleiben erhalten; die ursprüngliche
+Phase-2-Provenienzdatei beschreibt weiterhin deren damaligen Stand. Siehe den
+[Auswahl- und Migrationsvertrag](job-packaging.md). `PackageArtifactAssertions`
+prüft bei jedem JAR-Build die gewählten Provider, Meldungen, Services und die
+familienabhängig ausgeschlossenen Engines. Eingabeinventar und Descriptor
+werden neben dem JAR gesichert.
+
+Die zusätzlichen `SelectedPackageLocalJobIT` und `SelectedPackageArtifactIT`
+qualifizieren ausdrücklich den JAR-Packager. Sie benutzen eine explizite
+JAR-Auswahl und dokumentieren diese auch bei einem späteren IMAGE-Gesamtlauf.
+Das ist kein Fallback des gemeinsamen Szenariobestands: dessen IMAGE-Auswahl
+bleibt strikt. Die Paketfälle löschen die kompilierte Quellkopie und starten
+mit leerem HOME, ohne Maven im PATH und aus fremdem CWD. `isolation.json`
+hält diese Bedingungen fest.
+
+`image-qualification.yml` ist ausschliesslich manuell aktivierbar und verlangt
+eine Image-Referenz. Er zieht nur das ausdrücklich angegebene Produktimage,
+bereitet das Dienstnetz vor und verwendet den oben dokumentierten vollständigen
+Aufruf. Er ist im aktuellen Auftrag nicht ausgeführt worden. Die Pflichtmatrix
+enthält weiterhin ausschliesslich JAR und die nicht startenden Adaptertests.
+
+Der CI-Audit schreibt `target/qualification/summary.json` und
+`jar-executions.json`. Er berechnet jeden gestarteten JAR-Hash erneut, prüft
+alle Distributionsdateien gegen SHA256SUMS und im vollständigen Gate positive
+Invocations aller 44 Operationen. Signalbedingter Prozessstatus und fachlicher
+Reportstatus bleiben getrennt protokolliert. Der Release-Workflow paketiert
+nach den Tests nicht erneut mit übersprungenen Tests.
