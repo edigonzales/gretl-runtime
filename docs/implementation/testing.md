@@ -100,6 +100,10 @@ schlägt das Profil mit einem klaren Fehler fehl; es gibt kein stilles Skip.
 - Image: `docker.io/delfer/alpine-ftp-server` mit gepinntem Digest.
 - Dynamischer Control-Port und fester Passive-Port pro Testlauf, damit
   Passive-Mode-Datenverbindungen deterministisch sind.
+- Der Image-Entrypoint initialisiert den Benutzer und startet vsftpd mit
+  `background=NO` direkt unter dem Initprozess. So bleibt die Lebensdauer
+  an den Servermaster gebunden. Nach abgewiesenem Login prüft der Test
+  einen gültigen Zugriff auf denselben Server.
 - Pro Test ein Lease-Verzeichnis unter `/home/gretl/<token>`; Cleanup löscht
   Dateien und Verzeichnis rekursiv.
 - `MockFtpServer` bleibt für schnelle Protokoll-/Fehlerfälle im Standardbuild.

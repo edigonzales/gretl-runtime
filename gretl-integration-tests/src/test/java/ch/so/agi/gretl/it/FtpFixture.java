@@ -23,7 +23,7 @@ final class FtpFixture implements AutoCloseable {
             "docker.io/delfer/alpine-ftp-server@sha256:60bb774d8408d9d4d5c74d05d1c086a34ce192c6c1a142ffac268cac0dbc6fac";
     private static final String USER = "gretl";
     private static final String PASSWORD = "gretl-pass";
-    private FixedHostPortGenericContainer<?> container;
+    private final FixedHostPortGenericContainer<?> container;
 
     FtpFixture() {
         container = startContainer();
@@ -38,9 +38,12 @@ final class FtpFixture implements AutoCloseable {
                     .withExposedPorts(21)
                     .withFixedExposedPort(passive, passive)
                     .withEnv("USERS", USER + "|" + PASSWORD + "|/home/gretl")
-                    .withEnv("ADDRESS", "127.0.0.1")
-                    .withEnv("MIN_PORT", String.valueOf(passive))
-                    .withEnv("MAX_PORT", String.valueOf(passive))
+                    // Keep the master in the foreground. The image's default
+                    // pidproxy selects `pgrep vsftpd | tail -n 1`, which can
+                    // select a transient connection worker during readiness.
+                    .withCommand("vsftpd", "/etc/vsftpd/vsftpd.conf", "-obackground=NO",
+                            "-opasv_address=127.0.0.1", "-opasv_min_port=" + passive,
+                            "-opasv_max_port=" + passive)
                     .withCreateContainerCmdModifier(command ->
                             command.withHostName("ftp").withAliases("ftp"))
                     .waitingFor(Wait.forListeningPort());
@@ -59,30 +62,10 @@ final class FtpFixture implements AutoCloseable {
         throw new IllegalStateException("Could not start FTP fixture", last);
     }
 
-    private void restart() {
-        FixedHostPortGenericContainer<?> previous = container;
-        if (previous != null) {
-            try {
-                previous.stop();
-            } catch (RuntimeException ignored) {
-                // Restart below; stale container is discarded.
-            }
-        }
-        container = startContainer();
-    }
-
     Lease lease() throws IOException {
         String directory = "/home/gretl/" + UUID.randomUUID().toString()
                 .replace("-", "").substring(0, 12);
-        FTPClient client;
-        try {
-            client = connect();
-        } catch (IOException failure) {
-            // Docker Desktop occasionally loses the host port mapping after
-            // startup. A fresh container restores a usable control port.
-            restart();
-            client = connect();
-        }
+        FTPClient client = connect();
         try {
             if (!client.makeDirectory(directory)) {
                 throw new IOException("Could not create FTP lease directory: " + directory);

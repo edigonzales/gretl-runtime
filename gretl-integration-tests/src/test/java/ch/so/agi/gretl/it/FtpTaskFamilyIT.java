@@ -137,9 +137,15 @@ class FtpTaskFamilyIT {
         assertEquals(10, result.code(), result.out());
         assertFalse(result.out().contains("definitely-wrong"));
         assertFalse(result.err().contains("definitely-wrong"));
-        if (Files.exists(result.report())) {
-            assertFalse(Files.readString(result.report()).contains("definitely-wrong"));
-        }
+        String report = Files.readString(result.report());
+        assertFalse(report.contains("definitely-wrong"));
+        assertTrue(report.contains("FtpTaskException"), report);
+        assertTrue(report.contains("FTP-Anmeldung fehlgeschlagen"), report);
+        // A rejected login must leave the same server usable, including cleanup.
+        assertTrue(lease.list().isEmpty());
+        JobRunner.Result valid = JobRunner.run(root, ftpJob("validLogin", "FtpList", ""),
+                config(fixture.password()));
+        assertEquals(0, valid.code(), valid.err());
     }
 
     private String ftpJob(String id, String task, String extra) {
