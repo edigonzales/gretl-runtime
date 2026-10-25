@@ -5,8 +5,8 @@
     "successfulExecutions": [
       {
         "scenario": "ftp-list-result",
-        "directory": "gretl-integration-tests/target/job-evidence/ftp-list-result-89bf1a56-66ab-4835-9487-27014aee1a0f",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-list-result-4c05b3e5-726d-4bf9-91c0-a1fcf908a04d",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       }
     ]
   },
@@ -16,8 +16,8 @@
     "successfulExecutions": [
       {
         "scenario": "ftp-download",
-        "directory": "gretl-integration-tests/target/job-evidence/ftp-download-2d097806-8306-4970-9f5e-4a1f14f07439",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-download-5bb9c0cf-3ae2-47e4-b4e2-7e65278c8450",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       }
     ]
   },
@@ -27,8 +27,8 @@
     "successfulExecutions": [
       {
         "scenario": "ftp-upload",
-        "directory": "gretl-integration-tests/target/job-evidence/ftp-upload-7f63afc3-8102-4fd5-a420-b88f3f9f8420",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-upload-3c05e0d1-6264-434e-8da4-09ba4641da9a",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       }
     ]
   },
@@ -38,13 +38,13 @@
     "successfulExecutions": [
       {
         "scenario": "ftp-delete",
-        "directory": "gretl-integration-tests/target/job-evidence/ftp-delete-4d7707ed-0671-449d-933f-0ba2babb3296",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-delete-922a658a-873a-41f0-bc04-eddc762aa410",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "ftp-delete",
-        "directory": "gretl-integration-tests/target/job-evidence/ftp-delete-ad633879-3632-45bf-9d31-4917fdf5d7d2",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-delete-be37df1f-991a-4cb5-a594-392f063ab6e6",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       }
     ]
   },
@@ -54,23 +54,23 @@
     "successfulExecutions": [
       {
         "scenario": "original-s3-download",
-        "directory": "gretl-integration-tests/target/job-evidence/original-s3-download-0fe334a0-83f1-488a-b880-3eabac95299d",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-download-98d041a7-3bb5-40ec-beaa-6121b80e1b29",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "original-s3-download",
-        "directory": "gretl-integration-tests/target/job-evidence/original-s3-download-a427ed5f-39ee-4215-9338-8c17434e0779",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-download-a50a3565-9245-4875-b9d2-ba1efbbfd512",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "s3-download",
-        "directory": "gretl-integration-tests/target/job-evidence/s3-download-943cdcf7-c307-4557-b737-8a87fd203a49",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/s3-download-7496867b-a84d-4409-8742-066a976d5a13",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "s3-download",
-        "directory": "gretl-integration-tests/target/job-evidence/s3-download-c6de34e4-93cf-4450-8b15-643ca9bec014",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/s3-download-7c215f5d-1617-46f4-824b-b55d7303b62b",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       }
     ]
   },
@@ -80,23 +80,23 @@
     "successfulExecutions": [
       {
         "scenario": "original-s3-upload",
-        "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-1384b868-965a-4637-a4f9-9c035d969b2a",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-78983a96-5bf6-4b83-acbf-d49a76067936",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "original-s3-upload",
-        "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-1c3d2f5a-54dc-44be-8210-bafb90f703f3",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-d4e3d5f8-489e-493e-b5f9-a362c490f9b3",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "original-s3-upload",
-        "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-685f1afe-dbe9-4ea5-8d74-bfd02335796f",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-d8347dea-c7ba-4089-961d-d1e5aff76b14",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "s3-upload",
-        "directory": "gretl-integration-tests/target/job-evidence/s3-upload-43e27281-fa2e-43a6-9db9-9e5a2d5fc1d0",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/s3-upload-db3401e6-6961-448b-b339-ef67c2a6b71c",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       }
     ]
   },
@@ -106,23 +106,23 @@
     "successfulExecutions": [
       {
         "scenario": "original-s3-delete",
-        "directory": "gretl-integration-tests/target/job-evidence/original-s3-delete-a83bedc9-3457-4250-8db3-b6c7395e548c",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-delete-9bf6f81a-cd95-47f2-9b91-b2da4567f193",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "original-s3-delete",
-        "directory": "gretl-integration-tests/target/job-evidence/original-s3-delete-fa7b5a02-95fa-4c83-8606-c5477b2320e8",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-delete-f3893f0d-4d9f-4928-89ab-e0d97071793a",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "s3-delete",
-        "directory": "gretl-integration-tests/target/job-evidence/s3-delete-a913f58f-6c43-4382-8c90-2de2c99a3a8e",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/s3-delete-1fa5214b-bd5a-457e-ae78-e3d25d585700",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "s3-delete",
-        "directory": "gretl-integration-tests/target/job-evidence/s3-delete-b28767ef-c291-462d-aa89-8c08f56e38f0",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/s3-delete-990742ee-0fac-47ef-9b5e-b982bfc7d616",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       }
     ]
   },
@@ -132,13 +132,13 @@
     "successfulExecutions": [
       {
         "scenario": "original-s3-copy",
-        "directory": "gretl-integration-tests/target/job-evidence/original-s3-copy-183d6711-2493-4223-9b9d-f38c6cb0867f",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-copy-bf3ad337-9e42-45fd-90a7-312f18b2fa3d",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       },
       {
         "scenario": "s3-copy",
-        "directory": "gretl-integration-tests/target/job-evidence/s3-copy-4836e904-7e61-4018-bbbc-e51357a11e05",
-        "sha256": "035bb8303f4f05fb87a84951354a954a4fff9b6d3f7ff6d8a04b2e4535bb11c6"
+        "directory": "gretl-integration-tests/target/job-evidence/s3-copy-6fe8c213-0171-4882-b5bb-595feb8d3ca1",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
       }
     ]
   },
@@ -148,23 +148,23 @@
     "successfulExecutions": [
       {
         "scenario": "io-xsl-file",
-        "directory": "gretl-integration-tests/target/job-evidence/io-xsl-file-cdfbdd17-23af-475a-b1bd-fcdbc9dd92c4",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-xsl-file-49416cf5-1751-41f9-9cfb-16d9c76c0e3d",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "io-xsl-resource",
-        "directory": "gretl-integration-tests/target/job-evidence/io-xsl-resource-3f005ff4-cb40-4388-9f1b-21455983209a",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-xsl-resource-6b1963a6-fc76-4a37-96fa-e92a8d4adde6",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "io-xsl-set",
-        "directory": "gretl-integration-tests/target/job-evidence/io-xsl-set-056c791b-36c4-4751-90dc-34dee0133133",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-xsl-set-019b294e-2f72-4914-8927-037290539b62",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "selected-io",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-io-46458309-8cd8-4982-a11d-9ce8f7c173a6",
-        "sha256": "2783fef21de30a8f24b51990913d5f378fe046bd8ea97d8827f9a87129f22d10"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-io-81339f8e-127a-423f-8e23-3dbf9350ee8b",
+        "sha256": "f95edf7dfa6bed0f854a101a9942847fbd3b6e9f2a81b59884bc639d178512cd"
       }
     ]
   },
@@ -174,18 +174,18 @@
     "successfulExecutions": [
       {
         "scenario": "additional-function",
-        "directory": "gretl-integration-tests/target/job-evidence/additional-function-445d6488-04c9-4bfd-bfbc-e499b8e6209c",
-        "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca"
+        "directory": "gretl-integration-tests/target/job-evidence/additional-function-f888001a-5527-477a-9832-4829b3e93b64",
+        "sha256": "1c6e3e5a942d71128afae849d699b7f987820c91fd6279525a2aa68a42c660c4"
       },
       {
         "scenario": "ili-ili-report-single",
-        "directory": "gretl-integration-tests/target/job-evidence/ili-ili-report-single-473c8e97-7e3d-4b6a-a2c1-7e39459ea5f1",
-        "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125"
+        "directory": "gretl-integration-tests/target/job-evidence/ili-ili-report-single-4e54ff1a-ac52-4bb4-ac57-596f54cd7fdb",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
       },
       {
         "scenario": "selected-narrow-validator",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-narrow-validator-b2ad6047-bbf3-488f-95bb-c1b9f81de8f1",
-        "sha256": "756536ddd6c92dfee8e442d84e13b80b404efe09af58da492c63ab553a005f6b"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-narrow-validator-2fed910f-9bc6-475c-9790-d21701b35a92",
+        "sha256": "771b12cfb3771e9784ae903cc4968883fcef5c6c2c210eceae91b8796ce2a500"
       }
     ]
   },
@@ -195,13 +195,13 @@
     "successfulExecutions": [
       {
         "scenario": "io-download-file",
-        "directory": "gretl-integration-tests/target/job-evidence/io-download-file-63d75413-6904-42b9-bbaa-6920cda82f15",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-download-file-3c57e011-3a4e-4d63-a37d-79d7345e6cb6",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "selected-io",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-io-46458309-8cd8-4982-a11d-9ce8f7c173a6",
-        "sha256": "2783fef21de30a8f24b51990913d5f378fe046bd8ea97d8827f9a87129f22d10"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-io-81339f8e-127a-423f-8e23-3dbf9350ee8b",
+        "sha256": "f95edf7dfa6bed0f854a101a9942847fbd3b6e9f2a81b59884bc639d178512cd"
       }
     ]
   },
@@ -211,38 +211,38 @@
     "successfulExecutions": [
       {
         "scenario": "io-curl-binary",
-        "directory": "gretl-integration-tests/target/job-evidence/io-curl-binary-7c63ba07-21fd-47d2-94e6-d0e99ae50899",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-binary-63e7dd7c-55fb-4854-944c-4ac8fc02c64a",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "io-curl-data",
-        "directory": "gretl-integration-tests/target/job-evidence/io-curl-data-26033dbf-55ea-436d-b437-0a0f8be08f07",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-data-6d1b4333-5d58-45ef-ba96-a77663d16cdf",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "io-curl-form",
-        "directory": "gretl-integration-tests/target/job-evidence/io-curl-form-a81e6f1a-9696-45ee-ad92-e516441ef91c",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-form-101be97f-3fd4-4982-a935-a6164dde7bb8",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "io-curl-get",
-        "directory": "gretl-integration-tests/target/job-evidence/io-curl-get-df893e39-d529-44f2-9cd1-79346749231f",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-get-03830f55-4aba-4ecf-af07-41af0550a208",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "io-curl-original-download",
-        "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-download-f9fa02ac-5248-4842-924d-345b2724fcad",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-download-eb7191c3-2d67-4224-807f-4248e1a67d37",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "io-curl-original-form",
-        "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-form-8a6afb09-55f5-4746-8fcc-6f806aa6e07e",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-form-3967eff8-99ed-4220-956d-8b6d81c3650f",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "io-curl-original-planregister",
-        "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-planregister-bce1d464-2d96-479f-8460-b00aaed4dc90",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-planregister-0c1bb075-927b-48b4-bf45-5af7da0fda1e",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       }
     ]
   },
@@ -252,28 +252,28 @@
     "successfulExecutions": [
       {
         "scenario": "database",
-        "directory": "gretl-integration-tests/target/job-evidence/database-chain-72601290-515c-441e-ba15-23ac2cd4d515",
-        "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1"
+        "directory": "gretl-integration-tests/target/job-evidence/database-chain-4247b72a-a6d1-440a-9afb-00ae5f063e32",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
       },
       {
         "scenario": "parameter-copy-list",
-        "directory": "gretl-integration-tests/target/job-evidence/parameter-copy-list-96fc3931-18f6-421d-aec7-0b85a18ac533",
-        "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1"
+        "directory": "gretl-integration-tests/target/job-evidence/parameter-copy-list-e4012c6f-8bbc-47ad-920a-9a1c669e25e7",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
       },
       {
         "scenario": "parameter-copy-scalar",
-        "directory": "gretl-integration-tests/target/job-evidence/parameter-copy-scalar-dd3019a7-d99d-4c9e-9725-af44919895d4",
-        "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1"
+        "directory": "gretl-integration-tests/target/job-evidence/parameter-copy-scalar-5216d5a3-9377-444d-af66-a8901d63667b",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
       },
       {
         "scenario": "selected-database",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-database-9b9569f3-2770-4db6-991a-eb3947b32ba9",
-        "sha256": "84c6e95dce729ac1dc9063297312ac3961de63b0f669b0919ed9ffdc476ef791"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-database-927d7aba-d1ca-453d-ae24-e55e5fe8dd50",
+        "sha256": "a1ddf12d0d0921409decdbdafcabd25daa164dfe7623bddd8dc93d11c226511d"
       },
       {
         "scenario": "database",
-        "directory": "gretl-integration-tests/target/job-evidence/typed-db2db-chain-6ba312da-a851-469b-a286-b2c069f50fde",
-        "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1"
+        "directory": "gretl-integration-tests/target/job-evidence/typed-db2db-chain-bb2392f5-d02e-46cd-b406-a2dd5d05e343",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
       }
     ]
   },
@@ -283,18 +283,18 @@
     "successfulExecutions": [
       {
         "scenario": "original-duckdb",
-        "directory": "gretl-integration-tests/target/job-evidence/original-duckdb-de44d248-5640-4dd0-ac8d-dfa87766be1b",
-        "sha256": "e2fc769e208789b9beb9c594af9f8a26a207c827781bd9a3b177b2b1329aed33"
+        "directory": "gretl-integration-tests/target/job-evidence/original-duckdb-d729b4d4-91b1-47fa-b4c2-3091afe0a2a3",
+        "sha256": "5bd9e097c399b1f79543fc7bd48a3413c19848d703fe8e46dfa8ae0985f64fe5"
       },
       {
         "scenario": "database",
-        "directory": "gretl-integration-tests/target/job-evidence/positive-federation-02829a15-2600-40d5-9d9f-21772c9febd2",
-        "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1"
+        "directory": "gretl-integration-tests/target/job-evidence/positive-federation-6fa7c982-e286-43b6-8a7a-b995da9f5acd",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
       },
       {
         "scenario": "selected-database",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-database-9b9569f3-2770-4db6-991a-eb3947b32ba9",
-        "sha256": "84c6e95dce729ac1dc9063297312ac3961de63b0f669b0919ed9ffdc476ef791"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-database-927d7aba-d1ca-453d-ae24-e55e5fe8dd50",
+        "sha256": "a1ddf12d0d0921409decdbdafcabd25daa164dfe7623bddd8dc93d11c226511d"
       }
     ]
   },
@@ -304,8 +304,8 @@
     "successfulExecutions": [
       {
         "scenario": "original-gzip",
-        "directory": "gretl-integration-tests/target/job-evidence/original-gzip-fb984012-12a2-4c04-82f8-744fb3e0460f",
-        "sha256": "c12b187f68c488821519540cc19f734f0d1afc376b171eda62ba9a6066b8ae53"
+        "directory": "gretl-integration-tests/target/job-evidence/original-gzip-f74a9bb8-dd59-4bb5-b26b-22529337702d",
+        "sha256": "7a106f6a0cad2bf83d9d747bea684dc809c7fbaf0f3b8b6042ff2cf9ac6f427a"
       }
     ]
   },
@@ -315,18 +315,18 @@
     "successfulExecutions": [
       {
         "scenario": "io-extract-file",
-        "directory": "gretl-integration-tests/target/job-evidence/io-extract-file-42d5ff15-7c5a-4879-aae0-374503a84167",
-        "sha256": "d116c7d344fa7846a902c522a5052fe9d9566e7dc7afc7e36a84dc1fc0da5e07"
+        "directory": "gretl-integration-tests/target/job-evidence/io-extract-file-d305d95a-5be4-4647-b2c1-5c813e67598a",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
       },
       {
         "scenario": "original-gzip",
-        "directory": "gretl-integration-tests/target/job-evidence/original-gzip-fb984012-12a2-4c04-82f8-744fb3e0460f",
-        "sha256": "c12b187f68c488821519540cc19f734f0d1afc376b171eda62ba9a6066b8ae53"
+        "directory": "gretl-integration-tests/target/job-evidence/original-gzip-f74a9bb8-dd59-4bb5-b26b-22529337702d",
+        "sha256": "7a106f6a0cad2bf83d9d747bea684dc809c7fbaf0f3b8b6042ff2cf9ac6f427a"
       },
       {
         "scenario": "selected-io",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-io-46458309-8cd8-4982-a11d-9ce8f7c173a6",
-        "sha256": "2783fef21de30a8f24b51990913d5f378fe046bd8ea97d8827f9a87129f22d10"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-io-81339f8e-127a-423f-8e23-3dbf9350ee8b",
+        "sha256": "f95edf7dfa6bed0f854a101a9942847fbd3b6e9f2a81b59884bc639d178512cd"
       }
     ]
   },
@@ -336,23 +336,23 @@
     "successfulExecutions": [
       {
         "scenario": "database",
-        "directory": "gretl-integration-tests/target/job-evidence/database-chain-72601290-515c-441e-ba15-23ac2cd4d515",
-        "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1"
+        "directory": "gretl-integration-tests/target/job-evidence/database-chain-4247b72a-a6d1-440a-9afb-00ae5f063e32",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
       },
       {
         "scenario": "parameter-sql-list",
-        "directory": "gretl-integration-tests/target/job-evidence/parameter-sql-list-e518aa23-7e90-4e81-a829-52ac8754134c",
-        "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1"
+        "directory": "gretl-integration-tests/target/job-evidence/parameter-sql-list-9e181ec5-0754-4ac1-8230-c58270e9ce19",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
       },
       {
         "scenario": "parameter-sql-scalar",
-        "directory": "gretl-integration-tests/target/job-evidence/parameter-sql-scalar-768fd836-f176-4b4f-a115-8a8c097063ba",
-        "sha256": "016b6ce1254313ff560e8159a05a8d2a0b693de0d77904284379ed1c17b46ad1"
+        "directory": "gretl-integration-tests/target/job-evidence/parameter-sql-scalar-da265571-a6fe-404d-b2bf-048aac5188f9",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
       },
       {
         "scenario": "selected-database",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-database-9b9569f3-2770-4db6-991a-eb3947b32ba9",
-        "sha256": "84c6e95dce729ac1dc9063297312ac3961de63b0f669b0919ed9ffdc476ef791"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-database-927d7aba-d1ca-453d-ae24-e55e5fe8dd50",
+        "sha256": "a1ddf12d0d0921409decdbdafcabd25daa164dfe7623bddd8dc93d11c226511d"
       }
     ]
   },
@@ -362,18 +362,18 @@
     "successfulExecutions": [
       {
         "scenario": "excel-empty",
-        "directory": "gretl-integration-tests/target/job-evidence/excel-empty-03698811-b4ba-4661-855e-d495dda74329",
-        "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef"
+        "directory": "gretl-integration-tests/target/job-evidence/excel-empty-a6a441cb-fa98-401c-90bc-d3586a4325c9",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
       },
       {
         "scenario": "excel-single",
-        "directory": "gretl-integration-tests/target/job-evidence/excel-single-dad9caab-2d48-441e-acd1-73f46fb1c66e",
-        "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef"
+        "directory": "gretl-integration-tests/target/job-evidence/excel-single-5524b182-1368-47c8-a71a-18f9387656a3",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
       },
       {
         "scenario": "selected-interlis",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-7e5976e5-3ae0-4599-a572-88278d2b906e",
-        "sha256": "4df33356910a094114d5b4f12b7d2ba5a5cb64b016cf31230570e0d98aee9956"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-9c8bd56a-cdfb-4610-aa97-6eb87d2a8550",
+        "sha256": "dafe5608e5093c3061ada62fd6b5e116249ff937e8e8e3b8f855ceda9b96b1da"
       }
     ]
   },
@@ -383,13 +383,13 @@
     "successfulExecutions": [
       {
         "scenario": "format-csv-import",
-        "directory": "gretl-integration-tests/target/job-evidence/format-csv-import-9afe511b-e064-46c2-ac10-026521965abd",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-csv-import-832107bc-b9d8-4572-8d87-45c8dced6b1a",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       },
       {
         "scenario": "format-csv-import",
-        "directory": "gretl-integration-tests/target/job-evidence/format-csv-import-d2e3a8ae-fde6-45c1-b697-5c08c8966e66",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-csv-import-e32b63e5-9e2c-46d6-964a-1f139293c50a",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       }
     ]
   },
@@ -399,8 +399,8 @@
     "successfulExecutions": [
       {
         "scenario": "format-csv-export",
-        "directory": "gretl-integration-tests/target/job-evidence/format-csv-export-75d24df4-54cc-4c1e-ac87-229f7068dcf2",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-csv-export-4ca6cced-9158-46fa-bf1a-10f1cf938b31",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       }
     ]
   },
@@ -410,13 +410,13 @@
     "successfulExecutions": [
       {
         "scenario": "format-json-import",
-        "directory": "gretl-integration-tests/target/job-evidence/format-json-import-973f9833-1979-45b1-aaad-7ec88e9a9906",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-json-import-870ea77c-f929-4ba9-adf9-e21de1187bce",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       },
       {
         "scenario": "format-json-import",
-        "directory": "gretl-integration-tests/target/job-evidence/format-json-import-bd726a2c-158f-42ca-ad96-6361fdfff873",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-json-import-fc9ea537-9a04-434b-a527-0d4a5b46b776",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       }
     ]
   },
@@ -426,8 +426,8 @@
     "successfulExecutions": [
       {
         "scenario": "gpkg2shp-single",
-        "directory": "gretl-integration-tests/target/job-evidence/gpkg2shp-single-588771b7-8412-4557-91da-bf544cf310bd",
-        "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef"
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg2shp-single-a5cc7139-29ba-4689-a06c-b149387bd36e",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
       }
     ]
   },
@@ -437,8 +437,8 @@
     "successfulExecutions": [
       {
         "scenario": "format-gpkg-import",
-        "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-import-3ef1c6da-850f-4631-82fc-1ba0a282c185",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-import-59de6777-4fa8-4180-903f-77cb4939f2bb",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       }
     ]
   },
@@ -448,13 +448,13 @@
     "successfulExecutions": [
       {
         "scenario": "format-gpkg-export",
-        "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-export-7802c2b4-b707-4d19-8c75-b2d5ae2308ce",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-export-255a74bd-c14a-4840-817b-aead35c6b226",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       },
       {
         "scenario": "format-gpkg-export",
-        "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-export-ce149a53-e5d9-44a2-bd88-838f86166668",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-export-f2d4c05d-5541-4fa0-8ee2-75f6db3f032d",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       }
     ]
   },
@@ -464,8 +464,8 @@
     "successfulExecutions": [
       {
         "scenario": "format-shp-import",
-        "directory": "gretl-integration-tests/target/job-evidence/format-shp-import-7f6ac09d-8a82-44b4-b40b-9dbc0b631b41",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-shp-import-326a6d87-3e16-42cf-bdbc-089cf8a7aeaf",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       }
     ]
   },
@@ -475,8 +475,8 @@
     "successfulExecutions": [
       {
         "scenario": "format-shp-export",
-        "directory": "gretl-integration-tests/target/job-evidence/format-shp-export-0da50205-5eef-4065-9faf-eab52947d4d0",
-        "sha256": "53f324b536a40567991d59380b0c9f0ddef8120ad0ca5ba79a208ce8063b67d8"
+        "directory": "gretl-integration-tests/target/job-evidence/format-shp-export-083d4023-9803-41a7-9d7f-42041f4cd778",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
       }
     ]
   },
@@ -486,23 +486,23 @@
     "successfulExecutions": [
       {
         "scenario": "additional-function",
-        "directory": "gretl-integration-tests/target/job-evidence/additional-function-81b3e78c-807b-41a1-9d30-cc0b44c4708b",
-        "sha256": "0ec8142b83ccdbb55e92c35ba09048fa4a56c57e30576137ffac1d1e031a07ca"
+        "directory": "gretl-integration-tests/target/job-evidence/additional-function-a685bf85-12e6-4347-a666-e7aabd05fa12",
+        "sha256": "1c6e3e5a942d71128afae849d699b7f987820c91fd6279525a2aa68a42c660c4"
       },
       {
         "scenario": "selected-interlis",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-7e5976e5-3ae0-4599-a572-88278d2b906e",
-        "sha256": "4df33356910a094114d5b4f12b7d2ba5a5cb64b016cf31230570e0d98aee9956"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-9c8bd56a-cdfb-4610-aa97-6eb87d2a8550",
+        "sha256": "dafe5608e5093c3061ada62fd6b5e116249ff937e8e8e3b8f855ceda9b96b1da"
       },
       {
         "scenario": "valid-csv-path",
-        "directory": "gretl-integration-tests/target/job-evidence/valid-csv-path-adf641a8-226c-492e-a4d0-201328d30491",
-        "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c"
+        "directory": "gretl-integration-tests/target/job-evidence/valid-csv-path-4d266463-4f9f-4d6d-bd21-9d26852692d6",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
       },
       {
         "scenario": "valid-csv-string",
-        "directory": "gretl-integration-tests/target/job-evidence/valid-csv-string-b5beaf9a-f9e4-476d-aba9-0c9363acf75a",
-        "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c"
+        "directory": "gretl-integration-tests/target/job-evidence/valid-csv-string-eaa84422-6c18-4b7c-a5e9-04c40889ae41",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
       }
     ]
   },
@@ -512,13 +512,13 @@
     "successfulExecutions": [
       {
         "scenario": "valid-json-path",
-        "directory": "gretl-integration-tests/target/job-evidence/valid-json-path-4d89b84e-0308-4dcc-8bb7-5a22cd5063e0",
-        "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c"
+        "directory": "gretl-integration-tests/target/job-evidence/valid-json-path-a579619a-a8d1-4a07-a0d4-dbbedeebb035",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
       },
       {
         "scenario": "valid-json-string",
-        "directory": "gretl-integration-tests/target/job-evidence/valid-json-string-845fe526-a9aa-42d2-9747-b85c1509b0ed",
-        "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c"
+        "directory": "gretl-integration-tests/target/job-evidence/valid-json-string-3b91f045-e38d-47db-9b85-358568326ad1",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
       }
     ]
   },
@@ -528,13 +528,13 @@
     "successfulExecutions": [
       {
         "scenario": "valid-gpkg-path",
-        "directory": "gretl-integration-tests/target/job-evidence/valid-gpkg-path-94a266c5-1cdb-4af4-92fb-3caf8eafdf0c",
-        "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c"
+        "directory": "gretl-integration-tests/target/job-evidence/valid-gpkg-path-6243dcde-8df8-4503-aa4e-32bd1e1acf6e",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
       },
       {
         "scenario": "valid-gpkg-string",
-        "directory": "gretl-integration-tests/target/job-evidence/valid-gpkg-string-43ea9556-4fa4-48f1-8cae-846ce47c4cd6",
-        "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c"
+        "directory": "gretl-integration-tests/target/job-evidence/valid-gpkg-string-3f3c2458-da90-4e94-b145-c516cd72f948",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
       }
     ]
   },
@@ -544,13 +544,13 @@
     "successfulExecutions": [
       {
         "scenario": "valid-shp-path",
-        "directory": "gretl-integration-tests/target/job-evidence/valid-shp-path-ec7c6394-1e69-4251-9815-0ea64e720e52",
-        "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c"
+        "directory": "gretl-integration-tests/target/job-evidence/valid-shp-path-6996f0f4-2e2e-4b39-926d-8d907b1a55e2",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
       },
       {
         "scenario": "valid-shp-string",
-        "directory": "gretl-integration-tests/target/job-evidence/valid-shp-string-15527b43-b5de-4886-b441-f1e19f63cb0e",
-        "sha256": "0e751447b2465b4225d3d7bd088c0b8cc4ff711509d0707519563cd2b668246c"
+        "directory": "gretl-integration-tests/target/job-evidence/valid-shp-string-b3c0c82f-3f70-444f-adb4-02ac60231052",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
       }
     ]
   },
@@ -560,68 +560,68 @@
     "successfulExecutions": [
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-0633ba8b-dd58-40da-81d7-317642d649d8",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-0f43fd40-2d34-4ec1-957a-72d624246472",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-3067683e-54d3-4416-9cff-199ec5a5074a",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-226a19e5-1c66-430c-a812-80f7d74871a7",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-4a843183-abc9-48de-aec3-22365dd14b35",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-315a3e49-4f45-497d-85aa-dc9de380ae39",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-85cb514f-fcec-4f08-b8b2-63148d726251",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-49d2802e-1083-46bc-987e-fe2a4b8acc17",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-9485f21b-620f-44c0-9db6-c30eee097e39",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-4f2cfe87-0350-4035-8454-8998aad2aacc",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-9f16b5cc-e437-4056-9662-f643fdf8cca4",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-5ae3140e-466b-467e-9bd7-bc01c8e57510",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-af90eb30-0d93-430d-bb71-5366153183f5",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-795c953f-9c65-46fc-9a86-587241f304e0",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-c259cf83-e137-4585-83dd-c5137a7adbae",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-8de8ccad-3c50-45a2-8ea9-7f5a08a16d6a",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-cda80403-8910-4c1f-8a12-8ee122d69851",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-969294a3-d15b-4a66-b07c-ced6188e385c",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-d3a9f12b-4dd1-4856-bc00-4bb5fb064848",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-b100431c-f96c-454f-9051-e4a1946b851e",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-e2510931-01b5-47f1-b6bc-6bd4265465de",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-ca854f78-dd3c-4a5c-8a79-2910c253b0c8",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-eb83d0d8-d656-4056-8c7c-db62fc363f0b",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-dcb907ac-c231-4591-bc1a-38bd616c82d5",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-schema",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-f0ff066c-bde7-42ec-8656-64e0f8c885d0",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-fe6df509-bd23-4232-82d2-33745490012d",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       }
     ]
   },
@@ -631,38 +631,38 @@
     "successfulExecutions": [
       {
         "scenario": "ili2pg-import",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-0e6c5716-4b48-48c0-a34f-c24ace5b7252",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-0d257d51-a290-4fe1-bb93-a503fafd1cf9",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-import",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-29dde1ed-55dc-4e4a-8c5d-73abaf85945c",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-4246337e-8372-4e0f-9fcd-cad4ccd06f5d",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-import",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-69d35c16-d3aa-419d-a0b5-affc782df6cd",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-4b5685dd-4361-46ff-9908-8fbdd743206c",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-import",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-79923de4-f7e1-41ec-ad40-0ca590cb41ed",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-6724ac84-c45f-4e49-a8e3-bc61357cc217",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-import",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-ad02ea01-300f-48dd-90dd-06d1877b99a1",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-674739b6-58cc-4e45-8f2b-2186a193489f",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-import",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-c4eb374f-7306-4214-b6ca-0419aa4a37c5",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-762f5c97-9ece-41e0-86e6-49880a9d2b4a",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-import",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-c93b8d9b-bcc0-4cb0-a800-4539c190081b",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-bbf78a8d-8e15-497d-ba04-cb84e04977d6",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       }
     ]
   },
@@ -672,23 +672,23 @@
     "successfulExecutions": [
       {
         "scenario": "ili2pg-replace",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-1846ec16-58c1-465c-a03f-8db58afaaf44",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-03c3d53b-ef59-4d2d-b089-dbedf2e154dd",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-replace",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-7dfbfebd-684e-4379-8cbc-ae85d3b68302",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-e6523b1b-d16f-4db0-b373-411bb344bb62",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-replace",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-fce43497-c881-44b5-8a0b-7e5363bb3185",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-ebead581-1f02-43b9-8387-311f5b8b10ac",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-replace-repository",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-repository-0bbe00c7-5579-4707-96cf-65d58cb50252",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-repository-5bfe58a4-a37b-4d34-a1e3-2f83f8d84254",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       }
     ]
   },
@@ -698,8 +698,8 @@
     "successfulExecutions": [
       {
         "scenario": "ili2pg-update",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-update-cb403188-7c91-405a-95e8-c7f09ac7a061",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-update-bd586b68-daf8-4d7c-81f9-3827d91431e4",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       }
     ]
   },
@@ -709,8 +709,8 @@
     "successfulExecutions": [
       {
         "scenario": "ili2pg-export",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-export-c8ff28f8-9f24-4d4e-95bf-e429ec82dc4e",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-export-daf41102-2a96-43dd-8805-a6826e9edca3",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       }
     ]
   },
@@ -720,13 +720,13 @@
     "successfulExecutions": [
       {
         "scenario": "ili2pg-delete",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-delete-6b39e8ad-a710-4292-b514-f59769094133",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-delete-2139353d-0278-452a-a93c-efc2426e0383",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-delete",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-delete-70c007b0-fb9a-406a-a63a-ebcc71f1f5f4",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-delete-835110f6-b059-45ed-99a8-a59561d16c6f",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       }
     ]
   },
@@ -736,33 +736,33 @@
     "successfulExecutions": [
       {
         "scenario": "ili2pg-validate",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-0b0fac8f-150a-47e6-98c8-dae6941609d1",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-32f83a14-5c46-4953-b59d-87fec4cba3bb",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-validate",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-1e497ab4-366b-4837-b45d-882d0449e839",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-5511ffb4-ecc7-48f2-aa3e-8a2b672572ca",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-validate",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-43e4d790-5ab0-4cf7-9285-7739cb0d8b86",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-a80f92e1-64bc-4f70-9f59-92c7cde2b5a2",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-validate",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-75f502ee-bfb7-4d79-a5bd-4febb35be426",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-c25e9a43-7ef3-47ba-8d87-93bcd2462147",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-validate",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-7ab54efa-9a45-4bd7-89d4-08c4ba90c915",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-c47d5aa0-0064-4ab2-a3fb-33d417b90c30",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       },
       {
         "scenario": "ili2pg-validate",
-        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-c3f43124-4ed2-4dad-b402-48314f975219",
-        "sha256": "ac8a65d0c0cc243d6e5e0f42ff951493a92b63fda41dd178a3d332c45711566a"
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-d7158793-a001-47d8-9308-195fa6e3fcc5",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
       }
     ]
   },
@@ -772,33 +772,33 @@
     "successfulExecutions": [
       {
         "scenario": "gpkg-help-example",
-        "directory": "gretl-integration-tests/target/job-evidence/gpkg-help-example-3552c6ef-601a-4b2f-8e50-614c18bc1537",
-        "sha256": "000f310e79ab7b628e845230e1d8bf8857a50b76af03040a0da069d0b4e171ca"
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg-help-example-87ae4073-8464-4845-982a-ff6bdac21e43",
+        "sha256": "8ce3a44dda1acc3a68ab67bd9a17625d644b2c031f88f158315408de554d6d11"
       },
       {
         "scenario": "gpkg-srid",
-        "directory": "gretl-integration-tests/target/job-evidence/gpkg-srid-8c9b31ea-5635-409c-8ca5-82eb08fc9221",
-        "sha256": "218424075c7bb390c2024051b83eb30d3317f0eaf83f50ac6539111c43de3697"
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg-srid-51f7a0a9-11ac-4727-921d-169972a16b6b",
+        "sha256": "bc2ff4648a94b298ee4ff08f2fce885b85e186976650fa8338153ab104998c28"
       },
       {
         "scenario": "gpkg-srid",
-        "directory": "gretl-integration-tests/target/job-evidence/gpkg-srid-d1252191-113a-4e7c-8d9a-cecb683d6acf",
-        "sha256": "218424075c7bb390c2024051b83eb30d3317f0eaf83f50ac6539111c43de3697"
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg-srid-65743560-0275-4efd-b963-914f5d78c69f",
+        "sha256": "bc2ff4648a94b298ee4ff08f2fce885b85e186976650fa8338153ab104998c28"
       },
       {
         "scenario": "ili-gpkg-set",
-        "directory": "gretl-integration-tests/target/job-evidence/ili-gpkg-set-e0fd3679-985a-4c0e-9eff-24f32760943d",
-        "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125"
+        "directory": "gretl-integration-tests/target/job-evidence/ili-gpkg-set-d54adc3a-b8c3-4781-9b23-2faf7ddad6e8",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
       },
       {
         "scenario": "ili-gpkg-single",
-        "directory": "gretl-integration-tests/target/job-evidence/ili-gpkg-single-7dad55db-745c-4fcc-a532-6653c3f1eb57",
-        "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125"
+        "directory": "gretl-integration-tests/target/job-evidence/ili-gpkg-single-ff5db410-410a-4cd6-b696-9932a15a21e0",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
       },
       {
         "scenario": "selected-interlis",
-        "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-7e5976e5-3ae0-4599-a572-88278d2b906e",
-        "sha256": "4df33356910a094114d5b4f12b7d2ba5a5cb64b016cf31230570e0d98aee9956"
+        "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-9c8bd56a-cdfb-4610-aa97-6eb87d2a8550",
+        "sha256": "dafe5608e5093c3061ada62fd6b5e116249ff937e8e8e3b8f855ceda9b96b1da"
       }
     ]
   },
@@ -808,8 +808,8 @@
     "successfulExecutions": [
       {
         "scenario": "ili-duck-export-single",
-        "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-b770417a-7dd9-4bc1-ae87-917077050dc4",
-        "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125"
+        "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-9f3d16b7-7df1-4e66-b170-95f68a86f641",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
       }
     ]
   },
@@ -819,8 +819,8 @@
     "successfulExecutions": [
       {
         "scenario": "ili-duck-export-single",
-        "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-b770417a-7dd9-4bc1-ae87-917077050dc4",
-        "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125"
+        "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-9f3d16b7-7df1-4e66-b170-95f68a86f641",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
       }
     ]
   },
@@ -830,8 +830,8 @@
     "successfulExecutions": [
       {
         "scenario": "ili-duck-export-single",
-        "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-b770417a-7dd9-4bc1-ae87-917077050dc4",
-        "sha256": "690b89b81689efbdbb30dcb4e47740fc49133c7d51b5aa9e35c3f60c46096125"
+        "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-9f3d16b7-7df1-4e66-b170-95f68a86f641",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
       }
     ]
   },
@@ -841,13 +841,13 @@
     "successfulExecutions": [
       {
         "scenario": "av2ch-set",
-        "directory": "gretl-integration-tests/target/job-evidence/av2ch-set-dd9252be-bd8a-491b-991d-edd4fff894f2",
-        "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef"
+        "directory": "gretl-integration-tests/target/job-evidence/av2ch-set-baeb0806-88ac-4070-820b-aaa83bf5a32d",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
       },
       {
         "scenario": "av2ch-single",
-        "directory": "gretl-integration-tests/target/job-evidence/av2ch-single-72b0c404-2c26-4303-be31-05cf7e9cb23b",
-        "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef"
+        "directory": "gretl-integration-tests/target/job-evidence/av2ch-single-3e54c2ce-70c6-4fdd-ad8b-facc17aa0835",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
       }
     ]
   },
@@ -857,13 +857,13 @@
     "successfulExecutions": [
       {
         "scenario": "av2geobau-set",
-        "directory": "gretl-integration-tests/target/job-evidence/av2geobau-set-a7ba28eb-1e82-41ce-b362-b4e9bb6bb7d6",
-        "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef"
+        "directory": "gretl-integration-tests/target/job-evidence/av2geobau-set-71f6c148-ba30-42bb-8d94-425f284e7ade",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
       },
       {
         "scenario": "av2geobau-single",
-        "directory": "gretl-integration-tests/target/job-evidence/av2geobau-single-1bd7f4a5-4927-420b-9d29-cea7bda0634c",
-        "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef"
+        "directory": "gretl-integration-tests/target/job-evidence/av2geobau-single-f1dc909b-c80b-4db1-abe3-6f77b3580fc7",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
       }
     ]
   },
@@ -873,8 +873,8 @@
     "successfulExecutions": [
       {
         "scenario": "gpkg2dxf-single",
-        "directory": "gretl-integration-tests/target/job-evidence/gpkg2dxf-single-12184904-310c-4229-a9e6-391bb37d31c7",
-        "sha256": "57fd604077a2260af2db7c85463fad7060bc38ae0dbd30df372efb410e842eef"
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg2dxf-single-0890bf59-4dbe-4665-9102-2a8785b5f3f0",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
       }
     ]
   }

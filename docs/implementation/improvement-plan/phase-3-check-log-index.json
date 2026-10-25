@@ -1,5 +1,11 @@
 [
   {
+    "path": "/tmp/gretl-improvement-evidence/phase3/ci-751afb8-cancelled.log",
+    "sha256": "1ce740f346990b3f9d8b8652ad796d2a1aa493d54a28c18be1a14ba3aab11236",
+    "bytes": 565966,
+    "status": "inspect log"
+  },
+  {
     "path": "/tmp/gretl-improvement-evidence/phase3/distribution-development.log",
     "sha256": "22003cd36bf073800a11a75ce683b7787bcb785df8a7a003f252a68d25237d85",
     "bytes": 40149,
@@ -66,6 +72,12 @@
     "status": "FAILURE"
   },
   {
+    "path": "/tmp/gretl-improvement-evidence/phase3/profiles-revision-1.log",
+    "sha256": "367b09425b25641d12f16cebd28f466b69c425c6c071baaf4587539341d97a13",
+    "bytes": 127574,
+    "status": "SUCCESS"
+  },
+  {
     "path": "/tmp/gretl-improvement-evidence/phase3/profiles.log",
     "sha256": "5e9de5cf4e761ef51d01fdc53a882976a9196ff37a45edd5b6b3f9da0e1df023",
     "bytes": 127497,
@@ -100,6 +112,12 @@
     "sha256": "b6037d32a6e101c82b6268ce0021ef3af17d951315fb908e4f15252602776fd5",
     "bytes": 1021,
     "status": "FAILURE"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/standard-revision-1.log",
+    "sha256": "abe7a0f78e1bedb2cdb6d707f435214aa45e7ead0c764f0b35e60472095083bb",
+    "bytes": 100438,
+    "status": "SUCCESS"
   },
   {
     "path": "/tmp/gretl-improvement-evidence/phase3/standard.log",

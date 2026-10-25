@@ -1,7 +1,7 @@
 [
   {
     "scenario": "selected-database",
-    "sha256": "84c6e95dce729ac1dc9063297312ac3961de63b0f669b0919ed9ffdc476ef791",
+    "sha256": "a1ddf12d0d0921409decdbdafcabd25daa164dfe7623bddd8dc93d11c226511d",
     "exitCode": 0,
     "inventory": {
       "schemaVersion": 2,
@@ -191,17 +191,19 @@
       "ch/so/agi/gretl/i18n/messages_de.properties": true,
       "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
     },
-    "operationProviders": [],
+    "operationProviders": [
+      "ch.so.agi.gretl.tasks.database.DatabaseTaskProvider"
+    ],
     "isolation": {
-      "emptyMavenCache": true,
       "sourceDeleted": true,
-      "path": "/gretl-no-build-tools",
-      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-5481163901976871872"
+      "emptyMavenCache": true,
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-17182657935558778404",
+      "path": "/gretl-no-build-tools"
     }
   },
   {
     "scenario": "selected-external",
-    "sha256": "009b3f1aa14280c852448d0741be866e5c8ae49c5fae5fc62fea4a164658a34b",
+    "sha256": "c9e4db1f2806f6814861a918b3ce370321dd7b4d10aff7199e37206a8d668f95",
     "exitCode": 0,
     "inventory": {
       "schemaVersion": 2,
@@ -209,7 +211,7 @@
       "taskModules": [],
       "standardFunctions": false,
       "declared": [
-        "fixture.gf2dadd1573564c468cf05ea70d2ed318:external-file-size:1.0"
+        "fixture.g5167a09e934f4e5bb1a4534c06bf3762:external-file-size:1.0"
       ],
       "included": [
         {
@@ -295,9 +297,9 @@
         {
           "name": "external-file-size-1.0.jar",
           "kind": "jar",
-          "sha256": "f0bf3bc822fb3d849cb4b135ab8482eab4a6a2b0c6103e036e0c381121af29ab",
-          "coordinate": "fixture.gf2dadd1573564c468cf05ea70d2ed318:external-file-size:1.0",
-          "groupId": "fixture.gf2dadd1573564c468cf05ea70d2ed318",
+          "sha256": "cb019bb2b98b4c30730bb3b4b7bfce3899d94048d855c145f94112af0b3e2627",
+          "coordinate": "fixture.g5167a09e934f4e5bb1a4534c06bf3762:external-file-size:1.0",
+          "groupId": "fixture.g5167a09e934f4e5bb1a4534c06bf3762",
           "artifactId": "external-file-size",
           "version": "1.0",
           "classifier": ""
@@ -305,9 +307,9 @@
         {
           "name": "helper-1.0.jar",
           "kind": "jar",
-          "sha256": "4f4a8f046c2e42fca8d388385184a1ecb4d8a9d60091aafafdfd520b3aec94a0",
-          "coordinate": "fixture.gf2dadd1573564c468cf05ea70d2ed318:helper:1.0",
-          "groupId": "fixture.gf2dadd1573564c468cf05ea70d2ed318",
+          "sha256": "1563f81f7e0e9885b5ace306a95a5f23ada158272e27d75752ed6381d72246ac",
+          "coordinate": "fixture.g5167a09e934f4e5bb1a4534c06bf3762:helper:1.0",
+          "groupId": "fixture.g5167a09e934f4e5bb1a4534c06bf3762",
           "artifactId": "helper",
           "version": "1.0",
           "classifier": ""
@@ -371,17 +373,19 @@
       "ch/so/agi/gretl/i18n/messages_de.properties": true,
       "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
     },
-    "operationProviders": [],
+    "operationProviders": [
+      "external.probe.ExampleProvider"
+    ],
     "isolation": {
-      "emptyMavenCache": true,
       "sourceDeleted": true,
-      "path": "/gretl-no-build-tools",
-      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-18138489622123439476"
+      "emptyMavenCache": true,
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-11556822684168047702",
+      "path": "/gretl-no-build-tools"
     }
   },
   {
     "scenario": "selected-interlis",
-    "sha256": "4df33356910a094114d5b4f12b7d2ba5a5cb64b016cf31230570e0d98aee9956",
+    "sha256": "dafe5608e5093c3061ada62fd6b5e116249ff937e8e8e3b8f855ceda9b96b1da",
     "exitCode": 0,
     "inventory": {
       "schemaVersion": 2,
@@ -1041,17 +1045,19 @@
       "ch/so/agi/gretl/i18n/messages_de.properties": true,
       "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
     },
-    "operationProviders": [],
+    "operationProviders": [
+      "ch.so.agi.gretl.tasks.interlis.InterlisTaskProvider"
+    ],
     "isolation": {
-      "emptyMavenCache": true,
       "sourceDeleted": true,
-      "path": "/gretl-no-build-tools",
-      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-5325121769645195732"
+      "emptyMavenCache": true,
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-7904741775530975747",
+      "path": "/gretl-no-build-tools"
     }
   },
   {
     "scenario": "selected-io",
-    "sha256": "2783fef21de30a8f24b51990913d5f378fe046bd8ea97d8827f9a87129f22d10",
+    "sha256": "f95edf7dfa6bed0f854a101a9942847fbd3b6e9f2a81b59884bc639d178512cd",
     "exitCode": 0,
     "inventory": {
       "schemaVersion": 2,
@@ -1531,17 +1537,19 @@
       "ch/so/agi/gretl/i18n/messages_de.properties": true,
       "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
     },
-    "operationProviders": [],
+    "operationProviders": [
+      "ch.so.agi.gretl.tasks.io.IoTaskProvider"
+    ],
     "isolation": {
-      "emptyMavenCache": true,
       "sourceDeleted": true,
-      "path": "/gretl-no-build-tools",
-      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-4232041904268595635"
+      "emptyMavenCache": true,
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-4581658108559270939",
+      "path": "/gretl-no-build-tools"
     }
   },
   {
     "scenario": "selected-minimal-failure",
-    "sha256": "9a2b2c88ccde4f652554fafec497a909feb6665f9e3821c7a31ce043a19243d1",
+    "sha256": "44b84e9ff8376d2911db88e903bc7d23894d091a8415d73a835a6f3e5959ecda",
     "exitCode": 10,
     "inventory": {
       "schemaVersion": 2,
@@ -1691,15 +1699,15 @@
     },
     "operationProviders": [],
     "isolation": {
-      "emptyMavenCache": true,
       "sourceDeleted": true,
-      "path": "/gretl-no-build-tools",
-      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-7208619666822804088"
+      "emptyMavenCache": true,
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-2171782969142589488",
+      "path": "/gretl-no-build-tools"
     }
   },
   {
     "scenario": "selected-minimal-success",
-    "sha256": "9a2b2c88ccde4f652554fafec497a909feb6665f9e3821c7a31ce043a19243d1",
+    "sha256": "44b84e9ff8376d2911db88e903bc7d23894d091a8415d73a835a6f3e5959ecda",
     "exitCode": 0,
     "inventory": {
       "schemaVersion": 2,
@@ -1849,15 +1857,15 @@
     },
     "operationProviders": [],
     "isolation": {
-      "emptyMavenCache": true,
       "sourceDeleted": true,
-      "path": "/gretl-no-build-tools",
-      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-14619441124643734446"
+      "emptyMavenCache": true,
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-11287328964808643654",
+      "path": "/gretl-no-build-tools"
     }
   },
   {
     "scenario": "selected-narrow-validator",
-    "sha256": "756536ddd6c92dfee8e442d84e13b80b404efe09af58da492c63ab553a005f6b",
+    "sha256": "771b12cfb3771e9784ae903cc4968883fcef5c6c2c210eceae91b8796ce2a500",
     "exitCode": 0,
     "inventory": {
       "schemaVersion": 2,
@@ -2137,12 +2145,14 @@
       "ch/so/agi/gretl/i18n/messages_de.properties": true,
       "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule": false
     },
-    "operationProviders": [],
+    "operationProviders": [
+      "ch.so.agi.gretl.tasks.ilivalidator.IliValidatorProvider"
+    ],
     "isolation": {
-      "emptyMavenCache": true,
       "sourceDeleted": true,
-      "path": "/gretl-no-build-tools",
-      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-7296737668620642900"
+      "emptyMavenCache": true,
+      "foreignCwd": "/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/gretl-selected-package with spaces-12443973173478933317",
+      "path": "/gretl-no-build-tools"
     }
   }
 ]

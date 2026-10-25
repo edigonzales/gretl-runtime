@@ -49,7 +49,7 @@ class DistributionIT {
         try (JarFile jar = new JarFile(job.toFile())) {
             assertTrue(jar.getJarEntry("ch/so/agi/gretl/cli/GretlCli.class") == null);
             assertTrue(jar.getJarEntry("org/postgresql/Driver.class") == null);
-            assertTrue(jar.getJarEntry("META-INF/services/ch.so.agi.gretl.api.operation.OperationProvider") == null);
+            assertTrue(jar.getJarEntry("META-INF/services/ch.so.agi.gretl.runtime.api.OperationProvider") == null);
         }
     }
 
