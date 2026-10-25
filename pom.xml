@@ -23,8 +23,8 @@
     <module>gretl-i18n</module>
     <module>gretl-logging</module>
     <module>gretl-packager</module>
-    <module>gretl-basic-tasks</module>
-    <module>gretl-core-tasks</module>
+    <module>gretl-database-tasks</module>
+    <module>gretl-io-tasks</module>
     <module>gretl-cli</module>
     <module>gretl-job-runtime</module>
     <module>gretl-ilivalidator</module>
@@ -102,6 +102,61 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
         <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2c-core</artifactId>
+        <version>${ili2c.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2c-tool</artifactId>
+        <version>${ili2c.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>iox-ili</artifactId>
+        <version>${iox-ili.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2pg</artifactId>
+        <version>${ili2pg.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2gpkg</artifactId>
+        <version>${ili2gpkg.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>${poi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>${poi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2db</artifactId>
+        <version>${ili2pg.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>iox-api</artifactId>
+        <version>1.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

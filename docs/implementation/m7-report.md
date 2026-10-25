@@ -1,5 +1,8 @@
 # M7-Vorbereitung: Release-/Pilot-Härtung
 
+> Historischer Meilensteinbericht: Aussagen und Modulnamen gelten für den hier
+> dokumentierten Commit. Aktueller Zuschnitt: [Modulgrenzen](module-boundaries.md).
+
 **Stand:** 21. Oktober 2026
 **Status:** Release-Kandidat in Vorbereitung; Linux-x86-64-Nachweis als
 GitHub-Actions-Workflow angelegt, aber in dieser Arbeitsumgebung nicht

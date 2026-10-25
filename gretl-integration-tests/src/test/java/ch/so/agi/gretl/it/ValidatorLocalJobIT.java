@@ -24,7 +24,8 @@ class ValidatorLocalJobIT {
         assertFalse(result.timedOut());
         assertTrue(Files.readString(root.resolve("output/validation.log")).contains("validation done"));
         assertTrue(Files.readString(result.report()).contains("SUCCEEDED"));
-        assertEquals(64, result.artifactIdentity().length());
+        assertEquals(System.getProperty("gretl.test.executionMode", "JAR"), result.mode());
+        assertTrue(result.hasValidArtifactIdentity());
     }
 
     @Test void invalidCsvNeedsBothBusinessDiagnostics() throws Exception {
@@ -126,6 +127,50 @@ class ValidatorLocalJobIT {
             assertTrue(rows.next());
             assertTrue(rows.getInt(1) > 0);
         }
+    }
+
+    @Test void originalJsonValidatorFailDiagnostics() throws Exception {
+        Path root = ArtifactJobRunner.directory("original-invalid-json");
+        var result = validators(root, "json", Map.of("variant", "JsonValidatorFail"));
+        assertEquals(10, result.code(), result.err());
+        assertTrue(Files.readString(result.report()).contains("VALIDATION_FAILED"));
+        String log = Files.readString(root.resolve("output/validation.log"));
+        assertTrue(log.contains("line 2: Test2.Topic2.ClassA: tid o1: Attribute attrStruct[0]/attrText is length restricted to 3"), log);
+        assertTrue(log.contains("line 2: Test2.Topic2.ClassA: tid o1: Attribute attrBag[1]/attrText is length restricted to 3"), log);
+        assertTrue(log.contains("line 2: Test2.Topic2.ClassA: tid o1: Attribute attrTextList[0] is length restricted to 5"), log);
+        assertTrue(log.contains("line 21: Test2.Topic2.ClassA: tid o2: Attribute attrStruct[0]/attrText is length restricted to 3"), log);
+        assertTrue(log.contains("line 21: Test2.Topic2.ClassA: tid o2: Attribute attrBag[1]/attrText is length restricted to 3"), log);
+        assertTrue(log.contains("line 21: Test2.Topic2.ClassA: tid o2: Attribute attrTextList[0] is length restricted to 5"), log);
+        assertTrue(log.contains("Test2.Topic2.ClassA: tid o1: Overlay coord1 (2460000,500, 1045000,000), coord2 (2460001,000, 1045000,000), tids o1, o2"), log);
+        assertTrue(log.contains("Test2.Topic2.ClassA: tid o1: Intersection coord1 (2460000,500, 1045000,000), tids o1, o2"), log);
+        assertTrue(log.contains("Test2.Topic2.ClassA: tid o1: Intersection coord1 (2460001,000, 1045000,000), tids o1, o2"), log);
+        assertTrue(log.contains("failed to validate AREA Test2.Topic2.ClassA.attrSurface"), log);
+    }
+
+    @Test void originalGpkgValidatorFailDiagnostics() throws Exception {
+        Path root = ArtifactJobRunner.directory("original-invalid-gpkg");
+        var result = validators(root, "gpkg", Map.of("variant", "GpkgValidatorFail"));
+        assertEquals(10, result.code(), result.err());
+        assertTrue(Files.readString(result.report()).contains("VALIDATION_FAILED"));
+        String log = Files.readString(root.resolve("output/validation.log"));
+        assertTrue(log.contains("GpkgModel.Topic1.Attributes: tid o2: value 0 is out of range in attribute art"), log);
+        assertTrue(log.contains("GpkgModel.Topic1.Attributes: tid o2: value <true> is not a number"), log);
+    }
+
+    @Test void originalShpValidatorFailDiagnostics() throws Exception {
+        Path root = ArtifactJobRunner.directory("original-invalid-shp");
+        var result = validators(root, "shp", Map.of("variant", "ShpValidatorFail"));
+        assertEquals(10, result.code(), result.err());
+        assertTrue(Files.readString(result.report()).contains("VALIDATION_FAILED"));
+        String log = Files.readString(root.resolve("output/validation.log"));
+        assertTrue(log.contains("ShpModel.Topic12.Class1: tid o1: value rot is not a member of the enumeration in attribute aenum"), log);
+        assertTrue(log.contains("ShpModel.Topic12.Class1: tid o2: Attribute aint requires a value"), log);
+        assertTrue(log.contains("ShpModel.Topic12.Class1: tid o2: Attribute adec requires a value"), log);
+        assertTrue(log.contains("ShpModel.Topic12.Class1: tid o2: Attribute atext requires a value"), log);
+        assertTrue(log.contains("ShpModel.Topic12.Class1: tid o2: Attribute aenum requires a value"), log);
+        assertTrue(log.contains("ShpModel.Topic12.Class1: tid o2: Attribute adate requires a value"), log);
+        assertTrue(log.contains("ShpModel.Topic12.Class1: tid o2: Attribute the_geom requires a value"), log);
+        assertTrue(log.contains("...validation failed"), log);
     }
 
     private ArtifactJobRunner.Result validators(Path root, String target, Map<String, String> parameters) throws Exception {

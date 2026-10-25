@@ -22,7 +22,7 @@ class CancellationLocalJobIT {
             var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request), script);
             try {
                 await(root.resolve("output/ready"), running.process(), watch);
-                if (sigterm) running.process().destroy();
+                if (sigterm) ArtifactJobRunner.cancel(running);
                 else Files.writeString(root.resolve("output/cancel"), "cancel");
                 var result = ArtifactJobRunner.finish(running, true);
                 assertFalse(result.timedOut());
@@ -36,7 +36,7 @@ class CancellationLocalJobIT {
                 assertEquals(1, result.err().lines().filter(s -> s.contains("\"event_name\":\"gretl.run.finished\"")).count());
                 assertEquals(1, result.err().lines().filter(s -> s.contains("\"event_name\":\"gretl.cleanup.finished\"")).count());
             } finally {
-                if (running.process().isAlive()) ArtifactJobRunner.stop(running.process());
+                if (running.process().isAlive()) ArtifactJobRunner.stop(running);
             }
         }
     }
@@ -53,7 +53,7 @@ class CancellationLocalJobIT {
             var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request), script);
             try {
                 await(root.resolve("output/ready"), running.process(), watch);
-                running.process().destroy();
+                ArtifactJobRunner.cancel(running);
                 Files.writeString(root.resolve("output/release"), "release");
                 var result = ArtifactJobRunner.finish(running, true);
                 String report = Files.readString(result.report());
@@ -62,7 +62,7 @@ class CancellationLocalJobIT {
                 assertTrue(report.contains("original-business-failure"));
             } finally {
                 Files.writeString(root.resolve("output/release"), "release");
-                if (running.process().isAlive()) ArtifactJobRunner.stop(running.process());
+                if (running.process().isAlive()) ArtifactJobRunner.stop(running);
             }
         }
     }
@@ -85,7 +85,7 @@ class CancellationLocalJobIT {
                 assertTrue(Files.readString(result.report()).contains("\"status\":\"CANCELLED\""));
                 assertTrue(Files.exists(root.resolve("output/cleaned")));
             } finally {
-                if (running.process().isAlive()) ArtifactJobRunner.stop(running.process());
+                if (running.process().isAlive()) ArtifactJobRunner.stop(running);
             }
         }
     }

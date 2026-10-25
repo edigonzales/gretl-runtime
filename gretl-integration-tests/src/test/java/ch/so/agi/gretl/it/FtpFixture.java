@@ -42,11 +42,12 @@ final class FtpFixture implements AutoCloseable {
                     // pidproxy selects `pgrep vsftpd | tail -n 1`, which can
                     // select a transient connection worker during readiness.
                     .withCommand("vsftpd", "/etc/vsftpd/vsftpd.conf", "-obackground=NO",
-                            "-opasv_address=127.0.0.1", "-opasv_min_port=" + passive,
+                            "-opasv_address=" + (System.getProperty("gretl.test.executionMode", "JAR").equals("IMAGE") ? "ftp" : "127.0.0.1"), "-opasv_min_port=" + passive,
                             "-opasv_max_port=" + passive)
                     .withCreateContainerCmdModifier(command ->
                             command.withHostName("ftp").withAliases("ftp"))
                     .waitingFor(Wait.forListeningPort());
+            if (System.getProperty("gretl.test.executionMode", "JAR").equals("IMAGE")) candidate.withNetworkMode(System.getProperty("gretl.test.imageNetwork"));
             try {
                 candidate.start();
                 return candidate;
@@ -203,6 +204,7 @@ final class FtpFixture implements AutoCloseable {
                     throw new IOException("FTP fixture login failed");
                 }
                 client.enterLocalPassiveMode();
+                client.setUseEPSVwithIPv4(true);
                 client.setFileType(FTP.BINARY_FILE_TYPE);
                 return client;
             } catch (IOException exception) {

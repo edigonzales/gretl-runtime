@@ -1,5 +1,8 @@
 # M3-Prüfbericht: CLI, allgemeine Tasks und Stufe A
 
+> Historischer Meilensteinbericht: Aussagen und Modulnamen gelten für den hier
+> dokumentierten Commit. Aktueller Zuschnitt: [Modulgrenzen](module-boundaries.md).
+
 > **Historischer Bericht.** Dieser Bericht dokumentiert den Stand von M3
 > (`0.1.0-M3`, 263 Standard-/267 Profil-Tests). M4 ergänzt die reale
 > `IliValidator`-Integration; aktuell ist der [M4-Bericht](m4-report.md).

@@ -63,12 +63,12 @@
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
-      <artifactId>gretl-basic-tasks</artifactId>
+      <artifactId>gretl-database-tasks</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
-      <artifactId>gretl-core-tasks</artifactId>
+      <artifactId>gretl-io-tasks</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

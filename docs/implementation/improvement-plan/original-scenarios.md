@@ -1,4 +1,7 @@
-# Original-GRETL: Szenariozuordnung
+# Original-GRETL: Phase-1-Inventar
+
+**Historischer Portierungsstand aus Phase 1.** Die aktuelle konkrete Zuordnung
+steht in [phase-2-scenario-mapping.md](phase-2-scenario-mapping.md).
 
 Quelle: `sogis/gretl@a9222dc0ffd08f8f76570e998101db041822df71`, `gretl/src/integrationTest/`.
 

@@ -1,0 +1,623 @@
+{
+  "acceptedPhase1Commit": "52675c526a0edad52d7005c1d7e874fb7d3ca276",
+  "entrypoints": [
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.BasicTaskProvider",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/BasicTaskProvider.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.CurlOperation",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/CurlOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.CurlTaskException",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/CurlTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.Db2DbOperation",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/Db2DbOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.Db2DbTaskException",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/Db2DbTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.DuckDbSqlExecutorOperation",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/DuckDbSqlExecutorOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.DuckDbTaskException",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/DuckDbTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.ExtractOperation",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/ExtractOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.ExtractResult",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/ExtractResult.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.ExtractTaskException",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/ExtractTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.GzipOperation",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/GzipOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.GzipTaskException",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/GzipTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.HttpDownloadOperation",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/HttpDownloadOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.HttpDownloadResult",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/HttpDownloadResult.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.HttpTaskException",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/HttpTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.PreparedStatementSpec",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/PreparedStatementSpec.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.SqlExecutionResult",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/SqlExecutionResult.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.SqlExecutorOperation",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/SqlExecutorOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.SqlResult",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/SqlResult.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-basic-tasks",
+      "class": "ch.so.agi.gretl.tasks.basic.SqlTaskException",
+      "source": "gretl-basic-tasks/src/main/java/ch/so/agi/gretl/tasks/basic/SqlTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.core.CoreTaskProvider",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/core/CoreTaskProvider.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.ftp.FtpConnection",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/ftp/FtpConnection.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.ftp.FtpDeleteOperation",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/ftp/FtpDeleteOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.ftp.FtpDownloadOperation",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/ftp/FtpDownloadOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.ftp.FtpListOperation",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/ftp/FtpListOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.ftp.FtpTaskException",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/ftp/FtpTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.ftp.FtpUploadOperation",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/ftp/FtpUploadOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.s3.S3Bucket2BucketOperation",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/s3/S3Bucket2BucketOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.s3.S3Connection",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/s3/S3Connection.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.s3.S3DeleteOperation",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/s3/S3DeleteOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.s3.S3DownloadOperation",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/s3/S3DownloadOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.s3.S3TaskException",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/s3/S3TaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.s3.S3UploadOperation",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/s3/S3UploadOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.xslt.XslTransformerOperation",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/xslt/XslTransformerOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-core-tasks",
+      "class": "ch.so.agi.gretl.tasks.xslt.XsltTaskException",
+      "source": "gretl-core-tasks/src/main/java/ch/so/agi/gretl/tasks/xslt/XsltTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.av.Av2chEngine",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/av/Av2chEngine.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.av.Av2geobauEngine",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/av/Av2geobauEngine.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.interlis.Ili2DbDatasetNames",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/interlis/Ili2DbDatasetNames.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.interlis.Ili2DbExecutionSupport",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/interlis/Ili2DbExecutionSupport.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.interlis.Ili2DbFlavor",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/interlis/Ili2DbFlavor.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.interlis.Ili2DbRequest",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/interlis/Ili2DbRequest.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.interlis.Ili2DbRequestBuilder",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/interlis/Ili2DbRequestBuilder.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.interlis.InterlisTaskException",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/interlis/InterlisTaskException.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.interlis.InterlisValidationRequest",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/interlis/InterlisValidationRequest.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.interlis.InterlisValidationSupport",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/interlis/InterlisValidationSupport.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.ioxwkf.Csv2ExcelEngine",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ioxwkf/Csv2ExcelEngine.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.ioxwkf.Db2Shp",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ioxwkf/Db2Shp.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.ioxwkf.Gpkg2DxfEngine",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ioxwkf/Gpkg2DxfEngine.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.ioxwkf.Gpkg2ShpEngine",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ioxwkf/Gpkg2ShpEngine.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ioxwkf/IoxWkfDatabaseEngine.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.ioxwkf.Shp2Db",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ioxwkf/Shp2Db.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.ShapefileAttributeDescriptor",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/ShapefileAttributeDescriptor.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.ShapefileConstants",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/ShapefileConstants.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.ShapefileDescriptorMapper",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/ShapefileDescriptorMapper.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.ShapefileFieldNames",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/ShapefileFieldNames.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.ShapefileIoxReader",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/ShapefileIoxReader.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.ShapefileIoxWriter",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/ShapefileIoxWriter.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.ShapefileMappingException",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/ShapefileMappingException.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.Bounds",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/Bounds.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.BoundsAccumulator",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/BoundsAccumulator.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.DbfField",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/DbfField.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.DbfFieldType",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/DbfFieldType.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.DbfHeader",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/DbfHeader.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.DbfReader",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/DbfReader.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.DbfRecord",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/DbfRecord.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.DbfWriter",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/DbfWriter.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.EncodedShape",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/EncodedShape.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.EndianByteBuffer",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/EndianByteBuffer.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShapeRecord",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShapeRecord.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShapeType",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShapeType.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShapefileDataset",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShapefileDataset.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShapefileDatasetWriter",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShapefileDatasetWriter.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShapefileHeader",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShapefileHeader.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShapefileSchema",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShapefileSchema.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShapefileWriteOptions",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShapefileWriteOptions.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShpReader",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShpReader.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShpWriter",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShpWriter.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShxReader",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShxReader.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.core.ShxWriter",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShxWriter.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.geom.GeometryKind",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/geom/GeometryKind.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.geom.IoxToJtsGeometry",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/geom/IoxToJtsGeometry.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.geom.ShpGeometryDecoder",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/geom/ShpGeometryDecoder.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.shapefile.geom.ShpGeometryEncoder",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/geom/ShpGeometryEncoder.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.internal.sql.DatabaseSpec",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/sql/DatabaseSpec.java",
+      "internal": true
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.AvOperations",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/AvOperations.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.Csv2ExcelOperation",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/Csv2ExcelOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.CsvExportOperation",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/CsvExportOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.CsvImportOperation",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/CsvImportOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.Gpkg2ShpOperation",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/Gpkg2ShpOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.GpkgExportOperation",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/GpkgExportOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.GpkgImportOperation",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/GpkgImportOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.Ili2DbOperations",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/Ili2DbOperations.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.InterlisTaskProvider",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/InterlisTaskProvider.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.JsonImportOperation",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/JsonImportOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.ShpExportOperation",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/ShpExportOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.ShpImportOperation",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/ShpImportOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.ValidatorBuilder",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/ValidatorBuilder.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.ValidatorOperations",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/ValidatorOperations.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-interlis-tasks",
+      "class": "ch.so.agi.gretl.tasks.formats.ValidatorRequest",
+      "source": "gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/tasks/formats/ValidatorRequest.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-ilivalidator",
+      "class": "ch.so.agi.gretl.tasks.ilivalidator.IliValidatorOperation",
+      "source": "gretl-ilivalidator/src/main/java/ch/so/agi/gretl/tasks/ilivalidator/IliValidatorOperation.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-ilivalidator",
+      "class": "ch.so.agi.gretl.tasks.ilivalidator.IliValidatorProvider",
+      "source": "gretl-ilivalidator/src/main/java/ch/so/agi/gretl/tasks/ilivalidator/IliValidatorProvider.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-ilivalidator",
+      "class": "ch.so.agi.gretl.tasks.ilivalidator.IliValidatorTaskException",
+      "source": "gretl-ilivalidator/src/main/java/ch/so/agi/gretl/tasks/ilivalidator/IliValidatorTaskException.java",
+      "internal": false
+    },
+    {
+      "artifact": "ch.so.agi.gretl:gretl-ilivalidator",
+      "class": "ch.so.agi.gretl.tasks.ilivalidator.ValidationResult",
+      "source": "gretl-ilivalidator/src/main/java/ch/so/agi/gretl/tasks/ilivalidator/ValidationResult.java",
+      "internal": false
+    }
+  ]
+}

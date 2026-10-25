@@ -13,7 +13,61 @@
   <name>GRETL Runtime Script Distribution</name>
   <description>Versioned script distribution with launcher, runtime, standard tasks, extensions and examples.</description>
 
+  <repositories>
+    <repository>
+      <id>interlis-releases</id>
+      <url>https://jars.interlis.ch</url>
+      <releases><enabled>true</enabled><updatePolicy>never</updatePolicy></releases>
+      <snapshots><enabled>true</enabled><updatePolicy>never</updatePolicy></snapshots>
+    </repository>
+  </repositories>
+
   <dependencies>
+    <dependency>
+      <groupId>io.github.sogis</groupId>
+      <artifactId>ilivalidator-custom-functions</artifactId>
+      <version>${ilivalidator-custom-functions.version}</version>
+      <scope>runtime</scope>
+      <exclusions>
+        <exclusion><groupId>javax.activation</groupId><artifactId>activation</artifactId></exclusion>
+        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-core</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.github.sogis</groupId>
+      <artifactId>ilivalidator-custom-functions-geometries</artifactId>
+      <version>${ilivalidator-custom-functions-geometries.version}</version>
+      <scope>runtime</scope>
+      <exclusions>
+        <exclusion><groupId>javax.activation</groupId><artifactId>activation</artifactId></exclusion>
+        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-core</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>ch.geowerkstatt.ilivalidator.extensions.functions</groupId>
+      <artifactId>geow-interlis-functions</artifactId>
+      <version>${geow-interlis-functions.version}</version>
+      <scope>runtime</scope>
+      <exclusions>
+        <exclusion><groupId>javax.activation</groupId><artifactId>activation</artifactId></exclusion>
+        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-core</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>ch.geowerkstatt.ilivalidator.extensions.functions</groupId>
+      <artifactId>interlis-functions-ngk-so</artifactId>
+      <version>${interlis-functions-ngk-so.version}</version>
+      <scope>runtime</scope>
+      <exclusions>
+        <exclusion><groupId>javax.activation</groupId><artifactId>activation</artifactId></exclusion>
+        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-core</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId><artifactId>gretl-interlis-tasks</artifactId>
+      <version>${project.version}</version><classifier>standard-functions</classifier>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
       <artifactId>gretl-cli</artifactId>
@@ -21,12 +75,12 @@
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
-      <artifactId>gretl-basic-tasks</artifactId>
+      <artifactId>gretl-database-tasks</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
-      <artifactId>gretl-core-tasks</artifactId>
+      <artifactId>gretl-io-tasks</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -77,7 +131,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/dist/lib/runtime</outputDirectory>
               <includeScope>runtime</includeScope>
-              <excludeArtifactIds>gretl-basic-tasks,gretl-core-tasks,gretl-ilivalidator,gretl-interlis-tasks</excludeArtifactIds>
+              <excludeArtifactIds>gretl-database-tasks,gretl-io-tasks,gretl-ilivalidator,gretl-interlis-tasks</excludeArtifactIds>
             </configuration>
           </execution>
           <execution>
@@ -89,12 +143,12 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>ch.so.agi.gretl</groupId>
-                  <artifactId>gretl-basic-tasks</artifactId>
+                  <artifactId>gretl-database-tasks</artifactId>
                   <version>${project.version}</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>ch.so.agi.gretl</groupId>
-                  <artifactId>gretl-core-tasks</artifactId>
+                  <artifactId>gretl-io-tasks</artifactId>
                   <version>${project.version}</version>
                 </artifactItem>
                 <artifactItem>
@@ -106,6 +160,11 @@
                   <groupId>ch.so.agi.gretl</groupId>
                   <artifactId>gretl-interlis-tasks</artifactId>
                   <version>${project.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>ch.so.agi.gretl</groupId><artifactId>gretl-interlis-tasks</artifactId>
+                  <version>${project.version}</version><classifier>standard-functions</classifier>
+                  <outputDirectory>${project.build.directory}/dist/lib/extensions</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>

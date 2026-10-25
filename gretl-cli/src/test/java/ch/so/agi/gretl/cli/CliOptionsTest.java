@@ -1,5 +1,8 @@
 package ch.so.agi.gretl.cli;
 
+import ch.so.agi.gretl.job.runtime.PlanGraphFormat;
+import ch.so.agi.gretl.job.runtime.StartException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -62,18 +65,18 @@ class CliOptionsTest {
 
     @Test
     void rejectsInvalidAsciiDocOperationOptions() {
-        CliException missingOutput = assertThrows(CliException.class, () -> CliOptions.parse(
+        StartException missingOutput = assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"operations", "--format", "adoc"}, Path.of("/tmp"),
                 Locale.GERMAN));
         assertTrue(missingOutput.getMessage().contains("--output"), missingOutput.getMessage());
 
-        CliException outputWithoutFormat = assertThrows(CliException.class,
+        StartException outputWithoutFormat = assertThrows(StartException.class,
                 () -> CliOptions.parse(new String[]{"operations", "--output", "docs"},
                         Path.of("/tmp"), Locale.GERMAN));
         assertTrue(outputWithoutFormat.getMessage().contains("--format adoc"),
                 outputWithoutFormat.getMessage());
 
-        CliException unknownFormat = assertThrows(CliException.class, () -> CliOptions.parse(
+        StartException unknownFormat = assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"operations", "--format", "yaml"}, Path.of("/tmp"),
                 Locale.GERMAN));
         assertTrue(unknownFormat.getMessage().contains("Nicht unterstuetztes Format"),
@@ -82,19 +85,19 @@ class CliOptionsTest {
 
     @Test
     void rejectsGraphOptionsOutsidePlan() {
-        CliException run = assertThrows(CliException.class, () -> CliOptions.parse(
+        StartException run = assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"run", "job.groovy", "--graph", "mermaid"}, Path.of("/tmp"),
                 java.util.Locale.ENGLISH));
         assertTrue(run.getMessage().contains("only valid for plan"), run.getMessage());
-        CliException output = assertThrows(CliException.class, () -> CliOptions.parse(
+        StartException output = assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"check", "job.groovy", "--output", "x"}, Path.of("/tmp"),
                 java.util.Locale.ENGLISH));
         assertTrue(output.getMessage().contains("only valid for plan"), output.getMessage());
-        CliException noGraph = assertThrows(CliException.class, () -> CliOptions.parse(
+        StartException noGraph = assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"plan", "job.groovy", "--output", "x"}, Path.of("/tmp"),
                 java.util.Locale.ENGLISH));
         assertTrue(noGraph.getMessage().contains("requires --graph"), noGraph.getMessage());
-        CliException format = assertThrows(CliException.class, () -> CliOptions.parse(
+        StartException format = assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"plan", "job.groovy", "--graph", "svg"}, Path.of("/tmp"),
                 java.util.Locale.ENGLISH));
         assertTrue(format.getMessage().contains("Unsupported graph format"), format.getMessage());
@@ -102,26 +105,26 @@ class CliOptionsTest {
 
     @Test
     void parserErrorsFollowTheRequestedLocale() {
-        CliException english = assertThrows(CliException.class, () -> CliOptions.parse(
+        StartException english = assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"run", "--lang", "en"}, Path.of("/tmp"), Locale.ENGLISH));
         assertTrue(english.getMessage().contains("Job file missing"), english.getMessage());
-        CliException german = assertThrows(CliException.class, () -> CliOptions.parse(
+        StartException german = assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"run", "--lang", "de"}, Path.of("/tmp"), Locale.GERMAN));
         assertTrue(german.getMessage().contains("Jobdatei fehlt"), german.getMessage());
     }
 
     @Test
     void rejectsUnknownMissingDuplicateAndInapplicableOptions() {
-        assertThrows(CliException.class, () -> CliOptions.parse(
+        assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"run", "job.groovy", "--unknown"}, Path.of("/tmp")));
-        assertThrows(CliException.class, () -> CliOptions.parse(
+        assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"run", "job.groovy", "--param", "noequals"}, Path.of("/tmp")));
-        assertThrows(CliException.class, () -> CliOptions.parse(
+        assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"run", "job.groovy", "--param", "a=1", "--param", "a=2"},
                 Path.of("/tmp")));
-        assertThrows(CliException.class, () -> CliOptions.parse(
+        assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"check", "job.groovy", "--report", "x"}, Path.of("/tmp")));
-        assertThrows(CliException.class, () -> CliOptions.parse(
+        assertThrows(StartException.class, () -> CliOptions.parse(
                 new String[]{"run", "job.groovy", "--timeout", "soon"}, Path.of("/tmp")));
     }
 }

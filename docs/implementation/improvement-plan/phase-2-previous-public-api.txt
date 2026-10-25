@@ -1,0 +1,1031 @@
+Compiled from "BasicTaskProvider.java"
+public final class ch.so.agi.gretl.tasks.basic.BasicTaskProvider implements ch.so.agi.gretl.runtime.api.OperationProvider {
+  public ch.so.agi.gretl.tasks.basic.BasicTaskProvider();
+  public java.util.Collection<ch.so.agi.gretl.runtime.api.OperationType<?, ?>> operations();
+}
+Compiled from "CurlOperation.java"
+public final class ch.so.agi.gretl.tasks.basic.CurlOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static final long DEFAULT_MAX_BYTES;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.basic.CurlOperation$CurlRequest, ch.so.agi.gretl.tasks.basic.CurlOperation$CurlResult> type();
+}
+Compiled from "CurlTaskException.java"
+public final class ch.so.agi.gretl.tasks.basic.CurlTaskException extends java.lang.RuntimeException {
+  public ch.so.agi.gretl.tasks.basic.CurlTaskException(java.lang.String, java.lang.String, int, long, java.lang.String, java.lang.Throwable);
+  public java.lang.String code();
+  public int status();
+  public long bytes();
+  public java.lang.String phase();
+}
+Compiled from "Db2DbOperation.java"
+public final class ch.so.agi.gretl.tasks.basic.Db2DbOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.basic.Db2DbOperation$Db2DbRequest, ch.so.agi.gretl.tasks.basic.Db2DbOperation$Db2DbResult> type();
+}
+Compiled from "Db2DbTaskException.java"
+public final class ch.so.agi.gretl.tasks.basic.Db2DbTaskException extends java.lang.RuntimeException {
+  public ch.so.agi.gretl.tasks.basic.Db2DbTaskException(java.lang.String, java.lang.String, java.lang.String, java.lang.Throwable);
+  public java.lang.String code();
+  public java.lang.String phase();
+}
+Compiled from "DuckDbSqlExecutorOperation.java"
+public final class ch.so.agi.gretl.tasks.basic.DuckDbSqlExecutorOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.basic.DuckDbSqlExecutorOperation$DuckDbRequest, ch.so.agi.gretl.tasks.basic.DuckDbSqlExecutorOperation$DuckDbResult> type();
+}
+Compiled from "DuckDbTaskException.java"
+public final class ch.so.agi.gretl.tasks.basic.DuckDbTaskException extends java.lang.RuntimeException {
+  public ch.so.agi.gretl.tasks.basic.DuckDbTaskException(java.lang.String, java.lang.String, java.lang.String, java.lang.Throwable);
+  public java.lang.String code();
+  public java.lang.String phase();
+}
+Compiled from "ExtractOperation.java"
+public final class ch.so.agi.gretl.tasks.basic.ExtractOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static final long DEFAULT_MAX_EXPANDED_BYTES;
+  public static final int DEFAULT_MAX_ENTRIES;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.basic.ExtractOperation$ExtractRequest, ch.so.agi.gretl.tasks.basic.ExtractResult> type();
+}
+Compiled from "ExtractResult.java"
+public final class ch.so.agi.gretl.tasks.basic.ExtractResult extends java.lang.Record {
+  public ch.so.agi.gretl.tasks.basic.ExtractResult(java.nio.file.Path, java.util.List<java.nio.file.Path>, java.nio.file.Path, long);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.nio.file.Path file();
+  public java.util.List<java.nio.file.Path> files();
+  public java.nio.file.Path directory();
+  public long bytes();
+}
+Compiled from "ExtractTaskException.java"
+public final class ch.so.agi.gretl.tasks.basic.ExtractTaskException extends java.lang.RuntimeException implements ch.so.agi.gretl.runtime.api.DiagnosticCarrier {
+  public ch.so.agi.gretl.tasks.basic.ExtractTaskException(java.lang.String, java.lang.String, java.lang.Throwable);
+  public java.lang.String code();
+  public ch.so.agi.gretl.runtime.api.DiagnosticInfo diagnostic();
+}
+Compiled from "GzipOperation.java"
+public final class ch.so.agi.gretl.tasks.basic.GzipOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.basic.GzipOperation$GzipRequest, ch.so.agi.gretl.tasks.basic.GzipOperation$GzipResult> type();
+}
+Compiled from "GzipTaskException.java"
+public final class ch.so.agi.gretl.tasks.basic.GzipTaskException extends java.lang.RuntimeException {
+  public ch.so.agi.gretl.tasks.basic.GzipTaskException(java.lang.String, java.lang.String, java.lang.String, java.lang.Throwable);
+  public java.lang.String code();
+  public java.lang.String phase();
+}
+Compiled from "HttpDownloadOperation.java"
+public final class ch.so.agi.gretl.tasks.basic.HttpDownloadOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static final long DEFAULT_MAX_BYTES;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.basic.HttpDownloadOperation$HttpDownloadRequest, ch.so.agi.gretl.tasks.basic.HttpDownloadResult> type();
+}
+Compiled from "HttpDownloadResult.java"
+public final class ch.so.agi.gretl.tasks.basic.HttpDownloadResult extends java.lang.Record {
+  public ch.so.agi.gretl.tasks.basic.HttpDownloadResult(java.nio.file.Path, java.net.URI, int, long, java.lang.String);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.nio.file.Path file();
+  public java.net.URI finalUri();
+  public int status();
+  public long bytes();
+  public java.lang.String sha256();
+}
+Compiled from "HttpTaskException.java"
+public final class ch.so.agi.gretl.tasks.basic.HttpTaskException extends java.lang.RuntimeException implements ch.so.agi.gretl.runtime.api.DiagnosticCarrier {
+  public ch.so.agi.gretl.tasks.basic.HttpTaskException(java.lang.String, java.lang.String, java.lang.String, java.net.URI, int, long, java.lang.String, java.lang.Throwable);
+  public java.lang.String code();
+  public ch.so.agi.gretl.runtime.api.DiagnosticInfo diagnostic();
+  public java.lang.String method();
+  public java.lang.String origin();
+  public int status();
+  public long bytes();
+  public java.lang.String phase();
+}
+Compiled from "PreparedStatementSpec.java"
+public final class ch.so.agi.gretl.tasks.basic.PreparedStatementSpec extends java.lang.Record {
+  public ch.so.agi.gretl.tasks.basic.PreparedStatementSpec(java.lang.String, java.util.List<java.lang.Object>);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.lang.String sql();
+  public java.util.List<java.lang.Object> parameters();
+}
+Compiled from "SqlExecutionResult.java"
+public final class ch.so.agi.gretl.tasks.basic.SqlExecutionResult extends java.lang.Record {
+  public ch.so.agi.gretl.tasks.basic.SqlExecutionResult(int, java.util.List<java.lang.Long>, int);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public int index();
+  public java.util.List<java.lang.Long> updateCounts();
+  public int resultSetCount();
+}
+Compiled from "SqlExecutorOperation.java"
+public final class ch.so.agi.gretl.tasks.basic.SqlExecutorOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.basic.SqlExecutorOperation$SqlRequest, ch.so.agi.gretl.tasks.basic.SqlResult> type();
+}
+Compiled from "SqlResult.java"
+public final class ch.so.agi.gretl.tasks.basic.SqlResult extends java.lang.Record {
+  public ch.so.agi.gretl.tasks.basic.SqlResult(int, java.util.List<ch.so.agi.gretl.tasks.basic.SqlExecutionResult>);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public int executionCount();
+  public java.util.List<ch.so.agi.gretl.tasks.basic.SqlExecutionResult> executions();
+}
+Compiled from "SqlTaskException.java"
+public final class ch.so.agi.gretl.tasks.basic.SqlTaskException extends java.lang.RuntimeException implements ch.so.agi.gretl.runtime.api.DiagnosticCarrier {
+  public ch.so.agi.gretl.tasks.basic.SqlTaskException(java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, int, java.lang.Throwable);
+  public java.lang.String code();
+  public ch.so.agi.gretl.runtime.api.DiagnosticInfo diagnostic();
+  public java.lang.String databaseAlias();
+  public java.lang.String scriptName();
+  public int entryIndex();
+  public java.lang.String phase();
+  public java.lang.String sqlState();
+  public int vendorCode();
+}
+Compiled from "CoreTaskProvider.java"
+public final class ch.so.agi.gretl.tasks.core.CoreTaskProvider implements ch.so.agi.gretl.runtime.api.OperationProvider {
+  public ch.so.agi.gretl.tasks.core.CoreTaskProvider();
+  public java.util.Collection<ch.so.agi.gretl.runtime.api.OperationType<?, ?>> operations();
+}
+Compiled from "FtpConnection.java"
+public final class ch.so.agi.gretl.tasks.ftp.FtpConnection extends java.lang.Record {
+  public ch.so.agi.gretl.tasks.ftp.FtpConnection(java.lang.String, java.lang.String, ch.so.agi.gretl.runtime.api.SecretValue, java.lang.String, java.lang.String, boolean, long);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.lang.String server();
+  public java.lang.String user();
+  public ch.so.agi.gretl.runtime.api.SecretValue password();
+  public java.lang.String systemType();
+  public java.lang.String fileSeparator();
+  public boolean passiveMode();
+  public long controlKeepAliveTimeout();
+}
+Compiled from "FtpDeleteOperation.java"
+public final class ch.so.agi.gretl.tasks.ftp.FtpDeleteOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.ftp.FtpDeleteOperation$FtpDeleteRequest, ch.so.agi.gretl.tasks.ftp.FtpDeleteOperation$FtpDeleteResult> type();
+}
+Compiled from "FtpDownloadOperation.java"
+public final class ch.so.agi.gretl.tasks.ftp.FtpDownloadOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.ftp.FtpDownloadOperation$FtpDownloadRequest, ch.so.agi.gretl.tasks.ftp.FtpDownloadOperation$FtpDownloadResult> type();
+}
+Compiled from "FtpListOperation.java"
+public final class ch.so.agi.gretl.tasks.ftp.FtpListOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.ftp.FtpListOperation$FtpListRequest, ch.so.agi.gretl.tasks.ftp.FtpListOperation$FtpListResult> type();
+}
+Compiled from "FtpTaskException.java"
+public final class ch.so.agi.gretl.tasks.ftp.FtpTaskException extends java.lang.RuntimeException {
+  public ch.so.agi.gretl.tasks.ftp.FtpTaskException(java.lang.String, java.lang.String, java.lang.String, java.lang.Throwable);
+  public java.lang.String code();
+  public java.lang.String phase();
+}
+Compiled from "FtpUploadOperation.java"
+public final class ch.so.agi.gretl.tasks.ftp.FtpUploadOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.ftp.FtpUploadOperation$FtpUploadRequest, ch.so.agi.gretl.tasks.ftp.FtpUploadOperation$FtpUploadResult> type();
+}
+Compiled from "S3Bucket2BucketOperation.java"
+public final class ch.so.agi.gretl.tasks.s3.S3Bucket2BucketOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.s3.S3Bucket2BucketOperation$S3Bucket2BucketRequest, ch.so.agi.gretl.tasks.s3.S3Bucket2BucketOperation$S3Bucket2BucketResult> type();
+}
+Compiled from "S3Connection.java"
+public final class ch.so.agi.gretl.tasks.s3.S3Connection extends java.lang.Record {
+  public ch.so.agi.gretl.tasks.s3.S3Connection(java.lang.String, java.lang.String, java.lang.String, ch.so.agi.gretl.runtime.api.SecretValue);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.lang.String endpoint();
+  public java.lang.String region();
+  public java.lang.String accessKey();
+  public ch.so.agi.gretl.runtime.api.SecretValue secretKey();
+}
+Compiled from "S3DeleteOperation.java"
+public final class ch.so.agi.gretl.tasks.s3.S3DeleteOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.s3.S3DeleteOperation$S3DeleteRequest, ch.so.agi.gretl.tasks.s3.S3DeleteOperation$S3DeleteResult> type();
+}
+Compiled from "S3DownloadOperation.java"
+public final class ch.so.agi.gretl.tasks.s3.S3DownloadOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.s3.S3DownloadOperation$S3DownloadRequest, ch.so.agi.gretl.tasks.s3.S3DownloadOperation$S3DownloadResult> type();
+}
+Compiled from "S3TaskException.java"
+public final class ch.so.agi.gretl.tasks.s3.S3TaskException extends java.lang.RuntimeException {
+  public ch.so.agi.gretl.tasks.s3.S3TaskException(java.lang.String, java.lang.String, java.lang.String, java.lang.Throwable);
+  public java.lang.String code();
+  public java.lang.String phase();
+}
+Compiled from "S3UploadOperation.java"
+public final class ch.so.agi.gretl.tasks.s3.S3UploadOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.s3.S3UploadOperation$S3UploadRequest, ch.so.agi.gretl.tasks.s3.S3UploadOperation$S3UploadResult> type();
+}
+Compiled from "XslTransformerOperation.java"
+public final class ch.so.agi.gretl.tasks.xslt.XslTransformerOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static final java.lang.String DEFAULT_EXTENSION;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.xslt.XslTransformerOperation$XslTransformerRequest, ch.so.agi.gretl.tasks.xslt.XslTransformerOperation$XslTransformerResult> type();
+}
+Compiled from "XsltTaskException.java"
+public final class ch.so.agi.gretl.tasks.xslt.XsltTaskException extends java.lang.RuntimeException {
+  public ch.so.agi.gretl.tasks.xslt.XsltTaskException(java.lang.String, java.lang.String, java.lang.String, java.lang.Throwable);
+  public java.lang.String code();
+  public java.lang.String phase();
+}
+Compiled from "Av2chEngine.java"
+public final class ch.so.agi.gretl.internal.av.Av2chEngine {
+  public ch.so.agi.gretl.internal.av.Av2chEngine();
+  public void convert(ch.so.agi.gretl.internal.av.Av2chEngine$Av2chRequest);
+}
+Compiled from "Av2geobauEngine.java"
+public final class ch.so.agi.gretl.internal.av.Av2geobauEngine {
+  public ch.so.agi.gretl.internal.av.Av2geobauEngine();
+  public void convert(ch.so.agi.gretl.internal.av.Av2geobauEngine$Av2geobauRequest);
+}
+Compiled from "Ili2DbDatasetNames.java"
+public final class ch.so.agi.gretl.internal.interlis.Ili2DbDatasetNames {
+  public static java.util.List<java.lang.String> resolve(ch.so.agi.gretl.internal.interlis.Ili2DbRequest, java.util.List<java.lang.String>);
+}
+Compiled from "Ili2DbExecutionSupport.java"
+public final class ch.so.agi.gretl.internal.interlis.Ili2DbExecutionSupport {
+  public ch.so.agi.gretl.internal.interlis.Ili2DbExecutionSupport();
+  public void executeSchemaImport(ch.so.agi.gretl.internal.interlis.Ili2DbRequest, ch.so.agi.gretl.internal.interlis.Ili2DbFlavor);
+  public void executeImport(ch.so.agi.gretl.internal.interlis.Ili2DbRequest, ch.so.agi.gretl.internal.interlis.Ili2DbFlavor, int);
+  public void executeExport(ch.so.agi.gretl.internal.interlis.Ili2DbRequest, ch.so.agi.gretl.internal.interlis.Ili2DbFlavor);
+  public void executeDatasetOperation(ch.so.agi.gretl.internal.interlis.Ili2DbRequest, ch.so.agi.gretl.internal.interlis.Ili2DbFlavor, int);
+}
+Compiled from "Ili2DbFlavor.java"
+public abstract class ch.so.agi.gretl.internal.interlis.Ili2DbFlavor extends java.lang.Enum<ch.so.agi.gretl.internal.interlis.Ili2DbFlavor> {
+  public static final ch.so.agi.gretl.internal.interlis.Ili2DbFlavor POSTGIS;
+  public static final ch.so.agi.gretl.internal.interlis.Ili2DbFlavor GEOPACKAGE;
+  public static final ch.so.agi.gretl.internal.interlis.Ili2DbFlavor DUCKDB;
+  public static ch.so.agi.gretl.internal.interlis.Ili2DbFlavor[] values();
+  public static ch.so.agi.gretl.internal.interlis.Ili2DbFlavor valueOf(java.lang.String);
+}
+Compiled from "Ili2DbRequest.java"
+public final class ch.so.agi.gretl.internal.interlis.Ili2DbRequest extends java.lang.Record {
+  public ch.so.agi.gretl.internal.interlis.Ili2DbRequest(ch.so.agi.gretl.internal.sql.DatabaseSpec, java.nio.file.Path, java.lang.String, java.util.List<java.lang.String>, java.util.List<java.lang.String>, java.util.List<java.lang.String>, java.util.List<java.lang.String>, java.util.List<java.lang.String>, java.util.List<java.nio.file.Path>, java.util.List<java.nio.file.Path>, java.util.List<java.lang.String>, java.nio.file.Path, java.nio.file.Path, java.nio.file.Path, java.nio.file.Path, java.nio.file.Path, java.nio.file.Path, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, java.lang.String, java.lang.String, java.nio.file.Path, java.nio.file.Path, java.lang.String, java.lang.String, java.lang.Integer, java.lang.Long, java.lang.Long, java.lang.String, java.util.Map<java.lang.String, java.lang.Object>);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public ch.so.agi.gretl.internal.sql.DatabaseSpec database();
+  public java.nio.file.Path databaseFile();
+  public java.lang.String schema();
+  public java.util.List<java.lang.String> modelNames();
+  public java.util.List<java.lang.String> modelDirectories();
+  public java.util.List<java.lang.String> baskets();
+  public java.util.List<java.lang.String> topics();
+  public java.util.List<java.lang.String> datasetNames();
+  public java.util.List<java.nio.file.Path> datasetFiles();
+  public java.util.List<java.nio.file.Path> dataFiles();
+  public java.util.List<java.lang.String> repositoryDataIds();
+  public java.nio.file.Path iliFile();
+  public java.nio.file.Path iliMetaAttrsFile();
+  public java.nio.file.Path preScript();
+  public java.nio.file.Path postScript();
+  public java.nio.file.Path logFile();
+  public java.nio.file.Path validConfigFile();
+  public boolean importTid();
+  public boolean exportTid();
+  public boolean importBid();
+  public boolean deleteData();
+  public boolean trace();
+  public boolean disableValidation();
+  public boolean disableAreaValidation();
+  public boolean forceTypeValidation();
+  public boolean strokeArcs();
+  public boolean skipPolygonBuilding();
+  public boolean skipGeometryErrors();
+  public boolean iligml20();
+  public boolean disableRounding();
+  public boolean failOnException();
+  public boolean export3();
+  public boolean oneGeomPerTable();
+  public boolean setupPgExt();
+  public boolean createEnumTabs();
+  public boolean createGeomIdx();
+  public boolean createMetaInfo();
+  public boolean coalesceJson();
+  public boolean nameByTopic();
+  public boolean createBasketCol();
+  public boolean createTidCol();
+  public boolean createDatasetCol();
+  public boolean createFk();
+  public boolean createFkIdx();
+  public boolean createUnique();
+  public boolean createStdCols();
+  public java.lang.String defaultSrsAuth();
+  public java.lang.String defaultSrsCode();
+  public java.nio.file.Path dropScript();
+  public java.nio.file.Path createScript();
+  public java.lang.String metaConfig();
+  public java.lang.String tidColumnName();
+  public java.lang.Integer maxNameLength();
+  public java.lang.Long idSeqMin();
+  public java.lang.Long idSeqMax();
+  public java.lang.String translation();
+  public java.util.Map<java.lang.String, java.lang.Object> options();
+}
+Compiled from "Ili2DbRequestBuilder.java"
+public final class ch.so.agi.gretl.internal.interlis.Ili2DbRequestBuilder {
+  public ch.so.agi.gretl.internal.sql.DatabaseSpec database;
+  public java.nio.file.Path databaseFile;
+  public java.lang.String schema;
+  public java.util.List<java.lang.String> modelNames;
+  public java.util.List<java.lang.String> modelDirectories;
+  public java.util.List<java.lang.String> baskets;
+  public java.util.List<java.lang.String> topics;
+  public java.util.List<java.lang.String> datasetNames;
+  public java.util.List<java.nio.file.Path> datasetFiles;
+  public java.util.List<java.nio.file.Path> dataFiles;
+  public java.util.List<java.lang.String> repositoryDataIds;
+  public java.nio.file.Path iliFile;
+  public java.nio.file.Path iliMetaAttrsFile;
+  public java.nio.file.Path preScript;
+  public java.nio.file.Path postScript;
+  public java.nio.file.Path logFile;
+  public java.nio.file.Path validConfigFile;
+  public boolean importTid;
+  public boolean exportTid;
+  public boolean importBid;
+  public boolean deleteData;
+  public boolean trace;
+  public boolean disableValidation;
+  public boolean disableAreaValidation;
+  public boolean forceTypeValidation;
+  public boolean strokeArcs;
+  public boolean skipPolygonBuilding;
+  public boolean skipGeometryErrors;
+  public boolean iligml20;
+  public boolean disableRounding;
+  public boolean failOnException;
+  public boolean export3;
+  public boolean oneGeomPerTable;
+  public boolean setupPgExt;
+  public boolean createEnumTabs;
+  public boolean createGeomIdx;
+  public boolean createMetaInfo;
+  public boolean coalesceJson;
+  public boolean nameByTopic;
+  public boolean createBasketCol;
+  public boolean createTidCol;
+  public boolean createDatasetCol;
+  public boolean createFk;
+  public boolean createFkIdx;
+  public boolean createUnique;
+  public boolean createStdCols;
+  public java.lang.String defaultSrsAuth;
+  public java.lang.String defaultSrsCode;
+  public java.nio.file.Path dropScript;
+  public java.nio.file.Path createScript;
+  public java.lang.String metaConfig;
+  public java.lang.String tidColumnName;
+  public java.lang.Integer maxNameLength;
+  public java.lang.Long idSeqMin;
+  public java.lang.Long idSeqMax;
+  public java.lang.String translation;
+  public java.util.Map<java.lang.String, java.lang.Object> options;
+  public ch.so.agi.gretl.internal.interlis.Ili2DbRequestBuilder();
+  public ch.so.agi.gretl.internal.interlis.Ili2DbRequest build();
+}
+Compiled from "InterlisTaskException.java"
+public final class ch.so.agi.gretl.internal.interlis.InterlisTaskException extends java.lang.RuntimeException {
+  public ch.so.agi.gretl.internal.interlis.InterlisTaskException(java.lang.String, java.lang.String, java.lang.String, java.util.Optional<java.nio.file.Path>, java.lang.Throwable);
+  public java.lang.String code();
+  public java.lang.String phase();
+  public java.util.Optional<java.nio.file.Path> report();
+}
+Compiled from "InterlisValidationRequest.java"
+public final class ch.so.agi.gretl.internal.interlis.InterlisValidationRequest extends java.lang.Record {
+  public ch.so.agi.gretl.internal.interlis.InterlisValidationRequest(java.util.List<java.nio.file.Path>, java.util.List<java.lang.String>, java.util.List<java.lang.String>, java.nio.file.Path, java.lang.String, java.nio.file.Path, java.lang.String, boolean, boolean, boolean, boolean, boolean, java.nio.file.Path, java.nio.file.Path, java.lang.String, java.lang.Integer, java.lang.String, boolean, java.lang.String, java.lang.String, java.lang.String);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.util.List<java.nio.file.Path> dataFiles();
+  public java.util.List<java.lang.String> modelNames();
+  public java.util.List<java.lang.String> modelDirectories();
+  public java.nio.file.Path configFile();
+  public java.lang.String configRepositoryId();
+  public java.nio.file.Path metaConfigFile();
+  public java.lang.String metaConfigRepositoryId();
+  public boolean forceTypeValidation();
+  public boolean disableAreaValidation();
+  public boolean multiplicityOff();
+  public boolean allObjectsAccessible();
+  public boolean skipPolygonBuilding();
+  public java.nio.file.Path logFile();
+  public java.nio.file.Path xtfLogFile();
+  public java.lang.String proxy();
+  public java.lang.Integer proxyPort();
+  public java.lang.String tableName();
+  public boolean firstLineIsHeader();
+  public java.lang.String valueDelimiter();
+  public java.lang.String valueSeparator();
+  public java.lang.String encoding();
+}
+Compiled from "InterlisValidationSupport.java"
+public final class ch.so.agi.gretl.internal.interlis.InterlisValidationSupport {
+  public ch.so.agi.gretl.internal.interlis.InterlisValidationSupport();
+  public boolean validateCsv(ch.so.agi.gretl.internal.interlis.InterlisValidationRequest);
+  public boolean validateJson(ch.so.agi.gretl.internal.interlis.InterlisValidationRequest);
+  public boolean validateGpkg(ch.so.agi.gretl.internal.interlis.InterlisValidationRequest);
+  public boolean validateShp(ch.so.agi.gretl.internal.interlis.InterlisValidationRequest);
+}
+Compiled from "Csv2ExcelEngine.java"
+public final class ch.so.agi.gretl.internal.ioxwkf.Csv2ExcelEngine {
+  public ch.so.agi.gretl.internal.ioxwkf.Csv2ExcelEngine();
+  public void convert(ch.so.agi.gretl.internal.ioxwkf.Csv2ExcelEngine$Csv2ExcelRequest) throws java.io.IOException;
+}
+Compiled from "Db2Shp.java"
+public final class ch.so.agi.gretl.internal.ioxwkf.Db2Shp extends ch.interlis.ioxwkf.dbtools.AbstractExportFromdb {
+  public ch.so.agi.gretl.internal.ioxwkf.Db2Shp();
+}
+Compiled from "Gpkg2DxfEngine.java"
+public final class ch.so.agi.gretl.internal.ioxwkf.Gpkg2DxfEngine {
+  public ch.so.agi.gretl.internal.ioxwkf.Gpkg2DxfEngine();
+  public void convert(ch.so.agi.gretl.internal.ioxwkf.Gpkg2DxfEngine$Gpkg2DxfRequest) throws java.lang.Exception;
+}
+Compiled from "Gpkg2ShpEngine.java"
+public final class ch.so.agi.gretl.internal.ioxwkf.Gpkg2ShpEngine {
+  public ch.so.agi.gretl.internal.ioxwkf.Gpkg2ShpEngine();
+  public void convert(ch.so.agi.gretl.internal.ioxwkf.Gpkg2ShpEngine$Gpkg2ShpRequest) throws java.lang.Exception;
+}
+Compiled from "IoxWkfDatabaseEngine.java"
+public final class ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine {
+  public ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine();
+  public void importCsv(ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine$CsvImportRequest) throws java.lang.Exception;
+  public void exportCsv(ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine$CsvExportRequest) throws java.lang.Exception;
+  public void importGpkg(ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine$GpkgImportRequest) throws java.lang.Exception;
+  public void importShp(ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine$ShpImportRequest) throws java.lang.Exception;
+  public void exportGpkg(ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine$GpkgExportRequest) throws java.lang.Exception;
+  public void exportShp(ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine$ShpExportRequest) throws java.lang.Exception;
+  public int importJson(ch.so.agi.gretl.internal.ioxwkf.IoxWkfDatabaseEngine$JsonImportRequest) throws java.lang.Exception;
+}
+Compiled from "Shp2Db.java"
+public final class ch.so.agi.gretl.internal.ioxwkf.Shp2Db extends ch.interlis.ioxwkf.dbtools.AbstractImport2db {
+  public ch.so.agi.gretl.internal.ioxwkf.Shp2Db();
+}
+Compiled from "ShapefileAttributeDescriptor.java"
+public final class ch.so.agi.gretl.internal.shapefile.ShapefileAttributeDescriptor extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.ShapefileAttributeDescriptor(java.lang.String, java.lang.String, ch.so.agi.gretl.internal.shapefile.core.DbfFieldType, int, int, ch.so.agi.gretl.internal.shapefile.core.ShapeType, java.lang.Integer, boolean);
+  public boolean geometry();
+  public ch.so.agi.gretl.internal.shapefile.core.DbfField toDbfField();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.lang.String iomAttributeName();
+  public java.lang.String dbfFieldName();
+  public ch.so.agi.gretl.internal.shapefile.core.DbfFieldType dbfType();
+  public int length();
+  public int decimalCount();
+  public ch.so.agi.gretl.internal.shapefile.core.ShapeType shapeType();
+  public java.lang.Integer srid();
+  public boolean mandatory();
+}
+Compiled from "ShapefileConstants.java"
+public final class ch.so.agi.gretl.internal.shapefile.ShapefileConstants {
+  public static final java.lang.String GEOMETRY_ATTRIBUTE;
+  public static final java.lang.String ENCODING;
+  public static final java.lang.String LV95_PRJ;
+}
+Compiled from "ShapefileDescriptorMapper.java"
+public final class ch.so.agi.gretl.internal.shapefile.ShapefileDescriptorMapper {
+  public ch.so.agi.gretl.internal.shapefile.ShapefileDescriptorMapper();
+  public java.util.List<ch.so.agi.gretl.internal.shapefile.ShapefileAttributeDescriptor> fromIoxWkf(ch.interlis.ioxwkf.dbtools.AttributeDescriptor[]);
+  public java.util.List<ch.so.agi.gretl.internal.shapefile.ShapefileAttributeDescriptor> fromGeoPackage(java.sql.DatabaseMetaData, java.lang.String, java.lang.String, java.lang.String, java.lang.Integer) throws java.lang.Exception;
+}
+Compiled from "ShapefileFieldNames.java"
+public final class ch.so.agi.gretl.internal.shapefile.ShapefileFieldNames {
+  public ch.so.agi.gretl.internal.shapefile.ShapefileFieldNames();
+  public java.lang.String map(java.lang.String);
+}
+Compiled from "ShapefileIoxReader.java"
+public final class ch.so.agi.gretl.internal.shapefile.ShapefileIoxReader implements ch.interlis.iox.IoxReader,ch.interlis.iox_j.IoxIliReader {
+  public ch.so.agi.gretl.internal.shapefile.ShapefileIoxReader(java.io.File, ch.ehi.basics.settings.Settings) throws ch.interlis.iox.IoxException;
+  public void setModel(ch.interlis.ili2c.metamodel.TransferDescription);
+  public java.lang.String[] getAttributes();
+  public java.lang.String getGeomAttr();
+  public ch.interlis.iox.IoxEvent read() throws ch.interlis.iox.IoxException;
+  public void close() throws ch.interlis.iox.IoxException;
+  public ch.interlis.iom.IomObject createIomObject(java.lang.String, java.lang.String) throws ch.interlis.iox.IoxException;
+  public ch.interlis.iox.IoxFactoryCollection getFactory() throws ch.interlis.iox.IoxException;
+  public void setFactory(ch.interlis.iox.IoxFactoryCollection) throws ch.interlis.iox.IoxException;
+  public java.lang.String getMimeType();
+  public void setTopicFilter(java.lang.String[]);
+}
+Compiled from "ShapefileIoxWriter.java"
+public final class ch.so.agi.gretl.internal.shapefile.ShapefileIoxWriter implements ch.interlis.iox.IoxWriter {
+  public ch.so.agi.gretl.internal.shapefile.ShapefileIoxWriter(java.nio.file.Path, java.nio.charset.Charset, java.util.Optional<java.lang.String>);
+  public void setAttributeDescriptors(java.util.List<ch.so.agi.gretl.internal.shapefile.ShapefileAttributeDescriptor>) throws ch.interlis.iox.IoxException;
+  public void write(ch.interlis.iox.IoxEvent) throws ch.interlis.iox.IoxException;
+  public void close() throws ch.interlis.iox.IoxException;
+  public void flush() throws ch.interlis.iox.IoxException;
+  public ch.interlis.iom.IomObject createIomObject(java.lang.String, java.lang.String) throws ch.interlis.iox.IoxException;
+  public ch.interlis.iox.IoxFactoryCollection getFactory() throws ch.interlis.iox.IoxException;
+  public void setFactory(ch.interlis.iox.IoxFactoryCollection) throws ch.interlis.iox.IoxException;
+}
+Compiled from "ShapefileMappingException.java"
+public class ch.so.agi.gretl.internal.shapefile.ShapefileMappingException extends ch.interlis.iox.IoxException {
+  public ch.so.agi.gretl.internal.shapefile.ShapefileMappingException(java.lang.String);
+  public ch.so.agi.gretl.internal.shapefile.ShapefileMappingException(java.lang.String, java.lang.Throwable);
+}
+Compiled from "Bounds.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.Bounds extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.core.Bounds(double, double, double, double);
+  public static ch.so.agi.gretl.internal.shapefile.core.Bounds read(ch.so.agi.gretl.internal.shapefile.core.EndianByteBuffer);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public double xmin();
+  public double ymin();
+  public double xmax();
+  public double ymax();
+}
+Compiled from "BoundsAccumulator.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.BoundsAccumulator {
+  public ch.so.agi.gretl.internal.shapefile.core.BoundsAccumulator();
+  public void expand(ch.so.agi.gretl.internal.shapefile.core.Bounds);
+  public boolean isEmpty();
+  public ch.so.agi.gretl.internal.shapefile.core.Bounds toBounds();
+}
+Compiled from "DbfField.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.DbfField extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.core.DbfField(java.lang.String, ch.so.agi.gretl.internal.shapefile.core.DbfFieldType, int, int);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.lang.String name();
+  public ch.so.agi.gretl.internal.shapefile.core.DbfFieldType type();
+  public int length();
+  public int decimalCount();
+}
+Compiled from "DbfFieldType.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.DbfFieldType extends java.lang.Enum<ch.so.agi.gretl.internal.shapefile.core.DbfFieldType> {
+  public static final ch.so.agi.gretl.internal.shapefile.core.DbfFieldType CHARACTER;
+  public static final ch.so.agi.gretl.internal.shapefile.core.DbfFieldType NUMERIC;
+  public static final ch.so.agi.gretl.internal.shapefile.core.DbfFieldType FLOAT;
+  public static final ch.so.agi.gretl.internal.shapefile.core.DbfFieldType LOGICAL;
+  public static final ch.so.agi.gretl.internal.shapefile.core.DbfFieldType DATE;
+  public static ch.so.agi.gretl.internal.shapefile.core.DbfFieldType[] values();
+  public static ch.so.agi.gretl.internal.shapefile.core.DbfFieldType valueOf(java.lang.String);
+  public char code();
+  public static ch.so.agi.gretl.internal.shapefile.core.DbfFieldType fromCode(char) throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+}
+Compiled from "DbfHeader.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.DbfHeader extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.core.DbfHeader(byte, int, int, int, int, int, int, java.util.List<ch.so.agi.gretl.internal.shapefile.core.DbfField>);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public byte version();
+  public int lastUpdateYear();
+  public int lastUpdateMonth();
+  public int lastUpdateDay();
+  public int recordCount();
+  public int headerLength();
+  public int recordLength();
+  public java.util.List<ch.so.agi.gretl.internal.shapefile.core.DbfField> fields();
+}
+Compiled from "DbfReader.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.DbfReader implements java.lang.AutoCloseable {
+  public static ch.so.agi.gretl.internal.shapefile.core.DbfReader open(java.nio.file.Path, java.nio.charset.Charset) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public ch.so.agi.gretl.internal.shapefile.core.DbfHeader header();
+  public java.util.List<ch.so.agi.gretl.internal.shapefile.core.DbfField> fields();
+  public java.util.Optional<ch.so.agi.gretl.internal.shapefile.core.DbfRecord> readNext() throws java.io.IOException;
+  public long currentRecordNumber();
+  public void close() throws java.io.IOException;
+}
+Compiled from "DbfRecord.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.DbfRecord extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.core.DbfRecord(boolean, java.util.List<java.lang.String>);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public boolean deleted();
+  public java.util.List<java.lang.String> values();
+}
+Compiled from "DbfWriter.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.DbfWriter implements java.lang.AutoCloseable {
+  public ch.so.agi.gretl.internal.shapefile.core.DbfWriter(java.nio.channels.FileChannel, java.util.List<ch.so.agi.gretl.internal.shapefile.core.DbfField>, java.nio.charset.Charset);
+  public int headerLength();
+  public int recordLength();
+  public void writeHeader(int) throws java.io.IOException;
+  public void writeRecord(java.lang.Object[]) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void writeEndOfFile() throws java.io.IOException;
+  public void patchRecordCount(int) throws java.io.IOException;
+  public void close();
+}
+Compiled from "EncodedShape.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.EncodedShape extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.core.EncodedShape(java.nio.ByteBuffer, int, ch.so.agi.gretl.internal.shapefile.core.Bounds);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.nio.ByteBuffer content();
+  public int contentLengthBytes();
+  public ch.so.agi.gretl.internal.shapefile.core.Bounds bounds();
+}
+Compiled from "EndianByteBuffer.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.EndianByteBuffer {
+  public static ch.so.agi.gretl.internal.shapefile.core.EndianByteBuffer allocate(int);
+  public static ch.so.agi.gretl.internal.shapefile.core.EndianByteBuffer wrap(byte[]);
+  public static ch.so.agi.gretl.internal.shapefile.core.EndianByteBuffer wrap(byte[], int, int);
+  public static ch.so.agi.gretl.internal.shapefile.core.EndianByteBuffer wrap(java.nio.ByteBuffer);
+  public java.nio.ByteBuffer buffer();
+  public void position(int);
+  public int position();
+  public void flip();
+  public int remaining();
+  public boolean hasRemaining();
+  public byte get();
+  public void put(byte);
+  public void get(byte[]);
+  public void get(byte[], int, int);
+  public void put(byte[]);
+  public void put(byte[], int, int);
+  public int getBigInt();
+  public void putBigInt(int);
+  public int getLittleInt();
+  public void putLittleInt(int);
+  public double getLittleDouble();
+  public void putLittleDouble(double);
+  public short getLittleShort();
+  public void putLittleShort(short);
+}
+Compiled from "ShapeRecord.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShapeRecord extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.core.ShapeRecord(int, ch.so.agi.gretl.internal.shapefile.core.ShapeType, java.nio.ByteBuffer, ch.so.agi.gretl.internal.shapefile.core.Bounds);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public int recordNumber();
+  public ch.so.agi.gretl.internal.shapefile.core.ShapeType shapeType();
+  public java.nio.ByteBuffer content();
+  public ch.so.agi.gretl.internal.shapefile.core.Bounds bounds();
+}
+Compiled from "ShapeType.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShapeType extends java.lang.Enum<ch.so.agi.gretl.internal.shapefile.core.ShapeType> {
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType NULL;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType POINT;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType POLYLINE;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType POLYGON;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType MULTIPOINT;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType POINT_Z;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType POLYLINE_Z;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType POLYGON_Z;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType MULTIPOINT_Z;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType POINT_M;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType POLYLINE_M;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType POLYGON_M;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType MULTIPOINT_M;
+  public static final ch.so.agi.gretl.internal.shapefile.core.ShapeType MULTIPATCH;
+  public static ch.so.agi.gretl.internal.shapefile.core.ShapeType[] values();
+  public static ch.so.agi.gretl.internal.shapefile.core.ShapeType valueOf(java.lang.String);
+  public int code();
+  public static ch.so.agi.gretl.internal.shapefile.core.ShapeType fromCode(int) throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public boolean isSupported2dMvp();
+  public ch.so.agi.gretl.internal.shapefile.geom.GeometryKind defaultGeometryKind() throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+}
+Compiled from "ShapefileDataset.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShapefileDataset extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.core.ShapefileDataset(java.nio.file.Path, java.nio.file.Path, java.nio.file.Path, java.util.Optional<java.nio.file.Path>, java.util.Optional<java.nio.file.Path>);
+  public static ch.so.agi.gretl.internal.shapefile.core.ShapefileDataset fromPath(java.nio.file.Path, boolean) throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException, java.io.IOException;
+  public java.lang.String baseName();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.nio.file.Path shp();
+  public java.nio.file.Path shx();
+  public java.nio.file.Path dbf();
+  public java.util.Optional<java.nio.file.Path> prj();
+  public java.util.Optional<java.nio.file.Path> cpg();
+}
+Compiled from "ShapefileDatasetWriter.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShapefileDatasetWriter implements java.lang.AutoCloseable {
+  public static ch.so.agi.gretl.internal.shapefile.core.ShapefileDatasetWriter open(java.nio.file.Path, ch.so.agi.gretl.internal.shapefile.core.ShapefileSchema, ch.so.agi.gretl.internal.shapefile.core.ShapefileWriteOptions) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void write(com.vividsolutions.jts.geom.Geometry, java.lang.Object[]) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void finish() throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void close();
+  public java.nio.file.Path shpPath();
+  public java.nio.file.Path shxPath();
+  public java.nio.file.Path dbfPath();
+  public java.nio.file.Path cpgPath();
+  public java.nio.file.Path prjPath();
+  public int recordCount();
+}
+Compiled from "ShapefileHeader.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShapefileHeader extends java.lang.Record {
+  public static final int HEADER_SIZE;
+  public ch.so.agi.gretl.internal.shapefile.core.ShapefileHeader(int, int, int, ch.so.agi.gretl.internal.shapefile.core.ShapeType, double, double, double, double, double, double, double, double);
+  public static ch.so.agi.gretl.internal.shapefile.core.ShapefileHeader read(java.nio.channels.FileChannel) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void write(java.nio.channels.FileChannel) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void validateMainFileHeader() throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void validateIndexFileHeader() throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public int fileCode();
+  public int fileLengthWords();
+  public int version();
+  public ch.so.agi.gretl.internal.shapefile.core.ShapeType shapeType();
+  public double xmin();
+  public double ymin();
+  public double xmax();
+  public double ymax();
+  public double zmin();
+  public double zmax();
+  public double mmin();
+  public double mmax();
+}
+Compiled from "ShapefileSchema.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShapefileSchema extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.core.ShapefileSchema(ch.so.agi.gretl.internal.shapefile.core.ShapeType, java.util.List<ch.so.agi.gretl.internal.shapefile.core.DbfField>);
+  public void validateWritable() throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public ch.so.agi.gretl.internal.shapefile.core.ShapeType shapeType();
+  public java.util.List<ch.so.agi.gretl.internal.shapefile.core.DbfField> fields();
+}
+Compiled from "ShapefileWriteOptions.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShapefileWriteOptions extends java.lang.Record {
+  public ch.so.agi.gretl.internal.shapefile.core.ShapefileWriteOptions(java.nio.charset.Charset, java.util.Optional<java.lang.String>, ch.so.agi.gretl.internal.shapefile.core.ShapefileWriteOptions$OverflowPolicy);
+  public static ch.so.agi.gretl.internal.shapefile.core.ShapefileWriteOptions defaults();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.nio.charset.Charset dbfCharset();
+  public java.util.Optional<java.lang.String> prjWkt();
+  public ch.so.agi.gretl.internal.shapefile.core.ShapefileWriteOptions$OverflowPolicy overflow();
+}
+Compiled from "ShpReader.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShpReader implements java.lang.AutoCloseable {
+  public static ch.so.agi.gretl.internal.shapefile.core.ShpReader open(java.nio.file.Path) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public ch.so.agi.gretl.internal.shapefile.core.ShapefileHeader header();
+  public java.util.Optional<ch.so.agi.gretl.internal.shapefile.core.ShapeRecord> readNext() throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public long currentRecordNumber();
+  public long currentByteOffset();
+  public void close() throws java.io.IOException;
+}
+Compiled from "ShpWriter.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShpWriter implements java.lang.AutoCloseable {
+  public ch.so.agi.gretl.internal.shapefile.core.ShpWriter(java.nio.channels.FileChannel, ch.so.agi.gretl.internal.shapefile.core.ShapeType);
+  public ch.so.agi.gretl.internal.shapefile.core.ShapeType shapeType();
+  public void writeHeader(ch.so.agi.gretl.internal.shapefile.core.ShapefileHeader) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void writeRecord(int, ch.so.agi.gretl.internal.shapefile.core.EncodedShape) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void close();
+}
+Compiled from "ShxReader.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShxReader implements java.lang.AutoCloseable {
+  public static ch.so.agi.gretl.internal.shapefile.core.ShxReader open(java.nio.file.Path) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public ch.so.agi.gretl.internal.shapefile.core.ShapefileHeader header();
+  public java.util.List<ch.so.agi.gretl.internal.shapefile.core.ShxReader$ShxIndexEntry> entries();
+  public int recordCount();
+  public void validateAgainstShpHeader(ch.so.agi.gretl.internal.shapefile.core.ShapefileHeader) throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void validateRecordCountAgainstDbf(int, java.lang.String) throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void close() throws java.io.IOException;
+}
+Compiled from "ShxWriter.java"
+public final class ch.so.agi.gretl.internal.shapefile.core.ShxWriter implements java.lang.AutoCloseable {
+  public ch.so.agi.gretl.internal.shapefile.core.ShxWriter(java.nio.channels.FileChannel);
+  public void writeHeader(ch.so.agi.gretl.internal.shapefile.core.ShapefileHeader) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void writeIndexEntry(long, int) throws java.io.IOException, ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+  public void close();
+}
+Compiled from "GeometryKind.java"
+public final class ch.so.agi.gretl.internal.shapefile.geom.GeometryKind extends java.lang.Enum<ch.so.agi.gretl.internal.shapefile.geom.GeometryKind> {
+  public static final ch.so.agi.gretl.internal.shapefile.geom.GeometryKind COORD;
+  public static final ch.so.agi.gretl.internal.shapefile.geom.GeometryKind MULTICOORD;
+  public static final ch.so.agi.gretl.internal.shapefile.geom.GeometryKind POLYLINE;
+  public static final ch.so.agi.gretl.internal.shapefile.geom.GeometryKind SURFACE;
+  public static ch.so.agi.gretl.internal.shapefile.geom.GeometryKind[] values();
+  public static ch.so.agi.gretl.internal.shapefile.geom.GeometryKind valueOf(java.lang.String);
+  public static ch.so.agi.gretl.internal.shapefile.geom.GeometryKind fromOptionValue(java.lang.String);
+}
+Compiled from "IoxToJtsGeometry.java"
+public final class ch.so.agi.gretl.internal.shapefile.geom.IoxToJtsGeometry {
+  public ch.so.agi.gretl.internal.shapefile.geom.IoxToJtsGeometry();
+  public com.vividsolutions.jts.geom.Geometry convert(ch.interlis.iom.IomObject) throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+}
+Compiled from "ShpGeometryDecoder.java"
+public final class ch.so.agi.gretl.internal.shapefile.geom.ShpGeometryDecoder {
+  public ch.so.agi.gretl.internal.shapefile.geom.ShpGeometryDecoder();
+  public com.vividsolutions.jts.geom.Geometry decode(ch.so.agi.gretl.internal.shapefile.core.ShapeRecord) throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+}
+Compiled from "ShpGeometryEncoder.java"
+public final class ch.so.agi.gretl.internal.shapefile.geom.ShpGeometryEncoder {
+  public ch.so.agi.gretl.internal.shapefile.geom.ShpGeometryEncoder();
+  public ch.so.agi.gretl.internal.shapefile.core.EncodedShape encode(com.vividsolutions.jts.geom.Geometry) throws ch.so.agi.gretl.internal.shapefile.ShapefileMappingException;
+}
+Compiled from "DatabaseSpec.java"
+public final class ch.so.agi.gretl.internal.sql.DatabaseSpec extends java.lang.Record {
+  public ch.so.agi.gretl.internal.sql.DatabaseSpec(java.lang.String, java.lang.String, java.lang.String);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.lang.String jdbcUrl();
+  public java.lang.String username();
+  public java.lang.String password();
+}
+Compiled from "AvOperations.java"
+public final class ch.so.agi.gretl.tasks.formats.AvOperations {
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.AvOperations$Av2chRequest, ch.so.agi.gretl.tasks.formats.AvOperations$DirectoryResult> av2ch();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.AvOperations$Av2geobauRequest, ch.so.agi.gretl.tasks.formats.AvOperations$DirectoryResult> av2geobau();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.AvOperations$Gpkg2DxfRequest, ch.so.agi.gretl.tasks.formats.AvOperations$DirectoryResult> gpkg2dxf();
+}
+Compiled from "Csv2ExcelOperation.java"
+public final class ch.so.agi.gretl.tasks.formats.Csv2ExcelOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Csv2ExcelOperation$Request, ch.so.agi.gretl.tasks.formats.Csv2ExcelOperation$Result> type();
+}
+Compiled from "CsvExportOperation.java"
+public final class ch.so.agi.gretl.tasks.formats.CsvExportOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.CsvExportOperation$Request, ch.so.agi.gretl.tasks.formats.CsvExportOperation$Result> type();
+}
+Compiled from "CsvImportOperation.java"
+public final class ch.so.agi.gretl.tasks.formats.CsvImportOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.CsvImportOperation$Request, ch.so.agi.gretl.tasks.formats.CsvImportOperation$Result> type();
+}
+Compiled from "Gpkg2ShpOperation.java"
+public final class ch.so.agi.gretl.tasks.formats.Gpkg2ShpOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Gpkg2ShpOperation$Request, ch.so.agi.gretl.tasks.formats.Gpkg2ShpOperation$Result> type();
+}
+Compiled from "GpkgExportOperation.java"
+public final class ch.so.agi.gretl.tasks.formats.GpkgExportOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.GpkgExportOperation$Request, ch.so.agi.gretl.tasks.formats.GpkgExportOperation$Result> type();
+}
+Compiled from "GpkgImportOperation.java"
+public final class ch.so.agi.gretl.tasks.formats.GpkgImportOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.GpkgImportOperation$Request, ch.so.agi.gretl.tasks.formats.GpkgImportOperation$Result> type();
+}
+Compiled from "Ili2DbOperations.java"
+public final class ch.so.agi.gretl.tasks.formats.Ili2DbOperations {
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> pgSchema();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> pgImport();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> pgReplace();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> pgUpdate();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> pgExport();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> pgDelete();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> pgValidate();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> gpkgImport();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> duckdbSchema();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> duckdbImport();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Request, ch.so.agi.gretl.tasks.formats.Ili2DbOperations$Result> duckdbExport();
+}
+Compiled from "InterlisTaskProvider.java"
+public final class ch.so.agi.gretl.tasks.formats.InterlisTaskProvider implements ch.so.agi.gretl.runtime.api.OperationProvider {
+  public ch.so.agi.gretl.tasks.formats.InterlisTaskProvider();
+  public java.util.Collection<ch.so.agi.gretl.runtime.api.OperationType<?, ?>> operations();
+}
+Compiled from "JsonImportOperation.java"
+public final class ch.so.agi.gretl.tasks.formats.JsonImportOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.JsonImportOperation$Request, ch.so.agi.gretl.tasks.formats.JsonImportOperation$Result> type();
+}
+Compiled from "ShpExportOperation.java"
+public final class ch.so.agi.gretl.tasks.formats.ShpExportOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.ShpExportOperation$Request, ch.so.agi.gretl.tasks.formats.ShpExportOperation$Result> type();
+}
+Compiled from "ShpImportOperation.java"
+public final class ch.so.agi.gretl.tasks.formats.ShpImportOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.ShpImportOperation$Request, ch.so.agi.gretl.tasks.formats.ShpImportOperation$Result> type();
+}
+Compiled from "ValidatorBuilder.java"
+public final class ch.so.agi.gretl.tasks.formats.ValidatorBuilder implements ch.so.agi.gretl.runtime.api.ConfigBuilder<ch.so.agi.gretl.tasks.formats.ValidatorRequest> {
+  public ch.so.agi.gretl.tasks.formats.ValidatorBuilder();
+  public void setDataFiles(java.util.List<java.nio.file.Path>);
+  public void setModelNames(java.util.List<java.lang.String>);
+  public void setModelDirectories(java.util.List<java.lang.String>);
+  public void setConfigFile(java.nio.file.Path);
+  public void setConfigRepositoryId(java.lang.String);
+  public void setMetaConfigFile(java.nio.file.Path);
+  public void setMetaConfigRepositoryId(java.lang.String);
+  public void setForceTypeValidation(java.lang.Boolean);
+  public void setDisableAreaValidation(java.lang.Boolean);
+  public void setMultiplicityOff(java.lang.Boolean);
+  public void setAllObjectsAccessible(java.lang.Boolean);
+  public void setSkipPolygonBuilding(java.lang.Boolean);
+  public void setLogFile(java.nio.file.Path);
+  public void setXtfLogFile(java.nio.file.Path);
+  public void setProxy(java.lang.String);
+  public void setProxyPort(java.lang.Integer);
+  public void setFailOnError(java.lang.Boolean);
+  public void setTableName(java.lang.String);
+  public void setFirstLineIsHeader(java.lang.Boolean);
+  public void setValueDelimiter(java.lang.String);
+  public void setValueSeparator(java.lang.String);
+  public void setEncoding(java.lang.String);
+  public ch.so.agi.gretl.tasks.formats.ValidatorRequest build();
+  public java.lang.Object build();
+}
+Compiled from "ValidatorOperations.java"
+public final class ch.so.agi.gretl.tasks.formats.ValidatorOperations {
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.ValidatorRequest, ch.so.agi.gretl.tasks.formats.ValidatorOperations$Result> csv();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.ValidatorRequest, ch.so.agi.gretl.tasks.formats.ValidatorOperations$Result> json();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.ValidatorRequest, ch.so.agi.gretl.tasks.formats.ValidatorOperations$Result> gpkg();
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.formats.ValidatorRequest, ch.so.agi.gretl.tasks.formats.ValidatorOperations$Result> shp();
+}
+Compiled from "ValidatorRequest.java"
+public final class ch.so.agi.gretl.tasks.formats.ValidatorRequest extends java.lang.Record {
+  public ch.so.agi.gretl.tasks.formats.ValidatorRequest(java.util.List<java.nio.file.Path>, java.util.List<java.lang.String>, java.util.List<java.lang.String>, java.nio.file.Path, java.lang.String, java.nio.file.Path, java.lang.String, boolean, boolean, boolean, boolean, boolean, java.nio.file.Path, java.nio.file.Path, java.lang.String, java.lang.Integer, boolean, java.lang.String, boolean, java.lang.String, java.lang.String, java.lang.String);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.util.List<java.nio.file.Path> dataFiles();
+  public java.util.List<java.lang.String> modelNames();
+  public java.util.List<java.lang.String> modelDirectories();
+  public java.nio.file.Path configFile();
+  public java.lang.String configRepositoryId();
+  public java.nio.file.Path metaConfigFile();
+  public java.lang.String metaConfigRepositoryId();
+  public boolean forceTypeValidation();
+  public boolean disableAreaValidation();
+  public boolean multiplicityOff();
+  public boolean allObjectsAccessible();
+  public boolean skipPolygonBuilding();
+  public java.nio.file.Path logFile();
+  public java.nio.file.Path xtfLogFile();
+  public java.lang.String proxy();
+  public java.lang.Integer proxyPort();
+  public boolean failOnError();
+  public java.lang.String tableName();
+  public boolean firstLineIsHeader();
+  public java.lang.String valueDelimiter();
+  public java.lang.String valueSeparator();
+  public java.lang.String encoding();
+}
+Compiled from "IliValidatorOperation.java"
+public final class ch.so.agi.gretl.tasks.ilivalidator.IliValidatorOperation {
+  public static final java.lang.String ID;
+  public static final java.lang.String SYMBOL;
+  public static ch.so.agi.gretl.runtime.api.OperationType<ch.so.agi.gretl.tasks.ilivalidator.IliValidatorOperation$IliValidatorRequest, ch.so.agi.gretl.tasks.ilivalidator.ValidationResult> type();
+}
+Compiled from "IliValidatorProvider.java"
+public final class ch.so.agi.gretl.tasks.ilivalidator.IliValidatorProvider implements ch.so.agi.gretl.runtime.api.OperationProvider {
+  public ch.so.agi.gretl.tasks.ilivalidator.IliValidatorProvider();
+  public java.util.Collection<ch.so.agi.gretl.runtime.api.OperationType<?, ?>> operations();
+}
+Compiled from "IliValidatorTaskException.java"
+public final class ch.so.agi.gretl.tasks.ilivalidator.IliValidatorTaskException extends java.lang.RuntimeException implements ch.so.agi.gretl.runtime.api.DiagnosticCarrier {
+  public ch.so.agi.gretl.tasks.ilivalidator.IliValidatorTaskException(java.lang.String, java.lang.String, java.lang.String, int, long, java.util.Optional<java.nio.file.Path>, java.lang.Throwable);
+  public java.lang.String code();
+  public ch.so.agi.gretl.runtime.api.DiagnosticInfo diagnostic();
+  public java.lang.String phase();
+  public int errors();
+  public long warnings();
+  public java.util.Optional<java.nio.file.Path> reportFile();
+}
+Compiled from "ValidationResult.java"
+public final class ch.so.agi.gretl.tasks.ilivalidator.ValidationResult extends java.lang.Record {
+  public ch.so.agi.gretl.tasks.ilivalidator.ValidationResult(java.nio.file.Path, java.nio.file.Path, long);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.nio.file.Path file();
+  public java.nio.file.Path reportFile();
+  public long warnings();
+}
+Phase-1 accepted product: 52675c526a0edad52d7005c1d7e874fb7d3ca276
+Actual javap -public of public top-level task-library classes before phase-2 migration. Internal packages are implementation detail.

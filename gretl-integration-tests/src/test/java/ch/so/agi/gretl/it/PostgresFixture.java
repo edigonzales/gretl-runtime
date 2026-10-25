@@ -24,12 +24,17 @@ final class PostgresFixture {
                     .withDatabaseName("gretl")
                     .withUsername("gretl_user")
                     .withPassword("gretl_password");
+            if (System.getProperty("gretl.test.executionMode", "JAR").equals("IMAGE")) {
+                candidate.withNetworkMode(System.getProperty("gretl.test.imageNetwork"));
+                candidate.withCreateContainerCmdModifier(command -> command.withHostName("postgres").withAliases("postgres"));
+            }
             candidate.start();
             try (Connection connection = DriverManager.getConnection(
                     candidate.getJdbcUrl(), candidate.getUsername(),
                     candidate.getPassword());
                  Statement statement = connection.createStatement()) {
                 statement.execute("create extension if not exists postgis");
+                statement.execute("create extension if not exists \"uuid-ossp\"");
             } catch (SQLException exception) {
                 candidate.stop();
                 throw new IllegalStateException("Could not initialize PostGIS", exception);
@@ -70,6 +75,10 @@ final class PostgresFixture {
         String jdbcUrl() {
             String separator = container.getJdbcUrl().contains("?") ? "&" : "?";
             return container.getJdbcUrl() + separator + "currentSchema=" + schema + ",public";
+        }
+
+        String imageJdbcUrl() {
+            return "jdbc:postgresql://postgres:5432/gretl?currentSchema=" + schema + ",public";
         }
 
         String user() {

@@ -28,7 +28,7 @@ class PackageDescriptorTest {
                   "entryScript": "job.groovy",
                   "sources": [],
                   "resources": ["sql"],
-                  "dependencies": ["ch.so.agi.gretl:gretl-basic-tasks:1.0.0"]
+                  "dependencies": ["ch.so.agi.gretl:gretl-database-tasks:1.0.0"]
                 }
                 """);
 

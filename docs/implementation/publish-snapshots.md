@@ -95,7 +95,9 @@ Gruppe: `ch.so.agi.gretl`
 - `gretl-i18n`
 - `gretl-logging`
 - `gretl-packager`
-- `gretl-basic-tasks`
+- `gretl-database-tasks`
+- `gretl-io-tasks`
+- `gretl-interlis-tasks` (einschliesslich `standard-functions`-Classifier)
 - `gretl-cli`
 - `gretl-job-runtime`
 - `gretl-ilivalidator`
