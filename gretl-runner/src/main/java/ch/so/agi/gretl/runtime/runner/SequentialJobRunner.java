@@ -265,6 +265,7 @@ public final class SequentialJobRunner {
             RunEnvironment environment, WorkspaceManager.Workspace workspace,
             JobDefinition definition) {
         List<FailureInfo> failures = new ArrayList<>();
+        var completionBudget = environment.control().completionBudget();
         List<CleanupDefinition> cleanups = definition.cleanups();
         for (int index = cleanups.size() - 1; index >= 0; index--) {
             CleanupDefinition cleanup = cleanups.get(index);
@@ -277,7 +278,7 @@ public final class SequentialJobRunner {
             }
             CloseStack closeStack = new CloseStack();
             CleanupContextImpl context = new CleanupContextImpl(environment, cleanupDirectory,
-                    closeStack, environment.control(), cleanup.name());
+                    closeStack, completionBudget, cleanup.name());
             ExecutionIdentity identity = environment.identity(null, null);
             environment.emit("gretl.cleanup.started", LogLevel.INFO, identity,
                     Optional.empty(), "cleanup", null, 0,

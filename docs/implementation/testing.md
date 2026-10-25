@@ -171,3 +171,24 @@ Der schnelle lokale Build bleibt davon unberührt. Kombiniert sind das
 - Testcontainers- und Image-Versionen werden zentral gepflegt; Image-Digests
   sind im Code sichtbar und dürfen nicht stillschweigend auf `latest`
   zurückfallen (Ausnahme: dokumentiertes Floci-Contract).
+
+## Folgeplan: neue Artefaktgrenze und Messgrenzen
+
+Der Folgeplan unter `improvement-plan/` erweitert die oben beschriebene
+historische CLI-Komponentenprüfung um echte `java -jar`-Szenarien.
+`ArtifactJobRunner` paketiert kanonische Jobs über den aktuellen Distributions-
+Packager und startet sie in separaten Prozessen. `ValidatorLocalJobIT` und
+`CancellationLocalJobIT` laufen im normalen Reactor; `DatabaseArtifactIT` prüft
+zusätzlich eine PostgreSQL-Taskkette, Abbruch/Rollback und die ausdrücklich
+nicht unterstützte direkte PostGIS-Geometrieübernahme durch DuckDB.
+
+Die vorhandenen In-Process-Prüfungen bleiben Komponentenprüfungen und werden
+nicht als JAR-Artefaktnachweise gezählt. Die Originalzuordnung mit Quellcommit,
+Methoden, Assertionstexten und Fixture-Prüfsummen steht in
+[improvement-plan/original-scenarios.md](improvement-plan/original-scenarios.md).
+Der vollständige fachliche Port und die 44er-Abdeckung sind Phase-2-Gates;
+Inventarisierung allein gilt nicht als Migrationserfolg.
+
+JaCoCo misst Test-JVMs. Nicht instrumentierte Job-/Launcherprozesse stehen
+separat als fachliche Ausführungsnachweise im Bericht. Eine Testanzahl ist
+kein Coverage-Prozentsatz. Details und Pfade: [build.md](build.md).

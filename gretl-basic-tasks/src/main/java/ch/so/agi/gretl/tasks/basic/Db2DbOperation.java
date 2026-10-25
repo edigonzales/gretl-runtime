@@ -278,6 +278,8 @@ public final class Db2DbOperation {
                                 "db.executions", Integer.toString(index),
                                 "db.rows", Long.toString(transferredRows)), null);
                 return new Db2DbResult(index, transferredRows, executions);
+            } catch (ch.so.agi.gretl.runtime.api.TaskCancelledException exception) {
+                throw exception;
             } catch (Db2DbTaskException exception) {
                 logFailure(context, exception);
                 throw exception;

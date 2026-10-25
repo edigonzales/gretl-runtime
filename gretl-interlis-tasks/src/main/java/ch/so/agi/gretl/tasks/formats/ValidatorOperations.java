@@ -19,7 +19,7 @@ public final class ValidatorOperations {
 
     public static OperationType<ValidatorRequest, Result> csv() {
         return type(Kind.CSV, "gretl.csv-validator", "CsvValidator",
-                "Validate CSV with ilivalidator and the CSV reader", true, false, true);
+                "Validate CSV with ilivalidator and the CSV reader", true, false, false);
     }
 
     public static OperationType<ValidatorRequest, Result> json() {
@@ -29,7 +29,7 @@ public final class ValidatorOperations {
 
     public static OperationType<ValidatorRequest, Result> gpkg() {
         return type(Kind.GPKG, "gretl.gpkg-validator", "GpkgValidator",
-                "Validate GeoPackage with ilivalidator and the GeoPackage reader", false, false, false);
+                "Validate GeoPackage with ilivalidator and the GeoPackage reader", false, false, true);
     }
 
     public static OperationType<ValidatorRequest, Result> shp() {
@@ -49,7 +49,7 @@ public final class ValidatorOperations {
                 (b, v) -> b.setModelNames(v)));
         fields.add(field("modelDirectories", "list", "Model directories or repositories",
                 false, List.<String>of(), "modelDirectories = [file('models')]",
-                FormatTaskSupport::strings, (b, v) -> b.setModelDirectories(v)));
+                FormatTaskSupport::pathStrings, (b, v) -> b.setModelDirectories(v)));
         fields.add(field("configFile", "path", "Validation configuration file", false,
                 null, "configFile = file('validation.toml')", FormatTaskSupport::path,
                 (b, v) -> b.setConfigFile(v)));
@@ -116,7 +116,8 @@ public final class ValidatorOperations {
         return new OperationType<>(id, symbol, description, ValidatorRequest.class,
                 Result.class, ValidatorBuilder::new, () -> new Handler(kind), fields,
                 List.of(valid, log),
-                "task('validate', " + symbol + ") {\n    dataFiles = [file('data/input')]\n}\n");
+                "task('validate', " + symbol + ") {\n    dataFiles = [file('data/input')]\n"
+                        + (tableField ? "    tableName = 'abbaustelle'\n" : "") + "}\n");
     }
 
     @SuppressWarnings("unchecked")

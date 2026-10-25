@@ -257,6 +257,16 @@ public final class GretlCli {
                 .or(() -> Optional.ofNullable(environment.get("GRETL_JOB_NAME")))
                 .orElseGet(source::jobName);
         jobName = requireJobName(jobName);
+        Optional<String> correlationId = config.correlationId()
+                .or(() -> Optional.ofNullable(environment.get("GRETL_CORRELATION_ID")));
+        correlationId.ifPresent(value -> {
+            if (value.isBlank() || value.length() > 256
+                    || value.chars().anyMatch(Character::isISOControl)) {
+                throw new CliException(2, "runtime.correlationId / GRETL_CORRELATION_ID: "
+                        + "expected non-blank text up to 256 characters without control characters");
+            }
+        });
+        config = config.withCorrelationId(correlationId);
         LoggingConfig logging = config.logging().withOverrides(
                 options.logFormat(), options.logLevel());
         config = config.withOverrides(options.workDir(), null,
@@ -339,7 +349,7 @@ public final class GretlCli {
         LogContext context = new LogContext(commandId, runId,
                 config.jobName().orElseGet(source::jobName), RuntimeInfo.VERSION,
                 Optional.ofNullable(environment.get("GRETL_DEPLOYMENT_ENVIRONMENT"))
-                        .filter(value -> !value.isBlank()), locale);
+                        .filter(value -> !value.isBlank()), locale, config.correlationId());
         Path eventFile = config.reportRoot().resolve(runId + ".events.jsonl");
         LoggingPipeline logging;
         try {
@@ -352,8 +362,16 @@ public final class GretlCli {
         LogbackBridge bridge = null;
         RunControl control = new RunControl(SystemMonotonicClock.INSTANCE,
                 Optional.ofNullable(config.timeout()));
-        Thread hook = new Thread(() -> control.requestCancel(
-                ch.so.agi.gretl.runtime.api.CancelReason.REQUESTED), "gretl-shutdown");
+        java.util.concurrent.CountDownLatch completed = new java.util.concurrent.CountDownLatch(1);
+        Thread hook = new Thread(() -> {
+            control.requestCancel(ch.so.agi.gretl.runtime.api.CancelReason.REQUESTED);
+            long nanos = control.completionBudget().remaining().orElseThrow().toNanos();
+            try {
+                completed.await(nanos, java.util.concurrent.TimeUnit.NANOSECONDS);
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+            }
+        }, "gretl-shutdown");
         try {
             userSink.attach(logging::scriptMessage);
             try {
@@ -382,7 +400,6 @@ public final class GretlCli {
                     .runControl(control)
                     .build();
             JobOutcome outcome = new SequentialJobRunner().run(definition, plan, input);
-            removeHook(hook);
             String terminationPath = environment.get("GRETL_TERMINATION_MESSAGE_PATH");
             if (terminationPath != null && !terminationPath.isBlank()) {
                 try {
@@ -414,14 +431,18 @@ public final class GretlCli {
             }
             return outcome.exitCode();
         } finally {
-            removeHook(hook);
-            if (bridge != null) {
-                try {
-                    bridge.close();
-                } catch (RuntimeException ignored) {
+            try {
+                if (bridge != null) {
+                    try {
+                        bridge.close();
+                    } catch (RuntimeException ignored) {
+                    }
                 }
+                logging.close();
+            } finally {
+                completed.countDown();
+                removeHook(hook);
             }
-            logging.close();
         }
     }
 

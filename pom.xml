@@ -31,11 +31,14 @@
     <module>gretl-interlis-tasks</module>
     <module>examples/file-size-extension</module>
     <module>gretl-dist</module>
+    <module>gretl-integration-tests</module>
   </modules>
 
   <properties>
     <!-- Product baseline, spec 07. The wrapper pins Maven 3.10.0 separately. -->
     <java.version>25</java.version>
+    <gretl.test.includes>**/*JobIT.java</gretl.test.includes>
+    <jacoco.version>0.8.14</jacoco.version>
     <maven.compiler.release>25</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -175,6 +178,24 @@
     </pluginManagement>
 
     <plugins>
+      <!-- Java 25 coverage for test JVMs; forked product processes are reported separately. -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <executions>
+          <execution>
+            <id>coverage-agent</id>
+            <goals><goal>prepare-agent</goal></goals>
+            <configuration><append>true</append></configuration>
+          </execution>
+          <execution>
+            <id>coverage-report</id>
+            <phase>verify</phase>
+            <goals><goal>report</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -280,9 +301,7 @@
     -->
     <profile>
       <id>backing-services</id>
-      <modules>
-        <module>gretl-integration-tests</module>
-      </modules>
+      <properties><gretl.test.includes>**/*IT.java</gretl.test.includes></properties>
     </profile>
   </profiles>
 </project>

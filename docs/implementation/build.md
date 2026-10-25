@@ -539,3 +539,34 @@ Das Skript nutzt `docs/implementation/publish-settings.xml` mit
 Environment-Platzhaltern und das Maven-Profil `publish-snapshots`. Die
 Distribution wird als `gretl-dist` mit den Classifiers `bin` (ZIP) und
 `bin-tar-gz` (TAR.GZ) angehängt.
+
+## Coverage und Artefaktjobs (Verbesserungsplan Phase 1)
+
+JaCoCo 0.8.14 ist für Java-25-Bytecode gepinnt ([offizieller Versionsnachweis](https://www.jacoco.org/jacoco/trunk/doc/changes.html)). Das Plugin instrumentiert die
+Surefire-/Failsafe-JVMs und erzeugt bei `verify` Line-/Branch-Berichte unter
+`<modul>/target/site/jacoco/`. Das testseitige Integrationsmodul aggregiert die
+verfügbaren Reactorbeiträge unter `gretl-integration-tests/target/site/jacoco-aggregate/`.
+Die Compile-Abhängigkeiten dieses ausschliesslichen Testmoduls erlauben dabei
+die Zuordnung der Produktklassen und Quellen; sie ändern keine Produktabhängigkeit.
+
+Separat gestartete Launcher-, Packager- und `java -jar`-Prozesse sind bewusst
+**nicht instrumentiert**. Ihre fachlichen Assertions sind Ausführungsnachweise,
+aber kein gemessener Anteil der JaCoCo-Abdeckung. Testzahlen und Coverage werden
+getrennt ausgewiesen; es gibt keine globale Prozenthürde.
+
+Das Integrationsmodul ist einmal im normalen Reactor enthalten und hängt für die
+Buildreihenfolge explizit von `gretl-dist` ab. Standardmässig führt Failsafe dort
+`*JobIT` aus (derzeit die lokalen `*LocalJobIT`-Klassen); `backing-services` erweitert die Auswahl auf sämtliche `*IT`.
+Damit bleiben lokale Artefaktjobs Docker-frei und Diensttests ausdrücklich opt-in.
+Die beiden vollständigen Prüfwege bleiben:
+
+```sh
+./mvnw -B clean verify
+./mvnw -B -Pgeotools-probe,backing-services clean verify
+```
+
+Die JAR-Szenarien liegen unter `gretl-integration-tests/src/test/resources/jobs/`.
+`ArtifactJobRunner` kopiert jedes Szenario frisch, ruft den regulären Packager der
+gebauten Distribution auf und startet `java -jar` ohne Testclasspath. Prozessdaten,
+SHA-256, Report, Logs und Outputs bleiben unter `target/job-evidence/` erhalten.
+Vor einem erneuten `clean` müssen benötigte Nachweise gesichert werden.

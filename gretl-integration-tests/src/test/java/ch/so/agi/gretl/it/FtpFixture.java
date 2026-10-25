@@ -184,6 +184,7 @@ final class FtpFixture implements AutoCloseable {
                 client = fixture.connect();
                 deleteRecursively(client, directory);
             } catch (IOException exception) {
+                fixture.recordServerEvidence();
                 throw new IllegalStateException("Could not clean FTP lease " + directory,
                         exception);
             } finally {
@@ -228,6 +229,18 @@ final class FtpFixture implements AutoCloseable {
             }
         }
         throw new IOException("FTP fixture is not reachable", last);
+    }
+
+    private void recordServerEvidence() {
+        try {
+            Path evidence = Path.of("target", "service-evidence");
+            Files.createDirectories(evidence);
+            Files.writeString(evidence.resolve("ftp-" + container.getContainerId() + ".log"),
+                    container.getLogs().replace(PASSWORD, "[REDACTED]")
+                            .replace("definitely-wrong", "[REDACTED]"));
+        } catch (Exception ignored) {
+            // Keep the original test failure even if Docker's diagnostics fail too.
+        }
     }
 
     private static void sleep(long millis) {

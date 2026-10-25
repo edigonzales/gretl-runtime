@@ -157,6 +157,7 @@ final class DuckDbFederationEngine {
                 Db2DbSupport.DatabaseConfig config = Db2DbSupport.config(context,
                         source.database());
                 String rawAlias = "__gretl_" + source.alias() + "_raw";
+                rejectPostgisGeometry(source, config, context);
                 attachPostgres(connection, rawAlias, config, true);
                 attachments.add(rawAlias);
                 for (Table table : source.tables()) {
@@ -208,6 +209,36 @@ final class DuckDbFederationEngine {
             sql += ", " + String.join(", ", options);
         }
         return sql + ")";
+    }
+
+    /** The federation contract does not yet preserve PostGIS geometry/SRID.
+     * Reject it before DuckDB can silently expose an unknown PostgreSQL type as text.
+     */
+    private static void rejectPostgisGeometry(Source source, Db2DbSupport.DatabaseConfig config,
+                                              OperationContext context)
+            throws SQLException {
+        try (Connection connection = DriverManager.getConnection(config.jdbcUrl(),
+                config.user(), config.password());
+             var query = connection.prepareStatement("SELECT column_name FROM information_schema.columns "
+                     + "WHERE table_schema=? AND table_name=? AND udt_name IN ('geometry','geography')")) {
+            for (Table table : source.tables()) {
+                query.setString(1, table.schema());
+                query.setString(2, table.table());
+                try (ResultSet rows = query.executeQuery()) {
+                    if (rows.next()) {
+                        context.report(new ch.so.agi.gretl.runtime.api.Diagnostic(
+                                ch.so.agi.gretl.runtime.api.DiagnosticSeverity.ERROR,
+                                "DUCKDB_GEOMETRY_UNSUPPORTED",
+                                "PostGIS geometry/geography sources are not supported",
+                                Map.of(), List.of()));
+                        throw new DuckDbTaskException("DUCKDB_GEOMETRY_UNSUPPORTED",
+                                "PostGIS geometry/geography sources are not supported by DuckDbSqlExecutor; "
+                                        + "use an explicit SQL conversion with a separately verified SRID contract",
+                                "configuration", null);
+                    }
+                }
+            }
+        }
     }
 
     private static void cleanupSources(Connection connection, List<Source> sources,

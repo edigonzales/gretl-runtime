@@ -52,6 +52,9 @@ public final class Ili2DbOperations {
                     "databaseFile = file('data/db.gpkg')", FormatTaskSupport::path,
                     (b, v) -> b.databaseFile = v));
             if (kind == Kind.GPKG_IMPORT) {
+                fields.add(field("defaultSrsCode", "text", "Default SRS code", false, null,
+                        "defaultSrsCode = '2056'", FormatTaskSupport::text,
+                        (b, v) -> b.defaultSrsCode = v));
                 fields.add(field("coalesceJson", "boolean", "Coalesce JSON structures", false, false,
                         "coalesceJson = true", FormatTaskSupport::bool, (b, v) -> b.coalesceJson = v));
                 fields.add(field("nameByTopic", "boolean", "Use topic-qualified names", false, false,

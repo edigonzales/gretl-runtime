@@ -152,6 +152,11 @@ public final class RuntimeConfig {
         return language;
     }
 
+    public RuntimeConfig withCorrelationId(Optional<String> value) {
+        return new RuntimeConfig(file, configDirectory, workRoot, reportRoot,
+                keepWork, timeout, jobName, value, language, logging, params, secrets, taskConfig);
+    }
+
     public SecretResolver secretResolver(Map<String, String> environment,
                                          SecretRegistry registry) {
         Map<String, String> cache = new LinkedHashMap<>();

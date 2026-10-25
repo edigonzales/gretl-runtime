@@ -1,0 +1,230 @@
+package ch.so.agi.gretl.it;
+
+import ch.so.agi.gretl.runtime.logging.Json;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.security.MessageDigest;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HexFormat;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+/** Artifact boundary: regular distribution packager, then a fresh java -jar process.
+ * Capture uses OS file redirection: no pipe can deadlock or remain undrained.
+ * Evidence survives JUnit temp cleanup under target/job-evidence.
+ */
+final class ArtifactJobRunner {
+    enum Mode { JAR, IMAGE }
+    record Endpoint(String host, String image) {}
+    record Request(String id, Path jobDirectory, Path directory, List<String> targets,
+                   Map<String, String> parameters, Map<String, String> environment,
+                   Map<String, Object> config, Map<String, Endpoint> endpoints,
+                   Duration timeout) {
+        Request {
+            targets = List.copyOf(targets);
+            parameters = Map.copyOf(parameters);
+            environment = Map.copyOf(environment);
+            endpoints = Map.copyOf(endpoints);
+            if (!id.matches("[A-Za-z0-9._-]+") || timeout.isNegative() || timeout.isZero()) {
+                throw new IllegalArgumentException("Invalid scenario identity or timeout");
+            }
+        }
+    }
+    record Prepared(Request request, Path source, Path jar, String sha256, Path report) {}
+    record Result(int code, String out, String err, Path report, Path directory,
+                  Duration duration, boolean timedOut, boolean aborted, String artifactIdentity) {}
+    record Running(Prepared prepared, Process process, Path out, Path err, Instant started, boolean script) {}
+
+    static Path directory(String id) throws IOException {
+        Path root = Path.of("target", "job-evidence", id + "-" + UUID.randomUUID())
+                .toAbsolutePath().normalize();
+        Files.createDirectories(root);
+        privateDirectory(root);
+        Files.createDirectories(root.resolve("output"));
+        return root;
+    }
+
+    static Path fixture(String id) throws Exception {
+        return Path.of(ArtifactJobRunner.class.getResource("/jobs/" + id).toURI());
+    }
+
+    static Prepared prepare(Request request) throws Exception {
+        Mode mode = Mode.valueOf(System.getProperty("gretl.test.executionMode", "JAR"));
+        if (mode != Mode.JAR) {
+            throw new IllegalStateException("IMAGE execution is not available before the phase-2 adapter; no JAR fallback");
+        }
+        Path source = request.directory().resolve("source");
+        if (Files.exists(source)) throw new IOException("Scenario work copy already exists: " + source);
+        try (var paths = Files.walk(request.jobDirectory())) {
+            for (Path path : paths.toList()) {
+                if (Files.isSymbolicLink(path)) throw new IOException("Symlink fixture: " + path);
+                Path target = source.resolve(request.jobDirectory().relativize(path));
+                if (Files.isDirectory(path)) Files.createDirectories(target);
+                else Files.copy(path, target);
+            }
+        }
+        List<String> resources;
+        try (var paths = Files.list(source)) {
+            resources = paths.filter(p -> !p.getFileName().toString().equals("job.groovy")
+                            && !p.getFileName().toString().equals("job-package.json"))
+                    .map(p -> p.getFileName().toString()).sorted().toList();
+        }
+        Path descriptor = source.resolve("job-package.json");
+        if (!Files.exists(descriptor)) {
+            Files.writeString(descriptor, Json.write(Map.of(
+                    "schemaVersion", 1, "name", request.id(), "version", "1",
+                    "runtimeVersion", "0.1.0-SNAPSHOT", "entryScript", "job.groovy",
+                    "sources", List.of(), "resources", resources, "dependencies", List.of())));
+        }
+        Path distribution = Path.of("..", "gretl-dist", "target", "dist").toAbsolutePath().normalize();
+        Path launcher = distribution.resolve("bin/gretl");
+        if (!Files.isRegularFile(launcher)) throw new IOException("Candidate distribution missing: " + launcher);
+        Path jar = request.directory().resolve("job.jar");
+        List<String> command = List.of(launcher.toString(), "package", descriptor.toString(),
+                "--output", jar.toString());
+        Process packaging = process(command, request.directory(), request.environment(), "package").start();
+        try {
+            if (!packaging.waitFor(120, TimeUnit.SECONDS)) {
+                throw new IOException("Packaging timed out: " + request.id());
+            }
+        } finally {
+            if (packaging.isAlive()) stop(packaging);
+        }
+        if (packaging.exitValue() != 0 || !Files.isRegularFile(jar)) {
+            throw new IOException("Packaging failed (not a job result): "
+                    + Files.readString(request.directory().resolve("package.stderr.log")));
+        }
+        String hash;
+        try (var input = Files.newInputStream(jar)) {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] buffer = new byte[65536];
+            int count;
+            while ((count = input.read(buffer)) >= 0) digest.update(buffer, 0, count);
+            hash = HexFormat.of().formatHex(digest.digest());
+        }
+        Files.writeString(request.directory().resolve("runtime.json"), Json.write(request.config()));
+        return new Prepared(request, source, jar, hash, request.directory().resolve("report.json"));
+    }
+
+    static Running start(Prepared prepared, boolean script) throws IOException {
+        List<String> command = new ArrayList<>();
+        if (script) {
+            command.add(Path.of("..", "gretl-dist", "target", "dist", "bin", "gretl")
+                    .toAbsolutePath().normalize().toString());
+            command.add("run");
+            command.add(prepared.source().resolve("job.groovy").toString());
+        } else {
+            command.add(Path.of(System.getProperty("java.home"), "bin", "java").toString());
+            command.add("-Dfile.encoding=UTF-8");
+            command.add("-Duser.timezone=UTC");
+            command.add("-Duser.language=de");
+            command.add("-jar");
+            command.add(prepared.jar().toString());
+        }
+        command.addAll(List.of("--config", prepared.request().directory().resolve("runtime.json").toString(),
+                "--report", prepared.report().toString(), "--log-format", "json"));
+        for (String target : prepared.request().targets()) command.addAll(List.of("--target", target));
+        prepared.request().parameters().forEach((key, value) -> command.addAll(List.of("--param", key + "=" + value)));
+        Files.writeString(prepared.request().directory().resolve("command.json"), Json.write(command));
+        Instant started = Instant.now();
+        Process process = process(command, prepared.request().directory(), prepared.request().environment(), "job").start();
+        return new Running(prepared, process, prepared.request().directory().resolve("job.stdout.log"),
+                prepared.request().directory().resolve("job.stderr.log"), started, script);
+    }
+
+    static Result run(Request request) throws Exception {
+        Running running = start(prepare(request), false);
+        try {
+            return finish(running, false);
+        } finally {
+            if (running.process().isAlive()) stop(running.process());
+        }
+    }
+
+    static Result finish(Running running, boolean aborted) throws Exception {
+        Process process = running.process();
+        boolean timedOut = !process.waitFor(running.prepared().request().timeout().toMillis(), TimeUnit.MILLISECONDS);
+        if (timedOut) stop(process);
+        // waitFor/stop has reaped the process; redirected streams are now complete.
+        Request request = running.prepared().request();
+        var registry = new ch.so.agi.gretl.runtime.runner.SecretRegistry();
+        if (request.config().get("secrets") instanceof Map<?, ?> secrets) {
+            for (Object value : secrets.values()) {
+                if (value instanceof Map<?, ?> secret) {
+                    String clear = null;
+                    if (secret.get("file") instanceof String file) {
+                        clear = Files.readString(request.directory().resolve(file));
+                        if (clear.endsWith("\r\n")) clear = clear.substring(0, clear.length() - 2);
+                        else if (clear.endsWith("\n")) clear = clear.substring(0, clear.length() - 1);
+                    } else if (secret.get("environment") instanceof String key) {
+                        clear = request.environment().getOrDefault(key, System.getenv(key));
+                    }
+                    if (clear != null) registry.register(clear);
+                }
+            }
+        }
+        var redactor = new ch.so.agi.gretl.runtime.logging.Redactor(registry);
+        String out = redactor.redact(Files.readString(running.out()));
+        String err = redactor.redact(Files.readString(running.err()));
+        Files.writeString(running.out(), out);
+        Files.writeString(running.err(), err);
+        String identity = running.script()
+                ? HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(
+                        Files.readAllBytes(running.prepared().source().resolve("job.groovy"))))
+                : running.prepared().sha256();
+        Map<String, Object> evidence = new LinkedHashMap<>();
+        evidence.put("scenario", request.id());
+        evidence.put("mode", running.script() ? "SCRIPT" : "JAR");
+        evidence.put("sha256", identity);
+        evidence.put("exitCode", process.exitValue());
+        evidence.put("timedOut", timedOut);
+        evidence.put("aborted", aborted);
+        evidence.put("durationMillis", Duration.between(running.started(), Instant.now()).toMillis());
+        evidence.put("endpoints", request.endpoints().entrySet().stream().collect(
+                java.util.stream.Collectors.toMap(Map.Entry::getKey, e -> e.getValue().host())));
+        evidence.put("report", running.prepared().report().toString());
+        Files.writeString(request.directory().resolve("execution.json"), Json.write(evidence));
+        return new Result(process.exitValue(), out, err, running.prepared().report(), request.directory(),
+                Duration.between(running.started(), Instant.now()), timedOut, aborted, identity);
+    }
+
+    static void stop(Process process) throws InterruptedException {
+        process.destroy();
+        if (!process.waitFor(35, TimeUnit.SECONDS)) {
+            process.descendants().forEach(ProcessHandle::destroyForcibly);
+            process.destroyForcibly();
+            process.waitFor();
+        }
+    }
+
+    private static ProcessBuilder process(List<String> command, Path directory,
+                                           Map<String, String> environment, String prefix) {
+        ProcessBuilder builder = new ProcessBuilder(command).directory(directory.toFile());
+        for (String key : List.of("CLASSPATH", "JAVA_TOOL_OPTIONS", "_JAVA_OPTIONS", "JDK_JAVA_OPTIONS", "JAVA_OPTS")) {
+            builder.environment().remove(key);
+        }
+        for (String key : List.of("GRETL_JOB_NAME", "GRETL_CORRELATION_ID", "GRETL_JOB_REVISION",
+                "GRETL_TERMINATION_MESSAGE_PATH", "GRETL_DEPLOYMENT_ENVIRONMENT", "GRETL_LANGUAGE")) {
+            builder.environment().remove(key);
+        }
+        builder.environment().put("GRETL_LANGUAGE", "de");
+        builder.environment().putAll(environment);
+        builder.environment().put("JAVA_HOME", System.getProperty("java.home"));
+        builder.environment().put("TZ", "UTC");
+        builder.environment().put("LANG", "C.UTF-8");
+        return builder.redirectOutput(directory.resolve(prefix + ".stdout.log").toFile())
+                .redirectError(directory.resolve(prefix + ".stderr.log").toFile());
+    }
+
+    private static void privateDirectory(Path directory) throws IOException {
+        try { Files.setPosixFilePermissions(directory, PosixFilePermissions.fromString("rwx------")); }
+        catch (UnsupportedOperationException ignored) { }
+    }
+}

@@ -58,7 +58,7 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
                 event.jobName().or(() -> Optional.of(context.jobName())),
                 event.taskId(), event.invocationId(), event.operationId(),
                 event.phase(), event.outcome(), event.durationMillis(),
-                redactor.redactFields(event.attributes()),
+                contextualFields(event.attributes()),
                 event.failure().map(redactor::redact),
                 event.failure().flatMap(FailureInfo::source));
         console.write(canonical);
@@ -77,7 +77,7 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
                             + "bleibt davon unberuehrt.",
                     Optional.of(context.runId()), Optional.of(context.jobName()),
                     Optional.empty(), Optional.empty(), Optional.empty(),
-                    "logging", "", 0, Map.of(), Optional.empty(), Optional.empty());
+                    "logging", "", 0, contextualFields(Map.of()), Optional.empty(), Optional.empty());
             // Write only to the remaining sink(s), avoiding recursive degradation loops.
             if (!console.degraded()) {
                 console.write(warning);
@@ -94,6 +94,13 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
                 Optional.of(context.runId()), Optional.of(context.jobName()),
                 Optional.empty(), Optional.empty(), Optional.empty(),
                 "script", "", 0, Map.of(), Optional.empty()));
+    }
+
+    private Map<String, String> contextualFields(Map<String, String> fields) {
+        Map<String, String> result = new java.util.LinkedHashMap<>(fields);
+        result.remove("correlation.id");
+        context.correlationId().ifPresent(value -> result.put("correlation.id", value));
+        return redactor.redactFields(result);
     }
 
     public synchronized void libraryMessage(

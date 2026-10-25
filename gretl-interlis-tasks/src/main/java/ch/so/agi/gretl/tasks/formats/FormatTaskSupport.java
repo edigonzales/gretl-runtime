@@ -108,16 +108,29 @@ final class FormatTaskSupport {
         List<String> result = new ArrayList<>();
         if (value instanceof Iterable<?> iterable) {
             for (Object element : iterable) {
-                result.add(path(element).toString());
+                result.add(modelRepository(element));
             }
         } else if (value instanceof Object[] array) {
             for (Object element : array) {
-                result.add(path(element).toString());
+                result.add(modelRepository(element));
             }
         } else {
             throw new IllegalArgumentException("List expected");
         }
         return List.copyOf(result);
+    }
+
+    private static String modelRepository(Object value) {
+        if (value instanceof Path path) {
+            return path.toAbsolutePath().normalize().toString();
+        }
+        // IOX also understands repository URLs and placeholders such as %XTF_DIR.
+        // Preserve these strings rather than turning them into local file paths.
+        if (value instanceof CharSequence text && !text.toString().isBlank()
+                && text.toString().chars().noneMatch(Character::isISOControl)) {
+            return text.toString();
+        }
+        throw new IllegalArgumentException("Model directory requires a Path or non-blank repository string without control characters");
     }
 
     static List<Path> paths(Object value) {

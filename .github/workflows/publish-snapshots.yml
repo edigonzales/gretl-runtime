@@ -27,8 +27,42 @@ jobs:
           java-version: '25'
           cache: maven
 
+      - name: Standard verification
+        run: ./mvnw -B clean verify
+
+      - name: Preserve standard verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: standard-evidence-${{ github.sha }}
+          path: |
+            **/target/surefire-reports/
+            **/target/failsafe-reports/
+            **/target/site/jacoco*/
+            **/target/job-evidence/**/execution.json
+            **/target/job-evidence/**/report.json
+            **/target/job-evidence/**/*.stdout.log
+            **/target/job-evidence/**/*.stderr.log
+            **/target/job-evidence/**/output/
+
       - name: Run all tests including GeoTools and backing-service profiles
         run: ./mvnw -B -Pgeotools-probe,backing-services clean verify
+
+      - name: Preserve full verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-evidence-${{ github.sha }}
+          path: |
+            **/target/surefire-reports/
+            **/target/failsafe-reports/
+            **/target/site/jacoco*/
+            **/target/service-evidence/
+            **/target/job-evidence/**/execution.json
+            **/target/job-evidence/**/report.json
+            **/target/job-evidence/**/*.stdout.log
+            **/target/job-evidence/**/*.stderr.log
+            **/target/job-evidence/**/output/
 
       - name: Publish snapshot artefacts
         env:

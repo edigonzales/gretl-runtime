@@ -200,3 +200,12 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
    gehärtet; Distribution und Job-Paketierung sind auf 44/44 geprüft.
    `datasetFiles` leitet Dataset-Namen aus Dateinamen ab. Der Core-Task-Katalog
    ist vollständig.
+
+### Präzisierung: direkte PostGIS-Geometriequellen in DuckDB
+
+`DuckDbSqlExecutor` übernimmt PostgreSQL-Quellspalten mit `geometry` oder
+`geography` derzeit nicht. Solche Quellen werden vor ihrer Übernahme mit
+`DUCKDB_GEOMETRY_UNSUPPORTED` abgewiesen. Damit wird keine unbewiesene
+Geometry-/SRID-Erhaltung durch eine implizite Textkonversion behauptet.
+Explizite SQL-Konversionen benötigen einen eigenen fachlich geprüften Vertrag.
+`DatabaseArtifactIT` prüft die Ablehnung und den unveränderten PostGIS-Bestand.
