@@ -148,6 +148,7 @@ Die Zählung stammt selbst aus den gesicherten `TEST-*.xml`, nur aus aktiven Rea
 | gretl-logging | 18 | 18 |
 | gretl-packager | 8 | 8 |
 | gretl-runner | 116 | 116 |
+| gretl-geotools-probe | 0 | nicht ausgeführt (Reactor SKIPPED) |
 
 `regression-audit.json` vergleicht Testklasse und Testfallname mit den eigenen früheren Reports. Im Standardlauf fehlt keine Regression. Im Profillauf fehlen genau die vier GeoTools-Testausführungen, weil Maven nach dem Failsafe-Fehler stoppt; keine Testquelle wurde dafür deaktiviert. In beiden Konfigurationen kommt genau `ValidatorLocalJobIT.publishedGeoPackageExampleImportsTransferData` hinzu. Die vier fehlenden Ausführungen werden ausdrücklich als nicht erbracht ausgewiesen und nicht aus dem früheren grünen Kandidaten übernommen.
 
