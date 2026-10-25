@@ -570,7 +570,7 @@
         "FTP"
       ],
       "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
-      "historicallyDisabled": false,
+      "historicallyDisabled": true,
       "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/FtpUploadTest.java"
     },
     {

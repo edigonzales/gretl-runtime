@@ -104,6 +104,30 @@ class ValidatorLocalJobIT {
         assertThrows(AssertionError.class, () -> assertArrayEquals(new byte[] {0}, Files.readAllBytes(output)));
     }
 
+    @Test void publishedGeoPackageExampleImportsTransferData() throws Exception {
+        Path root = ArtifactJobRunner.directory("gpkg-help-example");
+        Path fixture = root.resolve("example");
+        Files.createDirectories(fixture.resolve("models"));
+        Path original = ArtifactJobRunner.fixture("gpkg-import");
+        Files.copy(original.resolve("Beispiel2a.xtf"), fixture.resolve("data.xtf"));
+        Files.copy(original.resolve("models/Beispiel2.ili"), fixture.resolve("models/Beispiel2.ili"));
+        var operation = ch.so.agi.gretl.runtime.runner.OperationRegistry.load(getClass().getClassLoader())
+                .requireSymbol("Ili2gpkgImport");
+        // This is the exact public example, including parameter declaration and default target.
+        Files.writeString(fixture.resolve("job.groovy"), operation.example());
+        Path output = root.resolve("output/example.gpkg");
+        var result = ArtifactJobRunner.run(new ArtifactJobRunner.Request("gpkg-help-example",
+                fixture, root, List.of(), Map.of("output", output.toString()), Map.of(),
+                JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(90)));
+        assertEquals(0, result.code(), result.err());
+        try (var connection = DriverManager.getConnection("jdbc:sqlite:" + output);
+             var statement = connection.createStatement();
+             var rows = statement.executeQuery("select count(*) from boflaechen")) {
+            assertTrue(rows.next());
+            assertTrue(rows.getInt(1) > 0);
+        }
+    }
+
     private ArtifactJobRunner.Result validators(Path root, String target, Map<String, String> parameters) throws Exception {
         var params = new java.util.LinkedHashMap<>(parameters);
         params.put("log", root.resolve("output/validation.log").toString());

@@ -132,7 +132,18 @@ public final class Ili2DbOperations {
         OutputField<Result, Path> log = Fields.output("logFile", "path", "ili2db log file", false, Result::logFile);
         return new OperationType<>(id, symbol, desc, Request.class, Result.class,
                 Builder::new, () -> new Handler(kind), fields, List.of(log),
-                "task('run', " + symbol + ") {\n    database = 'db'\n}\n");
+                kind == Kind.GPKG_IMPORT ? """
+                        parameter('output', type: 'path', required: true, description: 'GeoPackage output')
+                        task('run', Ili2gpkgImport) {
+                            databaseFile = parameter('output')
+                            dataFiles = [file('data.xtf')]
+                            modelDirectories = [file('models')]
+                            defaultSrsCode = '2056'
+                        }
+                        defaults 'run'
+                        """ : "task('run', " + symbol + ") {\n    "
+                        + (pg ? "database = 'db'" : "databaseFile = file('data/db.duckdb')")
+                        + (importLike ? "\n    dataFiles = [file('data.xtf')]" : "") + "\n}\n");
     }
 
     private record OptionSpec(String name, String type, String description, Object defaultValue,
