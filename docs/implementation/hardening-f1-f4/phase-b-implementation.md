@@ -81,3 +81,13 @@ Taskscope. Auch ein künstlich zukünftiger Recordzeitpunkt darf den sequenziell
 Origin-Guard nicht umgehen. `LibraryScopeLocalJobIT` ergänzt dieselbe Same-Thread-
 Weiterleitung im regulär paketierten Provider für beide Prozesseinstiege. Die
 Korrektur muss erneut vollständig qualifiziert und unabhängig geprüft werden.
+
+## Bestätigter Abschluss
+
+Gesamtqualifikation und unabhängiges Gate B sind für
+`9d6e26e1d9bfa5916a8d5c5a321d134ca5237447` PASS.
+Standard 573, Vollprofil 628 Tests, jeweils ohne Fehler/Errors/Skips; alle 44
+Businessoperationen sind im Artefaktaudit belegt. Details und Grenzen stehen in
+[qualification.md](qualification.md), Hashes im [Evidenzindex](evidence-index.json).
+Dies ergänzt die historische Implementierungs-/Korrekturfolge oben um deren
+tatsächlich ausgeführten Abschluss; die früheren FAIL-Berichte bleiben erhalten.
