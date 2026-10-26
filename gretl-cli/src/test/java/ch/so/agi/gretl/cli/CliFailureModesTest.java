@@ -43,7 +43,7 @@ class CliFailureModesTest {
         Path reportDirectory = Files.createDirectories(tempDir.resolve("report-target"));
         Files.writeString(reportDirectory.resolve("occupied"), "x");
         Result result = run("run", script.toString(),
-                "--locale", "de",
+                "--lang", "de",
                 "--work-dir", tempDir.resolve("work").toString(),
                 "--report", reportDirectory.toString());
         assertEquals(10, result.code(), result.err());
