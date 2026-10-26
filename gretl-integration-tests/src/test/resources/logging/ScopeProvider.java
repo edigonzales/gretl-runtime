@@ -14,6 +14,7 @@ import java.util.concurrent.*;
 public final class ScopeProvider implements OperationProvider {
     static final org.slf4j.Logger LOG = LoggerFactory.getLogger("fixture.scope");
     static LoggingEvent deferred;
+    static java.util.logging.LogRecord deferredJul;
     static Thread child;
     static ExecutorService pool;
     static Future<?> pooled;
@@ -57,12 +58,15 @@ public final class ScopeProvider implements OperationProvider {
                             deferred = new LoggingEvent(ScopeProvider.class.getName(), (ch.qos.logback.classic.Logger)LOG,
                                     Level.WARN, "provider-deferred", null, null);
                             deferred.setInstant(Instant.parse("2026-10-20T01:02:03.123Z"));
-                            deferred.prepareForDeferredProcessing(); startForeignLogs();
+                            deferred.prepareForDeferredProcessing();
+                            deferredJul = new java.util.logging.LogRecord(java.util.logging.Level.WARNING, "provider-delayed-jul");
+                            deferredJul.setLoggerName("fixture.scope"); startForeignLogs();
                         }
                         if (request.label().equals("b")) {
                             if (!"foreign-provider-value".equals(MDC.get("foreign.provider")))
                                 throw new IllegalStateException("foreign MDC changed");
                             ((ch.qos.logback.classic.Logger)LOG).callAppenders(deferred);
+                            java.util.logging.Logger.getLogger("fixture.scope").log(deferredJul);
                             var invalid = new LoggingEvent(ScopeProvider.class.getName(), (ch.qos.logback.classic.Logger)LOG,
                                     Level.WARN, "provider-invalid", null, null);
                             invalid.setMDCPropertyMap(Map.of("gretl.run_id", UUID.randomUUID().toString(),

@@ -61,7 +61,8 @@ public final class LogbackBridge implements AutoCloseable {
         private final LoggingPipeline pipeline;
         OriginJulBridge(LoggingPipeline pipeline) { this.pipeline = pipeline; }
         @Override public void publish(java.util.logging.LogRecord record) {
-            if (record != null && record.getLongThreadID() != Thread.currentThread().threadId()) {
+            if (record != null && (record.getLongThreadID() != Thread.currentThread().threadId()
+                    || !MdcExecutionScope.isCurrentJulRecord(record))) {
                 LogContext context = pipeline.context();
                 try (var scope = pipeline.openScope(new ch.so.agi.gretl.runtime.api.ExecutionIdentity(
                         context.runId(), context.jobName(), Optional.empty(), Optional.empty()), Optional.empty())) {

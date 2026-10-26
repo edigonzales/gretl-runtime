@@ -57,7 +57,7 @@ F1-Produktkorrektur ist ALREADY_FIXED; Plattformbelege sind ergänzt. Gate A fü
 | TC-F4-07 | LibrarySnapshotTest.nestingRestoresOnlyReservedKeysAndKeepsForeignChanges; LibraryScopeLocalJobIT foreign.provider | B / Komponenten PASS, Gesamtgate ausstehend |
 | TC-F4-08 | LibrarySnapshotTest.deferredEventKeepsOriginSnapshotAndTimestampDuringAnotherTask; LibraryScopeLocalJobIT provider-deferred | B / Komponenten PASS, Gesamtgate ausstehend |
 | TC-F4-09 | LibrarySnapshotTest.newAndPoolThreadsDoNotInheritOrGuessTheActiveTask; LibraryScopeLocalJobIT foreign logs | B / Komponenten PASS, Gesamtgate ausstehend |
-| TC-F4-10 | LibrarySnapshotTest.julHasTheSameInvocationExactlyOnce; relayedJulRecordCannotBorrowConsumersTask; LibraryScopeLocalJobIT | B / Komponenten PASS, Gesamtgate ausstehend |
+| TC-F4-10 | LibrarySnapshotTest.julHasTheSameInvocationExactlyOnce; relayedJulRecordCannotBorrowConsumersTask; sameThreadRelayedJulRecordCannotBorrowLaterScope; LibraryScopeLocalJobIT | B / Komponenten PASS, Gesamtgate ausstehend |
 | TC-F4-11 | LibrarySnapshotTest.libraryFailuresKeepTheirGraphAndMaskSecretsInTextAndJson; LibraryScopeLocalJobIT provider-secret | B / Komponenten PASS, Gesamtgate ausstehend |
 | TC-F4-12 | LibrarySnapshotTest.invalidOrForeignEventSnapshotsFallBackToRunOnly; LibraryScopeLocalJobIT provider-invalid | B / Komponenten PASS, Gesamtgate ausstehend |
 | TC-F4-13 | LoggingScopeTest.noOpAndBrokenHooksKeepBusinessOutcomeAndCleanup; LibrarySnapshotTest.wrongThreadCloseDegradesWithoutClearingThatThreadsMdcAndOwnerCanStillRestore | B / Komponenten PASS, Gesamtgate ausstehend |

@@ -91,6 +91,8 @@ class LibraryScopeLocalJobIT {
             assertEquals(4, foreign.size());
             for (var e : foreign) { assertNull(e.get("task_id")); assertNull(e.get("invocation_id")); }
             assertNull(message(records, "provider-invalid").get("task_id"));
+            assertNull(message(records, "provider-delayed-jul").get("task_id"));
+            assertNull(message(records, "provider-delayed-jul").get("invocation_id"));
             assertFalse(Json.write(records).contains("foreign-provider-value"));
             assertFalse(Json.write(records).contains("provider-dummy-secret-72819"));
             assertFalse(result.err().contains("provider-dummy-secret-72819"));

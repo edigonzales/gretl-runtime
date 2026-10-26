@@ -134,6 +134,31 @@ class LibrarySnapshotTest {
         }
     }
 
+    @ParameterizedTest @ValueSource(booleans={false,true})
+    void sameThreadRelayedJulRecordCannotBorrowLaterScope(boolean nestedReturn) throws Exception {
+        try (var f = new Fixture(); var parent = f.scope("a", null)) {
+            java.util.logging.LogRecord record;
+            try (var invocation = f.scope("a", "i1")) {
+                record = new java.util.logging.LogRecord(java.util.logging.Level.WARNING, "same-thread-relay");
+                record.setLoggerName("fixture.scope"); record.setLongThreadID(Thread.currentThread().threadId());
+                // The guard must use creation ordering, not an assumed wall-clock relationship.
+                record.setInstant(Instant.now().plusSeconds(86400));
+            }
+            if (nestedReturn) {
+                java.util.logging.Logger.getLogger("fixture.scope").log(record);
+                java.util.logging.Logger.getLogger("fixture.scope").warning("fresh-jul");
+            } else {
+                try (var b = f.scope("b", "i2")) {
+                    java.util.logging.Logger.getLogger("fixture.scope").log(record);
+                    java.util.logging.Logger.getLogger("fixture.scope").warning("fresh-jul");
+                }
+            }
+            var relayed = f.message("same-thread-relay"); assertNull(relayed.get("task_id"));
+            assertNull(relayed.get("invocation_id"));
+            assertEquals(nestedReturn ? "a" : "b", f.message("fresh-jul").get("task_id"));
+        }
+    }
+
     @Test void julHasTheSameInvocationExactlyOnce() throws Exception {
         try (var f = new Fixture()) {
             try (var scope = f.scope("a", "i1")) {

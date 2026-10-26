@@ -25,8 +25,12 @@ und übernimmt dessen `Instant`. Die Pipeline liest beim Schreiben kein Thread-M
 Leere, beschädigte und fremde Run-/Arbeitsidentitäten fallen auf Run-only zurück.
 Es gibt keine Taskregistry und keine automatische Threadvererbung.
 Die bestehende JUL→SLF4J-Brücke erhält einen begrenzten Origin-Guard: ein auf einem
-anderen Thread erzeugter JUL-Record darf beim Weiterreichen keine Taskidentität
-des Empfängers übernehmen. Die SLF4J-/Logback-Providerwahl bleibt unverändert.
+anderen Thread oder vor dem aktuellen Scopeintervall erzeugter JUL-Record darf beim
+Weiterreichen keine Taskidentität des Empfängers übernehmen. Dafür speichert eine
+nicht vererbte ThreadLocal ausschließlich eine JUL-Sequenzgrenze, keine Identitäten.
+Der JDK-25-LogRecord-Konstruktor vergibt eine globale monotone Sequenz. Eintritt und
+Rückkehr in einen Elternscope erneuern die Grenze; der äußerste Austritt entfernt
+sie. Diese Grenze verändert weder Zeitbudgets noch die fünf reservierten MDC-Werte. Die SLF4J-/Logback-Providerwahl bleibt unverändert.
 
 Öffentliche Task-API, DSL, Katalog, Produktionsdependencies und Modulgrenzen sind
 unverändert. Der zusätzliche Provider existiert ausschließlich als Testressource,
@@ -62,3 +66,18 @@ legitim kürzt. Die Produktbegrenzungen bleiben erhalten.
 Der eingefrorene Gesamtkandidat benötigt noch Standard- und Vollprofilbuild mit
 Artefaktaudits und unabhängiges Gate B. Große Rohartefakte bleiben außerhalb Git.
 Alle 62 Prüffallkennungen sind in `acceptance-matrix.md` zugeordnet.
+
+## Gate-B-Korrektur GB-F4-01
+
+Der erste Kandidat `a15f5000cc7e704fb2b6c3c56ba96d17d94be8b5` bestand zwar den
+Standardbuild (571 Tests ohne Fehler/Errors/Skips), erhielt aber unabhängig FAIL.
+`phase-b-review-initial.md` bleibt unverändert erhalten. Der Reviewer fand einen
+verzögerten JUL-Record auf demselben Thread, den der erste reine Thread-ID-Guard
+fälschlich Task B zuordnete. Für diesen Kandidaten wurde kein Vollbuild behauptet.
+
+Die neue Probe `LibrarySnapshotTest.sameThreadRelayedJulRecordCannotBorrowLaterScope`
+ist vor der Korrektur in beiden Varianten rot: A→B und Invocation→restaurierter
+Taskscope. Auch ein künstlich zukünftiger Recordzeitpunkt darf den sequenziellen
+Origin-Guard nicht umgehen. `LibraryScopeLocalJobIT` ergänzt dieselbe Same-Thread-
+Weiterleitung im regulär paketierten Provider für beide Prozesseinstiege. Die
+Korrektur muss erneut vollständig qualifiziert und unabhängig geprüft werden.

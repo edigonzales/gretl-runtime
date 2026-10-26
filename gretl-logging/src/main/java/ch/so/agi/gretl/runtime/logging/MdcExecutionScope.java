@@ -13,7 +13,11 @@ final class MdcExecutionScope implements RunEventSink.Scope {
     static final String RUN = "gretl.run_id", JOB = "gretl.job_name", TASK = "gretl.task_id",
             INVOCATION = "gretl.invocation_id", OPERATION = "gretl.operation_id";
     static final List<String> KEYS = List.of(RUN, JOB, TASK, INVOCATION, OPERATION);
+    // Ordering only, no identity or inherited context. LogRecord assigns a JDK-wide
+    // creation sequence; records predating the current scope interval are untrusted.
+    private static final ThreadLocal<Long> JUL_BOUNDARY = new ThreadLocal<>();
     private final Map<String,String> previous = new LinkedHashMap<>();
+    private final Long previousJulBoundary = JUL_BOUNDARY.get();
     private final Thread owner = Thread.currentThread();
     private final Runnable failure;
     private boolean closed;
@@ -26,6 +30,7 @@ final class MdcExecutionScope implements RunEventSink.Scope {
             set(TASK, identity.taskId().orElse(null));
             set(INVOCATION, identity.invocationId().orElse(null));
             set(OPERATION, operationId.orElse(null));
+            JUL_BOUNDARY.set(newJulBoundary());
         } catch (RuntimeException exception) {
             restore();
             throw exception;
@@ -42,7 +47,20 @@ final class MdcExecutionScope implements RunEventSink.Scope {
             try { set(entry.getKey(), entry.getValue()); }
             catch (RuntimeException exception) { failed = true; }
         }
+        // A resumed parent is a new interval too: an inner record must not acquire
+        // the restored parent's identity when published after invocation close.
+        if (previousJulBoundary == null) JUL_BOUNDARY.remove();
+        else JUL_BOUNDARY.set(newJulBoundary());
         if (failed) failure.run();
+    }
+
+    private static long newJulBoundary() {
+        return new java.util.logging.LogRecord(java.util.logging.Level.OFF, "").getSequenceNumber();
+    }
+
+    static boolean isCurrentJulRecord(java.util.logging.LogRecord record) {
+        Long boundary = JUL_BOUNDARY.get();
+        return boundary != null && record.getSequenceNumber() >= boundary;
     }
 
     @Override public void close() {
