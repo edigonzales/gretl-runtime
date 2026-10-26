@@ -14,9 +14,14 @@ public record JobOutcome(
         Optional<FailureInfo> primaryFailure, List<FailureInfo> secondaryFailures,
         Instant startedAt, Instant finishedAt, long durationMillis,
         boolean finishRequested, Optional<String> finishReason,
-        boolean workRetained) {
+        boolean workRetained, Optional<ch.so.agi.gretl.runtime.api.CancelReason> cancelReason) {
 
     public JobOutcome {
+        java.util.Objects.requireNonNull(cancelReason, "cancelReason");
+        if ((status == RunStatus.CANCELLED) != cancelReason.isPresent()) {
+            throw new IllegalArgumentException("cancelReason required exactly for CANCELLED");
+        }
+
         java.util.Objects.requireNonNull(runId, "runId");
         java.util.Objects.requireNonNull(definitionId, "definitionId");
         if (jobName == null || jobName.isBlank()) {

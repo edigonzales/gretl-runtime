@@ -30,8 +30,7 @@ final class RunEnvironment {
         this.input = Objects.requireNonNull(input, "input");
         this.definition = Objects.requireNonNull(definition, "definition");
         this.plan = Objects.requireNonNull(plan, "plan");
-        // A failed initial workspace setup still owns a run lifecycle and cleanups.
-        this.workspace = workspace;
+        this.workspace = Objects.requireNonNull(workspace, "workspace");
     }
 
     RunInput input() {

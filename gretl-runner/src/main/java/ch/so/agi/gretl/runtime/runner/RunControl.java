@@ -99,26 +99,14 @@ public final class RunControl implements TimeBudget, CancellationToken {
 
     @Override
     public boolean isCancellationRequested() {
-        observeTimeout();
-        if (cancelReason != null) {
-            cancellationObserved = true;
-        }
-        return cancelReason != null;
+        return reason().isPresent();
     }
 
     @Override
     public Optional<CancelReason> reason() {
-        observeTimeout();
-        if (cancelReason != null) {
-            cancellationObserved = true;
-        }
-        return Optional.ofNullable(cancelReason);
-    }
-
-    private void observeTimeout() {
-        if (expired()) {
-            observeCancel(CancelReason.TIMEOUT);
-        }
+        if (cancelReason != null) return Optional.of(cancelReason);
+        if (expired()) return Optional.of(CancelReason.TIMEOUT);
+        return Thread.currentThread().isInterrupted() ? Optional.of(CancelReason.INTERRUPTED) : Optional.empty();
     }
 
     /** A boundary observes the inherited task budget as well as run control. */
@@ -206,9 +194,6 @@ public final class RunControl implements TimeBudget, CancellationToken {
             public Optional<Duration> remaining() {
                 Optional<Duration> parent = RunControl.this.remaining();
                 long localRemaining = Math.max(0L, finalLocalDeadline - clock.ticks());
-                if (localRemaining == 0) {
-                    observeCancel(CancelReason.TIMEOUT);
-                }
                 Duration local = Duration.ofNanos(localRemaining);
                 if (parent.isEmpty()) {
                     return Optional.of(local);
@@ -218,11 +203,7 @@ public final class RunControl implements TimeBudget, CancellationToken {
 
             @Override
             public boolean expired() {
-                boolean elapsed = localRemainingExpired() || RunControl.this.expired();
-                if (elapsed) {
-                    observeCancel(CancelReason.TIMEOUT);
-                }
-                return elapsed;
+                return localRemainingExpired() || RunControl.this.expired();
             }
 
             private boolean localRemainingExpired() {

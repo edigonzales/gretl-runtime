@@ -58,6 +58,7 @@ public final class JobRuntime {
     private final Path startCwd;
     private final ClassLoader classLoader;
     private final Clock clock;
+    private final java.util.function.Supplier<UUID> runIds;
     private final String commandId = UUID.randomUUID().toString();
     private Locale locale = Locale.GERMAN;
 
@@ -68,6 +69,12 @@ public final class JobRuntime {
 
     public JobRuntime(PrintStream out, PrintStream err, Map<String, String> environment,
              Path startCwd, ClassLoader classLoader, Clock clock) {
+        this(out, err, environment, startCwd, classLoader, clock, UUID::randomUUID);
+    }
+
+    JobRuntime(PrintStream out, PrintStream err, Map<String,String> environment,
+               Path startCwd, ClassLoader classLoader, Clock clock, java.util.function.Supplier<UUID> runIds) {
+        this.runIds = java.util.Objects.requireNonNull(runIds);
         this.out = java.util.Objects.requireNonNull(out, "out");
         this.err = java.util.Objects.requireNonNull(err, "err");
         this.environment = Map.copyOf(environment);
@@ -225,7 +232,7 @@ public final class JobRuntime {
                     ResolvedParameters parameters, RuntimeConfig config,
                     OperationRegistry registry, MutableSink userSink,
                     Path explicitReport) {
-        UUID runId = UUID.randomUUID();
+        UUID runId = runIds.get();
         Instant commandStarted = clock.instant();
         prepareDirectory(config.workRoot(), "workRoot");
         prepareDirectory(config.reportRoot(), "reportRoot");
@@ -299,7 +306,12 @@ public final class JobRuntime {
                     .secretRegistry(secrets)
                     .runControl(control)
                     .build();
-            JobOutcome outcome = new SequentialJobRunner().run(definition, plan, input);
+            JobOutcome outcome;
+            try {
+                outcome = new SequentialJobRunner().run(definition, plan, input);
+            } catch (ch.so.agi.gretl.runtime.runner.RunStartException failure) {
+                throw new StartException(2, redactor.redact(safeMessage(failure)), failure);
+            }
             restoreInterrupt = Thread.interrupted();
             LoggingState loggingState = logging.state();
             Optional<String> revision = Optional.ofNullable(environment.get("GRETL_JOB_REVISION"))

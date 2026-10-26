@@ -57,6 +57,8 @@ public final class ResultStore {
         if (state.status == TaskStatus.PENDING && completion.status() == TaskStatus.NOT_RUN) {
             state.status = TaskStatus.NOT_RUN;
             state.reason = completion.reason();
+        state.cancelReason = completion.cancelReason();
+        state.failurePhase = completion.failurePhase();
             state.slot = ResultSlot.NoValue.INSTANCE;
             state.finishedAt = Optional.empty();
             state.durationMillis = 0;
@@ -82,6 +84,8 @@ public final class ResultStore {
         state.status = completion.status();
         state.slot = completion.slot();
         state.reason = completion.reason();
+        state.cancelReason = completion.cancelReason();
+        state.failurePhase = completion.failurePhase();
         state.finishedAt = Optional.of(Objects.requireNonNull(finishedAt, "finishedAt"));
         long ticks = Math.max(0, endTicks - state.startTicks);
         state.durationMillis = ticks / 1_000_000L;
@@ -146,7 +150,7 @@ public final class ResultStore {
         TaskState state = stateFor(ref);
         return new TaskOutcome(ref.id(), state.status, state.reason, state.slot,
                 Optional.ofNullable(state.startedAt), state.finishedAt, state.durationMillis,
-                state.invocations, state.failure, state.secondaryFailures);
+                state.invocations, state.failure, state.secondaryFailures, state.cancelReason, state.failurePhase);
     }
 
     public List<TaskOutcome> outcomes() {
@@ -194,6 +198,8 @@ public final class ResultStore {
         private TaskStatus status = TaskStatus.PENDING;
         private ResultSlot slot = ResultSlot.NoValue.INSTANCE;
         private String reason;
+        private Optional<ch.so.agi.gretl.runtime.api.CancelReason> cancelReason = Optional.empty();
+        private String failurePhase;
         private Instant startedAt;
         private Optional<Instant> finishedAt = Optional.empty();
         private long startTicks;

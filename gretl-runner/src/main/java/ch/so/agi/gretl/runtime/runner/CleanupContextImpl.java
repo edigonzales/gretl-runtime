@@ -50,14 +50,8 @@ final class CleanupContextImpl extends BaseContext implements CleanupContext {
     }
 
     @Override
-    public CancellationToken cancellation() {
-        return new CancellationToken() {
-            @Override public boolean isCancellationRequested() { return budget().expired(); }
-            @Override public Optional<CancelReason> reason() {
-                return budget().expired() ? Optional.of(CancelReason.TIMEOUT) : Optional.empty();
-            }
-            @Override public void throwIfCancellationRequested() { checkCancellation(); }
-        };
+    Optional<CancelReason> currentCancellationReason() {
+        return budget().expired() ? Optional.of(CancelReason.TIMEOUT) : Optional.empty();
     }
 
     @FunctionalInterface

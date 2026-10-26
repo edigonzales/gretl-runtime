@@ -9,9 +9,15 @@ public record TaskOutcome(
         String taskId, TaskStatus status, String reason, ResultSlot slot,
         Optional<Instant> startedAt, Optional<Instant> finishedAt,
         long durationMillis, List<InvocationOutcome> invocations,
-        Optional<FailureInfo> failure, List<FailureInfo> secondaryFailures) {
+        Optional<FailureInfo> failure, List<FailureInfo> secondaryFailures,
+        Optional<ch.so.agi.gretl.runtime.api.CancelReason> cancelReason, String failurePhase) {
 
     public TaskOutcome {
+        java.util.Objects.requireNonNull(cancelReason, "cancelReason");
+        if ((status == TaskStatus.CANCELLED) != cancelReason.isPresent()) {
+            throw new IllegalArgumentException("cancelReason required exactly for CANCELLED");
+        }
+
         text(taskId, "taskId");
         java.util.Objects.requireNonNull(status, "status");
         if (status == TaskStatus.PENDING || status == TaskStatus.RUNNING) {

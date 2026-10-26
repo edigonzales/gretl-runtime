@@ -5,9 +5,20 @@ import java.util.List;
 /** Immutable terminal completion proposed for one task. */
 public record TaskCompletion(
         TaskStatus status, ResultSlot slot, String reason,
-        FailureInfo primaryFailure, List<FailureInfo> secondaryFailures) {
+        FailureInfo primaryFailure, List<FailureInfo> secondaryFailures,
+        java.util.Optional<ch.so.agi.gretl.runtime.api.CancelReason> cancelReason, String failurePhase) {
+
+    public TaskCompletion(TaskStatus status, ResultSlot slot, String reason,
+                          FailureInfo primaryFailure, List<FailureInfo> secondaryFailures) {
+        this(status, slot, reason, primaryFailure, secondaryFailures, java.util.Optional.empty(), null);
+    }
 
     public TaskCompletion {
+        java.util.Objects.requireNonNull(cancelReason, "cancelReason");
+        if ((status == TaskStatus.CANCELLED) != cancelReason.isPresent()) {
+            throw new IllegalArgumentException("cancelReason required exactly for CANCELLED");
+        }
+
         java.util.Objects.requireNonNull(status, "status");
         java.util.Objects.requireNonNull(slot, "slot");
         if (reason != null && reason.isBlank()) {
@@ -61,9 +72,9 @@ public record TaskCompletion(
                 reason, null, List.of());
     }
 
-    public static TaskCompletion cancelled(List<FailureInfo> secondary) {
+    public static TaskCompletion cancelled(ch.so.agi.gretl.runtime.api.CancelReason reason, List<FailureInfo> secondary) {
         return new TaskCompletion(TaskStatus.CANCELLED, ResultSlot.NoValue.INSTANCE,
-                null, null, secondary);
+                null, null, secondary, java.util.Optional.of(reason), null);
     }
 
     public static TaskCompletion notRun(String reason) {

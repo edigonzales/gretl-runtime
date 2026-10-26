@@ -38,8 +38,7 @@ public final class OperationInvoker {
         parent.context().checkExecution();
 
         String invocationId = environment.nextInvocationId();
-        Path invocationDirectory = environment.workspace()
-                .invocationDirectory(parent.taskIndex(), invocationId);
+        Path invocationDirectory = parent.taskDirectory().resolve(invocationId);
         CloseStack closeStack = new CloseStack();
         ExecutionIdentity identity = environment.identity(parent.definition().id(), invocationId);
         OperationContextImpl context = new OperationContextImpl(
@@ -56,8 +55,9 @@ public final class OperationInvoker {
 
         R result = null;
         Throwable primary = null;
-        boolean cancelled = false;
+        FailureArbiter.WorkCompletion work;
         try {
+            environment.workspace().invocationDirectory(parent.taskIndex(), invocationId);
             context.checkExecution();
             C request = preparation.prepare(frame);
             context.checkExecution();
@@ -97,86 +97,60 @@ public final class OperationInvoker {
                         msg("runner.operationResultMismatch", type.id(),
                                 result.getClass().getName(), type.resultType().getName()));
             }
+            work = new FailureArbiter.WorkCompletion.Value(result);
+        } catch (FinishSignal signal) {
+            primary = signal;
+            work = new FailureArbiter.WorkCompletion.Finished(signal.reason());
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
-            environment.control().requestCancel(CancelReason.INTERRUPTED);
+            environment.control().observeCancel(CancelReason.INTERRUPTED);
             TaskCancelledException cancellation = new TaskCancelledException(CancelReason.INTERRUPTED);
             cancellation.addSuppressed(interrupted);
             primary = cancellation;
-            cancelled = true;
+            work = new FailureArbiter.WorkCompletion.Cancelled(cancellation);
         } catch (TaskCancelledException cancellation) {
-            environment.control().requestCancel(cancellation.reason());
+            environment.control().observeCancel(cancellation.reason());
             primary = cancellation;
-            cancelled = true;
+            work = new FailureArbiter.WorkCompletion.Cancelled(
+                    cancellation.getCause() != null || cancellation.getSuppressed().length > 0 ? cancellation : null);
         } catch (Throwable failure) {
-            if (environment.control().cancellationObserved()) {
-                primary = new TaskCancelledException(environment.control().reason().orElseThrow());
-                primary.addSuppressed(failure);
-                cancelled = true;
-            } else {
-                primary = failure;
-            }
+            FailureArbiter.rethrowFatal(failure);
+            primary = failure;
+            work = environment.control().cancellationObserved()
+                    ? new FailureArbiter.WorkCompletion.Cancelled(failure)
+                    : new FailureArbiter.WorkCompletion.Failure(failure);
         }
 
-        if (primary == null) {
-            frame.phase("cleanup");
-        }
+        if (primary == null) frame.phase("cleanup");
         List<Throwable> closeErrors = frame.closeResources();
-
-        InvocationStatus status;
-        FailureInfo primaryInfo = null;
-        if (primary != null) {
-            status = cancelled ? InvocationStatus.CANCELLED : InvocationStatus.FAILED;
-            if (!cancelled) {
-                primaryInfo = FailureInfo.from(primary);
-            }
-            for (Throwable closeError : closeErrors) {
-                if (closeError != primary) {
-                    primary.addSuppressed(closeError);
-                }
-            }
-        } else if (!closeErrors.isEmpty()) {
-            primary = closeErrors.get(0);
-            cancelled = primary instanceof TaskCancelledException;
-            status = cancelled ? InvocationStatus.CANCELLED : InvocationStatus.FAILED;
-            if (!cancelled) {
-                primaryInfo = FailureInfo.from(primary);
-            }
-            for (int index = 1; index < closeErrors.size(); index++) {
-                if (closeErrors.get(index) != primary) {
-                    primary.addSuppressed(closeErrors.get(index));
-                }
-            }
-        } else {
-            status = InvocationStatus.SUCCEEDED;
-        }
-        Throwable resolvedPrimary = primary;
-        List<FailureInfo> secondary = new java.util.ArrayList<>(closeErrors.stream()
-                .filter(error -> error != resolvedPrimary)
-                .filter(error -> !(error instanceof TaskCancelledException))
-                .map(FailureInfo::from)
-                .toList());
-        if (cancelled && primary != null) {
-            if (primary.getCause() != null) {
-                secondary.add(FailureInfo.from(primary.getCause()));
-            }
-            for (Throwable error : primary.getSuppressed()) {
-                if (!closeErrors.contains(error)) {
-                    secondary.add(FailureInfo.from(error));
-                }
-            }
+        TaskCompletion completion = new FailureArbiter().resolve(work, environment.control().snapshot(), closeErrors);
+        InvocationStatus status = switch (completion.status()) {
+            case FAILED -> InvocationStatus.FAILED;
+            case CANCELLED -> InvocationStatus.CANCELLED;
+            default -> InvocationStatus.SUCCEEDED;
+        };
+        FailureInfo primaryInfo = completion.primaryFailure();
+        List<FailureInfo> secondary = completion.secondaryFailures();
+        context.markClosed(completion.cancelReason());
+        if (status == InvocationStatus.FAILED) {
+            primary = work instanceof FailureArbiter.WorkCompletion.Failure failure
+                    ? failure.error() : closeErrors.getFirst();
+        } else if (status == InvocationStatus.CANCELLED) {
+            TaskCancelledException cancellation = new TaskCancelledException(completion.cancelReason().orElseThrow());
+            if (primary != null && primary != cancellation) cancellation.addSuppressed(primary);
+            primary = cancellation;
         }
 
         Instant finishedAt = environment.now();
         long endTicks = environment.monotonicClock().ticks();
-        InvocationOutcome outcome = frame.outcome(status, primaryInfo, secondary, finishedAt, endTicks);
+        InvocationOutcome outcome = frame.outcome(status, primaryInfo, secondary, completion.cancelReason(), finishedAt, endTicks);
         parent.addInvocation(outcome);
         environment.emit(
                 status == InvocationStatus.SUCCEEDED
                         ? "gretl.operation.finished" : "gretl.operation.failed",
                 status == InvocationStatus.SUCCEEDED ? LogLevel.INFO : LogLevel.DEBUG,
                 identity, Optional.of(type.id()), frame.phase(), status.name(),
-                outcome.durationMillis(), Map.of("operation.symbol", type.symbol()),
+                outcome.durationMillis(), SequentialJobRunner.terminalAttributes(outcome.cancelReason(), Map.of("operation.symbol", type.symbol())),
                 Optional.ofNullable(primaryInfo));
 
         if (primary != null) {

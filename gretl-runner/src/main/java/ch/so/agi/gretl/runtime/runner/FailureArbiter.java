@@ -34,7 +34,7 @@ public final class FailureArbiter {
                     ch.so.agi.gretl.runtime.api.TaskCancelledException)
                             || error.getCause() != null || error.getSuppressed().length > 0)
                     .map(FailureInfo::from).forEach(secondary::add);
-            return TaskCompletion.cancelled(secondary);
+            return TaskCompletion.cancelled(control.cancellationReason().orElseThrow(), secondary);
         }
 
         // Release errors are in controlled observation order. An earlier real
@@ -56,7 +56,7 @@ public final class FailureArbiter {
                 return failureFromCloseErrors(failures);
             }
             if (control.cancellationReason().isPresent()) {
-                return TaskCompletion.cancelled(closeFailures);
+                return TaskCompletion.cancelled(control.cancellationReason().orElseThrow(), closeFailures);
             }
             return TaskCompletion.skipped(finished.reason());
         }
@@ -73,7 +73,7 @@ public final class FailureArbiter {
             return failureFromCloseErrors(failures);
         }
         if (control.cancellationReason().isPresent()) {
-            return TaskCompletion.cancelled(List.of());
+            return TaskCompletion.cancelled(control.cancellationReason().orElseThrow(), List.of());
         }
         return TaskCompletion.succeeded(value.value());
     }
@@ -88,6 +88,11 @@ public final class FailureArbiter {
         List<FailureInfo> secondary = closeErrors.subList(1, closeErrors.size()).stream()
                 .map(FailureInfo::from).toList();
         return TaskCompletion.failed(FailureInfo.from(primary), secondary);
+    }
+
+    static void rethrowFatal(Throwable failure) {
+        if (failure instanceof VirtualMachineError fatal) throw fatal;
+        if (failure instanceof ThreadDeath fatal) throw fatal;
     }
 
     /** Explicit result of the executable work, independent of close failures. */

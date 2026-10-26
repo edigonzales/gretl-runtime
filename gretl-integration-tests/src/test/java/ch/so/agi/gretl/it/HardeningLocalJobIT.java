@@ -67,6 +67,7 @@ class HardeningLocalJobIT {
             assertTrue(Files.isRegularFile(root.resolve("output/returned")));
         }
         assertTerminal(result, "CANCELLED", 20);
+        assertCause(result, "TIMEOUT");
     }
 
     @ParameterizedTest
@@ -80,8 +81,60 @@ class HardeningLocalJobIT {
         assertFalse(Files.exists(root.resolve("output/unexpected")));
         String report = Files.readString(result.report());
         if (target.equals("originalFailure")) assertTrue(report.contains("original-hardening-failure"), report);
-        else assertTrue(report.contains("task-000004"), report);
+        else {
+            assertTrue(report.contains("task-000004"), report);
+            Map<?,?> parsed = (Map<?,?>) Json.parse(report);
+            var tasks = (List<?>) ((Map<?,?>) parsed.get("execution")).get("tasks");
+            Map<?,?> blocked = tasks.stream().map(row -> (Map<?,?>) row).filter(row -> "blockedTask".equals(row.get("taskId"))).findFirst().orElseThrow();
+            assertEquals("task-setup", blocked.get("failurePhase"));
+            var terminal = result.err().lines().filter(line -> line.startsWith("{")).map(line -> (Map<?,?>) Json.parse(line))
+                    .filter(row -> "gretl.task.failed".equals(row.get("event_name"))).findFirst().orElseThrow();
+            assertEquals("task-setup", terminal.get("phase"));
+        }
         assertTerminal(result, "FAILED", 10);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    @SuppressWarnings("unchecked")
+    void failedStartHasNoRunReportOrCleanupEffects(boolean script) throws Exception {
+        Path root = ArtifactJobRunner.directory("hardening-start-" + script);
+        var prepared = prepare(root, "permissions");
+        Path blocked = Files.writeString(root.resolve("blocked-root"), "keep");
+        Map<String,Object> config = (Map<String,Object>) Json.parseFile(root.resolve("runtime.json"), 1L << 20);
+        ((Map<String,Object>) config.get("runtime")).put("workRoot", blocked.toString());
+        Files.writeString(root.resolve("runtime.json"), Json.write(config));
+        var result = run(prepared, script);
+        assertEquals(2, result.code(), result.err());
+        assertFalse(Files.exists(result.report()));
+        assertFalse(Files.exists(root.resolve("output/cleaned")));
+        assertFalse(result.err().contains("gretl.run.started"));
+        assertFalse(result.err().contains("gretl.run.finished"));
+        assertEquals("keep", Files.readString(blocked));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"true,requestedCancel,REQUESTED", "false,requestedCancel,REQUESTED", "true,interruptedCancel,INTERRUPTED", "false,interruptedCancel,INTERRUPTED"})
+    void concreteControlCauseSurvivesTheProductEntry(boolean script, String target, String reason) throws Exception {
+        Path root = ArtifactJobRunner.directory("hardening-cause-" + target + "-" + script);
+        var result = run(prepare(root, target), script);
+        assertEquals(20, result.code(), result.err());
+        assertTerminal(result, "CANCELLED", 20);
+        assertCause(result, reason);
+    }
+
+    private static void assertCause(ArtifactJobRunner.Result result, String reason) throws Exception {
+        Map<?,?> report = (Map<?,?>) Json.parseFile(result.report(), 1L << 20);
+        Map<?,?> execution = (Map<?,?>) report.get("execution");
+        assertEquals(reason, execution.get("cancelReason"));
+        for (Object row : (List<?>) execution.get("tasks")) {
+            Map<?,?> task = (Map<?,?>) row;
+            assertEquals("CANCELLED".equals(task.get("status")) ? reason : null, task.get("cancelReason"));
+        }
+        for (Map<?,?> event : result.err().lines().filter(line -> line.startsWith("{")).map(line -> (Map<?,?>) Json.parse(line)).toList()) {
+            if ("CANCELLED".equals(event.get("outcome")))
+                assertEquals(reason, ((Map<?,?>) event.get("attributes")).get("cancel_reason"));
+        }
     }
 
     @SuppressWarnings("unchecked")

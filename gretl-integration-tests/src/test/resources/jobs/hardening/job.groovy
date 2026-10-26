@@ -43,6 +43,14 @@ action('originalFailure') {
     throw new IllegalStateException('original-hardening-failure')
 }
 
+// Real process cancellation causes, independent of timeout timing.
+action('requestedCancel') {
+    throw new TaskCancelledException(ch.so.agi.gretl.runtime.api.CancelReason.REQUESTED)
+}
+action('interruptedCancel') {
+    Thread.currentThread().interrupt()
+}
+
 cleanup('externalCleanup') {
     Files.writeString(parameter('output').resolve('cleaned'), 'cleaned-without-workspace')
     log().info('hardening-cleanup-complete')

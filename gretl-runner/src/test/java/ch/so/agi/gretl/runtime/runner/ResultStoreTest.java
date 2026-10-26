@@ -119,7 +119,7 @@ class ResultStoreTest {
         ResultStore cancelledStore = cancelled.store();
         cancelledStore.start(cancelled.a(), T0, 0);
         cancelledStore.complete(cancelled.a(),
-                TaskCompletion.cancelled(List.of()), T1, 1_000_000L);
+                TaskCompletion.cancelled(ch.so.agi.gretl.runtime.api.CancelReason.REQUESTED, List.of()), T1, 1_000_000L);
         ResultAccessException cancelError = assertThrows(ResultAccessException.class,
                 () -> cancelledStore.optional(cancelled.b(), cancelled.a()));
         assertEquals("RESULT_NOT_AVAILABLE", cancelError.code());

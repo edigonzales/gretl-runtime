@@ -30,12 +30,11 @@ public final class SequentialJobRunner {
         }
 
         WorkspaceManager manager = new WorkspaceManager(input.workRoot());
-        WorkspaceManager.Workspace workspace = null;
-        Throwable setupFailure = null;
+        WorkspaceManager.Workspace workspace;
         try {
             workspace = manager.openRun(input.runId());
         } catch (IOException | SecurityException exception) {
-            setupFailure = exception;
+            throw new RunStartException(exception);
         }
 
         RunEnvironment environment = new RunEnvironment(input, definition, plan, workspace);
@@ -51,9 +50,9 @@ public final class SequentialJobRunner {
                 Map.of("targets", String.join(",", plan.requestedTargets())),
                 Optional.empty());
 
-        FailureInfo runPrimary = setupFailure == null ? null : FailureInfo.from(setupFailure);
+        FailureInfo runPrimary = null;
         List<FailureInfo> runSecondary = new ArrayList<>();
-        boolean failed = setupFailure != null;
+        boolean failed = false;
         boolean cancelled = false;
         boolean finishRequested = false;
         String finishReason = null;
@@ -81,7 +80,8 @@ public final class SequentialJobRunner {
                         results, invoker, arbiter);
             } catch (IOException | SecurityException exception) {
                 TaskDefinition<?> task = selected.get(position);
-                results.complete(task.ref(), TaskCompletion.failed(FailureInfo.from(exception), List.of()),
+                results.complete(task.ref(), new TaskCompletion(TaskStatus.FAILED, ResultSlot.NoValue.INSTANCE, null,
+                                FailureInfo.from(exception), List.of(), Optional.empty(), "task-setup"),
                         environment.now(), environment.monotonicClock().ticks());
                 outcome = results.outcome(task.ref());
                 emitTaskTerminal(environment, task, outcome);
@@ -99,8 +99,12 @@ public final class SequentialJobRunner {
                 finishRequested = true;
                 finishReason = environment.control().finishReason().orElse("JOB_FINISHED");
             }
-            if (environment.control().isCancellationRequested() && !failed && !finishRequested) {
-                cancelled = true;
+            if (!failed) {
+                try {
+                    environment.control().throwIfCancellationRequested();
+                } catch (TaskCancelledException cancellation) {
+                    cancelled = true;
+                }
             }
         }
 
@@ -117,7 +121,7 @@ public final class SequentialJobRunner {
 
         boolean restoreInterrupt = Thread.interrupted() | environment.control().interrupted();
         try {
-            List<FailureInfo> cleanupFailures = runCleanups(environment, workspace, definition, setupFailure);
+            List<FailureInfo> cleanupFailures = runCleanups(environment, workspace, definition);
 
             RunStatus status;
             FailureInfo primaryFailure = null;
@@ -152,6 +156,7 @@ public final class SequentialJobRunner {
                 }
             } catch (IOException | SecurityException exception) {
                 workRetained = true;
+                secondaryFailures.add(FailureInfo.from(exception));
                 environment.emit("gretl.workspace.retention_failed", LogLevel.WARN,
                         runIdentity, Optional.empty(), "run", status.name(), 0,
                         Map.of("workspace.path", workspace.runRoot().toString()),
@@ -160,8 +165,8 @@ public final class SequentialJobRunner {
 
             environment.emit("gretl.run.finished", runLevel(status), runIdentity, Optional.empty(),
                     "run", status.name(), durationMillis,
-                    Map.of("exit_code", Integer.toString(status.exitCode()),
-                            "targets", String.join(",", plan.requestedTargets())),
+                    terminalAttributes(status == RunStatus.CANCELLED ? environment.control().snapshot().cancellationReason() : Optional.empty(),
+                            Map.of("exit_code", Integer.toString(status.exitCode()), "targets", String.join(",", plan.requestedTargets()))),
                     Optional.ofNullable(primaryFailure));
 
             List<TaskOutcome> taskOutcomes = results.outcomes();
@@ -171,7 +176,8 @@ public final class SequentialJobRunner {
                     taskOutcomes, environment.diagnostics(),
                     Optional.ofNullable(primaryFailure), secondaryFailures,
                     startedAt, finishedAt, durationMillis,
-                    finishRequested, Optional.ofNullable(finishReason), workRetained);
+                    finishRequested, Optional.ofNullable(finishReason), workRetained,
+                    status == RunStatus.CANCELLED ? environment.control().snapshot().cancellationReason() : Optional.empty());
             environment.close();
             return outcome;
         } finally {
@@ -191,9 +197,9 @@ public final class SequentialJobRunner {
                 Optional.ofNullable(task.operation() == null ? null : task.operation().id()),
                 "task", null, 0,
                 Map.of("task.description", task.description()), Optional.empty());
-        Path taskDirectory = workspace.taskDirectory(task.registrationIndex());
         TimeBudget budget = task.timeout() == null
                 ? environment.control() : environment.control().childBudget(task.timeout());
+        Path taskDirectory = workspace.taskDirectory(task.registrationIndex());
         TaskFrame frame = new TaskFrame(task, task.registrationIndex(), taskDirectory, budget);
         TaskContextImpl context = new TaskContextImpl(environment, task.ref(), frame,
                 taskDirectory, frame.closeStack(), budget, results, invoker);
@@ -228,15 +234,16 @@ public final class SequentialJobRunner {
         } catch (FinishSignal signal) {
             work = new FailureArbiter.WorkCompletion.Finished(signal.reason());
         } catch (TaskCancelledException cancellation) {
-            environment.control().requestCancel(cancellation.reason());
+            environment.control().observeCancel(cancellation.reason());
             work = new FailureArbiter.WorkCompletion.Cancelled(
                     cancellation.getCause() != null || cancellation.getSuppressed().length > 0
                             ? cancellation : null);
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
-            environment.control().requestCancel(CancelReason.INTERRUPTED);
+            environment.control().observeCancel(CancelReason.INTERRUPTED);
             work = new FailureArbiter.WorkCompletion.Cancelled(interrupted);
         } catch (Throwable failure) {
+            FailureArbiter.rethrowFatal(failure);
             work = environment.control().cancellationObserved()
                     && !frame.failureBeforeCancellation(failure)
                     ? new FailureArbiter.WorkCompletion.Cancelled(failure)
@@ -252,6 +259,7 @@ public final class SequentialJobRunner {
         List<Throwable> closeErrors = context.closeResources();
         TaskCompletion completion = arbiter.resolve(
                 work, environment.control().snapshot(), closeErrors);
+        context.markClosed(completion.cancelReason());
         for (InvocationOutcome invocation : frame.invocations()) {
             results.addInvocation(task.ref(), invocation);
         }
@@ -284,13 +292,14 @@ public final class SequentialJobRunner {
         }
         environment.emit(eventName, level, environment.identity(task.id(), null),
                 Optional.ofNullable(task.operation() == null ? null : task.operation().id()),
-                "task", outcome.status().name(), outcome.durationMillis(), attributes,
+                outcome.failurePhase() == null ? "task" : outcome.failurePhase(), outcome.status().name(), outcome.durationMillis(),
+                terminalAttributes(outcome.cancelReason(), attributes),
                 outcome.failure());
     }
 
     private List<FailureInfo> runCleanups(
             RunEnvironment environment, WorkspaceManager.Workspace workspace,
-            JobDefinition definition, Throwable setupFailure) {
+            JobDefinition definition) {
         List<FailureInfo> failures = new ArrayList<>();
         var completionBudget = environment.control().completionBudget();
         List<CleanupDefinition> cleanups = definition.cleanups();
@@ -302,15 +311,7 @@ public final class SequentialJobRunner {
             CloseStack closeStack = new CloseStack();
             CleanupContextImpl context = new CleanupContextImpl(environment, cleanupDirectory,
                     closeStack, completionBudget, cleanup.name(), () -> {
-                        if (workspace != null) {
-                            workspace.cleanupDirectory(cleanup.registrationIndex());
-                        } else if (setupFailure instanceof IOException exception) {
-                            throw exception;
-                        } else if (setupFailure instanceof SecurityException exception) {
-                            throw exception;
-                        } else {
-                            throw new IOException("run workspace unavailable");
-                        }
+                        workspace.cleanupDirectory(cleanup.registrationIndex());
                     });
             ExecutionIdentity identity = environment.identity(null, null);
             environment.emit("gretl.cleanup.started", LogLevel.INFO, identity,
@@ -322,9 +323,11 @@ public final class SequentialJobRunner {
                 cleanup.body().execute(context);
                 context.checkExecution();
             } catch (Throwable failure) {
+            FailureArbiter.rethrowFatal(failure);
                 primary = failure;
             }
             List<Throwable> closeErrors = context.closeResources();
+            context.markClosed(Optional.empty());
             if (primary != null) {
                 for (Throwable closeError : closeErrors) {
                     if (closeError != primary) {
@@ -357,6 +360,12 @@ public final class SequentialJobRunner {
             }
         }
         return failures;
+    }
+
+    static Map<String,String> terminalAttributes(Optional<CancelReason> reason, Map<String,String> attributes) {
+        Map<String,String> result = new java.util.LinkedHashMap<>(attributes);
+        reason.ifPresent(value -> result.put("cancel_reason", value.name()));
+        return result;
     }
 
     private static LogLevel runLevel(RunStatus status) {

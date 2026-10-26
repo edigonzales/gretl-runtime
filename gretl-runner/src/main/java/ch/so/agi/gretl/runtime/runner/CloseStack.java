@@ -51,6 +51,7 @@ public final class CloseStack implements ResourceScope {
             try {
                 resources.get(index).close();
             } catch (Throwable failure) {
+            FailureArbiter.rethrowFatal(failure);
                 failures.add(observeFailure.apply(failure));
             }
             observe(observeControl, failures);

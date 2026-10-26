@@ -10,9 +10,15 @@ public record InvocationOutcome(
         InvocationStatus status, String phase,
         Optional<Instant> startedAt, Optional<Instant> finishedAt,
         long durationMillis, Optional<FailureInfo> failure,
-        List<FailureInfo> secondaryFailures) {
+        List<FailureInfo> secondaryFailures,
+        Optional<ch.so.agi.gretl.runtime.api.CancelReason> cancelReason) {
 
     public InvocationOutcome {
+        java.util.Objects.requireNonNull(cancelReason, "cancelReason");
+        if ((status == InvocationStatus.CANCELLED) != cancelReason.isPresent()) {
+            throw new IllegalArgumentException("cancelReason required exactly for CANCELLED");
+        }
+
         text(invocationId, "invocationId");
         text(parentTaskId, "parentTaskId");
         text(operationId, "operationId");

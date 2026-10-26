@@ -30,6 +30,15 @@ abstract class BaseContext implements ContextView {
     private final Path workBase;
     private final CloseStack closeStack;
     private final TimeBudget budget;
+    private volatile ScopeSnapshot snapshot;
+    private final TimeBudget scopedBudget = new TimeBudget() {
+        @Override public Optional<java.time.Duration> remaining() {
+            return snapshot == null ? budget.remaining() : snapshot.remaining();
+        }
+        @Override public boolean expired() {
+            return snapshot == null ? budget.expired() : snapshot.expired();
+        }
+    };
     private final Map<String, SecretValue> secrets = new HashMap<>();
     private final TaskLogger logger;
     private ContextState state = ContextState.ACTIVE;
@@ -186,25 +195,25 @@ abstract class BaseContext implements ContextView {
         return new CancellationToken() {
             @Override
             public boolean isCancellationRequested() {
-                budget.expired();
-                return environment.control().isCancellationRequested();
+                return reason().isPresent();
             }
 
             @Override
             public Optional<CancelReason> reason() {
-                budget.expired();
-                return environment.control().reason();
+                if (snapshot != null) return snapshot.cancelReason();
+                return currentCancellationReason();
             }
 
             @Override
             public void throwIfCancellationRequested() {
+                checkDataAccess();
                 checkCancellation();
             }
         };
     }
 
     public TimeBudget budget() {
-        return budget;
+        return scopedBudget;
     }
 
     public ResourceScope resources() {
@@ -232,14 +241,18 @@ abstract class BaseContext implements ContextView {
         }
     }
 
-    void markClosed() {
+    void markClosed(Optional<CancelReason> cancelReason) {
+        Optional<java.time.Duration> remaining = budget.remaining();
+        snapshot = new ScopeSnapshot(remaining, remaining.map(java.time.Duration::isZero).orElse(false), cancelReason);
         state = ContextState.CLOSED;
     }
+
+    private record ScopeSnapshot(Optional<java.time.Duration> remaining, boolean expired,
+                                 Optional<CancelReason> cancelReason) { }
 
     List<Throwable> closeResources() {
         beginClosing();
         List<Throwable> failures = closeStack.closeAll(this::checkCancellation, this::observeCloseFailure);
-        markClosed();
         return failures;
     }
 
@@ -259,6 +272,11 @@ abstract class BaseContext implements ContextView {
 
     void checkExecution() {
         environment.control().checkBeforeWork(budget);
+    }
+
+    Optional<CancelReason> currentCancellationReason() {
+        Optional<CancelReason> reason = environment.control().reason();
+        return reason.isPresent() ? reason : budget.expired() ? Optional.of(CancelReason.TIMEOUT) : Optional.empty();
     }
 
     void checkCancellation() {

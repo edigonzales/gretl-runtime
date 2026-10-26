@@ -106,6 +106,7 @@ public final class RunReportWriter {
         ExecutionPlan plan = input.plan();
         Map<String, Object> execution = new LinkedHashMap<>();
         execution.put("status", outcome.status().name());
+        execution.put("cancelReason", outcome.cancelReason().map(Enum::name).orElse(null));
         execution.put("exitCode", outcome.exitCode());
         execution.put("startedAt", timestamp(outcome.startedAt()));
         execution.put("finishedAt", timestamp(outcome.finishedAt()));
@@ -146,6 +147,8 @@ public final class RunReportWriter {
         value.put("taskId", task.taskId());
         value.put("status", task.status().name());
         value.put("reason", task.reason());
+        value.put("cancelReason", task.cancelReason().map(Enum::name).orElse(null));
+        value.put("failurePhase", task.failurePhase());
         task.startedAt().ifPresent(time -> value.put("startedAt", timestamp(time)));
         task.finishedAt().ifPresent(time -> value.put("finishedAt", timestamp(time)));
         value.put("durationMillis", task.durationMillis());
@@ -163,6 +166,7 @@ public final class RunReportWriter {
         value.put("parentTaskId", invocation.parentTaskId());
         value.put("operationId", invocation.operationId());
         value.put("status", invocation.status().name());
+        value.put("cancelReason", invocation.cancelReason().map(Enum::name).orElse(null));
         value.put("phase", invocation.phase());
         invocation.startedAt().ifPresent(time -> value.put("startedAt", timestamp(time)));
         invocation.finishedAt().ifPresent(time -> value.put("finishedAt", timestamp(time)));

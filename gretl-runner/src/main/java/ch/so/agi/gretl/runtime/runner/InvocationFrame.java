@@ -67,10 +67,10 @@ final class InvocationFrame {
     }
 
     InvocationOutcome outcome(InvocationStatus status, FailureInfo failure,
-                              List<FailureInfo> secondary, Instant finishedAt, long endTicks) {
+                              List<FailureInfo> secondary, Optional<ch.so.agi.gretl.runtime.api.CancelReason> cancelReason, Instant finishedAt, long endTicks) {
         long duration = Math.max(0, endTicks - startTicks) / 1_000_000L;
         return new InvocationOutcome(invocationId, parent.definition().id(), operation.id(),
                 status, phase, Optional.of(startedAt), Optional.of(finishedAt),
-                duration, Optional.ofNullable(failure), secondary);
+                duration, Optional.ofNullable(failure), secondary, cancelReason);
     }
 }
