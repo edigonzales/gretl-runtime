@@ -53,6 +53,21 @@ Startfehler-Orakel und zählt nicht als gültiger Regressionsnachweis.
 Die endgültigen grünen Nachweise ersetzen diese Entwicklungsläufe nicht
 stillschweigend, sondern werden separat mit Kandidatenidentität abgelegt.
 
+Ein zusätzlicher externer Gegenbeweis (`finish-close-probe.log`) zeigte am
+Zwischenkandidaten `9fbf2226ff5b3c0fb92ec3932210141b4290a4d9`, dass
+`finishJob` einen früheren Closefehler gegenüber späterer Cancellation
+verdeckte. `BudgetPrecedenceTest` enthält diesen Fall nun ausdrücklich.
+Der bestehende Arbiter-Test für Cancellation vor Close stellt diese Reihenfolge
+jetzt mit dem tatsächlich beobachteten Kontrollsignal dar; Status- und
+Nebenursachenassertion bleiben erhalten. Der vollständige Standardbuild dieses
+Zwischenkandidaten war grün, ist aber keine Freigabe des später korrigierten
+Standes. Dessen vollständige Nachweise werden erneut erhoben.
+
+Die Textdiagnoseprüfung für Berichtfehler fordert jetzt ausdrücklich `--lang de`
+an. Das ersetzt ihre frühere Abhängigkeit vom implizit deutschen Bootstrap-
+Formatter; Exitcode- und Meldungsassertion werden nicht abgeschwächt. Das neue
+strukturierte Berichtfehlerereignis besitzt Titel in beiden Meldungskatalogen.
+
 Die Runtime beendet nicht kooperierende Bibliotheksaufrufe nicht hart.
 Bereits erfolgte fachliche Wirkungen werden nicht rückgängig gemacht. POSIX-
 Rechte gelten auf entsprechenden Dateisystemen; andere Dateisysteme nutzen

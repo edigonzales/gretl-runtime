@@ -127,6 +127,21 @@ class BudgetPrecedenceTest {
     }
 
     @Test
+    void finishDoesNotLetLaterCancellationHideEarlierReleaseFailure() {
+        List<String> closed = new ArrayList<>();
+        JobOutcome outcome = run(RunnerTestSupport.task("work").body(ctx -> {
+            ctx.resources().manage(() -> { closed.add("cancel"); throw cancellationWithCauses(); });
+            ctx.resources().manage(() -> { closed.add("first"); throw new IOException("finish-close-first"); });
+            ctx.finishJob("no data");
+            return null;
+        }).build());
+        assertEquals(RunStatus.FAILED, outcome.status());
+        assertEquals("finish-close-first", outcome.primaryFailure().orElseThrow().message());
+        assertEquals(List.of("first", "cancel"), closed);
+        assertEquals(1, cleanups.get());
+    }
+
+    @Test
     void interruptedInvocationStillRunsCleanupAndRestoresInterruptOnReturn() {
         assertFalse(Thread.currentThread().isInterrupted());
         var operation = operation((request, context) -> { throw new InterruptedException("handler-interrupted"); });

@@ -52,11 +52,11 @@ public final class FailureArbiter {
         }
 
         if (work instanceof WorkCompletion.Finished finished) {
-            if (control.cancellationReason().isPresent()) {
-                return TaskCompletion.cancelled(closeFailures);
-            }
             if (!failures.isEmpty()) {
                 return failureFromCloseErrors(failures);
+            }
+            if (control.cancellationReason().isPresent()) {
+                return TaskCompletion.cancelled(closeFailures);
             }
             return TaskCompletion.skipped(finished.reason());
         }

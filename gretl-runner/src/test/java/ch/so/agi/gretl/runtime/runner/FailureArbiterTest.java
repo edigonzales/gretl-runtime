@@ -103,7 +103,9 @@ class FailureArbiterTest {
                 true, Optional.of("finish"), false);
         TaskCompletion completion = arbiter.resolve(
                 new FailureArbiter.WorkCompletion.Finished("finish"), both,
-                List.of(new IOException("close")));
+                List.of(new ch.so.agi.gretl.runtime.api.TaskCancelledException(
+                                ch.so.agi.gretl.runtime.api.CancelReason.REQUESTED),
+                        new IOException("close")));
         assertEquals(TaskStatus.CANCELLED, completion.status());
         assertEquals(1, completion.secondaryFailures().size());
     }
