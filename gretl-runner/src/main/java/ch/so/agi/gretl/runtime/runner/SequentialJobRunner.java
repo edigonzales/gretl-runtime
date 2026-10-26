@@ -42,147 +42,149 @@ public final class SequentialJobRunner {
         OperationInvoker invoker = new OperationInvoker(environment);
         FailureArbiter arbiter = new FailureArbiter();
         ExecutionIdentity runIdentity = environment.identity(null, null);
-        Instant startedAt = environment.now();
-        long startTicks = environment.monotonicClock().ticks();
+        try (var runScope = environment.openScope(runIdentity, Optional.empty())) {
+            Instant startedAt = environment.now();
+            long startTicks = environment.monotonicClock().ticks();
 
-        environment.emit("gretl.run.started", LogLevel.INFO, runIdentity, Optional.empty(),
-                "run", null, 0,
-                Map.of("targets", String.join(",", plan.requestedTargets())),
-                Optional.empty());
+            environment.emit("gretl.run.started", LogLevel.INFO, runIdentity, Optional.empty(),
+                    "run", null, 0,
+                    Map.of("targets", String.join(",", plan.requestedTargets())),
+                    Optional.empty());
 
-        FailureInfo runPrimary = null;
-        List<FailureInfo> runSecondary = new ArrayList<>();
-        boolean failed = false;
-        boolean cancelled = false;
-        boolean finishRequested = false;
-        String finishReason = null;
+            FailureInfo runPrimary = null;
+            List<FailureInfo> runSecondary = new ArrayList<>();
+            boolean failed = false;
+            boolean cancelled = false;
+            boolean finishRequested = false;
+            String finishReason = null;
 
-        List<TaskDefinition<?>> selected = plan.selectedTasks();
-        int position = 0;
-        for (; position < selected.size(); position++) {
-            if (failed || cancelled || finishRequested) {
-                break;
-            }
-            try {
-                environment.control().checkBeforeWork();
-            } catch (FinishSignal signal) {
-                finishRequested = true;
-                finishReason = signal.reason();
-                break;
-            } catch (TaskCancelledException cancellation) {
-                cancelled = true;
-                break;
-            }
-
-            TaskOutcome outcome;
-            try {
-                outcome = executeTask(selected.get(position), environment, workspace,
-                        results, invoker, arbiter);
-            } catch (IOException | SecurityException exception) {
-                TaskDefinition<?> task = selected.get(position);
-                results.complete(task.ref(), new TaskCompletion(TaskStatus.FAILED, ResultSlot.NoValue.INSTANCE, null,
-                                FailureInfo.from(exception), List.of(), Optional.empty(), "task-setup"),
-                        environment.now(), environment.monotonicClock().ticks());
-                outcome = results.outcome(task.ref());
-                emitTaskTerminal(environment, task, outcome);
-            }
-
-            if (outcome.status() == TaskStatus.FAILED) {
-                failed = true;
-                runPrimary = outcome.failure().orElseThrow();
-                runSecondary.addAll(outcome.secondaryFailures());
-            } else if (outcome.status() == TaskStatus.CANCELLED) {
-                cancelled = true;
-                runSecondary.addAll(outcome.secondaryFailures());
-            }
-            if (environment.control().isFinishRequested() && !finishRequested) {
-                finishRequested = true;
-                finishReason = environment.control().finishReason().orElse("JOB_FINISHED");
-            }
-            if (!failed) {
+            List<TaskDefinition<?>> selected = plan.selectedTasks();
+            int position = 0;
+            for (; position < selected.size(); position++) {
+                if (failed || cancelled || finishRequested) {
+                    break;
+                }
                 try {
-                    environment.control().throwIfCancellationRequested();
+                    environment.control().checkBeforeWork();
+                } catch (FinishSignal signal) {
+                    finishRequested = true;
+                    finishReason = signal.reason();
+                    break;
                 } catch (TaskCancelledException cancellation) {
                     cancelled = true;
+                    break;
+                }
+
+                TaskOutcome outcome;
+                try {
+                    outcome = executeTask(selected.get(position), environment, workspace,
+                            results, invoker, arbiter);
+                } catch (IOException | SecurityException exception) {
+                    TaskDefinition<?> task = selected.get(position);
+                    results.complete(task.ref(), new TaskCompletion(TaskStatus.FAILED, ResultSlot.NoValue.INSTANCE, null,
+                                    FailureInfo.from(exception), List.of(), Optional.empty(), "task-setup"),
+                            environment.now(), environment.monotonicClock().ticks());
+                    outcome = results.outcome(task.ref());
+                    emitTaskTerminal(environment, task, outcome);
+                }
+
+                if (outcome.status() == TaskStatus.FAILED) {
+                    failed = true;
+                    runPrimary = outcome.failure().orElseThrow();
+                    runSecondary.addAll(outcome.secondaryFailures());
+                } else if (outcome.status() == TaskStatus.CANCELLED) {
+                    cancelled = true;
+                    runSecondary.addAll(outcome.secondaryFailures());
+                }
+                if (environment.control().isFinishRequested() && !finishRequested) {
+                    finishRequested = true;
+                    finishReason = environment.control().finishReason().orElse("JOB_FINISHED");
+                }
+                if (!failed) {
+                    try {
+                        environment.control().throwIfCancellationRequested();
+                    } catch (TaskCancelledException cancellation) {
+                        cancelled = true;
+                    }
                 }
             }
-        }
 
-        if (failed || cancelled || finishRequested) {
-            String reason = failed ? "FAIL_FAST"
-                    : cancelled ? "CANCELLED_BEFORE_START" : "JOB_FINISHED";
-            for (; position < selected.size(); position++) {
-                TaskDefinition<?> task = selected.get(position);
-                results.complete(task.ref(), TaskCompletion.notRun(reason),
-                        environment.now(), environment.monotonicClock().ticks());
-                emitTaskTerminal(environment, task, results.outcome(task.ref()));
-            }
-        }
-
-        boolean restoreInterrupt = Thread.interrupted() | environment.control().interrupted();
-        try {
-            List<FailureInfo> cleanupFailures = runCleanups(environment, workspace, definition);
-
-            RunStatus status;
-            FailureInfo primaryFailure = null;
-            List<FailureInfo> secondaryFailures = new ArrayList<>();
-            if (failed) {
-                status = RunStatus.FAILED;
-                primaryFailure = runPrimary;
-                secondaryFailures.addAll(runSecondary);
-                secondaryFailures.addAll(cleanupFailures);
-            } else if (cancelled) {
-                status = RunStatus.CANCELLED;
-                secondaryFailures.addAll(runSecondary);
-                secondaryFailures.addAll(cleanupFailures);
-            } else if (!cleanupFailures.isEmpty()) {
-                status = RunStatus.FAILED;
-                primaryFailure = cleanupFailures.get(0);
-                secondaryFailures.addAll(cleanupFailures.subList(1, cleanupFailures.size()));
-                secondaryFailures.addAll(runSecondary);
-            } else if (finishRequested) {
-                status = RunStatus.NO_DATA;
-            } else {
-                status = RunStatus.SUCCEEDED;
+            if (failed || cancelled || finishRequested) {
+                String reason = failed ? "FAIL_FAST"
+                        : cancelled ? "CANCELLED_BEFORE_START" : "JOB_FINISHED";
+                for (; position < selected.size(); position++) {
+                    TaskDefinition<?> task = selected.get(position);
+                    results.complete(task.ref(), TaskCompletion.notRun(reason),
+                            environment.now(), environment.monotonicClock().ticks());
+                    emitTaskTerminal(environment, task, results.outcome(task.ref()));
+                }
             }
 
-            Instant finishedAt = environment.now();
-            long endTicks = environment.monotonicClock().ticks();
-            long durationMillis = Math.max(0, endTicks - startTicks) / 1_000_000L;
-            boolean workRetained = false;
+            boolean restoreInterrupt = Thread.interrupted() | environment.control().interrupted();
             try {
-                if (workspace != null) {
-                    workRetained = manager.applyRetention(workspace, status, input.keepWork());
+                List<FailureInfo> cleanupFailures = runCleanups(environment, workspace, definition);
+
+                RunStatus status;
+                FailureInfo primaryFailure = null;
+                List<FailureInfo> secondaryFailures = new ArrayList<>();
+                if (failed) {
+                    status = RunStatus.FAILED;
+                    primaryFailure = runPrimary;
+                    secondaryFailures.addAll(runSecondary);
+                    secondaryFailures.addAll(cleanupFailures);
+                } else if (cancelled) {
+                    status = RunStatus.CANCELLED;
+                    secondaryFailures.addAll(runSecondary);
+                    secondaryFailures.addAll(cleanupFailures);
+                } else if (!cleanupFailures.isEmpty()) {
+                    status = RunStatus.FAILED;
+                    primaryFailure = cleanupFailures.get(0);
+                    secondaryFailures.addAll(cleanupFailures.subList(1, cleanupFailures.size()));
+                    secondaryFailures.addAll(runSecondary);
+                } else if (finishRequested) {
+                    status = RunStatus.NO_DATA;
+                } else {
+                    status = RunStatus.SUCCEEDED;
                 }
-            } catch (IOException | SecurityException exception) {
-                workRetained = true;
-                secondaryFailures.add(FailureInfo.from(exception));
-                environment.emit("gretl.workspace.retention_failed", LogLevel.WARN,
-                        runIdentity, Optional.empty(), "run", status.name(), 0,
-                        Map.of("workspace.path", workspace.runRoot().toString()),
-                        Optional.of(FailureInfo.from(exception)));
-            }
 
-            environment.emit("gretl.run.finished", runLevel(status), runIdentity, Optional.empty(),
-                    "run", status.name(), durationMillis,
-                    terminalAttributes(status == RunStatus.CANCELLED ? environment.control().snapshot().cancellationReason() : Optional.empty(),
-                            Map.of("exit_code", Integer.toString(status.exitCode()), "targets", String.join(",", plan.requestedTargets()))),
-                    Optional.ofNullable(primaryFailure));
+                Instant finishedAt = environment.now();
+                long endTicks = environment.monotonicClock().ticks();
+                long durationMillis = Math.max(0, endTicks - startTicks) / 1_000_000L;
+                boolean workRetained = false;
+                try {
+                    if (workspace != null) {
+                        workRetained = manager.applyRetention(workspace, status, input.keepWork());
+                    }
+                } catch (IOException | SecurityException exception) {
+                    workRetained = true;
+                    secondaryFailures.add(FailureInfo.from(exception));
+                    environment.emit("gretl.workspace.retention_failed", LogLevel.WARN,
+                            runIdentity, Optional.empty(), "run", status.name(), 0,
+                            Map.of("workspace.path", workspace.runRoot().toString()),
+                            Optional.of(FailureInfo.from(exception)));
+                }
 
-            List<TaskOutcome> taskOutcomes = results.outcomes();
-            JobOutcome outcome = new JobOutcome(
-                    input.runId(), definition.definitionId(), input.jobName(),
-                    status, status.exitCode(), plan.requestedTargets(),
-                    taskOutcomes, environment.diagnostics(),
-                    Optional.ofNullable(primaryFailure), secondaryFailures,
-                    startedAt, finishedAt, durationMillis,
-                    finishRequested, Optional.ofNullable(finishReason), workRetained,
-                    status == RunStatus.CANCELLED ? environment.control().snapshot().cancellationReason() : Optional.empty());
-            environment.close();
-            return outcome;
-        } finally {
-            if (restoreInterrupt || environment.control().interrupted()) {
-                Thread.currentThread().interrupt();
+                environment.emit("gretl.run.finished", runLevel(status), runIdentity, Optional.empty(),
+                        "run", status.name(), durationMillis,
+                        terminalAttributes(status == RunStatus.CANCELLED ? environment.control().snapshot().cancellationReason() : Optional.empty(),
+                                Map.of("exit_code", Integer.toString(status.exitCode()), "targets", String.join(",", plan.requestedTargets()))),
+                        Optional.ofNullable(primaryFailure));
+
+                List<TaskOutcome> taskOutcomes = results.outcomes();
+                JobOutcome outcome = new JobOutcome(
+                        input.runId(), definition.definitionId(), input.jobName(),
+                        status, status.exitCode(), plan.requestedTargets(),
+                        taskOutcomes, environment.diagnostics(),
+                        Optional.ofNullable(primaryFailure), secondaryFailures,
+                        startedAt, finishedAt, durationMillis,
+                        finishRequested, Optional.ofNullable(finishReason), workRetained,
+                        status == RunStatus.CANCELLED ? environment.control().snapshot().cancellationReason() : Optional.empty());
+                environment.close();
+                return outcome;
+            } finally {
+                if (restoreInterrupt || environment.control().interrupted()) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }
@@ -193,63 +195,65 @@ public final class SequentialJobRunner {
             OperationInvoker invoker, FailureArbiter arbiter) throws IOException {
         TimeBudget budget = task.timeout() == null
                 ? environment.control() : environment.control().childBudget(task.timeout());
-        results.start(task.ref(), environment.now(), environment.monotonicClock().ticks());
-        environment.emit("gretl.task.started", LogLevel.INFO,
-                environment.identity(task.id(), null),
-                Optional.ofNullable(task.operation() == null ? null : task.operation().id()),
-                "task", null, 0,
-                Map.of("task.description", task.description()), Optional.empty());
-        Path taskDirectory = workspace.taskDirectory(task.registrationIndex());
-        TaskFrame frame = new TaskFrame(task, task.registrationIndex(), taskDirectory, budget);
-        TaskContextImpl context = new TaskContextImpl(environment, task.ref(), frame,
-                taskDirectory, frame.closeStack(), budget, results, invoker);
-        frame.context(context);
+        try (var taskScope = environment.openScope(environment.identity(task.id(), null), Optional.empty())) {
+            results.start(task.ref(), environment.now(), environment.monotonicClock().ticks());
+            environment.emit("gretl.task.started", LogLevel.INFO,
+                    environment.identity(task.id(), null),
+                    Optional.ofNullable(task.operation() == null ? null : task.operation().id()),
+                    "task", null, 0,
+                    Map.of("task.description", task.description()), Optional.empty());
+            Path taskDirectory = workspace.taskDirectory(task.registrationIndex());
+            TaskFrame frame = new TaskFrame(task, task.registrationIndex(), taskDirectory, budget);
+            TaskContextImpl context = new TaskContextImpl(environment, task.ref(), frame,
+                    taskDirectory, frame.closeStack(), budget, results, invoker);
+            frame.context(context);
 
-        FailureArbiter.WorkCompletion work;
-        try {
-            context.checkExecution();
-            boolean enabled = task.condition() == null || task.condition().test(context);
-            context.checkExecution();
-            if (!enabled) {
-                work = new FailureArbiter.WorkCompletion.Skipped("PREDICATE_FALSE");
-                return completeTask(environment, task, frame, context, work, results, arbiter);
+            FailureArbiter.WorkCompletion work;
+            try {
+                context.checkExecution();
+                boolean enabled = task.condition() == null || task.condition().test(context);
+                context.checkExecution();
+                if (!enabled) {
+                    work = new FailureArbiter.WorkCompletion.Skipped("PREDICATE_FALSE");
+                    return completeTask(environment, task, frame, context, work, results, arbiter);
+                }
+                Object value = task.body().execute(context);
+                context.checkExecution();
+                if (value == null && task.operation() != null && task.resultType() != Void.class) {
+                    work = new FailureArbiter.WorkCompletion.Failure(
+                            new ProviderContractException("NULL_TASK_RESULT",
+                                    Messages.format(environment.locale(), "runner.nullTaskResult",
+                                            task.id(), task.resultType().getName())));
+                } else if (value != null && !task.resultType().isInstance(value)) {
+                    work = new FailureArbiter.WorkCompletion.Failure(
+                            new ProviderContractException("TASK_RESULT_TYPE_MISMATCH",
+                                    Messages.format(environment.locale(),
+                                            "runner.taskResultMismatch", task.id(),
+                                            value.getClass().getName(),
+                                            task.resultType().getName())));
+                } else {
+                    work = new FailureArbiter.WorkCompletion.Value(value);
+                }
+            } catch (FinishSignal signal) {
+                work = new FailureArbiter.WorkCompletion.Finished(signal.reason());
+            } catch (TaskCancelledException cancellation) {
+                environment.control().observeCancel(cancellation.reason());
+                work = new FailureArbiter.WorkCompletion.Cancelled(
+                        cancellation.getCause() != null || cancellation.getSuppressed().length > 0
+                                ? cancellation : null);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                environment.control().observeCancel(CancelReason.INTERRUPTED);
+                work = new FailureArbiter.WorkCompletion.Cancelled(interrupted);
+            } catch (Throwable failure) {
+                FailureArbiter.rethrowFatal(failure);
+                work = environment.control().cancellationObserved()
+                        && !frame.failureBeforeCancellation(failure)
+                        ? new FailureArbiter.WorkCompletion.Cancelled(failure)
+                        : new FailureArbiter.WorkCompletion.Failure(failure);
             }
-            Object value = task.body().execute(context);
-            context.checkExecution();
-            if (value == null && task.operation() != null && task.resultType() != Void.class) {
-                work = new FailureArbiter.WorkCompletion.Failure(
-                        new ProviderContractException("NULL_TASK_RESULT",
-                                Messages.format(environment.locale(), "runner.nullTaskResult",
-                                        task.id(), task.resultType().getName())));
-            } else if (value != null && !task.resultType().isInstance(value)) {
-                work = new FailureArbiter.WorkCompletion.Failure(
-                        new ProviderContractException("TASK_RESULT_TYPE_MISMATCH",
-                                Messages.format(environment.locale(),
-                                        "runner.taskResultMismatch", task.id(),
-                                        value.getClass().getName(),
-                                        task.resultType().getName())));
-            } else {
-                work = new FailureArbiter.WorkCompletion.Value(value);
-            }
-        } catch (FinishSignal signal) {
-            work = new FailureArbiter.WorkCompletion.Finished(signal.reason());
-        } catch (TaskCancelledException cancellation) {
-            environment.control().observeCancel(cancellation.reason());
-            work = new FailureArbiter.WorkCompletion.Cancelled(
-                    cancellation.getCause() != null || cancellation.getSuppressed().length > 0
-                            ? cancellation : null);
-        } catch (InterruptedException interrupted) {
-            Thread.currentThread().interrupt();
-            environment.control().observeCancel(CancelReason.INTERRUPTED);
-            work = new FailureArbiter.WorkCompletion.Cancelled(interrupted);
-        } catch (Throwable failure) {
-            FailureArbiter.rethrowFatal(failure);
-            work = environment.control().cancellationObserved()
-                    && !frame.failureBeforeCancellation(failure)
-                    ? new FailureArbiter.WorkCompletion.Cancelled(failure)
-                    : new FailureArbiter.WorkCompletion.Failure(failure);
+            return completeTask(environment, task, frame, context, work, results, arbiter);
         }
-        return completeTask(environment, task, frame, context, work, results, arbiter);
     }
 
     private TaskOutcome completeTask(

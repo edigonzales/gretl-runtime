@@ -146,6 +146,11 @@ final class ArtifactJobRunner {
     }
 
     static Running start(Prepared prepared, boolean script) throws IOException {
+        return start(prepared, script, Path.of("..", "gretl-dist", "target", "dist", "bin", "gretl")
+                .toAbsolutePath().normalize());
+    }
+
+    static Running start(Prepared prepared, boolean script, Path scriptLauncher) throws IOException {
         if (!script && prepared.image() != null) {
             Files.writeString(prepared.request().directory().resolve("command.json"), Json.write(prepared.image().arguments()));
             return new Running(prepared, prepared.image().start(prepared.request().directory()),
@@ -153,8 +158,7 @@ final class ArtifactJobRunner {
         }
         List<String> command = new ArrayList<>();
         if (script) {
-            command.add(Path.of("..", "gretl-dist", "target", "dist", "bin", "gretl")
-                    .toAbsolutePath().normalize().toString());
+            command.add(scriptLauncher.toString());
             command.add("run");
             command.add(prepared.source().resolve("job.groovy").toString());
         } else {

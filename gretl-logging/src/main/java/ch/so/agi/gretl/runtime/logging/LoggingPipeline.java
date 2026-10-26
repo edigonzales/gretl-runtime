@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.runtime.logging;
 
 import ch.so.agi.gretl.runtime.api.LogLevel;
+import ch.so.agi.gretl.runtime.api.ExecutionIdentity;
 import ch.so.agi.gretl.runtime.runner.FailureInfo;
 import ch.so.agi.gretl.runtime.runner.RunEvent;
 import ch.so.agi.gretl.runtime.runner.RunEventSink;
@@ -28,6 +29,7 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
     private final EventFileSink file;
     private final AtomicLong sequence = new AtomicLong();
     private boolean degradedNotified;
+    private boolean scopeDegraded;
 
     public LoggingPipeline(LoggingConfig config, LogContext context, Redactor redactor,
                            PrintStream stderr, Path eventFile, Clock clock)
@@ -65,7 +67,7 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
         if (file != null) {
             file.write(canonical);
         }
-        if ((console.degraded() || (file != null && file.snapshot().degraded()))
+        if ((scopeDegraded || console.degraded() || (file != null && file.snapshot().degraded()))
                 && !degradedNotified) {
             degradedNotified = true;
             LogEvent warning = new LogEvent(
@@ -73,7 +75,7 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
                     context.commandId() + ":" + sequence.get(),
                     context.commandId(), clock.instant(), LogLevel.WARN,
                     "gretl.logging.degraded",
-                    "Eine verwaltete Logsenke ist ausgefallen; der fachliche Runstatus "
+                    "Die Beobachtbarkeit ist beeintraechtigt; der fachliche Runstatus "
                             + "bleibt davon unberuehrt.",
                     Optional.of(context.runId()), Optional.of(context.jobName()),
                     Optional.empty(), Optional.empty(), Optional.empty(),
@@ -85,6 +87,27 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
             if (file != null && !file.snapshot().degraded()) {
                 file.write(warning);
             }
+        }
+    }
+
+    @Override
+    public synchronized RunEventSink.Scope openScope(ExecutionIdentity identity, Optional<String> operationId) {
+        try {
+            return new MdcExecutionScope(identity, operationId, this::scopeFailed);
+        } catch (RuntimeException failure) {
+            scopeFailed();
+            return RunEventSink.Scope.NO_OP;
+        }
+    }
+
+    private synchronized void scopeFailed() {
+        scopeDegraded = true;
+        if (!degradedNotified) {
+            // emit writes directly to the sinks; no call back through MDC or the library bridge.
+            degradedNotified = true;
+            emit(new RunEvent("gretl.logging.degraded", "Logging-Scope konnte nicht sicher wiederhergestellt werden.",
+                    clock.instant(), LogLevel.WARN, Optional.of(context.runId()), Optional.of(context.jobName()),
+                    Optional.empty(), Optional.empty(), Optional.empty(), "logging", "", 0, Map.of(), Optional.empty()));
         }
     }
 
@@ -112,9 +135,19 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
     public synchronized void libraryEvent(
             LogLevel level, String logger, String message,
             Optional<FailureInfo> failure) {
-        emit(new RunEvent("gretl.library.log", message, clock.instant(), level,
+        libraryEvent(level, logger, message, failure, Optional.empty(), clock.instant());
+    }
+
+    synchronized void libraryEvent(LogLevel level, String logger, String message,
+                                  Optional<FailureInfo> failure, Optional<LibraryIdentity> snapshot,
+                                  Instant timestamp) {
+        Optional<LibraryIdentity> trusted = scopeDegraded ? Optional.empty() : snapshot
+                .filter(s -> s.identity().runId().equals(context.runId())
+                        && s.identity().jobName().equals(context.jobName()));
+        emit(new RunEvent("gretl.library.log", message, timestamp, level,
                 Optional.of(context.runId()), Optional.of(context.jobName()),
-                Optional.empty(), Optional.empty(), Optional.empty(),
+                trusted.flatMap(s -> s.identity().taskId()), trusted.flatMap(s -> s.identity().invocationId()),
+                trusted.flatMap(LibraryIdentity::operationId),
                 "library", "", 0, Map.of("logger", logger), failure));
     }
 
@@ -123,7 +156,7 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
         return new LoggingState(
                 config.format(), config.eventFile(),
                 snapshot == null ? Optional.empty() : Optional.of(snapshot.path()),
-                console.degraded() || (snapshot != null && snapshot.degraded()),
+                scopeDegraded || console.degraded() || (snapshot != null && snapshot.degraded()),
                 snapshot != null && snapshot.truncated(),
                 snapshot != null && snapshot.lost(),
                 snapshot == null ? 0 : snapshot.recordTruncations());

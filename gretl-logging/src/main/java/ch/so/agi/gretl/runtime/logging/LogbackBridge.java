@@ -52,8 +52,25 @@ public final class LogbackBridge implements AutoCloseable {
         appender.start();
         root.addAppender(appender);
         SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
+        java.util.logging.Logger.getLogger("").addHandler(new OriginJulBridge(pipeline));
         return new LogbackBridge(loggerContext, appender);
+    }
+
+    /** A relayed JUL record cannot acquire the receiving thread's work identity. */
+    private static final class OriginJulBridge extends SLF4JBridgeHandler {
+        private final LoggingPipeline pipeline;
+        OriginJulBridge(LoggingPipeline pipeline) { this.pipeline = pipeline; }
+        @Override public void publish(java.util.logging.LogRecord record) {
+            if (record != null && record.getLongThreadID() != Thread.currentThread().threadId()) {
+                LogContext context = pipeline.context();
+                try (var scope = pipeline.openScope(new ch.so.agi.gretl.runtime.api.ExecutionIdentity(
+                        context.runId(), context.jobName(), Optional.empty(), Optional.empty()), Optional.empty())) {
+                    super.publish(record);
+                }
+            } else {
+                super.publish(record);
+            }
+        }
     }
 
     @Override
@@ -110,7 +127,8 @@ public final class LogbackBridge implements AutoCloseable {
                 }
                 pipeline.libraryEvent(fromLogback(event.getLevel()),
                         event.getLoggerName(), event.getFormattedMessage(),
-                        failure(event.getThrowableProxy()));
+                        failure(event.getThrowableProxy()),
+                        LibraryIdentity.capture(event.getMDCPropertyMap(), pipeline.context()), event.getInstant());
             } catch (Throwable ignored) {
                 // A library logging failure must never recurse into logging or fail the task.
             }

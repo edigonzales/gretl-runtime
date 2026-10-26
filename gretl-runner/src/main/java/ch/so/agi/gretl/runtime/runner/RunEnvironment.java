@@ -24,6 +24,7 @@ final class RunEnvironment {
     private final AtomicInteger invocationCounter = new AtomicInteger();
     private boolean diagnosticsTruncated;
     private boolean open = true;
+    private boolean scopeDegraded;
 
     RunEnvironment(RunInput input, JobDefinition definition, ExecutionPlan plan,
                    WorkspaceManager.Workspace workspace) {
@@ -104,6 +105,34 @@ final class RunEnvironment {
     ExecutionIdentity identity(String taskId, String invocationId) {
         return new ExecutionIdentity(runId(), jobName(),
                 Optional.ofNullable(taskId), Optional.ofNullable(invocationId));
+    }
+
+    RunEventSink.Scope openScope(ExecutionIdentity identity, Optional<String> operationId) {
+        try {
+            RunEventSink.Scope delegate = Objects.requireNonNull(input.eventSink().openScope(identity, operationId));
+            return new RunEventSink.Scope() {
+                private final Thread owner = Thread.currentThread();
+                private boolean closed;
+                @Override public void close() {
+                    if (closed) return;
+                    if (Thread.currentThread() != owner) { scopeFailed(); return; }
+                    closed = true;
+                    try { delegate.close(); }
+                    catch (RuntimeException failure) { scopeFailed(); }
+                }
+            };
+        } catch (RuntimeException failure) {
+            scopeFailed();
+            return RunEventSink.Scope.NO_OP;
+        }
+    }
+
+    private void scopeFailed() {
+        if (scopeDegraded) return;
+        scopeDegraded = true;
+        emit("gretl.logging.degraded", LogLevel.WARN, identity(null, null), Optional.empty(),
+                "logging", "", 0, "Logging-Scope konnte nicht sicher gebunden oder geschlossen werden.",
+                Map.of("logging.scope", "failed"), Optional.empty());
     }
 
     String nextInvocationId() {

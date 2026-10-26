@@ -29,6 +29,22 @@ final class ExternalPackageFixture {
                 "<dependency><groupId>" + group + "</groupId><artifactId>helper</artifactId><version>1.0</version></dependency>"
                 + "<dependency><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-api</artifactId><version>0.1.0-SNAPSHOT</version><scope>provided</scope></dependency>");
     }
+    Path loggingProvider() throws Exception {
+        Path runtime = Path.of("../gretl-dist/target/dist/lib/runtime").toAbsolutePath().normalize();
+        Path api = Path.of("../gretl-api/target/gretl-api-0.1.0-SNAPSHOT.jar").toAbsolutePath().normalize();
+        String classpath;
+        try (var files = Files.list(runtime)) {
+            classpath = files.filter(p -> p.toString().endsWith(".jar")).map(Path::toString)
+                    .collect(java.util.stream.Collectors.joining(java.io.File.pathSeparator));
+        }
+        Path classes = compile("external/logging/ScopeProvider.java",
+                Files.readString(Path.of("src/test/resources/logging/ScopeProvider.java")), api + java.io.File.pathSeparator + classpath);
+        return publish("logging-provider", classes,
+                Map.of("META-INF/services/ch.so.agi.gretl.runtime.api.OperationProvider", "external.logging.ScopeProvider\n"),
+                "<dependency><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-api</artifactId><version>0.1.0-SNAPSHOT</version><scope>provided</scope></dependency>"
+                + "<dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>2.0.20</version><scope>provided</scope></dependency>"
+                + "<dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.6.5</version><scope>provided</scope></dependency>");
+    }
     String coordinate() { return group + ":external-file-size:1.0"; }
     String helperCoordinate() { return group + ":helper:1.0"; }
     Path pollution() throws Exception {

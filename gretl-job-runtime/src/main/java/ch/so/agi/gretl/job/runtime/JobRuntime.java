@@ -295,11 +295,17 @@ public final class JobRuntime {
                     .keepWork(config.keepWork())
                     .clock(clock)
                     .monotonicClock(SystemMonotonicClock.INSTANCE)
-                    .eventSink(event -> {
-                        if ("gretl.run.finished".equals(event.eventName())) {
-                            terminal[0] = event;
-                        } else {
-                            logging.emit(event);
+                    .eventSink(new ch.so.agi.gretl.runtime.runner.RunEventSink() {
+                        @Override public void emit(RunEvent event) {
+                            if ("gretl.run.finished".equals(event.eventName())) {
+                                terminal[0] = event;
+                            } else {
+                                logging.emit(event);
+                            }
+                        }
+                        @Override public Scope openScope(ch.so.agi.gretl.runtime.api.ExecutionIdentity identity,
+                                                         Optional<String> operationId) {
+                            return logging.openScope(identity, operationId);
                         }
                     })
                     .secretResolver(secretResolver)
