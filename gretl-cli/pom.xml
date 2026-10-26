@@ -11,8 +11,13 @@
   <artifactId>gretl-cli</artifactId>
   <packaging>jar</packaging>
   <name>GRETL Runtime CLI</name>
-  <description>Command line, runtime configuration, help, run reports and job orchestration.</description>
+  <description>Command dispatch, authoring help and packaging over the shared job runtime.</description>
   <dependencies>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-job-runtime</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
       <artifactId>gretl-api</artifactId>
@@ -40,7 +45,13 @@
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
-      <artifactId>gretl-basic-tasks</artifactId>
+      <artifactId>gretl-io-tasks</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-database-tasks</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

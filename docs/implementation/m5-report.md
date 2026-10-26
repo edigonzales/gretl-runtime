@@ -1,5 +1,8 @@
 # M5-Prüfbericht: Script-MVP und Anwenderoberfläche
 
+> Historischer Meilensteinbericht: Aussagen und Modulnamen gelten für den hier
+> dokumentierten Commit. Aktueller Zuschnitt: [Modulgrenzen](module-boundaries.md).
+
 > **Historischer M5-Bericht.** M6 ist inzwischen implementiert; der aktuelle
 > Stufe-C-Bericht steht in [m6-report.md](m6-report.md).
 

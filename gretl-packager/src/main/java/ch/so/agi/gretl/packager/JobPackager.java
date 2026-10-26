@@ -35,31 +35,28 @@ public final class JobPackager {
                     PackagerMessages.format("package.runtimeVersion",
                             descriptor.runtimeVersion(), packagerVersion));
         }
-        JobCompiler.CompiledJob compiled = new JobCompiler().compile(descriptor);
-        List<Path> classpath = new ArrayList<>(currentClasspath());
-        List<PackageDescriptor.Dependency> missing = descriptor.dependencies().stream()
-                .filter(dependency -> !isOnClasspath(dependency, classpath))
-                .toList();
-        classpath.addAll(new MavenArtifactResolver().resolve(missing));
-        return new JobPackageBuilder(classpath, packagerVersion)
+        Path catalog = catalogFile();
+        List<ResolvedArtifact> selected = new PackageCatalog(catalog, descriptor.runtimeVersion()).select(descriptor);
+        List<Path> classpath = selected.stream().map(ResolvedArtifact::file).toList();
+        JobCompiler.CompiledJob compiled = new JobCompiler().compile(descriptor, classpath);
+        java.util.Map<Path, PackageDescriptor.Dependency> identities = new java.util.LinkedHashMap<>();
+        selected.forEach(artifact -> identities.put(artifact.file(), artifact.identity()));
+        return new JobPackageBuilder(classpath, packagerVersion, identities)
                 .build(descriptor, compiled, output);
     }
 
-    private static boolean isOnClasspath(PackageDescriptor.Dependency dependency,
-                                         List<Path> classpath) {
-        String name = dependency.artifactId() + "-" + dependency.version();
-        for (Path path : classpath) {
-            String fileName = path.getFileName() == null ? "" : path.getFileName().toString();
-            if (fileName.equals(dependency.artifactId() + ".jar")
-                    || fileName.startsWith(name)
-                    || (fileName.endsWith(".jar")
-                    && fileName.contains(dependency.artifactId()))) {
-                return true;
-            }
-        }
-        return false;
+    static Path catalogFile() throws PackageException {
+        String configured = System.getProperty("gretl.packager.catalog");
+        if (configured != null) return Path.of(configured);
+        try {
+            Path jar = Path.of(JobPackager.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            Path catalog = jar.getParent().getParent().getParent().resolve("package-catalog.json");
+            if (Files.isRegularFile(catalog)) return catalog;
+        } catch (Exception ignored) { }
+        throw new PackageException("PACKAGE_CATALOG_MISSING", "Use the candidate distribution or set gretl.packager.catalog explicitly");
     }
 
+    /** Diagnostic utility only; never used to select a package. */
     public static List<Path> currentClasspath() {
         String value = System.getProperty("java.class.path", "");
         List<Path> result = new ArrayList<>();

@@ -1,5 +1,8 @@
 # M0-Prüfbericht — qualifizierter Anfangsbestand
 
+> Historischer Meilensteinbericht: Aussagen und Modulnamen gelten für den hier
+> dokumentierten Commit. Aktueller Zuschnitt: [Modulgrenzen](module-boundaries.md).
+
 > **Historische Testbaugruppe.** `gretl-m0-qualification` wurde nach M6 aus
 > dem dauerhaften Build entfernt. Die API-Artefaktprüfung wird seitdem im
 > `gretl-dist`-Integrationstest gegen das ausgelieferte JAR ausgeführt.

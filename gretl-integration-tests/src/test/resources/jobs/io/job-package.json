@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 2,
+  "name": "io",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [
+    "io"
+  ],
+  "standardFunctions": false,
+  "resources": [
+    "LICENSE-sogis-gretl.txt",
+    "XslTransformerFile",
+    "XslTransformerFileSet",
+    "XslTransformerResource",
+    "download.md",
+    "foo.xml.gz",
+    "payload.txt",
+    "payload.zip",
+    "test.xtf.zip"
+  ],
+  "dependencies": []
+}

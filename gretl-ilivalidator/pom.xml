@@ -54,6 +54,10 @@
       <version>1.4.1</version>
     </dependency>
     <dependency>
+      <groupId>ch.interlis</groupId>
+      <artifactId>iox-ili</artifactId>
+    </dependency>
+    <dependency>
       <groupId>ch.so.agi.gretl</groupId>
       <artifactId>gretl-runner</artifactId>
       <version>${project.version}</version>
@@ -68,6 +72,23 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>production-module-boundary</id>
+            <phase>validate</phase><goals><goal>enforce</goal></goals>
+            <configuration><rules><bannedDependencies>
+              <searchTransitive>true</searchTransitive>
+              <message>Production dependencies inside GRETL are limited to API and i18n; test dependencies remain separate.</message>
+              <excludes><exclude>ch.so.agi.gretl:*:*:*:compile</exclude><exclude>ch.so.agi.gretl:*:*:*:runtime</exclude><exclude>ch.so.agi.gretl:*:*:*:provided</exclude></excludes>
+              <includes><include>ch.so.agi.gretl:gretl-api</include><include>ch.so.agi.gretl:gretl-i18n</include></includes>
+            </bannedDependencies></rules></configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>

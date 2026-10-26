@@ -30,6 +30,9 @@ public final class EventJson {
         result.put("message", event.message());
         result.put("command_id", event.commandId());
         result.put("locale", context.locale().toLanguageTag());
+        if (event.attributes().containsKey("correlation.id")) {
+            result.put("correlation_id", event.attributes().get("correlation.id"));
+        }
         event.runId().ifPresent(value -> result.put("run_id", value.toString()));
         event.jobName().ifPresent(value -> result.put("job_name", value));
         event.taskId().ifPresent(value -> result.put("task_id", value));

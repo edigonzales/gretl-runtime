@@ -396,3 +396,17 @@ Diagnose-/Invocationdetails im Bericht sind begrenzt, damit eine Action mit viel
 M0: Logging-Backend/Providerbestand mit qualifizieren; EHI-Bridgefähigkeit prüfen, keinen Stack verlieren. M1: Event-/Contextgrenze und deterministische Lifecyclezählung in Java. M2: echte Groovyquellen, `println`, innerer ctx.run-Kontext und Fehlerpositionen. M3: Encoder, Redaction, Datei-/Konsolenpfad, HTTP-/SQLdetails, Last-/Fehlersenkenprüfungen. M4: reale EHI-/Ioxfelder und kontrollierte Listenerlebensdauer. M5: Fehlerbehebung anhand der tatsächlichen Anwenderausgabe. M6: dieselben Logs, Quellen und Provider im Job-JAR. OTel-Backendintegration bleibt späterer eigener Auftrag.
 
 Nachweise: **TC-L01 bis TC-L24** aus Kapitel 09 nach deren Lieferstufenspalte. A/B-Logging ist MVP-Pflicht; C und das spätere OTel-Profil werden nur bei tatsächlicher Lieferung geprüft. Ein optisch schönes Beispiel-JSON oder eine kompilierte Logger-SPI ist kein bestandener Integrationstest. Tatsächlicher Stand dieser Spezifikationsarbeit: [17](17-findings-und-pruefprotokoll.md).
+
+### Präzisierung des MVP-Nachweises für Korrelation und Abschlusspfad
+
+`runtime.correlationId` beziehungsweise sein Startadapter-Fallback erscheint als
+`correlation_id` im JSON-Ereignis und als `identity.correlationId` im Runbericht.
+Der gemeinsame Logkontext trägt zusätzlich das redigierte Attribut
+`correlation.id` für Text-/Bibliotheksausgaben. Ein Provider darf diesen Wert
+nicht überschreiben. Ohne Wert bleibt das Feld abwesend.
+
+Der SIGTERM-Hook fordert Cancellation an und wartet auf den bereits laufenden
+Abschluss; er führt selbst weder Tasks noch Cleanup oder Berichtserstellung aus.
+Er teilt dasselbe monotone 30-Sekunden-Budget mit Job-Cleanup und Flush. Der
+fachliche Bericht kann `CANCELLED` mit Code 20 enthalten, während das
+Betriebssystem für den SIGTERM-beendeten Prozess 143 meldet.

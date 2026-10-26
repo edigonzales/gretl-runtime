@@ -22,66 +22,6 @@
     </repository>
   </repositories>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>ch.interlis</groupId>
-        <artifactId>ili2c-core</artifactId>
-        <version>${ili2c.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.interlis</groupId>
-        <artifactId>ili2c-tool</artifactId>
-        <version>${ili2c.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.interlis</groupId>
-        <artifactId>iox-ili</artifactId>
-        <version>${iox-ili.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.interlis</groupId>
-        <artifactId>ili2pg</artifactId>
-        <version>${ili2pg.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.interlis</groupId>
-        <artifactId>ili2gpkg</artifactId>
-        <version>${ili2gpkg.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi</artifactId>
-        <version>${poi.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi-ooxml</artifactId>
-        <version>${poi.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>${commons-io.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
@@ -190,25 +130,37 @@
       <groupId>io.github.sogis</groupId>
       <artifactId>ilivalidator-custom-functions</artifactId>
       <version>${ilivalidator-custom-functions.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.github.sogis</groupId>
       <artifactId>ilivalidator-custom-functions-geometries</artifactId>
       <version>${ilivalidator-custom-functions-geometries.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.geowerkstatt.ilivalidator.extensions.functions</groupId>
       <artifactId>geow-interlis-functions</artifactId>
       <version>${geow-interlis-functions.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.geowerkstatt.ilivalidator.extensions.functions</groupId>
       <artifactId>interlis-functions-ngk-so</artifactId>
       <version>${interlis-functions-ngk-so.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <!-- These engines open PostgreSQL through DriverManager; the task module
+         must provide its driver even when packaged without database-tasks. -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.duckdb</groupId>
@@ -234,4 +186,57 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <testResources>
+      <testResource><directory>src/test/resources</directory></testResource>
+      <testResource><directory>src/standard-functions/resources</directory></testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>production-module-boundary</id>
+            <phase>validate</phase><goals><goal>enforce</goal></goals>
+            <configuration><rules><bannedDependencies>
+              <searchTransitive>true</searchTransitive>
+              <message>Production dependencies inside GRETL are limited to API and i18n; test dependencies remain separate.</message>
+              <excludes><exclude>ch.so.agi.gretl:*:*:*:compile</exclude><exclude>ch.so.agi.gretl:*:*:*:runtime</exclude><exclude>ch.so.agi.gretl:*:*:*:provided</exclude></excludes>
+              <includes><include>ch.so.agi.gretl:gretl-api</include><include>ch.so.agi.gretl:gretl-i18n</include></includes>
+            </bannedDependencies></rules></configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>standard-validation-function-selection</id>
+            <phase>package</phase><goals><goal>jar</goal></goals>
+            <configuration>
+              <classifier>standard-functions</classifier>
+              <classesDirectory>${project.basedir}/src/standard-functions/resources</classesDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>independent-validator-runtime-classpath</id>
+            <phase>prepare-package</phase><goals><goal>build-classpath</goal></goals>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <outputFile>${project.build.directory}/runtime-classpath.txt</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

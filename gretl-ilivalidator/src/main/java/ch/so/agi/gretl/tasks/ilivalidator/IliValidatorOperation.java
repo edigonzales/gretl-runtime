@@ -163,7 +163,13 @@ public final class IliValidatorOperation {
             System.setErr(new java.io.PrintStream(console, true, StandardCharsets.UTF_8));
             boolean valid;
             try {
+                settings.setTransientObject(ch.interlis.iox_j.validator.Validator.CONFIG_CUSTOM_FUNCTIONS,
+                        selectedFunctions());
                 valid = Validator.runValidation(data.toString(), settings);
+                if (listener.events().stream().anyMatch(event -> event.message().contains("Function")
+                        && event.message().contains("is not yet implemented"))) {
+                    throw new IllegalArgumentException("Required INTERLIS function has no implementation; see validation report");
+                }
             } catch (RuntimeException exception) {
                 listener.addSynthetic(exception);
                 writeReport(report, listener, data, models, console.toString(StandardCharsets.UTF_8));
@@ -216,6 +222,41 @@ public final class IliValidatorOperation {
             return new ValidationResult(data, report, listener.warnings());
         }
 
+        /** Use IOX's existing startup selection and Java services without
+         * importing the format-task module or adding DSL options. */
+        private static Map<String, Class<?>> selectedFunctions() {
+            var plugins = new java.util.ArrayList<ch.interlis.iox_j.plugins.IoxPlugin>();
+            String selected = System.getProperty("ch.ehi.iox-ili.pluginClasses");
+            if (selected != null) {
+                for (String name : selected.split(",", -1)) {
+                    if (name.isBlank()) continue;
+                    try {
+                        plugins.add(Class.forName(name.strip(), true, IliValidatorOperation.class.getClassLoader())
+                                .asSubclass(ch.interlis.iox_j.plugins.IoxPlugin.class).getDeclaredConstructor().newInstance());
+                    } catch (ReflectiveOperationException | LinkageError exception) {
+                        throw new IllegalArgumentException("Cannot load selected IOX plugin " + name, exception);
+                    }
+                }
+            } else {
+                try {
+                    java.util.ServiceLoader.load(ch.interlis.iox_j.plugins.IoxPlugin.class,
+                            IliValidatorOperation.class.getClassLoader()).forEach(plugins::add);
+                } catch (java.util.ServiceConfigurationError | LinkageError exception) {
+                    throw new IllegalArgumentException("Cannot load selected IOX service: " + exception.getMessage(), exception);
+                }
+            }
+            Map<String, Class<?>> functions = new java.util.LinkedHashMap<>();
+            for (var plugin : plugins) {
+                if (!(plugin instanceof ch.interlis.iox_j.validator.InterlisFunction function)) continue;
+                String name = function.getQualifiedIliName();
+                if (name == null || name.isBlank()) throw new IllegalArgumentException("Selected IOX function has no qualified name: " + plugin.getClass().getName());
+                Class<?> previous = functions.putIfAbsent(name, plugin.getClass());
+                if (previous != null) throw new IllegalArgumentException("Duplicate qualified INTERLIS function " + name
+                        + ": " + previous.getName() + " and " + plugin.getClass().getName());
+            }
+            return java.util.Collections.unmodifiableMap(functions);
+        }
+
         private static DiagnosticArtifact artifact(Path report) {
             return new DiagnosticArtifact("validation-report", report,
                     "text/plain", true);
@@ -260,8 +301,11 @@ public final class IliValidatorOperation {
             if (event == null) {
                 return;
             }
-            events.add(new CapturedEvent(event.getEventKind(),
-                    event.getEventMsg() == null ? "" : event.getEventMsg(),
+            String message = event.getEventMsg() == null ? "" : event.getEventMsg();
+            if (event instanceof ch.interlis.iox_j.logging.LogEventImpl iox && iox.getSourceObjectXtfId() != null) {
+                message = "tid " + iox.getSourceObjectXtfId() + ": " + message;
+            }
+            events.add(new CapturedEvent(event.getEventKind(), message,
                     event.getOrigin() == null ? "" : event.getOrigin().toString(),
                     event.getException() == null ? null
                             : event.getException().getClass().getName() + ": "

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 2,
+  "name": "minimal-action",
+  "version": "0.1.0-SNAPSHOT",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [],
+  "standardFunctions": false,
+  "sources": [],
+  "resources": ["message.txt"],
+  "dependencies": []
+}

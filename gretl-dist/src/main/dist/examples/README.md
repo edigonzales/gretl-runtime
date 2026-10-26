@@ -19,3 +19,22 @@
   environment or file secret source.
 
 These examples contain no production credentials and no hidden test server.
+
+## Package selection
+
+The existing SQL and IliValidator descriptors use schema 1, retaining the full
+qualified standard catalog. Schema 2 accepts `taskModules` (`io`, `database`,
+`interlis`, `ilivalidator`) and `standardFunctions` (default false). Missing or
+empty modules select no standard tasks. External extensions must be declared
+as Maven coordinates in `dependencies` before compilation.
+
+`minimal-action/job-package.json` is an executable schema-2 example without
+standard task engines:
+
+```sh
+./bin/gretl package examples/minimal-action/job-package.json --output /tmp/minimal.jar
+java -jar /tmp/minimal.jar --param output=/tmp/minimal-result.txt
+```
+
+The packaged job needs Java 25; Maven is only an authoring tool. Embedded
+`META-INF/gretl/dependencies.json` records actual Maven inputs and hashes.

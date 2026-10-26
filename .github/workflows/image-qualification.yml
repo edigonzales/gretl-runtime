@@ -1,0 +1,67 @@
+name: explicit IMAGE qualification
+
+# Prepared only: never part of push, release or the current mandatory JAR gates.
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: 'Explicit candidate product image reference (prefer digest)'
+        required: true
+        type: string
+      launcher:
+        description: 'Absolute product launcher inside that image'
+        required: true
+        default: /opt/gretl/bin/gretl
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Prepare explicitly requested image and service network
+        env:
+          PRODUCT_IMAGE: ${{ inputs.image }}
+        run: |
+          docker pull "$PRODUCT_IMAGE"
+          docker network create gretl-image-qualification
+      - name: Run common scenarios and independent assertions in IMAGE mode
+        env:
+          PRODUCT_IMAGE: ${{ inputs.image }}
+          PRODUCT_LAUNCHER: ${{ inputs.launcher }}
+        run: |
+          ./mvnw -B -Pgeotools-probe,backing-services clean verify \
+            -Dgretl.test.executionMode=IMAGE \
+            "-Dgretl.test.image=$PRODUCT_IMAGE" \
+            "-Dgretl.test.imageLauncher=$PRODUCT_LAUNCHER" \
+            -Dgretl.test.imageNetwork=gretl-image-qualification \
+            "-Dgretl.test.imageUser=$(id -u):$(id -g)" \
+            -Dgretl.test.imageExtraHost=services:host-gateway
+      - name: Preserve qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: explicit-image-evidence-${{ github.sha }}
+          path: |
+            **/target/surefire-reports/
+            **/target/failsafe-reports/
+            **/target/job-evidence/**/execution.json
+            **/target/job-evidence/**/report.json
+            **/target/job-evidence/**/*.events.jsonl
+            **/target/job-evidence/**/*.stdout.log
+            **/target/job-evidence/**/*.stderr.log
+            **/target/job-evidence/**/output/
+            **/target/job-evidence/**/package-inventory.json
+            **/target/service-evidence/
+      - name: Remove service network
+        if: always()
+        run: docker network rm gretl-image-qualification

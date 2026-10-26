@@ -45,7 +45,7 @@ class JobCompilerTest {
                 """);
 
         PackageDescriptor packageDescriptor = PackageDescriptor.load(descriptor);
-        JobCompiler.CompiledJob compiled = new JobCompiler().compile(packageDescriptor);
+        JobCompiler.CompiledJob compiled = new JobCompiler().compile(packageDescriptor, JobPackager.currentClasspath());
 
         assertEquals("job", compiled.entryClass());
         assertTrue(compiled.classes().containsKey("job.class"));

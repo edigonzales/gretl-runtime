@@ -1,0 +1,62 @@
+[
+  {
+    "url": "https://models.geo.admin.ch/CH/CHBase_Part1_GEOMETRY_V1.ili",
+    "source": "upstream download",
+    "file": "CHBase_Part1_GEOMETRY_V1.ili",
+    "sha256": "f6979b3e349ddb30601a01a6d0e03c5285add8cc63c6f3d99b72101e16a82fbd"
+  },
+  {
+    "url": "https://models.geo.admin.ch/CH/CHBase_Part4_ADMINISTRATIVEUNITS_V1.ili",
+    "source": "upstream download",
+    "file": "CHBase_Part4_ADMINISTRATIVEUNITS_V1.ili",
+    "sha256": "bc097a21f8aef04adecf8603c0547a44003bc4568a18a9d88a464c90f53c8b5f"
+  },
+  {
+    "url": "https://models.interlis.ch/refhb23/Units-20120220.ili",
+    "source": "upstream download",
+    "file": "Units-20120220.ili",
+    "sha256": "45a233d3f2a681f2573965fb9ee6a98d279bdadbca94107874a22aa0c733a92d"
+  },
+  {
+    "url": "https://models.interlis.ch/refhb23/CoordSys-20151124.ili",
+    "source": "versioned snapshot of existing official-repository cache; upstream HTTP Error 404: Not Found",
+    "file": "CoordSys-20151124.ili",
+    "sha256": "8d097d71f82745e4ab07d2ccd1b70ed0c7f3e54e97e7f25855eb4c604fd51fd4"
+  },
+  {
+    "url": "https://models.interlis.ch/refhb23/Time-20200219.ili",
+    "source": "upstream download",
+    "file": "Time-20200219.ili",
+    "sha256": "cfb931287c3b5f542eafc942f0fede0058d169011374162fe98fd03861546ea7"
+  },
+  {
+    "url": "https://models.interlis.ch/refhb23/INTERLIS_ext.ili",
+    "source": "upstream download",
+    "file": "INTERLIS_ext.ili",
+    "sha256": "52c8c76c076ed0b9a169816b22c5c56385a2cbfd1bbee67c28b8a856e5505f65"
+  },
+  {
+    "url": "https://models.interlis.ch/refhb23/Text.ili",
+    "source": "upstream download",
+    "file": "Text.ili",
+    "sha256": "d26284bcdf67bcaf3622238a48b4a7261c1be58b64c773fbee3d03d2c33336ff"
+  },
+  {
+    "url": "https://models.interlis.ch/tools/MinimalRuntimeSystem01.ili",
+    "source": "upstream download",
+    "file": "MinimalRuntimeSystem01.ili",
+    "sha256": "27f6fd79ed6fcc650d2b7dea98e68875d3261518ff82c7a78f97a986fe5357eb"
+  },
+  {
+    "url": "https://models.geo.admin.ch/CH/CHBase_Part2_LOCALISATION_V1.ili",
+    "source": "versioned snapshot of official-repository cache",
+    "file": "CHBase_Part2_LOCALISATION_V1.ili",
+    "sha256": "dd8e36f02d3f6b12b0f5fd3a7e4b2276cea7bcfecacdd6a489b86ee400f880c7"
+  },
+  {
+    "url": "https://models.geo.admin.ch/CH/CHBase_Part3_CATALOGUEOBJECTS_V1.ili",
+    "source": "versioned snapshot of official-repository cache",
+    "file": "CHBase_Part3_CATALOGUEOBJECTS_V1.ili",
+    "sha256": "ea993be9b0f92ab971edf3df9237126f5bc051619e90f342b971e50597c23654"
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 2,
+  "name": "functions",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [
+    "interlis",
+    "ilivalidator"
+  ],
+  "standardFunctions": true,
+  "resources": [
+    "FunctionProbe.ili",
+    "LICENSE-sogis-gretl.txt",
+    "SO_FunctionsExt.ili"
+  ],
+  "dependencies": []
+}

@@ -87,6 +87,19 @@ class RunControlTest {
     }
 
     @Test
+    void completionUsesOneIndependentThirtySecondBudget() {
+        FakeMonotonicClock clock = new FakeMonotonicClock();
+        RunControl control = new RunControl(clock, Optional.of(Duration.ofSeconds(1)));
+        clock.advance(Duration.ofSeconds(2));
+        var completion = control.completionBudget();
+        assertEquals(Duration.ofSeconds(30), completion.remaining().orElseThrow());
+        clock.advance(Duration.ofSeconds(12));
+        assertEquals(Duration.ofSeconds(18), control.completionBudget().remaining().orElseThrow());
+        clock.advance(Duration.ofSeconds(18));
+        assertTrue(completion.expired());
+    }
+
+    @Test
     void noTimeoutMeansUnlimitedBudget() {
         RunControl control = new RunControl(new FakeMonotonicClock(), Optional.empty());
         assertTrue(control.remaining().isEmpty());

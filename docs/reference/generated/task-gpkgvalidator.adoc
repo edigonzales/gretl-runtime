@@ -70,4 +70,8 @@
 | Task bei Validierungsfehler abbrechen
 | [.optional]#nein#
 
+| [.dsl-signature]#*tableName* = text#
+| Zu validierender GeoPackage-Layer
+| [.required]#ja#
+
 |===

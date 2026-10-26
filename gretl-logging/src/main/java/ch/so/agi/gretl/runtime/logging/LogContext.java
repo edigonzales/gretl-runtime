@@ -7,7 +7,8 @@ import java.util.UUID;
 /** Stable process/run identity shared by all managed sinks. */
 public record LogContext(
         String commandId, UUID runId, String jobName, String runtimeVersion,
-        Optional<String> deploymentEnvironment, Locale locale) {
+        Optional<String> deploymentEnvironment, Locale locale,
+        Optional<String> correlationId) {
 
     public LogContext {
         if (commandId == null || commandId.isBlank()) {
@@ -22,6 +23,20 @@ public record LogContext(
         }
         java.util.Objects.requireNonNull(deploymentEnvironment, "deploymentEnvironment");
         java.util.Objects.requireNonNull(locale, "locale");
+        java.util.Objects.requireNonNull(correlationId, "correlationId");
+        correlationId.ifPresent(value -> {
+            if (value.isBlank() || value.length() > 256
+                    || value.chars().anyMatch(Character::isISOControl)) {
+                throw new IllegalArgumentException("Invalid correlationId");
+            }
+        });
+    }
+
+    public LogContext(String commandId, UUID runId, String jobName,
+                      String runtimeVersion, Optional<String> deploymentEnvironment,
+                      Locale locale) {
+        this(commandId, runId, jobName, runtimeVersion, deploymentEnvironment,
+                locale, Optional.empty());
     }
 
     public LogContext(String commandId, UUID runId, String jobName,

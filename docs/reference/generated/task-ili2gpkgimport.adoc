@@ -6,6 +6,10 @@
 | Database file
 | [.required]#ja#
 
+| [.dsl-signature]#*defaultSrsCode* = text#
+| Default SRS code
+| [.optional]#nein#
+
 | [.dsl-signature]#*coalesceJson* = boolean#
 | Coalesce [.acronym]#JSON# structures
 | [.optional]#nein#

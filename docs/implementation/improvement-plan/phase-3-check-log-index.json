@@ -1,0 +1,134 @@
+[
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/ci-751afb8-cancelled.log",
+    "sha256": "1ce740f346990b3f9d8b8652ad796d2a1aa493d54a28c18be1a14ba3aab11236",
+    "bytes": 565966,
+    "status": "inspect log"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/distribution-development.log",
+    "sha256": "22003cd36bf073800a11a75ce683b7787bcb785df8a7a003f252a68d25237d85",
+    "bytes": 40149,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/external-packages-2.log",
+    "sha256": "4fb7d81215776e16f90951454b396483110f0d1f1aeda3f83518557dee37165f",
+    "bytes": 98691,
+    "status": "FAILURE"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/external-packages.log",
+    "sha256": "9ae2d71d6b2a754dad4016c8edc6677b61602c0510f65d80ddad03d9765cb15e",
+    "bytes": 100087,
+    "status": "FAILURE"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/final-targeted.log",
+    "sha256": "4842fd60730a71d9b86df82fb12b3c50cf77958978d209e39239a78d74ca89d0",
+    "bytes": 92291,
+    "status": "FAILURE"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/isolated-packages.log",
+    "sha256": "276f5d4af11b037c1137f9545787d6f7e2fbd698a85a9e2d7597db087ea4b32b",
+    "bytes": 95387,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/packager-foundation-2.log",
+    "sha256": "f1392d88fec9f9f93d4887b9b1c2f9bbcbe09dd6fcf2ae0f5edafed3381f6212",
+    "bytes": 13993,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/packager-foundation.log",
+    "sha256": "bad6a9a6d86e167f8ee6f891f7560aea5b3ee3029d6681c8d84de57d99097188",
+    "bytes": 17471,
+    "status": "FAILURE"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/packager-unit-all.log",
+    "sha256": "d189d2ab15dd7293bd9ec7998e683b1d022ffa3e61e1716b9625aa9e46a93db3",
+    "bytes": 22472,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/packaging-regressions-2.log",
+    "sha256": "979d82473694b77f74704c1bf0060e07131234e6a3408d4573e126c8857f0d0e",
+    "bytes": 98856,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/packaging-regressions.log",
+    "sha256": "60c9ad1d272166b97c9b08968fd336f1ebf3aba8a435a487d8072d3f5faa80b0",
+    "bytes": 101465,
+    "status": "FAILURE"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/profiles-initial.log",
+    "sha256": "e5683c90ae3515b4e49c27f8a6e3e8fb28a603d0c12d339021cc454f2421bd61",
+    "bytes": 384815,
+    "status": "FAILURE"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/profiles-revision-1.log",
+    "sha256": "367b09425b25641d12f16cebd28f466b69c425c6c071baaf4587539341d97a13",
+    "bytes": 127574,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/profiles.log",
+    "sha256": "5e9de5cf4e761ef51d01fdc53a882976a9196ff37a45edd5b6b3f9da0e1df023",
+    "bytes": 127497,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/selected-isolated-all.log",
+    "sha256": "e5e5a7fff18af086ed5ff4de517564fd1366ca3c35905003416bcf3c1d01c090",
+    "bytes": 146694,
+    "status": "FAILURE"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/selected-local-jobs.log",
+    "sha256": "51d2d62f084b939a7833ddc07b7bca1ff5c5bf630d2857ef4f399657af635846",
+    "bytes": 96015,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/selected-suite-build.log",
+    "sha256": "69bff055dd4c22661f10988439d9afdd32f0f1c171325674df8ed21f554e1fc3",
+    "bytes": 42726,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/standard-initial.log",
+    "sha256": "460c02b83bfe978496cfa85d55f93c1680818e02279e1b7f221e891facc78da2",
+    "bytes": 100495,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/standard-pom-version-error.log",
+    "sha256": "b6037d32a6e101c82b6268ce0021ef3af17d951315fb908e4f15252602776fd5",
+    "bytes": 1021,
+    "status": "FAILURE"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/standard-revision-1.log",
+    "sha256": "abe7a0f78e1bedb2cdb6d707f435214aa45e7ead0c764f0b35e60472095083bb",
+    "bytes": 100438,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/standard.log",
+    "sha256": "a55c8e79435264a4eb1505eb88964c42888a53f2c53586c32afef91792be0207",
+    "bytes": 100447,
+    "status": "SUCCESS"
+  },
+  {
+    "path": "/tmp/gretl-improvement-evidence/phase3/tree-probe.log",
+    "sha256": "dd55395dbf686f3bc4f514a3af0cb22b42d0a9fe8074fc5b85cb35302f0557ff",
+    "bytes": 14660,
+    "status": "SUCCESS"
+  }
+]

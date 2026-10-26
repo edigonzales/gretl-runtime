@@ -1,9 +1,11 @@
 package ch.so.agi.gretl.job;
 
-import ch.so.agi.gretl.cli.GretlCli;
+import ch.so.agi.gretl.job.runtime.JobSource;
+
+import ch.so.agi.gretl.job.runtime.JobRuntime;
 import ch.so.agi.gretl.i18n.LocaleSelection;
 import ch.so.agi.gretl.i18n.Messages;
-import ch.so.agi.gretl.cli.RuntimeInfo;
+import ch.so.agi.gretl.job.runtime.RuntimeInfo;
 import ch.so.agi.gretl.runtime.groovy.DefinitionEnvironment;
 import ch.so.agi.gretl.runtime.groovy.GroovyJobLoader;
 import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
@@ -66,10 +68,10 @@ public final class JobJarMain {
             jobRoot = materialize(metadata, locale);
             PackagedJobSource source = new PackagedJobSource(metadata, jobRoot,
                     JobJarMain.class.getClassLoader(), locale);
-            GretlCli cli = new GretlCli(System.out, System.err, System.getenv(),
+            JobRuntime runtime = new JobRuntime(System.out, System.err, System.getenv(),
                     Path.of("").toAbsolutePath().normalize(),
                     JobJarMain.class.getClassLoader());
-            exit = cli.runPackaged(source, args);
+            exit = runtime.executePackaged(source, args);
         } catch (JobJarException exception) {
             startupError(exception, locale);
         } finally {
@@ -233,7 +235,7 @@ public final class JobJarMain {
         }
     }
 
-    static final class PackagedJobSource implements ch.so.agi.gretl.cli.JobSource {
+    static final class PackagedJobSource implements ch.so.agi.gretl.job.runtime.JobSource {
         private final JobMetadata metadata;
         private final Path jobRoot;
         private final ClassLoader classLoader;

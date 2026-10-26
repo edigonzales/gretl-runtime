@@ -11,11 +11,21 @@
   <artifactId>gretl-job-runtime</artifactId>
   <packaging>jar</packaging>
   <name>GRETL Packaged Job Runtime</name>
-  <description>Entry point and resource materialization for executable job JARs.</description>
+  <description>Shared script and packaged-job execution, configuration and finalization.</description>
   <dependencies>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
-      <artifactId>gretl-cli</artifactId>
+      <artifactId>gretl-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-i18n</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-runner</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -36,6 +46,22 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>production-module-boundary</id>
+            <phase>validate</phase><goals><goal>enforce</goal></goals>
+            <configuration><rules><bannedDependencies>
+              <searchTransitive>true</searchTransitive>
+              <message>Job execution must not depend on CLI or the authoring packager, including transitively.</message>
+              <excludes><exclude>ch.so.agi.gretl:gretl-cli:*:*:compile</exclude><exclude>ch.so.agi.gretl:gretl-cli:*:*:runtime</exclude><exclude>ch.so.agi.gretl:gretl-cli:*:*:provided</exclude><exclude>ch.so.agi.gretl:gretl-packager:*:*:compile</exclude><exclude>ch.so.agi.gretl:gretl-packager:*:*:runtime</exclude><exclude>ch.so.agi.gretl:gretl-packager:*:*:provided</exclude></excludes>
+            </bannedDependencies></rules></configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>

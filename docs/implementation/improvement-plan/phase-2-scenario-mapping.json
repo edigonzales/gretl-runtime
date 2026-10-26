@@ -1,0 +1,1418 @@
+{
+  "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+  "phase": 2,
+  "execution": "JAR; IMAGE nur vorbereitete gemeinsame Szenarien",
+  "scenarios": [
+    {
+      "original": "Av2chTest#transformation_Ok",
+      "jobs": [
+        "Av2ch"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2chTest.java#L14",
+      "originalAssertions": [
+        "assertTrue(resultSize > 580000, \"Size of result file is wrong.\")",
+        "assertTrue(resultString.contains(\"DM01 Interlis Converter\"))",
+        "assertTrue(resultString.contains(\"MODL DM01AVCH24LV95D\"))",
+        "assertTrue(resultString.contains(\"TABL LFP3Nachfuehrung\"))",
+        "assertTrue(resultString.contains(\"OBJE 2540 2514 2611693.294 1233674.211 111.9 1 3 1\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatLocalJobIT#originalAv2chObjectsAndFileSets (single)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Av2chTest#transformationFileSet_Ok",
+      "jobs": [
+        "Av2chFileSet"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2chTest.java#L31",
+      "originalAssertions": [
+        "assertTrue(resultFile1.exists())",
+        "assertTrue(resultFile2.exists())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatLocalJobIT#originalAv2chObjectsAndFileSets (set)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Av2chTest#transformation_Fail",
+      "jobs": [
+        "Av2chFail"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2chTest.java#L44",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatLocalJobIT#originalAv2chObjectsAndFileSets (fail)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Av2geobauTest#simple",
+      "jobs": [
+        "Av2geobau"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2geobauTest.java#L12",
+      "originalAssertions": [
+        "assertTrue(resultFile.exists())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatLocalJobIT#originalAv2geobauSingleAndFileSet (single)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Av2geobauTest#fileSet",
+      "jobs": [
+        "Av2geobauFileSet"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2geobauTest.java#L21",
+      "originalAssertions": [
+        "assertTrue(resultFile1.exists())",
+        "assertTrue(resultFile2.exists())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatLocalJobIT#originalAv2geobauSingleAndFileSet (set)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Csv2ExcelTest#convertCsv_Ok",
+      "jobs": [
+        "Csv2Excel"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Csv2ExcelTest.java#L17",
+      "originalAssertions": [
+        "assertEquals(7, headerRow.getLastCellNum())",
+        "assertEquals(7, dataRow.getLastCellNum())",
+        "assertEquals(308, sheet.getLastRowNum())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatLocalJobIT#originalCsv2ExcelRowsAndHeaders (single)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Csv2ExcelTest#convertEmptyCsv_Ok",
+      "jobs": [
+        "Csv2ExcelEmptyFile"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Csv2ExcelTest.java#L43",
+      "originalAssertions": [
+        "assertEquals(\"egid\", headerRow.getCell(0).getStringCellValue())",
+        "assertEquals(\"xkoordinaten\", headerRow.getCell(1).getStringCellValue())",
+        "assertEquals(0, sheet.getLastRowNum())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatLocalJobIT#originalCsv2ExcelRowsAndHeaders (empty)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "CsvExportTest#exportOk",
+      "jobs": [
+        "CsvExport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvExportTest.java#L32",
+      "originalAssertions": [
+        "assertEquals(\"\\\"t_id\\\",\\\"Aint\\\",\\\"adec\\\",\\\"atext\\\",\\\"aenum\\\",\\\"adate\\\",\\\"atimestamp\\\",\\\"aboolean\\\"\", line)",
+        "assertEquals(\"\\\"1\\\",\\\"2\\\",\\\"3.4\\\",\\\"abc\\\",\\\"\\\",\\\"2013-10-21\\\",\\\"2015-02-16T08:35:45.000\\\",\\\"true\\\"\", line)",
+        "assertEquals(\"\\\"2\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\"\", line)"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalTypedCsvBothBatchSizesAndExactExport",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "CsvImportTest#importOk",
+      "jobs": [
+        "CsvImport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvImportTest.java#L36",
+      "originalAssertions": [
+        "assertEquals(2, rs.getInt(1))",
+        "assertEquals(new BigDecimal(\"3.1\"), rs.getBigDecimal(2))",
+        "assertEquals(\"abc\", rs.getString(3))",
+        "assertEquals(\"rot\", rs.getString(4))",
+        "assertEquals(new java.sql.Date(2017-1900,9-1,21),rs.getDate(5))",
+        "assertEquals(new java.sql.Timestamp(2016-1900,8-1,22,13,15,22,450000000),rs.getTimestamp(6))",
+        "assertTrue(rs.getBoolean(7))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalTypedCsvBothBatchSizesAndExactExport",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "CsvImportTest#importOk_batchSize",
+      "jobs": [
+        "CsvImportBatchSize"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvImportTest.java#L72",
+      "originalAssertions": [
+        "assertEquals(2, rs.getInt(1))",
+        "assertEquals(new BigDecimal(\"3.1\"), rs.getBigDecimal(2))",
+        "assertEquals(\"abc\", rs.getString(3))",
+        "assertEquals(\"rot\", rs.getString(4))",
+        "assertEquals(new java.sql.Date(2017-1900,9-1,21),rs.getDate(5))",
+        "assertEquals(new java.sql.Timestamp(2016-1900,8-1,22,13,15,22,450000000),rs.getTimestamp(6))",
+        "assertTrue(rs.getBoolean(7))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalTypedCsvBothBatchSizesAndExactExport",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "CsvValidatorTest#validationOk",
+      "jobs": [
+        "CsvValidator"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvValidatorTest.java#L17",
+      "originalAssertions": [],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#validatesThroughPublicDsl (csv)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "CsvValidatorTest#validationFail",
+      "jobs": [
+        "CsvValidatorFail"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvValidatorTest.java#L25",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(fileContent.contains(\"CsvModel.Topic12.Class1: tid o2: value <x> is not a number\"))",
+        "assertTrue(fileContent.contains(\"CsvModel.Topic12.Class1: tid o2: value gruen is not a member of the enumeration in attribute attr3\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#invalidCsvNeedsBothBusinessDiagnostics",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "CurlTest#geodienste_Ok",
+      "jobs": [
+        "CurlGeodienste"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CurlTest.java#L38",
+      "originalAssertions": [
+        "assertEquals(\"/data_agg/interlis/import\", recordedRequest.getPath())",
+        "assertEquals(recordedRequest.getHeader(\"Authorization\").split(\" \")[1].trim(), Base64.getEncoder().encodeToString((\"fooUser:barPwd\").getBytes()))",
+        "assertTrue(bodyBufferSize>500L)",
+        "assertTrue(bodyContent.contains(\"name=\\\"topic\\\"\"))",
+        "assertTrue(bodyContent.contains(\"npl_waldgrenzen\"))",
+        "assertTrue(bodyContent.contains(\"name=\\\"lv95_file\\\"; filename=\\\"test.xtf.zip\\\"\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "IoLocalJobIT#originalCurlBasicAuthenticationMultipartBinaryAndBodyFailure",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Multipart-/GZIP-Daten, Pfade, Basic-Auth und Requestgrössen. Download verwendet den README-Snapshot desselben Originalcommits über lokalen HTTP-Server; Körperbytes werden unabhängig geprüft."
+    },
+    {
+      "original": "CurlTest#geodienste_Fail",
+      "jobs": [
+        "CurlGeodienste"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CurlTest.java#L67",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory, variables);\n        })"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "IoLocalJobIT#originalCurlBasicAuthenticationMultipartBinaryAndBodyFailure",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Multipart-/GZIP-Daten, Pfade, Basic-Auth und Requestgrössen. Download verwendet den README-Snapshot desselben Originalcommits über lokalen HTTP-Server; Körperbytes werden unabhängig geprüft."
+    },
+    {
+      "original": "CurlTest#planregister_Ok",
+      "jobs": [
+        "CurlPlanregister"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CurlTest.java#L84",
+      "originalAssertions": [
+        "assertEquals(\"/typo3/api/digiplan\", recordedRequest.getPath())",
+        "assertEquals(recordedRequest.getHeader(\"Authorization\").split(\" \")[1].trim(), Base64.getEncoder().encodeToString((\"fooUser:barPwd\").getBytes()))",
+        "assertTrue(recordedRequest.getBodySize()>600L)"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "IoLocalJobIT#originalCurlBasicAuthenticationMultipartBinaryAndBodyFailure",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Multipart-/GZIP-Daten, Pfade, Basic-Auth und Requestgrössen. Download verwendet den README-Snapshot desselben Originalcommits über lokalen HTTP-Server; Körperbytes werden unabhängig geprüft."
+    },
+    {
+      "original": "CurlTest#downloadFile_Ok",
+      "jobs": [
+        "CurlDownload"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CurlTest.java#L105",
+      "originalAssertions": [
+        "assertTrue(content.contains(\"_GRETL_\"))",
+        "assertTrue(content.contains(\"License\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "IoLocalJobIT#originalCurlBasicAuthenticationMultipartBinaryAndBodyFailure",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Multipart-/GZIP-Daten, Pfade, Basic-Auth und Requestgrössen. Download verwendet den README-Snapshot desselben Originalcommits über lokalen HTTP-Server; Körperbytes werden unabhängig geprüft."
+    },
+    {
+      "original": "DatabaseDocumentExportTest#exportOk",
+      "jobs": [
+        "DatabaseDocumentExport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/DatabaseDocumentExportTest.java#L31",
+      "originalAssertions": [],
+      "inScope": false,
+      "historicallyDisabled": false,
+      "test": null,
+      "status": "ausserhalb vereinbarten Umfangs",
+      "equivalence": "Keine angebotene Operation DatabaseDocumentExport."
+    },
+    {
+      "original": "Db2DbTaskTest#fetchSizeParameterTest",
+      "jobs": [
+        "Db2DbTaskFetchSize"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L39",
+      "originalAssertions": [
+        "assertEquals(2, countDest, \"Rowcount in table source_data must be equal to rowcount in table target_data\")"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#originalTypedFetchSizeChainRelativeSqlAndDestinationDeletion",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte Tabellen: ursprüngliche 2/5 Zeilen und Parameterwerte, bzw. vollständige ursprüngliche Datentypen und 2056-Geometrien; zwei Db2Db-Transfers mit relativen SQL-Dateien und Löschung vorhandener Zielzeile. Schemaqualifikation wird durch den Lease-search_path ersetzt."
+    },
+    {
+      "original": "Db2DbTaskTest#taskChainTest",
+      "jobs": [
+        "Db2DbTaskChain"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L87",
+      "originalAssertions": [
+        "assertEquals(countSrc, countDest,\n                    \"Rowcount in table albums_src must be equal to rowcount in table albums_dest\"\n            )"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#originalTypedFetchSizeChainRelativeSqlAndDestinationDeletion",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte Tabellen: ursprüngliche 2/5 Zeilen und Parameterwerte, bzw. vollständige ursprüngliche Datentypen und 2056-Geometrien; zwei Db2Db-Transfers mit relativen SQL-Dateien und Löschung vorhandener Zielzeile. Schemaqualifikation wird durch den Lease-search_path ersetzt."
+    },
+    {
+      "original": "Db2DbTaskTest#relativePathTest",
+      "jobs": [
+        "Db2DbTaskRelPath"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L116",
+      "originalAssertions": [
+        "assertEquals(countSrc, countDest,\n                    \"Rowcount in table albums_src must be equal to rowcount in table albums_dest\"\n            )"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#originalTypedFetchSizeChainRelativeSqlAndDestinationDeletion",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte Tabellen: ursprüngliche 2/5 Zeilen und Parameterwerte, bzw. vollständige ursprüngliche Datentypen und 2056-Geometrien; zwei Db2Db-Transfers mit relativen SQL-Dateien und Löschung vorhandener Zielzeile. Schemaqualifikation wird durch den Lease-search_path ersetzt."
+    },
+    {
+      "original": "Db2DbTaskTest#deleteDestTableContent",
+      "jobs": [
+        "Db2DbTaskDelTable"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L144",
+      "originalAssertions": [
+        "assertEquals(countSrc, countDest,\n                    \"Rowcount in table albums_src must be equal to rowcount in table albums_dest\"\n            )"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#originalTypedFetchSizeChainRelativeSqlAndDestinationDeletion",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte Tabellen: ursprüngliche 2/5 Zeilen und Parameterwerte, bzw. vollständige ursprüngliche Datentypen und 2056-Geometrien; zwei Db2Db-Transfers mit relativen SQL-Dateien und Löschung vorhandener Zielzeile. Schemaqualifikation wird durch den Lease-search_path ersetzt."
+    },
+    {
+      "original": "Db2DbTaskTest#parameter",
+      "jobs": [
+        "Db2DbParameter"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L169",
+      "originalAssertions": [
+        "assertEquals(2, countDest, \"Rowcount in table src1 must be equal to rowcount in table dest\")"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#positiveFederationAndOriginalScalarAndListParameterResults",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte Tabellen: ursprüngliche 2/5 Zeilen und Parameterwerte, bzw. vollständige ursprüngliche Datentypen und 2056-Geometrien; zwei Db2Db-Transfers mit relativen SQL-Dateien und Löschung vorhandener Zielzeile. Schemaqualifikation wird durch den Lease-search_path ersetzt."
+    },
+    {
+      "original": "Db2DbTaskTest#parameterList",
+      "jobs": [
+        "Db2DbParameterList"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L195",
+      "originalAssertions": [
+        "assertEquals(5, countDest, \"Rowcount in table dest must be equal to the combined rowcount in table src1 and src2\")"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#positiveFederationAndOriginalScalarAndListParameterResults",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte Tabellen: ursprüngliche 2/5 Zeilen und Parameterwerte, bzw. vollständige ursprüngliche Datentypen und 2056-Geometrien; zwei Db2Db-Transfers mit relativen SQL-Dateien und Löschung vorhandener Zielzeile. Schemaqualifikation wird durch den Lease-search_path ersetzt."
+    },
+    {
+      "original": "DbDriverContainedTest#SqliteDriverContainedTest",
+      "jobs": [
+        "DbTasks_SqliteLibsPresent"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/DbDriverContainedTest.java#L27",
+      "originalAssertions": [],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#geoPackageContainsDslSelectedSridAndImportedData",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Echte SQLite-Laufzeit über paketierten GPKG-Import und unabhängige JDBC-Daten-/SRID-Abfrage; keine reine Klassenanwesenheit."
+    },
+    {
+      "original": "DbDriverContainedTest#OracleDriverContainedTest",
+      "jobs": [
+        "DbTasks_OracleLibsPresent"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/DbDriverContainedTest.java#L34",
+      "originalAssertions": [],
+      "inScope": false,
+      "historicallyDisabled": false,
+      "test": null,
+      "status": "ausserhalb vereinbarten Umfangs",
+      "equivalence": "Keine Oracle-Operation bzw. Oracle-Dialekt-Zusage im angebotenen Katalog; SqlExecutor ist ausdrücklich PostgreSQL-fokussiert. Kein Oracle-Treiber-Beipack als Zufalls-Classpathvertrag."
+    },
+    {
+      "original": "FtpUploadTest#(kein aktiver @Test)",
+      "jobs": [
+        "FtpUpload"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/FtpUploadTest.java",
+      "originalAssertions": [],
+      "inScope": true,
+      "historicallyDisabled": true,
+      "test": "ArtifactServicesIT#ftpRoundTripListOverwriteDeleteAndRejectedLogin",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originalmethodenrumpf war historisch ohne aktives @Test. Neue lokale echte FTP-JAR-Fälle prüfen Upload, Listresultat, bytegleichen Download, Löschung und falsche Anmeldung. Originalfall wird nicht nachträglich als historisch ausgeführt gezählt."
+    },
+    {
+      "original": "Gpkg2DxfTest#export_Ok",
+      "jobs": [
+        "Gpkg2Dxf"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Gpkg2DxfTest.java#L27",
+      "originalAssertions": [
+        "assertTrue(Files.exists(filePath), \"Expected file not found: \" + dxfFile)",
+        "assertTrue(content.contains(\"LerchWeberAG\"))",
+        "assertTrue(content.contains(\"2638171.578\"))",
+        "assertTrue(content.contains(\"2619682.201\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatLocalJobIT#convertsGeoPackageUsingIndependentFileChecks (gpkg2dxf)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Versionierter gretl-next-Snapshot derselben Administrativdaten statt ursprünglichem Download: 109/127 Datensätze, LV95 sowie dieselben DXF-Namen, Texte und Koordinaten. Unabhängige DBF/SHP/WKT-/Textprüfung ersetzt die ursprüngliche GeoTools-Java-Projektion."
+    },
+    {
+      "original": "Gpkg2ShpTest#export_Ok",
+      "jobs": [
+        "Gpkg2Shp"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Gpkg2ShpTest.java#L29",
+      "originalAssertions": [
+        "assertEquals(109, featuresSource.getFeatures().size())",
+        "assertEquals(\"CH1903+_LV95\", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString())",
+        "assertEquals(127, featuresSource.getFeatures().size())",
+        "assertEquals(\"CH1903+_LV95\", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatLocalJobIT#convertsGeoPackageUsingIndependentFileChecks (gpkg2shp)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Versionierter gretl-next-Snapshot derselben Administrativdaten statt ursprünglichem Download: 109/127 Datensätze, LV95 sowie dieselben DXF-Namen, Texte und Koordinaten. Unabhängige DBF/SHP/WKT-/Textprüfung ersetzt die ursprüngliche GeoTools-Java-Projektion."
+    },
+    {
+      "original": "GpkgExportTest#exportTableOk",
+      "jobs": [
+        "GpkgExport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgExportTest.java#L44",
+      "originalAssertions": [
+        "assertTrue(rs.next(), \"No results returned from query\")",
+        "assertEquals(\"coord2d\", rs.getString(\"attr\"), \"Attribute value mismatch\")",
+        "assertEquals(\"COORD {C1 -0.22857142857142854, C2 0.5688311688311687}\", iomGeom.toString(), \"Geometry mismatch\")",
+        "assertFalse(rs.next(), \"More than one row returned from query\")"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalShapefileImportAndIndependentExportAttributesGeometryAndCrs (single/multi)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Ursprüngliche Point-WKB, coord2d-Attribut, 2056-SRID, ein und zwei Layer. Unabhängiger GeoPackage-/WKB-Leser prüft die exakten Koordinaten."
+    },
+    {
+      "original": "GpkgExportTest#exportTablesOk",
+      "jobs": [
+        "GpkgExportTables"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgExportTest.java#L78",
+      "originalAssertions": [
+        "assertEquals(\"coord2d\", rs.getString(1))",
+        "assertEquals(\"COORD {C1 -0.22857142857142854, C2 0.5688311688311687}\", iomGeom.toString())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalShapefileImportAndIndependentExportAttributesGeometryAndCrs (single/multi)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Ursprüngliche Point-WKB, coord2d-Attribut, 2056-SRID, ein und zwei Layer. Unabhängiger GeoPackage-/WKB-Leser prüft die exakten Koordinaten."
+    },
+    {
+      "original": "GpkgImportTest#importOk",
+      "jobs": [
+        "GpkgImport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgImportTest.java#L35",
+      "originalAssertions": [
+        "assertTrue(rowCount.next(), \"No row count result returned\")",
+        "assertEquals(1, rowCount.getInt(\"rowcount\"), \"Row count mismatch\")",
+        "assertEquals(3, rsmd.getColumnCount(), \"Column count mismatch\")",
+        "assertTrue(rs.next(), \"No result rows returned\")",
+        "assertEquals(1, rs.getInt(\"fid\"), \"FID mismatch\")",
+        "assertEquals(\"12\", rs.getString(\"idname\"), \"ID name mismatch\")",
+        "assertEquals(\"SRID=2056;POINT(-0.228571428571429 0.568831168831169)\", rs.getString(\"st_asewkt\"), \"Geometry mismatch\")"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalGeoPackageImportCoordinatesAndJsonObjectAndArray",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "GpkgValidatorTest#validationOk",
+      "jobs": [
+        "GpkgValidator"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgValidatorTest.java#L16",
+      "originalAssertions": [],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#validatesThroughPublicDsl (gpkg)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "GpkgValidatorTest#validationFail",
+      "jobs": [
+        "GpkgValidatorFail"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgValidatorTest.java#L24",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(fileContent.contains(\"GpkgModel.Topic1.Attributes: tid o2: value 0 is out of range in attribute art\"))",
+        "assertTrue(fileContent.contains(\"GpkgModel.Topic1.Attributes: tid o2: value <true> is not a number\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#originalGpkgValidatorFailDiagnostics",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "GzipTest#compress_file_Ok",
+      "jobs": [
+        "Gzip"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GzipTest.java#L30",
+      "originalAssertions": [
+        "assertNotNull(fileContent)",
+        "assertTrue(fileContent.contains(\"ili2pg-4.9.0-eb3a0d51869bd2adeeb51fe7aba4b526fe002c1a\"))",
+        "assertTrue(fileContent.contains(\"<Bezeichnung>Römersmattquellen der Wasserversorgung Bellach\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#archiveJobPreservesOriginalXmlBytes",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Ili2duckdbExportTest#exportOk",
+      "jobs": [
+        "Ili2duckdbExport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2duckdbExportTest.java#L33",
+      "originalAssertions": [
+        "assertXtfFile(new File(\"src/integrationTest/jobs/Ili2duckdbExport/VOLLZUG_SO0200002401_1531_20180105113131.xml\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisLocalJobIT#originalDuckDbSchemaImportDataAndStructuredTransferExport",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originales GB2AV-Modell, Originaltransfer, Modelltext, mutationsnummer, Eintrag und XTF-Ereignisfolge. Der aktuelle Datei-Datenbankvertrag verwendet das Defaultschema main statt der alten optionalen dbschema-Einstellung; SQL-Orakel qualifizieren entsprechend."
+    },
+    {
+      "original": "Ili2duckdbImportSchemaTest#importOk",
+      "jobs": [
+        "Ili2duckdbImportSchema"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2duckdbImportSchemaTest.java#L25",
+      "originalAssertions": [
+        "assertTrue(rs.getString(1).contains(\"INTERLIS 2.2;\"))",
+        "assertTrue(rs.getString(1).contains(\"mutationsnummer\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisLocalJobIT#originalDuckDbSchemaImportDataAndStructuredTransferExport",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originales GB2AV-Modell, Originaltransfer, Modelltext, mutationsnummer, Eintrag und XTF-Ereignisfolge. Der aktuelle Datei-Datenbankvertrag verwendet das Defaultschema main statt der alten optionalen dbschema-Einstellung; SQL-Orakel qualifizieren entsprechend."
+    },
+    {
+      "original": "Ili2duckdbImportTest#importOk",
+      "jobs": [
+        "Ili2duckdbImport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2duckdbImportTest.java#L25",
+      "originalAssertions": [
+        "assertTrue(rs.getString(1).contains(\"INTERLIS 2.2;\"))",
+        "assertTrue(rs.getString(1).contains(\"Eintrag\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisLocalJobIT#originalDuckDbSchemaImportDataAndStructuredTransferExport",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originales GB2AV-Modell, Originaltransfer, Modelltext, mutationsnummer, Eintrag und XTF-Ereignisfolge. Der aktuelle Datei-Datenbankvertrag verwendet das Defaultschema main statt der alten optionalen dbschema-Einstellung; SQL-Orakel qualifizieren entsprechend."
+    },
+    {
+      "original": "Ili2gpkgImportTest#importOk",
+      "jobs": [
+        "Ili2gpkgImport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2gpkgImportTest.java#L29",
+      "originalAssertions": [
+        "assertTrue(geometer.contains(geometerName))",
+        "assertEquals(5, i)"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisLocalJobIT#originalGeoPackageImportNamesAndFileSetDatasets (single)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Ili2gpkgImportTest#importFileSet",
+      "jobs": [
+        "Ili2gpkgImportFileSet"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2gpkgImportTest.java#L68",
+      "originalAssertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(4, count)",
+        "assertEquals(2,datasets.size())",
+        "assertTrue(datasets.contains(\"DatasetA\"))",
+        "assertTrue(datasets.contains(\"DatasetB\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisLocalJobIT#originalGeoPackageImportNamesAndFileSetDatasets (set)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Ili2pgDeleteDatasetsTest#deleteOk",
+      "jobs": [
+        "Ili2pgDeleteDatasets"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgDeleteDatasetsTest.java#L38",
+      "originalAssertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(0, rs.getInt(1))",
+        "assertEquals(0, datasets.size())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#sevenOperationsWithIndependentStateChecksFileSetExportReplacementAndDeletion",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Einzel-/Mehrfachdataset-Lebenszyklus mit ursprünglichem Beispiel2, strukturiert gelesenen beiden Exporten, 4→2→0 Fachdaten und Dataset-Mengen. Der Einzeldelete von AV-Daten wird durch denselben generischen Dataset-Löschpfad mit überprüftem verbleibendem zweitem Dataset gleichwertig abgedeckt."
+    },
+    {
+      "original": "Ili2pgDeleteTest#deleteDataset_Ok",
+      "jobs": [
+        "Ili2pgDeleteDataset"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgDeleteTest.java#L35",
+      "originalAssertions": [
+        "assertEquals(0, rs.getInt(1))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#sevenOperationsWithIndependentStateChecksFileSetExportReplacementAndDeletion",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Einzel-/Mehrfachdataset-Lebenszyklus mit ursprünglichem Beispiel2, strukturiert gelesenen beiden Exporten, 4→2→0 Fachdaten und Dataset-Mengen. Der Einzeldelete von AV-Daten wird durch denselben generischen Dataset-Löschpfad mit überprüftem verbleibendem zweitem Dataset gleichwertig abgedeckt."
+    },
+    {
+      "original": "Ili2pgExportDatasetsTest#exportOk",
+      "jobs": [
+        "Ili2pgExportDatasets"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgExportDatasetsTest.java#L33",
+      "originalAssertions": [
+        "assertXtfFile(new File(\"src/integrationTest/jobs/Ili2pgExportDatasets/DatasetA-out.xtf\"))",
+        "assertXtfFile(new File(\"src/integrationTest/jobs/Ili2pgExportDatasets/DatasetB-out.xtf\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#sevenOperationsWithIndependentStateChecksFileSetExportReplacementAndDeletion",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Einzel-/Mehrfachdataset-Lebenszyklus mit ursprünglichem Beispiel2, strukturiert gelesenen beiden Exporten, 4→2→0 Fachdaten und Dataset-Mengen. Der Einzeldelete von AV-Daten wird durch denselben generischen Dataset-Löschpfad mit überprüftem verbleibendem zweitem Dataset gleichwertig abgedeckt."
+    },
+    {
+      "original": "Ili2pgImportFileSetTest#importOk",
+      "jobs": [
+        "Ili2pgImportFileSet"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportFileSetTest.java#L38",
+      "originalAssertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(4,rs.getInt(1))",
+        "assertEquals(2,datasets.size())",
+        "assertTrue(datasets.contains(\"A_Da\"))",
+        "assertTrue(datasets.contains(\"B_Da\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalDatasetSubstringAndRepositoryDataIdResolveThroughLocalRepository",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale zwei Transfers: 4 Objekte und exakt A_Da/B_Da. Die bestehende Runtime-Slice-Option wird über datasetFiles statt historischer Gradle-Listensyntax versorgt."
+    },
+    {
+      "original": "Ili2pgImportSchemaTest#schemaImportOk",
+      "jobs": [
+        "Ili2pgImportSchema"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java#L35",
+      "originalAssertions": [
+        "assertTrue(rs.getString(1).contains(\"INTERLIS 2.2;\"))",
+        "assertTrue(rs.getString(1).contains(\"mutationsnummer\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalSchemaModelOptionsAndMetaConfiguration",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Alle vier ursprünglichen Varianten: GB2AV-Modell/Spalte, SQL-Spaltentypen sowie lokale und ilidata-Metakonfiguration mit ursprünglichem ID und Originalrepository/-INI; Metakonfigurationsfälle geben Modelle ausschliesslich über INI an."
+    },
+    {
+      "original": "Ili2pgImportSchemaTest#schemaImport_Options1_Ok",
+      "jobs": [
+        "Ili2pgImportSchema_Options"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java#L73",
+      "originalAssertions": [
+        "assertTrue(rs.getString(1).equalsIgnoreCase(\"text\"))",
+        "assertTrue(rs.getString(1).equalsIgnoreCase(\"character varying\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalSchemaModelOptionsAndMetaConfiguration",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Alle vier ursprünglichen Varianten: GB2AV-Modell/Spalte, SQL-Spaltentypen sowie lokale und ilidata-Metakonfiguration mit ursprünglichem ID und Originalrepository/-INI; Metakonfigurationsfälle geben Modelle ausschliesslich über INI an."
+    },
+    {
+      "original": "Ili2pgImportSchemaTest#schemaImport_MetaConfigIliData_Ok",
+      "jobs": [
+        "Ili2pgImportSchema_MetaConfigIliData"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java#L113",
+      "originalAssertions": [
+        "assertTrue(rs.getString(1).contains(\"ilidata:metaconfig_simple_table_ini_20240502\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalSchemaModelOptionsAndMetaConfiguration",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Alle vier ursprünglichen Varianten: GB2AV-Modell/Spalte, SQL-Spaltentypen sowie lokale und ilidata-Metakonfiguration mit ursprünglichem ID und Originalrepository/-INI; Metakonfigurationsfälle geben Modelle ausschliesslich über INI an."
+    },
+    {
+      "original": "Ili2pgImportSchemaTest#schemaImport_MetaConfigFile_Ok",
+      "jobs": [
+        "Ili2pgImportSchema_MetaConfigFile"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java#L139",
+      "originalAssertions": [
+        "assertTrue(rs.getString(1).contains(\"simple_table_ini_20240502.ini\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalSchemaModelOptionsAndMetaConfiguration",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Alle vier ursprünglichen Varianten: GB2AV-Modell/Spalte, SQL-Spaltentypen sowie lokale und ilidata-Metakonfiguration mit ursprünglichem ID und Originalrepository/-INI; Metakonfigurationsfälle geben Modelle ausschliesslich über INI an."
+    },
+    {
+      "original": "Ili2pgReplaceFileTest#importLocalFile_Ok",
+      "jobs": [
+        "Ili2pgReplaceFile"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgReplaceFileTest.java#L38",
+      "originalAssertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(2, rs.getInt(1))",
+        "assertEquals(1, datasets.size())",
+        "assertTrue(datasets.contains(\"A_Dataset\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalLocalReplacementKeepsTwoObjectsAndExplicitDatasetName",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Ili2pgReplaceFileTest#importIlidataFile_Ok",
+      "jobs": [
+        "Ili2pgReplaceIlidataFile"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgReplaceFileTest.java#L72",
+      "originalAssertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(1, rs.getInt(1))",
+        "assertEquals(1, datasets.size())",
+        "assertTrue(datasets.contains(\"2549\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalDatasetSubstringAndRepositoryDataIdResolveThroughLocalRepository",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "Ili2pgValidateDatasetTest#validateSingleDataset_Ok",
+      "jobs": [
+        "Ili2pgValidateSingleDataset"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateDatasetTest.java#L33",
+      "originalAssertions": [
+        "assertTrue(logFileContent.contains(\"Info: ...validate done\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalValidInvalidAndDatasetScopedValidation (Ili2pgValidateSingleDataset)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Unveränderte Modelle/Transfers, Einzel-/Mehrfach-/globale Auswahl, Import absichtlich invaliden Bestands und konkrete ...validate done/failed-Diagnose."
+    },
+    {
+      "original": "Ili2pgValidateDatasetTest#validateMultipleDataset_Ok",
+      "jobs": [
+        "Ili2pgValidateMultipleDatasets"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateDatasetTest.java#L46",
+      "originalAssertions": [
+        "assertTrue(logFileContent.contains(\"Info: ...validate done\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalValidInvalidAndDatasetScopedValidation (Ili2pgValidateMultipleDatasets)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Unveränderte Modelle/Transfers, Einzel-/Mehrfach-/globale Auswahl, Import absichtlich invaliden Bestands und konkrete ...validate done/failed-Diagnose."
+    },
+    {
+      "original": "Ili2pgValidateDatasetTest#validateData_Fail",
+      "jobs": [
+        "Ili2pgValidateDatasetFail"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateDatasetTest.java#L59",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);\n        })",
+        "assertTrue(logFileContent.contains(\"Error: ...validate failed\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalValidInvalidAndDatasetScopedValidation (Ili2pgValidateDatasetFail)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Unveränderte Modelle/Transfers, Einzel-/Mehrfach-/globale Auswahl, Import absichtlich invaliden Bestands und konkrete ...validate done/failed-Diagnose."
+    },
+    {
+      "original": "Ili2pgValidateTest#validateData_Ok",
+      "jobs": [
+        "Ili2pgValidate"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateTest.java#L34",
+      "originalAssertions": [
+        "assertTrue(logFileContent.contains(\"Info: ...validate done\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalValidInvalidAndDatasetScopedValidation (Ili2pgValidate)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Unveränderte Modelle/Transfers, Einzel-/Mehrfach-/globale Auswahl, Import absichtlich invaliden Bestands und konkrete ...validate done/failed-Diagnose."
+    },
+    {
+      "original": "Ili2pgValidateTest#validateData_Fail",
+      "jobs": [
+        "Ili2pgValidateFail"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateTest.java#L47",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);\n        })",
+        "assertTrue(logFileContent.contains(\"Error: ...validate failed\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisArtifactIT#originalValidInvalidAndDatasetScopedValidation (Ili2pgValidateFail)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Unveränderte Modelle/Transfers, Einzel-/Mehrfach-/globale Auswahl, Import absichtlich invaliden Bestands und konkrete ...validate done/failed-Diagnose."
+    },
+    {
+      "original": "IliValidatorTest#validationOk",
+      "jobs": [
+        "IliValidator"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/IliValidatorTest.java#L16",
+      "originalAssertions": [
+        "assertTrue(content.contains(\"Info: ...validation done\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisLocalJobIT#narrowValidatorOriginalSingleFileAndFileSetAndInvalidData",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Unveränderte Eingaben; FileSet wird wegen des schmalen Einzelfeldvertrags als zwei Tasks desselben JARs ausgeführt. NGK übernimmt additionalModels und allObjectsAccessible in die bereits unterstützte lokale validationConfig; konkrete Originalobjektkennung und Meldung sowie Abwesenheit der unknown-objects-Annahme bleiben geprüft."
+    },
+    {
+      "original": "IliValidatorTest#validationFileSetOk",
+      "jobs": [
+        "IliValidatorFileSet"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/IliValidatorTest.java#L29",
+      "originalAssertions": [],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisLocalJobIT#narrowValidatorOriginalSingleFileAndFileSetAndInvalidData",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Unveränderte Eingaben; FileSet wird wegen des schmalen Einzelfeldvertrags als zwei Tasks desselben JARs ausgeführt. NGK übernimmt additionalModels und allObjectsAccessible in die bereits unterstützte lokale validationConfig; konkrete Originalobjektkennung und Meldung sowie Abwesenheit der unknown-objects-Annahme bleiben geprüft."
+    },
+    {
+      "original": "IliValidatorTest#validationFail",
+      "jobs": [
+        "IliValidatorFail"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/IliValidatorTest.java#L38",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisLocalJobIT#narrowValidatorOriginalSingleFileAndFileSetAndInvalidData",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Unveränderte Eingaben; FileSet wird wegen des schmalen Einzelfeldvertrags als zwei Tasks desselben JARs ausgeführt. NGK übernimmt additionalModels und allObjectsAccessible in die bereits unterstützte lokale validationConfig; konkrete Originalobjektkennung und Meldung sowie Abwesenheit der unknown-objects-Annahme bleiben geprüft."
+    },
+    {
+      "original": "IliValidatorTest#validateFail_Ngk",
+      "jobs": [
+        "IliValidatorNgk"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/IliValidatorTest.java#L49",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(fileContent.contains(\"additional model SO_AFU_Naturgefahren_Validierung_20240515\"))",
+        "assertTrue(fileContent.contains(\"tid 701051de-6f2f-476d-81fb-43b8885ae7fc: Die Kennung des Auftrags im XTF muss dem Dateinamen des XTF entsprechen\"))",
+        "assertFalse(fileContent.contains(\"Info: assume unknown external objects\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "InterlisLocalJobIT#originalNgkAdditionalModelAndBusinessFailureThroughExistingValidationConfig",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Unveränderte Eingaben; FileSet wird wegen des schmalen Einzelfeldvertrags als zwei Tasks desselben JARs ausgeführt. NGK übernimmt additionalModels und allObjectsAccessible in die bereits unterstützte lokale validationConfig; konkrete Originalobjektkennung und Meldung sowie Abwesenheit der unknown-objects-Annahme bleiben geprüft."
+    },
+    {
+      "original": "JsonImportTest#importJsonObject_Ok",
+      "jobs": [
+        "JsonImportObject"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/JsonImportTest.java#L39",
+      "originalAssertions": [
+        "assertEquals(821114211, rs.getInt(1))",
+        "assertEquals(2626724, rs.getInt(1))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalGeoPackageImportCoordinatesAndJsonObjectAndArray",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "JsonImportTest#importJsonArray_Ok",
+      "jobs": [
+        "JsonImportArray"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/JsonImportTest.java#L93",
+      "originalAssertions": [
+        "assertEquals(\"\\\"Doe\\\"\", rs.getString(1))",
+        "assertEquals(\"\\\"Doe\\\"\", rs.getString(1))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalGeoPackageImportCoordinatesAndJsonObjectAndArray",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "JsonValidatorTest#validationOk",
+      "jobs": [
+        "JsonValidatorOk"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/JsonValidatorTest.java#L16",
+      "originalAssertions": [],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#validatesThroughPublicDsl (json)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Alle Originaldiagnosen, Objektkennungen, Attributpfade, Grenzen, Zeilen und Koordinaten. Unter der ausdrücklich deutschen JVM-Locale werden die gleichen Koordinaten mit Dezimalkomma formatiert."
+    },
+    {
+      "original": "JsonValidatorTest#validationFail",
+      "jobs": [
+        "JsonValidatorFail"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/JsonValidatorTest.java#L25",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(content.contains(\"line 2: Test2.Topic2.ClassA: tid o1: Attribute attrStruct[0]/attrText is length restricted to 3\"))",
+        "assertTrue(content.contains(\"line 2: Test2.Topic2.ClassA: tid o1: Attribute attrBag[1]/attrText is length restricted to 3\"))",
+        "assertTrue(content.contains(\"line 2: Test2.Topic2.ClassA: tid o1: Attribute attrTextList[0] is length restricted to 5\"))",
+        "assertTrue(content.contains(\"line 21: Test2.Topic2.ClassA: tid o2: Attribute attrStruct[0]/attrText is length restricted to 3\"))",
+        "assertTrue(content.contains(\"line 21: Test2.Topic2.ClassA: tid o2: Attribute attrBag[1]/attrText is length restricted to 3\"))",
+        "assertTrue(content.contains(\"line 21: Test2.Topic2.ClassA: tid o2: Attribute attrTextList[0] is length restricted to 5\"))",
+        "assertTrue(content.contains(\"Test2.Topic2.ClassA: tid o1: Overlay coord1 (2460000.500, 1045000.000), coord2 (2460001.000, 1045000.000), tids o1, o2\"))",
+        "assertTrue(content.contains(\"Test2.Topic2.ClassA: tid o1: Intersection coord1 (2460000.500, 1045000.000), tids o1, o2\"))",
+        "assertTrue(content.contains(\"Test2.Topic2.ClassA: tid o1: Intersection coord1 (2460001.000, 1045000.000), tids o1, o2\"))",
+        "assertTrue(content.contains(\"failed to validate AREA Test2.Topic2.ClassA.attrSurface\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#originalJsonValidatorFailDiagnostics",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Alle Originaldiagnosen, Objektkennungen, Attributpfade, Grenzen, Zeilen und Koordinaten. Unter der ausdrücklich deutschen JVM-Locale werden die gleichen Koordinaten mit Dezimalkomma formatiert."
+    },
+    {
+      "original": "PostgisRasterExportTest#exportTiff",
+      "jobs": [
+        "PostgisRasterTiffExport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/PostgisRasterExportTest.java#L32",
+      "originalAssertions": [
+        "assertEquals(targetFileSize, exportFileSize)"
+      ],
+      "inScope": false,
+      "historicallyDisabled": false,
+      "test": null,
+      "status": "ausserhalb vereinbarten Umfangs",
+      "equivalence": "Rasterexport ist keine der 44 angebotenen Operationen."
+    },
+    {
+      "original": "PostgisRasterExportTest#exportGeoTiff",
+      "jobs": [
+        "PostgisRasterGeotiffExport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/PostgisRasterExportTest.java#L53",
+      "originalAssertions": [
+        "assertEquals(targetFileSize, exportFileSize)"
+      ],
+      "inScope": false,
+      "historicallyDisabled": false,
+      "test": null,
+      "status": "ausserhalb vereinbarten Umfangs",
+      "equivalence": "Rasterexport ist keine der 44 angebotenen Operationen."
+    },
+    {
+      "original": "PublisherTestOld#simple",
+      "jobs": [
+        "Publisher"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/PublisherTestOld.java#L15",
+      "originalAssertions": [],
+      "inScope": false,
+      "historicallyDisabled": false,
+      "test": null,
+      "status": "ausserhalb vereinbarten Umfangs",
+      "equivalence": "Publisher ist ausdrücklich ausgeklammert."
+    },
+    {
+      "original": "PublisherTestOld#regions",
+      "jobs": [
+        "PublisherRegions"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/PublisherTestOld.java#L24",
+      "originalAssertions": [],
+      "inScope": false,
+      "historicallyDisabled": false,
+      "test": null,
+      "status": "ausserhalb vereinbarten Umfangs",
+      "equivalence": "Publisher ist ausdrücklich ausgeklammert."
+    },
+    {
+      "original": "S3Bucket2BucketTest#uploadDirectory_Ok",
+      "jobs": [
+        "S3Bucket2Bucket"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3Bucket2BucketTest.java#L55",
+      "originalAssertions": [
+        "assertTrue(keyList.contains(\"foo.txt\"))",
+        "assertTrue(keyList.contains(\"bar.txt\"))",
+        "assertEquals(2, keyList.size())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "S3OriginalArtifactIT#originalDirectoryFileTreeFileCopyAndDownloadDeleteValues",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Dateiinhalte, Schlüssel foo/bar als .txt/.csv, exakte Zweierauswahl, fubar-Download, Kopie und leere Buckets nach Einzel-/Mehrfachlöschung. FileTree wird als explizite sortierte CSV-Pfadauswahl abgebildet. Der alte Negativtest benutzt seine vermeintlichen falschen Credentials nicht (gvs ist unbenutzt); der neue NoSuchBucket-Nachweis prüft einen eindeutigen Fachfehler. Floci wird nicht als IAM-/Signaturqualifikation ausgegeben."
+    },
+    {
+      "original": "S3DeleteTest#deleteFile_Ok",
+      "jobs": [
+        "S3DeleteFile"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3DeleteTest.java#L70",
+      "originalAssertions": [
+        "assertEquals(0, listResponse.contents().size())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "S3OriginalArtifactIT#originalDirectoryFileTreeFileCopyAndDownloadDeleteValues",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Dateiinhalte, Schlüssel foo/bar als .txt/.csv, exakte Zweierauswahl, fubar-Download, Kopie und leere Buckets nach Einzel-/Mehrfachlöschung. FileTree wird als explizite sortierte CSV-Pfadauswahl abgebildet. Der alte Negativtest benutzt seine vermeintlichen falschen Credentials nicht (gvs ist unbenutzt); der neue NoSuchBucket-Nachweis prüft einen eindeutigen Fachfehler. Floci wird nicht als IAM-/Signaturqualifikation ausgegeben."
+    },
+    {
+      "original": "S3DeleteTest#deleteDirectory_Ok",
+      "jobs": [
+        "S3DeleteDirectory"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3DeleteTest.java#L92",
+      "originalAssertions": [
+        "assertEquals(0, listResponse.contents().size())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "S3OriginalArtifactIT#originalDirectoryFileTreeFileCopyAndDownloadDeleteValues",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Dateiinhalte, Schlüssel foo/bar als .txt/.csv, exakte Zweierauswahl, fubar-Download, Kopie und leere Buckets nach Einzel-/Mehrfachlöschung. FileTree wird als explizite sortierte CSV-Pfadauswahl abgebildet. Der alte Negativtest benutzt seine vermeintlichen falschen Credentials nicht (gvs ist unbenutzt); der neue NoSuchBucket-Nachweis prüft einen eindeutigen Fachfehler. Floci wird nicht als IAM-/Signaturqualifikation ausgegeben."
+    },
+    {
+      "original": "S3DownloadTest#downloadFile_Ok",
+      "jobs": [
+        "S3DownloadFile"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3DownloadTest.java#L68",
+      "originalAssertions": [
+        "assertTrue(reader.readLine().equalsIgnoreCase(\"fubar\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "S3OriginalArtifactIT#originalDirectoryFileTreeFileCopyAndDownloadDeleteValues",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Dateiinhalte, Schlüssel foo/bar als .txt/.csv, exakte Zweierauswahl, fubar-Download, Kopie und leere Buckets nach Einzel-/Mehrfachlöschung. FileTree wird als explizite sortierte CSV-Pfadauswahl abgebildet. Der alte Negativtest benutzt seine vermeintlichen falschen Credentials nicht (gvs ist unbenutzt); der neue NoSuchBucket-Nachweis prüft einen eindeutigen Fachfehler. Floci wird nicht als IAM-/Signaturqualifikation ausgegeben."
+    },
+    {
+      "original": "S3DownloadTest#downloadDirectory_Ok",
+      "jobs": [
+        "S3DownloadDirectory"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3DownloadTest.java#L98",
+      "originalAssertions": [
+        "assertEquals(\"foo\", content.substring(0, 3))",
+        "assertEquals(\"bar\", content.substring(0, 3))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "S3OriginalArtifactIT#originalDirectoryFileTreeFileCopyAndDownloadDeleteValues",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Dateiinhalte, Schlüssel foo/bar als .txt/.csv, exakte Zweierauswahl, fubar-Download, Kopie und leere Buckets nach Einzel-/Mehrfachlöschung. FileTree wird als explizite sortierte CSV-Pfadauswahl abgebildet. Der alte Negativtest benutzt seine vermeintlichen falschen Credentials nicht (gvs ist unbenutzt); der neue NoSuchBucket-Nachweis prüft einen eindeutigen Fachfehler. Floci wird nicht als IAM-/Signaturqualifikation ausgegeben."
+    },
+    {
+      "original": "S3UploadTest#uploadDirectory_Ok",
+      "jobs": [
+        "S3UploadDirectory"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3UploadTest.java#L63",
+      "originalAssertions": [
+        "assertTrue(keyList.contains(\"foo.txt\"))",
+        "assertTrue(keyList.contains(\"bar.txt\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "S3OriginalArtifactIT#originalDirectoryFileTreeFileCopyAndDownloadDeleteValues",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Dateiinhalte, Schlüssel foo/bar als .txt/.csv, exakte Zweierauswahl, fubar-Download, Kopie und leere Buckets nach Einzel-/Mehrfachlöschung. FileTree wird als explizite sortierte CSV-Pfadauswahl abgebildet. Der alte Negativtest benutzt seine vermeintlichen falschen Credentials nicht (gvs ist unbenutzt); der neue NoSuchBucket-Nachweis prüft einen eindeutigen Fachfehler. Floci wird nicht als IAM-/Signaturqualifikation ausgegeben."
+    },
+    {
+      "original": "S3UploadTest#uploadFileTree_Ok",
+      "jobs": [
+        "S3UploadFileTree"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3UploadTest.java#L97",
+      "originalAssertions": [
+        "assertTrue(keyList.contains(\"foo.csv\"))",
+        "assertTrue(keyList.contains(\"bar.csv\"))",
+        "assertEquals(2, keyList.size())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "S3OriginalArtifactIT#originalDirectoryFileTreeFileCopyAndDownloadDeleteValues",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Dateiinhalte, Schlüssel foo/bar als .txt/.csv, exakte Zweierauswahl, fubar-Download, Kopie und leere Buckets nach Einzel-/Mehrfachlöschung. FileTree wird als explizite sortierte CSV-Pfadauswahl abgebildet. Der alte Negativtest benutzt seine vermeintlichen falschen Credentials nicht (gvs ist unbenutzt); der neue NoSuchBucket-Nachweis prüft einen eindeutigen Fachfehler. Floci wird nicht als IAM-/Signaturqualifikation ausgegeben."
+    },
+    {
+      "original": "S3UploadTest#uploadFile_Ok",
+      "jobs": [
+        "S3UploadFile"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3UploadTest.java#L132",
+      "originalAssertions": [
+        "assertTrue(reader.readLine().equalsIgnoreCase(\"bar\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "S3OriginalArtifactIT#originalDirectoryFileTreeFileCopyAndDownloadDeleteValues",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Dateiinhalte, Schlüssel foo/bar als .txt/.csv, exakte Zweierauswahl, fubar-Download, Kopie und leere Buckets nach Einzel-/Mehrfachlöschung. FileTree wird als explizite sortierte CSV-Pfadauswahl abgebildet. Der alte Negativtest benutzt seine vermeintlichen falschen Credentials nicht (gvs ist unbenutzt); der neue NoSuchBucket-Nachweis prüft einen eindeutigen Fachfehler. Floci wird nicht als IAM-/Signaturqualifikation ausgegeben."
+    },
+    {
+      "original": "S3UploadTest#uploadFile_Fail",
+      "jobs": [
+        "S3UploadFileFail"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3UploadTest.java#L158",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);\n        })"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "S3OriginalArtifactIT#originalDirectoryFileTreeFileCopyAndDownloadDeleteValues",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Dateiinhalte, Schlüssel foo/bar als .txt/.csv, exakte Zweierauswahl, fubar-Download, Kopie und leere Buckets nach Einzel-/Mehrfachlöschung. FileTree wird als explizite sortierte CSV-Pfadauswahl abgebildet. Der alte Negativtest benutzt seine vermeintlichen falschen Credentials nicht (gvs ist unbenutzt); der neue NoSuchBucket-Nachweis prüft einen eindeutigen Fachfehler. Floci wird nicht als IAM-/Signaturqualifikation ausgegeben."
+    },
+    {
+      "original": "ShpExportTest#exportOk",
+      "jobs": [
+        "ShpExport"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/ShpExportTest.java#L44",
+      "originalAssertions": [
+        "assertEquals(2,attr1)",
+        "assertEquals(\"abc\",attr2)",
+        "assertEquals(3.4,attr3)",
+        "assertEquals(new Coordinate(2638000.0,1175250.0),((Point)attr4).getCoordinate())",
+        "assertEquals(new java.util.Date(2013-1900,10-1,21),attr5)",
+        "assertEquals(String.class.getName(),attr6.getClass().getName())",
+        "assertEquals(\"true\",attr6)",
+        "assertEquals(String.class.getName(),attr7.getClass().getName())",
+        "assertEquals(\"2015-02-16T08:35:45.000\",attr7)"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalShapefileImportAndIndependentExportAttributesGeometryAndCrs",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originalwerte für Zahl, Text, Datum, Timestamp und Point. Der bereits vorhandene native DBF-Writer speichert boolesch als logisches Feld L/T, dessen Wahrheitswert unabhängig geprüft wird; die alte GeoTools-String-Projektion true ist kein nativer Java-/Dateitypvertrag. Aktueller Writer ohne PRJ behauptet kein exportiertes CRS; SRID-/PRJ-Nachweis erfolgt zusätzlich bei GPKG und Gpkg2Shp."
+    },
+    {
+      "original": "ShpImportTest#importOk",
+      "jobs": [
+        "ShpImportBatchSize"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/ShpImportTest.java#L34",
+      "originalAssertions": [
+        "assertEquals(2,rs.getInt(1))",
+        "assertEquals(new BigDecimal(\"3.4\"),rs.getBigDecimal(2))",
+        "assertEquals(\"abc\",rs.getString(3))",
+        "assertEquals(\"rot\",rs.getString(4))",
+        "assertEquals(new java.sql.Date(2013-1900,10-1,21),rs.getDate(5))",
+        "assertEquals(2638000.0,rs.getFloat(6),0.000001)",
+        "assertEquals(1175250.0,rs.getFloat(7),0.000001)"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "FormatArtifactPostgresIT#originalShapefileImportAndIndependentExportAttributesGeometryAndCrs",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originaldaten und fachliche Orakel übernommen; Isolation und neue DSL sind angepasst."
+    },
+    {
+      "original": "ShpValidatorTest#validationOk",
+      "jobs": [
+        "ShpValidator"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/ShpValidatorTest.java#L16",
+      "originalAssertions": [],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#validatesThroughPublicDsl (shp)",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Alle Originalattribut-/Geometriediagnosen. Der native Reader zählt die beiden Datenrecords als o1/o2 statt der früheren GeoTools-Adapterzählung o2/o3; gleiche Datenreihenfolge, Werte und Pflichtattribute bleiben geprüft."
+    },
+    {
+      "original": "ShpValidatorTest#validationFail",
+      "jobs": [
+        "ShpValidatorFail"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/ShpValidatorTest.java#L25",
+      "originalAssertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o2: value rot is not a member of the enumeration in attribute aenum\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute aint requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute adec requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute atext requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute aenum requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute adate requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute the_geom requires a value\"))",
+        "assertTrue(fileContent.contains(\"...validation failed\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "ValidatorLocalJobIT#originalShpValidatorFailDiagnostics",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Alle Originalattribut-/Geometriediagnosen. Der native Reader zählt die beiden Datenrecords als o1/o2 statt der früheren GeoTools-Adapterzählung o2/o3; gleiche Datenreihenfolge, Werte und Pflichtattribute bleiben geprüft."
+    },
+    {
+      "original": "SqlExecutorTaskDuckDbTest#multipleStuff_Ok",
+      "jobs": [
+        "SqlExecutorTaskDuckDb"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskDuckDbTest.java#L18",
+      "originalAssertions": [
+        "assertTrue(Files.exists(pathToDatabase))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DuckDbLocalJobIT#originalSqlParquetAndGeoPackageImportPlusIndependentExportRead",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale Parquet-/GPKG-Dateien und SQL-Dateien über die aktuelle DuckDbSqlExecutor-Operation statt des heute PostgreSQL-fokussierten SqlExecutor; Datenbank wird unabhängig abgefragt, zusätzlicher Parquetexport gelesen."
+    },
+    {
+      "original": "SqlExecutorTaskTest#taskChainTest",
+      "jobs": [
+        "SqlExecutorTaskChain"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java#L42",
+      "originalAssertions": [
+        "assertEquals(countSrc, countDest, \"Rowcount in destination table must be equal to rowcount in source table\")",
+        "assertTrue(countDest > 0, \"Rowcount in destination table must be greater than zero\")"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#realDatabaseChainAndCancellationRollback",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte SQL-Kette mit relativen Skripten und nichtleeren kopierten Daten; skalare und wiederholte Prepared Statements erhalten ele1 bzw. ele1/ele2. Keine automatische Rückkehr zur historischen SQL-Textinterpolations-API."
+    },
+    {
+      "original": "SqlExecutorTaskTest#relPathTest",
+      "jobs": [
+        "SqlExecutorTaskRelPath"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java#L79",
+      "originalAssertions": [],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#realDatabaseChainAndCancellationRollback",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte SQL-Kette mit relativen Skripten und nichtleeren kopierten Daten; skalare und wiederholte Prepared Statements erhalten ele1 bzw. ele1/ele2. Keine automatische Rückkehr zur historischen SQL-Textinterpolations-API."
+    },
+    {
+      "original": "SqlExecutorTaskTest#parameter",
+      "jobs": [
+        "SqlExecutorTaskParameter"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java#L98",
+      "originalAssertions": [
+        "assertEquals(1, titles.size())",
+        "assertTrue(titles.contains(\"ele1\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#positiveFederationAndOriginalScalarAndListParameterResults",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte SQL-Kette mit relativen Skripten und nichtleeren kopierten Daten; skalare und wiederholte Prepared Statements erhalten ele1 bzw. ele1/ele2. Keine automatische Rückkehr zur historischen SQL-Textinterpolations-API."
+    },
+    {
+      "original": "SqlExecutorTaskTest#parameterList",
+      "jobs": [
+        "SqlExecutorTaskParameterList"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java#L133",
+      "originalAssertions": [
+        "assertEquals(2, titles.size())",
+        "assertTrue(titles.contains(\"ele1\"))",
+        "assertTrue(titles.contains(\"ele2\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "DatabaseArtifactIT#positiveFederationAndOriginalScalarAndListParameterResults",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Gleichwertige isolierte SQL-Kette mit relativen Skripten und nichtleeren kopierten Daten; skalare und wiederholte Prepared Statements erhalten ele1 bzw. ele1/ele2. Keine automatische Rückkehr zur historischen SQL-Textinterpolations-API."
+    },
+    {
+      "original": "XslTransformerTest#transformFile_Resource_Ok",
+      "jobs": [
+        "XslTransformerResource"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/XslTransformerTest.java#L16",
+      "originalAssertions": [
+        "assertTrue(fileContent.contains(\"<SO_AGI_SGV_Meldungen_20221109.Meldungen BID=\\\"SO_AGI_SGV_Meldungen_20221109.Meldungen\\\">\"))",
+        "assertTrue(fileContent.contains(\"<Grundstuecksnummer>1505</Grundstuecksnummer>\"))",
+        "assertTrue(fileContent.contains(\"<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "IoLocalJobIT#originalXsltVariantsAndBusinessContent",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale XML/XSL-Dateien und drei Inhaltsassertionen; Dateien, FileSet und echte ausgelieferte Classpath-XSL-Ressource."
+    },
+    {
+      "original": "XslTransformerTest#transformFile_File_Ok",
+      "jobs": [
+        "XslTransformerFile"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/XslTransformerTest.java#L31",
+      "originalAssertions": [
+        "assertTrue(fileContent.contains(\"<SO_AGI_SGV_Meldungen_20221109.Meldungen BID=\\\"SO_AGI_SGV_Meldungen_20221109.Meldungen\\\">\"))",
+        "assertTrue(fileContent.contains(\"<Grundstuecksnummer>1505</Grundstuecksnummer>\"))",
+        "assertTrue(fileContent.contains(\"<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>\"))"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "IoLocalJobIT#originalXsltVariantsAndBusinessContent",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale XML/XSL-Dateien und drei Inhaltsassertionen; Dateien, FileSet und echte ausgelieferte Classpath-XSL-Ressource."
+    },
+    {
+      "original": "XslTransformerTest#transformFileSet_Ok",
+      "jobs": [
+        "XslTransformerFileSet"
+      ],
+      "originalSource": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/XslTransformerTest.java#L46",
+      "originalAssertions": [
+        "assertTrue(new File(\"src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf\").exists())",
+        "assertTrue(new File(\"src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_mehrere_gebaeude_mehrere_grundstuecke.xtf\").exists())"
+      ],
+      "inScope": true,
+      "historicallyDisabled": false,
+      "test": "IoLocalJobIT#originalXsltVariantsAndBusinessContent",
+      "status": "implementiert; Vollgatenachweis im Phasenbericht",
+      "equivalence": "Originale XML/XSL-Dateien und drei Inhaltsassertionen; Dateien, FileSet und echte ausgelieferte Classpath-XSL-Ressource."
+    }
+  ]
+}

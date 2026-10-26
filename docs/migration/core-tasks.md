@@ -76,11 +76,13 @@ Datenbank, tabellarische Formate, Geodaten und zuletzt INTERLIS/AV. Die
 Gruppen folgen gemeinsamen Engines, Abhängigkeiten und Testfixtures, nicht
 einer alphabetischen Taskliste.
 
-**Modulzuschnitt:** `Curl`, `Gzip`, `Db2Db` und `DuckDbSqlExecutor` liegen in
-`gretl-basic-tasks`; `XslTransformer`, FTP und S3 in `gretl-core-tasks`. Die
-13 CSV-/JSON-/Geo-/Validator-Tasks liegen im neuen
-`gretl-interlis-tasks`, weil sie iox-wkf, den nativen Shapefile-Code,
-ilivalidator und die ili2db-/AV-Bibliotheken gemeinsam nutzen.
+**Aktueller Modulzuschnitt (Umbauphase 2):** 13 IO-Operationen in
+`gretl-io-tasks`, drei allgemeine Datenbankoperationen in
+`gretl-database-tasks`, 27 Format-/Validierungs-/ili2db-/AV-Operationen in
+`gretl-interlis-tasks` und der schmale `IliValidator` in `gretl-ilivalidator`.
+Die früheren Module Basic/Core werden ersetzt. Siehe
+[Modulgrenzen](../implementation/module-boundaries.md) und
+[Java-/Maven-Migration](phase-2-java-maven.md).
 
 ## Backing-Service-Abnahme
 
@@ -200,3 +202,12 @@ Runtime-Tasks bleiben aber eigenständige `OperationType`s mit der neuen
    gehärtet; Distribution und Job-Paketierung sind auf 44/44 geprüft.
    `datasetFiles` leitet Dataset-Namen aus Dateinamen ab. Der Core-Task-Katalog
    ist vollständig.
+
+### Präzisierung: direkte PostGIS-Geometriequellen in DuckDB
+
+`DuckDbSqlExecutor` übernimmt PostgreSQL-Quellspalten mit `geometry` oder
+`geography` derzeit nicht. Solche Quellen werden vor ihrer Übernahme mit
+`DUCKDB_GEOMETRY_UNSUPPORTED` abgewiesen. Damit wird keine unbewiesene
+Geometry-/SRID-Erhaltung durch eine implizite Textkonversion behauptet.
+Explizite SQL-Konversionen benötigen einen eigenen fachlich geprüften Vertrag.
+`DatabaseArtifactIT` prüft die Ablehnung und den unveränderten PostGIS-Bestand.

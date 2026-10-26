@@ -7,6 +7,6 @@
   "sources": [],
   "resources": ["sql"],
   "dependencies": [
-    "ch.so.agi.gretl:gretl-basic-tasks:0.1.0-SNAPSHOT"
+    "ch.so.agi.gretl:gretl-database-tasks:0.1.0-SNAPSHOT"
   ]
 }

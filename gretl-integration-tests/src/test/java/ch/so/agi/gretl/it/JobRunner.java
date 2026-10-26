@@ -53,6 +53,8 @@ final class JobRunner {
             throws Exception {
         String file = "secret-" + alias + ".txt";
         Files.writeString(root.resolve(file), value, StandardCharsets.UTF_8);
+        try { Files.setPosixFilePermissions(root.resolve(file), java.nio.file.attribute.PosixFilePermissions.fromString("rw-------")); }
+        catch (UnsupportedOperationException ignored) { }
         ((Map<String, Object>) config.get("secrets")).put(alias, Map.of("file", file));
     }
 

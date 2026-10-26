@@ -11,38 +11,75 @@
   <artifactId>gretl-integration-tests</artifactId>
   <packaging>jar</packaging>
   <name>GRETL Runtime Backing-Service Integration Tests</name>
-  <description>Docker-backed integration tests; built only with the backing-services profile.</description>
+  <description>Artifact job tests; service scenarios are enabled with backing-services.</description>
 
   <dependencies>
+    <!-- Direct product edges include sources and all test-JVM contributions in coverage aggregation. -->
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-runner</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-groovy</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-i18n</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-logging</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-packager</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-job-runtime</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Reactor edge: packaging jobs always uses this candidate's distribution. -->
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-dist</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
       <artifactId>gretl-cli</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
-      <artifactId>gretl-basic-tasks</artifactId>
+      <artifactId>gretl-database-tasks</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
-      <artifactId>gretl-core-tasks</artifactId>
+      <artifactId>gretl-io-tasks</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
       <artifactId>gretl-ilivalidator</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
       <artifactId>gretl-interlis-tasks</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
@@ -124,11 +161,16 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skipTests>true</skipTests>
-        </configuration>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <executions>
+          <execution>
+            <id>coverage-aggregate</id>
+            <phase>verify</phase>
+            <goals><goal>report-aggregate</goal></goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -142,6 +184,7 @@
           </execution>
         </executions>
         <configuration>
+          <includes><include>${gretl.test.includes}</include></includes>
           <forkCount>1</forkCount>
           <reuseForks>true</reuseForks>
         </configuration>

@@ -85,6 +85,8 @@ public final class RunReportWriter {
         identity.put("commandId", input.context().commandId());
         identity.put("runId", input.context().runId().toString());
         identity.put("jobName", input.context().jobName());
+        input.context().correlationId().ifPresent(value ->
+                identity.put("correlationId", redactor.redact(value)));
         identity.put("runtimeVersion", input.context().runtimeVersion());
         identity.put("locale", input.context().locale().toLanguageTag());
         identity.put("inventoryHash", input.inventoryHash());

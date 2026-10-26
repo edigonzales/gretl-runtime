@@ -1,0 +1,1172 @@
+{
+  "candidate": "27adb5baa3006627e66ce819e345ca70cda477bb",
+  "run": 40226691230,
+  "job": 121269452785,
+  "url": "https://github.com/edigonzales/gretl-runtime/actions/runs/40226691230",
+  "conclusion": "success",
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS x86-64",
+    "java": "Temurin 25.0.4+1",
+    "maven": "Wrapper 3.10.0"
+  },
+  "standard": {
+    "summary": {
+      "sourceRevision": "27adb5baa3006627e66ce819e345ca70cda477bb",
+      "sourceDirty": false,
+      "tests": {
+        "tests": 470,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "successfulJarOperations": [
+        "example.file-size",
+        "gretl.av2ch",
+        "gretl.av2geobau",
+        "gretl.csv-validator",
+        "gretl.csv2excel",
+        "gretl.curl",
+        "gretl.duckdb-sql-executor",
+        "gretl.extract",
+        "gretl.gpkg-validator",
+        "gretl.gpkg2dxf",
+        "gretl.gpkg2shp",
+        "gretl.gzip",
+        "gretl.http-download",
+        "gretl.ili2duckdb-export",
+        "gretl.ili2duckdb-import",
+        "gretl.ili2duckdb-import-schema",
+        "gretl.ili2gpkg-import",
+        "gretl.ilivalidator",
+        "gretl.json-validator",
+        "gretl.shp-validator",
+        "gretl.xsl-transformer"
+      ],
+      "full": false,
+      "distributionCatalogSha256": "8cc249b14a13d463934fb98a345022003e8e8bb035c5daa82173a20674201201",
+      "archives": [
+        {
+          "file": "gretl-runtime-0.1.0-SNAPSHOT-bin.tar.gz",
+          "sha256": "12857ddea94a42b17b918dee8e0e35e33352d429fa15dbf3fe725ca8fd39d239"
+        },
+        {
+          "file": "gretl-runtime-0.1.0-SNAPSHOT-bin.zip",
+          "sha256": "fe0631c498c191a0816b592ce607eab936d7cd05efdfaff030b45cc81824ec07"
+        }
+      ],
+      "coverage": [
+        {
+          "module": "gretl-api",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "60",
+              "covered": "603"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "7",
+              "covered": "19"
+            },
+            {
+              "type": "LINE",
+              "missed": "12",
+              "covered": "102"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "8",
+              "covered": "39"
+            },
+            {
+              "type": "METHOD",
+              "missed": "3",
+              "covered": "31"
+            },
+            {
+              "type": "CLASS",
+              "missed": "2",
+              "covered": "16"
+            }
+          ]
+        },
+        {
+          "module": "gretl-cli",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "733",
+              "covered": "1887"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "70",
+              "covered": "104"
+            },
+            {
+              "type": "LINE",
+              "missed": "120",
+              "covered": "338"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "60",
+              "covered": "99"
+            },
+            {
+              "type": "METHOD",
+              "missed": "9",
+              "covered": "59"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "7"
+            }
+          ]
+        },
+        {
+          "module": "gretl-database-tasks",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "3436",
+              "covered": "4002"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "449",
+              "covered": "265"
+            },
+            {
+              "type": "LINE",
+              "missed": "659",
+              "covered": "857"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "360",
+              "covered": "206"
+            },
+            {
+              "type": "METHOD",
+              "missed": "66",
+              "covered": "132"
+            },
+            {
+              "type": "CLASS",
+              "missed": "4",
+              "covered": "30"
+            }
+          ]
+        },
+        {
+          "module": "gretl-dist",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "660",
+              "covered": "106"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "59",
+              "covered": "5"
+            },
+            {
+              "type": "LINE",
+              "missed": "80",
+              "covered": "20"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "37",
+              "covered": "7"
+            },
+            {
+              "type": "METHOD",
+              "missed": "7",
+              "covered": "5"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "1"
+            }
+          ]
+        },
+        {
+          "module": "gretl-groovy",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "1252",
+              "covered": "2278"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "91",
+              "covered": "147"
+            },
+            {
+              "type": "LINE",
+              "missed": "246",
+              "covered": "487"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "150",
+              "covered": "151"
+            },
+            {
+              "type": "METHOD",
+              "missed": "72",
+              "covered": "110"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "15"
+            }
+          ]
+        },
+        {
+          "module": "gretl-i18n",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "32",
+              "covered": "91"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "8",
+              "covered": "12"
+            },
+            {
+              "type": "LINE",
+              "missed": "9",
+              "covered": "22"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "9",
+              "covered": "13"
+            },
+            {
+              "type": "METHOD",
+              "missed": "2",
+              "covered": "10"
+            },
+            {
+              "type": "CLASS",
+              "missed": "0",
+              "covered": "2"
+            }
+          ]
+        },
+        {
+          "module": "gretl-ilivalidator",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "401",
+              "covered": "647"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "40",
+              "covered": "28"
+            },
+            {
+              "type": "LINE",
+              "missed": "78",
+              "covered": "129"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "42",
+              "covered": "29"
+            },
+            {
+              "type": "METHOD",
+              "missed": "15",
+              "covered": "22"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "8"
+            }
+          ]
+        },
+        {
+          "module": "gretl-interlis-tasks",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "6848",
+              "covered": "13102"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "900",
+              "covered": "959"
+            },
+            {
+              "type": "LINE",
+              "missed": "1316",
+              "covered": "2383"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "1036",
+              "covered": "655"
+            },
+            {
+              "type": "METHOD",
+              "missed": "357",
+              "covered": "369"
+            },
+            {
+              "type": "CLASS",
+              "missed": "51",
+              "covered": "95"
+            }
+          ]
+        },
+        {
+          "module": "gretl-io-tasks",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "4604",
+              "covered": "7565"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "548",
+              "covered": "466"
+            },
+            {
+              "type": "LINE",
+              "missed": "989",
+              "covered": "1522"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "545",
+              "covered": "404"
+            },
+            {
+              "type": "METHOD",
+              "missed": "173",
+              "covered": "269"
+            },
+            {
+              "type": "CLASS",
+              "missed": "9",
+              "covered": "79"
+            }
+          ]
+        },
+        {
+          "module": "gretl-job-runtime",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "4308",
+              "covered": "1580"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "366",
+              "covered": "117"
+            },
+            {
+              "type": "LINE",
+              "missed": "815",
+              "covered": "303"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "331",
+              "covered": "86"
+            },
+            {
+              "type": "METHOD",
+              "missed": "115",
+              "covered": "52"
+            },
+            {
+              "type": "CLASS",
+              "missed": "13",
+              "covered": "6"
+            }
+          ]
+        },
+        {
+          "module": "gretl-logging",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "1489",
+              "covered": "4374"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "262",
+              "covered": "328"
+            },
+            {
+              "type": "LINE",
+              "missed": "259",
+              "covered": "844"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "268",
+              "covered": "211"
+            },
+            {
+              "type": "METHOD",
+              "missed": "45",
+              "covered": "128"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "20"
+            }
+          ]
+        },
+        {
+          "module": "gretl-packager",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "1638",
+              "covered": "3480"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "183",
+              "covered": "263"
+            },
+            {
+              "type": "LINE",
+              "missed": "272",
+              "covered": "576"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "178",
+              "covered": "170"
+            },
+            {
+              "type": "METHOD",
+              "missed": "27",
+              "covered": "98"
+            },
+            {
+              "type": "CLASS",
+              "missed": "0",
+              "covered": "15"
+            }
+          ]
+        },
+        {
+          "module": "gretl-runner",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "1663",
+              "covered": "8455"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "341",
+              "covered": "720"
+            },
+            {
+              "type": "LINE",
+              "missed": "328",
+              "covered": "1750"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "356",
+              "covered": "588"
+            },
+            {
+              "type": "METHOD",
+              "missed": "57",
+              "covered": "346"
+            },
+            {
+              "type": "CLASS",
+              "missed": "0",
+              "covered": "77"
+            }
+          ]
+        }
+      ],
+      "coverageLimit": "Separate launcher and java -jar processes are not instrumented"
+    },
+    "independentlySummedXml": {
+      "tests": 470,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "full": {
+    "summary": {
+      "sourceRevision": "27adb5baa3006627e66ce819e345ca70cda477bb",
+      "sourceDirty": false,
+      "tests": {
+        "tests": 525,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "successfulJarOperations": [
+        "example.file-size",
+        "gretl.av2ch",
+        "gretl.av2geobau",
+        "gretl.csv-export",
+        "gretl.csv-import",
+        "gretl.csv-validator",
+        "gretl.csv2excel",
+        "gretl.curl",
+        "gretl.db2db",
+        "gretl.duckdb-sql-executor",
+        "gretl.extract",
+        "gretl.ftp-delete",
+        "gretl.ftp-download",
+        "gretl.ftp-list",
+        "gretl.ftp-upload",
+        "gretl.gpkg-export",
+        "gretl.gpkg-import",
+        "gretl.gpkg-validator",
+        "gretl.gpkg2dxf",
+        "gretl.gpkg2shp",
+        "gretl.gzip",
+        "gretl.http-download",
+        "gretl.ili2duckdb-export",
+        "gretl.ili2duckdb-import",
+        "gretl.ili2duckdb-import-schema",
+        "gretl.ili2gpkg-import",
+        "gretl.ili2pg-delete",
+        "gretl.ili2pg-export",
+        "gretl.ili2pg-import",
+        "gretl.ili2pg-import-schema",
+        "gretl.ili2pg-replace",
+        "gretl.ili2pg-update",
+        "gretl.ili2pg-validate",
+        "gretl.ilivalidator",
+        "gretl.json-import",
+        "gretl.json-validator",
+        "gretl.s3-bucket2bucket",
+        "gretl.s3-delete",
+        "gretl.s3-download",
+        "gretl.s3-upload",
+        "gretl.shp-export",
+        "gretl.shp-import",
+        "gretl.shp-validator",
+        "gretl.sql-executor",
+        "gretl.xsl-transformer"
+      ],
+      "full": true,
+      "distributionCatalogSha256": "b8849b0c6e55b88c5e9623cf7b8b84fc13838095276d74f7f61a39d72759b2c0",
+      "archives": [
+        {
+          "file": "gretl-runtime-0.1.0-SNAPSHOT-bin.tar.gz",
+          "sha256": "5cb024387ef0eee2f8852e6735d5a32cdc0c50971288cb5b31b711b01bbb27c4"
+        },
+        {
+          "file": "gretl-runtime-0.1.0-SNAPSHOT-bin.zip",
+          "sha256": "31a01f189f7e4c2cd0201702f9b5ee7e0649143496895557920dc3cf98e1d3a3"
+        }
+      ],
+      "coverage": [
+        {
+          "module": "gretl-api",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "60",
+              "covered": "603"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "7",
+              "covered": "19"
+            },
+            {
+              "type": "LINE",
+              "missed": "12",
+              "covered": "102"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "8",
+              "covered": "39"
+            },
+            {
+              "type": "METHOD",
+              "missed": "3",
+              "covered": "31"
+            },
+            {
+              "type": "CLASS",
+              "missed": "2",
+              "covered": "16"
+            }
+          ]
+        },
+        {
+          "module": "gretl-cli",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "733",
+              "covered": "1887"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "70",
+              "covered": "104"
+            },
+            {
+              "type": "LINE",
+              "missed": "120",
+              "covered": "338"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "60",
+              "covered": "99"
+            },
+            {
+              "type": "METHOD",
+              "missed": "9",
+              "covered": "59"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "7"
+            }
+          ]
+        },
+        {
+          "module": "gretl-database-tasks",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "3436",
+              "covered": "4002"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "449",
+              "covered": "265"
+            },
+            {
+              "type": "LINE",
+              "missed": "659",
+              "covered": "857"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "360",
+              "covered": "206"
+            },
+            {
+              "type": "METHOD",
+              "missed": "66",
+              "covered": "132"
+            },
+            {
+              "type": "CLASS",
+              "missed": "4",
+              "covered": "30"
+            }
+          ]
+        },
+        {
+          "module": "gretl-dist",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "660",
+              "covered": "106"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "59",
+              "covered": "5"
+            },
+            {
+              "type": "LINE",
+              "missed": "80",
+              "covered": "20"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "37",
+              "covered": "7"
+            },
+            {
+              "type": "METHOD",
+              "missed": "7",
+              "covered": "5"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "1"
+            }
+          ]
+        },
+        {
+          "module": "gretl-groovy",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "1252",
+              "covered": "2278"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "91",
+              "covered": "147"
+            },
+            {
+              "type": "LINE",
+              "missed": "246",
+              "covered": "487"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "150",
+              "covered": "151"
+            },
+            {
+              "type": "METHOD",
+              "missed": "72",
+              "covered": "110"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "15"
+            }
+          ]
+        },
+        {
+          "module": "gretl-i18n",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "32",
+              "covered": "91"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "8",
+              "covered": "12"
+            },
+            {
+              "type": "LINE",
+              "missed": "9",
+              "covered": "22"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "9",
+              "covered": "13"
+            },
+            {
+              "type": "METHOD",
+              "missed": "2",
+              "covered": "10"
+            },
+            {
+              "type": "CLASS",
+              "missed": "0",
+              "covered": "2"
+            }
+          ]
+        },
+        {
+          "module": "gretl-ilivalidator",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "401",
+              "covered": "647"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "40",
+              "covered": "28"
+            },
+            {
+              "type": "LINE",
+              "missed": "78",
+              "covered": "129"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "42",
+              "covered": "29"
+            },
+            {
+              "type": "METHOD",
+              "missed": "15",
+              "covered": "22"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "8"
+            }
+          ]
+        },
+        {
+          "module": "gretl-interlis-tasks",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "6848",
+              "covered": "13102"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "900",
+              "covered": "959"
+            },
+            {
+              "type": "LINE",
+              "missed": "1316",
+              "covered": "2383"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "1036",
+              "covered": "655"
+            },
+            {
+              "type": "METHOD",
+              "missed": "357",
+              "covered": "369"
+            },
+            {
+              "type": "CLASS",
+              "missed": "51",
+              "covered": "95"
+            }
+          ]
+        },
+        {
+          "module": "gretl-io-tasks",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "4604",
+              "covered": "7565"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "548",
+              "covered": "466"
+            },
+            {
+              "type": "LINE",
+              "missed": "989",
+              "covered": "1522"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "545",
+              "covered": "404"
+            },
+            {
+              "type": "METHOD",
+              "missed": "173",
+              "covered": "269"
+            },
+            {
+              "type": "CLASS",
+              "missed": "9",
+              "covered": "79"
+            }
+          ]
+        },
+        {
+          "module": "gretl-job-runtime",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "4308",
+              "covered": "1580"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "366",
+              "covered": "117"
+            },
+            {
+              "type": "LINE",
+              "missed": "815",
+              "covered": "303"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "331",
+              "covered": "86"
+            },
+            {
+              "type": "METHOD",
+              "missed": "115",
+              "covered": "52"
+            },
+            {
+              "type": "CLASS",
+              "missed": "13",
+              "covered": "6"
+            }
+          ]
+        },
+        {
+          "module": "gretl-logging",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "1489",
+              "covered": "4374"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "262",
+              "covered": "328"
+            },
+            {
+              "type": "LINE",
+              "missed": "259",
+              "covered": "844"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "268",
+              "covered": "211"
+            },
+            {
+              "type": "METHOD",
+              "missed": "45",
+              "covered": "128"
+            },
+            {
+              "type": "CLASS",
+              "missed": "1",
+              "covered": "20"
+            }
+          ]
+        },
+        {
+          "module": "gretl-packager",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "1638",
+              "covered": "3480"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "183",
+              "covered": "263"
+            },
+            {
+              "type": "LINE",
+              "missed": "272",
+              "covered": "576"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "178",
+              "covered": "170"
+            },
+            {
+              "type": "METHOD",
+              "missed": "27",
+              "covered": "98"
+            },
+            {
+              "type": "CLASS",
+              "missed": "0",
+              "covered": "15"
+            }
+          ]
+        },
+        {
+          "module": "gretl-runner",
+          "counters": [
+            {
+              "type": "INSTRUCTION",
+              "missed": "1663",
+              "covered": "8455"
+            },
+            {
+              "type": "BRANCH",
+              "missed": "341",
+              "covered": "720"
+            },
+            {
+              "type": "LINE",
+              "missed": "328",
+              "covered": "1750"
+            },
+            {
+              "type": "COMPLEXITY",
+              "missed": "356",
+              "covered": "588"
+            },
+            {
+              "type": "METHOD",
+              "missed": "57",
+              "covered": "346"
+            },
+            {
+              "type": "CLASS",
+              "missed": "0",
+              "covered": "77"
+            }
+          ]
+        }
+      ],
+      "coverageLimit": "Separate launcher and java -jar processes are not instrumented"
+    },
+    "independentlySummedXml": {
+      "tests": 525,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "jarExecutions": 148,
+  "scriptExecutions": 4,
+  "standardOperations": [
+    "gretl.av2ch",
+    "gretl.av2geobau",
+    "gretl.csv-export",
+    "gretl.csv-import",
+    "gretl.csv-validator",
+    "gretl.csv2excel",
+    "gretl.curl",
+    "gretl.db2db",
+    "gretl.duckdb-sql-executor",
+    "gretl.extract",
+    "gretl.ftp-delete",
+    "gretl.ftp-download",
+    "gretl.ftp-list",
+    "gretl.ftp-upload",
+    "gretl.gpkg-export",
+    "gretl.gpkg-import",
+    "gretl.gpkg-validator",
+    "gretl.gpkg2dxf",
+    "gretl.gpkg2shp",
+    "gretl.gzip",
+    "gretl.http-download",
+    "gretl.ili2duckdb-export",
+    "gretl.ili2duckdb-import",
+    "gretl.ili2duckdb-import-schema",
+    "gretl.ili2gpkg-import",
+    "gretl.ili2pg-delete",
+    "gretl.ili2pg-export",
+    "gretl.ili2pg-import",
+    "gretl.ili2pg-import-schema",
+    "gretl.ili2pg-replace",
+    "gretl.ili2pg-update",
+    "gretl.ili2pg-validate",
+    "gretl.ilivalidator",
+    "gretl.json-import",
+    "gretl.json-validator",
+    "gretl.s3-bucket2bucket",
+    "gretl.s3-delete",
+    "gretl.s3-download",
+    "gretl.s3-upload",
+    "gretl.shp-export",
+    "gretl.shp-import",
+    "gretl.shp-validator",
+    "gretl.sql-executor",
+    "gretl.xsl-transformer"
+  ],
+  "distributionInputs": 93,
+  "distributionZipSha256": "31a01f189f7e4c2cd0201702f9b5ee7e0649143496895557920dc3cf98e1d3a3",
+  "representativePackages": [
+    {
+      "scenario": "selected-database",
+      "sha256": "0b6c7595ca218b9ac1cd7d497e7458750cc03c13b3d56d2d270e090fdd3eae86",
+      "inputs": 16
+    },
+    {
+      "scenario": "selected-external",
+      "sha256": "32a3997657218ba974efc9afe1cb986761f407b7aebc002ccc7353a3696ca49a",
+      "inputs": 14
+    },
+    {
+      "scenario": "selected-interlis",
+      "sha256": "5bc1548f77b9c720ae810fa7337e0be8df0995588f5054852ba07b3b7d35fbc5",
+      "inputs": 63
+    },
+    {
+      "scenario": "selected-io",
+      "sha256": "f70a63c990037de5bf6d950eeb352f8bbc64d529d0ab071d736a30da014b8e98",
+      "inputs": 45
+    },
+    {
+      "scenario": "selected-minimal-failure",
+      "sha256": "f5df5228bf0aafabdc8c7c8965c617fc041f9cd242a8db5c98f21e48124fa3d2",
+      "inputs": 12
+    },
+    {
+      "scenario": "selected-minimal-success",
+      "sha256": "f5df5228bf0aafabdc8c7c8965c617fc041f9cd242a8db5c98f21e48124fa3d2",
+      "inputs": 12
+    },
+    {
+      "scenario": "selected-narrow-validator",
+      "sha256": "e7de224a8e77cc66ab06c4dbaff096884caedc2656265b818017357d7816cde0",
+      "inputs": 25
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12612195488,
+      "name": "standard-evidence-27adb5baa3006627e66ce819e345ca70cda477bb",
+      "digest": "sha256:af21d6dd219aaec7b3454306c5c82be1a3028e56559910a957ab0b6595d35b0c",
+      "size_in_bytes": 8110572,
+      "expires_at": "2027-01-23T19:34:42Z"
+    },
+    {
+      "id": 12612087393,
+      "name": "full-evidence-27adb5baa3006627e66ce819e345ca70cda477bb",
+      "digest": "sha256:be3e7e1e3cbf413ad93951c8ff0bacf02ef46406916711b1e9a20965f790d863",
+      "size_in_bytes": 9025424,
+      "expires_at": "2027-01-23T19:34:42Z"
+    },
+    {
+      "id": 12611607458,
+      "name": "verified-packages-27adb5baa3006627e66ce819e345ca70cda477bb",
+      "digest": "sha256:1ff62b0b284acf412068997de1c54f38d36c9c17054aba87b10e645288daf91d",
+      "size_in_bytes": 441927513,
+      "expires_at": "2026-11-01T19:57:00Z"
+    }
+  ],
+  "workflowLogSha256": "e7a6d82593059d5d47ae2935a61cd8e1074077e1b992c9142226728b615ba02e",
+  "artifactZipDigestsVerified": true,
+  "xmlTotalsIndependentlySummedBy": "Agent A",
+  "productImageExecuted": false
+}

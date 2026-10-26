@@ -1,0 +1,122 @@
+[
+  {
+    "log": "curl-and-last-variants-12.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "database-and-validator-7.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "distribution-development-2.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "distribution-development.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "first-artifact-and-minimal-2.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "first-artifact-and-minimal-3.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "first-artifact-and-minimal.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "formats-and-functions-4.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "formats-and-functions-5.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "function-selection-test.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "ili2pg-10.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "ili2pg-and-ngk-8.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "ili2pg-and-ngk-9.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "ili2pg-duckdb-11.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "image-contract-and-cancellation.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "interlis-and-formats-6.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "interlis-layout-test.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "io-db-test.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "local-and-services-3.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "original-s3-and-repository-13.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "production-dependencies.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "profiles-1.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "profiles-2.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "services-and-formats-2.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "services-artifact.log",
+    "status": "FAILURE"
+  },
+  {
+    "log": "shared-execution-test.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "standard-1.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "standard-2.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "standard-3.log",
+    "status": "SUCCESS"
+  },
+  {
+    "log": "validator-extension-unit.log",
+    "status": "FAILURE"
+  }
+]
