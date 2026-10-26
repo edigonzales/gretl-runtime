@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "name": "formats",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [
+    "interlis"
+  ],
+  "standardFunctions": false,
+  "resources": [
+    "Av2ch",
+    "Av2chFail",
+    "Av2chFileSet",
+    "Av2geobau",
+    "Av2geobauFileSet",
+    "Csv2Excel",
+    "Csv2ExcelEmptyFile",
+    "Gpkg2Shp",
+    "LICENSE-sogis-gretl.txt",
+    "admin.gpkg",
+    "aggloprogramme.gpkg"
+  ],
+  "dependencies": []
+}

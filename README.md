@@ -3,8 +3,8 @@
 Implementierung der GRETL Runtime auf Basis der Spezifikation 4.1 in
 [`docs/spec/`](docs/spec/).
 
-**Aktueller Stand: M6-Snapshot `0.1.0-SNAPSHOT` – Script-MVP plus optionaler
-Job-Fat-JAR-Packager.** Die
+**Aktueller Stand: `0.1.0-SNAPSHOT` – Script-Runtime mit 44 Operationen und
+optionalem Job-Fat-JAR-Packager.** Die
 öffentliche Java-API, der sequenzielle Runner, die Groovy-6-Fassade,
 Logging/Runbericht, die Tasks `HttpDownload`, `Curl`, `Gzip`, `Extract`,
 `FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete`, `S3Download`, `S3Upload`,
@@ -41,10 +41,13 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - M2-Bericht (historisch): [`docs/implementation/m2-report.md`](docs/implementation/m2-report.md)
 - M1-Bericht (historisch): [`docs/implementation/m1-report.md`](docs/implementation/m1-report.md)
 - M0-Bericht (historisch): [`docs/implementation/m0-report.md`](docs/implementation/m0-report.md)
-- Standardprüfung: `./mvnw verify` mit JDK 25 (**384 Tests**)
-- GeoTools-Profil: `./mvnw -Pgeotools-probe verify` (**388 Tests**)
-- Backing-Services (Docker): `./mvnw -Pbacking-services verify` (28 Integrationstests)
-- Kombiniert mit GeoTools: `./mvnw -Pgeotools-probe,backing-services verify` (**416 Tests**)
+- Standardprüfung: `./mvnw -B clean verify` mit JDK 25
+- Vollständig mit echten Diensten: `./mvnw -B -Pgeotools-probe,backing-services clean verify`
+- Modulübersicht: [`module-boundaries.md`](docs/implementation/module-boundaries.md)
+- Java-/Maven-Migration: [`phase-2-java-maven.md`](docs/migration/phase-2-java-maven.md)
+- Fachliche JAR-Jobs und IMAGE-Vorbereitung: [`job-artifact-tests.md`](docs/implementation/job-artifact-tests.md)
+- Phasenplan und versionsbezogene Testzahlen: [`improvement-plan/`](docs/implementation/improvement-plan/)
+- Versionierte Paket-/Modulauswahl: [`job-packaging.md`](docs/implementation/job-packaging.md)
 - Teststrategie: [`docs/implementation/testing.md`](docs/implementation/testing.md)
 - Scriptdistribution: `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip`
 

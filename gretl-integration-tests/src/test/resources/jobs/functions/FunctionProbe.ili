@@ -1,0 +1,10 @@
+INTERLIS 2.3;
+MODEL FunctionProbe (en) AT "https://example.invalid/probe" VERSION "2026-10-25" =
+  IMPORTS SO_FunctionsExt;
+  TOPIC Data =
+    CLASS Resource =
+      url : MANDATORY TEXT*200;
+      MANDATORY CONSTRAINT SO_FunctionsExt.isHttpResource(url, "");
+    END Resource;
+  END Data;
+END FunctionProbe.

@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.internal.av;
 
+import ch.so.agi.gretl.internal.InterlisTaskException;
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +52,7 @@ public final class Av2chEngine {
                 }
             }
         } catch (Exception e) {
-            throw new ch.so.agi.gretl.internal.interlis.InterlisTaskException("AV_CONVERT", "AV conversion failed", "convert", java.util.Optional.empty(), e);
+            throw new ch.so.agi.gretl.internal.InterlisTaskException("AV_CONVERT", "AV conversion failed", "convert", java.util.Optional.empty(), e);
         }
     }
 

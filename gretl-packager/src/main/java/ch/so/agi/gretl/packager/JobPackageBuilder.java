@@ -49,12 +49,18 @@ public final class JobPackageBuilder {
 
     private final List<Path> classpath;
     private final String packagerVersion;
+    private final Map<Path, PackageDescriptor.Dependency> identities;
     private final Map<String, Entry> entries = new TreeMap<>();
     private final Map<String, Set<String>> services = new TreeMap<>();
     private final Map<String, Map<String, String>> groovyModules = new TreeMap<>();
     private final List<IncludedArtifact> includedArtifacts = new ArrayList<>();
 
     public JobPackageBuilder(List<Path> classpath, String packagerVersion) {
+        this(classpath, packagerVersion, Map.of());
+    }
+
+    public JobPackageBuilder(List<Path> classpath, String packagerVersion, Map<Path, PackageDescriptor.Dependency> identities) {
+        this.identities = Map.copyOf(identities);
         this.classpath = classpath.stream().map(path -> path.toAbsolutePath().normalize())
                 .distinct().toList();
         this.packagerVersion = packagerVersion;
@@ -102,10 +108,10 @@ public final class JobPackageBuilder {
                 try (InputStream input = jar.getInputStream(entry)) {
                     bytes = readBounded(input, entry.getName());
                 }
-                addEntry(entry.getName(), bytes, path.getFileName().toString());
+                addEntry(entry.getName(), bytes, identities.containsKey(path) ? identities.get(path).coordinate() : path.getFileName().toString());
             }
             includedArtifacts.add(new IncludedArtifact(path.getFileName().toString(),
-                    sha256(path), "jar"));
+                    sha256(path), "jar", identities.get(path)));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_CLASSPATH_READ",
                     PackagerMessages.format("package.jarRead", path.getFileName()), exception);
@@ -119,10 +125,10 @@ public final class JobPackageBuilder {
                     .sorted(Comparator.comparing(Path::toString)).toList();
             for (Path file : files) {
                 String name = root.relativize(file).toString().replace('\\', '/');
-                addEntry(name, Files.readAllBytes(file), root.getFileName().toString());
+                addEntry(name, Files.readAllBytes(file), identities.containsKey(root) ? identities.get(root).coordinate() : root.getFileName().toString());
             }
             includedArtifacts.add(new IncludedArtifact(root.getFileName().toString(),
-                    hashDirectory(root), "classes"));
+                    hashDirectory(root), "classes", identities.get(root)));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_CLASSPATH_READ",
                     PackagerMessages.format("package.classpathRead", root.getFileName()),
@@ -178,10 +184,8 @@ public final class JobPackageBuilder {
         if (normalized.endsWith(".class")) {
             // av2geobau embeds a private copy of the generated INTERLIS model
             // classes. Prefer the canonical iox-ili copy in the runtime image.
-            if (normalized.startsWith("ch/interlis/models/")) {
-                if (origin.contains("iox-ili")) {
-                    entries.put(normalized, new Entry(bytes, origin));
-                }
+            if (normalized.startsWith("ch/interlis/models/") && canonicalModelPair(previous.origin(), origin)) {
+                if (origin.startsWith("ch.interlis:iox-ili:")) entries.put(normalized, new Entry(bytes, origin));
                 return;
             }
             throw new PackageException("PACKAGE_CLASS_CONFLICT",
@@ -197,6 +201,11 @@ public final class JobPackageBuilder {
         }
         throw new PackageException("PACKAGE_RESOURCE_CONFLICT",
                 PackagerMessages.format("package.resourceConflict", normalized, previous.origin(), origin));
+    }
+
+    private static boolean canonicalModelPair(String first, String second) {
+        return (first.startsWith("ch.interlis:iox-ili:") && second.startsWith("ch.interlis:av2geobau:"))
+                || (second.startsWith("ch.interlis:iox-ili:") && first.startsWith("ch.interlis:av2geobau:"));
     }
 
     private void addCompiled(JobCompiler.CompiledJob compiled) throws PackageException {
@@ -261,7 +270,10 @@ public final class JobPackageBuilder {
         addMetadataEntry("META-INF/gretl/job.json", Json.write(job));
 
         Map<String, Object> dependencies = new LinkedHashMap<>();
-        dependencies.put("schemaVersion", 1);
+        dependencies.put("schemaVersion", 2);
+        dependencies.put("descriptorSchemaVersion", descriptor.schemaVersion());
+        dependencies.put("taskModules", descriptor.schemaVersion() == 1 ? List.of("io", "database", "interlis", "ilivalidator") : descriptor.taskModules());
+        dependencies.put("standardFunctions", descriptor.schemaVersion() == 1 || descriptor.standardFunctions());
         dependencies.put("declared", descriptor.dependencies().stream()
                 .map(PackageDescriptor.Dependency::coordinate).toList());
         List<Map<String, String>> included = new ArrayList<>();
@@ -270,6 +282,11 @@ public final class JobPackageBuilder {
             value.put("name", artifact.name());
             value.put("kind", artifact.kind());
             value.put("sha256", artifact.sha256());
+            if (artifact.identity() != null) {
+                value.put("coordinate", artifact.identity().coordinate());
+                value.put("groupId", artifact.identity().groupId()); value.put("artifactId", artifact.identity().artifactId());
+                value.put("version", artifact.identity().version()); value.put("classifier", artifact.identity().classifier());
+            }
             included.add(value);
         }
         dependencies.put("included", included);
@@ -333,9 +350,7 @@ public final class JobPackageBuilder {
 
     private void validateDeclaredDependencies(PackageDescriptor descriptor) throws PackageException {
         for (PackageDescriptor.Dependency dependency : descriptor.dependencies()) {
-            boolean found = includedArtifacts.stream().anyMatch(artifact ->
-                    artifact.name().equals(dependency.artifactId() + ".jar")
-                            || artifact.name().startsWith(dependency.artifactId() + "-"));
+            boolean found = includedArtifacts.stream().anyMatch(artifact -> dependency.equals(artifact.identity()));
             if (!found) {
                 throw new PackageException("PACKAGE_DEPENDENCY_MISSING",
                         PackagerMessages.format("package.dependencyMissing", dependency.coordinate()));
@@ -474,7 +489,7 @@ public final class JobPackageBuilder {
     private record Entry(byte[] bytes, String origin) {
     }
 
-    private record IncludedArtifact(String name, String sha256, String kind) {
+    private record IncludedArtifact(String name, String sha256, String kind, PackageDescriptor.Dependency identity) {
     }
 
     public record PackageResult(Path output, String name, String version,

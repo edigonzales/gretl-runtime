@@ -6,5 +6,5 @@ if defined JAVA_HOME (
 ) else (
   set "JAVA_BIN=java"
 )
-"%JAVA_BIN%" %GRETL_JAVA_OPTS% -cp "%BASE_DIR%\lib\runtime\*;%BASE_DIR%\lib\tasks\*;%BASE_DIR%\lib\extensions\*" ch.so.agi.gretl.cli.Main %*
+"%JAVA_BIN%" %GRETL_JAVA_OPTS% -Dgretl.packager.catalog="%BASE_DIR%\package-catalog.json" -cp "%BASE_DIR%\lib\runtime\*;%BASE_DIR%\lib\tasks\*;%BASE_DIR%\lib\extensions\*" ch.so.agi.gretl.cli.Main %*
 exit /b %ERRORLEVEL%

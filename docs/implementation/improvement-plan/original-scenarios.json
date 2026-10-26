@@ -1,0 +1,3881 @@
+{
+  "commit": "a9222dc0ffd08f8f76570e998101db041822df71",
+  "scenarios": [
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Av2chTest.java",
+      "method": "transformation_Ok",
+      "jobs": [
+        "Av2ch"
+      ],
+      "purpose": "Av2ch/transformation_Ok",
+      "sourceSha256": "0c82b765e64fa21b2eb2491d935bead3e7633f7822ff11c6e3a5aec6568ecb6f",
+      "assertions": [
+        "assertTrue(resultSize > 580000, \"Size of result file is wrong.\")",
+        "assertTrue(resultString.contains(\"DM01 Interlis Converter\"))",
+        "assertTrue(resultString.contains(\"MODL DM01AVCH24LV95D\"))",
+        "assertTrue(resultString.contains(\"TABL LFP3Nachfuehrung\"))",
+        "assertTrue(resultString.contains(\"OBJE 2540 2514 2611693.294 1233674.211 111.9 1 3 1\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/av2ch; AvArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2chTest.java#L14"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Av2chTest.java",
+      "method": "transformationFileSet_Ok",
+      "jobs": [
+        "Av2chFileSet"
+      ],
+      "purpose": "Av2ch/transformationFileSet_Ok",
+      "sourceSha256": "0c82b765e64fa21b2eb2491d935bead3e7633f7822ff11c6e3a5aec6568ecb6f",
+      "assertions": [
+        "assertTrue(resultFile1.exists())",
+        "assertTrue(resultFile2.exists())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/av2ch; AvArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2chTest.java#L31"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Av2chTest.java",
+      "method": "transformation_Fail",
+      "jobs": [
+        "Av2chFail"
+      ],
+      "purpose": "Av2ch/transformation_Fail",
+      "sourceSha256": "0c82b765e64fa21b2eb2491d935bead3e7633f7822ff11c6e3a5aec6568ecb6f",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/av2ch; AvArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2chTest.java#L44"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Av2geobauTest.java",
+      "method": "simple",
+      "jobs": [
+        "Av2geobau"
+      ],
+      "purpose": "Av2geobau/simple",
+      "sourceSha256": "35e4e4cff77e3d384ab93a7efb905672807236fe27d3493f6378e7e848efb108",
+      "assertions": [
+        "assertTrue(resultFile.exists())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/av2geobau; AvArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2geobauTest.java#L12"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Av2geobauTest.java",
+      "method": "fileSet",
+      "jobs": [
+        "Av2geobauFileSet"
+      ],
+      "purpose": "Av2geobau/fileSet",
+      "sourceSha256": "35e4e4cff77e3d384ab93a7efb905672807236fe27d3493f6378e7e848efb108",
+      "assertions": [
+        "assertTrue(resultFile1.exists())",
+        "assertTrue(resultFile2.exists())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/av2geobau; AvArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Av2geobauTest.java#L21"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Csv2ExcelTest.java",
+      "method": "convertCsv_Ok",
+      "jobs": [
+        "Csv2Excel"
+      ],
+      "purpose": "Csv2Excel/convertCsv_Ok",
+      "sourceSha256": "db7ed2fac7cf43f4a6cfacace86e6aa92d5f0b8c800dd566376612f1960f8a23",
+      "assertions": [
+        "assertEquals(7, headerRow.getLastCellNum())",
+        "assertEquals(7, dataRow.getLastCellNum())",
+        "assertEquals(308, sheet.getLastRowNum())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/csv-excel; FormatArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Csv2ExcelTest.java#L17"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Csv2ExcelTest.java",
+      "method": "convertEmptyCsv_Ok",
+      "jobs": [
+        "Csv2ExcelEmptyFile"
+      ],
+      "purpose": "Csv2Excel/convertEmptyCsv_Ok",
+      "sourceSha256": "db7ed2fac7cf43f4a6cfacace86e6aa92d5f0b8c800dd566376612f1960f8a23",
+      "assertions": [
+        "assertEquals(\"egid\", headerRow.getCell(0).getStringCellValue())",
+        "assertEquals(\"xkoordinaten\", headerRow.getCell(1).getStringCellValue())",
+        "assertEquals(0, sheet.getLastRowNum())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/csv-excel; FormatArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Csv2ExcelTest.java#L43"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/CsvExportTest.java",
+      "method": "exportOk",
+      "jobs": [
+        "CsvExport"
+      ],
+      "purpose": "CsvExport/exportOk",
+      "sourceSha256": "2737c212d05d9dc9550df4a49e3b6c75553e5427257160e5c0fc8b8d262fd4a0",
+      "assertions": [
+        "assertEquals(\"\\\"t_id\\\",\\\"Aint\\\",\\\"adec\\\",\\\"atext\\\",\\\"aenum\\\",\\\"adate\\\",\\\"atimestamp\\\",\\\"aboolean\\\"\", line)",
+        "assertEquals(\"\\\"1\\\",\\\"2\\\",\\\"3.4\\\",\\\"abc\\\",\\\"\\\",\\\"2013-10-21\\\",\\\"2015-02-16T08:35:45.000\\\",\\\"true\\\"\", line)",
+        "assertEquals(\"\\\"2\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\"\", line)"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/csv-import-export; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvExportTest.java#L32"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/CsvImportTest.java",
+      "method": "importOk",
+      "jobs": [
+        "CsvImport"
+      ],
+      "purpose": "CsvImport/importOk",
+      "sourceSha256": "7e776d3abeddfb5956023ed2a847579ce391950f1929fcce396027f5f6e7ef79",
+      "assertions": [
+        "assertEquals(2, rs.getInt(1))",
+        "assertEquals(new BigDecimal(\"3.1\"), rs.getBigDecimal(2))",
+        "assertEquals(\"abc\", rs.getString(3))",
+        "assertEquals(\"rot\", rs.getString(4))",
+        "assertEquals(new java.sql.Date(2017-1900,9-1,21),rs.getDate(5))",
+        "assertEquals(new java.sql.Timestamp(2016-1900,8-1,22,13,15,22,450000000),rs.getTimestamp(6))",
+        "assertTrue(rs.getBoolean(7))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/csv-import-export; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvImportTest.java#L36"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/CsvImportTest.java",
+      "method": "importOk_batchSize",
+      "jobs": [
+        "CsvImportBatchSize"
+      ],
+      "purpose": "CsvImport/importOk_batchSize",
+      "sourceSha256": "7e776d3abeddfb5956023ed2a847579ce391950f1929fcce396027f5f6e7ef79",
+      "assertions": [
+        "assertEquals(2, rs.getInt(1))",
+        "assertEquals(new BigDecimal(\"3.1\"), rs.getBigDecimal(2))",
+        "assertEquals(\"abc\", rs.getString(3))",
+        "assertEquals(\"rot\", rs.getString(4))",
+        "assertEquals(new java.sql.Date(2017-1900,9-1,21),rs.getDate(5))",
+        "assertEquals(new java.sql.Timestamp(2016-1900,8-1,22,13,15,22,450000000),rs.getTimestamp(6))",
+        "assertTrue(rs.getBoolean(7))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/csv-import-export; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvImportTest.java#L72"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/CsvValidatorTest.java",
+      "method": "validationOk",
+      "jobs": [
+        "CsvValidator"
+      ],
+      "purpose": "CsvValidator/validationOk",
+      "sourceSha256": "5fb683e7a3408b4fc1bd2208a695638106a219a7e03f2271fef2ce9bd8e526f2",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/validators; ValidatorLocalJobIT",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvValidatorTest.java#L17"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/CsvValidatorTest.java",
+      "method": "validationFail",
+      "jobs": [
+        "CsvValidatorFail"
+      ],
+      "purpose": "CsvValidator/validationFail",
+      "sourceSha256": "5fb683e7a3408b4fc1bd2208a695638106a219a7e03f2271fef2ce9bd8e526f2",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(fileContent.contains(\"CsvModel.Topic12.Class1: tid o2: value <x> is not a number\"))",
+        "assertTrue(fileContent.contains(\"CsvModel.Topic12.Class1: tid o2: value gruen is not a member of the enumeration in attribute attr3\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/validators; ValidatorLocalJobIT",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CsvValidatorTest.java#L25"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/CurlTest.java",
+      "method": "geodienste_Ok",
+      "jobs": [
+        "CurlGeodienste"
+      ],
+      "purpose": "Curl/geodienste_Ok",
+      "sourceSha256": "8fc8d5bfdf71984dc99b82cd340726b3061a1f4b0ae8314ce2c62b9f92891508",
+      "assertions": [
+        "assertEquals(\"/data_agg/interlis/import\", recordedRequest.getPath())",
+        "assertEquals(recordedRequest.getHeader(\"Authorization\").split(\" \")[1].trim(), Base64.getEncoder().encodeToString((\"fooUser:barPwd\").getBytes()))",
+        "assertTrue(bodyBufferSize>500L)",
+        "assertTrue(bodyContent.contains(\"name=\\\"topic\\\"\"))",
+        "assertTrue(bodyContent.contains(\"npl_waldgrenzen\"))",
+        "assertTrue(bodyContent.contains(\"name=\\\"lv95_file\\\"; filename=\\\"test.xtf.zip\\\"\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/http; IoArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "HTTP"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CurlTest.java#L38"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/CurlTest.java",
+      "method": "geodienste_Fail",
+      "jobs": [
+        "CurlGeodienste"
+      ],
+      "purpose": "Curl/geodienste_Fail",
+      "sourceSha256": "8fc8d5bfdf71984dc99b82cd340726b3061a1f4b0ae8314ce2c62b9f92891508",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory, variables);\n        })"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/http; IoArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "HTTP"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CurlTest.java#L67"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/CurlTest.java",
+      "method": "planregister_Ok",
+      "jobs": [
+        "CurlPlanregister"
+      ],
+      "purpose": "Curl/planregister_Ok",
+      "sourceSha256": "8fc8d5bfdf71984dc99b82cd340726b3061a1f4b0ae8314ce2c62b9f92891508",
+      "assertions": [
+        "assertEquals(\"/typo3/api/digiplan\", recordedRequest.getPath())",
+        "assertEquals(recordedRequest.getHeader(\"Authorization\").split(\" \")[1].trim(), Base64.getEncoder().encodeToString((\"fooUser:barPwd\").getBytes()))",
+        "assertTrue(recordedRequest.getBodySize()>600L)"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/http; IoArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "HTTP"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CurlTest.java#L84"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/CurlTest.java",
+      "method": "downloadFile_Ok",
+      "jobs": [
+        "CurlDownload"
+      ],
+      "purpose": "Curl/downloadFile_Ok",
+      "sourceSha256": "8fc8d5bfdf71984dc99b82cd340726b3061a1f4b0ae8314ce2c62b9f92891508",
+      "assertions": [
+        "assertTrue(content.contains(\"_GRETL_\"))",
+        "assertTrue(content.contains(\"License\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/http; IoArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "HTTP"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/CurlTest.java#L105"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/DatabaseDocumentExportTest.java",
+      "method": "exportOk",
+      "jobs": [
+        "DatabaseDocumentExport"
+      ],
+      "purpose": "DatabaseDocumentExport/exportOk",
+      "sourceSha256": "0974ed638dedce3fb7d61a027ca05b1665b489eecb911c7e818798d02df0f8b2",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ausserhalb-umfang; keiner (ausserhalb Scope) (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Keine angebotene Operation DatabaseDocumentExport.",
+      "status": "ausserhalb Umfang",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/DatabaseDocumentExportTest.java#L31"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java",
+      "method": "fetchSizeParameterTest",
+      "jobs": [
+        "Db2DbTaskFetchSize"
+      ],
+      "purpose": "Db2DbTask/fetchSizeParameterTest",
+      "sourceSha256": "6ef57f6c0a21281f0590285c5c3eb5291a974edbbf60cbf8812a808e458d6a8a",
+      "assertions": [
+        "assertEquals(2, countDest, \"Rowcount in table source_data must be equal to rowcount in table target_data\")"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (Kette); Varianten Phase 2 offen",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L39"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java",
+      "method": "taskChainTest",
+      "jobs": [
+        "Db2DbTaskChain"
+      ],
+      "purpose": "Db2DbTask/taskChainTest",
+      "sourceSha256": "6ef57f6c0a21281f0590285c5c3eb5291a974edbbf60cbf8812a808e458d6a8a",
+      "assertions": [
+        "assertEquals(countSrc, countDest,\n                    \"Rowcount in table albums_src must be equal to rowcount in table albums_dest\"\n            )"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (Kette); Varianten Phase 2 offen",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L87"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java",
+      "method": "relativePathTest",
+      "jobs": [
+        "Db2DbTaskRelPath"
+      ],
+      "purpose": "Db2DbTask/relativePathTest",
+      "sourceSha256": "6ef57f6c0a21281f0590285c5c3eb5291a974edbbf60cbf8812a808e458d6a8a",
+      "assertions": [
+        "assertEquals(countSrc, countDest,\n                    \"Rowcount in table albums_src must be equal to rowcount in table albums_dest\"\n            )"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (Kette); Varianten Phase 2 offen",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L116"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java",
+      "method": "deleteDestTableContent",
+      "jobs": [
+        "Db2DbTaskDelTable"
+      ],
+      "purpose": "Db2DbTask/deleteDestTableContent",
+      "sourceSha256": "6ef57f6c0a21281f0590285c5c3eb5291a974edbbf60cbf8812a808e458d6a8a",
+      "assertions": [
+        "assertEquals(countSrc, countDest,\n                    \"Rowcount in table albums_src must be equal to rowcount in table albums_dest\"\n            )"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (Kette); Varianten Phase 2 offen",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L144"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java",
+      "method": "parameter",
+      "jobs": [
+        "Db2DbParameter"
+      ],
+      "purpose": "Db2DbTask/parameter",
+      "sourceSha256": "6ef57f6c0a21281f0590285c5c3eb5291a974edbbf60cbf8812a808e458d6a8a",
+      "assertions": [
+        "assertEquals(2, countDest, \"Rowcount in table src1 must be equal to rowcount in table dest\")"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (Kette); Varianten Phase 2 offen",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L169"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java",
+      "method": "parameterList",
+      "jobs": [
+        "Db2DbParameterList"
+      ],
+      "purpose": "Db2DbTask/parameterList",
+      "sourceSha256": "6ef57f6c0a21281f0590285c5c3eb5291a974edbbf60cbf8812a808e458d6a8a",
+      "assertions": [
+        "assertEquals(5, countDest, \"Rowcount in table dest must be equal to the combined rowcount in table src1 and src2\")"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (Kette); Varianten Phase 2 offen",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Db2DbTaskTest.java#L195"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/DbDriverContainedTest.java",
+      "method": "SqliteDriverContainedTest",
+      "jobs": [
+        "DbTasks_SqliteLibsPresent"
+      ],
+      "purpose": "DbDriverContained/SqliteDriverContainedTest",
+      "sourceSha256": "bd3b86e347b67544a9beb97c4b1983ba54e69e5be038e6baef6c6ea33572182c",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/gpkg-import; ValidatorLocalJobIT#geoPackageContainsDslSelectedSridAndImportedData",
+      "scope": "SQLite ist als echte GPKG-Laufzeitabhängigkeit im Scope; GPKG-JAR mit unabhängiger Ergebnisprüfung.",
+      "status": "inventarisiert; GPKG-JAR-Ausführungsnachweis vorgesehen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/DbDriverContainedTest.java#L27"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/DbDriverContainedTest.java",
+      "method": "OracleDriverContainedTest",
+      "jobs": [
+        "DbTasks_OracleLibsPresent"
+      ],
+      "purpose": "DbDriverContained/OracleDriverContainedTest",
+      "sourceSha256": "bd3b86e347b67544a9beb97c4b1983ba54e69e5be038e6baef6c6ea33572182c",
+      "assertions": [],
+      "target": "keiner; Oracle ausserhalb des zugesicherten Umfangs",
+      "scope": "Oracle ist kein zugesicherter Treiber.",
+      "status": "ausserhalb Umfang",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/DbDriverContainedTest.java#L34"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/FtpUploadTest.java",
+      "method": "(kein aktiver @Test)",
+      "jobs": [
+        "FtpUpload"
+      ],
+      "purpose": "FtpUpload/(kein aktiver @Test)",
+      "sourceSha256": "16e3a2ee23c9eac9fe2c68198b4ffa767adb26db3540faba9404179b2a18a04e",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ftp; FtpTaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Historischer externer FTP-Test ist auskommentiert und enthält kein fachliches Orakel; lokale Transfers und Fehler bleiben verpflichtend.",
+      "status": "kein ursprünglicher ausführbarer Nachweis; FtpTaskFamilyIT bleibt erhalten; JAR-Port Phase 2 offen",
+      "services": [
+        "FTP"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": true,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/FtpUploadTest.java"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Gpkg2DxfTest.java",
+      "method": "export_Ok",
+      "jobs": [
+        "Gpkg2Dxf"
+      ],
+      "purpose": "Gpkg2Dxf/export_Ok",
+      "sourceSha256": "04a4ef2b0cc99fa89286c4ec91cf8ef36f472e34224fedb6986fb280db772881",
+      "assertions": [
+        "assertTrue(Files.exists(filePath), \"Expected file not found: \" + dxfFile)",
+        "assertTrue(content.contains(\"LerchWeberAG\"))",
+        "assertTrue(content.contains(\"2638171.578\"))",
+        "assertTrue(content.contains(\"2619682.201\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/gpkg-dxf; AvArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Gpkg2DxfTest.java#L27"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Gpkg2ShpTest.java",
+      "method": "export_Ok",
+      "jobs": [
+        "Gpkg2Shp"
+      ],
+      "purpose": "Gpkg2Shp/export_Ok",
+      "sourceSha256": "2eedfdb39477448d5c1f42da28fea8204dedbafc5264d0b2416fce8b3630cf39",
+      "assertions": [
+        "assertEquals(109, featuresSource.getFeatures().size())",
+        "assertEquals(\"CH1903+_LV95\", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString())",
+        "assertEquals(127, featuresSource.getFeatures().size())",
+        "assertEquals(\"CH1903+_LV95\", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/gpkg-shp; FormatArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Gpkg2ShpTest.java#L29"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/GpkgExportTest.java",
+      "method": "exportTableOk",
+      "jobs": [
+        "GpkgExport"
+      ],
+      "purpose": "GpkgExport/exportTableOk",
+      "sourceSha256": "abde8fe4eae4b95bcc94905dbc5f8e9fd57935c50305fe4ccf450719f07c7439",
+      "assertions": [
+        "assertTrue(rs.next(), \"No results returned from query\")",
+        "assertEquals(\"coord2d\", rs.getString(\"attr\"), \"Attribute value mismatch\")",
+        "assertEquals(\"COORD {C1 -0.22857142857142854, C2 0.5688311688311687}\", iomGeom.toString(), \"Geometry mismatch\")",
+        "assertFalse(rs.next(), \"More than one row returned from query\")"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/spatial-import-export; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgExportTest.java#L44"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/GpkgExportTest.java",
+      "method": "exportTablesOk",
+      "jobs": [
+        "GpkgExportTables"
+      ],
+      "purpose": "GpkgExport/exportTablesOk",
+      "sourceSha256": "abde8fe4eae4b95bcc94905dbc5f8e9fd57935c50305fe4ccf450719f07c7439",
+      "assertions": [
+        "assertEquals(\"coord2d\", rs.getString(1))",
+        "assertEquals(\"COORD {C1 -0.22857142857142854, C2 0.5688311688311687}\", iomGeom.toString())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/spatial-import-export; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgExportTest.java#L78"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/GpkgImportTest.java",
+      "method": "importOk",
+      "jobs": [
+        "GpkgImport"
+      ],
+      "purpose": "GpkgImport/importOk",
+      "sourceSha256": "9dc742785eaffa021115f4c9e752f3a47a4594910d4c60d7915a0f54535b1f71",
+      "assertions": [
+        "assertTrue(rowCount.next(), \"No row count result returned\")",
+        "assertEquals(1, rowCount.getInt(\"rowcount\"), \"Row count mismatch\")",
+        "assertEquals(3, rsmd.getColumnCount(), \"Column count mismatch\")",
+        "assertTrue(rs.next(), \"No result rows returned\")",
+        "assertEquals(1, rs.getInt(\"fid\"), \"FID mismatch\")",
+        "assertEquals(\"12\", rs.getString(\"idname\"), \"ID name mismatch\")",
+        "assertEquals(\"SRID=2056;POINT(-0.228571428571429 0.568831168831169)\", rs.getString(\"st_asewkt\"), \"Geometry mismatch\")"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/spatial-import-export; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgImportTest.java#L35"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/GpkgValidatorTest.java",
+      "method": "validationOk",
+      "jobs": [
+        "GpkgValidator"
+      ],
+      "purpose": "GpkgValidator/validationOk",
+      "sourceSha256": "6c81433e302418251c9088b8d510e9723ed2176b328c11fe63506c8ae50b68b7",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/validators; ValidatorLocalJobIT",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgValidatorTest.java#L16"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/GpkgValidatorTest.java",
+      "method": "validationFail",
+      "jobs": [
+        "GpkgValidatorFail"
+      ],
+      "purpose": "GpkgValidator/validationFail",
+      "sourceSha256": "6c81433e302418251c9088b8d510e9723ed2176b328c11fe63506c8ae50b68b7",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(fileContent.contains(\"GpkgModel.Topic1.Attributes: tid o2: value 0 is out of range in attribute art\"))",
+        "assertTrue(fileContent.contains(\"GpkgModel.Topic1.Attributes: tid o2: value <true> is not a number\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/validators; ValidatorLocalJobIT",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GpkgValidatorTest.java#L24"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/GzipTest.java",
+      "method": "compress_file_Ok",
+      "jobs": [
+        "Gzip"
+      ],
+      "purpose": "Gzip/compress_file_Ok",
+      "sourceSha256": "40e52a555a8e8f949b2529728235e65bb892e0b85a41ab94117eb8359b754c10",
+      "assertions": [
+        "assertNotNull(fileContent)",
+        "assertTrue(fileContent.contains(\"ili2pg-4.9.0-eb3a0d51869bd2adeeb51fe7aba4b526fe002c1a\"))",
+        "assertTrue(fileContent.contains(\"<Bezeichnung>Römersmattquellen der Wasserversorgung Bellach\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/archive; ValidatorLocalJobIT#archiveJobPreservesOriginalXmlBytes",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/GzipTest.java#L30"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2duckdbExportTest.java",
+      "method": "exportOk",
+      "jobs": [
+        "Ili2duckdbExport"
+      ],
+      "purpose": "Ili2duckdbExport/exportOk",
+      "sourceSha256": "d8f8aed6ccc41b8139461bf41d718a4fd7da9e380aeed0ab32592a23d1aab901",
+      "assertions": [
+        "assertXtfFile(new File(\"src/integrationTest/jobs/Ili2duckdbExport/VOLLZUG_SO0200002401_1531_20180105113131.xml\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2duckdb; InterlisArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2duckdbExportTest.java#L33"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2duckdbImportSchemaTest.java",
+      "method": "importOk",
+      "jobs": [
+        "Ili2duckdbImportSchema"
+      ],
+      "purpose": "Ili2duckdbImportSchema/importOk",
+      "sourceSha256": "457eec3f93774ba34c0230cbddcfee475858a3364baabed928345649b8571529",
+      "assertions": [
+        "assertTrue(rs.getString(1).contains(\"INTERLIS 2.2;\"))",
+        "assertTrue(rs.getString(1).contains(\"mutationsnummer\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2duckdb; InterlisArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2duckdbImportSchemaTest.java#L25"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2duckdbImportTest.java",
+      "method": "importOk",
+      "jobs": [
+        "Ili2duckdbImport"
+      ],
+      "purpose": "Ili2duckdbImport/importOk",
+      "sourceSha256": "f28b23c9772f9c3bcd8463a340ab4635f9f8c38f02844c1e5a86bcf88f1e9cbc",
+      "assertions": [
+        "assertTrue(rs.getString(1).contains(\"INTERLIS 2.2;\"))",
+        "assertTrue(rs.getString(1).contains(\"Eintrag\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2duckdb; InterlisArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2duckdbImportTest.java#L25"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2gpkgImportTest.java",
+      "method": "importOk",
+      "jobs": [
+        "Ili2gpkgImport"
+      ],
+      "purpose": "Ili2gpkgImport/importOk",
+      "sourceSha256": "7b3b976ecabfdc6ce35fc7e808e5acd373145dca6643745905ce46a1dce17290",
+      "assertions": [
+        "assertTrue(geometer.contains(geometerName))",
+        "assertEquals(5, i)"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/gpkg-import; ValidatorLocalJobIT#geoPackageContainsDslSelectedSridAndImportedData",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2gpkgImportTest.java#L29"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2gpkgImportTest.java",
+      "method": "importFileSet",
+      "jobs": [
+        "Ili2gpkgImportFileSet"
+      ],
+      "purpose": "Ili2gpkgImport/importFileSet",
+      "sourceSha256": "7b3b976ecabfdc6ce35fc7e808e5acd373145dca6643745905ce46a1dce17290",
+      "assertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(4, count)",
+        "assertEquals(2,datasets.size())",
+        "assertTrue(datasets.contains(\"DatasetA\"))",
+        "assertTrue(datasets.contains(\"DatasetB\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/gpkg-import; ValidatorLocalJobIT#geoPackageContainsDslSelectedSridAndImportedData",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2gpkgImportTest.java#L68"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgDeleteDatasetsTest.java",
+      "method": "deleteOk",
+      "jobs": [
+        "Ili2pgDeleteDatasets"
+      ],
+      "purpose": "Ili2pgDeleteDatasets/deleteOk",
+      "sourceSha256": "e00eee3265f3b029589cc525c562b69243a377016ac5485877b69af66ac5437f",
+      "assertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(0, rs.getInt(1))",
+        "assertEquals(0, datasets.size())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgDeleteDatasetsTest.java#L38"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgDeleteTest.java",
+      "method": "deleteDataset_Ok",
+      "jobs": [
+        "Ili2pgDeleteDataset"
+      ],
+      "purpose": "Ili2pgDelete/deleteDataset_Ok",
+      "sourceSha256": "f82650a1b3f14dfddc4dc02bca84a275b700a20a75f02e8bf03263c5b06855fd",
+      "assertions": [
+        "assertEquals(0, rs.getInt(1))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgDeleteTest.java#L35"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgExportDatasetsTest.java",
+      "method": "exportOk",
+      "jobs": [
+        "Ili2pgExportDatasets"
+      ],
+      "purpose": "Ili2pgExportDatasets/exportOk",
+      "sourceSha256": "9de6a2f74d7dbde039e48f8220f85fa92a6961b44f7a979c88fc132ca26ffa29",
+      "assertions": [
+        "assertXtfFile(new File(\"src/integrationTest/jobs/Ili2pgExportDatasets/DatasetA-out.xtf\"))",
+        "assertXtfFile(new File(\"src/integrationTest/jobs/Ili2pgExportDatasets/DatasetB-out.xtf\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgExportDatasetsTest.java#L33"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgImportFileSetTest.java",
+      "method": "importOk",
+      "jobs": [
+        "Ili2pgImportFileSet"
+      ],
+      "purpose": "Ili2pgImportFileSet/importOk",
+      "sourceSha256": "43f11d3a32bc0d68c936fa13d77dc162a23ab638751f86ed08cd13bdf047bbd0",
+      "assertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(4,rs.getInt(1))",
+        "assertEquals(2,datasets.size())",
+        "assertTrue(datasets.contains(\"A_Da\"))",
+        "assertTrue(datasets.contains(\"B_Da\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportFileSetTest.java#L38"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java",
+      "method": "schemaImportOk",
+      "jobs": [
+        "Ili2pgImportSchema"
+      ],
+      "purpose": "Ili2pgImportSchema/schemaImportOk",
+      "sourceSha256": "f3fd5a6803c984befcff424d30b2cb63a5df915c8ea6d5075e1987c30627eac6",
+      "assertions": [
+        "assertTrue(rs.getString(1).contains(\"INTERLIS 2.2;\"))",
+        "assertTrue(rs.getString(1).contains(\"mutationsnummer\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java#L35"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java",
+      "method": "schemaImport_Options1_Ok",
+      "jobs": [
+        "Ili2pgImportSchema_Options"
+      ],
+      "purpose": "Ili2pgImportSchema/schemaImport_Options1_Ok",
+      "sourceSha256": "f3fd5a6803c984befcff424d30b2cb63a5df915c8ea6d5075e1987c30627eac6",
+      "assertions": [
+        "assertTrue(rs.getString(1).equalsIgnoreCase(\"text\"))",
+        "assertTrue(rs.getString(1).equalsIgnoreCase(\"character varying\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java#L73"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java",
+      "method": "schemaImport_MetaConfigIliData_Ok",
+      "jobs": [
+        "Ili2pgImportSchema_MetaConfigIliData"
+      ],
+      "purpose": "Ili2pgImportSchema/schemaImport_MetaConfigIliData_Ok",
+      "sourceSha256": "f3fd5a6803c984befcff424d30b2cb63a5df915c8ea6d5075e1987c30627eac6",
+      "assertions": [
+        "assertTrue(rs.getString(1).contains(\"ilidata:metaconfig_simple_table_ini_20240502\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java#L113"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java",
+      "method": "schemaImport_MetaConfigFile_Ok",
+      "jobs": [
+        "Ili2pgImportSchema_MetaConfigFile"
+      ],
+      "purpose": "Ili2pgImportSchema/schemaImport_MetaConfigFile_Ok",
+      "sourceSha256": "f3fd5a6803c984befcff424d30b2cb63a5df915c8ea6d5075e1987c30627eac6",
+      "assertions": [
+        "assertTrue(rs.getString(1).contains(\"simple_table_ini_20240502.ini\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgImportSchemaTest.java#L139"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgReplaceFileTest.java",
+      "method": "importLocalFile_Ok",
+      "jobs": [
+        "Ili2pgReplaceFile"
+      ],
+      "purpose": "Ili2pgReplaceFile/importLocalFile_Ok",
+      "sourceSha256": "03d1e4c6b802297d5055717e119e0f178292332f8ae27b825ef65ee5d2ec0197",
+      "assertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(2, rs.getInt(1))",
+        "assertEquals(1, datasets.size())",
+        "assertTrue(datasets.contains(\"A_Dataset\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgReplaceFileTest.java#L38"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgReplaceFileTest.java",
+      "method": "importIlidataFile_Ok",
+      "jobs": [
+        "Ili2pgReplaceIlidataFile"
+      ],
+      "purpose": "Ili2pgReplaceFile/importIlidataFile_Ok",
+      "sourceSha256": "03d1e4c6b802297d5055717e119e0f178292332f8ae27b825ef65ee5d2ec0197",
+      "assertions": [
+        "assertTrue(rs.next())",
+        "assertEquals(1, rs.getInt(1))",
+        "assertEquals(1, datasets.size())",
+        "assertTrue(datasets.contains(\"2549\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgReplaceFileTest.java#L72"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgValidateDatasetTest.java",
+      "method": "validateSingleDataset_Ok",
+      "jobs": [
+        "Ili2pgValidateSingleDataset"
+      ],
+      "purpose": "Ili2pgValidateDataset/validateSingleDataset_Ok",
+      "sourceSha256": "433dddae63129cdaf23e809b4ebd7c7f5b4357262ae42567b39e1880e26de16c",
+      "assertions": [
+        "assertTrue(logFileContent.contains(\"Info: ...validate done\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateDatasetTest.java#L33"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgValidateDatasetTest.java",
+      "method": "validateMultipleDataset_Ok",
+      "jobs": [
+        "Ili2pgValidateMultipleDatasets"
+      ],
+      "purpose": "Ili2pgValidateDataset/validateMultipleDataset_Ok",
+      "sourceSha256": "433dddae63129cdaf23e809b4ebd7c7f5b4357262ae42567b39e1880e26de16c",
+      "assertions": [
+        "assertTrue(logFileContent.contains(\"Info: ...validate done\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateDatasetTest.java#L46"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgValidateDatasetTest.java",
+      "method": "validateData_Fail",
+      "jobs": [
+        "Ili2pgValidateDatasetFail"
+      ],
+      "purpose": "Ili2pgValidateDataset/validateData_Fail",
+      "sourceSha256": "433dddae63129cdaf23e809b4ebd7c7f5b4357262ae42567b39e1880e26de16c",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);\n        })",
+        "assertTrue(logFileContent.contains(\"Error: ...validate failed\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateDatasetTest.java#L59"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgValidateTest.java",
+      "method": "validateData_Ok",
+      "jobs": [
+        "Ili2pgValidate"
+      ],
+      "purpose": "Ili2pgValidate/validateData_Ok",
+      "sourceSha256": "6312059068b6230675023531f4456af658e22663d0514a0c7a2d246f605bd55e",
+      "assertions": [
+        "assertTrue(logFileContent.contains(\"Info: ...validate done\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateTest.java#L34"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/Ili2pgValidateTest.java",
+      "method": "validateData_Fail",
+      "jobs": [
+        "Ili2pgValidateFail"
+      ],
+      "purpose": "Ili2pgValidate/validateData_Fail",
+      "sourceSha256": "6312059068b6230675023531f4456af658e22663d0514a0c7a2d246f605bd55e",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);\n        })",
+        "assertTrue(logFileContent.contains(\"Error: ...validate failed\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili2pg; InterlisArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/Ili2pgValidateTest.java#L47"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/IliValidatorTest.java",
+      "method": "validationOk",
+      "jobs": [
+        "IliValidator"
+      ],
+      "purpose": "IliValidator/validationOk",
+      "sourceSha256": "dcf6e77ef2387412102b29ee98c21aa27f821724c024f61fd4a5b535d4a43ace",
+      "assertions": [
+        "assertTrue(content.contains(\"Info: ...validation done\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili-validator; InterlisArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/IliValidatorTest.java#L16"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/IliValidatorTest.java",
+      "method": "validationFileSetOk",
+      "jobs": [
+        "IliValidatorFileSet"
+      ],
+      "purpose": "IliValidator/validationFileSetOk",
+      "sourceSha256": "dcf6e77ef2387412102b29ee98c21aa27f821724c024f61fd4a5b535d4a43ace",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili-validator; InterlisArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/IliValidatorTest.java#L29"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/IliValidatorTest.java",
+      "method": "validationFail",
+      "jobs": [
+        "IliValidatorFail"
+      ],
+      "purpose": "IliValidator/validationFail",
+      "sourceSha256": "dcf6e77ef2387412102b29ee98c21aa27f821724c024f61fd4a5b535d4a43ace",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili-validator; InterlisArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/IliValidatorTest.java#L38"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/IliValidatorTest.java",
+      "method": "validateFail_Ngk",
+      "jobs": [
+        "IliValidatorNgk"
+      ],
+      "purpose": "IliValidator/validateFail_Ngk",
+      "sourceSha256": "dcf6e77ef2387412102b29ee98c21aa27f821724c024f61fd4a5b535d4a43ace",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(fileContent.contains(\"additional model SO_AFU_Naturgefahren_Validierung_20240515\"))",
+        "assertTrue(fileContent.contains(\"tid 701051de-6f2f-476d-81fb-43b8885ae7fc: Die Kennung des Auftrags im XTF muss dem Dateinamen des XTF entsprechen\"))",
+        "assertFalse(fileContent.contains(\"Info: assume unknown external objects\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ili-validator; InterlisArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/IliValidatorTest.java#L49"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/JsonImportTest.java",
+      "method": "importJsonObject_Ok",
+      "jobs": [
+        "JsonImportObject"
+      ],
+      "purpose": "JsonImport/importJsonObject_Ok",
+      "sourceSha256": "c355afb949e627c72da2948258b78aab9c7cf1d20f5eb143af8dcf21f803cf86",
+      "assertions": [
+        "assertEquals(821114211, rs.getInt(1))",
+        "assertEquals(2626724, rs.getInt(1))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/json-import; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/JsonImportTest.java#L39"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/JsonImportTest.java",
+      "method": "importJsonArray_Ok",
+      "jobs": [
+        "JsonImportArray"
+      ],
+      "purpose": "JsonImport/importJsonArray_Ok",
+      "sourceSha256": "c355afb949e627c72da2948258b78aab9c7cf1d20f5eb143af8dcf21f803cf86",
+      "assertions": [
+        "assertEquals(\"\\\"Doe\\\"\", rs.getString(1))",
+        "assertEquals(\"\\\"Doe\\\"\", rs.getString(1))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/json-import; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/JsonImportTest.java#L93"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/JsonValidatorTest.java",
+      "method": "validationOk",
+      "jobs": [
+        "JsonValidatorOk"
+      ],
+      "purpose": "JsonValidator/validationOk",
+      "sourceSha256": "67086897b7e01ad7db1a587f23a35f9508d3d8d6e454252ccfc37a14cf0595e8",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/validators; ValidatorLocalJobIT",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/JsonValidatorTest.java#L16"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/JsonValidatorTest.java",
+      "method": "validationFail",
+      "jobs": [
+        "JsonValidatorFail"
+      ],
+      "purpose": "JsonValidator/validationFail",
+      "sourceSha256": "67086897b7e01ad7db1a587f23a35f9508d3d8d6e454252ccfc37a14cf0595e8",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(content.contains(\"line 2: Test2.Topic2.ClassA: tid o1: Attribute attrStruct[0]/attrText is length restricted to 3\"))",
+        "assertTrue(content.contains(\"line 2: Test2.Topic2.ClassA: tid o1: Attribute attrBag[1]/attrText is length restricted to 3\"))",
+        "assertTrue(content.contains(\"line 2: Test2.Topic2.ClassA: tid o1: Attribute attrTextList[0] is length restricted to 5\"))",
+        "assertTrue(content.contains(\"line 21: Test2.Topic2.ClassA: tid o2: Attribute attrStruct[0]/attrText is length restricted to 3\"))",
+        "assertTrue(content.contains(\"line 21: Test2.Topic2.ClassA: tid o2: Attribute attrBag[1]/attrText is length restricted to 3\"))",
+        "assertTrue(content.contains(\"line 21: Test2.Topic2.ClassA: tid o2: Attribute attrTextList[0] is length restricted to 5\"))",
+        "assertTrue(content.contains(\"Test2.Topic2.ClassA: tid o1: Overlay coord1 (2460000.500, 1045000.000), coord2 (2460001.000, 1045000.000), tids o1, o2\"))",
+        "assertTrue(content.contains(\"Test2.Topic2.ClassA: tid o1: Intersection coord1 (2460000.500, 1045000.000), tids o1, o2\"))",
+        "assertTrue(content.contains(\"Test2.Topic2.ClassA: tid o1: Intersection coord1 (2460001.000, 1045000.000), tids o1, o2\"))",
+        "assertTrue(content.contains(\"failed to validate AREA Test2.Topic2.ClassA.attrSurface\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/validators; ValidatorLocalJobIT",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/JsonValidatorTest.java#L25"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/PostgisRasterExportTest.java",
+      "method": "exportTiff",
+      "jobs": [
+        "PostgisRasterTiffExport"
+      ],
+      "purpose": "PostgisRasterExport/exportTiff",
+      "sourceSha256": "490860b288f85bd755e626eb5e117b356c15625145bccb01bdf4b1c37d9ef69b",
+      "assertions": [
+        "assertEquals(targetFileSize, exportFileSize)"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ausserhalb-umfang; keiner (ausserhalb Scope) (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Rasterexport ist keine der 44 angebotenen Operationen.",
+      "status": "ausserhalb Umfang",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/PostgisRasterExportTest.java#L32"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/PostgisRasterExportTest.java",
+      "method": "exportGeoTiff",
+      "jobs": [
+        "PostgisRasterGeotiffExport"
+      ],
+      "purpose": "PostgisRasterExport/exportGeoTiff",
+      "sourceSha256": "490860b288f85bd755e626eb5e117b356c15625145bccb01bdf4b1c37d9ef69b",
+      "assertions": [
+        "assertEquals(targetFileSize, exportFileSize)"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ausserhalb-umfang; keiner (ausserhalb Scope) (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Rasterexport ist keine der 44 angebotenen Operationen.",
+      "status": "ausserhalb Umfang",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/PostgisRasterExportTest.java#L53"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/PublisherTestOld.java",
+      "method": "simple",
+      "jobs": [
+        "Publisher"
+      ],
+      "purpose": "PublisherTestOld/simple",
+      "sourceSha256": "70ca1a6a53f60c1d141ed08b84a72233345be468e21184b8ee8efa9cca5ad21c",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ausserhalb-umfang; keiner (ausserhalb Scope) (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Publisher ist ausdrücklich ausgeklammert.",
+      "status": "ausserhalb Umfang",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/PublisherTestOld.java#L15"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/PublisherTestOld.java",
+      "method": "regions",
+      "jobs": [
+        "PublisherRegions"
+      ],
+      "purpose": "PublisherTestOld/regions",
+      "sourceSha256": "70ca1a6a53f60c1d141ed08b84a72233345be468e21184b8ee8efa9cca5ad21c",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/ausserhalb-umfang; keiner (ausserhalb Scope) (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Publisher ist ausdrücklich ausgeklammert.",
+      "status": "ausserhalb Umfang",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/PublisherTestOld.java#L24"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/S3Bucket2BucketTest.java",
+      "method": "uploadDirectory_Ok",
+      "jobs": [
+        "S3Bucket2Bucket"
+      ],
+      "purpose": "S3Bucket2Bucket/uploadDirectory_Ok",
+      "sourceSha256": "be21f15c93b855d64454292ff78893e5a14cde1cdef6a305755bb71882b171c7",
+      "assertions": [
+        "assertTrue(keyList.contains(\"foo.txt\"))",
+        "assertTrue(keyList.contains(\"bar.txt\"))",
+        "assertEquals(2, keyList.size())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/s3; S3TaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "S3"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3Bucket2BucketTest.java#L55"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/S3DeleteTest.java",
+      "method": "deleteFile_Ok",
+      "jobs": [
+        "S3DeleteFile"
+      ],
+      "purpose": "S3Delete/deleteFile_Ok",
+      "sourceSha256": "62cc090ecf70ae354d2c202e579b31afda79bafa1c1bef8c9f814e606985e886",
+      "assertions": [
+        "assertEquals(0, listResponse.contents().size())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/s3; S3TaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "S3"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3DeleteTest.java#L70"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/S3DeleteTest.java",
+      "method": "deleteDirectory_Ok",
+      "jobs": [
+        "S3DeleteDirectory"
+      ],
+      "purpose": "S3Delete/deleteDirectory_Ok",
+      "sourceSha256": "62cc090ecf70ae354d2c202e579b31afda79bafa1c1bef8c9f814e606985e886",
+      "assertions": [
+        "assertEquals(0, listResponse.contents().size())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/s3; S3TaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "S3"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3DeleteTest.java#L92"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/S3DownloadTest.java",
+      "method": "downloadFile_Ok",
+      "jobs": [
+        "S3DownloadFile"
+      ],
+      "purpose": "S3Download/downloadFile_Ok",
+      "sourceSha256": "4a1d9bb1bcac522bab1e9cbd8b6395c9987dc72e9ab2d7f713bd5902b45a891f",
+      "assertions": [
+        "assertTrue(reader.readLine().equalsIgnoreCase(\"fubar\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/s3; S3TaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "S3"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3DownloadTest.java#L68"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/S3DownloadTest.java",
+      "method": "downloadDirectory_Ok",
+      "jobs": [
+        "S3DownloadDirectory"
+      ],
+      "purpose": "S3Download/downloadDirectory_Ok",
+      "sourceSha256": "4a1d9bb1bcac522bab1e9cbd8b6395c9987dc72e9ab2d7f713bd5902b45a891f",
+      "assertions": [
+        "assertEquals(\"foo\", content.substring(0, 3))",
+        "assertEquals(\"bar\", content.substring(0, 3))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/s3; S3TaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "S3"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3DownloadTest.java#L98"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/S3UploadTest.java",
+      "method": "uploadDirectory_Ok",
+      "jobs": [
+        "S3UploadDirectory"
+      ],
+      "purpose": "S3Upload/uploadDirectory_Ok",
+      "sourceSha256": "9995620daaf8bb0eb05085767fc16639e8140de15b21884d239ae8ddfee8d482",
+      "assertions": [
+        "assertTrue(keyList.contains(\"foo.txt\"))",
+        "assertTrue(keyList.contains(\"bar.txt\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/s3; S3TaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "S3"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3UploadTest.java#L63"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/S3UploadTest.java",
+      "method": "uploadFileTree_Ok",
+      "jobs": [
+        "S3UploadFileTree"
+      ],
+      "purpose": "S3Upload/uploadFileTree_Ok",
+      "sourceSha256": "9995620daaf8bb0eb05085767fc16639e8140de15b21884d239ae8ddfee8d482",
+      "assertions": [
+        "assertTrue(keyList.contains(\"foo.csv\"))",
+        "assertTrue(keyList.contains(\"bar.csv\"))",
+        "assertEquals(2, keyList.size())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/s3; S3TaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "S3"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3UploadTest.java#L97"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/S3UploadTest.java",
+      "method": "uploadFile_Ok",
+      "jobs": [
+        "S3UploadFile"
+      ],
+      "purpose": "S3Upload/uploadFile_Ok",
+      "sourceSha256": "9995620daaf8bb0eb05085767fc16639e8140de15b21884d239ae8ddfee8d482",
+      "assertions": [
+        "assertTrue(reader.readLine().equalsIgnoreCase(\"bar\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/s3; S3TaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "S3"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3UploadTest.java#L132"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/S3UploadTest.java",
+      "method": "uploadFile_Fail",
+      "jobs": [
+        "S3UploadFileFail"
+      ],
+      "purpose": "S3Upload/uploadFile_Fail",
+      "sourceSha256": "9995620daaf8bb0eb05085767fc16639e8140de15b21884d239ae8ddfee8d482",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);\n        })"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/s3; S3TaskFamilyIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "S3"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/S3UploadTest.java#L158"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/ShpExportTest.java",
+      "method": "exportOk",
+      "jobs": [
+        "ShpExport"
+      ],
+      "purpose": "ShpExport/exportOk",
+      "sourceSha256": "d7ed2d8a7e31a481011eec28bd4b38ec84ad962cef973aab8595c5d909bfaa56",
+      "assertions": [
+        "assertEquals(2,attr1)",
+        "assertEquals(\"abc\",attr2)",
+        "assertEquals(3.4,attr3)",
+        "assertEquals(new Coordinate(2638000.0,1175250.0),((Point)attr4).getCoordinate())",
+        "assertEquals(new java.util.Date(2013-1900,10-1,21),attr5)",
+        "assertEquals(String.class.getName(),attr6.getClass().getName())",
+        "assertEquals(\"true\",attr6)",
+        "assertEquals(String.class.getName(),attr7.getClass().getName())",
+        "assertEquals(\"2015-02-16T08:35:45.000\",attr7)"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/spatial-import-export; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/ShpExportTest.java#L44"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/ShpImportTest.java",
+      "method": "importOk",
+      "jobs": [
+        "ShpImportBatchSize"
+      ],
+      "purpose": "ShpImport/importOk",
+      "sourceSha256": "201d2b51f8b01e5c98f17fbd0f6c9ac9fd2635460283bea717c3b1f9ae007067",
+      "assertions": [
+        "assertEquals(2,rs.getInt(1))",
+        "assertEquals(new BigDecimal(\"3.4\"),rs.getBigDecimal(2))",
+        "assertEquals(\"abc\",rs.getString(3))",
+        "assertEquals(\"rot\",rs.getString(4))",
+        "assertEquals(new java.sql.Date(2013-1900,10-1,21),rs.getDate(5))",
+        "assertEquals(2638000.0,rs.getFloat(6),0.000001)",
+        "assertEquals(1175250.0,rs.getFloat(7),0.000001)"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/spatial-import-export; FormatArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/ShpImportTest.java#L34"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/ShpValidatorTest.java",
+      "method": "validationOk",
+      "jobs": [
+        "ShpValidator"
+      ],
+      "purpose": "ShpValidator/validationOk",
+      "sourceSha256": "5eb280c16555f55a69c60d1cad30ec2d42b191cf2d4329924445443106203a21",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/validators; ValidatorLocalJobIT",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/ShpValidatorTest.java#L16"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/ShpValidatorTest.java",
+      "method": "validationFail",
+      "jobs": [
+        "ShpValidatorFail"
+      ],
+      "purpose": "ShpValidator/validationFail",
+      "sourceSha256": "5eb280c16555f55a69c60d1cad30ec2d42b191cf2d4329924445443106203a21",
+      "assertions": [
+        "assertThrows(Throwable.class, () -> {\n            IntegrationTestUtil.executeTestRunner(projectDirectory);\n        })",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o2: value rot is not a member of the enumeration in attribute aenum\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute aint requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute adec requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute atext requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute aenum requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute adate requires a value\"))",
+        "assertTrue(fileContent.contains(\"ShpModel.Topic12.Class1: tid o3: Attribute the_geom requires a value\"))",
+        "assertTrue(fileContent.contains(\"...validation failed\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/validators; ValidatorLocalJobIT",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/ShpValidatorTest.java#L25"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/SqlExecutorTaskDuckDbTest.java",
+      "method": "multipleStuff_Ok",
+      "jobs": [
+        "SqlExecutorTaskDuckDb"
+      ],
+      "purpose": "SqlExecutorTaskDuckDb/multipleStuff_Ok",
+      "sourceSha256": "0e999d4dbbbb6a0d9346f02d96f71846fe6aa1134d191f2631b31bf583da61a6",
+      "assertions": [
+        "assertTrue(Files.exists(pathToDatabase))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/duckdb; DatabaseArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskDuckDbTest.java#L18"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java",
+      "method": "taskChainTest",
+      "jobs": [
+        "SqlExecutorTaskChain"
+      ],
+      "purpose": "SqlExecutorTask/taskChainTest",
+      "sourceSha256": "044ec17da8c382168f072d3371c46e5411868148e059da9af14c5d7dcf5b10ca",
+      "assertions": [
+        "assertEquals(countSrc, countDest, \"Rowcount in destination table must be equal to rowcount in source table\")",
+        "assertTrue(countDest > 0, \"Rowcount in destination table must be greater than zero\")"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java#L42"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java",
+      "method": "relPathTest",
+      "jobs": [
+        "SqlExecutorTaskRelPath"
+      ],
+      "purpose": "SqlExecutorTask/relPathTest",
+      "sourceSha256": "044ec17da8c382168f072d3371c46e5411868148e059da9af14c5d7dcf5b10ca",
+      "assertions": [],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java#L79"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java",
+      "method": "parameter",
+      "jobs": [
+        "SqlExecutorTaskParameter"
+      ],
+      "purpose": "SqlExecutorTask/parameter",
+      "sourceSha256": "044ec17da8c382168f072d3371c46e5411868148e059da9af14c5d7dcf5b10ca",
+      "assertions": [
+        "assertEquals(1, titles.size())",
+        "assertTrue(titles.contains(\"ele1\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java#L98"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java",
+      "method": "parameterList",
+      "jobs": [
+        "SqlExecutorTaskParameterList"
+      ],
+      "purpose": "SqlExecutorTask/parameterList",
+      "sourceSha256": "044ec17da8c382168f072d3371c46e5411868148e059da9af14c5d7dcf5b10ca",
+      "assertions": [
+        "assertEquals(2, titles.size())",
+        "assertTrue(titles.contains(\"ele1\"))",
+        "assertTrue(titles.contains(\"ele2\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/database; DatabaseArtifactIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [
+        "PostgreSQL/PostGIS"
+      ],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/SqlExecutorTaskTest.java#L133"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/XslTransformerTest.java",
+      "method": "transformFile_Resource_Ok",
+      "jobs": [
+        "XslTransformerResource"
+      ],
+      "purpose": "XslTransformer/transformFile_Resource_Ok",
+      "sourceSha256": "8e4f6de56acae52dff6973d9cf869db898f9ab6fe6ffac88e45c985220d9f7a8",
+      "assertions": [
+        "assertTrue(fileContent.contains(\"<SO_AGI_SGV_Meldungen_20221109.Meldungen BID=\\\"SO_AGI_SGV_Meldungen_20221109.Meldungen\\\">\"))",
+        "assertTrue(fileContent.contains(\"<Grundstuecksnummer>1505</Grundstuecksnummer>\"))",
+        "assertTrue(fileContent.contains(\"<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/xslt; IoArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/XslTransformerTest.java#L16"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/XslTransformerTest.java",
+      "method": "transformFile_File_Ok",
+      "jobs": [
+        "XslTransformerFile"
+      ],
+      "purpose": "XslTransformer/transformFile_File_Ok",
+      "sourceSha256": "8e4f6de56acae52dff6973d9cf869db898f9ab6fe6ffac88e45c985220d9f7a8",
+      "assertions": [
+        "assertTrue(fileContent.contains(\"<SO_AGI_SGV_Meldungen_20221109.Meldungen BID=\\\"SO_AGI_SGV_Meldungen_20221109.Meldungen\\\">\"))",
+        "assertTrue(fileContent.contains(\"<Grundstuecksnummer>1505</Grundstuecksnummer>\"))",
+        "assertTrue(fileContent.contains(\"<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>\"))"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/xslt; IoArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/XslTransformerTest.java#L31"
+    },
+    {
+      "originalCommit": "a9222dc0ffd08f8f76570e998101db041822df71",
+      "test": "java/ch/so/agi/gretl/jobs/XslTransformerTest.java",
+      "method": "transformFileSet_Ok",
+      "jobs": [
+        "XslTransformerFileSet"
+      ],
+      "purpose": "XslTransformer/transformFileSet_Ok",
+      "sourceSha256": "8e4f6de56acae52dff6973d9cf869db898f9ab6fe6ffac88e45c985220d9f7a8",
+      "assertions": [
+        "assertTrue(new File(\"src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf\").exists())",
+        "assertTrue(new File(\"src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_mehrere_gebaeude_mehrere_grundstuecke.xtf\").exists())"
+      ],
+      "target": "gretl-integration-tests/src/test/resources/jobs/xslt; IoArtifactLocalJobIT (geplant für Phase 2; noch kein JAR-Portnachweis)",
+      "scope": "Im Scope; bisheriger JAR-Nachweis ersetzt relevante Varianten noch nicht vollständig.",
+      "status": "inventarisiert; Ausführungsnachweis offen",
+      "services": [],
+      "notes": "Originale erwartete Daten/Fehler stehen in den Assertionen und den inventarisierten Eingabedateien. Status offen bis tatsächlicher Kandidatenlauf belegt ist.",
+      "historicallyDisabled": false,
+      "sourceUrl": "https://github.com/sogis/gretl/blob/a9222dc0ffd08f8f76570e998101db041822df71/gretl/src/integrationTest/java/ch/so/agi/gretl/jobs/XslTransformerTest.java#L46"
+    }
+  ],
+  "files": [
+    {
+      "path": "jobs/.gitignore",
+      "sha256": "3f10f4bca2e97afdc4699c317672d9771ad2e2726cf3832db8c3da36f5602769",
+      "bytes": 99
+    },
+    {
+      "path": "jobs/Av2ch/.gitignore",
+      "sha256": "b5726d3ec9335a09c124469eca039523847a6b0f08a083efaefd002b83326600",
+      "bytes": 8
+    },
+    {
+      "path": "jobs/Av2ch/254900.itf",
+      "sha256": "6d64380caef2a2e9ba19c71b1ba08d3fd47e06b0c50486980a3306f8a2a6daf8",
+      "bytes": 592155
+    },
+    {
+      "path": "jobs/Av2ch/build.gradle",
+      "sha256": "0dd99ceb72013001be357e4c0934fa94a4c5b5d9214f3084083b364a1f7bd506",
+      "bytes": 196
+    },
+    {
+      "path": "jobs/Av2ch/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Av2chFail/build.gradle",
+      "sha256": "73cc26ff2b3a0109d2a322039810311f5cec0e757cd5431e1f9bb0605ac81c44",
+      "bytes": 191
+    },
+    {
+      "path": "jobs/Av2chFail/fubar.itf",
+      "sha256": "4b4bbee842bd44a919dfa391417ddec8e0fa1c8632f6b3541fb1a915ce44611a",
+      "bytes": 21
+    },
+    {
+      "path": "jobs/Av2chFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Av2chFileSet/.gitignore",
+      "sha256": "9aff6ba4b042b9d09991a9fbf8c80ddbd2a9c433638339cd831bed955e39f106",
+      "bytes": 7
+    },
+    {
+      "path": "jobs/Av2chFileSet/252400.itf",
+      "sha256": "629a8e4fc11c4e988de0632cec505624671552ee4f9d3ab4c748e78be658c3d4",
+      "bytes": 627095
+    },
+    {
+      "path": "jobs/Av2chFileSet/254900.itf",
+      "sha256": "6d64380caef2a2e9ba19c71b1ba08d3fd47e06b0c50486980a3306f8a2a6daf8",
+      "bytes": 592155
+    },
+    {
+      "path": "jobs/Av2chFileSet/build.gradle",
+      "sha256": "98db3446d2b9f0feff24249c5d8a8c94b6e63fa618b27f18680558851fe2d383",
+      "bytes": 231
+    },
+    {
+      "path": "jobs/Av2chFileSet/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Av2geobau/.gitignore",
+      "sha256": "08bfa335580d5444abd581ae1f247614c1a4334b8aabec08245f3b7498a6bfa4",
+      "bytes": 10
+    },
+    {
+      "path": "jobs/Av2geobau/DM01AVCH24LV95D.ili",
+      "sha256": "5fbe8c1ba3bbd95b3cc425f91a3fea488dc2adc5bf0ccf13d0b5bc7492fbd21b",
+      "bytes": 70453
+    },
+    {
+      "path": "jobs/Av2geobau/build.gradle",
+      "sha256": "dd9cd8dcb3cfa73e6bccb78c987483e6676d178b9ff0c578c6db9a0096e1a01e",
+      "bytes": 189
+    },
+    {
+      "path": "jobs/Av2geobau/empty.itf",
+      "sha256": "86f38a42e60aa8b1d61b9a2b9fbe24de68b18185416076311122965d49a1d9f3",
+      "bytes": 560
+    },
+    {
+      "path": "jobs/Av2geobau/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Av2geobauFileSet/.gitignore",
+      "sha256": "abb91f840ab4d6aabd6558effe8b941d7ce9e0347b0232f5212121aaedbffcc7",
+      "bytes": 22
+    },
+    {
+      "path": "jobs/Av2geobauFileSet/DM01AVCH24LV95D.ili",
+      "sha256": "5fbe8c1ba3bbd95b3cc425f91a3fea488dc2adc5bf0ccf13d0b5bc7492fbd21b",
+      "bytes": 70453
+    },
+    {
+      "path": "jobs/Av2geobauFileSet/build.gradle",
+      "sha256": "ff0e5cf530016e326a62b2998ffbde2744b049d987fae1e33d3a111b8fd43d8a",
+      "bytes": 222
+    },
+    {
+      "path": "jobs/Av2geobauFileSet/empty1.itf",
+      "sha256": "86f38a42e60aa8b1d61b9a2b9fbe24de68b18185416076311122965d49a1d9f3",
+      "bytes": 560
+    },
+    {
+      "path": "jobs/Av2geobauFileSet/empty2.itf",
+      "sha256": "86f38a42e60aa8b1d61b9a2b9fbe24de68b18185416076311122965d49a1d9f3",
+      "bytes": 560
+    },
+    {
+      "path": "jobs/Av2geobauFileSet/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Csv2Excel/.gitignore",
+      "sha256": "563ac5ba7d33989ca2f6cef539faacbe18c6f7afb97d76596ce9c2ea5fd10d08",
+      "bytes": 40
+    },
+    {
+      "path": "jobs/Csv2Excel/20230124_sap_Gebaeude.csv",
+      "sha256": "c76042dc9df463ec8214140172ba8425c71c4748444844148d3fe5d039491e5e",
+      "bytes": 14679
+    },
+    {
+      "path": "jobs/Csv2Excel/SO_HBA_Gebaeude_20230111.ili",
+      "sha256": "59ccbbe54350f62e3419911749dca21aee82e03a53139d2513417a3975580f96",
+      "bytes": 1415
+    },
+    {
+      "path": "jobs/Csv2Excel/build.gradle",
+      "sha256": "ccb2fcd608a0860478bad089cf636e6baee888097d13f9648a370a04bfe8ce5e",
+      "bytes": 384
+    },
+    {
+      "path": "jobs/Csv2Excel/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Csv2ExcelEmptyFile/.gitignore",
+      "sha256": "563ac5ba7d33989ca2f6cef539faacbe18c6f7afb97d76596ce9c2ea5fd10d08",
+      "bytes": 40
+    },
+    {
+      "path": "jobs/Csv2ExcelEmptyFile/build.gradle",
+      "sha256": "a88dfdb7961db96faa508c3a6b4a4815eba12c0a475d8b6702832afe94121680",
+      "bytes": 337
+    },
+    {
+      "path": "jobs/Csv2ExcelEmptyFile/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Csv2ExcelEmptyFile/superflous_publication_formats.csv",
+      "sha256": "936a42016f04b309836c61b6e9cfccc701dc08764abd9e6c4986e35a2f1f15b9",
+      "bytes": 17
+    },
+    {
+      "path": "jobs/Csv2ExcelEmptyFile/superflous_publication_formats.xlsx",
+      "sha256": "5151cae0356799714bb76844556728798e5b12d44e12f043979ac24de1f49614",
+      "bytes": 3320
+    },
+    {
+      "path": "jobs/CsvExport/.gitignore",
+      "sha256": "15d93ce0bc954643b3f6ca99857a7ed7a9cb4b9433cf40b988226c31bfc976f8",
+      "bytes": 9
+    },
+    {
+      "path": "jobs/CsvExport/build.gradle",
+      "sha256": "2d2b1d1853064782297d7673ede2e2e73fc321ea89aed5259fc65c91cde4a244",
+      "bytes": 590
+    },
+    {
+      "path": "jobs/CsvExport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/CsvImport/build.gradle",
+      "sha256": "eea01c202a276a80e7cea599799ce43cc569615ba90ce6249a31db7964ddc7c5",
+      "bytes": 499
+    },
+    {
+      "path": "jobs/CsvImport/data1.csv",
+      "sha256": "96bf98dd14c6f1d7e2b4d807d9ffc4710f6bfb77b4fcedaab0a4ecf75cc730dc",
+      "bytes": 162
+    },
+    {
+      "path": "jobs/CsvImport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/CsvImportBatchSize/build.gradle",
+      "sha256": "921a8cee24a038d1828d869a7ce9b17380b2bb0ddb80c67d419a4d07f9d610f0",
+      "bytes": 525
+    },
+    {
+      "path": "jobs/CsvImportBatchSize/data1.csv",
+      "sha256": "96bf98dd14c6f1d7e2b4d807d9ffc4710f6bfb77b4fcedaab0a4ecf75cc730dc",
+      "bytes": 162
+    },
+    {
+      "path": "jobs/CsvImportBatchSize/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/CsvValidator/CsvModel.ili",
+      "sha256": "d57731aaf4cfe78a25208557cf8ff1e0bb7e93c28a41938bab77bb40ceab8139",
+      "bytes": 232
+    },
+    {
+      "path": "jobs/CsvValidator/build.gradle",
+      "sha256": "82edc1a2dba0c6c4950fa557893f2a5bc08b87469ad293e748810e191a75f389",
+      "bytes": 249
+    },
+    {
+      "path": "jobs/CsvValidator/data1.csv",
+      "sha256": "de3002dd270e24c7e0c1ba3975fe3584c3da3691a69fd937d2edc4922d8b0061",
+      "bytes": 25
+    },
+    {
+      "path": "jobs/CsvValidator/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/CsvValidatorFail/CsvModel.ili",
+      "sha256": "d57731aaf4cfe78a25208557cf8ff1e0bb7e93c28a41938bab77bb40ceab8139",
+      "bytes": 232
+    },
+    {
+      "path": "jobs/CsvValidatorFail/build.gradle",
+      "sha256": "00fe14f12c0c900203f05192a5533dfe12048467505738f0ea7bf1e3cae5f904",
+      "bytes": 252
+    },
+    {
+      "path": "jobs/CsvValidatorFail/dataFail.csv",
+      "sha256": "ba6cf204d74dca72da067d0781c08f9b3246d3e6369b9f76deadd5bf8a468542",
+      "bytes": 17
+    },
+    {
+      "path": "jobs/CsvValidatorFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/CurlDownload/.gitignore",
+      "sha256": "52d5187d6de3c745be9cbf5c6db40c6153cb5653e2906eb76cd140d7436f49b1",
+      "bytes": 26
+    },
+    {
+      "path": "jobs/CurlDownload/build.gradle",
+      "sha256": "2594d2d62db9f313a141fe0f75f2fb6e7158e3404e13c304d86cb2a86b0c6b82",
+      "bytes": 347
+    },
+    {
+      "path": "jobs/CurlDownload/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/CurlGeodienste/.gitignore",
+      "sha256": "f64f5c7c54239ff9952779d778d6c4f42c8c2706ed7e0c75fd42651994e29d8d",
+      "bytes": 46
+    },
+    {
+      "path": "jobs/CurlGeodienste/build.gradle",
+      "sha256": "7bd4dbd5e48ac9f055f8ca8207c7a036bb760049e709b077fb530c1d80ca921c",
+      "bytes": 671
+    },
+    {
+      "path": "jobs/CurlGeodienste/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/CurlGeodienste/test.xtf.zip",
+      "sha256": "6a317798c560e558a766c28a21852d2ee78d5e45f753962fff47e6f7685c626c",
+      "bytes": 200
+    },
+    {
+      "path": "jobs/CurlGeodiensteFail/build.gradle",
+      "sha256": "7bd4dbd5e48ac9f055f8ca8207c7a036bb760049e709b077fb530c1d80ca921c",
+      "bytes": 671
+    },
+    {
+      "path": "jobs/CurlGeodiensteFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/CurlPlanregister/.gitignore",
+      "sha256": "9aaca4c0280f078a110ea96cc1944f79e21562b3314f7ec9787fd4acb1578650",
+      "bytes": 42
+    },
+    {
+      "path": "jobs/CurlPlanregister/build.gradle",
+      "sha256": "c1ac306c7dd3d4113ce6402b577a8aec8e320be1537d154d1c9de9a8188f7f9d",
+      "bytes": 704
+    },
+    {
+      "path": "jobs/CurlPlanregister/foo.xml",
+      "sha256": "c5a1d9a0ee896117b7871aea5cdde47b136d9c90ae88952e37c119621d851bb2",
+      "bytes": 2238
+    },
+    {
+      "path": "jobs/CurlPlanregister/foo.xml.gz",
+      "sha256": "7bc6f552bb566b6c2003dd330fc1f2d0474ab5ca6cd85553186e65d29a6450fc",
+      "bytes": 717
+    },
+    {
+      "path": "jobs/CurlPlanregister/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/DatabaseDocumentExport/build.gradle",
+      "sha256": "54fc4cadfaeaa3b012629a751242fc6f99e7306b849feb6a6d8075591e7d8576",
+      "bytes": 621
+    },
+    {
+      "path": "jobs/DatabaseDocumentExport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Db2DbParameter/build.gradle",
+      "sha256": "ecf601cfac431144ef1cf3d38f939c7bf94cbb511ecaeb8746ab0d93e0a5bb7b",
+      "bytes": 588
+    },
+    {
+      "path": "jobs/Db2DbParameter/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Db2DbParameter/src.sql",
+      "sha256": "b1e4ff8efc3b3db0944c236d357f5d05f1ed85f3b130df4057127aa5e4dc218d",
+      "bytes": 39
+    },
+    {
+      "path": "jobs/Db2DbParameterList/build.gradle",
+      "sha256": "0729977387ff0f7bb5b8db79a50b7cc0223ff126abb3002d5cc5afba1ffdd021",
+      "bytes": 608
+    },
+    {
+      "path": "jobs/Db2DbParameterList/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Db2DbParameterList/src.sql",
+      "sha256": "b1e4ff8efc3b3db0944c236d357f5d05f1ed85f3b130df4057127aa5e4dc218d",
+      "bytes": 39
+    },
+    {
+      "path": "jobs/Db2DbTaskChain/build.gradle",
+      "sha256": "63d5b5a01e06fe41fb954b08b2e47af3124469536e55bf7dc80b27d1b472ce7f",
+      "bytes": 870
+    },
+    {
+      "path": "jobs/Db2DbTaskChain/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Db2DbTaskChain/statementChain_AToB.sql",
+      "sha256": "8b41494452d999ac81f7b3468f024cde668047fd18ed682e97761ce8b6dc04f9",
+      "bytes": 40
+    },
+    {
+      "path": "jobs/Db2DbTaskChain/statementChain_BToA.sql",
+      "sha256": "85a77f17034355288659567d65d9c070fca6741d0e0405cbc2a132e62f4b0374",
+      "bytes": 48
+    },
+    {
+      "path": "jobs/Db2DbTaskDelTable/build.gradle",
+      "sha256": "2353eeede5db8c9d32fe790a19300fca51b5b6f8e62f4055986bcf352fcabffe",
+      "bytes": 610
+    },
+    {
+      "path": "jobs/Db2DbTaskDelTable/deleteTableSuccesful.sql",
+      "sha256": "f16cfc70e6636fd89986728a0c42b2c59f8fd5e6defac1b74b45e6d5203d22d5",
+      "bytes": 47
+    },
+    {
+      "path": "jobs/Db2DbTaskDelTable/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Db2DbTaskFetchSize/build.gradle",
+      "sha256": "40f428fc6c1bc459f7e9a6f43dec3265846abb7b38dc4419998efa1c4f4ca14b",
+      "bytes": 599
+    },
+    {
+      "path": "jobs/Db2DbTaskFetchSize/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Db2DbTaskFetchSize/sql/fetchSize.sql",
+      "sha256": "102bb1e8588767c336d3bb5283517e09e1204172c2dfed3c401b2ad3f7e05c72",
+      "bytes": 150
+    },
+    {
+      "path": "jobs/Db2DbTaskRelPath/build.gradle",
+      "sha256": "c56e4e3d53638f04f8663f365a989f833ff7ce1f1e9a0a08d2dd7be6c4389d29",
+      "bytes": 576
+    },
+    {
+      "path": "jobs/Db2DbTaskRelPath/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Db2DbTaskRelPath/sql/relativePath.sql",
+      "sha256": "5c102a2a6629083f81f4dac82304caab59421c0c092ac27a54cd5777787d3a8c",
+      "bytes": 37
+    },
+    {
+      "path": "jobs/DbTasks_OracleLibsPresent/build.gradle",
+      "sha256": "64fdd8f01d8e6ee66ebba69496ebfee2e076ee0527a9e84ce3a78bae42ec1377",
+      "bytes": 499
+    },
+    {
+      "path": "jobs/DbTasks_OracleLibsPresent/gretl-job.groovy",
+      "sha256": "ae35c5fc9701a5c4408fab551a6feec325d63eb6168981401ff3028f6257a66a",
+      "bytes": 863
+    },
+    {
+      "path": "jobs/DbTasks_OracleLibsPresent/queryOracleVersion.sql",
+      "sha256": "12eb8ed7f8029ddaea602b3fa3b77d8d4d670ce32b7af306655931841eeb73a5",
+      "bytes": 31
+    },
+    {
+      "path": "jobs/DbTasks_OracleLibsPresent/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/DbTasks_PostgresLibsPresent/build.gradle",
+      "sha256": "9a676c446bcf82cd8fbab5d8b092a160295073c167b5cd5f1affa4d33f084c5c",
+      "bytes": 627
+    },
+    {
+      "path": "jobs/DbTasks_PostgresLibsPresent/gretl-job.groovy",
+      "sha256": "beaaf4788e73cc4ef7337de815bbb553bcec6deeffe5f548074d4017fa494a20",
+      "bytes": 881
+    },
+    {
+      "path": "jobs/DbTasks_PostgresLibsPresent/queryPostgresVersion.sql",
+      "sha256": "b339a30d55bf736e6e6993a7af1f14c6a6dd2c56f756928208752104f5bd092e",
+      "bytes": 16
+    },
+    {
+      "path": "jobs/DbTasks_PostgresLibsPresent/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/DbTasks_SqliteLibsPresent/build.gradle",
+      "sha256": "97c9634a37df3226541bfdd303defbd00d4add73bd4d541fb62610f38abd5c1f",
+      "bytes": 498
+    },
+    {
+      "path": "jobs/DbTasks_SqliteLibsPresent/gretl-job.groovy",
+      "sha256": "022dac6e7398a6a4f385d4e38aeb7bf5f080de10a7560c66d9d1370ce49ad06e",
+      "bytes": 812
+    },
+    {
+      "path": "jobs/DbTasks_SqliteLibsPresent/querySqliteMaster.sql",
+      "sha256": "0dfe4c682b3a0d259fc4f6f07efda05882aa8461da49516d5026790784aa2270",
+      "bytes": 49
+    },
+    {
+      "path": "jobs/DbTasks_SqliteLibsPresent/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/FtpUpload/build.gradle",
+      "sha256": "b396ca25ca0059755ffce4da5132659d4195af23f748b89ac9a3fba7ca5336e4",
+      "bytes": 337
+    },
+    {
+      "path": "jobs/FtpUpload/fubar.xml",
+      "sha256": "9cb84e0cbbd58e25b7009ec7931a0deff499d292c0c84ea737fdc58a102a2e45",
+      "bytes": 6039
+    },
+    {
+      "path": "jobs/FtpUpload/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Gpkg2Dxf/build.gradle",
+      "sha256": "8c7b9c47870575dd6a52d3fbab9b0c6e40ccda93a332206da08a3078290e09c1",
+      "bytes": 238
+    },
+    {
+      "path": "jobs/Gpkg2Dxf/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg",
+      "sha256": "7d9d2b608af8ed6e370ff40c39697ac66666c55b388128313dedd097f96b0e01",
+      "bytes": 2012160
+    },
+    {
+      "path": "jobs/Gpkg2Dxf/out/.gitignore",
+      "sha256": "cf02e955c059388fb902ae8b99dd48c5baa4525bf05d418767509d30df835c6e",
+      "bytes": 6
+    },
+    {
+      "path": "jobs/Gpkg2Dxf/out/dummy.txt",
+      "sha256": "d8e9e825d9cc70f51ec99a50413714325f071774ccefdfe5c914a58d166671ca",
+      "bytes": 30
+    },
+    {
+      "path": "jobs/Gpkg2Dxf/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Gpkg2Shp/build.gradle",
+      "sha256": "f2e603c8c55d15d4d96452d0b42f16e820543ca2ddf0ba68904d4d3fd30a2d5d",
+      "bytes": 238
+    },
+    {
+      "path": "jobs/Gpkg2Shp/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg",
+      "sha256": "c6608b76851b492825930b0d23c152cfd41e621b4f5ef746437a48e8561f64f5",
+      "bytes": 1991680
+    },
+    {
+      "path": "jobs/Gpkg2Shp/out/.gitignore",
+      "sha256": "7f22dcbad055519e4f8c472ea24957f791a88b1de04e997e9b1abb29793b00e9",
+      "bytes": 29
+    },
+    {
+      "path": "jobs/Gpkg2Shp/out/dummy.txt",
+      "sha256": "8a9dc04e9d039b6fa1387e0e9716b8db08416502311d27bdb312d9d0a6ca9f7b",
+      "bytes": 29
+    },
+    {
+      "path": "jobs/Gpkg2Shp/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/GpkgExport/.gitignore",
+      "sha256": "a2e5d4f85562a6f9cbffe6efc56e9756e4fec5e1e2f336f53d001453a14ce924",
+      "bytes": 10
+    },
+    {
+      "path": "jobs/GpkgExport/build.gradle",
+      "sha256": "c790084da4aebff6b80fe201f5c254782328098b2d8d4e278c8dd08bc347d036",
+      "bytes": 568
+    },
+    {
+      "path": "jobs/GpkgExport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/GpkgExportTables/.gitignore",
+      "sha256": "a2e5d4f85562a6f9cbffe6efc56e9756e4fec5e1e2f336f53d001453a14ce924",
+      "bytes": 10
+    },
+    {
+      "path": "jobs/GpkgExportTables/build.gradle",
+      "sha256": "e5344eabebfba52e3b1e54851ce25c484b0b3d198a2de782bfa788a6272660ea",
+      "bytes": 560
+    },
+    {
+      "path": "jobs/GpkgExportTables/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/GpkgImport/build.gradle",
+      "sha256": "ee4e6c527080c5b3a5e50a7c66f62173c6e7cfb817bae9ecf9484329f9a16b2d",
+      "bytes": 559
+    },
+    {
+      "path": "jobs/GpkgImport/point.gpkg",
+      "sha256": "238ca41573a68b975defb9530caa2a092e5f80a20345cdc8d26e63496b3a9019",
+      "bytes": 118784
+    },
+    {
+      "path": "jobs/GpkgImport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/GpkgValidator/GpkgModelAttrs.ili",
+      "sha256": "d2ddffdc840505bd292c3f9a4490e15064ac92c6c1e78f60cef4e6a1408c7462",
+      "bytes": 917
+    },
+    {
+      "path": "jobs/GpkgValidator/attributes.gpkg",
+      "sha256": "126bb1034d7a1e5c6a0f1274913d0e65fe4243a7ac69c3a034551023989925ea",
+      "bytes": 118784
+    },
+    {
+      "path": "jobs/GpkgValidator/build.gradle",
+      "sha256": "e94cf1c072f7226a2abb037fa9537bf63728c2d19676dbe74ac8f6561f6595fe",
+      "bytes": 220
+    },
+    {
+      "path": "jobs/GpkgValidator/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/GpkgValidatorFail/GpkgModelAttrs.ili",
+      "sha256": "f72eeb91f778d841a74b89726961a5e8610c560b56750535cd9c3a7f66e86bdc",
+      "bytes": 918
+    },
+    {
+      "path": "jobs/GpkgValidatorFail/attributes.gpkg",
+      "sha256": "126bb1034d7a1e5c6a0f1274913d0e65fe4243a7ac69c3a034551023989925ea",
+      "bytes": 118784
+    },
+    {
+      "path": "jobs/GpkgValidatorFail/build.gradle",
+      "sha256": "295882e5225eb201448cfd62e425214da2acb889837e3b8e1a3618802579a29f",
+      "bytes": 260
+    },
+    {
+      "path": "jobs/GpkgValidatorFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Gzip/.gitignore",
+      "sha256": "6d7296d72aaa46902fd04cb3ee5ac80ace824ead92d5141c47fb080d7a9bb210",
+      "bytes": 15
+    },
+    {
+      "path": "jobs/Gzip/build.gradle",
+      "sha256": "b7d42d2839011e612a12a92ac20dc6fc91fcb7e50aa9978886fe2dd1b0e81ab6",
+      "bytes": 222
+    },
+    {
+      "path": "jobs/Gzip/planregister.xml",
+      "sha256": "2a4f5e305bf9c51276755853f3e303e0b2791e5c9c4fbd1e39b3255ed8b34cba",
+      "bytes": 2783
+    },
+    {
+      "path": "jobs/Gzip/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2duckdbExport/.gitignore",
+      "sha256": "cde695f4f800aafe031398d1d2e7e153e6506974fdda064afdef639869a49426",
+      "bytes": 6
+    },
+    {
+      "path": "jobs/Ili2duckdbExport/KS3-20060703.ili",
+      "sha256": "e5f5df3b69edbe2262671d4a814a1f5b10ca68c8dc6ac7833dc910c181f1d1ee",
+      "bytes": 22686
+    },
+    {
+      "path": "jobs/Ili2duckdbExport/build.gradle",
+      "sha256": "8ecd3d3c340d194c47fe8037744cead449f7844c64a9a305cb0439d75d24facc",
+      "bytes": 592
+    },
+    {
+      "path": "jobs/Ili2duckdbExport/init.sql",
+      "sha256": "c637dd6b48c5cfc2ec8453c6a6f7fa580fa978dfabe9983f6727665817a4cc3d",
+      "bytes": 33
+    },
+    {
+      "path": "jobs/Ili2duckdbExport/my_gb2av.duckdb",
+      "sha256": "bc5289310c1d2d5f4276cc28e76ece42f3f7168fcb42c4319b6a63cd7bdb648b",
+      "bytes": 7614464
+    },
+    {
+      "path": "jobs/Ili2duckdbExport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2duckdbImport/.gitignore",
+      "sha256": "170e9e57d407be612b1b455e957964ccb1b151e76d6fcb126807a9f629efce1a",
+      "bytes": 9
+    },
+    {
+      "path": "jobs/Ili2duckdbImport/KS3-20060703.ili",
+      "sha256": "e5f5df3b69edbe2262671d4a814a1f5b10ca68c8dc6ac7833dc910c181f1d1ee",
+      "bytes": 22686
+    },
+    {
+      "path": "jobs/Ili2duckdbImport/VOLLZUG_SO0200002401_1531_20180105113131.xml",
+      "sha256": "bc5ea61cbee969570a0610b49e59afcb05a6d25ef5403a031cabdb5abcf79af7",
+      "bytes": 1017
+    },
+    {
+      "path": "jobs/Ili2duckdbImport/build.gradle",
+      "sha256": "6ab7218e5354d34e0b37b486ce393d1bf45fb108627c77c40a7bfa97f48528ce",
+      "bytes": 606
+    },
+    {
+      "path": "jobs/Ili2duckdbImport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2duckdbImportSchema/.gitignore",
+      "sha256": "c26a41f870e898723684730d3fad9a27d47a65ec03c3d92781d44ccf68667575",
+      "bytes": 10
+    },
+    {
+      "path": "jobs/Ili2duckdbImportSchema/KS3-20060703.ili",
+      "sha256": "e5f5df3b69edbe2262671d4a814a1f5b10ca68c8dc6ac7833dc910c181f1d1ee",
+      "bytes": 22686
+    },
+    {
+      "path": "jobs/Ili2duckdbImportSchema/build.gradle",
+      "sha256": "7e524ff23e716c4e0a51486a65bcf5fe300ad1773a15af3ad6c8dfe9c5a09c05",
+      "bytes": 508
+    },
+    {
+      "path": "jobs/Ili2duckdbImportSchema/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2gpkgImport/.gitignore",
+      "sha256": "83c57277807b01c87b9cf09e45aec5afd6a9cb939cb4c2fdb854cbae3c1a6dbc",
+      "bytes": 7
+    },
+    {
+      "path": "jobs/Ili2gpkgImport/SO_AGI_AV_GB_Administrative_Einteilungen_20180613.ili",
+      "sha256": "c0ae14ff634d063c37f05e6984a26d502464cb7d0b80dc33b82dae59907a5d0f",
+      "bytes": 4036
+    },
+    {
+      "path": "jobs/Ili2gpkgImport/build.gradle",
+      "sha256": "ab7d53c4dc23e4f83589f1aa2084d77582794414e1a139f47aaf65b2582e5663",
+      "bytes": 461
+    },
+    {
+      "path": "jobs/Ili2gpkgImport/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.xtf",
+      "sha256": "788a745ef64bb0905d611eab6bb1b513f3deb5b66a4b6abeb387748e09cb95a6",
+      "bytes": 104744
+    },
+    {
+      "path": "jobs/Ili2gpkgImport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2gpkgImportFileSet/.gitignore",
+      "sha256": "83c57277807b01c87b9cf09e45aec5afd6a9cb939cb4c2fdb854cbae3c1a6dbc",
+      "bytes": 7
+    },
+    {
+      "path": "jobs/Ili2gpkgImportFileSet/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "jobs/Ili2gpkgImportFileSet/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "jobs/Ili2gpkgImportFileSet/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "jobs/Ili2gpkgImportFileSet/build.gradle",
+      "sha256": "d0c349421fcc757d24940c4cf3141ae99db728f9c341027d7fad2e6a0c734370",
+      "bytes": 349
+    },
+    {
+      "path": "jobs/Ili2gpkgImportFileSet/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgDeleteDataset/254900.itf",
+      "sha256": "cefe39ec095ed9b9ec3100a3c82eb28aef25bfc9f30da3d34f8c112edfc5117f",
+      "bytes": 589718
+    },
+    {
+      "path": "jobs/Ili2pgDeleteDataset/build.gradle",
+      "sha256": "4cea25d1ef017a113b03dcd96ad568b98cc44d68049a326ba61e69989ab97e3d",
+      "bytes": 1025
+    },
+    {
+      "path": "jobs/Ili2pgDeleteDataset/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgDeleteDatasets/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "jobs/Ili2pgDeleteDatasets/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "jobs/Ili2pgDeleteDatasets/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "jobs/Ili2pgDeleteDatasets/build.gradle",
+      "sha256": "ff9e0a0125ff9997d4759b27f4826ddb3e0fc456421b7a331fbab1f7545699ab",
+      "bytes": 1095
+    },
+    {
+      "path": "jobs/Ili2pgDeleteDatasets/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgExportDatasets/.gitignore",
+      "sha256": "05c8913aa8466e3dd82489788f811d9d818cefa30efdcf1eaa9c1ffac5aa8b20",
+      "bytes": 10
+    },
+    {
+      "path": "jobs/Ili2pgExportDatasets/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "jobs/Ili2pgExportDatasets/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "jobs/Ili2pgExportDatasets/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "jobs/Ili2pgExportDatasets/build.gradle",
+      "sha256": "e63c5a61235ebefd79ab31b5f7644214e631d7241ab2ab5958ebe2cbe4015f24",
+      "bytes": 1116
+    },
+    {
+      "path": "jobs/Ili2pgExportDatasets/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgImportFileSet/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "jobs/Ili2pgImportFileSet/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "jobs/Ili2pgImportFileSet/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "jobs/Ili2pgImportFileSet/build.gradle",
+      "sha256": "83bdf983a94aac614a89f2e2b1c2f000de49e2c11d05339988b193f264fea70d",
+      "bytes": 922
+    },
+    {
+      "path": "jobs/Ili2pgImportFileSet/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema/KS3-20060703.ili",
+      "sha256": "e5f5df3b69edbe2262671d4a814a1f5b10ca68c8dc6ac7833dc910c181f1d1ee",
+      "bytes": 22686
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema/VOLLZUG_SO0200002401_1531_20180105113131.xml",
+      "sha256": "bc5ea61cbee969570a0610b49e59afcb05a6d25ef5403a031cabdb5abcf79af7",
+      "bytes": 1017
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema/build.gradle",
+      "sha256": "fec1d5b8e1a975bfae20c14a0607da3f9573827bac4c9cce24279e2cf51b61a1",
+      "bytes": 596
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_MetaConfigFile/SimpleTable.ili",
+      "sha256": "1cf561898e256b4bb503b9fbcb2465c29b7f77285f74799106e37138bf9ec333",
+      "bytes": 435
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_MetaConfigFile/build.gradle",
+      "sha256": "559054b07cd58ebc2b3acbf67b6567c23ef2aeab1cfb4300edf6a47c795d2bc7",
+      "bytes": 630
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_MetaConfigFile/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_MetaConfigFile/simple_table_ini_20240502.ini",
+      "sha256": "995563b1b910fc6525ce04c2b93c11bf2ab0ee2de71aec93adf8884c9ef719f2",
+      "bytes": 575
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_MetaConfigIliData/SimpleTable.ili",
+      "sha256": "1cf561898e256b4bb503b9fbcb2465c29b7f77285f74799106e37138bf9ec333",
+      "bytes": 435
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_MetaConfigIliData/build.gradle",
+      "sha256": "2adc430cd419bc219d6c16e7b2b9459617467d02a6413984b9cab81f512372db",
+      "bytes": 638
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_MetaConfigIliData/files/simple_table_ini_20240502.ini",
+      "sha256": "995563b1b910fc6525ce04c2b93c11bf2ab0ee2de71aec93adf8884c9ef719f2",
+      "bytes": 575
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_MetaConfigIliData/ilidata.xml",
+      "sha256": "ef5b280bb5d187240779c921160244bd9b75f2dd9f096a97d635aab8c13ca5a6",
+      "bytes": 2592
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_MetaConfigIliData/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_Options/SO_AFU_ABBAUSTELLEN_20210630.ili",
+      "sha256": "3caf2f3222ce19f6d36c777e414119ee47a136299517e54eb288f8afc8c91ba4",
+      "bytes": 3760
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_Options/build.gradle",
+      "sha256": "cb944f8ea7a43a6308d14d8ee6dd4228d15000e590cba1f4b711ce0dab99c900",
+      "bytes": 634
+    },
+    {
+      "path": "jobs/Ili2pgImportSchema_Options/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgReplaceFile/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "jobs/Ili2pgReplaceFile/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "jobs/Ili2pgReplaceFile/build.gradle",
+      "sha256": "c21fce499fd2c01edbf90485bacbfc9bfe4c06c72c2b49f185f8ea70fa88b5fb",
+      "bytes": 868
+    },
+    {
+      "path": "jobs/Ili2pgReplaceFile/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgReplaceIlidataFile/SO_AGI_MOpublic_20190424.ili",
+      "sha256": "c531fd856d46a89d822375202449272e286dd3d8f57b95b643e04ad464bcab08",
+      "bytes": 19683
+    },
+    {
+      "path": "jobs/Ili2pgReplaceIlidataFile/build.gradle",
+      "sha256": "fbfb27fe9bc71bfba1f047f94434cc9d21fbf62ce93621aef91ea296d6e0eb1a",
+      "bytes": 1052
+    },
+    {
+      "path": "jobs/Ili2pgReplaceIlidataFile/files/2549.ch.so.agi.av.mopublic.xtf",
+      "sha256": "4699e4cccb9f442d602ba3483014cbab7d45122e5572c17052be4a6b052863fd",
+      "bytes": 1060
+    },
+    {
+      "path": "jobs/Ili2pgReplaceIlidataFile/ilidata.xml",
+      "sha256": "ee37b65567d1ca1f6a9cdf97b350a48e52d2ed2ff92c90185f756d01f4a7f769",
+      "bytes": 3571
+    },
+    {
+      "path": "jobs/Ili2pgReplaceIlidataFile/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgValidate/.gitignore",
+      "sha256": "0183487e14e12c3ed34321d5793653710171bcd93b6ee77fe05736c21ad395d7",
+      "bytes": 5
+    },
+    {
+      "path": "jobs/Ili2pgValidate/SO_AGI_AV_GB_Administrative_Einteilungen_20180613.ili",
+      "sha256": "c0ae14ff634d063c37f05e6984a26d502464cb7d0b80dc33b82dae59907a5d0f",
+      "bytes": 4036
+    },
+    {
+      "path": "jobs/Ili2pgValidate/build.gradle",
+      "sha256": "f66f437947bccded3c561900019acbec3a82104fb01f08166eceadcef77d96f6",
+      "bytes": 1383
+    },
+    {
+      "path": "jobs/Ili2pgValidate/ch.so.agi.av_gb_admin_einteilung_edit_ok.xtf",
+      "sha256": "788a745ef64bb0905d611eab6bb1b513f3deb5b66a4b6abeb387748e09cb95a6",
+      "bytes": 104744
+    },
+    {
+      "path": "jobs/Ili2pgValidate/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgValidateDatasetFail/.gitignore",
+      "sha256": "0183487e14e12c3ed34321d5793653710171bcd93b6ee77fe05736c21ad395d7",
+      "bytes": 5
+    },
+    {
+      "path": "jobs/Ili2pgValidateDatasetFail/SO_AFU_Schutzbauten_20231212.ili",
+      "sha256": "e14c9ea17f3547c6bf6aaa31c00d17eb03bb83a8341b818d8d5c8ea062519661",
+      "bytes": 22632
+    },
+    {
+      "path": "jobs/Ili2pgValidateDatasetFail/build.gradle",
+      "sha256": "4ec9515949a5b7de48ac845a38973d285b4718421d7fa7adf7ba52f19050c6e1",
+      "bytes": 1858
+    },
+    {
+      "path": "jobs/Ili2pgValidateDatasetFail/ch.so.agi.testeinzelobjekt_valid1.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "jobs/Ili2pgValidateDatasetFail/ch.so.agi.testeinzelobjekt_valid2.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "jobs/Ili2pgValidateDatasetFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgValidateFail/.gitignore",
+      "sha256": "0183487e14e12c3ed34321d5793653710171bcd93b6ee77fe05736c21ad395d7",
+      "bytes": 5
+    },
+    {
+      "path": "jobs/Ili2pgValidateFail/SO_AGI_AV_GB_Administrative_Einteilungen_20180613.ili",
+      "sha256": "c0ae14ff634d063c37f05e6984a26d502464cb7d0b80dc33b82dae59907a5d0f",
+      "bytes": 4036
+    },
+    {
+      "path": "jobs/Ili2pgValidateFail/build.gradle",
+      "sha256": "94d29fffa2b65f61e45ba328869b5764121e353e2dc25bcc54919a754e0d4b28",
+      "bytes": 1391
+    },
+    {
+      "path": "jobs/Ili2pgValidateFail/ch.so.agi.av_gb_admin_einteilung_edit_fail.xtf",
+      "sha256": "e0b2b1b670e2a15b0a5f158418b7d1d191916de05c19820db6ef63f336e9ba4c",
+      "bytes": 104741
+    },
+    {
+      "path": "jobs/Ili2pgValidateFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgValidateMultipleDatasets/.gitignore",
+      "sha256": "0183487e14e12c3ed34321d5793653710171bcd93b6ee77fe05736c21ad395d7",
+      "bytes": 5
+    },
+    {
+      "path": "jobs/Ili2pgValidateMultipleDatasets/SO_AFU_Schutzbauten_20231212.ili",
+      "sha256": "e14c9ea17f3547c6bf6aaa31c00d17eb03bb83a8341b818d8d5c8ea062519661",
+      "bytes": 22632
+    },
+    {
+      "path": "jobs/Ili2pgValidateMultipleDatasets/build.gradle",
+      "sha256": "0a8d161908af56b97948fa59de1d2436d980bd1ae65fe614a1a3a392be551aad",
+      "bytes": 1845
+    },
+    {
+      "path": "jobs/Ili2pgValidateMultipleDatasets/ch.so.agi.testeinzelobjekt_valid1.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "jobs/Ili2pgValidateMultipleDatasets/ch.so.agi.testeinzelobjekt_valid2.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "jobs/Ili2pgValidateMultipleDatasets/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/Ili2pgValidateSingleDataset/.gitignore",
+      "sha256": "0183487e14e12c3ed34321d5793653710171bcd93b6ee77fe05736c21ad395d7",
+      "bytes": 5
+    },
+    {
+      "path": "jobs/Ili2pgValidateSingleDataset/SO_AFU_Schutzbauten_20231212.ili",
+      "sha256": "e14c9ea17f3547c6bf6aaa31c00d17eb03bb83a8341b818d8d5c8ea062519661",
+      "bytes": 22632
+    },
+    {
+      "path": "jobs/Ili2pgValidateSingleDataset/build.gradle",
+      "sha256": "005cea8b45607e5e83b6b12ee99ae367f5bfa770bc4a98e80eaad6fdbe4db229",
+      "bytes": 1842
+    },
+    {
+      "path": "jobs/Ili2pgValidateSingleDataset/ch.so.agi.testeinzelobjekt_valid1.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "jobs/Ili2pgValidateSingleDataset/ch.so.agi.testeinzelobjekt_valid2.xtf",
+      "sha256": "28be612e16404bebdd706ea38a58893c5f64f2d5ac8d181036fc6507a792c3d0",
+      "bytes": 3628
+    },
+    {
+      "path": "jobs/Ili2pgValidateSingleDataset/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/IliValidator/Beispiel2.ili",
+      "sha256": "b9a5b93cfec27cfbe1de986a77a077de5bbc011d7869cb03f777f8b6acd7cbbf",
+      "bytes": 1809
+    },
+    {
+      "path": "jobs/IliValidator/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "jobs/IliValidator/build.gradle",
+      "sha256": "a3e8ab7ec88398fc7592afbe0524c41a5115212f8440809440f73bd3cb5d5565",
+      "bytes": 209
+    },
+    {
+      "path": "jobs/IliValidator/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/IliValidatorFail/Beispiel2.ili",
+      "sha256": "cabe229c7e8b37c9a59a283f432a4e8d9c69818ecabd8e8665aeb424ff32f305",
+      "bytes": 1737
+    },
+    {
+      "path": "jobs/IliValidatorFail/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "jobs/IliValidatorFail/build.gradle",
+      "sha256": "9bfdd4e3dfd58b8e6ec9dbb1522f85c33e52500c7a09ef1e4e87140eba9827d1",
+      "bytes": 206
+    },
+    {
+      "path": "jobs/IliValidatorFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/IliValidatorFileSet/Beispiel2.ili",
+      "sha256": "0dd2732dee37678aee9d12d63862f229f41602dce4cfdec7ba8867ac5db9037e",
+      "bytes": 1727
+    },
+    {
+      "path": "jobs/IliValidatorFileSet/Beispiel2a.xtf",
+      "sha256": "a1a437d17f83c68e9ff593763b91ac70eccd1065e6e557dd87514fe8910cfcbe",
+      "bytes": 966
+    },
+    {
+      "path": "jobs/IliValidatorFileSet/Beispiel2b.xtf",
+      "sha256": "b5741f7feb3b9f442fda640ff79674f311517832508531d1eab68e6f3100b88f",
+      "bytes": 993
+    },
+    {
+      "path": "jobs/IliValidatorFileSet/build.gradle",
+      "sha256": "07ce67731d578088a2f9e74d0ac268961c7fa600be9fb3fc15e1707af8db71e5",
+      "bytes": 233
+    },
+    {
+      "path": "jobs/IliValidatorFileSet/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/IliValidatorNgk/.gitignore",
+      "sha256": "d1ac3ec22c621f3ee847995d7726e91d72409638880540d751cb3003956fbb83",
+      "bytes": 16
+    },
+    {
+      "path": "jobs/IliValidatorNgk/GeoW_FunctionsExt_23.ili",
+      "sha256": "842f7e29d6ed26c42c8cf836a83fe4406fc170d9d5eb491d8f846664bfcda8f9",
+      "bytes": 10090
+    },
+    {
+      "path": "jobs/IliValidatorNgk/NGK_SO_FunctionsExt_23.ili",
+      "sha256": "9160e23b7d1975d682b524bcc8630a8ce29328632a1eb8e90af1b08f5f3c837e",
+      "bytes": 897
+    },
+    {
+      "path": "jobs/IliValidatorNgk/NGK_SO_Testbeddata.xtf",
+      "sha256": "a65dba380ebb6d779386d7a7e690c398359ffeecf14b8743da3dcedb562d6594",
+      "bytes": 151025
+    },
+    {
+      "path": "jobs/IliValidatorNgk/SO_AFU_Naturgefahren_20240515-gretl-meta.ini",
+      "sha256": "a3460701508e792afbb65a3d939756fa38844ebe3acb249817dd4664c5ce647d",
+      "bytes": 180
+    },
+    {
+      "path": "jobs/IliValidatorNgk/SO_AFU_Naturgefahren_20240515-gretl.ini",
+      "sha256": "9cd3969b9014c5a5b7eb6dda5e8a90e6c0dcf22edfeda487ea602504cf048b6f",
+      "bytes": 74
+    },
+    {
+      "path": "jobs/IliValidatorNgk/SO_AFU_Naturgefahren_20240515.ili",
+      "sha256": "49a6c42e1d10d54ed43c5c07b7ac8bbb7a8b316f225d18e2f1790a92eb5eb30d",
+      "bytes": 62250
+    },
+    {
+      "path": "jobs/IliValidatorNgk/SO_AFU_Naturgefahren_Validierung_20240515.ili",
+      "sha256": "4b9c82d8bea04f748f3dc94a9a8ee7e79d7b378a0568e13c398e2c2e656bf4bf",
+      "bytes": 1476
+    },
+    {
+      "path": "jobs/IliValidatorNgk/build.gradle",
+      "sha256": "a2267a438b438f28b6efa53218fbbb4c2793af5a2da037d6cf93dfe9a423d4a6",
+      "bytes": 591
+    },
+    {
+      "path": "jobs/IliValidatorNgk/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/JsonImportArray/build.gradle",
+      "sha256": "3ea5872a68f227c84446ab8d80b6f14aa2202f0af5d47cffad8aec0a20690359",
+      "bytes": 511
+    },
+    {
+      "path": "jobs/JsonImportArray/data.json",
+      "sha256": "af2d5431e8b11eb1f44087a62685e408e38cfc838c073ff76cb6e18ba4fa6c14",
+      "bytes": 124
+    },
+    {
+      "path": "jobs/JsonImportArray/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/JsonImportObject/build.gradle",
+      "sha256": "a4eee367d1250546fd48911a89434ffc8ecc00b56acb3d091c6168a7d19610f1",
+      "bytes": 512
+    },
+    {
+      "path": "jobs/JsonImportObject/data.json",
+      "sha256": "c1bb771c0b46078838cad85c913ba616f017aee6cc710b99da5a8bfc70adc45e",
+      "bytes": 2201
+    },
+    {
+      "path": "jobs/JsonImportObject/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/JsonValidatorFail/Test2.ili",
+      "sha256": "3d1b4d5b8bcc64d8a07a1aa367f6d05553da9c0e5d2bd78806b929282bb9723a",
+      "bytes": 676
+    },
+    {
+      "path": "jobs/JsonValidatorFail/build.gradle",
+      "sha256": "8d5cfd823e333b8bff72ca851dbdf5b0a12edf69eabf8afa2d4f5d8188a8806a",
+      "bytes": 227
+    },
+    {
+      "path": "jobs/JsonValidatorFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/JsonValidatorFail/structAttrList.json",
+      "sha256": "0cf690c816db56e2bfa1907a19618707fdb3e20aeee85de47aad66a83363626f",
+      "bytes": 1044
+    },
+    {
+      "path": "jobs/JsonValidatorOk/Test2.ili",
+      "sha256": "3d1b4d5b8bcc64d8a07a1aa367f6d05553da9c0e5d2bd78806b929282bb9723a",
+      "bytes": 676
+    },
+    {
+      "path": "jobs/JsonValidatorOk/build.gradle",
+      "sha256": "ea6b48434c257fddda884cf52c39f0ebe8b4fa801e098b2597e7670637b5cc0b",
+      "bytes": 195
+    },
+    {
+      "path": "jobs/JsonValidatorOk/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/JsonValidatorOk/structAttrList.json",
+      "sha256": "256b60d7f155dc607ce3caa085b0411bbd9375fa7cf4b3137119ac3a29d8918d",
+      "bytes": 398
+    },
+    {
+      "path": "jobs/PostgisRasterGeotiffExport/build.gradle",
+      "sha256": "9f642c3a2e62de7ae2437c2919b993b89e765a61fd06962f3556d3ec06d95b19",
+      "bytes": 479
+    },
+    {
+      "path": "jobs/PostgisRasterGeotiffExport/raster.sql",
+      "sha256": "a902f3d5f6d1f0389c144ceef83af27381d59da159aa6ee3d6019a1ee890f2da",
+      "bytes": 128
+    },
+    {
+      "path": "jobs/PostgisRasterGeotiffExport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/PostgisRasterGeotiffExport/target.tif",
+      "sha256": "1d6650b469c57feebfda799208f3ccbd75eee3d3fdc97d27cd8daa764e586ebf",
+      "bytes": 22772
+    },
+    {
+      "path": "jobs/PostgisRasterTiffExport/build.gradle",
+      "sha256": "41b51b4be3259fb5653be472f05aaa34b01f322645e6f29204c3b877cde39998",
+      "bytes": 473
+    },
+    {
+      "path": "jobs/PostgisRasterTiffExport/raster.sql",
+      "sha256": "fc5166e18c2f6f7bbeed7c1c2e3049af1983702908454c1c9102632c569ec1bc",
+      "bytes": 100
+    },
+    {
+      "path": "jobs/PostgisRasterTiffExport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/PostgisRasterTiffExport/target.tif",
+      "sha256": "c09293be458a545455c2d183a0b55b9f43961091e1f9154c9c304326286f335f",
+      "bytes": 22772
+    },
+    {
+      "path": "jobs/PublisherOld/.gitignore",
+      "sha256": "5e85622688958da5e53618d4b6b7530aab4c7c29edf369dff6d5502194ecd575",
+      "bytes": 11
+    },
+    {
+      "path": "jobs/PublisherOld/build.gradle",
+      "sha256": "1bdce5980cc8104cd5719789abd020f8e0364e9a2433d0157deb439353f34862",
+      "bytes": 352
+    },
+    {
+      "path": "jobs/PublisherOld/grooming.json",
+      "sha256": "2455e978c88737bdec827d6c894e8483e65e91a493e897801e7726636368f7fa",
+      "bytes": 188
+    },
+    {
+      "path": "jobs/PublisherOld/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/PublisherRegionsOld/.gitignore",
+      "sha256": "5e85622688958da5e53618d4b6b7530aab4c7c29edf369dff6d5502194ecd575",
+      "bytes": 11
+    },
+    {
+      "path": "jobs/PublisherRegionsOld/build.gradle",
+      "sha256": "ae8b4ce7d389ed296cdc9fcb90702a3da887d42b8170158eb878e9ca7326a79e",
+      "bytes": 855
+    },
+    {
+      "path": "jobs/PublisherRegionsOld/grooming.json",
+      "sha256": "2455e978c88737bdec827d6c894e8483e65e91a493e897801e7726636368f7fa",
+      "bytes": 188
+    },
+    {
+      "path": "jobs/PublisherRegionsOld/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/S3Bucket2Bucket/build.gradle",
+      "sha256": "635e46d3659f13d9d7307fa5d18febdc8f883b11789f24c1628bf829365217a7",
+      "bytes": 969
+    },
+    {
+      "path": "jobs/S3Bucket2Bucket/docs/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3Bucket2Bucket/docs/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3Bucket2Bucket/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/S3DeleteDirectory/build.gradle",
+      "sha256": "935f389a6ebfb72214a10015e5c561bb886d22bae0cbdf7c503eae48fea2ee06",
+      "bytes": 616
+    },
+    {
+      "path": "jobs/S3DeleteDirectory/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/S3DeleteDirectory/upload/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3DeleteDirectory/upload/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3DeleteFile/build.gradle",
+      "sha256": "143e9fa826737133c7260d4fb3e5224430f21dcf433115013e4eb66155f6353c",
+      "bytes": 626
+    },
+    {
+      "path": "jobs/S3DeleteFile/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/S3DeleteFile/upload/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3DeleteFile/upload/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3DownloadDirectory/.gitignore",
+      "sha256": "07525f2e10cf7738aed92b902f5e60a9673e1fba0ceaa84e9ac2b8862d3d4a62",
+      "bytes": 16
+    },
+    {
+      "path": "jobs/S3DownloadDirectory/build.gradle",
+      "sha256": "2983a229b0422aa58f8291c29587c7b0420db73230f0e7b2def3fccb08c7f4eb",
+      "bytes": 650
+    },
+    {
+      "path": "jobs/S3DownloadDirectory/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/S3DownloadDirectory/upload/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3DownloadDirectory/upload/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3DownloadFile/.gitignore",
+      "sha256": "e10b71fb86968528ffe718f113e36c027658ea0e78580f8047614b460280c976",
+      "bytes": 34
+    },
+    {
+      "path": "jobs/S3DownloadFile/build.gradle",
+      "sha256": "d6b05a88d6a4384cddd267e67aeaf7a3e01bdd930d5c2ea3d5956b784bde4de0",
+      "bytes": 665
+    },
+    {
+      "path": "jobs/S3DownloadFile/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/S3DownloadFile/upload/download.txt",
+      "sha256": "cc7b318a05d752cb1183d89545bc39017fdd811565520073fd17e323b738c283",
+      "bytes": 5
+    },
+    {
+      "path": "jobs/S3UploadDirectory/build.gradle",
+      "sha256": "9d2e30c1857d40a7f0ce8b8b5d0ae07d5b6b352b197373133feddfd91279cdf7",
+      "bytes": 663
+    },
+    {
+      "path": "jobs/S3UploadDirectory/docs/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadDirectory/docs/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadDirectory/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/S3UploadFile/build.gradle",
+      "sha256": "c192bd8081f6b724b847b617e29a89aa8f578b676a87dc2e4df5f01f73f8820b",
+      "bytes": 739
+    },
+    {
+      "path": "jobs/S3UploadFile/docs/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadFile/docs/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadFile/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/S3UploadFileFail/build.gradle",
+      "sha256": "815614d1dc8206d255397fb1dc32c02b1f63526182625ac6e265220f9e425135",
+      "bytes": 661
+    },
+    {
+      "path": "jobs/S3UploadFileFail/docs/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadFileFail/docs/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadFileFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/S3UploadFileTree/build.gradle",
+      "sha256": "d4ae7816668488926302c3a0b1a49a7b4cd92d628a32ac1602fcdbb827a0048d",
+      "bytes": 645
+    },
+    {
+      "path": "jobs/S3UploadFileTree/docs/bar.csv",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadFileTree/docs/bar.txt",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadFileTree/docs/foo.csv",
+      "sha256": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadFileTree/docs/foo.txt",
+      "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "bytes": 3
+    },
+    {
+      "path": "jobs/S3UploadFileTree/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/ShpExport/.gitignore",
+      "sha256": "43b88639ad7f0de4838800bcf8bda31b594d24ce0a8b6f5a41b9f623800136a6",
+      "bytes": 45
+    },
+    {
+      "path": "jobs/ShpExport/build.gradle",
+      "sha256": "afc90057c3d27da6f351ac07a0b2fc4ab1aaaff3b572ae6977c86b9e051b7c09",
+      "bytes": 484
+    },
+    {
+      "path": "jobs/ShpExport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/ShpImport/build.gradle",
+      "sha256": "c746bc01d5a34fa0fc1254d209e170717bb8117b966cb99d7b1ab4616d7827f5",
+      "bytes": 484
+    },
+    {
+      "path": "jobs/ShpImport/data.dbf",
+      "sha256": "29860239c32530dd5d485cf611190e4f478c5eb6317dbc80973321de44f072e5",
+      "bytes": 614
+    },
+    {
+      "path": "jobs/ShpImport/data.prj",
+      "sha256": "99b86fd1844abbef755d712c1ee13e3d49c3bfa17f9100fbfbdfb781b1c0299c",
+      "bytes": 462
+    },
+    {
+      "path": "jobs/ShpImport/data.shp",
+      "sha256": "957178aaf70c4cad8b5469cbf97cd8ee1eb50542a56b48a27e0a9b6548bc7c53",
+      "bytes": 140
+    },
+    {
+      "path": "jobs/ShpImport/data.shx",
+      "sha256": "751f48d9c75df09c23f264225b4d289230085659675abb37606cd575c734f3aa",
+      "bytes": 116
+    },
+    {
+      "path": "jobs/ShpImport/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/ShpImportBatchSize/build.gradle",
+      "sha256": "e60bdfaf8f42ed46b892a657a4a23a33b3a01c58c14367ae8be2c723fbb8fbf8",
+      "bytes": 513
+    },
+    {
+      "path": "jobs/ShpImportBatchSize/data.dbf",
+      "sha256": "29860239c32530dd5d485cf611190e4f478c5eb6317dbc80973321de44f072e5",
+      "bytes": 614
+    },
+    {
+      "path": "jobs/ShpImportBatchSize/data.prj",
+      "sha256": "99b86fd1844abbef755d712c1ee13e3d49c3bfa17f9100fbfbdfb781b1c0299c",
+      "bytes": 462
+    },
+    {
+      "path": "jobs/ShpImportBatchSize/data.shp",
+      "sha256": "957178aaf70c4cad8b5469cbf97cd8ee1eb50542a56b48a27e0a9b6548bc7c53",
+      "bytes": 140
+    },
+    {
+      "path": "jobs/ShpImportBatchSize/data.shx",
+      "sha256": "751f48d9c75df09c23f264225b4d289230085659675abb37606cd575c734f3aa",
+      "bytes": 116
+    },
+    {
+      "path": "jobs/ShpImportBatchSize/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/ShpValidator/ShpModel.ili",
+      "sha256": "d7d94cfd672ec661a5c751fe51ca6c9c5845fdb01ab9c4c98559594e1f6652d1",
+      "bytes": 478
+    },
+    {
+      "path": "jobs/ShpValidator/build.gradle",
+      "sha256": "e05fbbda5fd40de9d8d5c251569b2d866cdeab88c9252bde05fd1c43e577f119",
+      "bytes": 182
+    },
+    {
+      "path": "jobs/ShpValidator/data.dbf",
+      "sha256": "29860239c32530dd5d485cf611190e4f478c5eb6317dbc80973321de44f072e5",
+      "bytes": 614
+    },
+    {
+      "path": "jobs/ShpValidator/data.prj",
+      "sha256": "99b86fd1844abbef755d712c1ee13e3d49c3bfa17f9100fbfbdfb781b1c0299c",
+      "bytes": 462
+    },
+    {
+      "path": "jobs/ShpValidator/data.shp",
+      "sha256": "957178aaf70c4cad8b5469cbf97cd8ee1eb50542a56b48a27e0a9b6548bc7c53",
+      "bytes": 140
+    },
+    {
+      "path": "jobs/ShpValidator/data.shx",
+      "sha256": "751f48d9c75df09c23f264225b4d289230085659675abb37606cd575c734f3aa",
+      "bytes": 116
+    },
+    {
+      "path": "jobs/ShpValidator/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/ShpValidatorFail/ShpModel.ili",
+      "sha256": "8e327cf948285b9a65efa67b06d6ef146ed6748d032480dc3adebcd3f59768b0",
+      "bytes": 544
+    },
+    {
+      "path": "jobs/ShpValidatorFail/build.gradle",
+      "sha256": "7103664c7572bb5086e53f78cd2e6c4cb5d3d7cf9dd2c6eaa43e3d78f8cceb7c",
+      "bytes": 221
+    },
+    {
+      "path": "jobs/ShpValidatorFail/data.dbf",
+      "sha256": "29860239c32530dd5d485cf611190e4f478c5eb6317dbc80973321de44f072e5",
+      "bytes": 614
+    },
+    {
+      "path": "jobs/ShpValidatorFail/data.prj",
+      "sha256": "99b86fd1844abbef755d712c1ee13e3d49c3bfa17f9100fbfbdfb781b1c0299c",
+      "bytes": 462
+    },
+    {
+      "path": "jobs/ShpValidatorFail/data.shp",
+      "sha256": "957178aaf70c4cad8b5469cbf97cd8ee1eb50542a56b48a27e0a9b6548bc7c53",
+      "bytes": 140
+    },
+    {
+      "path": "jobs/ShpValidatorFail/data.shx",
+      "sha256": "751f48d9c75df09c23f264225b4d289230085659675abb37606cd575c734f3aa",
+      "bytes": 116
+    },
+    {
+      "path": "jobs/ShpValidatorFail/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/SqlExecutorTaskChain/build.gradle",
+      "sha256": "99e004b2314166ed3e11a85a52f143eba53e6be869f16860be24ec5f6f53b6f0",
+      "bytes": 681
+    },
+    {
+      "path": "jobs/SqlExecutorTaskChain/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/SqlExecutorTaskChain/statementChain_fillSrcTable.sql",
+      "sha256": "8d3dbfffcab1023178c4b1bf3377883a415c6faadec6c51afc45468c26849920",
+      "bytes": 488
+    },
+    {
+      "path": "jobs/SqlExecutorTaskChain/statementChain_insertIntoDestTable.sql",
+      "sha256": "4abfa688067f01f0ef6f8ea595a1dcdbe897c410894156fc4e00c0a8ba8882de",
+      "bytes": 91
+    },
+    {
+      "path": "jobs/SqlExecutorTaskDuckDb/.gitignore",
+      "sha256": "170e9e57d407be612b1b455e957964ccb1b151e76d6fcb126807a9f629efce1a",
+      "bytes": 9
+    },
+    {
+      "path": "jobs/SqlExecutorTaskDuckDb/build.gradle",
+      "sha256": "810e7a6f3d384814a5e6bb43fdfdf43693209c649fbaa921d917de1d23335729",
+      "bytes": 709
+    },
+    {
+      "path": "jobs/SqlExecutorTaskDuckDb/create_insert.sql",
+      "sha256": "efd71873d0bb51e44fb1ab8aabbc4bdf4e506997ef9695a5d63b957a8b9be50f",
+      "bytes": 69
+    },
+    {
+      "path": "jobs/SqlExecutorTaskDuckDb/data/ch.so.afu.abbaustellen.gpkg",
+      "sha256": "58b96b8bcc6debad5c128185b5fccc219ce57876d1b7b9aa73e8b7b8e9ba3744",
+      "bytes": 262144
+    },
+    {
+      "path": "jobs/SqlExecutorTaskDuckDb/data/ch.so.afu.bewilligte_erdwaermeanlagen.parquet",
+      "sha256": "a919c5aa35a8158d910eec558574fb2e415b3da2bc33b404b4a4eb3b6b8410d3",
+      "bytes": 3602
+    },
+    {
+      "path": "jobs/SqlExecutorTaskDuckDb/import_parquet.sql",
+      "sha256": "976bd8ec75029b0b180868a76b97f35d7acfd30d72cd07a9322ff8f06fd012fa",
+      "bytes": 328
+    },
+    {
+      "path": "jobs/SqlExecutorTaskDuckDb/init.sql",
+      "sha256": "c637dd6b48c5cfc2ec8453c6a6f7fa580fa978dfabe9983f6727665817a4cc3d",
+      "bytes": 33
+    },
+    {
+      "path": "jobs/SqlExecutorTaskDuckDb/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/SqlExecutorTaskParameter/build.gradle",
+      "sha256": "14b451709274579aeb165aa4b69421e930e889cb3f3ad61077cea1eec17184c6",
+      "bytes": 471
+    },
+    {
+      "path": "jobs/SqlExecutorTaskParameter/insert.sql",
+      "sha256": "6e9cadc9093d0f8ffcc3df96bbf0cf292d66f8f23f61fe43cd26a32c3b860432",
+      "bytes": 48
+    },
+    {
+      "path": "jobs/SqlExecutorTaskParameter/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/SqlExecutorTaskParameterList/build.gradle",
+      "sha256": "20f09e18074ea4a3d975c0d7836e84c7658653714574e98110eccb4b3bb98b07",
+      "bytes": 485
+    },
+    {
+      "path": "jobs/SqlExecutorTaskParameterList/insert.sql",
+      "sha256": "6e9cadc9093d0f8ffcc3df96bbf0cf292d66f8f23f61fe43cd26a32c3b860432",
+      "bytes": 48
+    },
+    {
+      "path": "jobs/SqlExecutorTaskParameterList/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/SqlExecutorTaskRelPath/build.gradle",
+      "sha256": "1cd941b9b7048aff639162c9831e1b22af95d5180e91c692fee2274eeccd6a97",
+      "bytes": 484
+    },
+    {
+      "path": "jobs/SqlExecutorTaskRelPath/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/SqlExecutorTaskRelPath/sql/relativePathConfiguration.sql",
+      "sha256": "60e009ad6f9a7358197881c5386fad40612c07a41019fa9bdf2d1934cda1aa9c",
+      "bytes": 87
+    },
+    {
+      "path": "jobs/XslTransformerFile/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml",
+      "sha256": "0779d2adab6127eeb26eef915f09b9208189c4157c39140bd0501789a44a844c",
+      "bytes": 5579
+    },
+    {
+      "path": "jobs/XslTransformerFile/build.gradle",
+      "sha256": "418bbc5e0fe55e5a306bb3d309590d564b6ca536f09bda43d7cd8716ca00f8eb",
+      "bytes": 311
+    },
+    {
+      "path": "jobs/XslTransformerFile/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl",
+      "sha256": "0d2febd25a9662c40a4bbfe3b8b2a155bb02eb2df1a0369c14fcdd12daa66895",
+      "bytes": 11006
+    },
+    {
+      "path": "jobs/XslTransformerFile/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/XslTransformerFileSet/.gitignore",
+      "sha256": "c263e9add751acf981dec7a9c3a62cb10359b1fcc38560b57e9a1aaeb03fe078",
+      "bytes": 5
+    },
+    {
+      "path": "jobs/XslTransformerFileSet/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml",
+      "sha256": "0779d2adab6127eeb26eef915f09b9208189c4157c39140bd0501789a44a844c",
+      "bytes": 5579
+    },
+    {
+      "path": "jobs/XslTransformerFileSet/MeldungAnGeometer_mehrere_gebaeude_mehrere_grundstuecke.xml",
+      "sha256": "bf4bd5ca0aed7c01c76532dcf35e579a3128a5bb495ec9c3c81a545dbc71c60f",
+      "bytes": 9704
+    },
+    {
+      "path": "jobs/XslTransformerFileSet/build.gradle",
+      "sha256": "e99c63112f4ddab9ac921cdd343202d6caa44bacfd816a16a272017b144141c4",
+      "bytes": 291
+    },
+    {
+      "path": "jobs/XslTransformerFileSet/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/XslTransformerResource/.gitignore",
+      "sha256": "c263e9add751acf981dec7a9c3a62cb10359b1fcc38560b57e9a1aaeb03fe078",
+      "bytes": 5
+    },
+    {
+      "path": "jobs/XslTransformerResource/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml",
+      "sha256": "0779d2adab6127eeb26eef915f09b9208189c4157c39140bd0501789a44a844c",
+      "bytes": 5579
+    },
+    {
+      "path": "jobs/XslTransformerResource/build.gradle",
+      "sha256": "0a863bbe62b310f91458283af0e4e974279a01c30ee692c81f3c9a81203859ae",
+      "bytes": 305
+    },
+    {
+      "path": "jobs/XslTransformerResource/settings.gradle",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "jobs/init.gradle",
+      "sha256": "df19164e05ff6d0112041de98c3815294202c596af0d98d525eadc21d69e5210",
+      "bytes": 804
+    }
+  ]
+}

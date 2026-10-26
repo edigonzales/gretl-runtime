@@ -72,6 +72,59 @@ Ein `java -jar`-fähiges Archiv startet über den Eintrag `Main-Class` im JAR-Ma
 
 ## 3. Schlanker Paketdeskriptor
 
+### PKG-019 — Versionierte Auswahl (Umsetzungsplan Phase 3)
+
+`schemaVersion: 1` bleibt der Kompatibilitätsweg: Die zur `runtimeVersion`
+gehörende vollständige Standardauswahl einschliesslich der 18 Standardfunktionen
+wird aus dem ausgelieferten, versionierten Paketkatalog ergänzt. Sie stammt
+niemals aus dem Host-Classpath. Zusätzliche externe Extensions müssen in
+`dependencies` deklariert sein; ihre frühere zufällige Anwesenheit auf dem
+Authoring-Classpath ist kein Auswahlvertrag.
+
+`schemaVersion: 2` ergänzt `taskModules` und `standardFunctions`:
+
+```json
+{
+  "schemaVersion": 2,
+  "name": "download",
+  "version": "1",
+  "runtimeVersion": "0.1.0",
+  "entryScript": "job.groovy",
+  "taskModules": ["io"],
+  "standardFunctions": false,
+  "dependencies": [],
+  "resources": []
+}
+```
+
+Zulässige Modulnamen sind `io`, `database`, `interlis` und `ilivalidator`.
+Fehlendes oder leeres `taskModules` bedeutet ausschliesslich gemeinsame
+Job-Runtime ohne Standardtasks. `standardFunctions` ist standardmässig false;
+true ergänzt die qualifizierte Standardfunktionsauswahl samt ihrer tatsächlichen
+Abhängigkeiten. Diese Felder sind in Version 1 unzulässig. Unbekannte Namen,
+doppelte Auswahlen und ungültige Feldtypen sind Fehler. Ganze Artefakte werden
+ausgewählt; eine Klassenminimierung oder automatische Analyse dynamischer
+Operationen findet nicht statt.
+
+Der Paketkatalog wird beim Distributionsbuild aus dem tatsächlich von Maven
+aufgelösten Produktionsgraphen erzeugt. Er bindet Koordinaten, Versionen,
+Classifier, vollständige Laufzeithüllen, relative Distributionspfade und
+SHA-256 zusammen. Die qualifizierte Maven-Versionsmediation der Distribution
+gilt auch für deren Teilmengen. Der Packager prüft die Eingabebytes erneut.
+Externe Dependencies werden vor dem Kompilieren mit Maven aufgelöst. Ihre
+Koordinaten und tatsächlichen Eingaben werden ebenso inventarisiert; Konflikte
+mit qualifizierten Versionen werden abgewiesen. Der Compiler erhält nur den
+ausgewählten Bestand und erbt keine beliebigen Hostklassen.
+
+`dependencies` akzeptiert `group:artifact:version` oder für ein klassifiziertes
+JAR `group:artifact:jar:classifier:version`. Repositories, Maven-Executable,
+Settings und lokaler Maven-Cache sind Authoringkonfiguration, keine Jobparameter.
+Der gebaute Job benötigt diese Werkzeuge und Repositories beim Start nicht.
+Für die ausdrücklich als Entwicklung ausgewiesene `-SNAPSHOT`-Distribution
+bleibt der bisherige Entwicklungsweg erhalten: Die konkreten Eingabebytes sind
+an den erzeugten Katalog und dessen Prüfsummen gebunden. Das ist kein Ersatz
+für feste Releaseversionen bei einer qualifizierten Veröffentlichung.
+
 ### PKG-020 — Explizite Quellen, Ressourcen und Programmabhängigkeiten
 
 Ein zu implementierender Beispielvertrag:

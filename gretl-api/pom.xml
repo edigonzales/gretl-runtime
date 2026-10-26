@@ -31,6 +31,22 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>production-module-boundary</id>
+            <phase>validate</phase><goals><goal>enforce</goal></goals>
+            <configuration><rules><bannedDependencies>
+              <searchTransitive>true</searchTransitive>
+              <message>The public API is JDK-only.</message>
+              <excludes><exclude>*:*:*:*:compile</exclude><exclude>*:*:*:*:runtime</exclude><exclude>*:*:*:*:provided</exclude></excludes>
+            </bannedDependencies></rules></configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>

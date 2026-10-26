@@ -27,10 +27,78 @@ jobs:
           java-version: '25'
           cache: maven
 
+      - name: Standard verification
+        run: ./mvnw -B clean verify
+
+      - name: Audit standard artifact identities
+        run: python3 scripts/audit-job-evidence.py --source "${{ github.sha }}"
+
+      - name: Preserve standard verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: standard-evidence-${{ github.sha }}
+          path: |
+            **/target/surefire-reports/
+            **/target/failsafe-reports/
+            **/target/site/jacoco*/
+            **/target/qualification/
+            **/target/job-evidence/**/execution.json
+            **/target/job-evidence/**/package-inventory.json
+            **/target/job-evidence/**/package-descriptor.json
+            **/target/job-evidence/**/job-metadata.json
+            **/target/job-evidence/**/isolation.json
+            **/target/job-evidence/**/*.events.jsonl
+            gretl-dist/target/dist/package-catalog.json
+            gretl-dist/target/dist/inventory.json
+            gretl-dist/target/dist/SHA256SUMS
+            **/target/job-evidence/**/report.json
+            **/target/job-evidence/**/*.stdout.log
+            **/target/job-evidence/**/*.stderr.log
+            **/target/job-evidence/**/output/
+
       - name: Run all tests including GeoTools and backing-service profiles
         run: ./mvnw -B -Pgeotools-probe,backing-services clean verify
 
+      - name: Audit full artifact identities and all 44 operations
+        run: python3 scripts/audit-job-evidence.py --full --source "${{ github.sha }}"
+
+      - name: Preserve full verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-evidence-${{ github.sha }}
+          path: |
+            **/target/surefire-reports/
+            **/target/failsafe-reports/
+            **/target/site/jacoco*/
+            **/target/service-evidence/
+            **/target/qualification/
+            **/target/job-evidence/**/execution.json
+            **/target/job-evidence/**/package-inventory.json
+            **/target/job-evidence/**/package-descriptor.json
+            **/target/job-evidence/**/job-metadata.json
+            **/target/job-evidence/**/isolation.json
+            **/target/job-evidence/**/*.events.jsonl
+            gretl-dist/target/dist/package-catalog.json
+            gretl-dist/target/dist/inventory.json
+            gretl-dist/target/dist/SHA256SUMS
+            **/target/job-evidence/**/report.json
+            **/target/job-evidence/**/*.stdout.log
+            **/target/job-evidence/**/*.stderr.log
+            **/target/job-evidence/**/output/
+
+      - name: Preserve verified distribution and representative packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-packages-${{ github.sha }}
+          retention-days: 7
+          path: |
+            gretl-dist/target/gretl-runtime-*-bin.zip
+            **/target/job-evidence/selected-*/job.jar
+
       - name: Publish snapshot artefacts
+        if: github.ref == 'refs/heads/main'
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}

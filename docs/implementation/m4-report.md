@@ -1,5 +1,8 @@
 # M4-Prüfbericht: IliValidator und Stufe B
 
+> Historischer Meilensteinbericht: Aussagen und Modulnamen gelten für den hier
+> dokumentierten Commit. Aktueller Zuschnitt: [Modulgrenzen](module-boundaries.md).
+
 > **Historischer Bericht.** Dieser Bericht dokumentiert den Stand von M4
 > (`0.1.0-M4`, 267 Standard-/271 Profil-Tests). M5 ergänzt Distribution,
 > Inventar, Prüfsummen und Beispiele; aktuell ist der

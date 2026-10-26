@@ -86,8 +86,4 @@
 | [.acronym]#CSV#-Kodierung
 | [.optional]#nein#
 
-| [.dsl-signature]#*tableName* = text#
-| GeoPackage table name
-| [.required]#ja#
-
 |===

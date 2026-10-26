@@ -17,8 +17,17 @@ import java.util.OptionalLong;
 public final class RunControl implements TimeBudget, CancellationToken {
     private final MonotonicClock clock;
     private final OptionalLong deadlineTicks;
-    private CancelReason cancelReason;
+    private volatile CancelReason cancelReason;
     private String finishReason;
+    private TimeBudget completionBudget;
+
+    /** One shared grace period for cooperative cleanup, report and flush. */
+    public synchronized TimeBudget completionBudget() {
+        if (completionBudget == null) {
+            completionBudget = new RunControl(clock, Optional.of(Duration.ofSeconds(30)));
+        }
+        return completionBudget;
+    }
 
     public RunControl(MonotonicClock clock, Optional<Duration> timeout) {
         this.clock = Objects.requireNonNull(clock, "clock");
@@ -46,7 +55,7 @@ public final class RunControl implements TimeBudget, CancellationToken {
         }
     }
 
-    public void requestCancel(CancelReason reason) {
+    public synchronized void requestCancel(CancelReason reason) {
         Objects.requireNonNull(reason, "reason");
         if (cancelReason == null) {
             cancelReason = reason;

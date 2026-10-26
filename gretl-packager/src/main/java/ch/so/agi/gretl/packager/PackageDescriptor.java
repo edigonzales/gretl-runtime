@@ -17,19 +17,31 @@ import java.util.regex.Pattern;
 public record PackageDescriptor(
         Path descriptorFile, Path baseDirectory, int schemaVersion,
         String name, String version, String runtimeVersion, String entryScript,
-        List<String> sources, List<String> resources, List<Dependency> dependencies) {
+        List<String> sources, List<String> resources, List<Dependency> dependencies,
+        List<String> taskModules, boolean standardFunctions) {
 
     private static final long MAX_DESCRIPTOR_BYTES = 1L << 20;
     private static final Pattern NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]{0,127}");
     private static final Pattern VERSION = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._+\\-]{0,127}");
     private static final Set<String> FIELDS = Set.of(
             "schemaVersion", "name", "version", "runtimeVersion", "entryScript",
-            "sources", "resources", "dependencies");
+            "sources", "resources", "dependencies", "taskModules", "standardFunctions");
 
-    public record Dependency(String groupId, String artifactId, String version) {
+    public PackageDescriptor(Path descriptorFile, Path baseDirectory, int schemaVersion,
+            String name, String version, String runtimeVersion, String entryScript,
+            List<String> sources, List<String> resources, List<Dependency> dependencies) {
+        this(descriptorFile, baseDirectory, schemaVersion, name, version, runtimeVersion,
+                entryScript, sources, resources, dependencies, List.of(), false);
+    }
+
+    public record Dependency(String groupId, String artifactId, String version, String classifier) {
+        public Dependency(String groupId, String artifactId, String version) { this(groupId, artifactId, version, ""); }
         public String coordinate() {
-            return groupId + ":" + artifactId + ":" + version;
+            return classifier.isEmpty() ? groupId + ":" + artifactId + ":" + version
+                    : groupId + ":" + artifactId + ":jar:" + classifier + ":" + version;
         }
+        public String key() { return groupId + ":" + artifactId + ":jar:" + classifier; }
+        public String fileName() { return artifactId + "-" + version + (classifier.isEmpty() ? "" : "-" + classifier) + ".jar"; }
     }
 
     public PackageDescriptor {
@@ -38,6 +50,7 @@ public record PackageDescriptor(
         sources = List.copyOf(sources);
         resources = List.copyOf(resources);
         dependencies = List.copyOf(dependencies);
+        taskModules = List.copyOf(taskModules);
     }
 
     public static PackageDescriptor load(Path descriptor) throws PackageException {
@@ -65,7 +78,7 @@ public record PackageDescriptor(
         Map<String, Object> object = stringKeys(raw);
         rejectUnknown(object);
         int schemaVersion = integer(object, "schemaVersion");
-        if (schemaVersion != 1) {
+        if (schemaVersion != 1 && schemaVersion != 2) {
             throw new PackageException("PACKAGE_DESCRIPTOR_VERSION",
                     PackagerMessages.format("package.descriptorVersion", schemaVersion));
         }
@@ -84,10 +97,17 @@ public record PackageDescriptor(
         List<String> sources = textList(object, "sources");
         List<String> resources = textList(object, "resources");
         List<Dependency> dependencies = dependencies(object, allowSnapshots);
+        if (schemaVersion == 1 && (object.containsKey("taskModules") || object.containsKey("standardFunctions")))
+            throw new PackageException("PACKAGE_SELECTION_VERSION", "taskModules/standardFunctions require schemaVersion 2");
+        List<String> taskModules = textList(object, "taskModules");
+        if (!Set.of("io", "database", "interlis", "ilivalidator").containsAll(taskModules))
+            throw new PackageException("PACKAGE_MODULE_UNKNOWN", "Unknown taskModules selection: " + taskModules);
+        Object functions = object.getOrDefault("standardFunctions", false);
+        if (!(functions instanceof Boolean)) throw new PackageException("PACKAGE_FIELD_TYPE", "standardFunctions must be boolean");
 
         Path base = file.getParent().toAbsolutePath().normalize();
         PackageDescriptor value = new PackageDescriptor(file, base, schemaVersion,
-                name, version, runtimeVersion, entryScript, sources, resources, dependencies);
+                name, version, runtimeVersion, entryScript, sources, resources, dependencies, taskModules, (Boolean) functions);
         value.validate();
         return value;
     }
@@ -203,7 +223,8 @@ public record PackageDescriptor(
 
     private static int integer(Map<String, Object> object, String key) throws PackageException {
         Object value = object.get(key);
-        if (!(value instanceof Number number) || number.longValue() != number.doubleValue()) {
+        if (!(value instanceof Number number) || number.longValue() != number.doubleValue()
+                || number.longValue() < Integer.MIN_VALUE || number.longValue() > Integer.MAX_VALUE) {
             throw new PackageException("PACKAGE_FIELD_TYPE",
                     PackagerMessages.format("package.fieldInteger", key));
         }
@@ -263,13 +284,14 @@ public record PackageDescriptor(
                         PackagerMessages.get("package.dependenciesText"));
             }
             String[] parts = text.split(":", -1);
-            if (parts.length != 3 || parts[0].isBlank() || parts[1].isBlank()
-                    || parts[2].isBlank()) {
+            if ((parts.length != 3 && parts.length != 5) || !parts[0].matches("[A-Za-z0-9_.-]+")
+                    || !parts[1].matches("[A-Za-z0-9_.-]+") || (parts.length == 5 && (!parts[2].equals("jar")
+                    || !parts[3].matches("[A-Za-z0-9_.-]+")))) {
                 throw new PackageException("PACKAGE_DEPENDENCY_INVALID",
                         PackagerMessages.format("package.dependencyFormat", text));
             }
-            String version = parts[2];
-            if (version.startsWith("[") || version.startsWith("(")
+            String version = parts[parts.length - 1];
+            if (!VERSION.matcher(version).matches() || version.startsWith("[") || version.startsWith("(")
                     || version.equals("LATEST") || version.equals("RELEASE")
                     || (!allowSnapshots && version.toUpperCase(java.util.Locale.ROOT)
                     .endsWith("-SNAPSHOT"))
@@ -277,7 +299,10 @@ public record PackageDescriptor(
                 throw new PackageException("PACKAGE_DEPENDENCY_VERSION",
                         PackagerMessages.format("package.dependencyVersion", text));
             }
-            result.add(new Dependency(parts[0], parts[1], version));
+            Dependency dependency = new Dependency(parts[0], parts[1], version, parts.length == 5 ? parts[3] : "");
+            if (result.stream().anyMatch(previous -> previous.key().equals(dependency.key())))
+                throw new PackageException("PACKAGE_DEPENDENCY_DUPLICATE", "Duplicate/conflicting dependency: " + dependency.coordinate());
+            result.add(dependency);
         }
         return result;
     }

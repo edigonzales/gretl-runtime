@@ -1,5 +1,8 @@
 # M6-Prüfbericht: Optionaler Job-Fat-JAR-Packager (Stufe C)
 
+> Historischer Meilensteinbericht: Aussagen und Modulnamen gelten für den hier
+> dokumentierten Commit. Aktueller Zuschnitt: [Modulgrenzen](module-boundaries.md).
+
 **Stand:** 18. Oktober 2026  
 **Basis:** Spezifikation 4.1, Kapitel 09/10/12  
 **Projektversion:** `0.1.0-M6` (historischer Meilensteinbericht; die veröffentlichte Snapshot-Version ist `0.1.0-SNAPSHOT`)  

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "name": "ili2pg",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [
+    "interlis"
+  ],
+  "standardFunctions": false,
+  "resources": [
+    "A_Dataset.txt",
+    "B_Dataset.txt",
+    "Ili2pgDeleteDataset",
+    "Ili2pgDeleteDatasets",
+    "Ili2pgExportDatasets",
+    "Ili2pgImportFileSet",
+    "Ili2pgImportSchema",
+    "Ili2pgImportSchema_MetaConfigFile",
+    "Ili2pgImportSchema_MetaConfigIliData",
+    "Ili2pgImportSchema_Options",
+    "Ili2pgReplaceFile",
+    "Ili2pgReplaceIlidataFile",
+    "Ili2pgValidate",
+    "Ili2pgValidateDatasetFail",
+    "Ili2pgValidateFail",
+    "Ili2pgValidateMultipleDatasets",
+    "Ili2pgValidateSingleDataset",
+    "LICENSE-sogis-gretl.txt",
+    "models"
+  ],
+  "dependencies": []
+}

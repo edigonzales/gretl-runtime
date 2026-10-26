@@ -1,0 +1,379 @@
+[
+  {
+    "module": "gretl-api",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 603,
+        "missed": 60
+      },
+      "BRANCH": {
+        "covered": 19,
+        "missed": 7
+      },
+      "LINE": {
+        "covered": 102,
+        "missed": 12
+      },
+      "COMPLEXITY": {
+        "covered": 39,
+        "missed": 8
+      },
+      "METHOD": {
+        "covered": 31,
+        "missed": 3
+      },
+      "CLASS": {
+        "covered": 16,
+        "missed": 2
+      }
+    }
+  },
+  {
+    "module": "gretl-cli",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 1887,
+        "missed": 733
+      },
+      "BRANCH": {
+        "covered": 104,
+        "missed": 70
+      },
+      "LINE": {
+        "covered": 338,
+        "missed": 120
+      },
+      "COMPLEXITY": {
+        "covered": 99,
+        "missed": 60
+      },
+      "METHOD": {
+        "covered": 59,
+        "missed": 9
+      },
+      "CLASS": {
+        "covered": 7,
+        "missed": 1
+      }
+    }
+  },
+  {
+    "module": "gretl-database-tasks",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 4002,
+        "missed": 3436
+      },
+      "BRANCH": {
+        "covered": 265,
+        "missed": 449
+      },
+      "LINE": {
+        "covered": 857,
+        "missed": 659
+      },
+      "COMPLEXITY": {
+        "covered": 206,
+        "missed": 360
+      },
+      "METHOD": {
+        "covered": 132,
+        "missed": 66
+      },
+      "CLASS": {
+        "covered": 30,
+        "missed": 4
+      }
+    }
+  },
+  {
+    "module": "gretl-dist",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 106,
+        "missed": 25
+      },
+      "BRANCH": {
+        "covered": 5,
+        "missed": 3
+      },
+      "LINE": {
+        "covered": 20,
+        "missed": 6
+      },
+      "COMPLEXITY": {
+        "covered": 7,
+        "missed": 3
+      },
+      "METHOD": {
+        "covered": 5,
+        "missed": 1
+      },
+      "CLASS": {
+        "covered": 1,
+        "missed": 0
+      }
+    }
+  },
+  {
+    "module": "gretl-groovy",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 2278,
+        "missed": 1252
+      },
+      "BRANCH": {
+        "covered": 147,
+        "missed": 91
+      },
+      "LINE": {
+        "covered": 487,
+        "missed": 246
+      },
+      "COMPLEXITY": {
+        "covered": 151,
+        "missed": 150
+      },
+      "METHOD": {
+        "covered": 110,
+        "missed": 72
+      },
+      "CLASS": {
+        "covered": 15,
+        "missed": 1
+      }
+    }
+  },
+  {
+    "module": "gretl-i18n",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 91,
+        "missed": 32
+      },
+      "BRANCH": {
+        "covered": 12,
+        "missed": 8
+      },
+      "LINE": {
+        "covered": 22,
+        "missed": 9
+      },
+      "COMPLEXITY": {
+        "covered": 13,
+        "missed": 9
+      },
+      "METHOD": {
+        "covered": 10,
+        "missed": 2
+      },
+      "CLASS": {
+        "covered": 2,
+        "missed": 0
+      }
+    }
+  },
+  {
+    "module": "gretl-ilivalidator",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 647,
+        "missed": 401
+      },
+      "BRANCH": {
+        "covered": 28,
+        "missed": 40
+      },
+      "LINE": {
+        "covered": 129,
+        "missed": 78
+      },
+      "COMPLEXITY": {
+        "covered": 29,
+        "missed": 42
+      },
+      "METHOD": {
+        "covered": 22,
+        "missed": 15
+      },
+      "CLASS": {
+        "covered": 8,
+        "missed": 1
+      }
+    }
+  },
+  {
+    "module": "gretl-interlis-tasks",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 13102,
+        "missed": 6848
+      },
+      "BRANCH": {
+        "covered": 959,
+        "missed": 900
+      },
+      "LINE": {
+        "covered": 2383,
+        "missed": 1316
+      },
+      "COMPLEXITY": {
+        "covered": 655,
+        "missed": 1036
+      },
+      "METHOD": {
+        "covered": 369,
+        "missed": 357
+      },
+      "CLASS": {
+        "covered": 95,
+        "missed": 51
+      }
+    }
+  },
+  {
+    "module": "gretl-io-tasks",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 7565,
+        "missed": 4604
+      },
+      "BRANCH": {
+        "covered": 466,
+        "missed": 548
+      },
+      "LINE": {
+        "covered": 1522,
+        "missed": 989
+      },
+      "COMPLEXITY": {
+        "covered": 404,
+        "missed": 545
+      },
+      "METHOD": {
+        "covered": 269,
+        "missed": 173
+      },
+      "CLASS": {
+        "covered": 79,
+        "missed": 9
+      }
+    }
+  },
+  {
+    "module": "gretl-job-runtime",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 1580,
+        "missed": 4308
+      },
+      "BRANCH": {
+        "covered": 117,
+        "missed": 366
+      },
+      "LINE": {
+        "covered": 303,
+        "missed": 815
+      },
+      "COMPLEXITY": {
+        "covered": 86,
+        "missed": 331
+      },
+      "METHOD": {
+        "covered": 52,
+        "missed": 115
+      },
+      "CLASS": {
+        "covered": 6,
+        "missed": 13
+      }
+    }
+  },
+  {
+    "module": "gretl-logging",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 4374,
+        "missed": 1489
+      },
+      "BRANCH": {
+        "covered": 328,
+        "missed": 262
+      },
+      "LINE": {
+        "covered": 844,
+        "missed": 259
+      },
+      "COMPLEXITY": {
+        "covered": 211,
+        "missed": 268
+      },
+      "METHOD": {
+        "covered": 128,
+        "missed": 45
+      },
+      "CLASS": {
+        "covered": 20,
+        "missed": 1
+      }
+    }
+  },
+  {
+    "module": "gretl-packager",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 2593,
+        "missed": 1001
+      },
+      "BRANCH": {
+        "covered": 204,
+        "missed": 106
+      },
+      "LINE": {
+        "covered": 508,
+        "missed": 190
+      },
+      "COMPLEXITY": {
+        "covered": 139,
+        "missed": 109
+      },
+      "METHOD": {
+        "covered": 83,
+        "missed": 10
+      },
+      "CLASS": {
+        "covered": 13,
+        "missed": 0
+      }
+    }
+  },
+  {
+    "module": "gretl-runner",
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 8455,
+        "missed": 1663
+      },
+      "BRANCH": {
+        "covered": 720,
+        "missed": 341
+      },
+      "LINE": {
+        "covered": 1750,
+        "missed": 328
+      },
+      "COMPLEXITY": {
+        "covered": 588,
+        "missed": 356
+      },
+      "METHOD": {
+        "covered": 346,
+        "missed": 57
+      },
+      "CLASS": {
+        "covered": 77,
+        "missed": 0
+      }
+    }
+  }
+]

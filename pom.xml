@@ -23,19 +23,23 @@
     <module>gretl-i18n</module>
     <module>gretl-logging</module>
     <module>gretl-packager</module>
-    <module>gretl-basic-tasks</module>
-    <module>gretl-core-tasks</module>
+    <module>gretl-database-tasks</module>
+    <module>gretl-io-tasks</module>
     <module>gretl-cli</module>
     <module>gretl-job-runtime</module>
     <module>gretl-ilivalidator</module>
     <module>gretl-interlis-tasks</module>
     <module>examples/file-size-extension</module>
     <module>gretl-dist</module>
+    <module>gretl-integration-tests</module>
   </modules>
 
   <properties>
+    <gretl.sourceRevision></gretl.sourceRevision>
     <!-- Product baseline, spec 07. The wrapper pins Maven 3.10.0 separately. -->
     <java.version>25</java.version>
+    <gretl.test.includes>**/*JobIT.java</gretl.test.includes>
+    <jacoco.version>0.8.14</jacoco.version>
     <maven.compiler.release>25</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -99,6 +103,61 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
         <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2c-core</artifactId>
+        <version>${ili2c.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2c-tool</artifactId>
+        <version>${ili2c.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>iox-ili</artifactId>
+        <version>${iox-ili.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2pg</artifactId>
+        <version>${ili2pg.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2gpkg</artifactId>
+        <version>${ili2gpkg.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>${poi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>${poi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>ili2db</artifactId>
+        <version>${ili2pg.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.interlis</groupId>
+        <artifactId>iox-api</artifactId>
+        <version>1.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -175,6 +234,24 @@
     </pluginManagement>
 
     <plugins>
+      <!-- Java 25 coverage for test JVMs; forked product processes are reported separately. -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <executions>
+          <execution>
+            <id>coverage-agent</id>
+            <goals><goal>prepare-agent</goal></goals>
+            <configuration><append>true</append></configuration>
+          </execution>
+          <execution>
+            <id>coverage-report</id>
+            <phase>verify</phase>
+            <goals><goal>report</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -280,9 +357,7 @@
     -->
     <profile>
       <id>backing-services</id>
-      <modules>
-        <module>gretl-integration-tests</module>
-      </modules>
+      <properties><gretl.test.includes>**/*IT.java</gretl.test.includes></properties>
     </profile>
   </profiles>
 </project>

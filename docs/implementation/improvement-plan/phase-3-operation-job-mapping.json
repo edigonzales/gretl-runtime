@@ -1,0 +1,881 @@
+[
+  {
+    "id": "gretl.ftp-list",
+    "symbol": "FtpList",
+    "successfulExecutions": [
+      {
+        "scenario": "ftp-list-result",
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-list-result-4c05b3e5-726d-4bf9-91c0-a1fcf908a04d",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ftp-download",
+    "symbol": "FtpDownload",
+    "successfulExecutions": [
+      {
+        "scenario": "ftp-download",
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-download-5bb9c0cf-3ae2-47e4-b4e2-7e65278c8450",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ftp-upload",
+    "symbol": "FtpUpload",
+    "successfulExecutions": [
+      {
+        "scenario": "ftp-upload",
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-upload-3c05e0d1-6264-434e-8da4-09ba4641da9a",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ftp-delete",
+    "symbol": "FtpDelete",
+    "successfulExecutions": [
+      {
+        "scenario": "ftp-delete",
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-delete-922a658a-873a-41f0-bc04-eddc762aa410",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "ftp-delete",
+        "directory": "gretl-integration-tests/target/job-evidence/ftp-delete-be37df1f-991a-4cb5-a594-392f063ab6e6",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      }
+    ]
+  },
+  {
+    "id": "gretl.s3-download",
+    "symbol": "S3Download",
+    "successfulExecutions": [
+      {
+        "scenario": "original-s3-download",
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-download-98d041a7-3bb5-40ec-beaa-6121b80e1b29",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "original-s3-download",
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-download-a50a3565-9245-4875-b9d2-ba1efbbfd512",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "s3-download",
+        "directory": "gretl-integration-tests/target/job-evidence/s3-download-7496867b-a84d-4409-8742-066a976d5a13",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "s3-download",
+        "directory": "gretl-integration-tests/target/job-evidence/s3-download-7c215f5d-1617-46f4-824b-b55d7303b62b",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      }
+    ]
+  },
+  {
+    "id": "gretl.s3-upload",
+    "symbol": "S3Upload",
+    "successfulExecutions": [
+      {
+        "scenario": "original-s3-upload",
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-78983a96-5bf6-4b83-acbf-d49a76067936",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "original-s3-upload",
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-d4e3d5f8-489e-493e-b5f9-a362c490f9b3",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "original-s3-upload",
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-upload-d8347dea-c7ba-4089-961d-d1e5aff76b14",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "s3-upload",
+        "directory": "gretl-integration-tests/target/job-evidence/s3-upload-db3401e6-6961-448b-b339-ef67c2a6b71c",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      }
+    ]
+  },
+  {
+    "id": "gretl.s3-delete",
+    "symbol": "S3Delete",
+    "successfulExecutions": [
+      {
+        "scenario": "original-s3-delete",
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-delete-9bf6f81a-cd95-47f2-9b91-b2da4567f193",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "original-s3-delete",
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-delete-f3893f0d-4d9f-4928-89ab-e0d97071793a",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "s3-delete",
+        "directory": "gretl-integration-tests/target/job-evidence/s3-delete-1fa5214b-bd5a-457e-ae78-e3d25d585700",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "s3-delete",
+        "directory": "gretl-integration-tests/target/job-evidence/s3-delete-990742ee-0fac-47ef-9b5e-b982bfc7d616",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      }
+    ]
+  },
+  {
+    "id": "gretl.s3-bucket2bucket",
+    "symbol": "S3Bucket2Bucket",
+    "successfulExecutions": [
+      {
+        "scenario": "original-s3-copy",
+        "directory": "gretl-integration-tests/target/job-evidence/original-s3-copy-bf3ad337-9e42-45fd-90a7-312f18b2fa3d",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      },
+      {
+        "scenario": "s3-copy",
+        "directory": "gretl-integration-tests/target/job-evidence/s3-copy-6fe8c213-0171-4882-b5bb-595feb8d3ca1",
+        "sha256": "3aa92e1937eeb274842fb7f8c5546dac77a096eaca534095a1d719daf89d282c"
+      }
+    ]
+  },
+  {
+    "id": "gretl.xsl-transformer",
+    "symbol": "XslTransformer",
+    "successfulExecutions": [
+      {
+        "scenario": "io-xsl-file",
+        "directory": "gretl-integration-tests/target/job-evidence/io-xsl-file-49416cf5-1751-41f9-9cfb-16d9c76c0e3d",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "io-xsl-resource",
+        "directory": "gretl-integration-tests/target/job-evidence/io-xsl-resource-6b1963a6-fc76-4a37-96fa-e92a8d4adde6",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "io-xsl-set",
+        "directory": "gretl-integration-tests/target/job-evidence/io-xsl-set-019b294e-2f72-4914-8927-037290539b62",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "selected-io",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-io-81339f8e-127a-423f-8e23-3dbf9350ee8b",
+        "sha256": "f95edf7dfa6bed0f854a101a9942847fbd3b6e9f2a81b59884bc639d178512cd"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ilivalidator",
+    "symbol": "IliValidator",
+    "successfulExecutions": [
+      {
+        "scenario": "additional-function",
+        "directory": "gretl-integration-tests/target/job-evidence/additional-function-f888001a-5527-477a-9832-4829b3e93b64",
+        "sha256": "1c6e3e5a942d71128afae849d699b7f987820c91fd6279525a2aa68a42c660c4"
+      },
+      {
+        "scenario": "ili-ili-report-single",
+        "directory": "gretl-integration-tests/target/job-evidence/ili-ili-report-single-4e54ff1a-ac52-4bb4-ac57-596f54cd7fdb",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
+      },
+      {
+        "scenario": "selected-narrow-validator",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-narrow-validator-2fed910f-9bc6-475c-9790-d21701b35a92",
+        "sha256": "771b12cfb3771e9784ae903cc4968883fcef5c6c2c210eceae91b8796ce2a500"
+      }
+    ]
+  },
+  {
+    "id": "gretl.http-download",
+    "symbol": "HttpDownload",
+    "successfulExecutions": [
+      {
+        "scenario": "io-download-file",
+        "directory": "gretl-integration-tests/target/job-evidence/io-download-file-3c57e011-3a4e-4d63-a37d-79d7345e6cb6",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "selected-io",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-io-81339f8e-127a-423f-8e23-3dbf9350ee8b",
+        "sha256": "f95edf7dfa6bed0f854a101a9942847fbd3b6e9f2a81b59884bc639d178512cd"
+      }
+    ]
+  },
+  {
+    "id": "gretl.curl",
+    "symbol": "Curl",
+    "successfulExecutions": [
+      {
+        "scenario": "io-curl-binary",
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-binary-63e7dd7c-55fb-4854-944c-4ac8fc02c64a",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "io-curl-data",
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-data-6d1b4333-5d58-45ef-ba96-a77663d16cdf",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "io-curl-form",
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-form-101be97f-3fd4-4982-a935-a6164dde7bb8",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "io-curl-get",
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-get-03830f55-4aba-4ecf-af07-41af0550a208",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "io-curl-original-download",
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-download-eb7191c3-2d67-4224-807f-4248e1a67d37",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "io-curl-original-form",
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-form-3967eff8-99ed-4220-956d-8b6d81c3650f",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "io-curl-original-planregister",
+        "directory": "gretl-integration-tests/target/job-evidence/io-curl-original-planregister-0c1bb075-927b-48b4-bf45-5af7da0fda1e",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      }
+    ]
+  },
+  {
+    "id": "gretl.db2db",
+    "symbol": "Db2Db",
+    "successfulExecutions": [
+      {
+        "scenario": "database",
+        "directory": "gretl-integration-tests/target/job-evidence/database-chain-4247b72a-a6d1-440a-9afb-00ae5f063e32",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
+      },
+      {
+        "scenario": "parameter-copy-list",
+        "directory": "gretl-integration-tests/target/job-evidence/parameter-copy-list-e4012c6f-8bbc-47ad-920a-9a1c669e25e7",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
+      },
+      {
+        "scenario": "parameter-copy-scalar",
+        "directory": "gretl-integration-tests/target/job-evidence/parameter-copy-scalar-5216d5a3-9377-444d-af66-a8901d63667b",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
+      },
+      {
+        "scenario": "selected-database",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-database-927d7aba-d1ca-453d-ae24-e55e5fe8dd50",
+        "sha256": "a1ddf12d0d0921409decdbdafcabd25daa164dfe7623bddd8dc93d11c226511d"
+      },
+      {
+        "scenario": "database",
+        "directory": "gretl-integration-tests/target/job-evidence/typed-db2db-chain-bb2392f5-d02e-46cd-b406-a2dd5d05e343",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
+      }
+    ]
+  },
+  {
+    "id": "gretl.duckdb-sql-executor",
+    "symbol": "DuckDbSqlExecutor",
+    "successfulExecutions": [
+      {
+        "scenario": "original-duckdb",
+        "directory": "gretl-integration-tests/target/job-evidence/original-duckdb-d729b4d4-91b1-47fa-b4c2-3091afe0a2a3",
+        "sha256": "5bd9e097c399b1f79543fc7bd48a3413c19848d703fe8e46dfa8ae0985f64fe5"
+      },
+      {
+        "scenario": "database",
+        "directory": "gretl-integration-tests/target/job-evidence/positive-federation-6fa7c982-e286-43b6-8a7a-b995da9f5acd",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
+      },
+      {
+        "scenario": "selected-database",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-database-927d7aba-d1ca-453d-ae24-e55e5fe8dd50",
+        "sha256": "a1ddf12d0d0921409decdbdafcabd25daa164dfe7623bddd8dc93d11c226511d"
+      }
+    ]
+  },
+  {
+    "id": "gretl.gzip",
+    "symbol": "Gzip",
+    "successfulExecutions": [
+      {
+        "scenario": "original-gzip",
+        "directory": "gretl-integration-tests/target/job-evidence/original-gzip-f74a9bb8-dd59-4bb5-b26b-22529337702d",
+        "sha256": "7a106f6a0cad2bf83d9d747bea684dc809c7fbaf0f3b8b6042ff2cf9ac6f427a"
+      }
+    ]
+  },
+  {
+    "id": "gretl.extract",
+    "symbol": "Extract",
+    "successfulExecutions": [
+      {
+        "scenario": "io-extract-file",
+        "directory": "gretl-integration-tests/target/job-evidence/io-extract-file-d305d95a-5be4-4647-b2c1-5c813e67598a",
+        "sha256": "aeab5839c4a832fb1231a5eeeeb225535e30a73cf80291d07b76999ab7023c3c"
+      },
+      {
+        "scenario": "original-gzip",
+        "directory": "gretl-integration-tests/target/job-evidence/original-gzip-f74a9bb8-dd59-4bb5-b26b-22529337702d",
+        "sha256": "7a106f6a0cad2bf83d9d747bea684dc809c7fbaf0f3b8b6042ff2cf9ac6f427a"
+      },
+      {
+        "scenario": "selected-io",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-io-81339f8e-127a-423f-8e23-3dbf9350ee8b",
+        "sha256": "f95edf7dfa6bed0f854a101a9942847fbd3b6e9f2a81b59884bc639d178512cd"
+      }
+    ]
+  },
+  {
+    "id": "gretl.sql-executor",
+    "symbol": "SqlExecutor",
+    "successfulExecutions": [
+      {
+        "scenario": "database",
+        "directory": "gretl-integration-tests/target/job-evidence/database-chain-4247b72a-a6d1-440a-9afb-00ae5f063e32",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
+      },
+      {
+        "scenario": "parameter-sql-list",
+        "directory": "gretl-integration-tests/target/job-evidence/parameter-sql-list-9e181ec5-0754-4ac1-8230-c58270e9ce19",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
+      },
+      {
+        "scenario": "parameter-sql-scalar",
+        "directory": "gretl-integration-tests/target/job-evidence/parameter-sql-scalar-da265571-a6fe-404d-b2bf-048aac5188f9",
+        "sha256": "25db8f1f4356fb449af824c3cc9b131540ad491c66def83b1dea35409fa51b6f"
+      },
+      {
+        "scenario": "selected-database",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-database-927d7aba-d1ca-453d-ae24-e55e5fe8dd50",
+        "sha256": "a1ddf12d0d0921409decdbdafcabd25daa164dfe7623bddd8dc93d11c226511d"
+      }
+    ]
+  },
+  {
+    "id": "gretl.csv2excel",
+    "symbol": "Csv2Excel",
+    "successfulExecutions": [
+      {
+        "scenario": "excel-empty",
+        "directory": "gretl-integration-tests/target/job-evidence/excel-empty-a6a441cb-fa98-401c-90bc-d3586a4325c9",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
+      },
+      {
+        "scenario": "excel-single",
+        "directory": "gretl-integration-tests/target/job-evidence/excel-single-5524b182-1368-47c8-a71a-18f9387656a3",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
+      },
+      {
+        "scenario": "selected-interlis",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-9c8bd56a-cdfb-4610-aa97-6eb87d2a8550",
+        "sha256": "dafe5608e5093c3061ada62fd6b5e116249ff937e8e8e3b8f855ceda9b96b1da"
+      }
+    ]
+  },
+  {
+    "id": "gretl.csv-import",
+    "symbol": "CsvImport",
+    "successfulExecutions": [
+      {
+        "scenario": "format-csv-import",
+        "directory": "gretl-integration-tests/target/job-evidence/format-csv-import-832107bc-b9d8-4572-8d87-45c8dced6b1a",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      },
+      {
+        "scenario": "format-csv-import",
+        "directory": "gretl-integration-tests/target/job-evidence/format-csv-import-e32b63e5-9e2c-46d6-964a-1f139293c50a",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      }
+    ]
+  },
+  {
+    "id": "gretl.csv-export",
+    "symbol": "CsvExport",
+    "successfulExecutions": [
+      {
+        "scenario": "format-csv-export",
+        "directory": "gretl-integration-tests/target/job-evidence/format-csv-export-4ca6cced-9158-46fa-bf1a-10f1cf938b31",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      }
+    ]
+  },
+  {
+    "id": "gretl.json-import",
+    "symbol": "JsonImport",
+    "successfulExecutions": [
+      {
+        "scenario": "format-json-import",
+        "directory": "gretl-integration-tests/target/job-evidence/format-json-import-870ea77c-f929-4ba9-adf9-e21de1187bce",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      },
+      {
+        "scenario": "format-json-import",
+        "directory": "gretl-integration-tests/target/job-evidence/format-json-import-fc9ea537-9a04-434b-a527-0d4a5b46b776",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      }
+    ]
+  },
+  {
+    "id": "gretl.gpkg2shp",
+    "symbol": "Gpkg2Shp",
+    "successfulExecutions": [
+      {
+        "scenario": "gpkg2shp-single",
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg2shp-single-a5cc7139-29ba-4689-a06c-b149387bd36e",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
+      }
+    ]
+  },
+  {
+    "id": "gretl.gpkg-import",
+    "symbol": "GpkgImport",
+    "successfulExecutions": [
+      {
+        "scenario": "format-gpkg-import",
+        "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-import-59de6777-4fa8-4180-903f-77cb4939f2bb",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      }
+    ]
+  },
+  {
+    "id": "gretl.gpkg-export",
+    "symbol": "GpkgExport",
+    "successfulExecutions": [
+      {
+        "scenario": "format-gpkg-export",
+        "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-export-255a74bd-c14a-4840-817b-aead35c6b226",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      },
+      {
+        "scenario": "format-gpkg-export",
+        "directory": "gretl-integration-tests/target/job-evidence/format-gpkg-export-f2d4c05d-5541-4fa0-8ee2-75f6db3f032d",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      }
+    ]
+  },
+  {
+    "id": "gretl.shp-import",
+    "symbol": "ShpImport",
+    "successfulExecutions": [
+      {
+        "scenario": "format-shp-import",
+        "directory": "gretl-integration-tests/target/job-evidence/format-shp-import-326a6d87-3e16-42cf-bdbc-089cf8a7aeaf",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      }
+    ]
+  },
+  {
+    "id": "gretl.shp-export",
+    "symbol": "ShpExport",
+    "successfulExecutions": [
+      {
+        "scenario": "format-shp-export",
+        "directory": "gretl-integration-tests/target/job-evidence/format-shp-export-083d4023-9803-41a7-9d7f-42041f4cd778",
+        "sha256": "e1e83ce4d7d2540a13b23a044a1979d999f022de67675c838887e14a51e8f8fe"
+      }
+    ]
+  },
+  {
+    "id": "gretl.csv-validator",
+    "symbol": "CsvValidator",
+    "successfulExecutions": [
+      {
+        "scenario": "additional-function",
+        "directory": "gretl-integration-tests/target/job-evidence/additional-function-a685bf85-12e6-4347-a666-e7aabd05fa12",
+        "sha256": "1c6e3e5a942d71128afae849d699b7f987820c91fd6279525a2aa68a42c660c4"
+      },
+      {
+        "scenario": "selected-interlis",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-9c8bd56a-cdfb-4610-aa97-6eb87d2a8550",
+        "sha256": "dafe5608e5093c3061ada62fd6b5e116249ff937e8e8e3b8f855ceda9b96b1da"
+      },
+      {
+        "scenario": "valid-csv-path",
+        "directory": "gretl-integration-tests/target/job-evidence/valid-csv-path-4d266463-4f9f-4d6d-bd21-9d26852692d6",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
+      },
+      {
+        "scenario": "valid-csv-string",
+        "directory": "gretl-integration-tests/target/job-evidence/valid-csv-string-eaa84422-6c18-4b7c-a5e9-04c40889ae41",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
+      }
+    ]
+  },
+  {
+    "id": "gretl.json-validator",
+    "symbol": "JsonValidator",
+    "successfulExecutions": [
+      {
+        "scenario": "valid-json-path",
+        "directory": "gretl-integration-tests/target/job-evidence/valid-json-path-a579619a-a8d1-4a07-a0d4-dbbedeebb035",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
+      },
+      {
+        "scenario": "valid-json-string",
+        "directory": "gretl-integration-tests/target/job-evidence/valid-json-string-3b91f045-e38d-47db-9b85-358568326ad1",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
+      }
+    ]
+  },
+  {
+    "id": "gretl.gpkg-validator",
+    "symbol": "GpkgValidator",
+    "successfulExecutions": [
+      {
+        "scenario": "valid-gpkg-path",
+        "directory": "gretl-integration-tests/target/job-evidence/valid-gpkg-path-6243dcde-8df8-4503-aa4e-32bd1e1acf6e",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
+      },
+      {
+        "scenario": "valid-gpkg-string",
+        "directory": "gretl-integration-tests/target/job-evidence/valid-gpkg-string-3f3c2458-da90-4e94-b145-c516cd72f948",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
+      }
+    ]
+  },
+  {
+    "id": "gretl.shp-validator",
+    "symbol": "ShpValidator",
+    "successfulExecutions": [
+      {
+        "scenario": "valid-shp-path",
+        "directory": "gretl-integration-tests/target/job-evidence/valid-shp-path-6996f0f4-2e2e-4b39-926d-8d907b1a55e2",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
+      },
+      {
+        "scenario": "valid-shp-string",
+        "directory": "gretl-integration-tests/target/job-evidence/valid-shp-string-b3c0c82f-3f70-444f-adb4-02ac60231052",
+        "sha256": "2a5006292c49173ac4133c420ac24eeebe6506f5827c3f9b6072c88704e65b04"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2pg-import-schema",
+    "symbol": "Ili2pgImportSchema",
+    "successfulExecutions": [
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-0f43fd40-2d34-4ec1-957a-72d624246472",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-226a19e5-1c66-430c-a812-80f7d74871a7",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-315a3e49-4f45-497d-85aa-dc9de380ae39",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-49d2802e-1083-46bc-987e-fe2a4b8acc17",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-4f2cfe87-0350-4035-8454-8998aad2aacc",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-5ae3140e-466b-467e-9bd7-bc01c8e57510",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-795c953f-9c65-46fc-9a86-587241f304e0",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-8de8ccad-3c50-45a2-8ea9-7f5a08a16d6a",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-969294a3-d15b-4a66-b07c-ced6188e385c",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-b100431c-f96c-454f-9051-e4a1946b851e",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-ca854f78-dd3c-4a5c-8a79-2910c253b0c8",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-dcb907ac-c231-4591-bc1a-38bd616c82d5",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-schema",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-schema-fe6df509-bd23-4232-82d2-33745490012d",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2pg-import",
+    "symbol": "Ili2pgImport",
+    "successfulExecutions": [
+      {
+        "scenario": "ili2pg-import",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-0d257d51-a290-4fe1-bb93-a503fafd1cf9",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-import",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-4246337e-8372-4e0f-9fcd-cad4ccd06f5d",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-import",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-4b5685dd-4361-46ff-9908-8fbdd743206c",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-import",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-6724ac84-c45f-4e49-a8e3-bc61357cc217",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-import",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-674739b6-58cc-4e45-8f2b-2186a193489f",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-import",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-762f5c97-9ece-41e0-86e6-49880a9d2b4a",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-import",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-import-bbf78a8d-8e15-497d-ba04-cb84e04977d6",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2pg-replace",
+    "symbol": "Ili2pgReplace",
+    "successfulExecutions": [
+      {
+        "scenario": "ili2pg-replace",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-03c3d53b-ef59-4d2d-b089-dbedf2e154dd",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-replace",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-e6523b1b-d16f-4db0-b373-411bb344bb62",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-replace",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-ebead581-1f02-43b9-8387-311f5b8b10ac",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-replace-repository",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-replace-repository-5bfe58a4-a37b-4d34-a1e3-2f83f8d84254",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2pg-update",
+    "symbol": "Ili2pgUpdate",
+    "successfulExecutions": [
+      {
+        "scenario": "ili2pg-update",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-update-bd586b68-daf8-4d7c-81f9-3827d91431e4",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2pg-export",
+    "symbol": "Ili2pgExport",
+    "successfulExecutions": [
+      {
+        "scenario": "ili2pg-export",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-export-daf41102-2a96-43dd-8805-a6826e9edca3",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2pg-delete",
+    "symbol": "Ili2pgDelete",
+    "successfulExecutions": [
+      {
+        "scenario": "ili2pg-delete",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-delete-2139353d-0278-452a-a93c-efc2426e0383",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-delete",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-delete-835110f6-b059-45ed-99a8-a59561d16c6f",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2pg-validate",
+    "symbol": "Ili2pgValidate",
+    "successfulExecutions": [
+      {
+        "scenario": "ili2pg-validate",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-32f83a14-5c46-4953-b59d-87fec4cba3bb",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-validate",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-5511ffb4-ecc7-48f2-aa3e-8a2b672572ca",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-validate",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-a80f92e1-64bc-4f70-9f59-92c7cde2b5a2",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-validate",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-c25e9a43-7ef3-47ba-8d87-93bcd2462147",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-validate",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-c47d5aa0-0064-4ab2-a3fb-33d417b90c30",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      },
+      {
+        "scenario": "ili2pg-validate",
+        "directory": "gretl-integration-tests/target/job-evidence/ili2pg-validate-d7158793-a001-47d8-9308-195fa6e3fcc5",
+        "sha256": "ca5e3eb68f842c20db966b52c3c29d4c5ef84bdb5a12478083725172edaca080"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2gpkg-import",
+    "symbol": "Ili2gpkgImport",
+    "successfulExecutions": [
+      {
+        "scenario": "gpkg-help-example",
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg-help-example-87ae4073-8464-4845-982a-ff6bdac21e43",
+        "sha256": "8ce3a44dda1acc3a68ab67bd9a17625d644b2c031f88f158315408de554d6d11"
+      },
+      {
+        "scenario": "gpkg-srid",
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg-srid-51f7a0a9-11ac-4727-921d-169972a16b6b",
+        "sha256": "bc2ff4648a94b298ee4ff08f2fce885b85e186976650fa8338153ab104998c28"
+      },
+      {
+        "scenario": "gpkg-srid",
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg-srid-65743560-0275-4efd-b963-914f5d78c69f",
+        "sha256": "bc2ff4648a94b298ee4ff08f2fce885b85e186976650fa8338153ab104998c28"
+      },
+      {
+        "scenario": "ili-gpkg-set",
+        "directory": "gretl-integration-tests/target/job-evidence/ili-gpkg-set-d54adc3a-b8c3-4781-9b23-2faf7ddad6e8",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
+      },
+      {
+        "scenario": "ili-gpkg-single",
+        "directory": "gretl-integration-tests/target/job-evidence/ili-gpkg-single-ff5db410-410a-4cd6-b696-9932a15a21e0",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
+      },
+      {
+        "scenario": "selected-interlis",
+        "directory": "gretl-integration-tests/target/job-evidence/selected-interlis-9c8bd56a-cdfb-4610-aa97-6eb87d2a8550",
+        "sha256": "dafe5608e5093c3061ada62fd6b5e116249ff937e8e8e3b8f855ceda9b96b1da"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2duckdb-import-schema",
+    "symbol": "Ili2duckdbImportSchema",
+    "successfulExecutions": [
+      {
+        "scenario": "ili-duck-export-single",
+        "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-9f3d16b7-7df1-4e66-b170-95f68a86f641",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2duckdb-import",
+    "symbol": "Ili2duckdbImport",
+    "successfulExecutions": [
+      {
+        "scenario": "ili-duck-export-single",
+        "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-9f3d16b7-7df1-4e66-b170-95f68a86f641",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
+      }
+    ]
+  },
+  {
+    "id": "gretl.ili2duckdb-export",
+    "symbol": "Ili2duckdbExport",
+    "successfulExecutions": [
+      {
+        "scenario": "ili-duck-export-single",
+        "directory": "gretl-integration-tests/target/job-evidence/ili-duck-export-single-9f3d16b7-7df1-4e66-b170-95f68a86f641",
+        "sha256": "6bc43f54b4d0afe603369f2e197d72c40c2cd092ad78f226e965b22bd2a3e27b"
+      }
+    ]
+  },
+  {
+    "id": "gretl.av2ch",
+    "symbol": "Av2ch",
+    "successfulExecutions": [
+      {
+        "scenario": "av2ch-set",
+        "directory": "gretl-integration-tests/target/job-evidence/av2ch-set-baeb0806-88ac-4070-820b-aaa83bf5a32d",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
+      },
+      {
+        "scenario": "av2ch-single",
+        "directory": "gretl-integration-tests/target/job-evidence/av2ch-single-3e54c2ce-70c6-4fdd-ad8b-facc17aa0835",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
+      }
+    ]
+  },
+  {
+    "id": "gretl.av2geobau",
+    "symbol": "Av2geobau",
+    "successfulExecutions": [
+      {
+        "scenario": "av2geobau-set",
+        "directory": "gretl-integration-tests/target/job-evidence/av2geobau-set-71f6c148-ba30-42bb-8d94-425f284e7ade",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
+      },
+      {
+        "scenario": "av2geobau-single",
+        "directory": "gretl-integration-tests/target/job-evidence/av2geobau-single-f1dc909b-c80b-4db1-abe3-6f77b3580fc7",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
+      }
+    ]
+  },
+  {
+    "id": "gretl.gpkg2dxf",
+    "symbol": "Gpkg2Dxf",
+    "successfulExecutions": [
+      {
+        "scenario": "gpkg2dxf-single",
+        "directory": "gretl-integration-tests/target/job-evidence/gpkg2dxf-single-0890bf59-4dbe-4665-9102-2a8785b5f3f0",
+        "sha256": "85e86a66c6980f1e015da980725491f9596d6156ba09bbd463aefb80b7d5ccba"
+      }
+    ]
+  }
+]

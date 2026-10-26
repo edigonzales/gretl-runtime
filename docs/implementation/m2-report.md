@@ -1,5 +1,8 @@
 # M2-Prüfbericht: Groovy-6-Anwenderfassade und CORE-040-Harness
 
+> Historischer Meilensteinbericht: Aussagen und Modulnamen gelten für den hier
+> dokumentierten Commit. Aktueller Zuschnitt: [Modulgrenzen](module-boundaries.md).
+
 > **Historischer Bericht.** Dieser Bericht dokumentiert den Stand von M2
 > (`0.1.0-M2`, 197 Standard-/201 Profil-Tests). M3 ergänzt CLI, Logging,
 > Runbericht und die Standard-Tasks; aktuell ist der

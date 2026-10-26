@@ -6,5 +6,6 @@ BASE_DIR=$(dirname -- "$SCRIPT_DIR")
 JAVA_BIN="${JAVA_HOME:+$JAVA_HOME/bin/}java"
 
 exec "$JAVA_BIN" ${GRETL_JAVA_OPTS:-} \
+  -Dgretl.packager.catalog="$BASE_DIR/package-catalog.json" \
   -cp "$BASE_DIR/lib/runtime/*:$BASE_DIR/lib/tasks/*:$BASE_DIR/lib/extensions/*" \
   ch.so.agi.gretl.cli.Main "$@"

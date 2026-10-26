@@ -947,6 +947,16 @@ Bedarf implizit angelegt.
 
 include::generated/task-ili2gpkgimport.adoc[]
 
+Dieses ausführbare JAR-Testrezept wählt die Zieldatei und den SRS-Code über
+öffentliche Parameter. `Beispiel2a.xtf` und das Verzeichnis `models` gehören
+zum Jobpaket. Die eingebettete CLI-Hilfe bietet zusätzlich ein vollständiges
+Beispiel mit dem generischen Transferdateinamen `data.xtf`.
+
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/gpkg-import/job.groovy[]
+----
+
 === Ili2duckdbImportSchema
 
 Importiert ein INTERLIS-Schema in eine DuckDB-Datei.

@@ -1,5 +1,8 @@
 # M1-Prüfbericht — Java-API und sequenzieller Runner
 
+> Historischer Meilensteinbericht: Aussagen und Modulnamen gelten für den hier
+> dokumentierten Commit. Aktueller Zuschnitt: [Modulgrenzen](module-boundaries.md).
+
 > **Historischer Bericht.** Dieser Bericht dokumentiert den Stand von M1
 > (`0.1.0-M1`). M2 ergänzt den Groovy-Adapter und ist im
 > [M2-Bericht](m2-report.md) dokumentiert; die aktuellen Testzahlen stehen in

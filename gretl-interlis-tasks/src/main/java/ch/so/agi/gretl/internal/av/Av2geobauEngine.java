@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.internal.av;
 
+import ch.so.agi.gretl.internal.InterlisTaskException;
+
 import ch.ehi.basics.logging.EhiLogger;
 import ch.ehi.basics.logging.FileListener;
 import ch.ehi.basics.settings.Settings;
@@ -60,7 +62,7 @@ public final class Av2geobauEngine {
                 }
             }
         } catch (Exception e) {
-            throw new ch.so.agi.gretl.internal.interlis.InterlisTaskException("AV_CONVERT", "AV conversion failed", "convert", java.util.Optional.empty(), e);
+            throw new ch.so.agi.gretl.internal.InterlisTaskException("AV_CONVERT", "AV conversion failed", "convert", java.util.Optional.empty(), e);
         } finally {
             if (fileLogger != null) {
                 EhiLogger.getInstance().removeListener(fileLogger);

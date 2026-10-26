@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.cli;
 
+import ch.so.agi.gretl.job.runtime.OperationHelpText;
+
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.InputField;
 import ch.so.agi.gretl.runtime.api.OperationType;
