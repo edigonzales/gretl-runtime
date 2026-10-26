@@ -9,6 +9,37 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 class OperationMetadataTest {
+    @Test void everyPublicDescriptionExistsInEachLanguageWithoutFallback() throws Exception {
+        var registry = OperationRegistry.load(getClass().getClassLoader());
+        for (String suffix : List.of("", "_de")) {
+            String resource = "/ch/so/agi/gretl/i18n/messages" + suffix + ".properties";
+            try (var stream = getClass().getResourceAsStream(resource)) {
+                assertNotNull(stream, resource);
+                var catalog = new PropertyResourceBundle(new java.io.InputStreamReader(
+                        stream, java.nio.charset.StandardCharsets.UTF_8));
+                for (var operation : registry.all()) {
+                    String prefix = "operation." + operation.id();
+                    assertDescription(catalog, prefix + ".description", resource);
+                    for (var input : operation.inputs()) {
+                        assertDescription(catalog, prefix + ".field." + input.name()
+                                + ".description", resource);
+                    }
+                    for (var output : operation.outputs()) {
+                        assertDescription(catalog, prefix + ".output." + output.name()
+                                + ".description", resource);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void assertDescription(ResourceBundle catalog, String key, String resource) {
+        assertTrue(catalog.containsKey(key), resource + ": " + key);
+        String description = catalog.getString(key);
+        assertFalse(description.isBlank(), key);
+        assertFalse(description.contains("[."), "Descriptions must remain plain text: " + key);
+    }
+
     @Test void entireCatalogMatchesVersionedIdentityAndResultContracts() throws Exception {
         var registry = OperationRegistry.load(getClass().getClassLoader());
         var expected = (List<?>) Json.parseFile(Path.of("../docs/implementation/improvement-plan/operation-inventory.json"), 1_000_000);

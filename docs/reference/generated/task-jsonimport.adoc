@@ -1,25 +1,31 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*database* = text#
-| Alias der Ziel-Datenbankverbindung
+| Alias der Ziel-Datenbankverbindung +
+Beispiel: [.code-fragment]#`database = 'db'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*jsonFile* = path#
-| Zu importierende [.acronym]#JSON#-Datei
+| Zu importierende [.acronym]#JSON#-Datei +
+Beispiel: [.code-fragment]#`jsonFile = file('data/input.json')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*qualifiedTableName* = text#
-| Name der Zieltabelle
+| Name der Zieltabelle +
+Beispiel: [.code-fragment]#`qualifiedTableName = 'public.documents'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*columnName* = text#
-| Ziel-Textspalte
+| Ziel-Textspalte +
+Beispiel: [.code-fragment]#`columnName = 'document'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*deleteAllRows* = boolean#
-| Zuerst alle Zielzeilen loeschen
+| Zuerst alle Zielzeilen loeschen +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`deleteAllRows = true`#
 | [.optional]#nein#
 
 |===

@@ -95,10 +95,10 @@ public final class ValidatorOperations {
             fields.add(field("firstLineIsHeader", "boolean", "Use first CSV line as header",
                     false, true, "firstLineIsHeader = false", FormatTaskSupport::bool,
                     (b, v) -> b.setFirstLineIsHeader(v)));
-            fields.add(field("valueDelimiter", "text", "CSV delimiter", false, null,
-                    "valueDelimiter = ','", FormatTaskSupport::text, (b, v) -> b.setValueDelimiter(v)));
-            fields.add(field("valueSeparator", "text", "CSV quote character", false, null,
-                    "valueSeparator = '\"'", FormatTaskSupport::text, (b, v) -> b.setValueSeparator(v)));
+            fields.add(field("valueDelimiter", "text", "CSV quote character", false, null,
+                    "valueDelimiter = '\"'", FormatTaskSupport::text, (b, v) -> b.setValueDelimiter(v)));
+            fields.add(field("valueSeparator", "text", "CSV field separator", false, null,
+                    "valueSeparator = ';'", FormatTaskSupport::text, (b, v) -> b.setValueSeparator(v)));
             fields.add(field("encoding", "text", "CSV encoding", false, null,
                     "encoding = 'UTF-8'", FormatTaskSupport::text, (b, v) -> b.setEncoding(v)));
         }

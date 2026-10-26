@@ -1,17 +1,20 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*dataFile* = path#
-| Vorhandene [.acronym]#INTERLIS#-XTF-Transferdatei
+| Vorhandene [.acronym]#INTERLIS#-XTF-Transferdatei +
+Beispiel: [.code-fragment]#`dataFile = file('data.xtf')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*modelDirectory* = path#
-| Vollstaendiger lokaler Modellbestand
+| Vollstaendiger lokaler Modellbestand +
+Beispiel: [.code-fragment]#`modelDirectory = file('models')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*validationConfig* = path#
-| Optionale lokale Validierungskonfiguration
+| Optionale lokale Validierungskonfiguration +
+Beispiel: [.code-fragment]#`validationConfig = file('validation.toml')`#
 | [.optional]#nein#
 
 |===

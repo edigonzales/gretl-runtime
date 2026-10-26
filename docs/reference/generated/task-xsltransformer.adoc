@@ -1,29 +1,37 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*xmlFiles* = list#
-| Zu transformierende [.acronym]#XML#-Eingabedateien
+| Zu transformierende [.acronym]#XML#-Eingabedateien +
+Beispiel: [.code-fragment]#`xmlFiles = [file('data/input.xml')]`#
 | [.required]#ja#
 
 | [.dsl-signature]#*xslFile* = path#
-| Lokales [.acronym]#XSLT#-Stylesheet; xslFile oder xslResource verwenden
+| Lokales [.acronym]#XSLT#-Stylesheet; xslFile oder xslResource verwenden +
+Beispiel: [.code-fragment]#`xslFile = file('xsl/transform.xsl')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*xslResource* = text#
-| [.acronym]#XSLT#-Klassenpfad-Ressource unter xslt/
+| [.acronym]#XSLT#-Klassenpfad-Ressource unter xslt/ +
+Beispiel: [.code-fragment]#`xslResource = 'transform.xsl'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*outDirectory* = path#
-| Verzeichnis fuer die transformierten Dateien
+| Verzeichnis fuer die transformierten Dateien +
+Beispiel: [.code-fragment]#`outDirectory = workPath('out')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*fileExtension* = text#
-| Dateierweiterung ohne fuehrenden Punkt
+| Dateierweiterung ohne fuehrenden Punkt +
+Vorgabe: [.code-fragment]#`'xtf'`# +
+Beispiel: [.code-fragment]#`fileExtension = 'xtf'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*overwrite* = boolean#
-| Vorhandene Ausgabedateien ersetzen
+| Vorhandene Ausgabedateien ersetzen +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`overwrite = false`#
 | [.optional]#nein#
 
 |===

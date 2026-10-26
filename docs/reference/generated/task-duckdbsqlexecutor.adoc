@@ -1,41 +1,57 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*database* = path#
-| DuckDB-Datenbankdatei
+| DuckDB-Datenbankdatei +
+Beispiel: [.code-fragment]#`database = file('build/work.duckdb')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*inMemory* = boolean#
-| In-Memory-DuckDB-Datenbank verwenden
+| In-Memory-DuckDB-Datenbank verwenden +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`inMemory = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*installExtensions* = boolean#
-| Install required DuckDB extensions before loading them
+| Benötigte DuckDB-Erweiterungen vor dem Laden installieren; benötigt gegebenenfalls Netzwerkzugriff. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`installExtensions = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*sqlFiles* = list#
-| Geordnete [.acronym]#SQL#-Dateien
+| Geordnete [.acronym]#SQL#-Dateien +
+Beispiel: [.code-fragment]#`sqlFiles = [file('sql/analyse.sql')]`#
 | [.required]#ja#
 
 | [.dsl-signature]#*sources* = list#
-| Federated [.acronym]#CSV#, GeoPackage or PostgreSQL sources
+| Quellen als Maps für [.acronym]#CSV#, GeoPackage oder PostgreSQL; jede Quelle erhält einen eindeutigen Namen und ihre formatspezifischen Verbindungs- oder Dateifelder. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`sources = [[type: 'csv', alias: 'input', file: file('data.csv')]]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*targets* = list#
-| Writable PostgreSQL targets
+| Schreibbare PostgreSQL-Ziele als benannte Maps; Verbindungen werden über Datenbankaliase aus taskConfig ausgewählt. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`targets = [[type: 'postgres', alias: 'target', database: 'pg']]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*exports* = list#
-| Parquet, GeoPackage, [.acronym]#XLSX# or PostgreSQL exports
+| Exportaufträge als Maps für Parquet, GeoPackage, [.acronym]#XLSX# oder PostgreSQL; je Auftrag Typ, Name, Abfrage und Ausgabeziel angeben. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`exports = [[type: 'parquet', name: 'out', query: 'select * from input.data', file: file('out.parquet'), overwrite: true]]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*sqlParameters* = map#
-| [.acronym]#SQL#-Parameter fuer eine Ausfuehrung aller [.acronym]#SQL#-Dateien
+| [.acronym]#SQL#-Parameter fuer eine Ausfuehrung aller [.acronym]#SQL#-Dateien +
+Vorgabe: [.code-fragment]#`{}`# +
+Beispiel: [.code-fragment]#`sqlParameters = [year: '2024']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*sqlParameterSets* = list#
-| [.acronym]#SQL#-Parameter-Maps; alle [.acronym]#SQL#-Dateien laufen pro Map
+| [.acronym]#SQL#-Parameter-Maps; alle [.acronym]#SQL#-Dateien laufen pro Map +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`sqlParameterSets = [[year: '2024'], [year: '2025']]`#
 | [.optional]#nein#
 
 |===

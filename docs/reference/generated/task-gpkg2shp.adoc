@@ -1,13 +1,15 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*dataFile* = path#
-| Zu konvertierende GeoPackage-Datei
+| Zu konvertierende GeoPackage-Datei +
+Beispiel: [.code-fragment]#`dataFile = file('data/input.gpkg')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*outputDir* = path#
-| Shapefile-Ausgabeverzeichnis
+| Shapefile-Ausgabeverzeichnis +
+Beispiel: [.code-fragment]#`outputDir = path('build/shp')`#
 | [.required]#ja#
 
 |===

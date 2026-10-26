@@ -1,33 +1,46 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*url* = uri#
-| Absolute [.acronym]#HTTP#-/[.acronym]#HTTPS#-Adresse
+| Absolute [.acronym]#HTTP#-/[.acronym]#HTTPS#-Adresse +
+Erlaubte Werte: [.code-fragment]#`http`#, [.code-fragment]#`https`# +
+Beispiel: [.code-fragment]#`url = 'https://example.invalid/data.zip'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*output* = path#
-| Ziel einer vollstaendig heruntergeladenen Datei
+| Ziel einer vollstaendig heruntergeladenen Datei +
+Beispiel: [.code-fragment]#`output = workPath('data.zip')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*overwrite* = boolean#
-| Vorhandene Zieldatei nach erfolgreichem Download ersetzen
+| Vorhandene Zieldatei nach erfolgreichem Download ersetzen +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`overwrite = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*method* = text#
-| GET oder POST
+| GET oder POST +
+Vorgabe: [.code-fragment]#`'GET'`# +
+Erlaubte Werte: [.code-fragment]#`GET`#, [.code-fragment]#`POST`# +
+Beispiel: [.code-fragment]#`method = 'GET'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*headers* = map#
-| [.acronym]#HTTP#-Header; Werte als Text oder SecretValue
+| [.acronym]#HTTP#-Header; Werte als Text oder SecretValue +
+Vorgabe: [.code-fragment]#`{}`# +
+Beispiel: [.code-fragment]#`headers = ['Accept': 'application/zip']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*bodyText* = text#
-| Optionaler UTF-8-Body nur fuer POST
+| Optionaler UTF-8-Body nur fuer POST +
+Beispiel: [.code-fragment]#`bodyText = 'grant_type=client_credentials'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*maxBytes* = integer#
-| Maximal gelesene Bytes
+| Maximal gelesene Bytes +
+Vorgabe: [.code-fragment]#`1073741824`# +
+Beispiel: [.code-fragment]#`maxBytes = 1048576L`#
 | [.optional]#nein#
 
 |===

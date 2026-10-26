@@ -1,133 +1,188 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*databaseFile* = path#
-| Database file
+| Pfad der lokalen GeoPackage- oder DuckDB-Datenbank; Eingabe und Ausgabe hängen von der gewählten Operation ab. +
+Beispiel: [.code-fragment]#`databaseFile = file('data/db.gpkg')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*dataFiles* = list#
-| Transfer files
+| Liste der [.acronym]#INTERLIS#-Transferdateien; bei Importen Eingaben, beim Export Ausgabeziele. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`dataFiles = [file('data.xtf')]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*modelNames* = list#
-| [.acronym]#INTERLIS# model names
+| Liste der [.acronym]#INTERLIS#-Modellnamen; die passenden Modelle müssen über modelDirectories auffindbar sein. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`modelNames = ['Model']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*modelDirectories* = list#
-| Model directories
+| Liste lokaler Modellverzeichnisse als Path oder Repository-Adressen als Text; Suchreihenfolge der Fachbibliothek beachten. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`modelDirectories = [file('models')]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetNames* = list#
-| Dataset names
+| Liste expliziter Dataset-Namen; bei dateibezogenen Operationen muss ihre Anzahl zu den Transferdateien passen. Nicht mit abgeleiteten Namen kombinieren. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`datasetNames = ['DatasetA']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetFiles* = list#
-| Files whose names provide dataset names
+| Dateien zur Namensableitung: sortierte Basisnamen ohne Endung werden als Dataset-Namen verwendet; nicht mit datasetNames oder datasetNamesFromTransferFiles kombinieren. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`datasetFiles = [file('DatasetA.txt')]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*export3* = boolean#
-| Export [.acronym]#INTERLIS# 2.4
+| Transferdateien im [.acronym]#INTERLIS#-2.4-Format statt im Standardformat exportieren. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`export3 = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*logFile* = path#
-| ili2db log file
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet. +
+Beispiel: [.code-fragment]#`logFile = file('build/ili2db.log')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*failOnException* = boolean#
-| Fail on ili2db exception
+| Bei einem von ili2db gemeldeten Fehler den Task fehlschlagen lassen; false übernimmt die Fehlerbehandlung in den Job. +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`failOnException = false`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*baskets* = list#
-| Baskets
+| Liste der Basket-Identifikatoren zur Einschränkung der ili2db-Operation. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`baskets = ['b1']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*topics* = list#
-| Topics
+| Liste der qualifizierten [.acronym]#INTERLIS#-Topicnamen zur Einschränkung der ili2db-Operation. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`topics = ['Topic']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*exportTid* = boolean#
-| Export t_id
+| Gespeicherte Transfer-Objektidentifikatoren beim Export verwenden. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`exportTid = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*importBid* = boolean#
-| Import basket id
+| Basket-Identifikatoren aus der Transferdatei beim Import übernehmen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`importBid = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*preScript* = path#
-| Pre script
+| Lokale [.acronym]#SQL#-Datei, die ili2db vor seiner Fachoperation ausführt; nicht mit einem separaten SqlExecutor-Task verwechseln. +
+Beispiel: [.code-fragment]#`preScript = file('pre.sql')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*postScript* = path#
-| Post script
+| Lokale [.acronym]#SQL#-Datei, die ili2db nach seiner Fachoperation ausführt. +
+Beispiel: [.code-fragment]#`postScript = file('post.sql')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*trace* = boolean#
-| Enable trace
+| Detaillierte Diagnoseausgabe der ili2db-Fachbibliothek einschalten. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`trace = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*disableValidation* = boolean#
-| Disable validation
+| Fachliche Validierung der Transferdaten deaktivieren; nur für bewusst kontrollierte Eingaben verwenden. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`disableValidation = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*disableAreaValidation* = boolean#
-| Disable area validation
+| Flächentopologie-Prüfung deaktivieren; andere Validierungen bleiben davon unabhängig. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`disableAreaValidation = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*forceTypeValidation* = boolean#
-| Force type validation
+| Typprüfung auch dann erzwingen, wenn sie in der Validierungskonfiguration deaktiviert wurde. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`forceTypeValidation = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*strokeArcs* = boolean#
-| Stroke arcs
+| Kreisbögen bei der Übernahme in die Datenbank in Geradenstücke umwandeln. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`strokeArcs = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*skipPolygonBuilding* = boolean#
-| Skip polygon building
+| Polygonbildung aus [.acronym]#INTERLIS#-1-Linien überspringen; keine reparierten Flächen voraussetzen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`skipPolygonBuilding = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*skipGeometryErrors* = boolean#
-| Skip geometry errors
+| Geometriefehler gemäss ili2db-Option überspringen; dies ist keine allgemeine Fehlerunterdrückung der Runtime. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`skipGeometryErrors = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*iligml20* = boolean#
-| ILIGML 2.0
+| Transferdaten im ILIGML-2.0-Format verarbeiten. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`iligml20 = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*disableRounding* = boolean#
-| Disable rounding
+| Rundung von Koordinaten durch ili2db deaktivieren. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`disableRounding = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxy* = text#
-| [.acronym]#HTTP# proxy
+| Hostname des [.acronym]#HTTP#-Proxys für Repository-Zugriffe der Fachbibliothek. +
+Beispiel: [.code-fragment]#`proxy = 'proxy.example'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxyPort* = integer#
-| [.acronym]#HTTP# proxy port
+| Port des [.acronym]#HTTP#-Proxys; zusammen mit proxy verwenden. +
+Beispiel: [.code-fragment]#`proxyPort = 8080`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*validConfigFile* = path#
-| Validation config file
+| Lokale Datei mit zusätzlichen ili2db-Validierungsregeln. +
+Beispiel: [.code-fragment]#`validConfigFile = file('validation.toml')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetNamesFromTransferFiles* = boolean#
-| Derive dataset names from transfer file names
+| Dataset-Namen aus sortierten Transferdateinamen ohne Endung ableiten; nicht mit datasetNames oder datasetFiles kombinieren. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`datasetNamesFromTransferFiles = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetNameSliceStart* = integer#
-| Dataset name slice start
+| Nullbasierter Beginn des Ausschnitts bei abgeleiteten Dataset-Namen; wirkt zusammen mit optionalem datasetNameSliceEnd. +
+Beispiel: [.code-fragment]#`datasetNameSliceStart = 0`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetNameSliceEnd* = integer#
-| Dataset name slice end
+| Exklusive Endposition des Ausschnitts bei abgeleiteten Dataset-Namen; ohne Ende wird bis zum Namensende gelesen. +
+Beispiel: [.code-fragment]#`datasetNameSliceEnd = 8`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetSubstring* = list#
-| Dataset name substring indices
+| Liste mit Start und exklusivem Ende als Textzahlen für abgeleitete Dataset-Namen; gültige Werte haben Vorrang vor den einzelnen Slice-Feldern. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`datasetSubstring = ['0', '4']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*exportModels* = list#
-| Export models
+| Liste der beim Export auszugebenden [.acronym]#INTERLIS#-Modelle. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`exportModels = ['Model']`#
 | [.optional]#nein#
 
 |===

@@ -149,9 +149,15 @@ public final class Ili2DbOperations {
                             defaultSrsCode = '2056'
                         }
                         defaults 'run'
-                        """ : "task('run', " + symbol + ") {\n    "
-                        + (pg ? "database = 'db'" : "databaseFile = file('data/db.duckdb')")
-                        + (importLike ? "\n    dataFiles = [file('data.xtf')]" : "") + "\n}\n");
+                        """ : (file ? "parameter('database', type: 'path', required: true, description: 'DuckDB database file')\n" : "")
+                        + (export ? "parameter('output', type: 'path', required: true, description: 'Transfer output file')\n" : "")
+                        + "task('run', " + symbol + ") {\n    "
+                        + (pg ? "database = 'db'\n    schema = 'public'" : "databaseFile = parameter('database')")
+                        + (kind == Kind.PG_DELETE ? "" : "\n    modelNames = ['Beispiel2']\n    modelDirectories = [file('models')]")
+                        + (schema ? "\n    defaultSrsCode = '2056'\n    createBasketCol = true\n    createTidCol = true" : "\n    datasetNames = ['Beispiel']")
+                        + (importLike ? "\n    dataFiles = [file('data.xtf')]\n    importTid = true" : "")
+                        + (export ? "\n    dataFiles = [parameter('output')]" : "")
+                        + "\n}\ndefaults 'run'\n");
     }
 
     private record OptionSpec(String name, String type, String description, Object defaultValue,

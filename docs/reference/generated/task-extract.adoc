@@ -1,29 +1,38 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*archive* = path#
-| Vorhandene Archivdatei
+| Vorhandene Archivdatei +
+Beispiel: [.code-fragment]#`archive = result('download').file`#
 | [.required]#ja#
 
 | [.dsl-signature]#*compression* = text#
-| ZIP oder [.acronym]#GZIP#
+| ZIP oder [.acronym]#GZIP# +
+Erlaubte Werte: [.code-fragment]#`ZIP`#, [.code-fragment]#`GZIP`# +
+Beispiel: [.code-fragment]#`compression = 'ZIP'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*outputDirectory* = path#
-| Zielverzeichnis fuer ZIP
+| Zielverzeichnis fuer ZIP +
+Beispiel: [.code-fragment]#`outputDirectory = workPath('out')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*outputFile* = path#
-| Zieldatei fuer [.acronym]#GZIP#
+| Zieldatei fuer [.acronym]#GZIP# +
+Beispiel: [.code-fragment]#`outputFile = workPath('data.csv')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*maxExpandedBytes* = integer#
-| Maximal entpackte Bytes
+| Maximal entpackte Bytes +
+Vorgabe: [.code-fragment]#`4294967296`# +
+Beispiel: [.code-fragment]#`maxExpandedBytes = 4294967296L`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*maxEntries* = integer#
-| Maximale ZIP-Eintraege
+| Maximale ZIP-Eintraege +
+Vorgabe: [.code-fragment]#`10000`# +
+Beispiel: [.code-fragment]#`maxEntries = 10000`#
 | [.optional]#nein#
 
 |===

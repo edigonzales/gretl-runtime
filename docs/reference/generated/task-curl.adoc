@@ -1,57 +1,76 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*serverUrl* = uri#
-| Absolute [.acronym]#HTTP#-/[.acronym]#HTTPS#-Adresse
+| Absolute [.acronym]#HTTP#-/[.acronym]#HTTPS#-Adresse +
+Erlaubte Werte: [.code-fragment]#`http`#, [.code-fragment]#`https`# +
+Beispiel: [.code-fragment]#`serverUrl = 'https://example.invalid/token'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*method* = text#
-| GET oder POST; ohne Angabe aus dem Body abgeleitet
+| GET oder POST; ohne Angabe aus dem Body abgeleitet +
+Erlaubte Werte: [.code-fragment]#`GET`#, [.code-fragment]#`POST`# +
+Beispiel: [.code-fragment]#`method = 'POST'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*expectedStatusCode* = integer#
-| Exakt erwarteter [.acronym]#HTTP#-Statuscode
+| Exakt erwarteter [.acronym]#HTTP#-Statuscode +
+Beispiel: [.code-fragment]#`expectedStatusCode = 200`#
 | [.required]#ja#
 
 | [.dsl-signature]#*expectedBody* = text#
-| Text, der im UTF-8-Antwort-Body vorkommen muss
+| Text, der im UTF-8-Antwort-Body vorkommen muss +
+Beispiel: [.code-fragment]#`expectedBody = '"success":true'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*headers* = map#
-| [.acronym]#HTTP#-Header; Werte als Text oder SecretValue
+| [.acronym]#HTTP#-Header; Werte als Text oder SecretValue +
+Vorgabe: [.code-fragment]#`{}`# +
+Beispiel: [.code-fragment]#`headers = ['Content-Type': 'application/json']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*formData* = map#
-| Multipart-Formularfelder; Werte als Text oder Dateipfad
+| Multipart-Formularfelder; Werte als Text oder Dateipfad +
+Vorgabe: [.code-fragment]#`{}`# +
+Beispiel: [.code-fragment]#`formData = [topic: 'npl', file: file('data.xtf.zip')]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*data* = text#
-| Optionaler UTF-8-Text-Body
+| Optionaler UTF-8-Text-Body +
+Beispiel: [.code-fragment]#`data = 'grant_type=client_credentials'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*dataBinary* = path#
-| Optionale binaere Request-Body-Datei
+| Optionale binaere Request-Body-Datei +
+Beispiel: [.code-fragment]#`dataBinary = file('request.bin')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*outputFile* = path#
-| Optionale Zieldatei fuer den Antwort-Body
+| Optionale Zieldatei fuer den Antwort-Body +
+Beispiel: [.code-fragment]#`outputFile = workPath('response.json')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*overwrite* = boolean#
-| Vorhandene Zieldatei nach erfolgreicher Antwort ersetzen
+| Vorhandene Zieldatei nach erfolgreicher Antwort ersetzen +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`overwrite = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*user* = text#
-| Basic-Auth-Benutzername
+| Basic-Auth-Benutzername +
+Beispiel: [.code-fragment]#`user = 'api-user'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*password* = secret#
-| Basic-Auth-Passwort aus einem Secret-Alias
+| Basic-Auth-Passwort aus einem Secret-Alias +
+Beispiel: [.code-fragment]#`password = secret('apiPassword')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*maxBytes* = integer#
-| Maximale Bytes des Antwort-Bodys
+| Maximale Bytes des Antwort-Bodys +
+Vorgabe: [.code-fragment]#`16777216`# +
+Beispiel: [.code-fragment]#`maxBytes = 1048576L`#
 | [.optional]#nein#
 
 |===

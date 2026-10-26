@@ -1,37 +1,46 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*csvFile* = path#
-| Zu konvertierende [.acronym]#CSV#-Datei
+| Zu konvertierende [.acronym]#CSV#-Datei +
+Beispiel: [.code-fragment]#`csvFile = file('data/input.csv')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*outputFile* = path#
-| [.acronym]#XLSX#-Ausgabedatei
+| [.acronym]#XLSX#-Ausgabedatei +
+Beispiel: [.code-fragment]#`outputFile = file('build/output.xlsx')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*firstLineIsHeader* = boolean#
-| Erste [.acronym]#CSV#-Zeile als Header verwenden
+| Erste [.acronym]#CSV#-Zeile als Header verwenden +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`firstLineIsHeader = false`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*valueDelimiter* = text#
-| [.acronym]#CSV#-Anfuehrungszeichen
+| Einzelnes [.acronym]#CSV#-Anführungszeichen, beispielsweise ein doppeltes Anführungszeichen. +
+Beispiel: [.code-fragment]#`valueDelimiter = '"'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*valueSeparator* = text#
-| [.acronym]#CSV#-Feldtrennzeichen
+| Einzelnes [.acronym]#CSV#-Feldtrennzeichen, beispielsweise ein Semikolon. +
+Beispiel: [.code-fragment]#`valueSeparator = ','`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*encoding* = text#
-| [.acronym]#CSV#-Kodierung
+| [.acronym]#CSV#-Kodierung +
+Beispiel: [.code-fragment]#`encoding = 'UTF-8'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*models* = text#
-| [.acronym]#INTERLIS# model names
+| Liste der [.acronym]#INTERLIS#-Modellnamen; die passenden Modelle müssen über modelDirectories auffindbar sein. +
+Beispiel: [.code-fragment]#`models = 'Model'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*modeldir* = text#
-| [.acronym]#INTERLIS# model directories
+| Suchpfad für [.acronym]#INTERLIS#-Modelle; mehrere Verzeichnisse gemäss der verwendeten Fachbibliothek trennen. +
+Beispiel: [.code-fragment]#`modeldir = file('models')`#
 | [.optional]#nein#
 
 |===

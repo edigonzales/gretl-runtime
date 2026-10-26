@@ -1,33 +1,44 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*sourceDatabase* = text#
-| Alias der Quell-Datenbankverbindung
+| Alias der Quell-Datenbankverbindung +
+Beispiel: [.code-fragment]#`sourceDatabase = 'source'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*targetDatabase* = text#
-| Alias der Ziel-Datenbankverbindung
+| Alias der Ziel-Datenbankverbindung +
+Beispiel: [.code-fragment]#`targetDatabase = 'target'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*transfers* = list#
-| Geordnete Transfers mit sqlFile, targetTable, deleteAllRows und geometryColumns
+| Geordnete Maps mit sqlFile (Path), targetTable (Text), deleteAllRows (Boolean) und geometryColumns (Liste). Jede [.acronym]#SQL#-Datei liest aus der Quelle und schreibt in die Zieltabelle. +
+Beispiel: [.code-fragment]#`transfers = [[sqlFile: file('select.sql'), targetTable: 'colors', deleteAllRows: true]]`#
 | [.required]#ja#
 
 | [.dsl-signature]#*sqlParameters* = map#
-| [.acronym]#SQL#-Parameter fuer eine Ausfuehrung aller Transfers
+| [.acronym]#SQL#-Parameter fuer eine Ausfuehrung aller Transfers +
+Vorgabe: [.code-fragment]#`{}`# +
+Beispiel: [.code-fragment]#`sqlParameters = [year: '2024']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*sqlParameterSets* = list#
-| [.acronym]#SQL#-Parameter-Maps; alle Transfers laufen pro Map
+| [.acronym]#SQL#-Parameter-Maps; alle Transfers laufen pro Map +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`sqlParameterSets = [[year: '2024'], [year: '2025']]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*batchSize* = integer#
-| [.acronym]#JDBC#-Batch-Groesse fuer Zieleinfuegungen
+| [.acronym]#JDBC#-Batch-Groesse fuer Zieleinfuegungen +
+Vorgabe: [.code-fragment]#`5000`# +
+Beispiel: [.code-fragment]#`batchSize = 1000`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*fetchSize* = integer#
-| [.acronym]#JDBC#-Fetch-Groesse fuer Quell-Lesevorgaenge
+| [.acronym]#JDBC#-Fetch-Groesse fuer Quell-Lesevorgaenge +
+Vorgabe: [.code-fragment]#`5000`# +
+Beispiel: [.code-fragment]#`fetchSize = 1000`#
 | [.optional]#nein#
 
 |===

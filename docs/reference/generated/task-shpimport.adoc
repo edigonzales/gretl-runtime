@@ -1,29 +1,35 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*database* = text#
-| Alias der Ziel-Datenbankverbindung
+| Alias der Ziel-Datenbankverbindung +
+Beispiel: [.code-fragment]#`database = 'db'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*dataFile* = path#
-| Zu importierender Shapefile-Pfad
+| Zu importierender Shapefile-Pfad +
+Beispiel: [.code-fragment]#`dataFile = file('data/input.shp')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*tableName* = text#
-| Name der Zieltabelle
+| Name der Zieltabelle +
+Beispiel: [.code-fragment]#`tableName = 'abbaustelle'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*schemaName* = text#
-| Optionales Ziel-Schema
+| Optionales Ziel-Schema +
+Beispiel: [.code-fragment]#`schemaName = 'public'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*encoding* = text#
-| Optionale Shapefile-Kodierung
+| Optionale Shapefile-Kodierung +
+Beispiel: [.code-fragment]#`encoding = 'UTF-8'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*batchSize* = integer#
-| [.acronym]#JDBC#-Batch-Groesse
+| [.acronym]#JDBC#-Batch-Groesse +
+Beispiel: [.code-fragment]#`batchSize = 1000`#
 | [.optional]#nein#
 
 |===

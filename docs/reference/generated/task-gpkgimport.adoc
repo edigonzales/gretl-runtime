@@ -1,33 +1,40 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*database* = text#
-| Alias der Ziel-Datenbankverbindung
+| Alias der Ziel-Datenbankverbindung +
+Beispiel: [.code-fragment]#`database = 'db'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*dataFile* = path#
-| Zu importierende GeoPackage-Datei
+| GeoPackage aus einer ili2gpkg-Abbildung als Eingabe für die [.acronym]#DXF#-Konvertierung. +
+Beispiel: [.code-fragment]#`dataFile = file('data/input.gpkg')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*srcTableName* = text#
-| GeoPackage-Layer-Name
+| GeoPackage-Layer-Name +
+Beispiel: [.code-fragment]#`srcTableName = 'abbaustelle'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*dstTableName* = text#
-| Name der Zieltabelle
+| Name der Zieltabelle +
+Beispiel: [.code-fragment]#`dstTableName = 'abbaustelle'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*schemaName* = text#
-| Optionales Ziel-Schema
+| Optionales Ziel-Schema +
+Beispiel: [.code-fragment]#`schemaName = 'public'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*batchSize* = integer#
-| [.acronym]#JDBC#-Batch-Groesse
+| [.acronym]#JDBC#-Batch-Groesse +
+Beispiel: [.code-fragment]#`batchSize = 1000`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*fetchSize* = integer#
-| DuckDB-Fetch-Groesse
+| DuckDB-Fetch-Groesse +
+Beispiel: [.code-fragment]#`fetchSize = 1000`#
 | [.optional]#nein#
 
 |===

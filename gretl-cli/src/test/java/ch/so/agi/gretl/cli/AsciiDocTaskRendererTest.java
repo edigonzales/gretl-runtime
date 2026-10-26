@@ -34,15 +34,16 @@ class AsciiDocTaskRendererTest {
         AsciiDocTaskRenderer renderer = new AsciiDocTaskRenderer();
         String table = renderer.renderTaskTable(testOperation(), Locale.GERMAN);
 
-        assertTrue(table.startsWith("[cols=\"4,6,1\", options=\"header\"]"), table);
+        assertTrue(table.startsWith("[cols=\"4,6,1\", options=\"header\", role=\"gretl-task-properties\"]"), table);
         assertTrue(table.contains("| Feld | Beschreibung | Erforderlich"), table);
         assertTrue(table.contains("[.dsl-signature]#*url* = uri#"), table);
         assertTrue(table.contains("[.required]#ja#"), table);
         assertTrue(table.contains("[.optional]#nein#"), table);
         assertTrue(table.contains("A \\| B +\nC"), table);
         assertTrue(table.endsWith("|===\n"), table);
-        assertFalse(table.contains("Vorgabe:"), table);
-        assertFalse(table.contains("Erlaubt:"), table);
+        assertTrue(table.contains("Vorgabe: [.code-fragment]#`'GET'`#"), table);
+        assertTrue(table.contains("Erlaubte Werte: [.code-fragment]#`GET`#, [.code-fragment]#`POST`#"), table);
+        assertTrue(table.contains("Beispiel: [.code-fragment]#`method = 'GET'`#"), table);
         assertFalse(table.contains(".Ergebnisse"), table);
         assertFalse(table.contains(".Beispiel"), table);
         assertFalse(table.contains("[source,groovy]"), table);
@@ -53,6 +54,29 @@ class AsciiDocTaskRendererTest {
     void hidesSecretDefaults() {
         assertEquals("[secret]", OperationHelpText.displayDefault(
                 SecretValue.deferred(() -> "do-not-print")));
+        InputField<TestRequest, SecretValue> password = new InputField<>(
+                "password", "secret", "Password", false,
+                Optional.of(SecretValue.deferred(() -> {
+                    throw new AssertionError("Rendering must not resolve secrets");
+                })), List.of(), "password = secret('alias')",
+                value -> (SecretValue) value, (builder, value) -> {});
+        var operation = testOperation();
+        var withSecret = new OperationType<>(operation.id(), operation.symbol(),
+                operation.description(), operation.requestType(), operation.resultType(),
+                operation.builderFactory(), operation.handlerFactory(), List.of(password),
+                operation.outputs(), operation.example());
+        String table = new AsciiDocTaskRenderer().renderTaskTable(withSecret, Locale.GERMAN);
+        assertTrue(table.contains("[secret]"), table);
+        assertFalse(table.contains("do-not-print"), table);
+    }
+
+    @Test
+    void absentDefaultsAreNotInventedAndFieldExamplesEscapeTableSeparators() {
+        String table = new AsciiDocTaskRenderer().renderTaskTable(testOperation(), Locale.GERMAN);
+        String urlRow = table.substring(table.indexOf("*url*"), table.indexOf("*method*"));
+        assertFalse(urlRow.contains("Vorgabe:"), urlRow);
+        assertFalse(urlRow.contains("Erlaubte Werte:"), urlRow);
+        assertTrue(urlRow.contains("a=1\\|b=2"), urlRow);
     }
 
     @Test
@@ -61,7 +85,9 @@ class AsciiDocTaskRendererTest {
                 .renderTaskTable(testOperation(), Locale.ENGLISH);
         assertTrue(table.contains("| Field | Description | Required"), table);
         assertTrue(table.contains("[.required]#yes#"), table);
-        assertFalse(table.contains("Default:"), table);
+        assertTrue(table.contains("Default:"), table);
+        assertTrue(table.contains("Allowed values:"), table);
+        assertTrue(table.contains("Example:"), table);
         assertFalse(table.contains("Results"), table);
     }
 
@@ -76,7 +102,7 @@ class AsciiDocTaskRendererTest {
         assertTrue(Files.isRegularFile(table));
         assertFalse(Files.exists(tempDir.resolve("task-reference.adoc")));
         String content = Files.readString(table, StandardCharsets.UTF_8);
-        assertTrue(content.startsWith("[cols=\"4,6,1\", options=\"header\"]"));
+        assertTrue(content.startsWith("[cols=\"4,6,1\", options=\"header\", role=\"gretl-task-properties\"]"));
         assertTrue(content.contains("*url* = uri"));
         assertFalse(content.contains(".Beispiel"));
     }
@@ -110,11 +136,11 @@ class AsciiDocTaskRendererTest {
     private static OperationType<TestRequest, TestResult> testOperation() {
         InputField<TestRequest, String> url = new InputField<>(
                 "url", "uri", "A | B\nC", true, Optional.empty(), List.of(),
-                "url = 'https://example.invalid'",
+                "url = 'https://example.invalid?a=1|b=2'",
                 Object::toString, (builder, value) -> {});
         InputField<TestRequest, String> method = new InputField<>(
                 "method", "text", "HTTP method", false,
-                Optional.of("https://example.invalid"), List.of("GET", "POST"),
+                Optional.of("GET"), List.of("GET", "POST"),
                 "method = 'GET'", Object::toString, (builder, value) -> {});
         OutputField<TestResult, Path> file = Fields.output(
                 "file", "path", "Completed file", true, TestResult::file);

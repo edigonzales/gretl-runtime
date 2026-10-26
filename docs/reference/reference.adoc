@@ -1,45 +1,173 @@
 = GRETL-Referenzdokumentation
+:lang: de
+:sectanchors:
+:table-caption: Tabelle
 
-Die GRETL-Runtime führt datenverarbeitende Jobs als gerichteten azyklischen
-Graphen aus benannten Tasks aus. Ein Task beschreibt eine fachliche Operation,
-seine Einstellungen und seine Vorgänger. Die Runtime plant die Reihenfolge,
-löst Parameter und Pfade auf und führt die Tasks sequenziell in einer JVM aus.
+== Überblick und Features
 
-Diese Referenz hat zwei Teile:
+GRETL verarbeitet Geodaten und andere strukturierte Daten: Dateien beziehen,
+Daten prüfen, Datenbanken befüllen, Modelle umbauen und Ergebnisse exportieren.
+Ein Job verbindet benannte Tasks zu einem gerichteten azyklischen Graphen
+(DAG). GRETL wählt die benötigten Vorgänger aus und führt sie sequenziell in
+einer JVM aus. Ein Job wird als Groovy-Script geschrieben; die mitgelieferte
+Groovy-Laufzeit kompiliert es beim Start automatisch.
 
-- Die **Property-Tabellen** unter `generated/` werden aus den tatsächlich
-  registrierten Task-Metadaten erzeugt. Sie enthalten nur die Eingabefelder
-  eines Tasktyps und werden nicht manuell bearbeitet.
-- Die **redaktionellen Abschnitte** in dieser Datei erklären die Tasks,
-  zeigen vollständige Beispiele, dokumentieren Ergebnisse und Grenzen und
-  binden die generierten Tabellen ein.
+Die Standarddistribution stellt 44 Taskarten bereit. Dazu gehören HTTP-,
+FTP- und S3-Transfers, SQL und Datenbanktransfers, CSV/JSON/Excel,
+GeoPackage/Shapefile sowie INTERLIS- und AV-Werkzeuge. Deklarierte Parameter,
+explizite Abhängigkeiten und dokumentierte Ergebnisfelder verbinden diese
+Bausteine. Taskhilfe und Property-Tabellen verwenden dieselben Metadaten.
+Eigene Taskbibliotheken können vor dem Start bereitgestellt werden.
 
-Die generierten Tabellen sind keine zweite Taskbeschreibung. `gretl
-operations <Symbol>` und die Job-Hilfe lesen dieselben Metadaten und bleiben
-die Laufzeitreferenz.
+Der aktuelle Stand ist [.code-fragment]#`0.1.0-SNAPSHOT`#. Die erste Zielplattform ist Linux
+x86-64; zusätzliche Plattformen benötigen ihre eigenen Fach- und
+Treibernachweise. Ein lokaler Lauf auf einem anderen Betriebssystem ist noch
+keine allgemeine Plattformfreigabe.
 
-== GRETL Runtime
+GRETL besitzt keine globale Transaktion über den ganzen Job. Ein späterer
+Fehler kann bereits geschriebene Dateien oder Datenbankänderungen hinterlassen.
+Es gibt keinen automatischen Vollretry, Laufzeitcache oder Resume eines alten
+Runs. Abbruch und Timeout sind kooperativ. Publisher, Native Image und
+[.config-key]#`XtfToGpkg`# gehören nicht zum hier beschriebenen Lieferumfang.
 
-Ein Job wird als Groovy-Script geschrieben und mit `gretl run` gestartet. Die
-wesentlichen Bausteine sind:
+== Systemanforderungen und Installation
 
-- `task('name', Taskart) { ... }` für eine fachliche Operation,
-- `action('name') { ... }` für gewöhnlichen ausführbaren Groovy-Code,
-- `dependsOn` für die Reihenfolge,
-- `defaults` für die Ziele, die ohne `--target` ausgeführt werden,
-- deklarierte Jobparameter, Jobressourcen und dokumentierte Ergebnisse.
+=== Java und Distribution
 
-Die Standarddistribution liefert die in dieser Referenz beschriebenen
-Tasktypen mit. Eigene Taskbibliotheken verwenden dieselbe Schnittstelle und
-dieselbe Joboberfläche. Der Katalog ist releasebezogen und keine geschlossene
-Liste zukünftiger Tasks.
+Zum Ausführen wird Java 25 benötigt. Die Distribution enthält Groovy 6 und die
+Bibliotheken ihrer Taskarten. Maven und Gradle werden beim Scriptstart nicht
+benötigt. Der mitgelieferte Launcher [.code-fragment]#`bin/gretl`# ist ein Shellscript.
 
-== Job schreiben
+Die Snapshot-Artefakte stehen im
+link:https://jars.interlis.guru/snapshots/ch/so/agi/gretl/gretl-dist/0.1.0-SNAPSHOT/[Snapshot-Verzeichnis].
+Für die Installation das ZIP mit dem Classifier [.config-key]#`bin`# oder das TAR.GZ mit dem
+Classifier [.code-fragment]#`bin-tar-gz`# herunterladen. Die
+link:https://jars.interlis.guru/snapshots/ch/so/agi/gretl/gretl-dist/0.1.0-SNAPSHOT/maven-metadata.xml[Maven-Metadaten]
+benennen die timestamped Snapshot-Dateien. Ein Snapshot kann durch einen
+neueren Build ersetzt werden; für einen nachvollziehbaren Betrieb das
+konkrete Archiv und seine Prüfsummen aufbewahren.
+
+Nach dem Download, hier unter dem lokalen Namen [.file-name]#`gretl-runtime.zip`#:
+
+[source,bash]
+----
+unzip gretl-runtime.zip
+cd gretl-runtime-0.1.0-SNAPSHOT
+export JAVA_HOME=/pfad/zu/jdk-25
+export PATH="$JAVA_HOME/bin:$PWD/bin:$PATH"
+java -version
+shasum -a 256 -c SHA256SUMS
+gretl --version
+gretl operations
+----
+
+Unter Linux kann statt [.code-fragment]#`shasum -a 256`# auch [.config-key]#`sha256sum`# verwendet werden.
+Ein TAR.GZ wird mit [.file-name]#`tar -xzf gretl-runtime.tar.gz`# entpackt. Für einen neuen
+Terminalstart [.env-var]#`JAVA_HOME`# und den absoluten Pfad zu [.config-key]#`bin`# dauerhaft setzen.
+
+[source,text]
+----
+bin/gretl          Startprogramm
+lib/runtime/      Runtime, Groovy, Logging und CLI
+lib/tasks/        Mitgelieferte Taskbibliotheken und Dependencies
+lib/extensions/   Zusätzlich bereitgestellte Bibliotheken
+examples/         Jobs mit lokalen Beispieldaten
+inventory.json    Ausgelieferte Artefakte und Versionen
+SHA256SUMS        Prüfsummen des Distributionsinhalts
+----
+
+=== Aus dem Quellcode bauen
+
+Nur für Entwicklung oder eine selbst gebaute Distribution ist ein JDK 25
+nötig. Der eingecheckte Maven-Wrapper lädt Maven selbst:
+
+[source,bash]
+----
+./mvnw verify
+unzip gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip
+----
+
+Der Build benötigt Zugriff auf die im Projekt konfigurierten Maven-Repositories.
+Die normale Prüfung benötigt keine externen Datenbank-, FTP- oder S3-Dienste.
+Das zusätzliche Profil [.code-fragment]#`backing-services`# prüft diese Integrationen gegen
+lokale Dienstcontainer. Diese Buildaufgaben gehören nicht in ein Jobscript.
+
+== Schnellstart
+
+=== Eine lokale INTERLIS-Datei validieren
+
+Die Distribution liefert einen vollständigen lokalen Modell- und Datenbestand
+unter [.code-fragment]#`examples/ili-validator/`#. Der zugehörige Job lautet:
+
+[source,groovy]
+----
+include::../../gretl-dist/src/main/dist/examples/ili-validator/job.groovy[]
+----
+
+Im entpackten Distributionsverzeichnis:
+
+[source,bash]
+----
+gretl run examples/ili-validator/job.groovy --help
+gretl check examples/ili-validator/job.groovy
+gretl plan examples/ili-validator/job.groovy
+gretl run examples/ili-validator/job.groovy --report ./validation-run.json
+----
+
+Bei Erfolg endet der Prozess mit Exitcode 0. Der Runbericht enthält Status,
+Zeiten und Diagnoseverweise. Der Task liefert [.config-key]#`reportFile`# für den fachlichen
+Prüfbericht; das ist ein anderer Bericht als [.file-name]#`validation-run.json`#.
+Zwischendateien im Arbeitsbereich werden nach erfolgreichem Lauf normalerweise
+entfernt. Zum Untersuchen kann der Lauf mit [.cli-option]#`--keep-work always`# gestartet
+werden; dauerhaft benötigte Ergebnisse werden in einen externen Pfad kopiert.
+
+=== Eine Datei herunterladen und entpacken
+
+Dieser Job ist unverändert in der Beispieldistribution enthalten:
+
+[source,groovy]
+----
+include::../../gretl-dist/src/main/dist/examples/download-extract/job.groovy[]
+----
+
+Die Parameter werden beim Start übergeben. Ein URL- und Zielwechsel benötigt
+keinen neuen Produktbuild. [.config-key]#`dependsOn`# wählt den Download als Vorgänger aus,
+und [.code-fragment]#`result('download').file`# reicht seine abgeschlossene Datei weiter.
+
+Zum lokalen Ausprobieren kann ein einfacher HTTP-Server das mitgelieferte
+Archiv anbieten. Python wird nur für diesen Testserver gebraucht. Im ersten
+Terminal im Distributionsverzeichnis:
+
+[source,bash]
+----
+python3 -m http.server 8765 --bind 127.0.0.1 --directory examples/download-extract
+----
+
+Im zweiten Terminal, ebenfalls im Distributionsverzeichnis:
+
+[source,bash]
+----
+gretl run examples/download-extract/job.groovy \
+  --param quelle=http://127.0.0.1:8765/data.zip \
+  --param ziel=./entpackt \
+  --report ./download-run.json
+----
+
+Das Zielverzeichnis soll für diese Probe noch nicht existieren. Vorhandene
+Dateien werden vom Extract-Task nicht still ersetzt. Den Testserver danach
+mit Ctrl-C beenden. Für einen Fachjob wird die lokale Adresse durch die
+gewünschte Datenquelle ersetzt.
+
+== Job-DSL
+
+Die folgenden Auszüge erklären einzelne Sprachmittel. Ein Block mit einer
+Parameterdeklaration allein ist noch kein vollständiger Job. Vollständige
+Einstiegsjobs stehen im Schnellstart; vollständige Taskbeispiele in der Taskreferenz.
 
 === Tasks, Ziele und Abhängigkeiten
 
 Ein Task wird über seinen Namen und seine Taskart registriert. Die
-Einstellungen stehen als `name = wert` im Block. Die Konfiguration wird erst
+Einstellungen stehen als [.code-fragment]#`name = wert`# im Block. Die Konfiguration wird erst
 gelesen, wenn der Task nach seinen Vorgängern an der Reihe ist.
 
 [source,groovy]
@@ -52,7 +180,7 @@ task('update', SqlExecutor) {
 defaults 'update'
 ----
 
-`dependsOn` nennt einen oder mehrere Vorgänger. Die Runtime ermittelt daraus
+[.config-key]#`dependsOn`# nennt einen oder mehrere Vorgänger. Die Runtime ermittelt daraus
 die Auswahlhülle; sie errät keine Abhängigkeit aus einem späteren
 Ergebniszugriff.
 
@@ -73,13 +201,13 @@ defaults 'extract'
 ----
 
 Quellreihenfolge im Script ist nur Lesbarkeit. Sie ersetzt keine
-`dependsOn`-Kante. `after` ist eine reine Reihenfolge zwischen bereits
+[.config-key]#`dependsOn`#-Kante. [.config-key]#`after`# ist eine reine Reihenfolge zwischen bereits
 ausgewählten Tasks und erzeugt keinen Ergebniszugriff.
 
 === Parameter
 
-Öffentliche Jobparameter werden einmal im Script deklariert. `description` ist
-Pflicht; `type` ist `text`, `boolean`, `integer` oder `path`.
+Öffentliche Jobparameter werden einmal im Script deklariert. [.config-key]#`description`# ist
+Pflicht; [.config-key]#`type`# ist [.config-key]#`text`#, [.config-key]#`boolean`#, [.config-key]#`integer`# oder [.dsl-method]#`path`#.
 
 [source,groovy]
 ----
@@ -89,32 +217,32 @@ parameter('entpacken', type: 'boolean', defaultValue: true,
           description: 'Das Archiv nach dem Download entpacken')
 ----
 
-Werte werden mit `--param name=wert` oder über eine Parameterdatei übergeben.
+Werte werden mit [.cli-option]#`--param name=wert`# oder über eine Parameterdatei übergeben.
 Deklarierte Pfadparameter werden relativ zum ursprünglichen Startverzeichnis
-aufgelöst. `run` prüft alle verpflichtenden Parameter vor der ersten
-Taskarbeit. `check` und `plan` dürfen fehlende Pflichtwerte noch als offen
+aufgelöst. [.config-key]#`run`# prüft alle verpflichtenden Parameter vor der ersten
+Taskarbeit. [.config-key]#`check`# und [.config-key]#`plan`# dürfen fehlende Pflichtwerte noch als offen
 anzeigen.
 
 === Pfade
 
 Die Job-DSL kennt drei Pfadbereiche:
 
-- `file('...')` bezeichnet eine Datei oder ein Verzeichnis, das zum Job gehört.
-- `workPath('...')` bezeichnet eine temporäre Arbeitsdatei des aktuellen
+- [.dsl-method]#`file('...')`# bezeichnet eine Datei oder ein Verzeichnis, das zum Job gehört.
+- [.dsl-method]#`workPath('...')`# bezeichnet eine temporäre Arbeitsdatei des aktuellen
   Tasks. Der Pfad bleibt für nachfolgende Tasks bis zum Runende lesbar.
-- `path('...')` löst einen erst im Job entstandenen externen Pfad relativ zum
+- [.dsl-method]#`path('...')`# löst einen erst im Job entstandenen externen Pfad relativ zum
   Startverzeichnis auf.
 
-Ein deklarierter Parameter vom Typ `path` liefert direkt einen aufgelösten
-`Path`. `file`, `workPath` und `path` öffnen die Datei nicht; sie liefern nur
+Ein deklarierter Parameter vom Typ [.dsl-method]#`path`# liefert direkt einen aufgelösten
+[.java-type]#`Path`#. [.dsl-method]#`file`#, [.dsl-method]#`workPath`# und [.dsl-method]#`path`# öffnen die Datei nicht; sie liefern nur
 den Pfad. Ob eine Operation eine vorhandene Ausgabe überschreiben darf, regelt
 die jeweilige Taskart.
 
 === Ergebnisse
 
 Ein Task kann dokumentierte Ergebnisse bereitstellen. Der Zugriff erfolgt über
-`result('name').feld` und ist nur entlang einer direkten oder transitiven
-`dependsOn`-Kette erlaubt.
+[.code-fragment]#`result('name').feld`# und ist nur entlang einer direkten oder transitiven
+[.config-key]#`dependsOn`#-Kette erlaubt.
 
 [source,groovy]
 ----
@@ -130,17 +258,17 @@ task('extract', Extract, dependsOn: 'download') {
 }
 ----
 
-`result` startet keinen Task und ergänzt keine Kante. Unbekannte Felder,
+[.dsl-method]#`result`# startet keinen Task und ergänzt keine Kante. Unbekannte Felder,
 fehlende Vorgänger und ein Zugriff auf einen übersprungenen oder
-fehlgeschlagenen Task sind Fehler. Die Hilfe von `gretl operations <Symbol>`
+fehlgeschlagenen Task sind Fehler. Die Hilfe von [.command]#`gretl operations <Symbol>`#
 nennt die verfügbaren Ergebnisfelder.
 
 === Actions
 
 Eine Action ist gewöhnlicher ausführbarer Groovy-Code. Sie kann Tasks synchron
-mit `ctx.run(...)` aufrufen und deren Javaresultate weiterverarbeiten. Eine
-Action kann mit `null` erfolgreich enden; ein nicht-void Taskhandler mit
-deklarierter Ergebnisstruktur darf dagegen nicht unbemerkt `null` liefern.
+mit [.code-fragment]#`ctx.run(...)`# aufrufen und deren Javaresultate weiterverarbeiten. Eine
+Action kann mit [.literal]#`null`# erfolgreich enden; ein nicht-void Taskhandler mit
+deklarierter Ergebnisstruktur darf dagegen nicht unbemerkt [.literal]#`null`# liefern.
 
 [source,groovy]
 ----
@@ -156,53 +284,534 @@ action('pruefen') {
 Actions und Tasks verwenden denselben Plan, dieselben Ergebnisse und dieselben
 Fehlerregeln. Eine Action ist keine zweite Ablauf-DSL.
 
-== Taskarten
+=== Bedingungen und kontrolliertes Jobende
 
-=== HttpDownload
+[.config-key]#`when`# wird unmittelbar vor der Taskkonfiguration ausgewertet. Bei [.literal]#`false`#
+bleibt die Konfiguration unausgeführt und der Task wird [.literal]#`SKIPPED`#. Ein
+Nachfolger kann weiterlaufen, muss aber das fehlende Ergebnis bewusst behandeln.
+[.config-key]#`after`# ordnet nur bereits ausgewählte Tasks und erlaubt keinen Resultatzugriff.
 
-`HttpDownload` lädt eine Datei über HTTP oder HTTPS und veröffentlicht sie
-erst nach erfolgreichem Abschluss unter dem Zielpfad. Der Task unterstützt GET
-und POST, Header mit Text- oder Secretwerten und einen optionalen UTF-8-Body
-für POST.
+Dieses vollständige lokale Beispiel beendet den Job bewusst ohne Daten:
 
 [source,groovy]
 ----
-task('download', HttpDownload) {
-    url = 'https://example.invalid/data.zip'
-    output = workPath('daten.zip')
-    headers = ['Accept': 'application/zip']
+include::../../gretl-dist/src/main/dist/examples/action-nodata/nodata.groovy[]
+----
+
+Ein solches Ende ergibt nach erfolgreichem Cleanup [.literal]#`NO_DATA`# und Exitcode 0.
+Ein Downloadfehler ist kein Nachweis fehlender Daten und wird nicht auf diese
+Weise in einen Erfolg umgedeutet. Ein [.config-key]#`return`# im Konfigurationsblock ist kein Skip.
+
+=== Cleanup und Fehlerbehandlung
+
+[.code-fragment]#`cleanup('name') { ... }`# registriert Arbeit für das Runende. Die Aktionen laufen
+in umgekehrter Registrierungsreihenfolge nach Erfolg, Fehler, NO_DATA und
+kooperativem Abbruch. Sie laufen nicht bei [.config-key]#`check`#, [.config-key]#`plan`# oder einem Fehler
+vor dem Run. Im Cleanup sind keine neuen Tasks und keine [.code-fragment]#`ctx.run`#-Aufrufe erlaubt.
+Fachliche Erfolgsschritte wie das Löschen erfolgreich verarbeiteter Quelldaten
+gehören in den normalen Ablauf, da Cleanup auch nach einem Fehler läuft.
+
+Eine Action darf einen Fachfehler mit normalem [.code-fragment]#`try/catch`# behandeln. Ein
+unbehandelter Fehler oder ein erforderlicher Freigabefehler lässt den Task
+fehlschlagen. Ein Cleanupfehler kann einen sonst erfolgreichen Run noch
+scheitern lassen. Alle bereits erzeugten Fachwirkungen bleiben real.
+
+== Kommandoreferenz
+
+=== Hilfe, Version und Taskkatalog
+
+[cols="3,5",options="header"]
+|===
+| Aufruf | Bedeutung
+| [.command]#`gretl --help`# | Globale Hilfe; lädt weder Job noch Taskprovider.
+| [.command]#`gretl --version`# | Runtimeversion, Paketidentität und erforderliche Java-Linie.
+| [.command]#`gretl operations`# | Tatsächlich verfügbare Taskarten mit Beschreibung und Herkunft.
+| [.command]#`gretl operations SqlExecutor`# | Felder, Defaults, erlaubte Werte, Ergebnisse und Beispiel dieser Taskart.
+| [.command]#`gretl run job.groovy --help`# | Deklarierte Parameter und Ziele des Jobs; keine Taskarbeit.
+|===
+
+Die Jobhilfe lädt das vertrauenswürdige Groovy-Script. Code ausserhalb der
+Taskblöcke kann dabei ausgeführt werden. Sie löst keine Secretwerte auf und
+verlangt keine Pflichtparameter. Syntax- und Registrierungsfehler bleiben Fehler.
+
+[.code-fragment]#`operations --format adoc --lang de --output <verzeichnis>`# erzeugt die
+Property-Tabellen des geladenen Katalogs. Mit einem einzelnen Symbol kann die
+Tabelle auch auf stdout ausgegeben werden. Beschreibungen und vollständige
+Beispiele der Referenz werden redaktionell gepflegt.
+
+=== Definition prüfen, Plan anzeigen, Job ausführen
+
+[source,bash]
+----
+gretl check job.groovy
+gretl plan job.groovy --target export
+gretl plan job.groovy --graph mermaid --output ./plan.mmd
+gretl plan job.groovy --graph plantuml --output ./plan.puml
+gretl run job.groovy --target export --report ./run.json
+----
+
+[.config-key]#`check`# prüft die verfügbare Definition. [.config-key]#`plan`# bildet zusätzlich den Plan der
+gewählten Ziele und ihrer Vorgänger. Beide führen keine Taskkonfiguration,
+Taskarbeit oder Cleanup aus. Fehlende Pflichtparameter dürfen noch offen
+bleiben; ausdrücklich angegebene Werte müssen bereits zum Parametertyp passen.
+Toplevelcode des Scripts wird auch hier geladen: Diese Befehle sind keine
+Sandbox und prüfen keine erst später entstehenden Fachwerte.
+
+[.config-key]#`run`# prüft alle jobweit erforderlichen Parameter vor dem ersten Task, auch
+wenn nur ein Teilziel gewählt wurde. Ohne [.cli-option]#`--target`# gelten die mit [.dsl-method]#`defaults`#
+registrierten Ziele. Fehlt beides, endet der Aufruf als Konfigurationsfehler.
+
+=== Optionen
+
+[cols="3,5",options="header"]
+|===
+| Option | Wirkung
+| [.cli-option]#`--target <name>`# | Wiederholbar; explizite Ziele statt Scriptdefaults.
+| [.cli-option]#`--config <datei>`# | Eine explizite UTF-8-JSON-Runtimekonfiguration.
+| [.cli-option]#`--params-file <datei>`# | JSON-Objekt mit Jobparameterwerten als Strings.
+| [.cli-option]#`--param <name=wert>`# | Wiederholbare Parameterübergabe; trennt am ersten Gleichheitszeichen.
+| [.cli-option]#`--work-dir <verzeichnis>`# | Wurzel für die privaten Arbeitsbereiche eines Runs.
+| [.cli-option]#`--report <datei>`# | Abschliessender JSON-Runbericht für [.config-key]#`run`#.
+| [.cli-option]#`--timeout <dauer>`# | Positives ISO-8601-Zeitbudget, beispielsweise [.literal]#`PT30M`#; kooperativer Abbruch.
+| [.cli-option]#`--keep-work <modus>`# | [.config-key]#`never`#, [.code-fragment]#`on-failure`# oder [.config-key]#`always`#; Vorgabe [.code-fragment]#`on-failure`#.
+| [.cli-option]#`--log-format text\|json`# | Konsolenformat; strukturierte Logs gehen auf stderr.
+| [.cli-option]#`--log-level <level>`# | [.literal]#`TRACE`#, [.literal]#`DEBUG`#, [.literal]#`INFO`#, [.literal]#`WARN`# oder [.literal]#`ERROR`#.
+| [.cli-option]#`--lang en\|de`# | Sprache der Runtimeausgaben.
+| [.cli-option]#`--graph mermaid\|plantuml`# | Graphdarstellung bei [.config-key]#`plan`#; mit [.cli-option]#`--output`# in eine Datei schreiben.
+| [.cli-option]#`--output <pfad>`# | Graphdatei bei [.config-key]#`plan`#, Tabellenverzeichnis bei [.config-key]#`operations`# oder JAR bei [.config-key]#`package`#.
+|===
+
+Optionen sind befehlsspezifisch. Beispielsweise akzeptiert [.config-key]#`check`# keinen
+Runbericht und startet keine Deadline. Unbekannte oder unpassende Optionen,
+fehlende Optionswerte und doppelte Parameternamen in derselben Quelle sind
+Fehler. Dateipfade in CLI-Optionen beziehen sich auf das Startverzeichnis.
+Werte mit Leerzeichen als ein Shellargument quotieren:
+
+[source,bash]
+----
+gretl run job.groovy --param 'ziel=/data/Meine Ergebnisse'
+----
+
+=== Paketieren
+
+[source,bash]
+----
+gretl package job-package.json --output job.jar
+java -jar job.jar --help
+java -jar job.jar --report ./run.json
+----
+
+[.config-key]#`package`# erhält einen Paketdeskriptor und benötigt [.cli-option]#`--output`#. Die Paketierung
+kompiliert den Job, führt ihn aber nicht aus. Der Abschnitt
+<<job-jars,Job-JARs>> beschreibt Ressourcen und Abhängigkeiten.
+
+== Konfiguration und Betrieb
+
+=== Runtimekonfiguration
+
+Ein Job darf ohne [.cli-option]#`--config`# starten. Dann gibt es keine vorbereiteten
+Secret- oder Datenbankaliase, kein Jobzeitlimit und Textlogging auf stderr mit
+INFO. Arbeitsbereiche liegen unter [.code-fragment]#`gretl-work`# im Java-Temporärverzeichnis;
+Runberichte unter [.code-fragment]#`gretl-reports`# im Startverzeichnis. [.config-key]#`keepWork`# ist
+[.code-fragment]#`on-failure`#.
+
+Eine vollständige Beispielkonfiguration mit einer Datenbankverbindung:
+
+[source,json]
+----
+{
+  "schemaVersion": 1,
+  "language": "de",
+  "runtime": {
+    "workRoot": "./work",
+    "reportRoot": "./reports",
+    "keepWork": "on-failure",
+    "timeout": "PT1H",
+    "jobName": "datenbezug"
+  },
+  "logging": {
+    "format": "text",
+    "level": "INFO",
+    "eventFile": true
+  },
+  "params": {"umgebung": "test"},
+  "secrets": {
+    "dbPassword": {"environment": "GRETL_DB_PASSWORD"},
+    "sourceAuth": {"file": "./secrets/source-auth.txt"}
+  },
+  "taskConfig": {
+    "edit": {
+      "jdbcUrl": "jdbc:postgresql://localhost/gretl_test",
+      "user": "gretl_test",
+      "passwordSecret": "dbPassword"
+    }
+  }
 }
 ----
 
-Redirects sind deaktiviert. Der Task wiederholt einen fehlgeschlagenen
-Request nicht automatisch. Ein HTTP-Status ausserhalb von 200 bis 299, eine
-überschrittene Byte-Grenze oder eine abgebrochene Übertragung führen zu einem
-Taskfehler; ein vorhandenes Ziel wird ohne `overwrite = true` nicht ersetzt.
-Der Response-Body wird nicht automatisch geloggt.
+Unbekannte Corefelder, doppelte JSON-Schlüssel und falsche Typen werden
+abgelehnt. Für den Inhalt eines [.config-key]#`taskConfig`#-Alias ist die verwendende Taskart
+verantwortlich. [.code-fragment]#`database = 'edit'`# bezeichnet im Beispiel diesen Alias;
+JDBC-URL und Passwort stehen nicht im Job. Weitere Datenbanktasks verwenden
+entsprechend ihre dokumentierten Aliasfelder. Verbindung und fachlich
+benötigte Tabellen müssen vorbereitet sein.
 
-Ergebnisse sind `file`, `finalUri`, `status`, `bytes` und `sha256`. `file`
-bezeichnet die abgeschlossene Zieldatei, `bytes` ihre tatsächliche Grösse.
+=== Parameter und Prioritäten
 
-Die Property-Tabelle fasst die Felder zusammen:
+Öffentliche Jobparameter werden im Script einmal mit Beschreibung deklariert.
+Die Typen sind [.config-key]#`text`#, [.config-key]#`boolean`#, [.config-key]#`integer`# und [.dsl-method]#`path`#. [.config-key]#`integer`# liefert einen
+64-Bit-Long; [.config-key]#`boolean`# akzeptiert nur [.literal]#`true`# und [.literal]#`false`#. [.dsl-method]#`path`# liefert einen
+normalisierten Path, ohne die Existenz einer Datei vorwegzunehmen.
 
-include::generated/task-httpdownload.adoc[]
+Vorrang von niedrig nach hoch:
 
+. [.config-key]#`defaultValue`# in der Jobdeklaration.
+. [.config-key]#`params`# in der Runtimekonfiguration.
+. Werte aus [.cli-option]#`--params-file`#.
+. Werte aus [.cli-option]#`--param`#.
+
+Parameterdatei und Runtime-[.config-key]#`params`# enthalten Stringwerte, beispielsweise:
+
+[source,json]
+----
+{"jahr": "2026", "vollstaendig": "true", "ziel": "./ausgabe"}
+----
+
+[.code-fragment]#`required: true`# und [.config-key]#`defaultValue`# dürfen nicht kombiniert werden. Ein
+optionaler Parameter ohne Wert liefert [.literal]#`null`#. Ein leerer optionaler Text ist
+ein Wert; ein erforderlicher Text darf nicht leer sein. Unbekannte Namen in
+[.cli-option]#`--param`# oder der Parameterdatei sind Fehler. Zusätzliche Namen in der
+allgemeinen Runtimekonfiguration werden für diesen Job ignoriert.
+JSON-Werte werden weder als Groovy-Ausdruck noch mit Variablenersetzung ausgeführt.
+
+=== Pfadbasen und Arbeitsbereiche
+
+[cols="3,5",options="header"]
+|===
+| Pfad | Basis
+| Jobdatei und CLI-Dateioptionen | Ursprüngliches Startverzeichnis.
+| [.config-key]#`runtime`#-Pfade und Secretdateien | Verzeichnis der Runtimekonfiguration.
+| [.dsl-method]#`file('...')`# | Jobverzeichnis; im Job-JAR die materialisierten Ressourcen.
+| [.dsl-method]#`parameter('ziel')`# mit Typ [.dsl-method]#`path`# | Ursprüngliches Startverzeichnis, auch bei Übergabe aus einer Parameterdatei.
+| [.dsl-method]#`path('...')`# | Ursprüngliches Startverzeichnis.
+| [.dsl-method]#`workPath('...')`# | Privater Arbeitsbereich des aktuellen Tasks oder synchronen Aufrufs.
+|===
+
+Jeder Run erhält einen eigenen Arbeitsbereich. Zwischenergebnisse bleiben für
+Nachfolger bis zum Runende zugänglich. [.dsl-method]#`workPath`# verlangt relative Pfade,
+verhindert das Verlassen des Arbeitsbereichs und erstellt erforderliche
+Elternverzeichnisse. Es erstellt keine fertige Ausgabedatei.
+Ergebnisse, die den Run überleben sollen, gehören in ein ausdrücklich gewähltes
+externes Ziel. Mit [.cli-option]#`--keep-work always`# lassen sich Arbeitsdateien untersuchen.
+
+=== Secrets und Sprache
+
+Ein Secretalias verweist entweder auf eine Environmentvariable oder auf eine
+Datei. Die Quelle wird erst beim Zugriff mit [.dsl-method]#`secret('alias')`# gelesen.
+Secretdateien sind UTF-8, höchstens 64 KiB gross; ein abschliessendes LF oder
+CRLF wird entfernt. Environmentwerte werden unverändert gelesen.
+[.java-type]#`SecretValue`# wird von unterstützten Taskfeldern direkt angenommen. Seine
+Stringdarstellung ist maskiert; ein Passwort deshalb nicht durch gewöhnliche
+Stringkonkatenation in einen Header einbauen.
+
+Öffentliche Parameter und deren Defaults sind kein Secretkanal. Verwaltete
+Logs und Berichte maskieren bekannte Secretwerte. Frei programmierte Ausgaben
+oder absichtlich kodierte Geheimnisse können diesen Schutz umgehen.
+
+Die Sprache wird in folgender Reihenfolge gewählt:
+[.cli-option]#`--lang`# vor [.env-var]#`GRETL_LANGUAGE`# vor [.config-key]#`language`# in der Runtimekonfiguration vor
+der Betriebssystem-Locale. Ohne unterstützte Locale ist Englisch der Fallback.
+Technische Feldnamen, IDs und Fehlercodes bleiben sprachneutral.
+
+=== Logging, Berichte und Exitcodes
+
+Konsole, Ereignisdatei und Abschlussbericht erfüllen unterschiedliche Aufgaben:
+
+* Text- oder JSON-Konsolenlogs gehen auf stderr; Hilfe und Planausgabe auf stdout.
+* Die begrenzte Ereignisdatei [.code-fragment]#`<runId>.events.jsonl`# liegt im Reportverzeichnis.
+  [.code-fragment]#`logging.eventFile=false`# deaktiviert sie.
+* Der erforderliche Abschlussbericht heisst [.file-name]#`<runId>.json`# oder verwendet den
+  Pfad aus [.cli-option]#`--report`#. Er enthält Taskstatus, Zeiten und explizite Diagnosen.
+
+Der Bericht serialisiert keine beliebigen Taskresultate und ist kein
+Wiederaufnahmespeicher. Globale Hilfe, Jobhilfe, [.config-key]#`check`# und [.config-key]#`plan`# erzeugen
+keinen Runbericht. Für einen fehlgeschlagenen Run sind Taskname, betroffenes
+Feld, Quelle und Ursachen wichtiger als ein einzelner Log-Level: Eine Action
+kann einen Fachfehler bewusst behandeln und trotzdem erfolgreich enden.
+
+[cols="1,6",options="header"]
+|===
+| Exitcode | Bedeutung
+| 0 | Erfolgreicher Run oder bewusstes [.literal]#`NO_DATA`# nach erfolgreichem Cleanup.
+| 2 | CLI-, Konfigurations-, Lade- oder Planfehler vor Beginn des Runs.
+| 10 | Unbehandelter Task-, Request-, Fach- oder Cleanupfehler nach Runbeginn.
+| 20 | Kontrollierter Abbruch oder Timeout.
+| 40 | Nachgewiesener interner Runnerfehler.
+|===
+
+Ein später falsches Taskfeld ist ein Laufzeitfehler; [.config-key]#`check`# führt seine
+Konfigurationsclosure nicht vorab aus. Nach einem unbehandelten Taskfehler
+beginnt keine weitere normale Taskarbeit. Cleanup wird noch versucht.
+Timeout beendet eine nicht kooperierende In-Process-Bibliothek nicht hart.
+Nach einem erzwungenen Prozessende können Cleanup und Abschlussbericht fehlen.
+Vor einem erneuten Lauf sind die Diagnosen der Taskart und bereits erfolgte
+Fachänderungen zu beachten.
+
+== Taskreferenz
+
+Die thematische Übersicht führt zu den alphabetisch geordneten Taskkapiteln.
+Alle hier genannten Symbole sind in der Standarddistribution verfügbar und
+benötigen im Job keine Klassenimports. Der tatsächliche Katalog eines
+installierten Pakets wird mit [.command]#`gretl operations`# angezeigt.
+
+[cols="2,6",options="header"]
+|===
+| Bereich | Taskarten
+| Dateien und HTTP
+| <<task-httpdownload,HttpDownload>>, <<task-curl,Curl>>, <<task-extract,Extract>>, <<task-gzip,Gzip>>, <<task-xsltransformer,XslTransformer>>
+| FTP und S3
+| <<task-ftplist,FtpList>>, <<task-ftpdownload,FtpDownload>>, <<task-ftpupload,FtpUpload>>, <<task-ftpdelete,FtpDelete>>, <<task-s3download,S3Download>>, <<task-s3upload,S3Upload>>, <<task-s3delete,S3Delete>>, <<task-s3bucket2bucket,S3Bucket2Bucket>>
+| Datenbanken
+| <<task-sqlexecutor,SqlExecutor>>, <<task-db2db,Db2Db>>, <<task-duckdbsqlexecutor,DuckDbSqlExecutor>>
+| Tabellen und JSON
+| <<task-csv2excel,Csv2Excel>>, <<task-csvimport,CsvImport>>, <<task-csvexport,CsvExport>>, <<task-jsonimport,JsonImport>>, <<task-csvvalidator,CsvValidator>>, <<task-jsonvalidator,JsonValidator>>
+| Geodaten
+| <<task-gpkg2shp,Gpkg2Shp>>, <<task-gpkg2dxf,Gpkg2Dxf>>, <<task-gpkgimport,GpkgImport>>, <<task-gpkgexport,GpkgExport>>, <<task-shpimport,ShpImport>>, <<task-shpexport,ShpExport>>, <<task-gpkgvalidator,GpkgValidator>>, <<task-shpvalidator,ShpValidator>>
+| INTERLIS und AV
+| <<task-ilivalidator,IliValidator>>, <<task-ili2pgimportschema,Ili2pgImportSchema>>, <<task-ili2pgimport,Ili2pgImport>>, <<task-ili2pgreplace,Ili2pgReplace>>, <<task-ili2pgupdate,Ili2pgUpdate>>, <<task-ili2pgexport,Ili2pgExport>>, <<task-ili2pgdelete,Ili2pgDelete>>, <<task-ili2pgvalidate,Ili2pgValidate>>, <<task-ili2gpkgimport,Ili2gpkgImport>>, <<task-ili2duckdbimportschema,Ili2duckdbImportSchema>>, <<task-ili2duckdbimport,Ili2duckdbImport>>, <<task-ili2duckdbexport,Ili2duckdbExport>>, <<task-av2ch,Av2ch>>, <<task-av2geobau,Av2geobau>>
+|===
+
+Die Beispiele sind vollständige Jobs, soweit nicht ausdrücklich als Ausschnitt
+bezeichnet. Sie setzen die jeweils genannten Dateien, Modelle, bestehenden
+Tabellen und eingerichteten Dienstzugänge voraus. Beispieladressen unter
+[.code-fragment]#`example.invalid`# werden durch eigene Datenquellen ersetzt. Pfade unter
+[.dsl-method]#`workPath`# sind temporär; für dauerhafte Ergebnisse einen Pfadparameter verwenden.
+Bei Rezepten aus dem Prüfbestand zeigt das Include den tatsächlich ausgeführten
+Taskcode; zusätzlich angegebene [.dsl-method]#`defaults`# wählen das dokumentierte Einzelziel.
+
+Die breite Property-Tabelle beschreibt Name und Typ, Bedeutung, Pflichtstatus,
+vorhandene Vorgaben, erlaubte Werte und ein Feldbeispiel. Eine fehlende Vorgabe
+bedeutet nicht automatisch [.literal]#`null`#: Ein Fachadapter kann zusätzliche Regeln
+oder bibliothekseigene Defaults besitzen. Eine leere Liste ist nicht gleichbedeutend
+mit beliebiger Auswahl; beispielsweise löscht [.task-type]#`FtpDelete`# ohne Dateifilter alle
+Dateien des konfigurierten Verzeichnisses.
+
+[[task-av2ch]]
+=== Av2ch
+
+Transformiert kantonale AV-Daten im INTERLIS-1-Format ins Bundesmodell.
+Die Fachbibliothek unterstützt Deutsch und Italienisch im Bezugsrahmen LV95.
+Das Bundes-ITF behält den Basisnamen der Eingabe. Modelle und Eingabedaten
+müssen zur gewählten Sprache passen. Mehrere lokale Dateien werden über
+[.config-key]#`inputFiles`# angegeben. Die Konvertierung ersetzt keine vorgängige Validierung.
+
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/formats/job.groovy[tags=reference-parameters;reference-av2ch]
+defaults 'av2ch'
+----
+
+Das Rezept benötigt [.config-key]#`output`# als externen Pfadparameter. Die relativen
+Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
+Jobs werden sie durch die eigenen Eingaben ersetzt.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`directory`# / [.dsl-method]#`path`#
+| Verzeichnis für die erzeugten Dateien; für dauerhafte Ausgaben einen externen Pfadparameter verwenden.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-av2ch.adoc[]
+
+[[task-av2geobau]]
+=== Av2geobau
+
+Konvertiert AV-ITF-Dateien ohne Datenbank in GeoBau-DXF. Die Eingabe muss
+dem Bundesmodell DM01AVCH24LV95D entsprechen. Der fachliche Datenumbau und die
+Zuordnung auf DXF-Layer sind vorgegeben: beispielsweise LFP1 auf Layer 01111
+und Gebäude auf Layer 01211. Die Daten werden dabei nicht separat validiert.
+Mit [.config-key]#`zip`# lassen sich die Ausgaben komprimieren.
+
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/formats/job.groovy[tags=reference-parameters;reference-av2geobau]
+defaults 'av2geobau'
+----
+
+Das Rezept benötigt [.config-key]#`output`# als externen Pfadparameter. Die relativen
+Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
+Jobs werden sie durch die eigenen Eingaben ersetzt.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`directory`# / [.dsl-method]#`path`#
+| Verzeichnis für erzeugte DXF-Dateien beziehungsweise ZIP-Archive.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-av2geobau.adoc[]
+
+[[task-csv2excel]]
+=== Csv2Excel
+
+[.task-type]#`Csv2Excel`# nutzt den gretl-next-CSV-Reader und den IOX-Excel-Writer. Optional
+kann ein INTERLIS-Modell geladen werden.
+
+[source,groovy]
+----
+task('convert', Csv2Excel) {
+    csvFile = file('data/input.csv')
+    outputFile = file('build/output.xlsx')
+    models = 'CsvModel'
+    modeldir = 'models'
+}
+
+defaults 'convert'
+----
+
+[.config-key]#`firstLineIsHeader`#, [.config-key]#`valueDelimiter`#, [.config-key]#`valueSeparator`# und [.config-key]#`encoding`# steuern
+den CSV-Reader. Ergebnis ist [.dsl-method]#`file`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Geschriebene XLSX-Datei
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-csv2excel.adoc[]
+
+[[task-csvexport]]
+=== CsvExport
+
+[.task-type]#`CsvExport`# schreibt eine Datenbanktabelle mit iox-wkf [.config-key]#`Db2Csv`# in eine
+CSV-Datei.
+
+[source,groovy]
+----
+task('export', CsvExport) {
+    database = 'db'
+    dataFile = file('build/export.csv')
+    tableName = 'colors'
+    attributes = ['id', 'name']
+}
+
+defaults 'export'
+----
+
+[.config-key]#`attributes`# ist optional; [.config-key]#`firstLineIsHeader`# defaultet auf [.literal]#`true`#. Ergebnis
+ist [.dsl-method]#`file`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Geschriebene CSV-Datei
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-csvexport.adoc[]
+
+[[task-csvimport]]
+=== CsvImport
+
+[.task-type]#`CsvImport`# importiert eine CSV-Datei mit iox-wkf [.config-key]#`Csv2db`# in eine
+Datenbanktabelle.
+
+[source,groovy]
+----
+task('import', CsvImport) {
+    database = 'db'
+    dataFile = file('data/input.csv')
+    tableName = 'colors'
+}
+
+defaults 'import'
+----
+
+Die CSV-Header werden den Zielspalten zugeordnet; ohne Header werden die
+Spalten positional übernommen. [.config-key]#`schemaName`#, [.config-key]#`encoding`#, [.config-key]#`valueDelimiter`#,
+[.config-key]#`valueSeparator`# und [.config-key]#`batchSize`# sind optional. Ergebnis ist [.dsl-method]#`file`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Pfad der gelesenen CSV-Eingabedatei; die importierten Daten liegen in der konfigurierten Datenbank.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-csvimport.adoc[]
+
+[[task-csvvalidator]]
+=== CsvValidator
+
+[.task-type]#`CsvValidator`# validiert eine CSV-Datei mit ilivalidator und dem CSV-Reader
+gegen ein INTERLIS-Modell. Die Datei muss genau einmal angegeben werden.
+
+[source,groovy]
+----
+task('validate', CsvValidator) {
+    dataFiles = [file('data/input.csv')]
+    modelNames = ['CsvModel']
+    modelDirectories = [file('models')]
+}
+
+defaults 'validate'
+----
+
+[.config-key]#`firstLineIsHeader`#, [.config-key]#`valueDelimiter`#, [.config-key]#`valueSeparator`# und [.config-key]#`encoding`# werden
+an den CSV-Reader durchgereicht. [.code-fragment]#`failOnError=false`# liefert [.code-fragment]#`valid=false`#
+ohne Taskabbruch.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`valid`# / [.config-key]#`boolean`#
+| Validierungsergebnis
+| nein
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad der Validierungsdiagnosen; ohne expliziten Pfad verwendet der Adapter eine Datei im Arbeitsbereich.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-csvvalidator.adoc[]
+
+[[task-curl]]
 === Curl
 
-`Curl` führt genau eine HTTP-Anfrage aus und prüft die Antwort. Der Task ist
+[.task-type]#`Curl`# führt genau eine HTTP-Anfrage aus und prüft die Antwort. Der Task ist
 für API-Aufrufe, Uploads, Token-Abrufe und Response-Assertions gedacht. Im
-Gegensatz zu `HttpDownload` ist das Ziel optional und der Status wird exakt
+Gegensatz zu [.task-type]#`HttpDownload`# ist das Ziel optional und der Status wird exakt
 geprüft.
 
 [cols="2,3,3",options="header"]
 |===
-|Aspekt |`HttpDownload` |`Curl`
+|Aspekt |[.task-type]#`HttpDownload`# |[.task-type]#`Curl`#
 |Rolle |Datei herunterladen und sicher veröffentlichen |HTTP-Anfrage ausführen und Antwort prüfen
-|Ausgabe |`output` Pflicht |`outputFile` optional
-|Request-Body |`bodyText` nur POST |`data`, `dataBinary` oder `formData` (multipart)
-|Authentifizierung |Header mit Text/`SecretValue` |Basic Auth plus Header/`SecretValue`
-|Response-Prüfung |Status 2xx, `maxBytes`, SHA-256 |exakter `expectedStatusCode`, `expectedBody`
-|Ergebnisse |`file`, `finalUri`, `status`, `bytes`, `sha256` |`status`, `bytes`, `outputFile`
+|Ausgabe |[.config-key]#`output`# Pflicht |[.config-key]#`outputFile`# optional
+|Request-Body |[.config-key]#`bodyText`# nur POST |[.config-key]#`data`#, [.config-key]#`dataBinary`# oder [.config-key]#`formData`# (multipart)
+|Authentifizierung |Header mit Text/[.java-type]#`SecretValue`# |Basic Auth plus Header/[.java-type]#`SecretValue`#
+|Response-Prüfung |Status 2xx, [.config-key]#`maxBytes`#, SHA-256 |exakter [.config-key]#`expectedStatusCode`#, [.config-key]#`expectedBody`#
+|Ergebnisse |[.dsl-method]#`file`#, [.config-key]#`finalUri`#, [.config-key]#`status`#, [.config-key]#`bytes`#, [.config-key]#`sha256`# |[.config-key]#`status`#, [.config-key]#`bytes`#, [.config-key]#`outputFile`#
 |===
 
 Ein Token-Abruf mit Text-Body und optionaler Zieldatei:
@@ -218,6 +827,8 @@ task('token', Curl) {
     password = secret('apiPassword')
     outputFile = workPath('token.json')
 }
+
+defaults 'token'
 ----
 
 Ein Multipart-Upload mit Text- und Dateifeld:
@@ -235,318 +846,52 @@ task('upload', Curl) {
         publish: 'true'
     ]
 }
+
+defaults 'upload'
 ----
 
-Genau eines von `data`, `dataBinary` und `formData` ist zulässig. Ohne
-`method` wird GET für Anfragen ohne Body und POST für Anfragen mit Body
+Genau eines von [.config-key]#`data`#, [.config-key]#`dataBinary`# und [.config-key]#`formData`# ist zulässig. Ohne
+[.config-key]#`method`# wird GET für Anfragen ohne Body und POST für Anfragen mit Body
 verwendet; GET zusammen mit einem Body ist ein Fehler. Redirects werden nicht
 verfolgt, und ein fehlgeschlagener Request wird nicht automatisch wiederholt.
 
-Der Response-Body wird höchstens bis `maxBytes` gelesen (Vorgabe 16 MiB). Ein
-Status ausserhalb des erwarteten Codes, ein nicht gefundener `expectedBody`
-oder eine überschrittene Grenze führen zu einem Taskfehler. `outputFile` wird
+Der Response-Body wird höchstens bis [.config-key]#`maxBytes`# gelesen (Vorgabe 16 MiB). Ein
+Status ausserhalb des erwarteten Codes, ein nicht gefundener [.config-key]#`expectedBody`#
+oder eine überschrittene Grenze führen zu einem Taskfehler. [.config-key]#`outputFile`# wird
 erst nach erfolgreicher Prüfung atomar veröffentlicht; vorhandene Dateien
-werden ohne `overwrite = true` nicht ersetzt. Ohne `outputFile` wird der Body
+werden ohne [.code-fragment]#`overwrite = true`# nicht ersetzt. Ohne [.config-key]#`outputFile`# wird der Body
 nach der Prüfung verworfen und ist kein Resultatfeld.
 
-`password` ist ein `SecretValue` aus `secret('alias')` und erscheint nicht im
-Klartext in Logs oder Fehlern. Ein expliziter `Authorization`-Header und Basic
+[.config-key]#`password`# ist ein [.java-type]#`SecretValue`# aus [.dsl-method]#`secret('alias')`# und erscheint nicht im
+Klartext in Logs oder Fehlern. Ein expliziter [.config-key]#`Authorization`#-Header und Basic
 Auth schliessen sich aus.
 
-Ergebnisse sind `status`, `bytes` und `outputFile` (nullable). Die
+Ergebnisse sind [.config-key]#`status`#, [.config-key]#`bytes`# und [.config-key]#`outputFile`# (nullable). Die
 Property-Tabelle fasst die Felder zusammen:
 
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`status`# / [.config-key]#`integer`#
+| HTTP-Status
+| nein
+| [.config-key]#`bytes`# / [.config-key]#`integer`#
+| Bytes des Antwort-Bodys
+| nein
+| [.config-key]#`outputFile`# / [.dsl-method]#`path`#
+| Geschriebener Antwort-Body, sonst null
+| ja
+|===
+
+.Property-Tabelle
 include::generated/task-curl.adoc[]
 
-=== Extract
-
-`Extract` entpackt ein ZIP- oder GZIP-Archiv. Der Modus wird ausdrücklich über
-`compression` gewählt; die Endung allein genügt nicht. ZIP schreibt in ein
-Ausgabeverzeichnis, GZIP in eine einzelne Zieldatei.
-
-[source,groovy]
-----
-task('extract', Extract, dependsOn: 'download') {
-    archive = result('download').file
-    compression = 'ZIP'
-    outputDirectory = workPath('entpackt')
-}
-----
-
-Der Task schützt vor Pfad-Traversal, absoluten Einträgen, Symlinks und
-kollidierenden Dateinamen. Vorhandene Zieldateien werden nicht still
-überschrieben. Die Standardgrenzen liegen bei 4 GiB entpackten Daten und
-10'000 ZIP-Einträgen; beide Werte sind konfigurierbar.
-
-Ergebnisse sind `file`, `files`, `directory` und `bytes`. Bei GZIP ist `file`
-die einzelne Ausgabedatei und `directory` ist `null`; bei ZIP ist `directory`
-das Ausgabeverzeichnis, `file` ist `null` und `files` enthält die
-abgeschlossenen regulären Dateien in stabiler Reihenfolge.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-extract.adoc[]
-
-=== Gzip
-
-`Gzip` schreibt eine GZIP-komprimierte Kopie einer einzelnen Datei.
-
-[source,groovy]
-----
-task('compress', Gzip) {
-    dataFile = file('data/input.xml')
-    gzipFile = workPath('out/input.xml.gz')
-}
-----
-
-Die Ausgabe wird in eine temporäre Datei geschrieben und erst nach
-erfolgreichem Abschluss veröffentlicht. `overwrite` ist aus
-Kompatibilitätsgründen standardmässig `true`; mit `overwrite = false`
-scheitert der Task, wenn die Zieldatei bereits existiert. `dataFile` und
-`gzipFile` müssen verschiedene Pfade bezeichnen, und die Eingabe muss eine
-lesbare reguläre Datei sein.
-
-Ergebnisse sind `file` und `bytes` (Grösse der geschriebenen GZIP-Datei).
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-gzip.adoc[]
-
-=== XslTransformer
-
-`XslTransformer` transformiert eine oder mehrere XML-Dateien mit einem
-XSLT-Stylesheet. Das Stylesheet kommt entweder aus einer lokalen Datei oder aus
-einer Klassenpfad-Ressource unter `xslt/`.
-
-[source,groovy]
-----
-task('transform', XslTransformer) {
-    xmlFiles = [file('data/input.xml')]
-    xslFile = file('xsl/transform.xsl')
-    outDirectory = workPath('out')
-    fileExtension = 'xtf'
-}
-----
-
-Für mehrere Dateien wird `xmlFiles` mit allen Eingaben gefüllt. Der Ausgabename
-ist der Basisname der XML-Datei plus `fileExtension`. Zwei Eingaben mit
-demselben Basisnamen sind ein Fehler, auch wenn `overwrite = true` gesetzt ist.
-Vorhandene Ausgaben werden standardmässig ersetzt; `overwrite = false` lässt
-den Task bei einer vorhandenen Zieldatei scheitern.
-
-Externe Entities, DOCTYPE-Deklarationen und Netzwerkzugriffe sind deaktiviert.
-Lokale Stylesheet-Includes relativ zur Stylesheetdatei bleiben zulässig.
-Ergebnisse sind `files` (geschriebene Dateien in Eingabereihenfolge) und
-`count`.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-xsltransformer.adoc[]
-
-=== FtpList
-
-`FtpList` listet die Dateien eines entfernten FTP-Verzeichnisses auf. Ordner
-werden nicht in die Ergebnisliste aufgenommen.
-
-[source,groovy]
-----
-task('list', FtpList) {
-    server = 'ftp.example.ch'
-    user = 'ftp-user'
-    password = secret('ftpPassword')
-    remoteDir = '/incoming'
-}
-----
-
-Alle FTP-Tasks teilen die Verbindungsfelder `server` (host oder host:port),
-`user`, `password` (SecretValue), `systemType` (Default `UNIX`),
-`fileSeparator`, `passiveMode` (Default `true`) und
-`controlKeepAliveTimeout` (Default 300 Sekunden). Das Passwort erscheint nicht
-im Klartext in Logs oder Fehlern. Ergebnis ist `files`.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-ftplist.adoc[]
-
-=== FtpDownload
-
-`FtpDownload` lädt Dateien aus einem entfernten Verzeichnis in ein lokales
-Verzeichnis. Ohne `remoteFiles` werden alle Dateien des Verzeichnisses geladen;
-sonst gelten Namen oder Wildcards wie `*.zip`.
-
-[source,groovy]
-----
-task('download', FtpDownload) {
-    server = 'ftp.example.ch'
-    user = 'ftp-user'
-    password = secret('ftpPassword')
-    remoteDir = '/incoming'
-    localDir = workPath('download')
-    remoteFiles = ['*.zip']
-    fileType = 'BINARY'
-}
-----
-
-Der lokale Zielpfad wird gegen Pfad-Traversal geprüft. Vorhandene Dateien
-werden mit `overwrite = true` (Default aus Kompatibilitätsgründen) ersetzt;
-`overwrite = false` lässt den Task bei einer vorhandenen Zieldatei scheitern.
-Ergebnisse sind `files` und `bytes`.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-ftpdownload.adoc[]
-
-=== FtpUpload
-
-`FtpUpload` lädt genau eine lokale Datei unter ihrem Dateinamen in ein
-entferntes Verzeichnis hoch.
-
-[source,groovy]
-----
-task('upload', FtpUpload) {
-    server = 'ftp.example.ch'
-    user = 'ftp-user'
-    password = secret('ftpPassword')
-    localFile = file('data/upload.zip')
-    remoteDir = '/incoming'
-    fileType = 'BINARY'
-}
-----
-
-`fileType` ist `ASCII` oder `BINARY` (Default `ASCII`). Der entfernte Pfad
-wird aus `remoteDir`, dem Dateinamen und dem Trennzeichen gebildet.
-Ergebnisse sind `remoteFile` und `bytes`.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-ftpupload.adoc[]
-
-=== FtpDelete
-
-`FtpDelete` löscht Dateien aus einem entfernten Verzeichnis. Ohne
-`remoteFiles` werden alle Dateien des Verzeichnisses gelöscht; mit
-`remoteFiles` gelten Namen oder Wildcards.
-
-[source,groovy]
-----
-task('delete', FtpDelete) {
-    server = 'ftp.example.ch'
-    user = 'ftp-user'
-    password = secret('ftpPassword')
-    remoteDir = '/incoming'
-    remoteFiles = ['*.tmp']
-}
-----
-
-Das Weglassen von `remoteFiles` löscht alle Dateien im Verzeichnis. Ein
-fehlgeschlagenes Löschen ist ein Taskfehler, kein stiller Teilerfolg.
-Ergebnisse sind `files` und `count`.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-ftpdelete.adoc[]
-
-=== S3Download
-
-`S3Download` lädt ein Objekt oder alle Objekte eines Buckets herunter. Die
-S3-Verbindung wird direkt am Task konfiguriert; `secretKey` muss als
-SecretValue über `secret('alias')` kommen.
-
-[source,groovy]
-----
-task('download', S3Download) {
-    accessKey = 'AKIA...'
-    secretKey = secret('s3SecretKey')
-    bucketName = 'my-bucket'
-    key = 'data/export.zip'
-    downloadDir = workPath('download')
-}
-----
-
-Ohne `key` werden alle Objekte geladen. Objekt-Schlüssel mit `/` bilden
-Unterverzeichnisse; Schlüssel, die aus dem Download-Verzeichnis ausbrechen
-würden, werden abgewiesen. Vorhandene Dateien werden mit `overwrite = true`
-(Default) ersetzt. Ergebnisse sind `files`, `count` und `bytes`.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-s3download.adoc[]
-
-=== S3Upload
-
-`S3Upload` lädt eine Datei, die direkten Dateien eines Verzeichnisses oder eine
-Dateiliste hoch. Der Objekt-Schlüssel ist jeweils der Dateiname; doppelte
-Dateinamen werden abgewiesen.
-
-[source,groovy]
-----
-task('upload', S3Upload) {
-    accessKey = 'AKIA...'
-    secretKey = secret('s3SecretKey')
-    bucketName = 'my-bucket'
-    sourceFile = file('data/export.zip')
-    acl = 'private'
-}
-----
-
-`sourceDir` liest nur direkte Dateien, nicht rekursiv. `contentType` und
-`metadata` gelten für alle hochgeladenen Objekte. `acl` ist optional und
-defaultet auf `private`. Ergebnisse sind `keys`, `count` und `bytes`.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-s3upload.adoc[]
-
-=== S3Delete
-
-`S3Delete` löscht ein Objekt oder alle Objekte eines Buckets.
-
-[source,groovy]
-----
-task('delete', S3Delete) {
-    accessKey = 'AKIA...'
-    secretKey = secret('s3SecretKey')
-    bucketName = 'my-bucket'
-    key = 'data/old.zip'
-}
-----
-
-Ohne `key` werden alle Objekte gelöscht. Das ist eine bewusste
-Massenlöschung; der Task liefert die gelöschten Schlüssel als `keys` und
-`count` zurück.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-s3delete.adoc[]
-
-=== S3Bucket2Bucket
-
-`S3Bucket2Bucket` kopiert alle Objekte von einem Quell- in einen Ziel-Bucket.
-Quell- und Ziel-Bucket verwenden dieselbe S3-Verbindung.
-
-[source,groovy]
-----
-task('copy', S3Bucket2Bucket) {
-    accessKey = 'AKIA...'
-    secretKey = secret('s3SecretKey')
-    sourceBucket = 'source-bucket'
-    targetBucket = 'target-bucket'
-    acl = 'private'
-}
-----
-
-Mit `metadata` werden die Metadaten der kopierten Objekte ersetzt; ohne
-`metadata` bleiben sie erhalten. `acl` ist optional und defaultet auf
-`private`. Ergebnisse sind `keys` und `count`.
-
-Die Property-Tabelle fasst die Felder zusammen:
-
-include::generated/task-s3bucket2bucket.adoc[]
-
+[[task-db2db]]
 === Db2Db
 
-`Db2Db` kopiert Zeilen aus einer Quell- in eine Zieltabelle. Die Verbindungen
-werden über Aliasse aus der Runtimekonfiguration (`taskConfig`) aufgelöst, nicht
+[.task-type]#`Db2Db`# kopiert Zeilen aus einer Quell- in eine Zieltabelle. Die Verbindungen
+werden über Aliasse aus der Runtimekonfiguration ([.config-key]#`taskConfig`#) aufgelöst, nicht
 direkt im Job mit JDBC-URL und Passwort.
 
 [source,groovy]
@@ -560,23 +905,40 @@ task('copy', Db2Db) {
         deleteAllRows: true
     ]]
 }
+
+defaults 'copy'
 ----
 
 Jede SQL-Datei liefert ein Resultset. Optional darf sie mit einem
-`SET search_path`-Statement beginnen. Die Transfers laufen in einer
+[.code-fragment]#`SET search_path`#-Statement beginnen. Die Transfers laufen in einer
 Zieltransaktion; bei einem Fehler wird alles zurückgerollt. Parameter werden
-mit `${name}` substituiert. `geometryColumns` unterstützt WKT, WKB und GeoJSON
+mit [.code-fragment]#`${name}`# substituiert. [.config-key]#`geometryColumns`# unterstützt WKT, WKB und GeoJSON
 mit EPSG-Code, sofern die Zieldatenbank die entsprechenden PostGIS-Funktionen
-bereitstellt. Ergebnisse sind `executionCount`, `transferredRows` und
-`executions`.
+bereitstellt. Ergebnisse sind [.config-key]#`executionCount`#, [.config-key]#`transferredRows`# und
+[.config-key]#`executions`#.
 
-Die Property-Tabelle fasst die Felder zusammen:
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`executionCount`# / [.config-key]#`integer`#
+| Anzahl Transfer-Ausfuehrungen
+| nein
+| [.config-key]#`transferredRows`# / [.config-key]#`integer`#
+| Gesamtzahl uebertragener Zeilen
+| nein
+| [.config-key]#`executions`# / [.config-key]#`list`#
+| Transfer-Ergebnisse in Ausfuehrungsreihenfolge
+| nein
+|===
 
+.Property-Tabelle
 include::generated/task-db2db.adoc[]
 
+[[task-duckdbsqlexecutor]]
 === DuckDbSqlExecutor
 
-`DuckDbSqlExecutor` führt SQL-Dateien gegen eine DuckDB-Datei oder eine
+[.task-type]#`DuckDbSqlExecutor`# führt SQL-Dateien gegen eine DuckDB-Datei oder eine
 In-Memory-Datenbank aus und kann föderierte Quellen, PostgreSQL-Ziele und
 Exporte einbinden.
 
@@ -610,145 +972,281 @@ task('federation', DuckDbSqlExecutor) {
         create: true
     ]]
 }
+
+defaults 'federation'
 ----
 
-Unterstützte Quellen sind `csv`, `gpkg` und `postgres`, Ziele sind
-`postgres`. Exporte unterstützen `parquet`, `gpkg`, `xlsx` und `postgres`.
-`mode` steuert bei Quellen `view` oder `materialize`; PostgreSQL-Exporte
-kennen `append`, `truncate` und `replace`. `installExtensions` installiert
+Unterstützte Quellen sind [.config-key]#`csv`#, [.config-key]#`gpkg`# und [.config-key]#`postgres`#, Ziele sind
+[.config-key]#`postgres`#. Exporte unterstützen [.config-key]#`parquet`#, [.config-key]#`gpkg`#, [.config-key]#`xlsx`# und [.config-key]#`postgres`#.
+[.config-key]#`mode`# steuert bei Quellen [.config-key]#`view`# oder [.config-key]#`materialize`#; PostgreSQL-Exporte
+kennen [.config-key]#`append`#, [.config-key]#`truncate`# und [.config-key]#`replace`#. [.config-key]#`installExtensions`# installiert
 fehlende DuckDB-Extensions, andernfalls werden sie nur geladen. Die SQL-Dateien
-werden in Reihenfolge ausgeführt; `${name}` wird aus `sqlParameters` bzw.
-`sqlParameterSets` substituiert. Ergebnisse sind `executionCount`, `executions`
-und `exportFiles`.
+werden in Reihenfolge ausgeführt; [.code-fragment]#`${name}`# wird aus [.config-key]#`sqlParameters`# bzw.
+[.config-key]#`sqlParameterSets`# substituiert. Ergebnisse sind [.config-key]#`executionCount`#, [.config-key]#`executions`#
+und [.config-key]#`exportFiles`#.
 
-Die Property-Tabelle fasst die Felder zusammen:
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`executionCount`# / [.config-key]#`integer`#
+| Anzahl ausgefuehrter SQL-Statements
+| nein
+| [.config-key]#`executions`# / [.config-key]#`list`#
+| Statement-Ergebnisse in Ausfuehrungsreihenfolge
+| nein
+| [.config-key]#`exportFiles`# / [.config-key]#`list`#
+| Liste der durch die Exportaufträge erzeugten Dateien.
+| nein
+|===
 
+.Property-Tabelle
 include::generated/task-duckdbsqlexecutor.adoc[]
 
-=== Csv2Excel
+[[task-extract]]
+=== Extract
 
-`Csv2Excel` nutzt den gretl-next-CSV-Reader und den IOX-Excel-Writer. Optional
-kann ein INTERLIS-Modell geladen werden.
-
-[source,groovy]
-----
-task('convert', Csv2Excel) {
-    csvFile = file('data/input.csv')
-    outputFile = file('build/output.xlsx')
-    models = 'CsvModel'
-    modeldir = 'models'
-}
-----
-
-`firstLineIsHeader`, `valueDelimiter`, `valueSeparator` und `encoding` steuern
-den CSV-Reader. Ergebnis ist `file`.
-
-include::generated/task-csv2excel.adoc[]
-
-=== CsvImport
-
-`CsvImport` importiert eine CSV-Datei mit iox-wkf `Csv2db` in eine
-Datenbanktabelle.
+[.task-type]#`Extract`# entpackt ein ZIP- oder GZIP-Archiv. Der Modus wird ausdrücklich über
+[.config-key]#`compression`# gewählt; die Endung allein genügt nicht. ZIP schreibt in ein
+Ausgabeverzeichnis, GZIP in eine einzelne Zieldatei.
 
 [source,groovy]
 ----
-task('import', CsvImport) {
-    database = 'db'
-    dataFile = file('data/input.csv')
-    tableName = 'colors'
+task('extract', Extract) {
+    archive = file('data.zip')
+    compression = 'ZIP'
+    outputDirectory = workPath('entpackt')
 }
+
+defaults 'extract'
 ----
 
-Die CSV-Header werden den Zielspalten zugeordnet; ohne Header werden die
-Spalten positional übernommen. `schemaName`, `encoding`, `valueDelimiter`,
-`valueSeparator` und `batchSize` sind optional. Ergebnis ist `file`.
+Der Task schützt vor Pfad-Traversal, absoluten Einträgen, Symlinks und
+kollidierenden Dateinamen. Vorhandene Zieldateien werden nicht still
+überschrieben. Die Standardgrenzen liegen bei 4 GiB entpackten Daten und
+10'000 ZIP-Einträgen; beide Werte sind konfigurierbar.
 
-include::generated/task-csvimport.adoc[]
+Ergebnisse sind [.dsl-method]#`file`#, [.config-key]#`files`#, [.config-key]#`directory`# und [.config-key]#`bytes`#. Bei GZIP ist [.dsl-method]#`file`#
+die einzelne Ausgabedatei und [.config-key]#`directory`# ist [.literal]#`null`#; bei ZIP ist [.config-key]#`directory`#
+das Ausgabeverzeichnis, [.dsl-method]#`file`# ist [.literal]#`null`# und [.config-key]#`files`# enthält die
+abgeschlossenen regulären Dateien in stabiler Reihenfolge.
 
-=== CsvExport
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Einzelne GZIP-Datei, sonst null
+| ja
+| [.config-key]#`files`# / [.config-key]#`list`#
+| Abgeschlossene regulaere Dateien
+| nein
+| [.config-key]#`directory`# / [.dsl-method]#`path`#
+| ZIP-Ausgabeverzeichnis, sonst null
+| ja
+| [.config-key]#`bytes`# / [.config-key]#`integer`#
+| Tatsaechlich entpackte Bytes
+| nein
+|===
 
-`CsvExport` schreibt eine Datenbanktabelle mit iox-wkf `Db2Csv` in eine
-CSV-Datei.
+.Property-Tabelle
+include::generated/task-extract.adoc[]
+
+[[task-ftpdelete]]
+=== FtpDelete
+
+[.task-type]#`FtpDelete`# löscht Dateien aus einem entfernten Verzeichnis. Ohne
+[.config-key]#`remoteFiles`# werden alle Dateien des Verzeichnisses gelöscht; mit
+[.config-key]#`remoteFiles`# gelten Namen oder Wildcards.
 
 [source,groovy]
 ----
-task('export', CsvExport) {
-    database = 'db'
-    dataFile = file('build/export.csv')
-    tableName = 'colors'
-    attributes = ['id', 'name']
+task('delete', FtpDelete) {
+    server = 'ftp.example.ch'
+    user = 'ftp-user'
+    password = secret('ftpPassword')
+    remoteDir = '/incoming'
+    remoteFiles = ['*.tmp']
 }
+
+defaults 'delete'
 ----
 
-`attributes` ist optional; `firstLineIsHeader` defaultet auf `true`. Ergebnis
-ist `file`.
+Das Weglassen von [.config-key]#`remoteFiles`# löscht alle Dateien im Verzeichnis. Ein
+fehlgeschlagenes Löschen ist ein Taskfehler, kein stiller Teilerfolg.
+Ergebnisse sind [.config-key]#`files`# und [.config-key]#`count`#.
 
-include::generated/task-csvexport.adoc[]
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`files`# / [.config-key]#`list`#
+| Geloeschte entfernte Dateinamen
+| nein
+| [.config-key]#`count`# / [.config-key]#`integer`#
+| Anzahl geloeschter Dateien
+| nein
+|===
 
-=== JsonImport
+.Property-Tabelle
+include::generated/task-ftpdelete.adoc[]
 
-`JsonImport` importiert ein JSON-Objekt oder ein JSON-Array in eine
-Textspalte. Bei einem Array wird pro Element ein Datensatz geschrieben.
+[[task-ftpdownload]]
+=== FtpDownload
+
+[.task-type]#`FtpDownload`# lädt Dateien aus einem entfernten Verzeichnis in ein lokales
+Verzeichnis. Ohne [.config-key]#`remoteFiles`# werden alle Dateien des Verzeichnisses geladen;
+sonst gelten Namen oder Wildcards wie [.file-name]#`*.zip`#.
 
 [source,groovy]
 ----
-task('import', JsonImport) {
-    database = 'db'
-    jsonFile = file('data/documents.json')
-    qualifiedTableName = 'public.documents'
-    columnName = 'document'
+task('download', FtpDownload) {
+    server = 'ftp.example.ch'
+    user = 'ftp-user'
+    password = secret('ftpPassword')
+    remoteDir = '/incoming'
+    localDir = workPath('download')
+    remoteFiles = ['*.zip']
+    fileType = 'BINARY'
 }
+
+defaults 'download'
 ----
 
-`deleteAllRows = true` leert die Zieltabelle vor dem Import. Ergebnis ist
-`rows`.
+Der lokale Zielpfad wird gegen Pfad-Traversal geprüft. Vorhandene Dateien
+werden mit [.code-fragment]#`overwrite = true`# (Default aus Kompatibilitätsgründen) ersetzt;
+[.code-fragment]#`overwrite = false`# lässt den Task bei einer vorhandenen Zieldatei scheitern.
+Ergebnisse sind [.config-key]#`files`# und [.config-key]#`bytes`#.
 
-include::generated/task-jsonimport.adoc[]
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`files`# / [.config-key]#`list`#
+| Heruntergeladene Dateien
+| nein
+| [.config-key]#`bytes`# / [.config-key]#`integer`#
+| Heruntergeladene Bytes
+| nein
+|===
 
-=== CsvValidator
+.Property-Tabelle
+include::generated/task-ftpdownload.adoc[]
 
-`CsvValidator` validiert eine CSV-Datei mit ilivalidator und dem CSV-Reader
-gegen ein INTERLIS-Modell. Die Datei muss genau einmal angegeben werden.
+[[task-ftplist]]
+=== FtpList
+
+[.task-type]#`FtpList`# listet die Dateien eines entfernten FTP-Verzeichnisses auf. Ordner
+werden nicht in die Ergebnisliste aufgenommen.
 
 [source,groovy]
 ----
-task('validate', CsvValidator) {
-    dataFiles = [file('data/input.csv')]
-    modelNames = ['CsvModel']
-    modelDirectories = [file('models')]
+task('list', FtpList) {
+    server = 'ftp.example.ch'
+    user = 'ftp-user'
+    password = secret('ftpPassword')
+    remoteDir = '/incoming'
 }
+
+defaults 'list'
 ----
 
-`firstLineIsHeader`, `valueDelimiter`, `valueSeparator` und `encoding` werden
-an den CSV-Reader durchgereicht. `failOnError=false` liefert `valid=false`
-ohne Taskabbruch.
+Alle FTP-Tasks teilen die Verbindungsfelder [.config-key]#`server`# (host oder host:port),
+[.config-key]#`user`#, [.config-key]#`password`# (SecretValue), [.config-key]#`systemType`# (Default [.literal]#`UNIX`#),
+[.config-key]#`fileSeparator`#, [.config-key]#`passiveMode`# (Default [.literal]#`true`#) und
+[.config-key]#`controlKeepAliveTimeout`# (Default 300 Sekunden). Das Passwort erscheint nicht
+im Klartext in Logs oder Fehlern. Ergebnis ist [.config-key]#`files`#.
 
-include::generated/task-csvvalidator.adoc[]
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`files`# / [.config-key]#`list`#
+| Entfernte Dateinamen
+| nein
+|===
 
-=== JsonValidator
+.Property-Tabelle
+include::generated/task-ftplist.adoc[]
 
-`JsonValidator` validiert JSON-Dateien mit ilivalidator und dem JSON-Reader
-gegen ein INTERLIS-Modell. Die JSON-Vorverarbeitung ergänzt `@type`, `@topic`,
-`@id` und `@bid`, wie in gretl-next.
+[[task-ftpupload]]
+=== FtpUpload
+
+[.task-type]#`FtpUpload`# lädt genau eine lokale Datei unter ihrem Dateinamen in ein
+entferntes Verzeichnis hoch.
 
 [source,groovy]
 ----
-task('validate', JsonValidator) {
-    dataFiles = [file('data/input.json')]
-    modelNames = ['Test2']
-    modelDirectories = [file('models')]
+task('upload', FtpUpload) {
+    server = 'ftp.example.ch'
+    user = 'ftp-user'
+    password = secret('ftpPassword')
+    localFile = file('data/upload.zip')
+    remoteDir = '/incoming'
+    fileType = 'BINARY'
 }
+
+defaults 'upload'
 ----
 
-Ergebnisse sind `valid` und `logFile`; `failOnError` defaultet auf `true`.
+[.config-key]#`fileType`# ist [.literal]#`ASCII`# oder [.literal]#`BINARY`# (Default [.literal]#`ASCII`#). Der entfernte Pfad
+wird aus [.config-key]#`remoteDir`#, dem Dateinamen und dem Trennzeichen gebildet.
+Ergebnisse sind [.config-key]#`remoteFile`# und [.config-key]#`bytes`#.
 
-include::generated/task-jsonvalidator.adoc[]
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`remoteFile`# / [.config-key]#`text`#
+| Geschriebener entfernter Pfad
+| nein
+| [.config-key]#`bytes`# / [.config-key]#`integer`#
+| Hochgeladene Bytes
+| nein
+|===
 
+.Property-Tabelle
+include::generated/task-ftpupload.adoc[]
+
+[[task-gpkg2dxf]]
+=== Gpkg2Dxf
+
+Exportiert die INTERLIS-Klassentabellen eines mit ili2gpkg erzeugten
+GeoPackage in DXF-Dateien. Ein beliebiges GeoPackage ohne die benötigten
+ili2db-Metainformationen ist keine gleichwertige Eingabe. Das Metaattribut
+[.code-fragment]#`!!@dxflayer="true"`# bestimmt die Layerzuordnung; ohne eine solche Festlegung
+verwendet die Fachbibliothek den Layer [.config-key]#`default`#. Die DXF-Ausgabe verwendet
+ISO-8859-1. Ein vorhandenes Ausgabeziel vor einem erneuten Lauf prüfen.
+
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/formats/job.groovy[tags=reference-parameters;reference-gpkg2dxf]
+defaults 'gpkg2dxf'
+----
+
+Das Rezept benötigt [.config-key]#`output`# als externen Pfadparameter. Die relativen
+Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
+Jobs werden sie durch die eigenen Eingaben ersetzt.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`directory`# / [.dsl-method]#`path`#
+| Verzeichnis für erzeugte DXF-Dateien beziehungsweise ZIP-Archive.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-gpkg2dxf.adoc[]
+
+[[task-gpkg2shp]]
 === Gpkg2Shp
 
-`Gpkg2Shp` konvertiert die ili2gpkg-Klassentabellen eines GeoPackages mit dem
+[.task-type]#`Gpkg2Shp`# konvertiert die ili2gpkg-Klassentabellen eines GeoPackages mit dem
 nativen gretl-next-Shapefile-Writer in Shapefiles. Pro Klasse entsteht eine
-`.shp`-Datei mit `.shx`, `.dbf`, `.cpg` und optional `.prj`. Der Writer
+[.code-fragment]#`.shp`#-Datei mit [.code-fragment]#`.shx`#, [.code-fragment]#`.dbf`#, [.code-fragment]#`.cpg`# und optional [.code-fragment]#`.prj`#. Der Writer
 unterstützt 2D-Geometrien; Z/M-Layer werden mit einer klaren Fehlermeldung
 abgelehnt.
 
@@ -758,15 +1256,60 @@ task('convert', Gpkg2Shp) {
     dataFile = file('data/input.gpkg')
     outputDir = path('build/shp')
 }
+
+defaults 'convert'
 ----
 
-Ergebnis ist `directory`.
+Ergebnis ist [.config-key]#`directory`#.
 
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`directory`# / [.dsl-method]#`path`#
+| Verzeichnis der geschriebenen Ausgabedateien.
+| nein
+|===
+
+.Property-Tabelle
 include::generated/task-gpkg2shp.adoc[]
 
+[[task-gpkgexport]]
+=== GpkgExport
+
+[.task-type]#`GpkgExport`# exportiert eine oder mehrere Datenbanktabellen mit iox-wkf
+[.config-key]#`Db2Gpkg`# in ein GeoPackage.
+
+[source,groovy]
+----
+task('export', GpkgExport) {
+    database = 'db'
+    dataFile = file('build/output.gpkg')
+    srcTableName = ['abbaustelle']
+    dstTableName = ['abbaustelle']
+}
+
+defaults 'export'
+----
+
+Ergebnis ist [.dsl-method]#`file`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Geschriebenes GeoPackage
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-gpkgexport.adoc[]
+
+[[task-gpkgimport]]
 === GpkgImport
 
-`GpkgImport` importiert einen GeoPackage-Layer mit iox-wkf `Gpkg2db` in eine
+[.task-type]#`GpkgImport`# importiert einen GeoPackage-Layer mit iox-wkf [.config-key]#`Gpkg2db`# in eine
 Datenbanktabelle. Layer mit Z/M-Dimension werden abgelehnt, weil der
 Importpfad sie nicht zuverlässig erhält.
 
@@ -778,76 +1321,28 @@ task('import', GpkgImport) {
     srcTableName = 'abbaustelle'
     dstTableName = 'abbaustelle'
 }
+
+defaults 'import'
 ----
 
-Ergebnis ist `file`.
+Ergebnis ist [.dsl-method]#`file`#.
 
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Pfad des gelesenen GeoPackage; die importierten Daten liegen in der Zieldatenbank.
+| nein
+|===
+
+.Property-Tabelle
 include::generated/task-gpkgimport.adoc[]
 
-=== GpkgExport
-
-`GpkgExport` exportiert eine oder mehrere Datenbanktabellen mit iox-wkf
-`Db2Gpkg` in ein GeoPackage.
-
-[source,groovy]
-----
-task('export', GpkgExport) {
-    database = 'db'
-    dataFile = file('build/output.gpkg')
-    srcTableName = ['abbaustelle']
-    dstTableName = ['abbaustelle']
-}
-----
-
-Ergebnis ist `file`.
-
-include::generated/task-gpkgexport.adoc[]
-
-=== ShpImport
-
-`ShpImport` importiert ein Shapefile mit dem nativen gretl-next-Shapefile-
-Reader und `Shp2Db` in eine Datenbanktabelle. Die DBF-Attribute werden mit der
-Hop-Reihenfolge explizit → CPG → LDID → ISO-8859-1 gelesen; NUL-, Datums- und
-Numerik-NULLs werden nach den Hop-Regeln behandelt. Der Reader unterstützt
-2D-Point, MultiPoint, PolyLine und Polygon; Z/M-Shapes werden abgelehnt.
-
-[source,groovy]
-----
-task('import', ShpImport) {
-    dataFile = file('data/input.shp')
-    database = 'db'
-    tableName = 'abbaustelle'
-}
-----
-
-Ergebnis ist `file`.
-
-include::generated/task-shpimport.adoc[]
-
-=== ShpExport
-
-`ShpExport` exportiert eine Datenbanktabelle mit dem nativen gretl-next-
-Shapefile-Writer. Die DBF-Datei wird inklusive NULL-Markern geschrieben; CPG,
-Sidecars und atomisches Überschreiben werden vom Writer verwaltet. Z/M-
-Geometrien werden mit einer klaren Fehlermeldung abgelehnt; 2D-Multipart und
-Polygon-Löcher werden unterstützt.
-
-[source,groovy]
-----
-task('export', ShpExport) {
-    database = 'db'
-    dataFile = file('build/output.shp')
-    tableName = 'abbaustelle'
-}
-----
-
-Ergebnis ist `file`.
-
-include::generated/task-shpexport.adoc[]
-
+[[task-gpkgvalidator]]
 === GpkgValidator
 
-`GpkgValidator` validiert eine GeoPackage-Tabelle mit ilivalidator und dem
+[.task-type]#`GpkgValidator`# validiert eine GeoPackage-Tabelle mit ilivalidator und dem
 GeoPackage-Reader gegen ein INTERLIS-Modell.
 
 [source,groovy]
@@ -858,30 +1353,349 @@ task('validate', GpkgValidator) {
     modelNames = ['GpkgModel']
     modelDirectories = [file('models')]
 }
+
+defaults 'validate'
 ----
 
-`tableName` ist erforderlich. Ergebnisse sind `valid` und `logFile`.
+[.config-key]#`tableName`# ist erforderlich. Ergebnisse sind [.config-key]#`valid`# und [.config-key]#`logFile`#.
 
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`valid`# / [.config-key]#`boolean`#
+| Validierungsergebnis
+| nein
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad der Validierungsdiagnosen; ohne expliziten Pfad verwendet der Adapter eine Datei im Arbeitsbereich.
+| nein
+|===
+
+.Property-Tabelle
 include::generated/task-gpkgvalidator.adoc[]
 
-=== ShpValidator
+[[task-gzip]]
+=== Gzip
 
-`ShpValidator` validiert ein Shapefile mit ilivalidator und dem nativen
-Shapefile-Reader gegen ein INTERLIS-Modell.
+[.task-type]#`Gzip`# schreibt eine GZIP-komprimierte Kopie einer einzelnen Datei.
 
 [source,groovy]
 ----
-task('validate', ShpValidator) {
-    dataFiles = [file('data/input.shp')]
-    modelNames = ['ShpModel']
-    modelDirectories = [file('models')]
+task('compress', Gzip) {
+    dataFile = file('data/input.xml')
+    gzipFile = workPath('out/input.xml.gz')
 }
+
+defaults 'compress'
 ----
 
-Es wird genau eine Datei akzeptiert. Ergebnisse sind `valid` und `logFile`.
+Die Ausgabe wird in eine temporäre Datei geschrieben und erst nach
+erfolgreichem Abschluss veröffentlicht. [.config-key]#`overwrite`# ist aus
+Kompatibilitätsgründen standardmässig [.literal]#`true`#; mit [.code-fragment]#`overwrite = false`#
+scheitert der Task, wenn die Zieldatei bereits existiert. [.config-key]#`dataFile`# und
+[.config-key]#`gzipFile`# müssen verschiedene Pfade bezeichnen, und die Eingabe muss eine
+lesbare reguläre Datei sein.
 
-include::generated/task-shpvalidator.adoc[]
+Ergebnisse sind [.dsl-method]#`file`# und [.config-key]#`bytes`# (Grösse der geschriebenen GZIP-Datei).
 
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Geschriebene GZIP-Datei
+| nein
+| [.config-key]#`bytes`# / [.config-key]#`integer`#
+| Groesse der GZIP-Datei
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-gzip.adoc[]
+
+[[task-httpdownload]]
+=== HttpDownload
+
+[.task-type]#`HttpDownload`# lädt eine Datei über HTTP oder HTTPS und veröffentlicht sie
+erst nach erfolgreichem Abschluss unter dem Zielpfad. Der Task unterstützt GET
+und POST, Header mit Text- oder Secretwerten und einen optionalen UTF-8-Body
+für POST.
+
+[source,groovy]
+----
+task('download', HttpDownload) {
+    url = 'https://example.invalid/data.zip'
+    output = workPath('daten.zip')
+    headers = ['Accept': 'application/zip']
+}
+
+defaults 'download'
+----
+
+Redirects sind deaktiviert. Der Task wiederholt einen fehlgeschlagenen
+Request nicht automatisch. Ein HTTP-Status ausserhalb von 200 bis 299, eine
+überschrittene Byte-Grenze oder eine abgebrochene Übertragung führen zu einem
+Taskfehler; ein vorhandenes Ziel wird ohne [.code-fragment]#`overwrite = true`# nicht ersetzt.
+Der Response-Body wird nicht automatisch geloggt.
+
+Ergebnisse sind [.dsl-method]#`file`#, [.config-key]#`finalUri`#, [.config-key]#`status`#, [.config-key]#`bytes`# und [.config-key]#`sha256`#. [.dsl-method]#`file`#
+bezeichnet die abgeschlossene Zieldatei, [.config-key]#`bytes`# ihre tatsächliche Grösse.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Abgeschlossene Datei
+| nein
+| [.config-key]#`finalUri`# / [.config-key]#`uri`#
+| Tatsaechlich angefragte URI
+| nein
+| [.config-key]#`status`# / [.config-key]#`integer`#
+| HTTP-Status
+| nein
+| [.config-key]#`bytes`# / [.config-key]#`integer`#
+| Tatsaechlich gelesene Bytes
+| nein
+| [.config-key]#`sha256`# / [.config-key]#`text`#
+| SHA-256 der Datei
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-httpdownload.adoc[]
+
+[[task-ili2duckdbexport]]
+=== Ili2duckdbExport
+
+Exportiert den ausgewählten Bestand einer DuckDB-Datei als INTERLIS-
+Transferdatei. [.config-key]#`databaseFile`# ist die Quelle und [.config-key]#`dataFiles`# enthält die
+Ausgabeziele. Ein Dataset-Filter muss zu den importierten Dataset-Namen
+passen. Das Rezept verbindet Schemaaufbau, Import und Export ausdrücklich
+mit Abhängigkeiten; der Export startet keinen Vorgänger durch Ergebniszugriff.
+
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/ili/job.groovy[tags=reference-parameters;reference-duck-schema;reference-duck-import;reference-duck-export]
+defaults 'duck-export'
+----
+
+Das Rezept benötigt [.config-key]#`output`# als externen Pfadparameter. Die relativen
+Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
+Jobs werden sie durch die eigenen Eingaben ersetzt.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-ili2duckdbexport.adoc[]
+
+[[task-ili2duckdbimport]]
+=== Ili2duckdbImport
+
+Importiert INTERLIS-Transferdateien in ein vorbereitetes DuckDB-Schema.
+Die Modellabbildung und die Einstellungen für Basket- und Transfer-IDs müssen
+mit dem Schemaimport übereinstimmen. Eine direkte Dateidatenbank benötigt
+keinen Datenbankalias in [.config-key]#`taskConfig`#. Der Import verändert [.config-key]#`databaseFile`#;
+für dauerhaft benötigte Daten einen externen Pfad verwenden.
+
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/ili/job.groovy[tags=reference-parameters;reference-duck-schema;reference-duck-import]
+defaults 'duck-import'
+----
+
+Das Rezept benötigt [.config-key]#`output`# als externen Pfadparameter. Die relativen
+Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
+Jobs werden sie durch die eigenen Eingaben ersetzt.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-ili2duckdbimport.adoc[]
+
+[[task-ili2duckdbimportschema]]
+=== Ili2duckdbImportSchema
+
+Legt die Tabellenstruktur eines INTERLIS-Modells in einer DuckDB-Datei an.
+[.config-key]#`databaseFile`# bezeichnet die lokale Datenbank; [.config-key]#`modelNames`# und
+[.config-key]#`modelDirectories`# bestimmen den Modellbestand. Für datasetbezogene
+Folgeschritte werden Basket- und Transfer-ID-Spalten im Schema angelegt.
+Ein vorhandenes Schema muss zu den später importierten Daten passen.
+
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/ili/job.groovy[tags=reference-parameters;reference-duck-schema]
+defaults 'duck-schema'
+----
+
+Das Rezept benötigt [.config-key]#`output`# als externen Pfadparameter. Die relativen
+Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
+Jobs werden sie durch die eigenen Eingaben ersetzt.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-ili2duckdbimportschema.adoc[]
+
+[[task-ili2gpkgimport]]
+=== Ili2gpkgImport
+
+Importiert INTERLIS-Transferdateien in ein GeoPackage; das Schema wird bei
+Bedarf implizit angelegt.
+
+
+Dieses ausführbare JAR-Testrezept wählt die Zieldatei und den SRS-Code über
+öffentliche Parameter. [.code-fragment]#`Beispiel2a.xtf`# und das Verzeichnis [.config-key]#`models`# gehören
+zum Jobpaket. Die eingebettete CLI-Hilfe bietet zusätzlich ein vollständiges
+Beispiel mit dem generischen Transferdateinamen [.code-fragment]#`data.xtf`#.
+
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/gpkg-import/job.groovy[]
+----
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-ili2gpkgimport.adoc[]
+
+[[task-ili2pgdelete]]
+=== Ili2pgDelete
+
+Löscht Datasets anhand ihrer Identifikatoren aus PostgreSQL/PostGIS. Die
+Tabellen müssen die beim Schemaimport angelegte Basket-/Dataset-Verwaltung
+besitzen. Ein Dataset-Name bezeichnet einen fachlichen Datenbestand; mehrere
+Namen können gemeinsam übergeben werden. Dies ist ein schreibender
+Datenbankvorgang, keine Bereinigung temporärer Runtime-Dateien.
+
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/ili2pg/job.groovy[tags=reference-parameters;reference-delete]
+defaults 'delete'
+----
+
+Das Rezept benötigt [.config-key]#`schema`# und [.config-key]#`output`# als Jobparameter und den
+Datenbankalias [.config-key]#`db`#. Das gewählte Schema und seine Eingabedaten müssen bereits
+vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau. Pfade wie
+[.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-ili2pgdelete.adoc[]
+
+[[task-ili2pgexport]]
+=== Ili2pgExport
+
+Exportiert Daten aus PostgreSQL/PostGIS in INTERLIS-Transferdateien. Modelle,
+Topics, Baskets und Datasets schränken die Auswahl ein. Beim Export bezeichnet
+[.config-key]#`dataFiles`# die Ausgabeziele. Die Endung bestimmt das Transferformat,
+beispielsweise [.code-fragment]#`.itf`# für INTERLIS 1; [.config-key]#`export3`# wählt INTERLIS 2.4.
+Bei mehreren dateibezogenen Datasets müssen Dateiziele und Dataset-Namen
+zusammenpassen. Bestehende Exportdateien vor einem erneuten Lauf prüfen.
+
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/ili2pg/job.groovy[tags=reference-parameters;reference-export]
+defaults 'export'
+----
+
+Das Rezept benötigt [.config-key]#`schema`# und [.config-key]#`output`# als Jobparameter und den
+Datenbankalias [.config-key]#`db`#. Das gewählte Schema und seine Eingabedaten müssen bereits
+vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau. Pfade wie
+[.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-ili2pgexport.adoc[]
+
+[[task-ili2pgimport]]
+=== Ili2pgImport
+
+Importiert INTERLIS-Transferdateien in ein vorbereitetes PostgreSQL-/PostGIS-
+Schema. Ein ausdrücklich angegebener Dataset-Name darf beim erstmaligen Import
+noch nicht vorhanden sein; für das Ersetzen existiert [.task-type]#`Ili2pgReplace`#.
+Mehrere [.config-key]#`dataFiles`# können zusammen verarbeitet werden. Dataset-Namen werden
+entweder explizit oder aus sortierten Dateinamen ohne Endung abgeleitet.
+[.config-key]#`datasetNames`#, [.config-key]#`datasetFiles`# und [.config-key]#`datasetNamesFromTransferFiles`# schliessen
+sich als Benennungsstrategien gegenseitig aus. Start- und exklusive Endposition
+für abgeleitete Namen stehen in [.config-key]#`datasetNameSliceStart`# und
+[.config-key]#`datasetNameSliceEnd`#; [.code-fragment]#`datasetSubstring = ['0', '4']`# ist die alternative
+Listenform. Eine passende Anzahl von Dataset-Namen ist erforderlich.
+
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/ili2pg/job.groovy[tags=reference-parameters;reference-import]
+defaults 'import'
+----
+
+Das Rezept benötigt [.config-key]#`schema`# und [.config-key]#`output`# als Jobparameter und den
+Datenbankalias [.config-key]#`db`#. Das gewählte Schema und seine Eingabedaten müssen bereits
+vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau. Pfade wie
+[.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-ili2pgimport.adoc[]
+
+[[task-ili2pgimportschema]]
 === Ili2pgImportSchema
 
 Importiert ein INTERLIS-Schema mit ili2pg in PostgreSQL/PostGIS.
@@ -897,154 +1711,127 @@ task('schema', Ili2pgImportSchema) {
     createBasketCol = true
     createTidCol = true
 }
+
+defaults 'schema'
 ----
 
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
 include::generated/task-ili2pgimportschema.adoc[]
 
-=== Ili2pgImport
-
-Importiert INTERLIS-Transferdateien in PostgreSQL/PostGIS. Mit `datasetFiles`
-werden Dataset-Namen aus den sortierten Dateinamen ohne Endung abgeleitet;
-`datasetNameSlice`/`datasetSubstring` schneiden die Namen zu.
-
-include::generated/task-ili2pgimport.adoc[]
-
+[[task-ili2pgreplace]]
 === Ili2pgReplace
 
-Ersetzt Datasets in PostgreSQL/PostGIS mit INTERLIS-Transferdateien.
+Ersetzt vorhandene Datasets in PostgreSQL/PostGIS mit den angegebenen
+Transferdaten. Das Schema muss mit Basket-Verwaltung vorbereitet sein,
+beispielsweise mit [.code-fragment]#`createBasketCol = true`# beim Schemaimport. Die Auswahl
+über Dataset-Namen ist fachlich wirksam: vor dem Lauf prüfen, welche Bestände
+ersetzt werden. Wie beim Import können mehrere Dateien und abgeleitete
+Dataset-Namen verwendet werden.
 
+.Durch Integrationstests ausgeführtes Rezept
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/ili2pg/job.groovy[tags=reference-parameters;reference-replace]
+defaults 'replace'
+----
+
+Das Rezept benötigt [.config-key]#`schema`# und [.config-key]#`output`# als Jobparameter und den
+Datenbankalias [.config-key]#`db`#. Das gewählte Schema und seine Eingabedaten müssen bereits
+vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau. Pfade wie
+[.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
 include::generated/task-ili2pgreplace.adoc[]
 
+[[task-ili2pgupdate]]
 === Ili2pgUpdate
 
-Aktualisiert Datasets in PostgreSQL/PostGIS aus INTERLIS-Transferdateien.
+Aktualisiert bestehende Daten anhand einer INTERLIS-Transferdatei. Neue
+Objekte werden eingefügt, bestehende aktualisiert und im übergebenen Bestand
+nicht mehr enthaltene Objekte gelöscht. Dafür werden Basket-Verwaltung und
+stabile Objektidentifikatoren benötigt. Ein Update ist kein blindes Anhängen
+weiterer Zeilen; die Dataset-Auswahl und OID-Regeln gehören zum Fachvertrag.
 
-include::generated/task-ili2pgupdate.adoc[]
-
-=== Ili2pgExport
-
-Exportiert PostgreSQL/PostGIS-Daten in INTERLIS-Transferdateien. `datasetFiles`
-und die Slice-Optionen funktionieren wie bei `Ili2pgImport`.
-
-include::generated/task-ili2pgexport.adoc[]
-
-=== Ili2pgDelete
-
-Löscht Datasets aus PostgreSQL/PostGIS.
-
-include::generated/task-ili2pgdelete.adoc[]
-
-=== Ili2pgValidate
-
-Validiert PostgreSQL/PostGIS-Daten mit ili2pg.
-
-include::generated/task-ili2pgvalidate.adoc[]
-
-=== Ili2gpkgImport
-
-Importiert INTERLIS-Transferdateien in ein GeoPackage; das Schema wird bei
-Bedarf implizit angelegt.
-
-include::generated/task-ili2gpkgimport.adoc[]
-
-Dieses ausführbare JAR-Testrezept wählt die Zieldatei und den SRS-Code über
-öffentliche Parameter. `Beispiel2a.xtf` und das Verzeichnis `models` gehören
-zum Jobpaket. Die eingebettete CLI-Hilfe bietet zusätzlich ein vollständiges
-Beispiel mit dem generischen Transferdateinamen `data.xtf`.
-
+.Durch Integrationstests ausgeführtes Rezept
 [source,groovy]
 ----
-include::../../gretl-integration-tests/src/test/resources/jobs/gpkg-import/job.groovy[]
-----
-
-=== Ili2duckdbImportSchema
-
-Importiert ein INTERLIS-Schema in eine DuckDB-Datei.
-
-include::generated/task-ili2duckdbimportschema.adoc[]
-
-=== Ili2duckdbImport
-
-Importiert INTERLIS-Transferdateien in eine DuckDB-Datei.
-
-include::generated/task-ili2duckdbimport.adoc[]
-
-=== Ili2duckdbExport
-
-Exportiert INTERLIS-Transferdateien aus einer DuckDB-Datei.
-
-include::generated/task-ili2duckdbexport.adoc[]
-
-=== Av2ch
-
-Konvertiert AV-ITF-Dateien ins Bundes-AV-Modell.
-
-include::generated/task-av2ch.adoc[]
-
-=== Av2geobau
-
-Konvertiert AV-ITF-Dateien in GeoBau-DXF-Dateien.
-
-include::generated/task-av2geobau.adoc[]
-
-=== Gpkg2Dxf
-
-Konvertiert ili2gpkg-Klassentabellen in DXF-Dateien.
-
-include::generated/task-gpkg2dxf.adoc[]
-
-=== SqlExecutor
-
-`SqlExecutor` führt SQL-Scripts oder vorbereitete Statements gegen eine
-vorbereitete PostgreSQL-Verbindung aus. Die Verbindung wird im Job nicht mit
-URL und Passwort konfiguriert, sondern über einen Alias aus der
-Runtimekonfiguration (`taskConfig`).
-
-[source,groovy]
-----
-task('update', SqlExecutor) {
-    database = 'edit'
-    scripts = [file('sql/update.sql')]
-}
-
+include::../../gretl-integration-tests/src/test/resources/jobs/ili2pg/job.groovy[tags=reference-parameters;reference-update]
 defaults 'update'
 ----
 
-Genau eine der Listen `scripts` oder `statements` muss nicht leer sein. Die
-Reihenfolge der Einträge ist die Ausführungsreihenfolge. Ein Script wird als
-vollständige UTF-8-Datei an den Treiber übergeben; die Runtime zerlegt es nicht
-mit einem Regex in Einzelstatements. `statements` verwendet Maps mit genau den
-Feldern `sql` und `parameters`.
+Das Rezept benötigt [.config-key]#`schema`# und [.config-key]#`output`# als Jobparameter und den
+Datenbankalias [.config-key]#`db`#. Das gewählte Schema und seine Eingabedaten müssen bereits
+vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau. Pfade wie
+[.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
 
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-ili2pgupdate.adoc[]
+
+[[task-ili2pgvalidate]]
+=== Ili2pgValidate
+
+Validiert den ausgewählten Datenbestand in PostgreSQL/PostGIS ohne ihn in
+eine Transferdatei zu exportieren. Modelle, Topics, Baskets und Datasets
+begrenzen den Prüfbestand. Der Task schlägt standardmässig bei einem von
+ili2db gemeldeten Fehler fehl. [.code-fragment]#`failOnException = false`# überträgt die
+bewusste fachliche Behandlung an den Job; das Protokoll muss dann selbst
+bewertet werden. Der Optionsname des alten Gradle-Tasks ist hier nicht gültig.
+
+.Durch Integrationstests ausgeführtes Rezept
 [source,groovy]
 ----
-task('kennzeichnen', SqlExecutor) {
-    database = 'edit'
-    statements = [
-        [sql: 'UPDATE demo.gemeinde SET geprueft = ? WHERE bfs_nr = ?',
-         parameters: [true, 2545]]
-    ]
-}
+include::../../gretl-integration-tests/src/test/resources/jobs/ili2pg/job.groovy[tags=reference-parameters;reference-validate]
+defaults 'validate'
 ----
 
-Alle Einträge eines Aufrufs laufen in einer Transaktion mit deaktiviertem
-Auto-commit. Ein normaler Abschluss führt zu einem Commit; bei einem Fehler
-wird ein Rollback versucht. Ein zusätzlicher Rollbackfehler bleibt sichtbar.
-Der Task führt keinen automatischen Vollretry aus und garantiert nicht, dass
-bereits erfolgte externe Wirkungen verschwinden.
+Das Rezept benötigt [.config-key]#`schema`# und [.config-key]#`output`# als Jobparameter und den
+Datenbankalias [.config-key]#`db`#. Das gewählte Schema und seine Eingabedaten müssen bereits
+vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau. Pfade wie
+[.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
 
-Ergebnisse sind `executionCount` und `executions`. `executionCount` zählt die
-übergebenen Script-/Statementeinträge, nicht einzelne SQL-Befehle.
-`executions` enthält pro Eintrag die Updatezahlen und die Anzahl der
-verarbeiteten ResultSets in Eingabereihenfolge.
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet.
+| nein
+|===
 
-Die Property-Tabelle fasst die Felder zusammen:
+.Property-Tabelle
+include::generated/task-ili2pgvalidate.adoc[]
 
-include::generated/task-sqlexecutor.adoc[]
-
+[[task-ilivalidator]]
 === IliValidator
 
-`IliValidator` validiert eine INTERLIS-Transferdatei (`.xtf` oder `.itf`)
+[.task-type]#`IliValidator`# validiert eine INTERLIS-Transferdatei ([.code-fragment]#`.xtf`# oder [.code-fragment]#`.itf`#)
 gegen einen vollständigen lokalen Modellbestand. Der Task verwendet die reale
 Validatorbibliothek und schreibt einen aufrufbezogenen Prüfbericht in den
 Arbeitsbereich.
@@ -1059,45 +1846,542 @@ task('validate', IliValidator) {
 defaults 'validate'
 ----
 
-`dataFile` und `modelDirectory` sind Pflicht. `validationConfig` ist optional
+[.config-key]#`dataFile`# und [.config-key]#`modelDirectory`# sind Pflicht. [.config-key]#`validationConfig`# ist optional
 und bezeichnet eine ausdrücklich unterstützte lokale Validierungskonfiguration.
 Weitere Engineoptionen oder Modellrepository-Fähigkeiten werden nicht
 durchgereicht; unbekannte Felder sind Fehler.
 
 Ein fachlich ungültiger Transfer lässt den Task fehlschlagen. Der Prüfbericht
-bleibt als Diagnoseartefakt zugänglich. Bei Erfolg sind `file`, `reportFile`
-und `warnings` dokumentiert; `warnings` zählt die vom Adapter eindeutig
+bleibt als Diagnoseartefakt zugänglich. Bei Erfolg sind [.dsl-method]#`file`#, [.config-key]#`reportFile`#
+und [.config-key]#`warnings`# dokumentiert; [.config-key]#`warnings`# zählt die vom Adapter eindeutig
 erfassten Warnungen.
 
-Die Property-Tabelle fasst die Felder zusammen:
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Validierte Eingabedatei
+| nein
+| [.config-key]#`reportFile`# / [.dsl-method]#`path`#
+| Geschuetzter Validierungsbericht
+| nein
+| [.config-key]#`warnings`# / [.config-key]#`integer`#
+| Anzahl eindeutig erfasster Warnungen
+| nein
+|===
 
+.Property-Tabelle
 include::generated/task-ilivalidator.adoc[]
 
-== Betrieb
+[[task-jsonimport]]
+=== JsonImport
 
-Die Runtimekonfiguration wird als UTF-8-JSON über `--config` übergeben. Sie
-enthält unter anderem den Arbeitsbereich, den Reportpfad, Secrets und
-`taskConfig`-Alisase für Datenbankverbindungen. Ein Datenbank-Alias wie
-`database = 'edit'` verweist auf einen Abschnitt in `taskConfig`; Passwörter
-kommen über Secretquellen und erscheinen nicht im Job.
+[.task-type]#`JsonImport`# importiert ein JSON-Objekt oder ein JSON-Array in eine
+Textspalte. Bei einem Array wird pro Element ein Datensatz geschrieben.
 
-Die vollständige Konfiguration, die Pfadbasen, das Logging und der Runbericht
-sind in der [Build-Anleitung](../implementation/build.md) beschrieben. Die
-Laufzeitreferenz eines Tasks ist jederzeit über `gretl operations <Symbol>`
-verfügbar.
+[source,groovy]
+----
+task('import', JsonImport) {
+    database = 'db'
+    jsonFile = file('data/documents.json')
+    qualifiedTableName = 'public.documents'
+    columnName = 'document'
+}
 
-== Hinweise zur Referenz
+defaults 'import'
+----
 
-Die Dateien unter `generated/` enthalten ausschliesslich die Property-Tabelle
-eines Tasks. Sie werden mit `./scripts/generate-task-docs.sh` aus der
-gepackten Distribution erzeugt und nicht manuell bearbeitet.
+[.code-fragment]#`deleteAllRows = true`# leert die Zieltabelle vor dem Import. Ergebnis ist
+[.config-key]#`rows`#.
 
-Diese Hauptdatei ist redaktionell. Ein neuer Task ist erst dokumentiert, wenn
-er hier einen Abschnitt mit Beschreibung, Beispiel und Grenzen erhält und
-seine Tabelle mit `include::generated/task-<anchor>.adoc[]` eingebunden wird.
-`./mvnw verify` prüft, dass jede generierte Tabelle eingebunden ist und dass
-keine Include-Datei fehlt.
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`rows`# / [.config-key]#`integer`#
+| Importierte JSON-Datensaetze
+| nein
+|===
 
-Thoth Biblios rendert diese Datei als Single-Page-Referenz. Die
-Thoth-Konfiguration steht in `biblios.yml`; die lokale Vorschau ist in
-`README.md` beschrieben.
+.Property-Tabelle
+include::generated/task-jsonimport.adoc[]
+
+[[task-jsonvalidator]]
+=== JsonValidator
+
+[.task-type]#`JsonValidator`# validiert JSON-Dateien mit ilivalidator und dem JSON-Reader
+gegen ein INTERLIS-Modell. Die JSON-Vorverarbeitung ergänzt [.code-fragment]#`@type`#, [.code-fragment]#`@topic`#,
+[.code-fragment]#`@id`# und [.code-fragment]#`@bid`#, wie in gretl-next.
+
+[source,groovy]
+----
+task('validate', JsonValidator) {
+    dataFiles = [file('data/input.json')]
+    modelNames = ['Test2']
+    modelDirectories = [file('models')]
+}
+
+defaults 'validate'
+----
+
+Ergebnisse sind [.config-key]#`valid`# und [.config-key]#`logFile`#; [.config-key]#`failOnError`# defaultet auf [.literal]#`true`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`valid`# / [.config-key]#`boolean`#
+| Validierungsergebnis
+| nein
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad der Validierungsdiagnosen; ohne expliziten Pfad verwendet der Adapter eine Datei im Arbeitsbereich.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-jsonvalidator.adoc[]
+
+[[task-s3bucket2bucket]]
+=== S3Bucket2Bucket
+
+[.task-type]#`S3Bucket2Bucket`# kopiert alle Objekte von einem Quell- in einen Ziel-Bucket.
+Quell- und Ziel-Bucket verwenden dieselbe S3-Verbindung.
+
+[source,groovy]
+----
+task('copy', S3Bucket2Bucket) {
+    accessKey = 'AKIA...'
+    secretKey = secret('s3SecretKey')
+    sourceBucket = 'source-bucket'
+    targetBucket = 'target-bucket'
+    acl = 'private'
+}
+
+defaults 'copy'
+----
+
+Mit [.config-key]#`metadata`# werden die Metadaten der kopierten Objekte ersetzt; ohne
+[.config-key]#`metadata`# bleiben sie erhalten. [.config-key]#`acl`# ist optional und defaultet auf
+[.config-key]#`private`#. Ergebnisse sind [.config-key]#`keys`# und [.config-key]#`count`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`keys`# / [.config-key]#`list`#
+| Kopierte Objekt-Schluessel
+| nein
+| [.config-key]#`count`# / [.config-key]#`integer`#
+| Anzahl kopierter Objekte
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-s3bucket2bucket.adoc[]
+
+[[task-s3delete]]
+=== S3Delete
+
+[.task-type]#`S3Delete`# löscht ein Objekt oder alle Objekte eines Buckets.
+
+[source,groovy]
+----
+task('delete', S3Delete) {
+    accessKey = 'AKIA...'
+    secretKey = secret('s3SecretKey')
+    bucketName = 'my-bucket'
+    key = 'data/old.zip'
+}
+
+defaults 'delete'
+----
+
+Ohne [.config-key]#`key`# werden alle Objekte gelöscht. Das ist eine bewusste
+Massenlöschung; der Task liefert die gelöschten Schlüssel als [.config-key]#`keys`# und
+[.config-key]#`count`# zurück.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`keys`# / [.config-key]#`list`#
+| Geloeschte Objekt-Schluessel
+| nein
+| [.config-key]#`count`# / [.config-key]#`integer`#
+| Anzahl geloeschter Objekte
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-s3delete.adoc[]
+
+[[task-s3download]]
+=== S3Download
+
+[.task-type]#`S3Download`# lädt ein Objekt oder alle Objekte eines Buckets herunter. Die
+S3-Verbindung wird direkt am Task konfiguriert; [.config-key]#`secretKey`# muss als
+SecretValue über [.dsl-method]#`secret('alias')`# kommen.
+
+[source,groovy]
+----
+task('download', S3Download) {
+    accessKey = 'AKIA...'
+    secretKey = secret('s3SecretKey')
+    bucketName = 'my-bucket'
+    key = 'data/export.zip'
+    downloadDir = workPath('download')
+}
+
+defaults 'download'
+----
+
+Ohne [.config-key]#`key`# werden alle Objekte geladen. Objekt-Schlüssel mit [.code-fragment]#`/`# bilden
+Unterverzeichnisse; Schlüssel, die aus dem Download-Verzeichnis ausbrechen
+würden, werden abgewiesen. Vorhandene Dateien werden mit [.code-fragment]#`overwrite = true`#
+(Default) ersetzt. Ergebnisse sind [.config-key]#`files`#, [.config-key]#`count`# und [.config-key]#`bytes`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`files`# / [.config-key]#`list`#
+| Heruntergeladene Dateien
+| nein
+| [.config-key]#`count`# / [.config-key]#`integer`#
+| Anzahl heruntergeladener Objekte
+| nein
+| [.config-key]#`bytes`# / [.config-key]#`integer`#
+| Heruntergeladene Bytes
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-s3download.adoc[]
+
+[[task-s3upload]]
+=== S3Upload
+
+[.task-type]#`S3Upload`# lädt eine Datei, die direkten Dateien eines Verzeichnisses oder eine
+Dateiliste hoch. Der Objekt-Schlüssel ist jeweils der Dateiname; doppelte
+Dateinamen werden abgewiesen.
+
+[source,groovy]
+----
+task('upload', S3Upload) {
+    accessKey = 'AKIA...'
+    secretKey = secret('s3SecretKey')
+    bucketName = 'my-bucket'
+    sourceFile = file('data/export.zip')
+    acl = 'private'
+}
+
+defaults 'upload'
+----
+
+[.config-key]#`sourceDir`# liest nur direkte Dateien, nicht rekursiv. [.config-key]#`contentType`# und
+[.config-key]#`metadata`# gelten für alle hochgeladenen Objekte. [.config-key]#`acl`# ist optional und
+defaultet auf [.config-key]#`private`#. Ergebnisse sind [.config-key]#`keys`#, [.config-key]#`count`# und [.config-key]#`bytes`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`keys`# / [.config-key]#`list`#
+| Hochgeladene Objekt-Schluessel
+| nein
+| [.config-key]#`count`# / [.config-key]#`integer`#
+| Anzahl hochgeladener Objekte
+| nein
+| [.config-key]#`bytes`# / [.config-key]#`integer`#
+| Hochgeladene Bytes
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-s3upload.adoc[]
+
+[[task-shpexport]]
+=== ShpExport
+
+[.task-type]#`ShpExport`# exportiert eine Datenbanktabelle mit dem nativen gretl-next-
+Shapefile-Writer. Die DBF-Datei wird inklusive NULL-Markern geschrieben; CPG,
+Sidecars und atomisches Überschreiben werden vom Writer verwaltet. Z/M-
+Geometrien werden mit einer klaren Fehlermeldung abgelehnt; 2D-Multipart und
+Polygon-Löcher werden unterstützt.
+
+[source,groovy]
+----
+task('export', ShpExport) {
+    database = 'db'
+    dataFile = file('build/output.shp')
+    tableName = 'abbaustelle'
+}
+
+defaults 'export'
+----
+
+Ergebnis ist [.dsl-method]#`file`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Geschriebenes Shapefile
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-shpexport.adoc[]
+
+[[task-shpimport]]
+=== ShpImport
+
+[.task-type]#`ShpImport`# importiert ein Shapefile mit dem nativen gretl-next-Shapefile-
+Reader und [.config-key]#`Shp2Db`# in eine Datenbanktabelle. Die DBF-Attribute werden mit der
+Hop-Reihenfolge explizit → CPG → LDID → ISO-8859-1 gelesen; NUL-, Datums- und
+Numerik-NULLs werden nach den Hop-Regeln behandelt. Der Reader unterstützt
+2D-Point, MultiPoint, PolyLine und Polygon; Z/M-Shapes werden abgelehnt.
+
+[source,groovy]
+----
+task('import', ShpImport) {
+    dataFile = file('data/input.shp')
+    database = 'db'
+    tableName = 'abbaustelle'
+}
+
+defaults 'import'
+----
+
+Ergebnis ist [.dsl-method]#`file`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.dsl-method]#`file`# / [.dsl-method]#`path`#
+| Pfad des gelesenen Shapefile; die importierten Daten liegen in der Zieldatenbank.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-shpimport.adoc[]
+
+[[task-shpvalidator]]
+=== ShpValidator
+
+[.task-type]#`ShpValidator`# validiert ein Shapefile mit ilivalidator und dem nativen
+Shapefile-Reader gegen ein INTERLIS-Modell.
+
+[source,groovy]
+----
+task('validate', ShpValidator) {
+    dataFiles = [file('data/input.shp')]
+    modelNames = ['ShpModel']
+    modelDirectories = [file('models')]
+}
+
+defaults 'validate'
+----
+
+Es wird genau eine Datei akzeptiert. Ergebnisse sind [.config-key]#`valid`# und [.config-key]#`logFile`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`valid`# / [.config-key]#`boolean`#
+| Validierungsergebnis
+| nein
+| [.config-key]#`logFile`# / [.dsl-method]#`path`#
+| Pfad der Validierungsdiagnosen; ohne expliziten Pfad verwendet der Adapter eine Datei im Arbeitsbereich.
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-shpvalidator.adoc[]
+
+[[task-sqlexecutor]]
+=== SqlExecutor
+
+[.task-type]#`SqlExecutor`# führt SQL-Scripts oder vorbereitete Statements gegen eine
+vorbereitete PostgreSQL-Verbindung aus. Die Verbindung wird im Job nicht mit
+URL und Passwort konfiguriert, sondern über einen Alias aus der
+Runtimekonfiguration ([.config-key]#`taskConfig`#).
+
+[source,groovy]
+----
+task('update', SqlExecutor) {
+    database = 'edit'
+    scripts = [file('sql/update.sql')]
+}
+
+defaults 'update'
+----
+
+Genau eine der Listen [.config-key]#`scripts`# oder [.config-key]#`statements`# muss nicht leer sein. Die
+Reihenfolge der Einträge ist die Ausführungsreihenfolge. Ein Script wird als
+vollständige UTF-8-Datei an den Treiber übergeben; die Runtime zerlegt es nicht
+mit einem Regex in Einzelstatements. [.config-key]#`statements`# verwendet Maps mit genau den
+Feldern [.config-key]#`sql`# und [.config-key]#`parameters`#.
+
+[source,groovy]
+----
+task('kennzeichnen', SqlExecutor) {
+    database = 'edit'
+    statements = [
+        [sql: 'UPDATE demo.gemeinde SET geprueft = ? WHERE bfs_nr = ?',
+         parameters: [true, 2545]]
+    ]
+}
+
+defaults 'kennzeichnen'
+----
+
+Alle Einträge eines Aufrufs laufen in einer Transaktion mit deaktiviertem
+Auto-commit. Ein normaler Abschluss führt zu einem Commit; bei einem Fehler
+wird ein Rollback versucht. Ein zusätzlicher Rollbackfehler bleibt sichtbar.
+Der Task führt keinen automatischen Vollretry aus und garantiert nicht, dass
+bereits erfolgte externe Wirkungen verschwinden.
+
+Ergebnisse sind [.config-key]#`executionCount`# und [.config-key]#`executions`#. [.config-key]#`executionCount`# zählt die
+übergebenen Script-/Statementeinträge, nicht einzelne SQL-Befehle.
+[.config-key]#`executions`# enthält pro Eintrag die Updatezahlen und die Anzahl der
+verarbeiteten ResultSets in Eingabereihenfolge.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`executionCount`# / [.config-key]#`integer`#
+| Anzahl Script-/Statementeintraege
+| nein
+| [.config-key]#`executions`# / [.config-key]#`list`#
+| Ergebnisse in Eingabereihenfolge
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-sqlexecutor.adoc[]
+
+[[task-xsltransformer]]
+=== XslTransformer
+
+[.task-type]#`XslTransformer`# transformiert eine oder mehrere XML-Dateien mit einem
+XSLT-Stylesheet. Das Stylesheet kommt entweder aus einer lokalen Datei oder aus
+einer Klassenpfad-Ressource unter [.code-fragment]#`xslt/`#.
+
+[source,groovy]
+----
+task('transform', XslTransformer) {
+    xmlFiles = [file('data/input.xml')]
+    xslFile = file('xsl/transform.xsl')
+    outDirectory = workPath('out')
+    fileExtension = 'xtf'
+}
+
+defaults 'transform'
+----
+
+Für mehrere Dateien wird [.config-key]#`xmlFiles`# mit allen Eingaben gefüllt. Der Ausgabename
+ist der Basisname der XML-Datei plus [.config-key]#`fileExtension`#. Zwei Eingaben mit
+demselben Basisnamen sind ein Fehler, auch wenn [.code-fragment]#`overwrite = true`# gesetzt ist.
+Vorhandene Ausgaben werden standardmässig ersetzt; [.code-fragment]#`overwrite = false`# lässt
+den Task bei einer vorhandenen Zieldatei scheitern.
+
+Externe Entities, DOCTYPE-Deklarationen und Netzwerkzugriffe sind deaktiviert.
+Lokale Stylesheet-Includes relativ zur Stylesheetdatei bleiben zulässig.
+Ergebnisse sind [.config-key]#`files`# (geschriebene Dateien in Eingabereihenfolge) und
+[.config-key]#`count`#.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`files`# / [.config-key]#`list`#
+| Geschriebene Ausgabedateien in Eingabereihenfolge
+| nein
+| [.config-key]#`count`# / [.config-key]#`integer`#
+| Anzahl geschriebener Ausgabedateien
+| nein
+|===
+
+.Property-Tabelle
+include::generated/task-xsltransformer.adoc[]
+
+== Erweiterungen und Job-JARs
+
+=== Eigene Taskbibliotheken bereitstellen
+
+Eine Erweiterung implementiert die gradlefreie Java-SPI mit [.java-type]#`OperationProvider`#,
+[.java-type]#`OperationType`#, Builder, Handler und ausdrücklich beschriebenen Ein- und
+Ausgängen. Sie registriert ihren Provider über
+[.code-fragment]#`META-INF/services/ch.so.agi.gretl.runtime.api.OperationProvider`#.
+Das Repository enthält unter [.code-fragment]#`examples/file-size-extension`# ein separat
+gebautes Beispiel.
+
+Vor dem nächsten Start legt der Betrieb das Erweiterungs-JAR und seine
+kompatiblen Abhängigkeiten in [.code-fragment]#`lib/extensions`#. Danach zeigt
+[.command]#`gretl operations`# das neue Symbol samt Herkunft; seine Felder und Ergebnisse
+werden auf dieselbe Weise wie bei Standardtasks dokumentiert. Doppelte IDs
+oder Symbole sind Fehler. Die Verzeichnisse bilden einen gemeinsamen
+Klassenpfad und bieten keine Classloader-Isolation.
+
+Während eines Jobs werden keine JARs nachgeladen; [.code-fragment]#`@Grab`# ist deaktiviert.
+Jobautoren konfigurieren die eingerichteten Bausteine und müssen selbst keine
+Bibliotheksabhängigkeiten verwalten. Änderungen am Script benötigen keinen
+Neubau der Runtime.
+
+[[job-jars]]
+=== Job-JARs
+
+Ein Job-JAR enthält einen vorkompilierten Job, seine Runtime, die ausgewählten
+Taskbibliotheken und deklarierte Ressourcen. Java 25 bleibt erforderlich;
+eine separate GRETL-Installation, Maven oder Gradle ist beim Start nicht nötig.
+
+Die Beispieldistribution liefert diesen Deskriptor für den lokalen Validator:
+
+[source,json]
+----
+include::../../gretl-dist/src/main/dist/examples/ili-validator/job-package.json[]
+----
+
+[.config-key]#`entryScript`#, [.config-key]#`sources`# und [.config-key]#`resources`# sind relativ zum Deskriptor.
+[.config-key]#`dependencies`# nennt die ausdrücklich benötigten Maven-Artefakte. Beim
+Paketbuild werden sie aus dem lokalen Repository beziehungsweise den
+unterstützten Repositories aufgelöst. Ein fehlendes Artefakt ist ein Fehler;
+die Paketierung führt den Job nicht aus, um Abhängigkeiten zu erraten.
+
+[source,bash]
+----
+gretl package examples/ili-validator/job-package.json --output ./ili-job.jar
+java -jar ili-job.jar --help
+java -jar ili-job.jar --report ./ili-run.json
+----
+
+Bei einem noch nicht veröffentlichten Snapshot müssen die benötigten
+Artefakte zuerst bereitgestellt oder mit [.command]#`./mvnw install`# im lokalen
+Maven-Repository installiert werden. Im Job-JAR gelten dieselben
+Parameterregeln und Pfadbasen wie beim Scriptstart. [.dsl-method]#`file('models')`# liest aus
+den materialisierten Paketressourcen. Das JAR enthält einen festen Jobstand;
+eine Scriptänderung verlangt einen neuen Paketbuild.
+
+== Referenz pflegen
+
+Die Dateien unter [.code-fragment]#`generated/`# enthalten ausschliesslich Property-Tabellen.
+Sie werden aus dem tatsächlich ausgelieferten Taskkatalog erzeugt:
+
+[source,bash]
+----
+./scripts/generate-task-docs.sh
+./mvnw verify
+----
+
+Beschreibungstexte, Beispiele, Ergebnisfelder und Verweise in dieser Hauptdatei
+werden redaktionell gepflegt. Neue Taskarten benötigen ein vollständiges
+Kapitel und ein Include ihrer generierten Tabelle. Die Prüfung vergleicht die
+generierten Dateien mit der Distribution und prüft sämtliche Tabellen-Includes.
+Die Autorenanleitung in [.code-fragment]#`docs/reference/README.md`# beschreibt den lokalen
+Thoth-Build und die Vorschau; [.code-fragment]#`STYLE_GUIDE.md`# legt Schreibweise und Gestaltung fest.

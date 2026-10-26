@@ -1,13 +1,15 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*dataFile* = path#
-| GeoPackage file
+| GeoPackage aus einer ili2gpkg-Abbildung als Eingabe für die [.acronym]#DXF#-Konvertierung. +
+Beispiel: [.code-fragment]#`dataFile = file('data.gpkg')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*outputDir* = path#
-| [.acronym]#DXF# output directory
+| Verzeichnis für erzeugte [.acronym]#DXF#-Dateien beziehungsweise ZIP-Archive. +
+Beispiel: [.code-fragment]#`outputDir = path('build/dxf')`#
 | [.required]#ja#
 
 |===

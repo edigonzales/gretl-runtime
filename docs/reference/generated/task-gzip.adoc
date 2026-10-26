@@ -1,17 +1,21 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*dataFile* = path#
-| Vorhandene Eingabedatei
+| Vorhandene Eingabedatei +
+Beispiel: [.code-fragment]#`dataFile = file('data/input.xml')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*gzipFile* = path#
-| [.acronym]#GZIP#-Ausgabedatei
+| [.acronym]#GZIP#-Ausgabedatei +
+Beispiel: [.code-fragment]#`gzipFile = workPath('out/input.xml.gz')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*overwrite* = boolean#
-| Vorhandene Ausgabedatei ersetzen
+| Vorhandene Ausgabedatei ersetzen +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`overwrite = false`#
 | [.optional]#nein#
 
 |===

@@ -1,313 +1,447 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*databaseFile* = path#
-| Database file
+| Pfad der lokalen GeoPackage- oder DuckDB-Datenbank; Eingabe und Ausgabe hängen von der gewählten Operation ab. +
+Beispiel: [.code-fragment]#`databaseFile = file('data/db.gpkg')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*modelNames* = list#
-| [.acronym]#INTERLIS# model names
+| Liste der [.acronym]#INTERLIS#-Modellnamen; die passenden Modelle müssen über modelDirectories auffindbar sein. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`modelNames = ['Model']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*modelDirectories* = list#
-| Model directories
+| Liste lokaler Modellverzeichnisse als Path oder Repository-Adressen als Text; Suchreihenfolge der Fachbibliothek beachten. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`modelDirectories = [file('models')]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*iliFile* = path#
-| [.acronym]#INTERLIS# model file
+| Lokale [.acronym]#INTERLIS#-Modelldatei als Alternative zur Modellauswahl über Modellnamen. +
+Beispiel: [.code-fragment]#`iliFile = file('model.ili')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*defaultSrsCode* = text#
-| Default SRS code
+| Code des Koordinatenreferenzsystems für Geometrien ohne andere Festlegung, beispielsweise 2056 für LV95. +
+Beispiel: [.code-fragment]#`defaultSrsCode = '2056'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createBasketCol* = boolean#
-| Create basket column
+| Basket-Spalte und Basket-Verwaltung beim Schemaimport anlegen; erforderlich für datasetbezogene Abläufe. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createBasketCol = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createTidCol* = boolean#
-| Create t_id column
+| Spalte zur Speicherung der Transfer-Objektidentifikatoren beim Schemaimport anlegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createTidCol = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createEnumTabs* = boolean#
-| Create enum tables
+| Wertetabellen für [.acronym]#INTERLIS#-Aufzählungen beim Schemaimport anlegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createEnumTabs = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createGeomIdx* = boolean#
-| Create geometry index
+| Räumliche Indizes für die angelegten Geometriespalten erzeugen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createGeomIdx = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createMetaInfo* = boolean#
-| Create meta information
+| ili2db-Metainformationen zur Abbildung zwischen [.acronym]#INTERLIS#-Modell und Datenbankschema anlegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createMetaInfo = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*logFile* = path#
-| ili2db log file
+| Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet. +
+Beispiel: [.code-fragment]#`logFile = file('build/ili2db.log')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*failOnException* = boolean#
-| Fail on ili2db exception
+| Bei einem von ili2db gemeldeten Fehler den Task fehlschlagen lassen; false übernimmt die Fehlerbehandlung in den Job. +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`failOnException = false`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*baskets* = list#
-| Baskets
+| Liste der Basket-Identifikatoren zur Einschränkung der ili2db-Operation. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`baskets = ['b1']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*topics* = list#
-| Topics
+| Liste der qualifizierten [.acronym]#INTERLIS#-Topicnamen zur Einschränkung der ili2db-Operation. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`topics = ['Topic']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*exportTid* = boolean#
-| Export t_id
+| Gespeicherte Transfer-Objektidentifikatoren beim Export verwenden. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`exportTid = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*importBid* = boolean#
-| Import basket id
+| Basket-Identifikatoren aus der Transferdatei beim Import übernehmen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`importBid = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*preScript* = path#
-| Pre script
+| Lokale [.acronym]#SQL#-Datei, die ili2db vor seiner Fachoperation ausführt; nicht mit einem separaten SqlExecutor-Task verwechseln. +
+Beispiel: [.code-fragment]#`preScript = file('pre.sql')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*postScript* = path#
-| Post script
+| Lokale [.acronym]#SQL#-Datei, die ili2db nach seiner Fachoperation ausführt. +
+Beispiel: [.code-fragment]#`postScript = file('post.sql')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*trace* = boolean#
-| Enable trace
+| Detaillierte Diagnoseausgabe der ili2db-Fachbibliothek einschalten. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`trace = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*disableValidation* = boolean#
-| Disable validation
+| Fachliche Validierung der Transferdaten deaktivieren; nur für bewusst kontrollierte Eingaben verwenden. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`disableValidation = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*disableAreaValidation* = boolean#
-| Disable area validation
+| Flächentopologie-Prüfung deaktivieren; andere Validierungen bleiben davon unabhängig. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`disableAreaValidation = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*forceTypeValidation* = boolean#
-| Force type validation
+| Typprüfung auch dann erzwingen, wenn sie in der Validierungskonfiguration deaktiviert wurde. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`forceTypeValidation = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*strokeArcs* = boolean#
-| Stroke arcs
+| Kreisbögen bei der Übernahme in die Datenbank in Geradenstücke umwandeln. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`strokeArcs = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*skipPolygonBuilding* = boolean#
-| Skip polygon building
+| Polygonbildung aus [.acronym]#INTERLIS#-1-Linien überspringen; keine reparierten Flächen voraussetzen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`skipPolygonBuilding = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*skipGeometryErrors* = boolean#
-| Skip geometry errors
+| Geometriefehler gemäss ili2db-Option überspringen; dies ist keine allgemeine Fehlerunterdrückung der Runtime. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`skipGeometryErrors = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*iligml20* = boolean#
-| ILIGML 2.0
+| Transferdaten im ILIGML-2.0-Format verarbeiten. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`iligml20 = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*disableRounding* = boolean#
-| Disable rounding
+| Rundung von Koordinaten durch ili2db deaktivieren. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`disableRounding = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxy* = text#
-| [.acronym]#HTTP# proxy
+| Hostname des [.acronym]#HTTP#-Proxys für Repository-Zugriffe der Fachbibliothek. +
+Beispiel: [.code-fragment]#`proxy = 'proxy.example'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxyPort* = integer#
-| [.acronym]#HTTP# proxy port
+| Port des [.acronym]#HTTP#-Proxys; zusammen mit proxy verwenden. +
+Beispiel: [.code-fragment]#`proxyPort = 8080`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*validConfigFile* = path#
-| Validation config file
+| Lokale Datei mit zusätzlichen ili2db-Validierungsregeln. +
+Beispiel: [.code-fragment]#`validConfigFile = file('validation.toml')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetNamesFromTransferFiles* = boolean#
-| Derive dataset names from transfer file names
+| Dataset-Namen aus sortierten Transferdateinamen ohne Endung ableiten; nicht mit datasetNames oder datasetFiles kombinieren. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`datasetNamesFromTransferFiles = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetNameSliceStart* = integer#
-| Dataset name slice start
+| Nullbasierter Beginn des Ausschnitts bei abgeleiteten Dataset-Namen; wirkt zusammen mit optionalem datasetNameSliceEnd. +
+Beispiel: [.code-fragment]#`datasetNameSliceStart = 0`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetNameSliceEnd* = integer#
-| Dataset name slice end
+| Exklusive Endposition des Ausschnitts bei abgeleiteten Dataset-Namen; ohne Ende wird bis zum Namensende gelesen. +
+Beispiel: [.code-fragment]#`datasetNameSliceEnd = 8`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*datasetSubstring* = list#
-| Dataset name substring indices
+| Liste mit Start und exklusivem Ende als Textzahlen für abgeleitete Dataset-Namen; gültige Werte haben Vorrang vor den einzelnen Slice-Feldern. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`datasetSubstring = ['0', '4']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*oneGeomPerTable* = boolean#
-| One geometry per table
+| Geometrieattribute gemäss ili2db-Abbildung auf getrennte Tabellen verteilen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`oneGeomPerTable = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*setupPgExt* = boolean#
-| Setup PostGIS extension
+| PostGIS-Erweiterung beim Schemaaufbau einrichten; Datenbankbenutzer benötigt die dafür erforderlichen Rechte. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`setupPgExt = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*dropScript* = path#
-| Drop script
+| Pfad für das von ili2db erzeugte [.acronym]#SQL#-Script zum Entfernen des Schemas. +
+Beispiel: [.code-fragment]#`dropScript = file('drop.sql')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createScript* = path#
-| Create script
+| Pfad für das von ili2db erzeugte [.acronym]#SQL#-Script zum Anlegen des Schemas. +
+Beispiel: [.code-fragment]#`createScript = file('create.sql')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*metaConfig* = text#
-| Meta configuration
+| Lokale Meta-Konfiguration oder ilidata-Referenz für die ili2db-Konfiguration. +
+Beispiel: [.code-fragment]#`metaConfig = file('meta.ini')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*defaultSrsAuth* = text#
-| Default SRS authority
+| Namensraum des Standard-Koordinatenreferenzsystems, beispielsweise [.acronym]#EPSG#; zusammen mit defaultSrsCode verwenden. +
+Beispiel: [.code-fragment]#`defaultSrsAuth = 'EPSG'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createSingleEnumTab* = boolean#
-| Single enum table
+| Alle Aufzählungen in einer gemeinsamen Wertetabelle ablegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createSingleEnumTab = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createEnumTxtCol* = boolean#
-| Enum text column
+| Zusätzliche Textspalten für Aufzählungswerte anlegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createEnumTxtCol = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createEnumColAsItfCode* = boolean#
-| Enum column as [.acronym]#ITF# code
+| Aufzählungswerte mit ihrer numerischen [.acronym]#INTERLIS#-1-Kodierung abbilden. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createEnumColAsItfCode = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createEnumTabsWithId* = boolean#
-| Enum tables with id
+| Aufzählungstabellen mit eigener Identifikationsspalte anlegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createEnumTabsWithId = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createImportTabs* = boolean#
-| Create import tables
+| Verwaltungstabellen für Importvorgänge anlegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createImportTabs = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*beautifyEnumDispName* = boolean#
-| Beautify enum display names
+| Lesbare Anzeigenamen aus den Bezeichnern von Aufzählungswerten ableiten. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`beautifyEnumDispName = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*noSmartMapping* = boolean#
-| No smart mapping
+| Optimierte Abbildungen von Strukturen durch ili2db deaktivieren. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`noSmartMapping = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*smart1Inheritance* = boolean#
-| Smart1 inheritance
+| Die smart1-Abbildung der Vererbung verwenden; nicht gleichzeitig mit einer anderen Vererbungsstrategie wählen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`smart1Inheritance = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*smart2Inheritance* = boolean#
-| Smart2 inheritance
+| Die smart2-Abbildung der Vererbung verwenden; nicht gleichzeitig mit einer anderen Vererbungsstrategie wählen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`smart2Inheritance = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*coalesceCatalogueRef* = boolean#
-| Coalesce catalogue references
+| Katalogreferenzen gemäss ili2db auf direkte Fremdschlüssel abbilden. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`coalesceCatalogueRef = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*coalesceMultiSurface* = boolean#
-| Coalesce multi surfaces
+| Geeignete Strukturattribute zu MultiSurface-Geometrien zusammenfassen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`coalesceMultiSurface = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*coalesceMultiLine* = boolean#
-| Coalesce multi lines
+| Geeignete Strukturattribute zu MultiLine-Geometrien zusammenfassen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`coalesceMultiLine = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*expandMultilingual* = boolean#
-| Expand multilingual
+| Mehrsprachige Strukturen in einzelne Sprachspalten auflösen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`expandMultilingual = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*expandStruct* = boolean#
-| Expand structures
+| Geeignete Strukturattribute in zusätzliche Spalten auflösen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`expandStruct = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*coalesceArray* = boolean#
-| Coalesce arrays
+| Geeignete mehrwertige Attribute als Datenbank-Arrays abbilden. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`coalesceArray = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createTypeConstraint* = boolean#
-| Create type constraints
+| Constraints für die durch das [.acronym]#INTERLIS#-Modell vorgegebenen Typen erzeugen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createTypeConstraint = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createFk* = boolean#
-| Create foreign keys
+| Fremdschlüssel-Constraints für Referenzattribute erzeugen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createFk = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createFkIdx* = boolean#
-| Create FK indexes
+| Indizes auf Fremdschlüsselspalten erzeugen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createFkIdx = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createUnique* = boolean#
-| Create unique constraints
+| UNIQUE-Constraints gemäss den [.acronym]#INTERLIS#-Eindeutigkeitsregeln erzeugen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createUnique = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createStdCols* = boolean#
-| Create standard columns
+| Standard-Verwaltungsspalten von ili2db anlegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createStdCols = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*coalesceJson* = boolean#
-| Coalesce [.acronym]#JSON#
+| Geeignete Strukturen in [.acronym]#JSON#-Spalten abbilden. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`coalesceJson = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*nameByTopic* = boolean#
-| Name by topic
+| Tabellen mit ihrem Topic-Präfix benennen; verändert die [.acronym]#SQL#-Namen des erzeugten Schemas. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`nameByTopic = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createNumChecks* = boolean#
-| Numeric checks
+| CHECK-Constraints für numerische Wertebereiche erzeugen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createNumChecks = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createTextChecks* = boolean#
-| Text checks
+| CHECK-Constraints für textuelle Wertebereiche erzeugen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createTextChecks = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createDateTimeChecks* = boolean#
-| Date/time checks
+| CHECK-Constraints für Datums- und Zeitwerte erzeugen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createDateTimeChecks = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createTypeDiscriminator* = boolean#
-| Type discriminator
+| Spalte zur Unterscheidung der konkreten [.acronym]#INTERLIS#-Klasse anlegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createTypeDiscriminator = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*disableNameOptimization* = boolean#
-| Disable name optimization
+| Optimierung und Verkürzung der aus Modellnamen abgeleiteten [.acronym]#SQL#-Namen deaktivieren. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`disableNameOptimization = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*sqlEnableNull* = boolean#
-| [.acronym]#SQL# NULL enabled
+| [.acronym]#SQL#-NULL-Abbildung gemäss ili2db-Option erlauben. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`sqlEnableNull = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*sqlColsAsText* = boolean#
-| [.acronym]#SQL# columns as text
+| Attributspalten gemäss ili2db als Text abbilden. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`sqlColsAsText = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*sqlExtRefCols* = boolean#
-| [.acronym]#SQL# external ref columns
+| Zusätzliche Spalten zur Abbildung externer Referenzen anlegen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`sqlExtRefCols = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*keepAreaRef* = boolean#
-| Keep area references
+| Referenzen auf [.acronym]#INTERLIS#-1-AREA-Geometrien bei der [.acronym]#SQL#-Abbildung erhalten. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`keepAreaRef = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*createDatasetCol* = boolean#
-| Create dataset column
+| Dataset-Zuordnung in den durch ili2db angelegten Tabellen speichern. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`createDatasetCol = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*translation* = text#
-| Translation
+| Von ili2db verwendete Modellübersetzung beziehungsweise Sprache der Abbildung. +
+Beispiel: [.code-fragment]#`translation = 'de'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*tidColumnName* = text#
-| t_id column name
+| [.acronym]#SQL#-Spaltenname für den Transfer-Objektidentifikator. +
+Beispiel: [.code-fragment]#`tidColumnName = 't_id'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*idSeqMin* = integer#
-| ID sequence minimum
+| Untere Grenze der von ili2db verwendeten ID-Sequenz. +
+Beispiel: [.code-fragment]#`idSeqMin = 1`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*idSeqMax* = integer#
-| ID sequence maximum
+| Obere Grenze der von ili2db verwendeten ID-Sequenz. +
+Beispiel: [.code-fragment]#`idSeqMax = 999999`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*maxNameLength* = integer#
-| Maximum [.acronym]#SQL# name length
+| Maximale Länge erzeugter [.acronym]#SQL#-Bezeichner in Zeichen. +
+Beispiel: [.code-fragment]#`maxNameLength = 60`#
 | [.optional]#nein#
 
 |===

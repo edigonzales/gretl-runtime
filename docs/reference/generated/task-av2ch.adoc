@@ -1,25 +1,32 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*inputFiles* = list#
-| [.acronym]#ITF# files to convert
+| Liste der lokalen [.acronym]#INTERLIS#-1-Transferdateien für die AV-Konvertierung. +
+Beispiel: [.code-fragment]#`inputFiles = [file('data.itf')]`#
 | [.required]#ja#
 
 | [.dsl-signature]#*outputDirectory* = path#
-| Output directory
+| Verzeichnis für die erzeugten Dateien; für dauerhafte Ausgaben einen externen Pfadparameter verwenden. +
+Beispiel: [.code-fragment]#`outputDirectory = path('build/av')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*modeldir* = text#
-| Model directory
+| Lokales Verzeichnis beziehungsweise Suchpfad der für die Konvertierung benötigten Modelle. +
+Beispiel: [.code-fragment]#`modeldir = file('models')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*language* = text#
-| Language (de or it)
+| Sprache des Bundesmodells: de für Deutsch oder it für Italienisch. +
+Vorgabe: [.code-fragment]#`'de'`# +
+Beispiel: [.code-fragment]#`language = 'de'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*zip* = boolean#
-| Write ZIP files
+| Die erzeugten Dateien als ZIP-Archive ausgeben. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`zip = true`#
 | [.optional]#nein#
 
 |===

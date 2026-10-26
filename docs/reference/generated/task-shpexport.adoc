@@ -1,25 +1,30 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*database* = text#
-| Alias der Quell-Datenbankverbindung
+| Alias der Quell-Datenbankverbindung +
+Beispiel: [.code-fragment]#`database = 'db'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*dataFile* = path#
-| Shapefile-Ausgabepfad
+| Shapefile-Ausgabepfad +
+Beispiel: [.code-fragment]#`dataFile = file('build/output.shp')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*tableName* = text#
-| Name der Quelltabelle
+| Name der Quelltabelle +
+Beispiel: [.code-fragment]#`tableName = 'abbaustelle'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*schemaName* = text#
-| Optionales Quell-Schema
+| Optionales Quell-Schema +
+Beispiel: [.code-fragment]#`schemaName = 'public'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*encoding* = text#
-| Shapefile-Kodierung
+| Shapefile-Kodierung +
+Beispiel: [.code-fragment]#`encoding = 'UTF-8'`#
 | [.optional]#nein#
 
 |===

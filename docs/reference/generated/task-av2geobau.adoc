@@ -1,33 +1,41 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*itfFiles* = list#
-| [.acronym]#ITF# files to convert
+| Liste der lokalen [.acronym]#INTERLIS#-1-Transferdateien für die AV-Konvertierung. +
+Beispiel: [.code-fragment]#`itfFiles = [file('data.itf')]`#
 | [.required]#ja#
 
 | [.dsl-signature]#*dxfDirectory* = path#
-| [.acronym]#DXF# output directory
+| Verzeichnis für erzeugte [.acronym]#DXF#-Dateien beziehungsweise ZIP-Archive. +
+Beispiel: [.code-fragment]#`dxfDirectory = path('build/dxf')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*modeldir* = text#
-| Model directory
+| Lokales Verzeichnis beziehungsweise Suchpfad der für die Konvertierung benötigten Modelle. +
+Beispiel: [.code-fragment]#`modeldir = file('models')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*logFile* = path#
-| Log file
+| Pfad für das Protokoll der Fachbibliothek. +
+Beispiel: [.code-fragment]#`logFile = file('build/av2geobau.log')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxy* = text#
-| [.acronym]#HTTP# proxy
+| Hostname des [.acronym]#HTTP#-Proxys für Repository-Zugriffe der Fachbibliothek. +
+Beispiel: [.code-fragment]#`proxy = 'proxy.example'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxyPort* = integer#
-| [.acronym]#HTTP# proxy port
+| Port des [.acronym]#HTTP#-Proxys; zusammen mit proxy verwenden. +
+Beispiel: [.code-fragment]#`proxyPort = 8080`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*zip* = boolean#
-| Write ZIP files
+| Die erzeugten Dateien als ZIP-Archive ausgeben. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`zip = true`#
 | [.optional]#nein#
 
 |===

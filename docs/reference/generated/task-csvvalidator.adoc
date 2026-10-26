@@ -1,89 +1,119 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*dataFiles* = list#
-| Zu validierende [.acronym]#CSV#-Dateien
+| Zu validierende [.acronym]#CSV#-Dateien +
+Beispiel: [.code-fragment]#`dataFiles = [file('data/input')]`#
 | [.required]#ja#
 
 | [.dsl-signature]#*modelNames* = list#
-| [.acronym]#INTERLIS# model names
+| Liste der [.acronym]#INTERLIS#-Modellnamen; die passenden Modelle müssen über modelDirectories auffindbar sein. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`modelNames = ['Model']`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*modelDirectories* = list#
-| Model directories or repositories
+| Liste lokaler Modellverzeichnisse als Path oder Repository-Adressen als Text; unterstützt auch IOX-Platzhalter wie %[.acronym]#XTF#_DIR. +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`modelDirectories = [file('models')]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*configFile* = path#
-| Validation configuration file
+| Lokale Validierungskonfiguration mit zusätzlichen Regeln oder bewusst deaktivierten Prüfungen. +
+Beispiel: [.code-fragment]#`configFile = file('validation.toml')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*configRepositoryId* = text#
-| Validation configuration ID
+| Repository-ID der Validierungskonfiguration; Alternative zur lokalen configFile. +
+Beispiel: [.code-fragment]#`configRepositoryId = 'ch.example.validation'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*metaConfigFile* = path#
-| Meta configuration file
+| Lokale Meta-Konfiguration für die Validierung und deren Modell-/Regelkonfiguration. +
+Beispiel: [.code-fragment]#`metaConfigFile = file('meta.toml')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*metaConfigRepositoryId* = text#
-| Meta configuration ID
+| Repository-ID einer Meta-Konfiguration; Alternative zur lokalen metaConfigFile. +
+Beispiel: [.code-fragment]#`metaConfigRepositoryId = 'ch.example.meta'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*forceTypeValidation* = boolean#
-| Force type validation
+| Typprüfung auch dann erzwingen, wenn sie in der Validierungskonfiguration deaktiviert wurde. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`forceTypeValidation = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*disableAreaValidation* = boolean#
-| Disable area validation
+| Flächentopologie-Prüfung deaktivieren; andere Validierungen bleiben davon unabhängig. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`disableAreaValidation = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*multiplicityOff* = boolean#
-| Disable multiplicity validation
+| Prüfung der Attribut- und Beziehungsmultiplizitäten deaktivieren. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`multiplicityOff = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*allObjectsAccessible* = boolean#
-| All objects accessible
+| Dem Validator mitteilen, dass alle referenzierten Objekte im Prüfbestand verfügbar sein sollen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`allObjectsAccessible = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*skipPolygonBuilding* = boolean#
-| Skip polygon building
+| Polygonbildung aus [.acronym]#INTERLIS#-1-Linien überspringen; keine reparierten Flächen voraussetzen. +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`skipPolygonBuilding = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*logFile* = path#
-| Validation log file
+| Pfad der Validierungsdiagnosen; ohne expliziten Pfad verwendet der Adapter eine Datei im Arbeitsbereich. +
+Beispiel: [.code-fragment]#`logFile = file('build/validation.log')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*xtfLogFile* = path#
-| IliVErrors log file
+| Zusätzliche strukturierte Fehlerdatei im [.acronym]#INTERLIS#-Modell IliVErrors. +
+Beispiel: [.code-fragment]#`xtfLogFile = file('build/errors.xtf')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxy* = text#
-| [.acronym]#HTTP# proxy host
+| Hostname des [.acronym]#HTTP#-Proxys für Zugriffe der Fachbibliothek auf Modell- und Konfigurationsrepositories. +
+Beispiel: [.code-fragment]#`proxy = 'proxy.example'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxyPort* = integer#
-| [.acronym]#HTTP# proxy port
+| Port des [.acronym]#HTTP#-Proxys; zusammen mit proxy verwenden. +
+Beispiel: [.code-fragment]#`proxyPort = 8080`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*failOnError* = boolean#
-| Task bei Validierungsfehler abbrechen
+| Task bei Validierungsfehler abbrechen +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`failOnError = false`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*firstLineIsHeader* = boolean#
-| Erste [.acronym]#CSV#-Zeile als Header verwenden
+| Erste [.acronym]#CSV#-Zeile als Header verwenden +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`firstLineIsHeader = false`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*valueDelimiter* = text#
-| [.acronym]#CSV#-Anfuehrungszeichen
+| Einzelnes [.acronym]#CSV#-Anführungszeichen, beispielsweise ein doppeltes Anführungszeichen. +
+Beispiel: [.code-fragment]#`valueDelimiter = '"'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*valueSeparator* = text#
-| [.acronym]#CSV#-Feldtrennzeichen
+| Einzelnes [.acronym]#CSV#-Feldtrennzeichen, beispielsweise ein Semikolon. +
+Beispiel: [.code-fragment]#`valueSeparator = ';'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*encoding* = text#
-| [.acronym]#CSV#-Kodierung
+| [.acronym]#CSV#-Kodierung +
+Beispiel: [.code-fragment]#`encoding = 'UTF-8'`#
 | [.optional]#nein#
 
 |===

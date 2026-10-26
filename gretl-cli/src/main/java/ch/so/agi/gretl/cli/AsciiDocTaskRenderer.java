@@ -56,7 +56,7 @@ final class AsciiDocTaskRenderer {
         Objects.requireNonNull(operation, "operation");
         Objects.requireNonNull(locale, "locale");
         StringBuilder out = new StringBuilder();
-        out.append("[cols=\"4,6,1\", options=\"header\"]\n");
+        out.append("[cols=\"4,6,1\", options=\"header\", role=\"gretl-task-properties\"]\n");
         out.append("|===\n");
         out.append("| ").append(text(locale, "doc.field"))
                 .append(" | ").append(text(locale, "doc.description"))
@@ -92,7 +92,23 @@ final class AsciiDocTaskRenderer {
                                     Locale locale) {
         String description = OperationHelpText.fieldDescription(
                 operation, field.name(), locale);
-        return escapeCell(textRenderer.render(description));
+        StringBuilder details = new StringBuilder(description);
+        field.defaultValue().ifPresent(value -> details.append("\n")
+                .append(text(locale, "doc.default")).append(": ")
+                .append(code(OperationHelpText.displayDefault(value))));
+        if (!field.allowedValues().isEmpty()) {
+            details.append("\n").append(text(locale, "doc.allowed")).append(": ")
+                    .append(String.join(", ", field.allowedValues().stream()
+                            .map(AsciiDocTaskRenderer::code).toList()));
+        }
+        details.append("\n").append(text(locale, "doc.example")).append(": ")
+                .append(code(field.example()));
+        return escapeCell(textRenderer.render(details.toString()));
+    }
+
+    private static String code(String value) {
+        return "[.code-fragment]#`" + value.replace("`", "\\`")
+                .replace("#", "\\#") + "`#";
     }
 
     private static void appendCell(StringBuilder out, String value) {

@@ -1,49 +1,65 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*accessKey* = text#
-| [.acronym]#S3#-Zugriffsschluessel
+| [.acronym]#S3#-Zugriffsschluessel +
+Beispiel: [.code-fragment]#`accessKey = 'AKIA...'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*secretKey* = secret#
-| Geheimer [.acronym]#S3#-Schluessel aus einem Secret-Alias
+| Geheimer [.acronym]#S3#-Schluessel aus einem Secret-Alias +
+Beispiel: [.code-fragment]#`secretKey = secret('s3SecretKey')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*endpoint* = text#
-| [.acronym]#S3#-Endpunkt-URL
+| [.acronym]#S3#-Endpunkt-URL +
+Vorgabe: [.code-fragment]#`'https://s3.eu-central-1.amazonaws.com'`# +
+Beispiel: [.code-fragment]#`endpoint = 'http://127.0.0.1:9000'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*region* = text#
-| [.acronym]#S3#-Region
+| [.acronym]#S3#-Region +
+Vorgabe: [.code-fragment]#`'eu-central-1'`# +
+Beispiel: [.code-fragment]#`region = 'eu-central-1'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*bucketName* = text#
-| [.acronym]#S3#-Bucket-Name
+| [.acronym]#S3#-Bucket-Name +
+Beispiel: [.code-fragment]#`bucketName = 'my-bucket'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*sourceFile* = path#
-| Einzelne hochzuladende Datei
+| Einzelne hochzuladende Datei +
+Beispiel: [.code-fragment]#`sourceFile = file('data/export.zip')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*sourceDir* = path#
-| Verzeichnis, dessen direkte Dateien hochgeladen werden
+| Verzeichnis, dessen direkte Dateien hochgeladen werden +
+Beispiel: [.code-fragment]#`sourceDir = path('data')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*sourceFiles* = list#
-| Hochzuladende Dateien
+| Hochzuladende Dateien +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`sourceFiles = [file('a.txt')]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*acl* = text#
-| [.acronym]#S3#-Canned-ACL
+| [.acronym]#S3#-Canned-ACL +
+Vorgabe: [.code-fragment]#`'private'`# +
+Beispiel: [.code-fragment]#`acl = 'private'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*contentType* = text#
-| Content-Type der hochgeladenen Objekte
+| Content-Type der hochgeladenen Objekte +
+Beispiel: [.code-fragment]#`contentType = 'application/zip'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*metadata* = map#
-| [.acronym]#S3#-Objekt-Metadaten
+| [.acronym]#S3#-Objekt-Metadaten +
+Vorgabe: [.code-fragment]#`{}`# +
+Beispiel: [.code-fragment]#`metadata = [source: 'export']`#
 | [.optional]#nein#
 
 |===

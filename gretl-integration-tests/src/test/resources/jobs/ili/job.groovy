@@ -1,5 +1,7 @@
+// tag::reference-parameters[]
 parameter('output', type: 'path', required: true, description: 'Writable output')
 parameter('variant', defaultValue: 'single', description: 'Original input variant')
+// end::reference-parameters[]
 task('ili', IliValidator) {
     dataFile = file(parameter('variant') == 'fail' ? 'IliValidatorFail/Beispiel2a.xtf' : 'IliValidator/Beispiel2a.xtf')
     modelDirectory = file(parameter('variant') == 'fail' ? 'IliValidatorFail' : 'IliValidator')
@@ -21,17 +23,23 @@ task('gpkg', Ili2gpkgImport) {
         modelDirectories = [file('Ili2gpkgImport'), file('models')]
     }
 }
+// tag::reference-duck-schema[]
 task('duck-schema', Ili2duckdbImportSchema) {
     databaseFile = parameter('output').resolve('result.duckdb'); modelNames = ['GB2AV']; modelDirectories = [file('Ili2duckdbImportSchema')]
     createBasketCol = true; createTidCol = true
 }
+// end::reference-duck-schema[]
+// tag::reference-duck-import[]
 task('duck-import', Ili2duckdbImport, dependsOn: 'duck-schema') {
     databaseFile = parameter('output').resolve('result.duckdb'); modelNames = ['GB2AV']; modelDirectories = [file('Ili2duckdbImport')]
     dataFiles = [file('Ili2duckdbImport/VOLLZUG_SO0200002401_1531_20180105113131.xml')]; datasetNames = ['original']; importTid = true
 }
+// end::reference-duck-import[]
+// tag::reference-duck-export[]
 task('duck-export', Ili2duckdbExport, dependsOn: 'duck-import') {
     databaseFile = parameter('output').resolve('result.duckdb'); dataFiles = [parameter('output').resolve('export.xtf')]; datasetNames = ['original']
 }
+// end::reference-duck-export[]
 defaults 'ili-report'
 
 task('ngk', IliValidator) {

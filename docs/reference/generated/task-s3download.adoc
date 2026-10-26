@@ -1,37 +1,48 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*accessKey* = text#
-| [.acronym]#S3#-Zugriffsschluessel
+| [.acronym]#S3#-Zugriffsschluessel +
+Beispiel: [.code-fragment]#`accessKey = 'AKIA...'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*secretKey* = secret#
-| Geheimer [.acronym]#S3#-Schluessel aus einem Secret-Alias
+| Geheimer [.acronym]#S3#-Schluessel aus einem Secret-Alias +
+Beispiel: [.code-fragment]#`secretKey = secret('s3SecretKey')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*endpoint* = text#
-| [.acronym]#S3#-Endpunkt-URL
+| [.acronym]#S3#-Endpunkt-URL +
+Vorgabe: [.code-fragment]#`'https://s3.eu-central-1.amazonaws.com'`# +
+Beispiel: [.code-fragment]#`endpoint = 'http://127.0.0.1:9000'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*region* = text#
-| [.acronym]#S3#-Region
+| [.acronym]#S3#-Region +
+Vorgabe: [.code-fragment]#`'eu-central-1'`# +
+Beispiel: [.code-fragment]#`region = 'eu-central-1'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*bucketName* = text#
-| [.acronym]#S3#-Bucket-Name
+| [.acronym]#S3#-Bucket-Name +
+Beispiel: [.code-fragment]#`bucketName = 'my-bucket'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*key* = text#
-| Objekt-Schluessel; leer bedeutet alle Objekte
+| Objekt-Schluessel; leer bedeutet alle Objekte +
+Beispiel: [.code-fragment]#`key = 'data/export.zip'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*downloadDir* = path#
-| Lokales Download-Verzeichnis
+| Lokales Download-Verzeichnis +
+Beispiel: [.code-fragment]#`downloadDir = workPath('download')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*overwrite* = boolean#
-| Vorhandene lokale Dateien ersetzen
+| Vorhandene lokale Dateien ersetzen +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`overwrite = false`#
 | [.optional]#nein#
 
 |===

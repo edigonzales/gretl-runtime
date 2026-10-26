@@ -1,45 +1,60 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*server* = text#
-| [.acronym]#FTP#-Server-Host, optional host:port
+| [.acronym]#FTP#-Server-Host, optional host:port +
+Beispiel: [.code-fragment]#`server = 'ftp.example.ch'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*user* = text#
-| [.acronym]#FTP#-Benutzername
+| [.acronym]#FTP#-Benutzername +
+Beispiel: [.code-fragment]#`user = 'ftp-user'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*password* = secret#
-| [.acronym]#FTP#-Passwort aus einem Secret-Alias
+| [.acronym]#FTP#-Passwort aus einem Secret-Alias +
+Beispiel: [.code-fragment]#`password = secret('ftpPassword')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*systemType* = text#
-| [.acronym]#FTP#-Server-Systemtyp
+| [.acronym]#FTP#-Server-Systemtyp +
+Vorgabe: [.code-fragment]#`'UNIX'`# +
+Beispiel: [.code-fragment]#`systemType = 'UNIX'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*fileSeparator* = text#
-| Pfadtrennzeichen auf dem [.acronym]#FTP#-Server
+| Pfadtrennzeichen auf dem [.acronym]#FTP#-Server +
+Beispiel: [.code-fragment]#`fileSeparator = '/'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*passiveMode* = boolean#
-| Passiven [.acronym]#FTP#-Modus verwenden
+| Passiven [.acronym]#FTP#-Modus verwenden +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`passiveMode = true`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*controlKeepAliveTimeout* = integer#
-| Control-Keep-Alive-Timeout in Sekunden; 0 deaktiviert ihn
+| Control-Keep-Alive-Timeout in Sekunden; 0 deaktiviert ihn +
+Vorgabe: [.code-fragment]#`300`# +
+Beispiel: [.code-fragment]#`controlKeepAliveTimeout = 300`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*localFile* = path#
-| Lokale Datei zum Hochladen
+| Lokale Datei zum Hochladen +
+Beispiel: [.code-fragment]#`localFile = file('data/upload.zip')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*remoteDir* = text#
-| Zielverzeichnis auf dem [.acronym]#FTP#-Server
+| Zielverzeichnis auf dem [.acronym]#FTP#-Server +
+Beispiel: [.code-fragment]#`remoteDir = '/incoming'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*fileType* = text#
-| [.acronym]#ASCII#- oder [.acronym]#BINARY#-Transfermodus
+| [.acronym]#ASCII#- oder [.acronym]#BINARY#-Transfermodus +
+Vorgabe: [.code-fragment]#`'ASCII'`# +
+Erlaubte Werte: [.code-fragment]#`ASCII`#, [.code-fragment]#`BINARY`# +
+Beispiel: [.code-fragment]#`fileType = 'BINARY'`#
 | [.optional]#nein#
 
 |===

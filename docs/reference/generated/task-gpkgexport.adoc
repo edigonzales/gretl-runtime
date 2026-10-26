@@ -1,33 +1,40 @@
-[cols="4,6,1", options="header"]
+[cols="4,6,1", options="header", role="gretl-task-properties"]
 |===
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*database* = text#
-| Alias der Quell-Datenbankverbindung
+| Alias der Quell-Datenbankverbindung +
+Beispiel: [.code-fragment]#`database = 'db'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*dataFile* = path#
-| GeoPackage-Ausgabedatei
+| GeoPackage-Ausgabedatei +
+Beispiel: [.code-fragment]#`dataFile = file('build/output.gpkg')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*srcTableName* = list#
-| Source tables
+| Liste der zu exportierenden Quelltabellen; Reihenfolge entspricht den Ziel-Layer-Namen. +
+Beispiel: [.code-fragment]#`srcTableName = ['abbaustelle']`#
 | [.required]#ja#
 
 | [.dsl-signature]#*dstTableName* = list#
-| Destination tables
+| Liste der Ziel-Layer-Namen im GeoPackage; gleich viele Einträge wie Quelltabellen angeben. +
+Beispiel: [.code-fragment]#`dstTableName = ['abbaustelle']`#
 | [.required]#ja#
 
 | [.dsl-signature]#*schemaName* = text#
-| Optionales Quell-Schema
+| Optionales Quell-Schema +
+Beispiel: [.code-fragment]#`schemaName = 'public'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*batchSize* = integer#
-| [.acronym]#JDBC#-Batch-Groesse
+| [.acronym]#JDBC#-Batch-Groesse +
+Beispiel: [.code-fragment]#`batchSize = 1000`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*fetchSize* = integer#
-| [.acronym]#JDBC#-Fetch-Groesse
+| [.acronym]#JDBC#-Fetch-Groesse +
+Beispiel: [.code-fragment]#`fetchSize = 1000`#
 | [.optional]#nein#
 
 |===
