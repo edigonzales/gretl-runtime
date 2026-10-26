@@ -191,14 +191,14 @@ public final class SequentialJobRunner {
             TaskDefinition<?> task, RunEnvironment environment,
             WorkspaceManager.Workspace workspace, ResultStore results,
             OperationInvoker invoker, FailureArbiter arbiter) throws IOException {
+        TimeBudget budget = task.timeout() == null
+                ? environment.control() : environment.control().childBudget(task.timeout());
         results.start(task.ref(), environment.now(), environment.monotonicClock().ticks());
         environment.emit("gretl.task.started", LogLevel.INFO,
                 environment.identity(task.id(), null),
                 Optional.ofNullable(task.operation() == null ? null : task.operation().id()),
                 "task", null, 0,
                 Map.of("task.description", task.description()), Optional.empty());
-        TimeBudget budget = task.timeout() == null
-                ? environment.control() : environment.control().childBudget(task.timeout());
         Path taskDirectory = workspace.taskDirectory(task.registrationIndex());
         TaskFrame frame = new TaskFrame(task, task.registrationIndex(), taskDirectory, budget);
         TaskContextImpl context = new TaskContextImpl(environment, task.ref(), frame,

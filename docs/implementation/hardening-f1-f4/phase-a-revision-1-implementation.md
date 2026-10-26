@@ -46,3 +46,14 @@ Rohbelege liegen unter /tmp/gretl-hardening-v11-evidence, grosse Artefakte nicht
 Die JDK-/Maven-Versionen, Kandidaten-SHA, Standardprüfung, Artefaktaudit, Linuxprobe
 und unabhängiges Review werden nach tatsächlicher Ausführung separat dokumentiert.
 F4 wurde in dieser Phase nicht begonnen.
+
+## Reviewkorrektur A-F2-01
+
+Das unabhängige Gate A für `291a00136f6e7406e70a78f7902f6b280f275ad9` ergab FAIL.
+Der vollständige Bericht bleibt in `phase-a-review-291a001.md` erhalten.
+Das lokale Budget beginnt jetzt vor Startregistrierung und synchronem Startereignis.
+`ScopedControlTest.taskBudgetIncludesSynchronousStartObservation` verbraucht mit der
+FakeClock zwei Sekunden im Startereignis bei einem Sekundenlimit: kein Predicate/Body,
+CANCELLED/TIMEOUT und genau ein Cleanup. Vor der Korrektur reproduziert dieselbe
+Assertion SUCCEEDED (Log `task-budget-start-red.log` im externen Evidenzpaket).
+Der korrigierte Kandidat benötigt einen neuen vollständigen Standardlauf und Review.

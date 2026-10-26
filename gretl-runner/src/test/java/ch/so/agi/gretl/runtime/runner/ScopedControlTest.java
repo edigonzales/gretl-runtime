@@ -175,6 +175,29 @@ class ScopedControlTest {
         finally { Thread.interrupted(); }
     }
 
+    @Test
+    void taskBudgetIncludesSynchronousStartObservation() {
+        AtomicInteger predicates = new AtomicInteger();
+        AtomicInteger bodies = new AtomicInteger();
+        AtomicInteger cleanups = new AtomicInteger();
+        JobDefinition d = RunnerTestSupport.definition(root, b -> {
+            b.register(RunnerTestSupport.task("work").timeout(Duration.ofSeconds(1))
+                    .when(c -> { predicates.incrementAndGet(); return true; })
+                    .body(c -> { bodies.incrementAndGet(); return null; }).build());
+            b.cleanup("release", c -> cleanups.incrementAndGet());
+            b.defaults("work");
+        });
+        var input = RunnerTestSupport.input(root, clock, event -> {
+            if (event.eventName().equals("gretl.task.started")) clock.advance(Duration.ofSeconds(2));
+        }).build();
+        JobOutcome result = new SequentialJobRunner().run(d, RunnerTestSupport.plan(d), input);
+        assertEquals(RunStatus.CANCELLED, result.status());
+        assertEquals(Optional.of(CancelReason.TIMEOUT), result.tasks().getFirst().cancelReason());
+        assertEquals(0, predicates.get());
+        assertEquals(0, bodies.get());
+        assertEquals(1, cleanups.get());
+    }
+
     private JobOutcome run(JobDefinition d, RunControl control) {
         var input = RunnerTestSupport.input(root, clock, new RecordingEventSink());
         if (control != null) input.runControl(control);
