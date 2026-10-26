@@ -19,11 +19,15 @@ public final class TerminationMessage {
     }
 
     public static void write(Path path, JobOutcome outcome) throws IOException {
+        write(path, outcome, outcome.exitCode());
+    }
+
+    static void write(Path path, JobOutcome outcome, int finalExitCode) throws IOException {
         Path target = path.toAbsolutePath().normalize();
         Map<String, Object> message = new LinkedHashMap<>();
         message.put("runId", outcome.runId().toString());
-        message.put("status", outcome.status().name());
-        message.put("exitCode", outcome.exitCode());
+        message.put("status", finalExitCode == 10 ? "FAILED" : outcome.status().name());
+        message.put("exitCode", finalExitCode);
         outcome.primaryFailure().flatMap(failure -> outcome.tasks().stream()
                         .filter(task -> task.status() == ch.so.agi.gretl.runtime.runner.TaskStatus.FAILED)
                         .map(TaskOutcome::taskId).findFirst())

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 2,
+  "name": "hardening",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": [],
+  "standardFunctions": false,
+  "sources": [],
+  "resources": [],
+  "dependencies": []
+}

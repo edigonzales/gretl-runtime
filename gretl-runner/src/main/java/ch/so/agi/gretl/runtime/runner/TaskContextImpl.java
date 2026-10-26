@@ -41,7 +41,7 @@ final class TaskContextImpl extends BaseContext implements TaskContext, Operatio
     @Override
     public <C, R> R call(OperationType<C, R> type, C validatedRequest) throws Exception {
         checkWork();
-        environment().control().checkBeforeWork();
+        checkExecution();
         if (validatedRequest == null) {
             throw new IllegalArgumentException("validatedRequest must not be null");
         }
@@ -55,7 +55,7 @@ final class TaskContextImpl extends BaseContext implements TaskContext, Operatio
     <C, R> R invokeOperation(OperationType<C, R> type, RequestPreparation<C> preparation)
             throws Exception {
         checkWork();
-        environment().control().checkBeforeWork();
+        checkExecution();
         return invoker.invoke(type, preparation, frame);
     }
 
@@ -64,7 +64,7 @@ final class TaskContextImpl extends BaseContext implements TaskContext, Operatio
                            OperationCaller.InvocationPreparation<C> preparation)
             throws Exception {
         checkWork();
-        environment().control().checkBeforeWork();
+        checkExecution();
         return invoker.invoke(type, frame -> preparation.prepare(frame.context(), this), frame);
     }
 
@@ -74,7 +74,7 @@ final class TaskContextImpl extends BaseContext implements TaskContext, Operatio
         if (reason == null || reason.isBlank()) {
             throw new IllegalArgumentException("finish reason must not be blank");
         }
-        environment().control().checkBeforeWork();
+        checkExecution();
         environment().control().requestFinish(reason);
         throw new FinishSignal(reason);
     }

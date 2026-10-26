@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.runtime.runner;
 
 import ch.so.agi.gretl.runtime.api.CancellationToken;
+import ch.so.agi.gretl.runtime.api.CancelReason;
+import ch.so.agi.gretl.runtime.api.TaskCancelledException;
 import ch.so.agi.gretl.runtime.api.ContextAccessException;
 import ch.so.agi.gretl.runtime.api.ContextView;
 import ch.so.agi.gretl.runtime.api.Diagnostic;
@@ -135,10 +137,7 @@ abstract class BaseContext implements ContextView {
                     Messages.format(environment.locale(), "runner.workPathEscape",
                             relativePath));
         }
-        Path parent = path.getParent();
-        if (parent != null) {
-            Files.createDirectories(parent);
-        }
+        environment.workspace().prepareWorkPath(workBase, path);
         return path;
     }
 
@@ -184,7 +183,24 @@ abstract class BaseContext implements ContextView {
     }
 
     public CancellationToken cancellation() {
-        return environment.control();
+        return new CancellationToken() {
+            @Override
+            public boolean isCancellationRequested() {
+                budget.expired();
+                return environment.control().isCancellationRequested();
+            }
+
+            @Override
+            public Optional<CancelReason> reason() {
+                budget.expired();
+                return environment.control().reason();
+            }
+
+            @Override
+            public void throwIfCancellationRequested() {
+                checkCancellation();
+            }
+        };
     }
 
     public TimeBudget budget() {
@@ -222,7 +238,7 @@ abstract class BaseContext implements ContextView {
 
     List<Throwable> closeResources() {
         beginClosing();
-        List<Throwable> failures = closeStack.closeAll();
+        List<Throwable> failures = closeStack.closeAll(this::checkCancellation, this::observeCloseFailure);
         markClosed();
         return failures;
     }
@@ -238,6 +254,27 @@ abstract class BaseContext implements ContextView {
             throw new ContextAccessException("CONTEXT_CLOSED",
                     "Neue Arbeit ist nach dem Scopeende nicht erlaubt");
         }
+        checkExecution();
+    }
+
+    void checkExecution() {
+        environment.control().checkBeforeWork(budget);
+    }
+
+    void checkCancellation() {
+        environment.control().checkCancellation(budget);
+    }
+
+    Throwable observeCloseFailure(Throwable failure) {
+        if (failure instanceof TaskCancelledException cancellation) {
+            environment.control().observeCancel(cancellation.reason());
+        } else if (failure instanceof InterruptedException) {
+            environment.control().observeCancel(CancelReason.INTERRUPTED);
+            TaskCancelledException cancellation = new TaskCancelledException(CancelReason.INTERRUPTED);
+            cancellation.addSuppressed(failure);
+            return cancellation;
+        }
+        return failure;
     }
 
     private Path resolve(Path base, String text) {

@@ -4,12 +4,8 @@ import ch.so.agi.gretl.runtime.api.LogLevel;
 import ch.so.agi.gretl.runtime.runner.RunEvent;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.PosixFilePermission;
 import java.time.Instant;
-import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -37,10 +33,8 @@ final class EventFileSink implements AutoCloseable {
         this.config = config;
         this.context = context;
         this.encoder = new RecordEncoder(context);
-        Files.createDirectories(path.toAbsolutePath().normalize().getParent());
-        this.output = Files.newOutputStream(path, StandardOpenOption.CREATE_NEW,
-                StandardOpenOption.WRITE);
-        setPrivate(path);
+        PrivateDiagnosticFiles.createParents(path.toAbsolutePath().normalize().getParent());
+        this.output = PrivateDiagnosticFiles.newEventFile(path);
         this.normalLimit = Math.max(1, config.maxEventFileBytes()
                 - Math.min(RESERVE_BYTES, config.maxEventFileBytes() / 8));
     }
@@ -125,15 +119,6 @@ final class EventFileSink implements AutoCloseable {
                 || eventName.equals("gretl.cleanup.failed")
                 || eventName.equals("gretl.logging.truncated")
                 || eventName.equals("gretl.logging.degraded");
-    }
-
-    private static void setPrivate(Path path) {
-        try {
-            Files.setPosixFilePermissions(path, EnumSet.of(
-                    PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE));
-        } catch (UnsupportedOperationException | IOException ignored) {
-            // Non-POSIX filesystem; the parent directory permissions still apply.
-        }
     }
 
     record Snapshot(Path path, boolean degraded, boolean truncated, boolean lost,

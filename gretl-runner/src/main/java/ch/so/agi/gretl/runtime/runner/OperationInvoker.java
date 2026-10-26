@@ -35,7 +35,7 @@ public final class OperationInvoker {
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(preparation, "preparation");
         Objects.requireNonNull(parent, "parent");
-        environment.control().checkBeforeWork();
+        parent.context().checkExecution();
 
         String invocationId = environment.nextInvocationId();
         Path invocationDirectory = environment.workspace()
@@ -58,7 +58,9 @@ public final class OperationInvoker {
         Throwable primary = null;
         boolean cancelled = false;
         try {
+            context.checkExecution();
             C request = preparation.prepare(frame);
+            context.checkExecution();
             if (request == null) {
                 throw new ProviderContractException("NULL_OPERATION_REQUEST",
                         msg("runner.nullOperationRequest", type.id()));
@@ -71,6 +73,8 @@ public final class OperationInvoker {
             OperationHandler<C, R> handler;
             try {
                 handler = type.handlerFactory().get();
+            } catch (TaskCancelledException cancellation) {
+                throw cancellation;
             } catch (RuntimeException exception) {
                 throw new ProviderContractException("HANDLER_FACTORY_FAILED",
                         msg("runner.handlerFactoryFailed", type.id()), exception);
@@ -79,8 +83,10 @@ public final class OperationInvoker {
                 throw new ProviderContractException("NULL_OPERATION_HANDLER",
                         msg("runner.nullOperationHandler", type.id()));
             }
+            context.checkExecution();
             frame.phase("execution");
             result = handler.execute(request, context);
+            context.checkExecution();
             if (result == null && type.resultType() != Void.class) {
                 throw new ProviderContractException("NULL_OPERATION_RESULT",
                         msg("runner.nullOperationResult", type.id(),
@@ -103,7 +109,13 @@ public final class OperationInvoker {
             primary = cancellation;
             cancelled = true;
         } catch (Throwable failure) {
-            primary = failure;
+            if (environment.control().cancellationObserved()) {
+                primary = new TaskCancelledException(environment.control().reason().orElseThrow());
+                primary.addSuppressed(failure);
+                cancelled = true;
+            } else {
+                primary = failure;
+            }
         }
 
         if (primary == null) {
@@ -124,9 +136,12 @@ public final class OperationInvoker {
                 }
             }
         } else if (!closeErrors.isEmpty()) {
-            status = InvocationStatus.FAILED;
             primary = closeErrors.get(0);
-            primaryInfo = FailureInfo.from(primary);
+            cancelled = primary instanceof TaskCancelledException;
+            status = cancelled ? InvocationStatus.CANCELLED : InvocationStatus.FAILED;
+            if (!cancelled) {
+                primaryInfo = FailureInfo.from(primary);
+            }
             for (int index = 1; index < closeErrors.size(); index++) {
                 if (closeErrors.get(index) != primary) {
                     primary.addSuppressed(closeErrors.get(index));
@@ -136,10 +151,21 @@ public final class OperationInvoker {
             status = InvocationStatus.SUCCEEDED;
         }
         Throwable resolvedPrimary = primary;
-        List<FailureInfo> secondary = closeErrors.stream()
+        List<FailureInfo> secondary = new java.util.ArrayList<>(closeErrors.stream()
                 .filter(error -> error != resolvedPrimary)
+                .filter(error -> !(error instanceof TaskCancelledException))
                 .map(FailureInfo::from)
-                .toList();
+                .toList());
+        if (cancelled && primary != null) {
+            if (primary.getCause() != null) {
+                secondary.add(FailureInfo.from(primary.getCause()));
+            }
+            for (Throwable error : primary.getSuppressed()) {
+                if (!closeErrors.contains(error)) {
+                    secondary.add(FailureInfo.from(error));
+                }
+            }
+        }
 
         Instant finishedAt = environment.now();
         long endTicks = environment.monotonicClock().ticks();
@@ -154,6 +180,9 @@ public final class OperationInvoker {
                 Optional.ofNullable(primaryInfo));
 
         if (primary != null) {
+            if (status == InvocationStatus.FAILED) {
+                parent.recordFailure(primary);
+            }
             throwUnchecked(primary);
         }
         return result;

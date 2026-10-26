@@ -16,6 +16,7 @@ import ch.so.agi.gretl.runtime.runner.TaskRegistration;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -62,6 +63,11 @@ class RunReportWriterTest {
                         false, false, false, 0),
                 Instant.parse("2026-10-18T10:00:00Z"), Optional.of("test"));
         Path report = tempDir.resolve("reports/run.json");
+        Files.createDirectory(report.getParent());
+        boolean posix = Files.getFileStore(tempDir).supportsFileAttributeView("posix");
+        if (posix) {
+            Files.setPosixFilePermissions(report.getParent(), PosixFilePermissions.fromString("rwxr-xr-x"));
+        }
         new RunReportWriter(new Redactor(new ch.so.agi.gretl.runtime.runner.SecretRegistry()))
                 .write(reportInput, report);
 
@@ -78,5 +84,10 @@ class RunReportWriterTest {
         assertEquals("none", ((Map<?, ?>) parsed.get("telemetry")).get("mode"));
         assertFalse(json.contains("do-not-serialize-this-value"));
         assertFalse(json.contains("password"));
+        if (posix) {
+            assertEquals("rwxr-xr-x", PosixFilePermissions.toString(
+                    Files.getPosixFilePermissions(report.getParent())));
+            assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(report)));
+        }
     }
 }

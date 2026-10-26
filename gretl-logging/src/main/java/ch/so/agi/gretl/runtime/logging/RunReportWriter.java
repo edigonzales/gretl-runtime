@@ -16,10 +16,8 @@ import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.PosixFilePermission;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -46,11 +44,10 @@ public final class RunReportWriter {
         if (parent == null) {
             throw new IOException("Report path has no parent: " + target);
         }
-        Files.createDirectories(parent);
+        PrivateDiagnosticFiles.createParents(parent);
         byte[] bytes = (Json.write(report(input)) + "\n").getBytes(StandardCharsets.UTF_8);
-        Path temporary = Files.createTempFile(parent, "." + target.getFileName() + ".", ".tmp");
+        Path temporary = PrivateDiagnosticFiles.newReportTemporary(parent, "." + target.getFileName() + ".");
         try {
-            setPrivate(temporary);
             Files.write(temporary, bytes);
             try {
                 Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE,
@@ -58,7 +55,6 @@ public final class RunReportWriter {
             } catch (AtomicMoveNotSupportedException exception) {
                 Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
             }
-            setPrivate(target);
         } finally {
             Files.deleteIfExists(temporary);
         }
@@ -253,12 +249,4 @@ public final class RunReportWriter {
         return instant.toString();
     }
 
-    private static void setPrivate(Path path) {
-        try {
-            Files.setPosixFilePermissions(path, EnumSet.of(
-                    PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE));
-        } catch (UnsupportedOperationException | IOException ignored) {
-            // Non-POSIX filesystem.
-        }
-    }
 }

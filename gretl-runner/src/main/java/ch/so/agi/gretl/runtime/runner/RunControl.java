@@ -18,6 +18,8 @@ public final class RunControl implements TimeBudget, CancellationToken {
     private final MonotonicClock clock;
     private final OptionalLong deadlineTicks;
     private volatile CancelReason cancelReason;
+    private volatile boolean cancellationObserved;
+    private volatile boolean interrupted;
     private String finishReason;
     private TimeBudget completionBudget;
 
@@ -57,6 +59,9 @@ public final class RunControl implements TimeBudget, CancellationToken {
 
     public synchronized void requestCancel(CancelReason reason) {
         Objects.requireNonNull(reason, "reason");
+        if (reason == CancelReason.INTERRUPTED) {
+            interrupted = true;
+        }
         if (cancelReason == null) {
             cancelReason = reason;
         }
@@ -81,18 +86,7 @@ public final class RunControl implements TimeBudget, CancellationToken {
 
     /** Blocks any new normal work after finish, cancellation or budget expiry. */
     public void checkBeforeWork() {
-        if (cancelReason != null) {
-            throw new TaskCancelledException(cancelReason);
-        }
-        if (expired()) {
-            requestCancel(CancelReason.TIMEOUT);
-            throw new TaskCancelledException(CancelReason.TIMEOUT);
-        }
-        if (Thread.currentThread().isInterrupted()) {
-            Thread.interrupted();
-            requestCancel(CancelReason.INTERRUPTED);
-            throw new TaskCancelledException(CancelReason.INTERRUPTED);
-        }
+        throwIfCancellationRequested();
         if (finishReason != null) {
             throw new FinishSignal(finishReason);
         }
@@ -105,29 +99,70 @@ public final class RunControl implements TimeBudget, CancellationToken {
 
     @Override
     public boolean isCancellationRequested() {
-        return cancelReason != null || expired();
+        observeTimeout();
+        if (cancelReason != null) {
+            cancellationObserved = true;
+        }
+        return cancelReason != null;
     }
 
     @Override
     public Optional<CancelReason> reason() {
+        observeTimeout();
         if (cancelReason != null) {
-            return Optional.of(cancelReason);
+            cancellationObserved = true;
         }
-        return expired() ? Optional.of(CancelReason.TIMEOUT) : Optional.empty();
+        return Optional.ofNullable(cancelReason);
+    }
+
+    private void observeTimeout() {
+        if (expired()) {
+            observeCancel(CancelReason.TIMEOUT);
+        }
+    }
+
+    /** A boundary observes the inherited task budget as well as run control. */
+    void checkBeforeWork(TimeBudget budget) {
+        checkCancellation(budget);
+        if (finishReason != null) {
+            throw new FinishSignal(finishReason);
+        }
+    }
+
+    void checkCancellation(TimeBudget budget) {
+        if (budget.expired()) {
+            observeCancel(CancelReason.TIMEOUT);
+        }
+        throwIfCancellationRequested();
+    }
+
+    /** Reads only previously observed cancellation, without observing a later deadline. */
+    boolean cancellationObserved() {
+        return cancellationObserved;
+    }
+
+    void observeCancel(CancelReason reason) {
+        requestCancel(reason);
+        cancellationObserved = true;
+    }
+
+    boolean interrupted() {
+        return interrupted;
     }
 
     @Override
     public void throwIfCancellationRequested() throws TaskCancelledException {
         if (cancelReason != null) {
+            cancellationObserved = true;
             throw new TaskCancelledException(cancelReason);
         }
         if (expired()) {
-            requestCancel(CancelReason.TIMEOUT);
+            observeCancel(CancelReason.TIMEOUT);
             throw new TaskCancelledException(CancelReason.TIMEOUT);
         }
         if (Thread.currentThread().isInterrupted()) {
             Thread.interrupted();
-            requestCancel(CancelReason.INTERRUPTED);
+            observeCancel(CancelReason.INTERRUPTED);
             throw new TaskCancelledException(CancelReason.INTERRUPTED);
         }
     }
@@ -171,6 +206,9 @@ public final class RunControl implements TimeBudget, CancellationToken {
             public Optional<Duration> remaining() {
                 Optional<Duration> parent = RunControl.this.remaining();
                 long localRemaining = Math.max(0L, finalLocalDeadline - clock.ticks());
+                if (localRemaining == 0) {
+                    observeCancel(CancelReason.TIMEOUT);
+                }
                 Duration local = Duration.ofNanos(localRemaining);
                 if (parent.isEmpty()) {
                     return Optional.of(local);
@@ -180,7 +218,11 @@ public final class RunControl implements TimeBudget, CancellationToken {
 
             @Override
             public boolean expired() {
-                return localRemainingExpired() || RunControl.this.expired();
+                boolean elapsed = localRemainingExpired() || RunControl.this.expired();
+                if (elapsed) {
+                    observeCancel(CancelReason.TIMEOUT);
+                }
+                return elapsed;
             }
 
             private boolean localRemainingExpired() {

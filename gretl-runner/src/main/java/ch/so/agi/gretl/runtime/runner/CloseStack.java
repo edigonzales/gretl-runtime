@@ -31,21 +31,44 @@ public final class CloseStack implements ResourceScope {
     }
 
     public List<Throwable> closeAll() {
+        return closeAll(() -> { });
+    }
+
+    /** Observe control at release boundaries, while still attempting every close. */
+    List<Throwable> closeAll(Runnable observeControl) {
+        return closeAll(observeControl, failure -> failure);
+    }
+
+    List<Throwable> closeAll(Runnable observeControl,
+                             java.util.function.UnaryOperator<Throwable> observeFailure) {
         if (closed) {
             return List.of();
         }
         closed = true;
         List<Throwable> failures = new ArrayList<>();
+        observe(observeControl, failures);
         for (int index = resources.size() - 1; index >= 0; index--) {
             try {
                 resources.get(index).close();
             } catch (Throwable failure) {
-                failures.add(failure);
+                failures.add(observeFailure.apply(failure));
             }
+            observe(observeControl, failures);
         }
         resources.clear();
         identities.clear();
         return List.copyOf(failures);
+    }
+
+    private static void observe(Runnable observer, List<Throwable> failures) {
+        try {
+            observer.run();
+        } catch (ch.so.agi.gretl.runtime.api.TaskCancelledException cancellation) {
+            if (failures.stream().noneMatch(
+                    ch.so.agi.gretl.runtime.api.TaskCancelledException.class::isInstance)) {
+                failures.add(cancellation);
+            }
+        }
     }
 
     public boolean isClosed() {

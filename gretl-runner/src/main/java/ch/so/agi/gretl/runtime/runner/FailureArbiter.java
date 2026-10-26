@@ -25,6 +25,25 @@ public final class FailureArbiter {
             return TaskCompletion.failed(FailureInfo.from(failure.error()), closeFailures);
         }
 
+        if (work instanceof WorkCompletion.Cancelled cancelled) {
+            java.util.ArrayList<FailureInfo> secondary = new java.util.ArrayList<>();
+            if (cancelled.secondary() != null) {
+                secondary.add(FailureInfo.from(cancelled.secondary()));
+            }
+            failures.stream().filter(error -> !(error instanceof
+                    ch.so.agi.gretl.runtime.api.TaskCancelledException)
+                            || error.getCause() != null || error.getSuppressed().length > 0)
+                    .map(FailureInfo::from).forEach(secondary::add);
+            return TaskCompletion.cancelled(secondary);
+        }
+
+        // Release errors are in controlled observation order. An earlier real
+        // close error must not be hidden by a later timeout.
+        if (!failures.isEmpty() && failures.getFirst() instanceof
+                ch.so.agi.gretl.runtime.api.TaskCancelledException) {
+            return resolve(new WorkCompletion.Cancelled(), control, failures);
+        }
+
         if (work instanceof WorkCompletion.Skipped skipped) {
             if (!failures.isEmpty()) {
                 return failureFromCloseErrors(failures);
@@ -42,10 +61,6 @@ public final class FailureArbiter {
             return TaskCompletion.skipped(finished.reason());
         }
 
-        if (work instanceof WorkCompletion.Cancelled) {
-            return TaskCompletion.cancelled(closeFailures);
-        }
-
         WorkCompletion.Value value = (WorkCompletion.Value) work;
         if (control.finishRequested()) {
             if (!failures.isEmpty()) {
@@ -56,6 +71,9 @@ public final class FailureArbiter {
         }
         if (!failures.isEmpty()) {
             return failureFromCloseErrors(failures);
+        }
+        if (control.cancellationReason().isPresent()) {
+            return TaskCompletion.cancelled(List.of());
         }
         return TaskCompletion.succeeded(value.value());
     }
@@ -99,7 +117,10 @@ public final class FailureArbiter {
             }
         }
 
-        record Cancelled() implements WorkCompletion {
+        record Cancelled(Throwable secondary) implements WorkCompletion {
+            public Cancelled() {
+                this(null);
+            }
         }
     }
 }

@@ -30,7 +30,8 @@ final class RunEnvironment {
         this.input = Objects.requireNonNull(input, "input");
         this.definition = Objects.requireNonNull(definition, "definition");
         this.plan = Objects.requireNonNull(plan, "plan");
-        this.workspace = Objects.requireNonNull(workspace, "workspace");
+        // A failed initial workspace setup still owns a run lifecycle and cleanups.
+        this.workspace = workspace;
     }
 
     RunInput input() {
@@ -46,7 +47,7 @@ final class RunEnvironment {
     }
 
     WorkspaceManager.Workspace workspace() {
-        return workspace;
+        return Objects.requireNonNull(workspace, "run workspace unavailable");
     }
 
     UUID runId() {

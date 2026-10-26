@@ -2,6 +2,7 @@ package ch.so.agi.gretl.job.runtime;
 
 import ch.so.agi.gretl.runtime.groovy.GroovyDslException;
 import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
+import ch.so.agi.gretl.runtime.api.LogLevel;
 import ch.so.agi.gretl.i18n.LocaleSelection;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.logging.Json;
@@ -18,6 +19,7 @@ import ch.so.agi.gretl.runtime.logging.RunReportWriter;
 import ch.so.agi.gretl.runtime.runner.DefinitionException;
 import ch.so.agi.gretl.runtime.runner.ExecutionPlan;
 import ch.so.agi.gretl.runtime.runner.ExecutionPlanner;
+import ch.so.agi.gretl.runtime.runner.FailureInfo;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.JobOutcome;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
@@ -27,6 +29,7 @@ import ch.so.agi.gretl.runtime.runner.ParameterResolver;
 import ch.so.agi.gretl.runtime.runner.ParameterSources;
 import ch.so.agi.gretl.runtime.runner.ResolvedParameters;
 import ch.so.agi.gretl.runtime.runner.RunControl;
+import ch.so.agi.gretl.runtime.runner.RunEvent;
 import ch.so.agi.gretl.runtime.runner.RunInput;
 import ch.so.agi.gretl.runtime.runner.SecretRegistry;
 import ch.so.agi.gretl.runtime.runner.SecretResolver;
@@ -37,10 +40,9 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -261,6 +263,9 @@ public final class JobRuntime {
                 Thread.currentThread().interrupt();
             }
         }, "gretl-shutdown");
+        // The final process event must reflect required-report failures as well.
+        RunEvent[] terminal = new RunEvent[1];
+        boolean restoreInterrupt = false;
         try {
             userSink.attach(logging::scriptMessage);
             try {
@@ -283,42 +288,62 @@ public final class JobRuntime {
                     .keepWork(config.keepWork())
                     .clock(clock)
                     .monotonicClock(SystemMonotonicClock.INSTANCE)
-                    .eventSink(logging)
+                    .eventSink(event -> {
+                        if ("gretl.run.finished".equals(event.eventName())) {
+                            terminal[0] = event;
+                        } else {
+                            logging.emit(event);
+                        }
+                    })
                     .secretResolver(secretResolver)
                     .secretRegistry(secrets)
                     .runControl(control)
                     .build();
             JobOutcome outcome = new SequentialJobRunner().run(definition, plan, input);
-            String terminationPath = environment.get("GRETL_TERMINATION_MESSAGE_PATH");
-            if (terminationPath != null && !terminationPath.isBlank()) {
-                try {
-                    TerminationMessage.write(startCwd.resolve(terminationPath), outcome);
-                } catch (IOException exception) {
-                    err.println(Messages.format(locale,
-                            "cli.warning.terminationMessage", safeMessage(exception)));
-                }
-            }
-            if (bridge != null) {
-                bridge.close();
-            }
-            logging.close();
+            restoreInterrupt = Thread.interrupted();
             LoggingState loggingState = logging.state();
             Optional<String> revision = Optional.ofNullable(environment.get("GRETL_JOB_REVISION"))
                     .filter(value -> !value.isBlank());
+            int exitCode = outcome.exitCode();
+            FailureInfo reportFailure = null;
             try {
                 new RunReportWriter(redactor).write(new RunReportInput(
                         context, outcome, definition, plan, source.displayFile(),
                         source.sha256(), revision,
                         RuntimeInfo.inventoryHash(registry), loggingState,
                         commandStarted, context.deploymentEnvironment()), report);
-            } catch (IOException exception) {
+            } catch (IOException | SecurityException exception) {
                 String message = Messages.format(locale,
-                        "cli.error.reportWrite", safeMessage(exception));
-                err.println(new TextFormatter().formatProblem(clock.instant(),
-                        "REPORT_WRITE_FAILED", null, message, Map.of()));
-                return 10;
+                        "cli.error.reportWrite", redactor.redact(safeMessage(exception)));
+                reportFailure = FailureInfo.from(exception);
+                logging.emit(new RunEvent("gretl.report.write_failed", message, clock.instant(),
+                        LogLevel.ERROR, Optional.of(runId), Optional.of(context.jobName()),
+                        Optional.empty(), Optional.empty(), Optional.empty(), "report", "FAILED", 0,
+                        Map.of("code", "REPORT_WRITE_FAILED"), Optional.of(reportFailure)));
+                if (exitCode == 0) {
+                    exitCode = 10;
+                }
             }
-            return outcome.exitCode();
+            String terminationPath = environment.get("GRETL_TERMINATION_MESSAGE_PATH");
+            if (terminationPath != null && !terminationPath.isBlank()) {
+                try {
+                    TerminationMessage.write(startCwd.resolve(terminationPath), outcome, exitCode);
+                } catch (IOException | SecurityException exception) {
+                    err.println(Messages.format(locale,
+                            "cli.warning.terminationMessage", redactor.redact(safeMessage(exception))));
+                }
+            }
+            RunEvent finished = java.util.Objects.requireNonNull(terminal[0], "run terminal event");
+            Map<String, String> attributes = new LinkedHashMap<>(finished.attributes());
+            attributes.put("exit_code", Integer.toString(exitCode));
+            logging.emit(new RunEvent(finished.eventName(), finished.message(), clock.instant(),
+                    exitCode == 10 ? LogLevel.ERROR : finished.level(), finished.runId(),
+                    finished.jobName(), finished.taskId(), finished.invocationId(),
+                    finished.operationId(), finished.phase(),
+                    exitCode == 10 ? "FAILED" : finished.outcome(), finished.durationMillis(),
+                    attributes, finished.failure().isPresent() ? finished.failure()
+                            : Optional.ofNullable(reportFailure)));
+            return exitCode;
         } finally {
             try {
                 if (bridge != null) {
@@ -331,6 +356,9 @@ public final class JobRuntime {
             } finally {
                 completed.countDown();
                 removeHook(hook);
+                if (restoreInterrupt) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }
@@ -357,24 +385,18 @@ public final class JobRuntime {
 
     private void prepareDirectory(Path path, String label) {
         try {
-            Files.createDirectories(path);
-            setPrivateDirectory(path);
+            try {
+                Files.createDirectories(path, PosixFilePermissions.asFileAttribute(
+                        PosixFilePermissions.fromString("rwx------")));
+            } catch (UnsupportedOperationException exception) {
+                Files.createDirectories(path);
+            }
             if (!Files.isDirectory(path) || !Files.isWritable(path)) {
                 throw new IOException("not a writable directory");
             }
-        } catch (IOException exception) {
+        } catch (IOException | SecurityException exception) {
             throw new StartException(2, Messages.format(locale,
                     "cli.error.notWritable", label, path), exception);
-        }
-    }
-
-    private static void setPrivateDirectory(Path path) {
-        try {
-            Files.setPosixFilePermissions(path, EnumSet.of(
-                    PosixFilePermission.OWNER_READ,
-                    PosixFilePermission.OWNER_WRITE,
-                    PosixFilePermission.OWNER_EXECUTE));
-        } catch (UnsupportedOperationException | IOException ignored) {
         }
     }
 
