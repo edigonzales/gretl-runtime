@@ -9,11 +9,11 @@ Beispiel: [.code-fragment]#`inputFiles = [file('data.itf')]`#
 
 | [.dsl-signature]#*outputDirectory* = path#
 | Verzeichnis für die erzeugten Dateien; für dauerhafte Ausgaben einen externen Pfadparameter verwenden. +
-Beispiel: [.code-fragment]#`outputDirectory = path('build/av')`#
+Beispiel: [.code-fragment]#`outputDirectory = parameter('output')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*modeldir* = text#
-| Lokales Verzeichnis beziehungsweise Suchpfad der für die Konvertierung benötigten Modelle. +
+| Lokales Modellverzeichnis als Path (etwa [.dsl-method]#`file('models')`#) oder unveränderter Suchpfadtext der Fachbibliothek; mehrere Verzeichnisse nach deren Regeln trennen. +
 Beispiel: [.code-fragment]#`modeldir = file('models')`#
 | [.optional]#nein#
 

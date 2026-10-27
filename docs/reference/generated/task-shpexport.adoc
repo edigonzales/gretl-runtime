@@ -9,7 +9,7 @@ Beispiel: [.code-fragment]#`database = 'db'`#
 
 | [.dsl-signature]#*dataFile* = path#
 | Shapefile-Ausgabepfad +
-Beispiel: [.code-fragment]#`dataFile = file('build/output.shp')`#
+Beispiel: [.code-fragment]#`dataFile = parameter('ziel')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*tableName* = text#

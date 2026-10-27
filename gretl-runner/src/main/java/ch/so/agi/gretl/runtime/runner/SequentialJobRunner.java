@@ -37,7 +37,24 @@ public final class SequentialJobRunner {
             throw new RunStartException(exception);
         }
 
-        RunEnvironment environment = new RunEnvironment(input, definition, plan, workspace);
+        Path jobRoot;
+        try {
+            jobRoot = input.prepareWorkspace(workspace.runRoot());
+        } catch (IOException | RuntimeException exception) {
+            try {
+                manager.applyRetention(workspace, RunStatus.FAILED, KeepWork.NEVER);
+            } catch (IOException | RuntimeException cleanupFailure) {
+                exception.addSuppressed(cleanupFailure);
+                input.eventSink().emit(new RunEvent("gretl.workspace.retention_failed", "",
+                        input.clock().instant(), LogLevel.WARN, Optional.of(input.runId()),
+                        Optional.of(input.jobName()), Optional.empty(), Optional.empty(),
+                        Optional.empty(), "setup", "FAILED", 0,
+                        Map.of("workspace.path", workspace.runRoot().toString()),
+                        Optional.of(FailureInfo.from(cleanupFailure))));
+            }
+            throw new RunStartException(exception);
+        }
+        RunEnvironment environment = new RunEnvironment(input, definition, plan, workspace, jobRoot);
         ResultStore results = new ResultStore(definition, plan);
         OperationInvoker invoker = new OperationInvoker(environment);
         FailureArbiter arbiter = new FailureArbiter();

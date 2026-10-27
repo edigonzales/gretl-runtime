@@ -21,7 +21,7 @@ public final class Csv2ExcelOperation {
                 null, "csvFile = file('data/input.csv')", FormatTaskSupport::path,
                 (b, v) -> b.csvFile = v);
         InputField<Request, Path> out = field("outputFile", "path", "XLSX output file", true,
-                null, "outputFile = file('build/output.xlsx')", FormatTaskSupport::path,
+                null, "outputFile = parameter('ziel')", FormatTaskSupport::path,
                 (b, v) -> b.outputFile = v);
         InputField<Request, Boolean> header = field("firstLineIsHeader", "boolean",
                 "Use first CSV line as header", false, true, "firstLineIsHeader = false",
@@ -40,14 +40,14 @@ public final class Csv2ExcelOperation {
                 (b, v) -> b.models = v);
         InputField<Request, String> modeldir = field("modeldir", "text",
                 "INTERLIS model directories", false, null, "modeldir = file('models')",
-                FormatTaskSupport::text, (b, v) -> b.modeldir = v);
+                FormatTaskSupport::modelSearchPath, (b, v) -> b.modeldir = v);
         OutputField<Result, Path> file = Fields.output("file", "path",
                 "Written XLSX file", false, Result::file);
         return new OperationType<>(ID, SYMBOL, "Convert CSV to XLSX with IOX",
                 Request.class, Result.class, Builder::new, Handler::new,
                 List.of(csv, out, header, delimiter, separator, encoding, models, modeldir),
                 List.of(file),
-                "task('convert', Csv2Excel) {\n    csvFile = file('data/input.csv')\n    outputFile = file('build/output.xlsx')\n}\n");
+                "parameter('ziel', type: 'path', required: true, description: 'Ausgabedatei')\n\ntask('convert', Csv2Excel) {\n    csvFile = file('data/input.csv')\n    outputFile = parameter('ziel')\n}\n\ndefaults 'convert'\n");
     }
 
     private static <T> InputField<Request, T> field(String name, String type, String desc,

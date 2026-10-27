@@ -9,7 +9,7 @@ Beispiel: [.code-fragment]#`csvFile = file('data/input.csv')`#
 
 | [.dsl-signature]#*outputFile* = path#
 | [.acronym]#XLSX#-Ausgabedatei +
-Beispiel: [.code-fragment]#`outputFile = file('build/output.xlsx')`#
+Beispiel: [.code-fragment]#`outputFile = parameter('ziel')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*firstLineIsHeader* = boolean#
@@ -34,12 +34,12 @@ Beispiel: [.code-fragment]#`encoding = 'UTF-8'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*models* = text#
-| Liste der [.acronym]#INTERLIS#-Modellnamen; die passenden Modelle müssen über modelDirectories auffindbar sein. +
+| Liste der [.acronym]#INTERLIS#-Modellnamen; die passenden Modelle müssen über modeldir auffindbar sein. +
 Beispiel: [.code-fragment]#`models = 'Model'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*modeldir* = text#
-| Suchpfad für [.acronym]#INTERLIS#-Modelle; mehrere Verzeichnisse gemäss der verwendeten Fachbibliothek trennen. +
+| Lokales Modellverzeichnis als Path (etwa [.dsl-method]#`file('models')`#) oder unveränderter Suchpfadtext der Fachbibliothek; mehrere Verzeichnisse nach deren Regeln trennen. +
 Beispiel: [.code-fragment]#`modeldir = file('models')`#
 | [.optional]#nein#
 

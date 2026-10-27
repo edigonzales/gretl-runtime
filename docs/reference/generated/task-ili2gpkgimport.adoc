@@ -92,7 +92,7 @@ Beispiel: [.code-fragment]#`deleteData = true`#
 
 | [.dsl-signature]#*logFile* = path#
 | Pfad des ili2db-Protokolls; ohne expliziten Pfad wird eine aufrufbezogene Datei im Arbeitsbereich verwendet. +
-Beispiel: [.code-fragment]#`logFile = file('build/ili2db.log')`#
+Beispiel: [.code-fragment]#`logFile = workPath('ili2db.log')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*failOnException* = boolean#

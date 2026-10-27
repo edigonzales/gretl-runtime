@@ -4,7 +4,7 @@
 
 | [.dsl-signature]#*database* = path#
 | DuckDB-Datenbankdatei +
-Beispiel: [.code-fragment]#`database = file('build/work.duckdb')`#
+Beispiel: [.code-fragment]#`database = workPath('work.duckdb')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*inMemory* = boolean#

@@ -287,6 +287,7 @@ public final class JobRuntime {
                     .parameters(parameters)
                     .taskConfig(config.taskConfig())
                     .jobRoot(source.jobRoot())
+                    .workspacePreparation(source::prepareRun)
                     .locale(locale)
                     .startCwd(startCwd)
                     .workRoot(config.workRoot())

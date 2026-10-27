@@ -543,6 +543,109 @@ class DistributionIT {
                 .equals(Files.readString(tempDir.resolve("param-report-b.json"))));
     }
 
+    @Test
+    void packagedResourcesFollowRunRetentionAndAreNotOpenedForHelpOrPlan() throws Exception {
+        Path unpacked = tempDir.resolve("resource-dist");
+        unzip(Path.of("target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip"), unpacked);
+        Path base;
+        try (var paths = Files.list(unpacked)) { base = paths.filter(Files::isDirectory).findFirst().orElseThrow(); }
+        Path source = Files.createDirectory(tempDir.resolve("resource-source"));
+        Files.writeString(source.resolve("data.txt"), "packaged input");
+        Files.writeString(source.resolve("job.groovy"), """
+                parameter('output', type: 'path', required: true, description: 'External output directory')
+                parameter('ending', defaultValue: 'success', description: 'Terminal scenario')
+                action('process') {
+                    assert file('data.txt').toFile().text == 'packaged input'
+                    assert !workPath('data.txt').toFile().exists()
+                    workPath('data.txt').toFile().text = 'work'
+                    parameter('output').resolve('result.txt').toFile().text = 'permanent'
+                    if (parameter('ending') == 'failure') throw new IOException('fixture failure')
+                    if (parameter('ending') == 'cancel') throw new ch.so.agi.gretl.runtime.api.TaskCancelledException(
+                        ch.so.agi.gretl.runtime.api.CancelReason.REQUESTED)
+                    if (parameter('ending') == 'no-data') finishJob('empty')
+                }
+                cleanup('verify resource lifetime') {
+                    assert file('data.txt').toFile().text == 'packaged input'
+                    parameter('output').resolve('cleanup.txt').toFile().text = 'cleaned'
+                    if (parameter('ending') == 'cleanup-failure') throw new IOException('cleanup failed')
+                }
+                defaults 'process'
+                """);
+        Files.writeString(source.resolve("job-package.json"), """
+                {"schemaVersion":2,"name":"resources","version":"1",
+                 "runtimeVersion":"0.1.0-SNAPSHOT","entryScript":"job.groovy",
+                 "taskModules":[],"standardFunctions":false,"sources":[],
+                 "resources":["data.txt"],"dependencies":[]}
+                """);
+        Path jar = tempDir.resolve("resources.jar");
+        var pack = run(base, "package", source.resolve("job-package.json").toString(), "--output", jar.toString());
+        assertEquals(0, pack.code(), pack.err());
+        byte[] original = Files.readAllBytes(jar);
+        Path cwd = Files.createDirectory(tempDir.resolve("resource-foreign-cwd"));
+        for (String mode : List.of("never", "on-failure", "always")) {
+            for (String ending : List.of("success", "no-data", "failure", "cancel", "cleanup-failure")) {
+                Path output = Files.createDirectory(cwd.resolve(mode + "-" + ending));
+                Path work = output.resolve("work");
+                var result = runJava(cwd, jar, "--work-dir", work.toString(), "--keep-work", mode,
+                        "--param", "output=" + output, "--param", "ending=" + ending,
+                        "--report", output.resolve("report.json").toString());
+                int expected = ending.equals("cancel") ? 20
+                        : ending.equals("failure") || ending.equals("cleanup-failure") ? 10 : 0;
+                assertEquals(expected, result.code(), result.err());
+                assertEquals("permanent", Files.readString(output.resolve("result.txt")));
+                assertEquals("cleaned", Files.readString(output.resolve("cleanup.txt")));
+                boolean retained = mode.equals("always") || mode.equals("on-failure") && expected != 0;
+                try (var paths = Files.list(work)) {
+                    var runs = paths.toList();
+                    assertEquals(retained ? 1 : 0, runs.size(), result.err());
+                    if (retained) assertEquals("packaged input", Files.readString(runs.getFirst().resolve("job-resources/data.txt")));
+                }
+                assertTrue(Files.readString(output.resolve("report.json"))
+                        .contains("\"workRetained\":" + retained));
+            }
+        }
+        // A broken resource is invisible to definition-only commands, but fails run setup.
+        Path broken = tempDir.resolve("missing-resource.jar");
+        try (JarFile input = new JarFile(jar.toFile());
+             var output = new java.util.jar.JarOutputStream(Files.newOutputStream(broken))) {
+            for (var entry : input.stream().toList()) {
+                if (entry.getName().equals("META-INF/gretl/job-resources/data.txt")) continue;
+                output.putNextEntry(new JarEntry(entry.getName()));
+                try (var data = input.getInputStream(entry)) { data.transferTo(output); }
+                output.closeEntry();
+            }
+        }
+        Path tmp = Files.createDirectory(cwd.resolve("java-temp"));
+        for (String option : List.of("--version", "--help", "--plan")) {
+            var command = List.of(Path.of(System.getProperty("java.home"), "bin/java").toString(),
+                    "-Djava.io.tmpdir=" + tmp, "-jar", broken.toString(), option);
+            var result = execute(cwd, command);
+            assertEquals(0, result.code(), result.err());
+            try (var paths = Files.list(tmp)) { assertEquals(0, paths.count()); }
+        }
+        Path unopened = cwd.resolve("unopened-work");
+        var missingParameter = runJava(cwd, broken, "--work-dir", unopened.toString());
+        assertEquals(2, missingParameter.code(), missingParameter.err());
+        assertTrue(!missingParameter.err().contains("JOB_RESOURCE_MISSING"));
+        assertTrue(!Files.exists(unopened));
+        var badPlan = runJava(cwd, broken, "--work-dir", unopened.toString(), "--target", "unknown",
+                "--param", "output=" + cwd);
+        assertEquals(2, badPlan.code(), badPlan.err());
+        assertTrue(!badPlan.err().contains("JOB_RESOURCE_MISSING"));
+        assertTrue(!Files.exists(unopened));
+        Path failedWork = cwd.resolve("failed-setup");
+        Path failedOutput = Files.createDirectory(cwd.resolve("failed-output"));
+        var failed = runJava(cwd, broken, "--work-dir", failedWork.toString(), "--keep-work", "always",
+                "--param", "output=" + failedOutput, "--report", failedOutput.resolve("report.json").toString());
+        assertEquals(2, failed.code(), failed.err());
+        assertTrue(failed.err().contains("JOB_RESOURCE_MISSING"), failed.err());
+        assertTrue(!Files.exists(failedOutput.resolve("result.txt")));
+        assertTrue(!Files.exists(failedOutput.resolve("cleanup.txt")));
+        assertTrue(!Files.exists(failedOutput.resolve("report.json")));
+        try (var paths = Files.list(failedWork)) { assertEquals(0, paths.count()); }
+        assertTrue(java.util.Arrays.equals(original, Files.readAllBytes(jar)));
+    }
+
     private ProcessResult run(Path base, String... args) throws Exception {
         List<String> command = new java.util.ArrayList<>();
         command.add(base.resolve("bin/gretl").toString());

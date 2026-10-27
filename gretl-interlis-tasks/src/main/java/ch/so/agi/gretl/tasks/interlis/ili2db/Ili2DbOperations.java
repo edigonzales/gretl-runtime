@@ -126,7 +126,7 @@ public final class Ili2DbOperations {
                     "export3 = true", FormatTaskSupport::bool, (b, v) -> b.export3 = v));
         }
         fields.add(field("logFile", "path", "ili2db log file", false, null,
-                "logFile = file('build/ili2db.log')", FormatTaskSupport::path, (b, v) -> b.logFile = v));
+                "logFile = workPath('ili2db.log')", FormatTaskSupport::path, (b, v) -> b.logFile = v));
         fields.add(field("failOnException", "boolean", "Fail on ili2db exception", false, true,
                 "failOnException = false", FormatTaskSupport::bool, (b, v) -> b.failOnException = v));
         addOptions(fields, commonOptions());

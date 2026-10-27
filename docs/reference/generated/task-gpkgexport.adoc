@@ -9,7 +9,7 @@ Beispiel: [.code-fragment]#`database = 'db'`#
 
 | [.dsl-signature]#*dataFile* = path#
 | GeoPackage-Ausgabedatei +
-Beispiel: [.code-fragment]#`dataFile = file('build/output.gpkg')`#
+Beispiel: [.code-fragment]#`dataFile = parameter('ziel')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*srcTableName* = list#

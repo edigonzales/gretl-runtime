@@ -7,7 +7,7 @@ task('excel', Csv2Excel) {
     firstLineIsHeader = true; valueSeparator = ';'
     encoding = parameter('variant') == 'empty' ? 'UTF-8' : 'ISO-8859-1'
     if (parameter('variant') != 'empty') {
-        models = 'SO_HBA_Gebaeude_20230111'; modeldir = file('Csv2Excel').toString()
+        models = 'SO_HBA_Gebaeude_20230111'; modeldir = file('Csv2Excel')
     }
     outputFile = parameter('output').resolve('converted.xlsx')
 }

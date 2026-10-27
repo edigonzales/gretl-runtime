@@ -354,6 +354,37 @@ class FormatPostgresIT {
         assertEquals(0, scalar("select count(*) from ili2pgtest.t_ili2db_dataset"));
     }
 
+    @Test
+    void publishedExportRecipesUseExternalPathParameters() throws Exception {
+        try (var connection = connection(); var statement = connection.createStatement()) {
+            statement.execute("create table colors (id int, name text)");
+            statement.execute("insert into colors values (1, 'red'), (2, 'blue')");
+            statement.execute("create table abbaustelle as select * from shp_points");
+        }
+        for (String symbol : java.util.List.of("CsvExport", "GpkgExport", "ShpExport")) {
+            String suffix = switch (symbol) { case "CsvExport" -> "csv"; case "GpkgExport" -> "gpkg"; default -> "shp"; };
+            Path output = root.resolve("external/" + symbol + "." + suffix);
+            Files.createDirectories(output.getParent());
+            var config = config();
+            config.put("params", Map.of("ziel", output.toString()));
+            var result = JobRunner.run(root, ReferenceExamplesTest.firstExample(symbol), config);
+            assertEquals(0, result.code(), result.err());
+            assertTrue(Files.size(output) > 0);
+            if (suffix.equals("csv")) {
+                assertTrue(Files.readString(output).contains("red"));
+                assertTrue(Files.readString(output).contains("blue"));
+            } else if (suffix.equals("shp")) {
+                assertEquals(1, FileOracles.dbfCount(root.resolve("external/ShpExport.dbf")));
+            } else {
+                try (var db = DriverManager.getConnection("jdbc:sqlite:" + output);
+                     var statement = db.createStatement(); var rows = statement.executeQuery("select count(*) from abbaustelle")) {
+                    assertTrue(rows.next());
+                    assertEquals(1, rows.getInt(1));
+                }
+            }
+        }
+    }
+
     private Map<String, Object> config() throws Exception {
         Map<String, Object> config = JobRunner.baseConfig(root);
         JobRunner.secret(root, config, "dbPassword", lease.password());

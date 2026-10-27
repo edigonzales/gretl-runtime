@@ -20,6 +20,7 @@ final class RunEnvironment {
     private final JobDefinition definition;
     private final ExecutionPlan plan;
     private final WorkspaceManager.Workspace workspace;
+    private final java.nio.file.Path jobRoot;
     private final List<ch.so.agi.gretl.runtime.api.Diagnostic> diagnostics = new ArrayList<>();
     private final AtomicInteger invocationCounter = new AtomicInteger();
     private boolean diagnosticsTruncated;
@@ -27,11 +28,12 @@ final class RunEnvironment {
     private boolean scopeDegraded;
 
     RunEnvironment(RunInput input, JobDefinition definition, ExecutionPlan plan,
-                   WorkspaceManager.Workspace workspace) {
+                   WorkspaceManager.Workspace workspace, java.nio.file.Path jobRoot) {
         this.input = Objects.requireNonNull(input, "input");
         this.definition = Objects.requireNonNull(definition, "definition");
         this.plan = Objects.requireNonNull(plan, "plan");
         this.workspace = Objects.requireNonNull(workspace, "workspace");
+        this.jobRoot = Objects.requireNonNull(jobRoot, "jobRoot");
     }
 
     RunInput input() {
@@ -71,7 +73,7 @@ final class RunEnvironment {
     }
 
     java.nio.file.Path jobRoot() {
-        return input.jobRoot();
+        return jobRoot;
     }
 
     java.nio.file.Path startCwd() {

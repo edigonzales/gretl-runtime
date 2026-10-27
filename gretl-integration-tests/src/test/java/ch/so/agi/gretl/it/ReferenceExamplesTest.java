@@ -52,6 +52,19 @@ class ReferenceExamplesTest {
         assertFalse(Files.exists(directory.resolve("gretl-reports")));
     }
 
+    static String firstExample(String symbol) throws Exception {
+        Path reference = Path.of("../docs/reference/reference.adoc").toAbsolutePath().normalize();
+        String document = Files.readString(reference);
+        String anchor = "[[task-" + symbol.toLowerCase(java.util.Locale.ROOT) + "]]";
+        int start = document.indexOf(anchor);
+        assertTrue(start >= 0, symbol);
+        int end = document.indexOf("\n[[task-", start + anchor.length());
+        var matcher = Pattern.compile("\\[source,groovy]\\R----\\R(.*?)\\R----", Pattern.DOTALL)
+                .matcher(document.substring(start, end < 0 ? document.length() : end));
+        assertTrue(matcher.find(), symbol);
+        return expandIncludes(matcher.group(1), reference.getParent());
+    }
+
     /** Only the two include forms used by the reference's executable recipes. */
     private static String expandIncludes(String snippet, Path base) throws Exception {
         var include = Pattern.compile("^include::([^\\[]+)\\[(?:tags=([^]]+))?]$");

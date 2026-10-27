@@ -9,7 +9,7 @@ Beispiel: [.code-fragment]#`database = 'db'`#
 
 | [.dsl-signature]#*dataFile* = path#
 | [.acronym]#CSV#-Ausgabedatei +
-Beispiel: [.code-fragment]#`dataFile = file('build/export.csv')`#
+Beispiel: [.code-fragment]#`dataFile = parameter('ziel')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*tableName* = text#

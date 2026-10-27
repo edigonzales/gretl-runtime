@@ -93,6 +93,12 @@ Für den aktuellen Katalog gilt damit ausdrücklich: A liefert HttpDownload, Ext
 
 Die anwenderorientierte DSL ist eine begründete Entwurfsentscheidung, noch kein empirischer Usability-Nachweis. Vor Freigabe werden kurze Aufgaben mit der vorgesehenen Zielgruppe geprüft: einen vorhandenen Schritt konfigurieren, eine Pflichtangabe korrigieren, einen Parameter übergeben und einen weiteren vorhandenen Baustein anschliessen. Bibliotheksautoren verwenden weiterhin die vertiefenden Java-/Groovy-Verträge.
 
+### ADR-4.1-PATHS — Rungebundene Paketressourcen und explizite Modellpfade
+
+Entscheidung vom 27. Oktober 2026: Materialisierte Job-JAR-Ressourcen werden erst nach erfolgreicher Definitions-, Parameter- und Planprüfung unter `<workRoot>/<runId>/job-resources/` angelegt. Sie bilden einen Lesebestand innerhalb desselben Besitz- und Retentionvertrags wie Taskarbeitsdateien. Der separate temporäre JAR-Ordner mit bedingungsloser Löschung entfällt. Hilfe und Plan benötigen keine Materialisierung; Setupfehler bleiben Code 2 und räumen ausschliesslich den unvollständigen eigenen Bereich bestmöglich auf.
+
+`modeldir` bei Csv2Excel, Av2ch und Av2geobau akzeptiert additiv einen lokalen `Path` als normalisierten absoluten Pfadtext; bestehender Suchpfadtext bleibt unverändert. Der allgemeine Textkonverter und die Requesttypen bleiben unverändert. Beispiele trennen Jobressourcen (`file`), Zwischenstände (`workPath`) und dauerhafte Ausgaben (deklarierte Pfadparameter). Keine Änderung der öffentlichen Task-SPI, keine neue CLI-Option, kein periodischer Janitor und keine Änderung der Abschlussreihenfolge. Die vollständigen Regeln stehen in OPS-021/OPS-040 und PKG-050/PKG-051.
+
 ## 3. Quellen der Paketierungsentscheidung
 
 | Frage | Primärquelle und Bedeutung |

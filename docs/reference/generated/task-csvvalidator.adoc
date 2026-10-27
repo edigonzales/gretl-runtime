@@ -71,12 +71,12 @@ Beispiel: [.code-fragment]#`skipPolygonBuilding = true`#
 
 | [.dsl-signature]#*logFile* = path#
 | Pfad der Validierungsdiagnosen; ohne expliziten Pfad verwendet der Adapter eine Datei im Arbeitsbereich. +
-Beispiel: [.code-fragment]#`logFile = file('build/validation.log')`#
+Beispiel: [.code-fragment]#`logFile = workPath('validation.log')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*xtfLogFile* = path#
 | Zusätzliche strukturierte Fehlerdatei im [.acronym]#INTERLIS#-Modell IliVErrors. +
-Beispiel: [.code-fragment]#`xtfLogFile = file('build/errors.xtf')`#
+Beispiel: [.code-fragment]#`xtfLogFile = workPath('errors.xtf')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxy* = text#

@@ -22,11 +22,11 @@ public final class AvOperations {
                 "ITF files to convert", true, null, "inputFiles = [file('data.itf')]",
                 FormatTaskSupport::paths, (b, v) -> ((Av2chBuilder) b).inputFiles = v);
         InputField<Av2chRequest, Path> output = field("outputDirectory", "path",
-                "Output directory", true, null, "outputDirectory = path('build/av')",
+                "Output directory", true, null, "outputDirectory = parameter('output')",
                 FormatTaskSupport::path, (b, v) -> ((Av2chBuilder) b).outputDirectory = v);
         InputField<Av2chRequest, String> modeldir = field("modeldir", "text",
                 "Model directory", false, null, "modeldir = file('models')",
-                FormatTaskSupport::text, (b, v) -> ((Av2chBuilder) b).modeldir = v);
+                FormatTaskSupport::modelSearchPath, (b, v) -> ((Av2chBuilder) b).modeldir = v);
         InputField<Av2chRequest, String> language = field("language", "text",
                 "Language (de or it)", false, "de", "language = 'de'",
                 FormatTaskSupport::text, (b, v) -> ((Av2chBuilder) b).language = v);
@@ -39,7 +39,7 @@ public final class AvOperations {
                 List.of(files, output, modeldir, language, zip),
                 List.of(Fields.output("directory", "path", "Output directory", false,
                         DirectoryResult::directory)),
-                "task('convert', Av2ch) {\n    inputFiles = [file('data.itf')]\n    outputDirectory = path('build/av')\n}\n");
+                "parameter('output', type: 'path', required: true, description: 'Ausgabeverzeichnis')\n\ntask('convert', Av2ch) {\n    inputFiles = [file('data.itf')]\n    outputDirectory = parameter('output')\n}\n\ndefaults 'convert'\n");
     }
 
     public static OperationType<Av2geobauRequest, DirectoryResult> av2geobau() {
@@ -47,13 +47,13 @@ public final class AvOperations {
                 "ITF files to convert", true, null, "itfFiles = [file('data.itf')]",
                 FormatTaskSupport::paths, (b, v) -> ((Av2geobauBuilder) b).itfFiles = v);
         InputField<Av2geobauRequest, Path> output = field("dxfDirectory", "path",
-                "DXF output directory", true, null, "dxfDirectory = path('build/dxf')",
+                "DXF output directory", true, null, "dxfDirectory = parameter('output')",
                 FormatTaskSupport::path, (b, v) -> ((Av2geobauBuilder) b).dxfDirectory = v);
         InputField<Av2geobauRequest, String> modeldir = field("modeldir", "text",
                 "Model directory", false, null, "modeldir = file('models')",
-                FormatTaskSupport::text, (b, v) -> ((Av2geobauBuilder) b).modeldir = v);
+                FormatTaskSupport::modelSearchPath, (b, v) -> ((Av2geobauBuilder) b).modeldir = v);
         InputField<Av2geobauRequest, Path> log = field("logFile", "path", "Log file", false,
-                null, "logFile = file('build/av2geobau.log')", FormatTaskSupport::path,
+                null, "logFile = workPath('av2geobau.log')", FormatTaskSupport::path,
                 (b, v) -> ((Av2geobauBuilder) b).logFile = v);
         InputField<Av2geobauRequest, String> proxy = field("proxy", "text", "HTTP proxy", false,
                 null, "proxy = 'proxy.example'", FormatTaskSupport::text, (b, v) -> ((Av2geobauBuilder) b).proxy = v);
@@ -68,7 +68,7 @@ public final class AvOperations {
                 List.of(files, output, modeldir, log, proxy, proxyPort, zip),
                 List.of(Fields.output("directory", "path", "DXF output directory", false,
                         DirectoryResult::directory)),
-                "task('convert', Av2geobau) {\n    itfFiles = [file('data.itf')]\n    dxfDirectory = path('build/dxf')\n}\n");
+                "parameter('output', type: 'path', required: true, description: 'Ausgabeverzeichnis')\n\ntask('convert', Av2geobau) {\n    itfFiles = [file('data.itf')]\n    dxfDirectory = parameter('output')\n}\n\ndefaults 'convert'\n");
     }
 
     public static OperationType<Gpkg2DxfRequest, DirectoryResult> gpkg2dxf() {
@@ -76,7 +76,7 @@ public final class AvOperations {
                 "GeoPackage file", true, null, "dataFile = file('data.gpkg')",
                 FormatTaskSupport::path, (b, v) -> ((Gpkg2DxfBuilder) b).dataFile = v);
         InputField<Gpkg2DxfRequest, Path> output = field("outputDir", "path",
-                "DXF output directory", true, null, "outputDir = path('build/dxf')",
+                "DXF output directory", true, null, "outputDir = parameter('output')",
                 FormatTaskSupport::path, (b, v) -> ((Gpkg2DxfBuilder) b).outputDir = v);
         return new OperationType<>("gretl.gpkg2dxf", "Gpkg2Dxf",
                 "Convert ili2gpkg GeoPackage tables to DXF", Gpkg2DxfRequest.class,
@@ -84,7 +84,7 @@ public final class AvOperations {
                 List.of(file, output),
                 List.of(Fields.output("directory", "path", "DXF output directory", false,
                         DirectoryResult::directory)),
-                "task('convert', Gpkg2Dxf) {\n    dataFile = file('data.gpkg')\n    outputDir = path('build/dxf')\n}\n");
+                "parameter('output', type: 'path', required: true, description: 'Ausgabeverzeichnis')\n\ntask('convert', Gpkg2Dxf) {\n    dataFile = file('data.gpkg')\n    outputDir = parameter('output')\n}\n\ndefaults 'convert'\n");
     }
 
     private static <T, R> InputField<T, R> field(String name, String type, String desc,

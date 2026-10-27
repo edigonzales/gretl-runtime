@@ -64,6 +64,11 @@ public final class FormatTaskSupport {
         throw new IllegalArgumentException("Path expected");
     }
 
+    /** A local model Path or an unchanged library-specific search path. */
+    public static String modelSearchPath(Object value) {
+        return value instanceof Path path ? path.toAbsolutePath().normalize().toString() : text(value);
+    }
+
     public static String text(Object value) {
         if (value instanceof CharSequence text && !text.toString().isBlank()) {
             return text.toString();

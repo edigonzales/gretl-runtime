@@ -92,6 +92,9 @@ Die Regeln stehen ausschliesslich in `assets/gretl-layout.css`.
 Das Layout der beiden Konfigurationstabellen (`gretl-runtime-config`) stellt die
 Zellen auf Mobil- und schmalen Tabletansichten untereinander dar; die letzte
 Zelle erhält dabei das Label «Vorgabe». Die Tasktabellen behalten ihr Layout.
+Die Aufbewahrungsmatrix (`gretl-work-retention`) stellt auf diesen Ansichten
+ebenfalls die Zellen untereinander dar, mit den Labels «Modus», «Erfolg / NO_DATA»,
+«Fehler» und «Abbruch / Timeout».
 Das lokale Template `templates/layout.ftl` ergänzt zum gebündelten Biblios-Template nur den Link
 auf dieses Stylesheet. Biblios und seine Standard-Stylesheets bleiben
 unverändert. Lange Tokens dürfen die mobile Seite nicht horizontal verbreitern.

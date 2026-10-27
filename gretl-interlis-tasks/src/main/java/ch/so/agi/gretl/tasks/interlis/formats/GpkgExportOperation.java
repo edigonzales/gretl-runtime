@@ -21,7 +21,7 @@ public final class GpkgExportOperation {
         InputField<Request, String> db = input("database", "text", "Source database alias", true,
                 null, "database = 'db'", FormatTaskSupport::text, (b, v) -> b.database = v);
         InputField<Request, Path> file = input("dataFile", "path", "GeoPackage output file", true,
-                null, "dataFile = file('build/output.gpkg')", FormatTaskSupport::path,
+                null, "dataFile = parameter('ziel')", FormatTaskSupport::path,
                 (b, v) -> b.dataFile = v);
         InputField<Request, List<String>> source = input("srcTableName", "list", "Source tables",
                 true, null, "srcTableName = ['abbaustelle']", FormatTaskSupport::strings,
@@ -43,7 +43,7 @@ public final class GpkgExportOperation {
         return new OperationType<>(ID, SYMBOL, "Export GeoPackage through iox-wkf",
                 Request.class, Result.class, Builder::new, Handler::new,
                 List.of(db, file, source, target, schema, batch, fetch), List.of(result),
-                "task('export', GpkgExport) {\n    database = 'db'\n    dataFile = file('build/output.gpkg')\n    srcTableName = ['abbaustelle']\n    dstTableName = ['abbaustelle']\n}\n");
+                "parameter('ziel', type: 'path', required: true, description: 'Ausgabedatei')\n\ntask('export', GpkgExport) {\n    database = 'db'\n    dataFile = parameter('ziel')\n    srcTableName = ['abbaustelle']\n    dstTableName = ['abbaustelle']\n}\n\ndefaults 'export'\n");
     }
 
     private static <T> InputField<Request, T> input(String name, String type, String desc,

@@ -229,13 +229,16 @@ Die Job-DSL kennt drei Pfadbereiche:
 
 - [.dsl-method]#`file('...')`# bezeichnet eine Datei oder ein Verzeichnis, das zum Job gehört.
 - [.dsl-method]#`workPath('...')`# bezeichnet eine temporäre Arbeitsdatei des aktuellen
-  Tasks. Der Pfad bleibt für nachfolgende Tasks bis zum Runende lesbar.
+  Tasks oder Aufrufs; auch Verzeichnisziele sind möglich. Vorhandene Dateien bleiben
+  für nachfolgende Tasks und Cleanup bis zur Runbereinigung lesbar.
 - [.dsl-method]#`path('...')`# löst einen erst im Job entstandenen externen Pfad relativ zum
   Startverzeichnis auf.
 
 Ein deklarierter Parameter vom Typ [.dsl-method]#`path`# liefert direkt einen aufgelösten
 [.java-type]#`Path`#. [.dsl-method]#`file`#, [.dsl-method]#`workPath`# und [.dsl-method]#`path`# öffnen die Datei nicht; sie liefern nur
-den Pfad. Ob eine Operation eine vorhandene Ausgabe überschreiben darf, regelt
+den Pfad; [.dsl-method]#`workPath`# legt zusätzlich erforderliche Elternverzeichnisse an.
+Details zu Basen und Aufbewahrung stehen unter
+<<_pfadbasen_und_arbeitsbereiche,Pfadbasen und Arbeitsbereiche>>. Ob eine Operation eine vorhandene Ausgabe überschreiben darf, regelt
 die jeweilige Taskart.
 
 === Ergebnisse
@@ -308,6 +311,9 @@ Weise in einen Erfolg umgedeutet. Ein [.config-key]#`return`# im Konfigurationsb
 in umgekehrter Registrierungsreihenfolge nach Erfolg, Fehler, NO_DATA und
 kooperativem Abbruch. Sie laufen nicht bei [.config-key]#`check`#, [.config-key]#`plan`# oder einem Fehler
 vor dem Run. Im Cleanup sind keine neuen Tasks und keine [.code-fragment]#`ctx.run`#-Aufrufe erlaubt.
+Die automatische Workspacebereinigung folgt erst nach diesen Aktionen; sie
+ist unabhängig von einem selbst registrierten Cleanup. Siehe
+<<_lebensdauer_und_automatische_bereinigung,Lebensdauer und automatische Bereinigung>>.
 Fachliche Erfolgsschritte wie das Löschen erfolgreich verarbeiteter Quelldaten
 gehören in den normalen Ablauf, da Cleanup auch nach einem Fehler läuft.
 
@@ -546,23 +552,148 @@ JSON-Werte werden weder als Groovy-Ausdruck noch mit Variablenersetzung ausgefü
 
 === Pfadbasen und Arbeitsbereiche
 
+Ein Job verwendet mehrere Verzeichnisse mit unterschiedlichen Aufgaben. Das
+*Startverzeichnis* ist der beim Prozessstart festgehaltene Ordner. Der
+*Jobroot* enthält die zum Job gehörenden Ressourcen. Der *Configordner* enthält
+die ausdrücklich ausgewählte Runtimekonfiguration. Keiner dieser Ordner muss
+mit dem Installationsverzeichnis von GRETL übereinstimmen.
+
+Relative Pfade werden anhand ihrer Herkunft aufgelöst:
+
 [cols="3,5",options="header"]
 |===
 | Pfad | Basis
-| Jobdatei und CLI-Dateioptionen | Ursprüngliches Startverzeichnis.
-| [.config-key]#`runtime`#-Pfade und Secretdateien | Verzeichnis der Runtimekonfiguration.
-| [.dsl-method]#`file('...')`# | Jobverzeichnis; im Job-JAR die materialisierten Ressourcen.
-| [.dsl-method]#`parameter('ziel')`# mit Typ [.dsl-method]#`path`# | Ursprüngliches Startverzeichnis, auch bei Übergabe aus einer Parameterdatei.
-| [.dsl-method]#`path('...')`# | Ursprüngliches Startverzeichnis.
-| [.dsl-method]#`workPath('...')`# | Privater Arbeitsbereich des aktuellen Tasks oder synchronen Aufrufs.
+| Jobdatei und CLI-Dateioptionen, etwa [.cli-option]#`--config`#, [.cli-option]#`--params-file`#, [.cli-option]#`--work-dir`#, [.cli-option]#`--report`# und [.cli-option]#`--output`# | Ursprüngliches Startverzeichnis.
+| Explizite [.config-key]#`runtime.workRoot`#-, [.config-key]#`runtime.reportRoot`#-Werte und Secretdateien | Verzeichnis der Runtimekonfiguration. Weggelassene Werte verwenden die Defaults aus <<_runtimekonfiguration,Runtimekonfiguration>>.
+| [.dsl-method]#`file('...')`# | Jobroot: Scriptordner; im Job-JAR die für diesen Run entpackten Ressourcen.
+| [.dsl-method]#`parameter('ziel')`# mit Typ [.literal]#`path`# | Ursprüngliches Startverzeichnis, unabhängig davon, ob der Wert aus Jobdefault, Runtimekonfiguration, Parameterdatei oder [.cli-option]#`--param`# stammt.
+| [.dsl-method]#`path('...')`# | Ursprüngliches Startverzeichnis; für externe Pfadtexte, die erst während der Ausführung entstehen.
+| [.dsl-method]#`workPath('...')`# | Eigener Arbeitsbereich des aktuellen Tasks beziehungsweise Aufrufs.
+| Textparameter und fachliche Textfelder | Keine allgemeine Pfadkonversion. Modellrepositorys, Suchpfade und Pfade innerhalb von SQL folgen dem jeweiligen Fachvertrag.
 |===
 
-Jeder Run erhält einen eigenen Arbeitsbereich. Zwischenergebnisse bleiben für
-Nachfolger bis zum Runende zugänglich. [.dsl-method]#`workPath`# verlangt relative Pfade,
-verhindert das Verlassen des Arbeitsbereichs und erstellt erforderliche
-Elternverzeichnisse. Es erstellt keine fertige Ausgabedatei.
-Ergebnisse, die den Run überleben sollen, gehören in ein ausdrücklich gewähltes
-externes Ziel. Mit [.cli-option]#`--keep-work always`# lassen sich Arbeitsdateien untersuchen.
+Absolute Pfade bleiben bei [.dsl-method]#`file`#, [.dsl-method]#`path`# und Pfadparametern
+absolut. Diese Funktionen sind keine Dateisystemsandbox. Sie prüfen nicht, ob
+die Datei existiert, und legen weder Dateien noch Elternverzeichnisse an.
+Bei Taskfeldern explizite Pfadhelper oder deklarierte Pfadparameter verwenden;
+ein nackter relativer String wird nicht allgemein zum Jobroot aufgelöst.
+
+==== Ein Beispiel mit getrennten Verzeichnissen
+
+GRETL wird aus [.path]#`/srv/automation`# gestartet:
+
+[source,bash]
+----
+gretl run jobs/import/job.groovy \
+  --config conf/runtime.json \
+  --params-file params/daily.json \
+  --param ziel=./export \
+  --report ./reports/import.json
+----
+
+Die Datei [.file-name]#`conf/runtime.json`# enthält unter [.config-key]#`runtime`#
+[.code-fragment]#`"workRoot": "./work"`# und
+[.code-fragment]#`"reportRoot": "./reports"`#. Daraus ergeben sich:
+
+[cols="3,5",options="header"]
+|===
+| Angabe | Aufgelöster Ort
+| Jobdatei | [.path]#`/srv/automation/jobs/import/job.groovy`#
+| [.dsl-method]#`file('sql/update.sql')`# | [.path]#`/srv/automation/jobs/import/sql/update.sql`#
+| Pfadparameter [.parameter]#`ziel`# | [.path]#`/srv/automation/export`#; die Parameterdatei ändert diese Basis nicht.
+| Gemeinsame Arbeitswurzel | [.path]#`/srv/automation/conf/work`#
+| Eigener Runbereich | [.path]#`/srv/automation/conf/work/<runId>/`#
+| Abschlussbericht | [.path]#`/srv/automation/reports/import.json`#
+| Ereignisdatei | [.path]#`/srv/automation/conf/reports/<runId>.events.jsonl`#
+| Secretdateiquelle [.code-fragment]#`"file": "./secrets/password.txt"`# | [.path]#`/srv/automation/conf/secrets/password.txt`#
+|===
+
+[.cli-option]#`--work-dir ./work`# würde die Arbeitswurzel dagegen auf
+[.path]#`/srv/automation/work`# setzen und den Configwert überschreiben.
+Ein Ordnername wie [.path]#`build`# hat keine besondere Runtimebedeutung.
+
+==== Arbeitsdateien mit workPath
+
+[.dsl-method]#`workPath('download/daten.zip')`# liefert einen absoluten
+[.java-type]#`Path`# für eine Zwischendatei. Jeder Run besitzt einen frischen privaten
+Unterordner unter [.config-key]#`workRoot`#. Tasks und synchrone Aufrufe erhalten
+eigene Unterbereiche. Schematisch sieht das so aus:
+
+[source,text]
+----
+<workRoot>/
+  <runId>/
+    job-resources/                 Ressourcen eines Job-JARs
+    <Task-/Aufrufbereich A>/
+      download/daten.zip
+    <Task-/Aufrufbereich B>/
+      entpackt/
+----
+
+Die Namen der Task-/Aufrufbereiche sind interne Details und werden im Job
+nicht zusammengesetzt. [.dsl-method]#`workPath`# wechselt das Prozess-Arbeitsverzeichnis
+nicht. Derselbe Name liefert im selben Bereich denselben Pfad; in einem
+anderen Task oder Aufruf bezeichnet er einen anderen Ort.
+
+Der Helper legt erforderliche Elternverzeichnisse an, aber keine fertige
+Ausgabedatei. Bei [.dsl-method]#`workPath('entpackt')`# wird auch das eigentliche
+Zielverzeichnis erst vom schreibenden Task angelegt. Absolute Angaben,
+Ausbrüche mit [.code-fragment]#`..`# und unzulässige Symlinks werden abgelehnt.
+Welche vorhandenen Ausgaben ersetzt werden dürfen, entscheidet die Taskart.
+
+Dateien bleiben nach Ende des erzeugenden Tasks oder Aufrufs für Nachfolger
+und Job-Cleanup verfügbar. Nachfolger lesen den Ergebnispfad, beispielsweise
+[.code-fragment]#`archive = result('download').file`#. Ein eigenes
+[.dsl-method]#`workPath('daten.zip')`# würde ihren eigenen Bereich bezeichnen.
+Das vollständige Beispiel steht unter <<_ergebnisse,Ergebnisse>>.
+
+==== Lebensdauer und automatische Bereinigung
+
+Nach der Taskarbeit laufen die registrierten Job-Cleanups. Danach wendet GRETL
+[.config-key]#`keepWork`# auf den gesamten eigenen Runbereich an:
+
+[cols="2,3,2,3",options="header",role="gretl-work-retention"]
+|===
+| Modus | Erfolg und NO_DATA | Fehler | Kontrollierter Abbruch / Timeout
+| [.literal]#`on-failure`# (Vorgabe) | löschen | behalten | behalten
+| [.literal]#`always`# | behalten | behalten | behalten
+| [.literal]#`never`# | löschen | löschen | löschen
+|===
+
+Ein Cleanupfehler macht einen sonst erfolgreichen Run zum Fehler. Die
+Bereinigung erfolgt vor dem Schreiben des Abschlussberichts. Ein späterer
+Berichtfehler kann deshalb einen Fehlerexit ergeben, obwohl die Arbeitsdateien
+bereits gelöscht wurden. Scheitert die Bereinigung, meldet GRETL dies; Reste
+können verbleiben. Nach hartem Prozessabbruch ist keine Bereinigung garantiert.
+
+Gelöscht wird ausschliesslich der eigene Run-Unterordner; die gemeinsame
+Arbeitswurzel und andere Runs bleiben bestehen. Es gibt *keine spätere
+zeitgesteuerte Bereinigung alter Runs* durch GRETL. Aufbewahrte Bereiche müssen
+betrieblich verwaltet werden und können zudem einer externen Tempverzeichnis-
+oder Volume-Bereinigung unterliegen. Sie sind keine garantierte dauerhafte Ablage.
+Mit [.cli-option]#`--keep-work always`# lassen sich Arbeitsdateien untersuchen;
+der Runbericht enthält unter [.config-key]#`execution.workRetained`#, ob sie behalten wurden.
+
+Dauerhafte Ergebnisse gehören in ausdrücklich gewählte externe Ziele,
+gewöhnlich über deklarierte Pfadparameter. Ziele ausserhalb des Runbereichs
+werden von der Workspacebereinigung nicht entfernt. Diese Lebensdauer hängt
+vom tatsächlichen Ablageort ab, nicht vom Namen eines Taskfelds.
+
+Im Job-JAR liegt der entpackte Ressourcenbestand unter [.path]#`job-resources/`#
+im Runbereich und folgt derselben Aufbewahrungsregel. Er dient als Lesebestand;
+erzeugte Ausgaben gehören auch dort in den Arbeitsbereich oder ein externes
+Ziel. Materialisierung erfolgt erst nach erfolgreicher Definitions-, Parameter-
+und Planprüfung vor der Taskarbeit. Die JAR-Optionen [.cli-option]#`--help`#,
+[.cli-option]#`--version`# und [.cli-option]#`--plan`# benötigen keinen entpackten Ressourcenbestand.
+Auch der Scriptbefehl [.config-key]#`check`# erzeugt keinen Runarbeitsbereich.
+Scheitert die Materialisierung, endet der Start mit Code 2 ohne Tasks oder
+Job-Cleanup; der unvollständige eigene Bereich wird bestmöglich entfernt.
+
+Runberichte und Ereignisdateien im Reportverzeichnis bleiben von
+[.config-key]#`keepWork`# unberührt. Ein fachlicher Prüfbericht innerhalb des
+Arbeitsbereichs folgt dagegen der Tabelle und kann nach Erfolg bereits fehlen,
+auch wenn sein Pfad im Runbericht steht. Dauerhaft benötigte Fachberichte
+müssen deshalb ebenfalls extern abgelegt oder während des Runs kopiert werden.
 
 === Secrets und Sprache
 
@@ -632,6 +763,11 @@ Konsole, Ereignisdatei und Abschlussbericht erfüllen unterschiedliche Aufgaben:
   [.code-fragment]#`logging.eventFile=false`# deaktiviert sie.
 * Der erforderliche Abschlussbericht heisst [.file-name]#`<runId>.json`# oder verwendet den
   Pfad aus [.cli-option]#`--report`#. Er enthält Taskstatus, Zeiten und explizite Diagnosen.
+
+Die Workspacebereinigung löscht diese beiden Dateien im Reportverzeichnis nicht.
+Fachliche Prüfberichte können dagegen im temporären Arbeitsbereich liegen und
+werden dort gemäss [.config-key]#`keepWork`# behandelt; siehe
+<<_lebensdauer_und_automatische_bereinigung,Lebensdauer>>.
 
 Der Bericht serialisiert keine beliebigen Taskresultate und ist kein
 Wiederaufnahmespeicher. Globale Hilfe, Jobhilfe, [.config-key]#`check`# und [.config-key]#`plan`# erzeugen
@@ -769,11 +905,13 @@ kann ein INTERLIS-Modell geladen werden.
 
 [source,groovy]
 ----
+parameter('ziel', type: 'path', required: true, description: 'Ausgabedatei')
+
 task('convert', Csv2Excel) {
     csvFile = file('data/input.csv')
-    outputFile = file('build/output.xlsx')
+    outputFile = parameter('ziel')
     models = 'CsvModel'
-    modeldir = 'models'
+    modeldir = file('models')
 }
 
 defaults 'convert'
@@ -802,9 +940,11 @@ CSV-Datei.
 
 [source,groovy]
 ----
+parameter('ziel', type: 'path', required: true, description: 'Ausgabedatei')
+
 task('export', CsvExport) {
     database = 'db'
-    dataFile = file('build/export.csv')
+    dataFile = parameter('ziel')
     tableName = 'colors'
     attributes = ['id', 'name']
 }
@@ -1353,9 +1493,11 @@ abgelehnt.
 
 [source,groovy]
 ----
+parameter('ziel', type: 'path', required: true, description: 'Ausgabeverzeichnis')
+
 task('convert', Gpkg2Shp) {
     dataFile = file('data/input.gpkg')
-    outputDir = path('build/shp')
+    outputDir = parameter('ziel')
 }
 
 defaults 'convert'
@@ -1383,9 +1525,11 @@ include::generated/task-gpkg2shp.adoc[]
 
 [source,groovy]
 ----
+parameter('ziel', type: 'path', required: true, description: 'Ausgabedatei')
+
 task('export', GpkgExport) {
     database = 'db'
-    dataFile = file('build/output.gpkg')
+    dataFile = parameter('ziel')
     srcTableName = ['abbaustelle']
     dstTableName = ['abbaustelle']
 }
@@ -2213,9 +2357,11 @@ Polygon-Löcher werden unterstützt.
 
 [source,groovy]
 ----
+parameter('ziel', type: 'path', required: true, description: 'Ausgabedatei')
+
 task('export', ShpExport) {
     database = 'db'
-    dataFile = file('build/output.shp')
+    dataFile = parameter('ziel')
     tableName = 'abbaustelle'
 }
 
@@ -2466,7 +2612,9 @@ Bei einem noch nicht veröffentlichten Snapshot müssen die benötigten
 Artefakte zuerst bereitgestellt oder mit [.command]#`./mvnw install`# im lokalen
 Maven-Repository installiert werden. Im Job-JAR gelten dieselben
 Parameterregeln und Pfadbasen wie beim Scriptstart. [.dsl-method]#`file('models')`# liest aus
-den materialisierten Paketressourcen. Das JAR enthält einen festen Jobstand;
+den erst beim Runstart materialisierten Paketressourcen im eigenen Runbereich.
+Diese folgen ebenfalls [.config-key]#`keepWork`#; Details stehen unter
+<<_pfadbasen_und_arbeitsbereiche,Pfadbasen und Arbeitsbereiche>>. Das JAR enthält einen festen Jobstand;
 eine Scriptänderung verlangt einen neuen Paketbuild.
 
 == Referenz pflegen

@@ -80,10 +80,10 @@ public final class ValidatorOperations {
                 false, "skipPolygonBuilding = true", FormatTaskSupport::bool,
                 (b, v) -> b.setSkipPolygonBuilding(v)));
         fields.add(field("logFile", "path", "Validation log file", false,
-                null, "logFile = file('build/validation.log')", FormatTaskSupport::path,
+                null, "logFile = workPath('validation.log')", FormatTaskSupport::path,
                 (b, v) -> b.setLogFile(v)));
         fields.add(field("xtfLogFile", "path", "IliVErrors log file", false,
-                null, "xtfLogFile = file('build/errors.xtf')", FormatTaskSupport::path,
+                null, "xtfLogFile = workPath('errors.xtf')", FormatTaskSupport::path,
                 (b, v) -> b.setXtfLogFile(v)));
         fields.add(field("proxy", "text", "HTTP proxy host", false, null,
                 "proxy = 'proxy.example'", FormatTaskSupport::text, (b, v) -> b.setProxy(v)));

@@ -171,7 +171,7 @@ Die Runtimekonfiguration wird vor Taskbeginn eingelesen und strukturell geprüft
 
 Absolut angegebene Pfade bleiben absolut. `file` und der fortgeschrittene `ctx.path` sind keine allgemeine Sandbox. Die gleichnamigen Kontextzugriffe folgen denselben Regeln wie die Helfer im Taskblock. Der Jobroot ist für mitgelieferte Beispiele ein Lesebestand; erzeugte Zwischenstände gehören in den Workspace.
 
-`workPath` akzeptiert nur relative Pfade innerhalb seines eigenen Bereichs, verhindert Traversal und unzulässige Symlinks in seinem erzeugten Pfad und erstellt benötigte Elternverzeichnisse. Die Runtime darf dadurch weder ausserhalb des Arbeitsbereichs schreiben noch eine fertige Ausgabedatei vortäuschen.
+`workPath` liefert einen absoluten Path für eine Datei oder ein Verzeichnis im aktuellen Task-/Aufrufbereich; es wechselt das Prozess-CWD nicht. Wiederholte gleiche Namen im selben Bereich liefern denselben Pfad, Namen in verschiedenen Bereichen andere Pfade. Nachfolger verwenden die Resultatpfade des Producers. `file` und `ctx.path` erzeugen keine Elternverzeichnisse. `workPath` akzeptiert nur relative Pfade innerhalb seines eigenen Bereichs, verhindert Traversal und unzulässige Symlinks in seinem erzeugten Pfad und erstellt benötigte Elternverzeichnisse. Die Runtime darf dadurch weder ausserhalb des Arbeitsbereichs schreiben noch eine fertige Ausgabedatei vortäuschen.
 
 ### OPS-022 — Geheimnisse
 
@@ -236,7 +236,19 @@ Optional installiert die Authoringdistribution zusätzlich den Packager. Ein nor
 
 Jeder Run erhält eine eindeutige Run-ID und einen neu angelegten privaten Unterordner. Unter Linux ist er nur für den ausführenden Benutzer zugänglich. Tasks und synchrone Invocations erhalten eigene Unterbereiche.
 
-Dateiresultate bleiben bis zum Runende erhalten. Bei Erfolg werden Arbeitsdateien gemäss `keepWork` entfernt; bei Fehler oder kontrolliertem Abbruch bleiben sie standardmässig für Diagnose bestehen. Eine explizite Aufbewahrungsentscheidung darf keine dauerhaften fachlichen Ausgaben löschen.
+Dateiresultate bleiben nach Task- und Aufrufende für Nachfolger und Job-Cleanup erhalten. Erst nach dem Job-Cleanup und der Ermittlung des fachlichen Outcomes wird die Aufbewahrung angewandt, vor dem Abschlussbericht:
+
+| `keepWork` | Erfolg / `NO_DATA` | Fehler, auch Cleanupfehler | Kontrollierter Abbruch / Timeout |
+|---|---|---|---|
+| `on-failure` (Default) | löschen | behalten | behalten |
+| `always` | behalten | behalten | behalten |
+| `never` | löschen | löschen | löschen |
+
+Im Job-JAR liegt der materialisierte Lesebestand unter `<workRoot>/<runId>/job-resources/` und folgt derselben Regel (ADR-4.1-PATHS in [11](11-quellen-entscheidungen-und-roadmap.md)). Die gemeinsame Arbeitswurzel und andere Runs bleiben erhalten. Dauerhafte fachliche Ausgaben werden explizit ausserhalb des Runbereichs abgelegt, gewöhnlich über einen Pfadparameter. Die Löschbarkeit richtet sich nach dem tatsächlichen Ort und nicht dem verwendeten Helper oder Feldnamen.
+
+Es gibt keinen späteren periodischen Altbestand-Cleanup durch GRETL. Betrieb und Plattform verantworten die weitere Aufbewahrung; Tempverzeichnis- oder Volume-Bereinigung kann behaltene Dateien entfernen. `always` ist deshalb keine Garantie einer dauerhaften Ablage. Nach hartem Prozessabbruch ist die Bereinigung nicht garantiert. Fehler beim Löschen werden mit `gretl.workspace.retention_failed` gemeldet; Reste können verbleiben. Ein nachfolgender Berichtfehler kann einen Fehlerexit erzeugen, nachdem die Arbeitsdateien bereits entfernt wurden.
+
+Runberichte und Ereignisdateien im Reportroot gehören nicht zur Workspace-Retention. Fachliche Prüfberichte innerhalb des Runbereichs folgen hingegen der Tabelle; ihre Diagnoseverweise im Runbericht garantieren nicht ihre weitere Existenz.
 
 Die automatische Workspacebereinigung traversiert ausschliesslich den eigenen Runbereich. Externe Ausgabeziele, Datenbankbestände und taskeigene Publikationshistorien liegen ausserhalb dieses Besitzvertrags. Der Runner löscht keinen Fachbestand aufgrund allgemeiner Logretention.
 

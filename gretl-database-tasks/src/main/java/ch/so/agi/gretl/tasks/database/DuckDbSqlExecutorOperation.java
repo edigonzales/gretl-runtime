@@ -34,7 +34,7 @@ public final class DuckDbSqlExecutorOperation {
     public static OperationType<DuckDbRequest, DuckDbResult> type() {
         InputField<DuckDbRequest, Path> database = new InputField<>(
                 "database", "path", "DuckDB database file", false,
-                Optional.empty(), List.of(), "database = file('build/work.duckdb')",
+                Optional.empty(), List.of(), "database = workPath('work.duckdb')",
                 DuckDbSqlExecutorOperation::path,
                 (builder, value) -> ((DuckDbBuilder) builder).setDatabase(value));
         InputField<DuckDbRequest, Boolean> inMemory = new InputField<>(
@@ -104,8 +104,9 @@ public final class DuckDbSqlExecutorOperation {
                         targets, exports, parameters, parameterSets),
                 List.of(executionCount, executions, exportFiles),
                 """
+                parameter('ziel', type: 'path', required: true, description: 'Parquet output file')
                 task('analyse', DuckDbSqlExecutor) {
-                    database = file('build/work.duckdb')
+                    database = workPath('work.duckdb')
                     sqlFiles = [file('sql/analyse.sql')]
                     sources = [[
                         type: 'csv',
@@ -122,10 +123,11 @@ public final class DuckDbSqlExecutorOperation {
                         type: 'parquet',
                         name: 'result',
                         query: 'SELECT * FROM input.data',
-                        file: file('build/result.parquet'),
+                        file: parameter('ziel'),
                         overwrite: true
                     ]]
                 }
+                defaults 'analyse'
                 """);
     }
 

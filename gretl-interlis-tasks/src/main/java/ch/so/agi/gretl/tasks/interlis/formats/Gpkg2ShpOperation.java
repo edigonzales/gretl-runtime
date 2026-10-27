@@ -22,14 +22,14 @@ public final class Gpkg2ShpOperation {
                 (builder, value) -> ((Builder) builder).dataFile = value);
         InputField<Request, Path> output = new InputField<>("outputDir", "path",
                 "Shapefile output directory", true, Optional.empty(), List.of(),
-                "outputDir = path('build/shp')", FormatTaskSupport::path,
+                "outputDir = parameter('ziel')", FormatTaskSupport::path,
                 (builder, value) -> ((Builder) builder).outputDir = value);
         OutputField<Result, Path> directory = Fields.output("directory", "path",
                 "Written output directory", false, Result::directory);
         return new OperationType<>(ID, SYMBOL, "Convert GeoPackage to Shapefiles",
                 Request.class, Result.class, Builder::new, Handler::new,
                 List.of(file, output), List.of(directory),
-                "task('convert', Gpkg2Shp) {\n    dataFile = file('data/input.gpkg')\n    outputDir = path('build/shp')\n}\n");
+                "parameter('ziel', type: 'path', required: true, description: 'Ausgabeverzeichnis')\n\ntask('convert', Gpkg2Shp) {\n    dataFile = file('data/input.gpkg')\n    outputDir = parameter('ziel')\n}\n\ndefaults 'convert'\n");
     }
 
     public record Request(Path dataFile, Path outputDir) {}

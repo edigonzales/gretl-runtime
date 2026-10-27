@@ -9,7 +9,7 @@ Beispiel: [.code-fragment]#`dataFile = file('data/input.gpkg')`#
 
 | [.dsl-signature]#*outputDir* = path#
 | Shapefile-Ausgabeverzeichnis +
-Beispiel: [.code-fragment]#`outputDir = path('build/shp')`#
+Beispiel: [.code-fragment]#`outputDir = parameter('ziel')`#
 | [.required]#ja#
 
 |===

@@ -18,7 +18,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,24 +63,13 @@ public final class JobJarMain {
                     + " (runtime " + metadata.runtimeVersion() + ")");
             return;
         }
-        Path jobRoot = null;
-        int exit = 2;
-        try {
-            jobRoot = materialize(metadata, locale);
-            PackagedJobSource source = new PackagedJobSource(metadata, jobRoot,
-                    JobJarMain.class.getClassLoader(), locale);
-            JobRuntime runtime = new JobRuntime(System.out, System.err, System.getenv(),
-                    Path.of("").toAbsolutePath().normalize(),
-                    JobJarMain.class.getClassLoader());
-            exit = runtime.executePackaged(source, args);
-        } catch (JobJarException exception) {
-            startupError(exception, locale);
-        } finally {
-            if (jobRoot != null) {
-                deleteQuietly(jobRoot);
-            }
-        }
-        System.exit(exit);
+        // Registration needs a logical root; the runner prepares packaged resources.
+        Path definitionRoot = Path.of("").toAbsolutePath().normalize();
+        PackagedJobSource source = new PackagedJobSource(metadata, definitionRoot,
+                JobJarMain.class.getClassLoader(), locale);
+        JobRuntime runtime = new JobRuntime(System.out, System.err, System.getenv(),
+                definitionRoot, JobJarMain.class.getClassLoader());
+        System.exit(runtime.executePackaged(source, args));
     }
 
     private static String requestedLanguage(String[] args) {
@@ -91,9 +81,15 @@ public final class JobJarMain {
         return null;
     }
 
-    private static Path materialize(JobMetadata metadata, Locale locale) throws JobJarException {
+    private static Path materialize(JobMetadata metadata, Locale locale, Path runRoot,
+                                    ClassLoader classLoader) throws IOException {
         try {
-            Path root = Files.createTempDirectory("gretl-job-");
+            FileAttribute<?>[] permissions = Files.getFileStore(runRoot)
+                    .supportsFileAttributeView("posix")
+                    ? new FileAttribute<?>[]{PosixFilePermissions.asFileAttribute(
+                            PosixFilePermissions.fromString("rwx------"))}
+                    : new FileAttribute<?>[0];
+            Path root = Files.createDirectory(runRoot.resolve("job-resources"), permissions);
             for (String file : metadata.resourceFiles()) {
                 String normalized = safeRelative(file, locale);
                 Path target = root.resolve(normalized).normalize();
@@ -101,21 +97,20 @@ public final class JobJarMain {
                     throw new JobJarException("JOB_RESOURCE_PATH",
                             Messages.format(locale, "job.error.resourceEscapes", file));
                 }
-                Files.createDirectories(target.getParent());
-                try (InputStream input = JobJarMain.class.getClassLoader()
+                Files.createDirectories(target.getParent(), permissions);
+                try (InputStream input = classLoader
                         .getResourceAsStream(RESOURCE_ROOT + normalized)) {
                     if (input == null) {
                         throw new JobJarException("JOB_RESOURCE_MISSING",
                                 Messages.format(locale, "job.error.resourceMissing",
                                         normalized));
                     }
-                    Files.copy(input, target, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(input, target);
                 }
             }
             return root;
-        } catch (IOException exception) {
-            throw new JobJarException("JOB_RESOURCE_IO",
-                    Messages.get(locale, "job.error.resourceIo"), exception);
+        } catch (JobJarException exception) {
+            throw new IOException(exception.getMessage(), exception);
         }
     }
 
@@ -131,23 +126,6 @@ public final class JobJarMain {
     private static void startupError(JobJarException exception, Locale locale) {
         System.err.println(new TextFormatter(locale).formatProblem(Instant.now(),
                 "JOB_JAR_STARTUP", null, exception.getMessage(), Map.of()));
-    }
-
-    private static void deleteQuietly(Path root) {
-        try {
-            if (!Files.exists(root)) {
-                return;
-            }
-            try (var walk = Files.walk(root)) {
-                walk.sorted(java.util.Comparator.reverseOrder()).forEach(path -> {
-                    try {
-                        Files.deleteIfExists(path);
-                    } catch (IOException ignored) {
-                    }
-                });
-            }
-        } catch (IOException ignored) {
-        }
     }
 
     public record JobMetadata(
@@ -257,6 +235,11 @@ public final class JobJarMain {
         @Override
         public Path jobRoot() {
             return jobRoot;
+        }
+
+        @Override
+        public Path prepareRun(Path runRoot) throws IOException {
+            return materialize(metadata, locale, runRoot, classLoader);
         }
 
         @Override

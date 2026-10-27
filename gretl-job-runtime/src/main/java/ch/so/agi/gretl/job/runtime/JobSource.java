@@ -9,7 +9,13 @@ import java.nio.file.Path;
 public interface JobSource {
     Path displayFile();
 
+    /** Definition root; packaged execution uses the root returned by prepareRun. */
     Path jobRoot();
+
+    /** Materialize resources only for an actual run, inside its owned workspace. */
+    default Path prepareRun(Path runRoot) throws java.io.IOException {
+        return jobRoot();
+    }
 
     String jobName();
 

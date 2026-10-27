@@ -21,7 +21,7 @@ public final class CsvExportOperation {
         InputField<Request, String> db = input("database", "text", "Source database alias", true,
                 null, "database = 'db'", FormatTaskSupport::text, (b, v) -> b.database = v);
         InputField<Request, Path> file = input("dataFile", "path", "CSV output file", true,
-                null, "dataFile = file('build/export.csv')", FormatTaskSupport::path,
+                null, "dataFile = parameter('ziel')", FormatTaskSupport::path,
                 (b, v) -> b.dataFile = v);
         InputField<Request, String> table = input("tableName", "text", "Source table", true,
                 null, "tableName = 'colors'", FormatTaskSupport::text, (b, v) -> b.tableName = v);
@@ -49,7 +49,7 @@ public final class CsvExportOperation {
                 Request.class, Result.class, Builder::new, Handler::new,
                 List.of(db, file, table, header, delimiter, separator, schema, attributes, encoding),
                 List.of(result),
-                "task('export', CsvExport) {\n    database = 'db'\n    dataFile = file('build/export.csv')\n    tableName = 'colors'\n}\n");
+                "parameter('ziel', type: 'path', required: true, description: 'Ausgabedatei')\n\ntask('export', CsvExport) {\n    database = 'db'\n    dataFile = parameter('ziel')\n    tableName = 'colors'\n}\n\ndefaults 'export'\n");
     }
 
     private static <T> InputField<Request, T> input(String name, String type, String desc,

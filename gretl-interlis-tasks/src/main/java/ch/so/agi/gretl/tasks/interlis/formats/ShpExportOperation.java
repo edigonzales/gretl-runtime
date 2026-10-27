@@ -21,7 +21,7 @@ public final class ShpExportOperation {
         InputField<Request, String> db = input("database", "text", "Source database alias", true,
                 null, "database = 'db'", FormatTaskSupport::text, (b, v) -> b.database = v);
         InputField<Request, Path> file = input("dataFile", "path", "Shapefile output path", true,
-                null, "dataFile = file('build/output.shp')", FormatTaskSupport::path,
+                null, "dataFile = parameter('ziel')", FormatTaskSupport::path,
                 (b, v) -> b.dataFile = v);
         InputField<Request, String> table = input("tableName", "text", "Source table", true,
                 null, "tableName = 'abbaustelle'", FormatTaskSupport::text,
@@ -37,7 +37,7 @@ public final class ShpExportOperation {
         return new OperationType<>(ID, SYMBOL, "Export Shapefile through native IOX writer",
                 Request.class, Result.class, Builder::new, Handler::new,
                 List.of(db, file, table, schema, encoding), List.of(result),
-                "task('export', ShpExport) {\n    database = 'db'\n    dataFile = file('build/output.shp')\n    tableName = 'abbaustelle'\n}\n");
+                "parameter('ziel', type: 'path', required: true, description: 'Ausgabedatei')\n\ntask('export', ShpExport) {\n    database = 'db'\n    dataFile = parameter('ziel')\n    tableName = 'abbaustelle'\n}\n\ndefaults 'export'\n");
     }
 
     private static <T> InputField<Request, T> input(String name, String type, String desc,

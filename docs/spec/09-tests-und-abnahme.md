@@ -144,7 +144,7 @@ Ein Test einer blockierten nicht kooperierenden Bibliothek darf die JVM von auss
 | TC-C03 | Jobroot, Start-CWD, Parameterdatei und Configordner verschieden | `file`, deklarierter `path`-Parameter, fortgeschrittener `ctx.path`, `workPath` und Secretdateipfad gemäss Vertrag. |
 | TC-C04 | Allgemeines `gretl --help` / `gretl --version` | Kein Jobladen, keine Provider-/Engineinitialisierung. |
 | TC-C05 | Secret und dynamischer Token | Kein automatisches Logging oder Serialisieren des Werts. |
-| TC-C06 | Neues Workdir, Erfolg, Fehler, `keepWork` | Dateien bis Runende verfügbar, korrekte Aufbewahrung, keine externen Fachdateien gelöscht. |
+| TC-C06 | Neues Workdir, Erfolg, `NO_DATA`, Fehler, Abbruch und Cleanupfehler in allen `keepWork`-Modi | Dateien bis einschliesslich Job-Cleanup verfügbar; Matrix aus OPS-040 erfüllt; Arbeitswurzel, andere Runs, Reports und externe Fachdateien bleiben erhalten. |
 | TC-C07 | Fertige Distribution ohne Maven/Gradle und Code-Netzzugang | Scriptjob und eigene Taskbibliothek funktionieren. |
 | TC-C08 | Runbericht und Scriptfehler | Status, Ursache, Datei und Zeile verständlich; keine Publisherfelder im Schema. |
 | TC-C09 | Start ohne Konfigurationsdatei | Defaults aus OPS-013 und deklarierte Jobdefaults, eindeutige Berichte und keine Runverzeichniserzeugung bei Hilfe/Plan. |
@@ -305,7 +305,7 @@ Diese zusätzlichen Orakel konkretisieren die Findings aus der Spezifikationspr�
 | TC-K07 | Finish, echte Fehler, Cancellation und Closefehler in kontrollierter Reihenfolge | Vollständige Tabelle CORE-024 eingehalten; keine Auswertung von Logseverities oder Uhrzeitspekulation. |
 | TC-K08 | Mehrere Job-Cleanups nach Erfolg/Fehler/Cancel | Umgekehrte Registrierung, gemeinsames Nachfristbudget, erste echte Ursache erhalten; keine Fachquittierung als generisches Cleanup. |
 | TC-K09 | Berichtpfad nach fachlicher Arbeit nicht mehr beschreibbar | Erforderlicher Reportfehler allgemein gemeldet, keine ETL-Wiederholung; vorhandene Primärursache und Fachwirkungen erhalten. |
-| TC-K10 | Workspace-Retention und Diagnoseartefakte | Nur eigener Runbereich betroffen; Logs/Reports ausserhalb bleiben; sensible verwahrte Dateien nicht automatisch als öffentliche Artefakte aufgenommen. |
+| TC-K10 | Workspace-Retention, materialisierte JAR-Ressourcen und Diagnoseartefakte | Nur eigener Runbereich betroffen; Logs/Reports ausserhalb bleiben; sensible verwahrte Dateien nicht automatisch als öffentliche Artefakte aufgenommen. |
 
 ### 11.3 Echte Groovy-Bindungsprobe — A/M2
 
@@ -369,3 +369,10 @@ Die Regeln BLD-001 bis BLD-008 in [07, Abschnitt 6.4](07-plattform-und-versionen
 | TC-BLD08 | M0, bei Releaseumfangsänderung | Eine weitere Entwicklungsperson kann anhand der kurzen Buildanleitung Standardprüfung, gezielten Modulbuild und die gelieferten Zusatzgates aufrufen. Voraussetzungen, Befehle und Artefaktorte stimmen mit CI überein; Dokumentreferenztests werden nicht als ausgeführter Maven-Produktbuild ausgegeben. |
 
 Ein einfacher Build darf weder Loggingtests noch Secretprüfung, echte Validatorintegration oder Endproduktnachweise auslassen. Die Regeln begrenzen Infrastrukturkomplexität; sie reduzieren nicht die zuvor festgelegte Qualität. Publisher, XtfToGpkg, Native und noch nicht implementierte Paketierung bleiben aus den aktuellen MVP-Nachweisen ausgeklammert.
+
+### Ergänzende Pfadabnahme zu ADR-4.1-PATHS
+
+- Ein gebautes Job-JAR wird aus fremdem CWD mit getrenntem Config-, Work- und Reportroot gestartet. Ressourcen und Arbeitsdateien folgen gemeinsam allen drei Aufbewahrungsmodi bei Erfolg, `NO_DATA`, Fehler, Abbruch und Cleanupfehler; externe Ausgaben und Berichte bleiben erhalten, das Original-JAR unverändert.
+- Hilfe, Version und Plan eines JARs mit fehlendem Ressourceneintrag funktionieren ohne Materialisierung. Der tatsächliche Run endet mit Code 2 ohne Task-/Cleanuparbeit und entfernt den unvollständigen eigenen Bereich bestmöglich. Unsichere Ressourceneinträge werden abgelehnt.
+- Gleiche Arbeitsdateinamen verschiedener Tasks/Aufrufe kollidieren nicht; Resultatpfade bleiben bis einschliesslich Job-Cleanup lesbar. Wiederholte Helperaufrufe im selben Bereich liefern denselben Pfad.
+- Die drei `modeldir`-Felder konvertieren lokale Path-Werte, erhalten Suchpfadtext und lehnen ungültige Werte ab. Ein echter Csv2Excel-Job verwendet einen lokalen Modellbestand aus fremdem Start-CWD. Der allgemeine Textkonverter lehnt Path weiterhin ab.

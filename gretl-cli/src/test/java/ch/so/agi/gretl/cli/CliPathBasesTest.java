@@ -27,7 +27,7 @@ class CliPathBasesTest {
                 parameter('input', type: 'path', required: true, description: 'extern')
                 action('check') {
                     assert file('local.txt').toFile().text == 'job-file'
-                    assert parameter('input').getFileName().toString() == 'external.txt'
+                    assert parameter('input').toFile().text == 'start-cwd'
                     assert ctx.path('external.txt').toFile().text == 'start-cwd'
                     assert secret('s').reveal() == 'secret-from-config'
                     assert workPath('sub/inside.txt').parent.toFile().exists()

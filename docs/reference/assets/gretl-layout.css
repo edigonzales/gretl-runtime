@@ -69,20 +69,25 @@
     .header-content { min-width: 0; }
 
     /* Keep the configuration reference readable without narrow text columns. */
-    .doc-content table.gretl-runtime-config,
-    .doc-content table.gretl-runtime-config :is(tbody, tr, td) {
+    .doc-content table:is(.gretl-runtime-config, .gretl-work-retention),
+    .doc-content table:is(.gretl-runtime-config, .gretl-work-retention) :is(tbody, tr, td) {
         display: block;
         width: 100%;
         box-sizing: border-box;
     }
 
-    .doc-content table.gretl-runtime-config :is(colgroup, thead) {
+    .doc-content table:is(.gretl-runtime-config, .gretl-work-retention) :is(colgroup, thead) {
         display: none;
     }
 
     .doc-content table.gretl-runtime-config td:last-child::before {
         content: "Vorgabe: ";
     }
+
+    .doc-content table.gretl-work-retention td:nth-child(1)::before { content: "Modus: "; }
+    .doc-content table.gretl-work-retention td:nth-child(2)::before { content: "Erfolg / NO_DATA: "; }
+    .doc-content table.gretl-work-retention td:nth-child(3)::before { content: "Fehler: "; }
+    .doc-content table.gretl-work-retention td:nth-child(4)::before { content: "Abbruch / Timeout: "; }
 }
 
 /* Keep chapter text clear of the sticky navigation, including its borders. */

@@ -15,9 +15,16 @@ import java.util.UUID;
  * public gretl-api SPI.
  */
 public final class RunInput {
+    /** Technical setup after workspace ownership, before run.started; not task SPI. */
+    @FunctionalInterface
+    public interface WorkspacePreparation {
+        Path prepare(Path runRoot) throws java.io.IOException;
+    }
+
     private final ResolvedParameters parameters;
     private final Map<String, Map<String, Object>> taskConfig;
     private final Path jobRoot;
+    private final WorkspacePreparation workspacePreparation;
     private final Path startCwd;
     private final Path workRoot;
     private final String jobName;
@@ -37,6 +44,8 @@ public final class RunInput {
         this.startCwd = builder.startCwd.toAbsolutePath().normalize();
         this.jobRoot = builder.jobRoot == null
                 ? startCwd : builder.jobRoot.toAbsolutePath().normalize();
+        this.workspacePreparation = builder.workspacePreparation == null
+                ? root -> jobRoot : builder.workspacePreparation;
         this.workRoot = builder.workRoot.toAbsolutePath().normalize();
         this.jobName = builder.jobName;
         this.runId = builder.runId;
@@ -66,6 +75,11 @@ public final class RunInput {
 
     public Path jobRoot() {
         return jobRoot;
+    }
+
+    Path prepareWorkspace(Path runRoot) throws java.io.IOException {
+        return Objects.requireNonNull(workspacePreparation.prepare(runRoot), "prepared jobRoot")
+                .toAbsolutePath().normalize();
     }
 
     public Path startCwd() {
@@ -133,6 +147,7 @@ public final class RunInput {
                 Map.of(), Map.of(), java.util.List.of(), Set.of());
         private Map<String, Map<String, Object>> taskConfig = Map.of();
         private Path jobRoot;
+        private WorkspacePreparation workspacePreparation;
         private Path startCwd = Path.of("").toAbsolutePath().normalize();
         private Path workRoot = Path.of(System.getProperty("java.io.tmpdir"), "gretl-work");
         private String jobName = "job";
@@ -159,6 +174,11 @@ public final class RunInput {
 
         public Builder jobRoot(Path value) {
             this.jobRoot = Objects.requireNonNull(value, "jobRoot");
+            return this;
+        }
+
+        public Builder workspacePreparation(WorkspacePreparation value) {
+            this.workspacePreparation = Objects.requireNonNull(value, "workspacePreparation");
             return this;
         }
 

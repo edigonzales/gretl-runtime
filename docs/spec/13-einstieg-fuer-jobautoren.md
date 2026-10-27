@@ -228,6 +228,8 @@ Ein Beispiel: `file('models')` meint den Modellordner, der zusammen mit dem Job 
 
 Zwischendateien bleiben für nachfolgende Aufgaben bis zum Ende des Jobs verfügbar. Nach einem erfolgreichen Lauf wird der normale Arbeitsbereich aufgeräumt. Dateien, die dauerhaft bereitstehen sollen, erhalten deshalb einen ausdrücklich vorgesehenen externen Ausgabeort.
 
+Arbeitsdateien bleiben für Nachfolger und Job-Cleanup erhalten. Danach löscht GRETL sie standardmässig bei Erfolg und `NO_DATA`; bei Fehler und kontrolliertem Abbruch bleiben sie zur Diagnose. `--keep-work always` behält den eigenen Runbereich, `never` entfernt ihn auch bei Fehlern. Eine spätere zeitgesteuerte Bereinigung alter Runs übernimmt GRETL nicht. Dauerhafte Ergebnisse gehören in externe Pfadparameter. Die vollständige Matrix und die Grenzen bei hartem Abbruch oder Berichtfehler stehen in [06, OPS-040](06-betrieb-und-auslieferung.md#ops-040--workspace-lifecycle).
+
 ## 7. Vorgänger, Ergebnisse und Standardziel
 
 Für gewöhnliche Jobs reicht `dependsOn`. Ein einzelner Vorgänger steht als Name:

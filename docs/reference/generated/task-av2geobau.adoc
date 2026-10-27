@@ -9,17 +9,17 @@ Beispiel: [.code-fragment]#`itfFiles = [file('data.itf')]`#
 
 | [.dsl-signature]#*dxfDirectory* = path#
 | Verzeichnis für erzeugte [.acronym]#DXF#-Dateien beziehungsweise ZIP-Archive. +
-Beispiel: [.code-fragment]#`dxfDirectory = path('build/dxf')`#
+Beispiel: [.code-fragment]#`dxfDirectory = parameter('output')`#
 | [.required]#ja#
 
 | [.dsl-signature]#*modeldir* = text#
-| Lokales Verzeichnis beziehungsweise Suchpfad der für die Konvertierung benötigten Modelle. +
+| Lokales Modellverzeichnis als Path (etwa [.dsl-method]#`file('models')`#) oder unveränderter Suchpfadtext der Fachbibliothek; mehrere Verzeichnisse nach deren Regeln trennen. +
 Beispiel: [.code-fragment]#`modeldir = file('models')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*logFile* = path#
 | Pfad für das Protokoll der Fachbibliothek. +
-Beispiel: [.code-fragment]#`logFile = file('build/av2geobau.log')`#
+Beispiel: [.code-fragment]#`logFile = workPath('av2geobau.log')`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*proxy* = text#

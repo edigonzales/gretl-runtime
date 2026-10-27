@@ -9,7 +9,7 @@ Beispiel: [.code-fragment]#`dataFile = file('data.gpkg')`#
 
 | [.dsl-signature]#*outputDir* = path#
 | Verzeichnis für erzeugte [.acronym]#DXF#-Dateien beziehungsweise ZIP-Archive. +
-Beispiel: [.code-fragment]#`outputDir = path('build/dxf')`#
+Beispiel: [.code-fragment]#`outputDir = parameter('output')`#
 | [.required]#ja#
 
 |===
