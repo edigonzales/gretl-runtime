@@ -1,0 +1,46 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  search: false
+  title: "next.gretl.app"
+  site-url: "https://next.gretl.app"
+  favicon: assets/gretl-mark.svg
+  navbar:
+    pinned: true
+    collapse-below: lg
+    left:
+      - href: index.qmd
+        text: Overview
+      - href: features.qmd
+        text: Features
+      - href: getting-started.qmd
+        text: Getting Started
+      - href: docs.qmd
+        text: Docs
+    right:
+      - icon: github
+        text: GitHub
+        href: https://github.com/edigonzales/gretl-runtime
+        aria-label: GRETL on GitHub
+  page-footer:
+    left: "GRETL next"
+    right: "Built with Quarto"
+
+lang: en
+
+format:
+  html:
+    theme:
+      - cosmo
+      - styles.scss
+    toc: false
+    code-copy: true
+    code-overflow: scroll
+    highlight-style: github
+    smooth-scroll: true
+    link-external-newwindow: true
+
+execute:
+  freeze: auto

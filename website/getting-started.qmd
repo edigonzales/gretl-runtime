@@ -1,0 +1,25 @@
+---
+title: "Getting Started"
+description: "Create and run a small GRETL next job."
+---
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Create a Gradle project, apply the plugin and register your first task.
+
+```groovy
+plugins {
+    id 'ch.so.agi.gretl'
+}
+
+import ch.so.agi.gretl.tasks.SqlExecutor
+
+tasks.register('executeSql', SqlExecutor) {
+    database 'jdbc:sqlite:build/example.db'
+    sqlFiles 'sql/init.sql'
+}
+```
+
+Run the task:
+
+```bash
+./gradlew executeSql
+```

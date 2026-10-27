@@ -1,0 +1,18 @@
+---
+title: "Features"
+description: "What is new and different in GRETL next."
+---
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. GRETL next keeps Gradle as the pipeline engine while presenting a smaller, task-focused public DSL.
+
+## Modular plugins
+
+Lorem ipsum dolor sit amet. Core tasks and GeoTools-heavy processing can evolve independently.
+
+## DuckDB federation
+
+Lorem ipsum dolor sit amet. Configure logical sources, run SQL and export results without filling the job with connection plumbing.
+
+## Control plane
+
+Lorem ipsum dolor sit amet. A small server and pull workers add scheduling, run history and logs while jobs remain ordinary Gradle builds.

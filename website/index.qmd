@@ -1,0 +1,97 @@
+---
+page-layout: full
+body-classes: landing-page
+---
+
+<!--
+  STARTSEITE
+  Die Texte in diesem Dokument können direkt geändert werden.
+  Farben, Abstände und Typografie befinden sich in styles.scss.
+-->
+
+::: {.landing-shell}
+
+::: {.hero}
+
+::: {.hero-copy}
+
+<h1 class="hero-title">
+  <span>GRETL next,</span>
+  <span class="gradient-text">reengineered.</span>
+</h1>
+
+<p class="hero-lead">
+  Geospatial ETL with a focused Groovy DSL, DuckDB federation and INTERLIS tools,
+  powered by a standalone Java runtime.
+</p>
+
+::: {.hero-actions}
+[Get started [→]{.button-arrow}](getting-started.qmd){.btn .btn-primary .btn-lg}
+[Explore features](features.qmd){.btn .btn-outline-primary .btn-lg}
+:::
+
+:::
+
+::: {.hero-code-wrap}
+::: {.hero-glow .hero-glow-warm}
+:::
+
+::: {.hero-code}
+```{.groovy code-line-numbers="true"}
+task('analyse', DuckDbSqlExecutor) {
+    database = workPath('work.duckdb')
+    sqlFiles = [file('sql/analyse.sql')]
+}
+
+defaults 'analyse'
+```
+:::
+
+:::
+
+:::
+
+::: {.benefit-strip}
+
+::: {.benefit}
+::: {.benefit-icon .icon-teal}
+<i class="bi bi-puzzle"></i>
+:::
+::: {.benefit-copy}
+### Modular by design
+Plug in only what you need. Keep the core small and the build focused.
+:::
+:::
+
+::: {.benefit}
+::: {.benefit-icon .icon-orange}
+<i class="bi bi-database"></i>
+:::
+::: {.benefit-copy}
+### DuckDB SQL
+Query PostgreSQL, GeoPackage and CSV through one prepared DuckDB session.
+:::
+:::
+
+::: {.benefit}
+::: {.benefit-icon .icon-blue}
+<i class="bi bi-book"></i>
+:::
+::: {.benefit-copy}
+### Versioned docs
+Keep examples, task reference and release documentation clearly separated.
+:::
+:::
+
+::: {.benefit}
+::: {.benefit-icon .icon-coral}
+<i class="bi bi-diagram-3"></i>
+:::
+::: {.benefit-copy}
+### Lightweight control plane
+Schedule jobs, route them to workers and keep run history without replacing Gradle.
+:::
+:::
+
+:::
+:::
