@@ -1,0 +1,54 @@
+/* Reference layout only. Fonts, colors, tables and code use Biblios defaults. */
+.doc-page {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.doc-page > h1,
+.doc-content :is(.paragraph, .ulist, .olist, .dlist, .listingblock,
+                 .literalblock, .admonitionblock, .sidebarblock, .imageblock,
+                 .quoteblock, .verseblock),
+.doc-content :is(h1, h2, h3, h4, h5, h6),
+.doc-content table.tableblock:not(.gretl-task-properties) {
+    max-width: var(--content-width);
+}
+
+.doc-content table.gretl-task-properties {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+}
+
+.doc-content table.gretl-task-properties :is(th, td),
+.doc-content table.gretl-task-properties code,
+.doc-content table.gretl-task-properties .dsl-signature {
+    overflow-wrap: anywhere;
+    min-width: 0;
+}
+
+.doc-content :is(p, li, dd, th, td),
+.doc-page :is(h1, h2, h3, h4, h5, h6),
+.site-header .site-title {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+    .sidebar,
+    .doc-switcher,
+    .version-switcher,
+    .doc-switcher select,
+    .version-switcher select {
+        max-width: 100%;
+    }
+
+    .header-content { min-width: 0; }
+    /* AsciiDoc supplies inline col widths; override them only on small screens. */
+    .doc-content table.gretl-task-properties col:nth-child(1) { width: 30% !important; }
+    .doc-content table.gretl-task-properties col:nth-child(2) { width: 46% !important; }
+    .doc-content table.gretl-task-properties col:nth-child(3) { width: 24% !important; }
+}
+
+/* Keep chapter text clear of the sticky navigation, including its borders. */
+.doc-content :is(h1, h2, h3, h4, h5, h6)[id] {
+    scroll-margin-top: calc(var(--anchor-offset) + 0.5rem);
+}

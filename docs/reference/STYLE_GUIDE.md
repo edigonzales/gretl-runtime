@@ -1,9 +1,10 @@
 # Typografie und technische Schreibweisen
 
-Die Gestaltung und Rollen stammen aus
-[gretl-next](https://github.com/edigonzales/gretl-next/tree/main/docs/reference)
-und sind hier auf die Runtime-DSL angepasst. Technische Begriffe werden nach
-ihrer Bedeutung ausgezeichnet. Blau bleibt Links vorbehalten.
+Die Referenz verwendet das unveränderte Default-Styling von Thoth Biblios
+für Schrift, Farben, Überschriften, Tabellen und Code. Die technischen Rollen
+stammen aus [gretl-next](https://github.com/edigonzales/gretl-next/tree/main/docs/reference)
+und sind auf die Runtime-DSL angepasst. Sie erhalten keine eigene Typografie;
+Backticks und starke Feldnamen verwenden die Standarddarstellung.
 
 ## Semantische Rollen
 
@@ -68,10 +69,9 @@ Nur der Feldname in der Signatur wird fett gesetzt. Weitere Angaben stehen
 in der Beschreibung: Vorgabe, erlaubte Werte und Feldbeispiel. Nur tatsächlich
 vorhandene Metadatenvorgaben werden als Vorgabe ausgegeben.
 
-Überschriften verwenden Recursive mit Gewicht 900, DSL-Methoden und starke
-Feldnamen Gewicht 700. Technische Kategorien erhalten keine eigene Farbe.
-Inline-Code in Referenztabellen hat keinen zusätzlichen Hintergrund.
-Hinweisboxen bleiben davon unabhängig und ersetzen keine reguläre Beschreibung.
+Schriften und Schriftgewichte werden nicht lokal festgelegt. Codeblöcke und
+Inline-Code verwenden die Biblios-/Prism-Defaults. Technische Kategorien
+erhalten keine eigene Farbe. Hinweise ersetzen keine reguläre Beschreibung.
 Lange Feldnamen, Pfade und Beispiele dürfen umbrechen.
 
 ## Breite Property-Tabellen
@@ -79,10 +79,12 @@ Lange Feldnamen, Pfade und Beispiele dürfen umbrechen.
 Der GRETL-Renderer setzt die Tabellenrolle `gretl-task-properties`. Nur diese
 Tabellen nutzen die volle verfügbare Inhaltsbreite neben der Navigation.
 Lauftext, Codeblöcke, Hinweise und gewöhnliche Tabellen behalten maximal `72ch`.
-Die Regeln stehen ausschliesslich in `assets/styles.css`; Biblios bleibt
-unverändert. Lange Tokens dürfen die mobile Seite nicht horizontal verbreitern.
-Der mehrzeilige mobile Kopfbereich bleibt im normalen Dokumentfluss und
-verdeckt keine Kapitelanker.
+Die Regeln stehen ausschliesslich in `assets/gretl-layout.css`. Das lokale
+`templates/layout.ftl` ergänzt zum gebündelten Biblios-Template nur den Link
+auf dieses Stylesheet. Biblios und seine Standard-Stylesheets bleiben
+unverändert. Lange Tokens dürfen die mobile Seite nicht horizontal verbreitern;
+Ein kleiner zusätzlicher Scrollabstand hält Kapitelanker unterhalb der
+Standardnavigation sichtbar.
 
 ## Generierung und Review
 

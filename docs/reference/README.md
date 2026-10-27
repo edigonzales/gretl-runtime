@@ -7,7 +7,7 @@ verlinkt auf 44 alphabetisch geordnete Taskkapitel.
 
 ## Quellen und Zuständigkeiten
 
-- Fachliche Beschreibungen, Gestaltung, Prism-Anpassungen und Fonts basieren
+- Fachliche Beschreibungen und Beispiele basieren
   auf [gretl-next](https://github.com/edigonzales/gretl-next/tree/main/docs/reference),
   Ausgangsstand der Hauptdatei: Git-Blob `3250307aaa7e46aac1052ad31cf3a400b324fa27`.
   Alte Gradle-Beispiele und Aussagen werden gegen die Runtimeimplementierung
@@ -23,7 +23,8 @@ verlinkt auf 44 alphabetisch geordnete Taskkapitel.
   Weitere Rezepte verwenden AsciiDoc-Tags in ausgeführten Integrationsjobs.
   Änderungen an diesen Rezepten werden deshalb mit denselben echten Fixtures
   geprüft. Erklärungsausschnitte werden als solche gekennzeichnet.
-- [STYLE_GUIDE.md](STYLE_GUIDE.md) beschreibt Typografie und technische Rollen.
+- Schrift, Farben und Codegestaltung verwenden die unveränderten Biblios-Defaults.
+  [STYLE_GUIDE.md](STYLE_GUIDE.md) beschreibt technische Rollen und die wenigen Layoutregeln.
 
 ## Tabellen aktualisieren
 
@@ -97,24 +98,33 @@ java -jar ../../../thoth/thoth-biblios/build/libs/thoth-biblios-0.0.1-SNAPSHOT-a
   build --config biblios.yml --clean
 ```
 
-Beide Konfigurationen müssen neben `assets/` liegen, da Thoth die Overrides
-relativ zur Konfigurationsdatei auflöst. Eine Konfigurationskopie in `/tmp`
-würde die lokalen CSS- und Font-Overrides nicht übernehmen.
+Beide Konfigurationen müssen neben `assets/` und `templates/` liegen, da Thoth
+die Overrides relativ zur Konfigurationsdatei auflöst. Eine Konfigurationskopie
+in `/tmp` würde die lokalen Layoutregeln und deren Stylesheet-Link nicht übernehmen.
 
 ## Breite Property-Tabellen
 
 Der GRETL-Renderer setzt die AsciiDoc-Rolle `gretl-task-properties`, die in
-HTML als Klasse der Tabelle erscheint. `assets/styles.css` ersetzt über den
-vorhandenen Biblios-Asset-Override das Stylesheet dieser Referenz:
+HTML als Klasse der Tabelle erscheint. `assets/gretl-layout.css` ergänzt nur
+Breiten- und Umbruchregeln sowie einen kleinen Abstand für Kapitelanker;
+die Standard-Stylesheets werden nicht ersetzt:
 
 - Der Artikel verwendet die verfügbare Inhaltsbreite neben der Navigation.
 - Lauftext, Codeblöcke, Hinweise und gewöhnliche Tabellen bleiben maximal `72ch` breit.
 - Nur `table.gretl-task-properties` verwendet die volle verfügbare Inhaltsbreite.
 - Lange Feldnamen und Beispiele dürfen auf schmalen Viewports umbrechen.
 
-Biblios-Code und globale Biblios-Templates/-Styles werden dafür nicht geändert.
-`assets/prism-overrides.css` und `assets/fonts/` übernehmen die Codegestaltung
-und Fonts der Vorlage. Gebaute Seiten und Thoth-Caches werden nicht eingecheckt.
+`templates/layout.ftl` ist eine Kopie des gebündelten Templates aus dem verwendeten
+Thoth-Biblios-JAR mit genau einem zusätzlichen Stylesheet-Link auf
+`gretl-layout.css` nach dem Standard-Stylesheet. Bei einem Thoth-Update die
+Vorlage mit dem gebündelten Template abgleichen und nur diesen Link ergänzen.
+Biblios-Code und globale Templates bleiben unverändert. Die standardmässigen
+`styles.css`, `prism-overrides.css` und Fonts werden aus Biblios übernommen.
+Lokale Schrift-, Farb- oder Prism-Overrides sind nicht vorgesehen.
+
+Nach Änderungen an Overrides sauber mit `build --clean` rendern, damit entfernte
+Assets nicht in der Ausgabe zurückbleiben. Gebaute Seiten und Thoth-Caches werden
+nicht eingecheckt.
 
 ## Abnahme und Pflege
 
@@ -126,7 +136,8 @@ und Fonts der Vorlage. Gebaute Seiten und Thoth-Caches werden nicht eingecheckt.
 4. Bei 1440px, 1024px und 390px Breite kontrollieren: Tabellenklasse vorhanden,
    Property-Tabellen bei ausreichendem Platz breiter als Lauftext, Texte maximal
    `72ch`, kein horizontaler Seitenüberlauf, Navigation ohne Überlagerung,
-   Fonts geladen und Codeblöcke mit Copy-Button.
+   Biblios-Standardschriften geladen und Codeblöcke mit dem Standard-Prism-Styling
+   und Copy-Button.
 5. Bei neuen Taskarten Kurzbeschreibung, Feldtexte und Ergebnisse in beiden
    Sprachkatalogen vervollständigen und ein alphabetisches Kapitel mit
    Beschreibung, vollständigem Beispiel, Voraussetzungen und Grenzen ergänzen.
