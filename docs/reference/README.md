@@ -102,7 +102,7 @@ Beide Konfigurationen müssen neben `assets/` und `templates/` liegen, da Thoth
 die Overrides relativ zur Konfigurationsdatei auflöst. Eine Konfigurationskopie
 in `/tmp` würde die lokalen Layoutregeln und deren Stylesheet-Link nicht übernehmen.
 
-## Breite Property-Tabellen
+## Breite Tabellen und Taskbeispiele
 
 Der GRETL-Renderer setzt die AsciiDoc-Rolle `gretl-task-properties`, die in
 HTML als Klasse der Tabelle erscheint. `assets/gretl-layout.css` ergänzt nur
@@ -110,9 +110,16 @@ Breiten- und Umbruchregeln sowie einen kleinen Abstand für Kapitelanker;
 die Standard-Stylesheets werden nicht ersetzt:
 
 - Der Artikel verwendet die verfügbare Inhaltsbreite neben der Navigation.
-- Lauftext, Codeblöcke, Hinweise und gewöhnliche Tabellen bleiben maximal `72ch` breit.
-- Nur `table.gretl-task-properties` verwendet die volle verfügbare Inhaltsbreite.
-- Lange Feldnamen und Beispiele dürfen auf schmalen Viewports umbrechen.
+- Property-Tabellen (`gretl-task-properties`), Ergebnisfeldtabellen
+  (`gretl-task-results`) und Codeblöcke im Abschnitt `gretl-task-reference`
+  verwenden dieselbe volle Inhaltsbreite. Das gilt auch für die Prism-Toolbar.
+- Lauftext, Hinweise und gewöhnliche Tabellen bleiben maximal `72ch` breit.
+  Codeblöcke ausserhalb der Taskkapitel behalten ebenfalls diese Begrenzung.
+- Beide Referenztabellen verwenden eine erste Spalte von 30%, eine flexible
+  Beschreibungsspalte und eine automatisch nach dem Inhalt bemessene Statusspalte.
+  «Erforderlich», «Nullable» und die Statuswerte bleiben jeweils in einer Zeile.
+- Lange Feldnamen und Beschreibungen dürfen auf schmalen Viewports umbrechen.
+  Lange Codezeilen scrollen bei Bedarf innerhalb des Codeblocks.
 
 `templates/layout.ftl` ist eine Kopie des gebündelten Templates aus dem verwendeten
 Thoth-Biblios-JAR mit genau einem zusätzlichen Stylesheet-Link auf
@@ -133,9 +140,11 @@ nicht eingecheckt.
    Dafür werden Docker sowie PostgreSQL/PostGIS-, FTP- und S3-Testcontainer benötigt.
 3. Den aktuellen Working Tree mit Thoth rendern. Keine ungelösten Includes,
    fehlenden Anker oder defekten lokalen Ressourcen akzeptieren.
-4. Bei 1440px, 1024px und 390px Breite kontrollieren: Tabellenklasse vorhanden,
-   Property-Tabellen bei ausreichendem Platz breiter als Lauftext, Texte maximal
-   `72ch`, kein horizontaler Seitenüberlauf, Navigation ohne Überlagerung,
+4. Bei 1440px, 1024px und 390px Breite alle 44 Taskkapitel kontrollieren:
+   Property- und Ergebnisfeldtabellen sowie Codebeispiele haben dieselbe Breite;
+   Statusüberschriften und -werte sind einzeilig. Lauftext und Code ausserhalb
+   der Taskkapitel bleiben auf `72ch` begrenzt. Kein horizontaler Seitenüberlauf,
+   keine abgeschnittenen Zellinhalte, Navigation ohne Überlagerung,
    Biblios-Standardschriften geladen und Codeblöcke mit dem Standard-Prism-Styling
    und Copy-Button.
 5. Bei neuen Taskarten Kurzbeschreibung, Feldtexte und Ergebnisse in beiden

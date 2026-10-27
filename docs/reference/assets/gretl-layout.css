@@ -9,21 +9,46 @@
                  .literalblock, .admonitionblock, .sidebarblock, .imageblock,
                  .quoteblock, .verseblock),
 .doc-content :is(h1, h2, h3, h4, h5, h6),
-.doc-content table.tableblock:not(.gretl-task-properties) {
+.doc-content table.tableblock:not(.gretl-task-properties, .gretl-task-results) {
     max-width: var(--content-width);
 }
 
-.doc-content table.gretl-task-properties {
+.doc-content .gretl-task-reference .listingblock {
     width: 100%;
     max-width: 100%;
-    table-layout: fixed;
 }
 
-.doc-content table.gretl-task-properties :is(th, td),
-.doc-content table.gretl-task-properties code,
-.doc-content table.gretl-task-properties .dsl-signature {
+.doc-content table:is(.gretl-task-properties, .gretl-task-results) {
+    width: 100%;
+    max-width: 100%;
+    table-layout: auto;
+}
+
+.doc-content table:is(.gretl-task-properties, .gretl-task-results) :is(th, td),
+.doc-content table:is(.gretl-task-properties, .gretl-task-results) code,
+.doc-content table:is(.gretl-task-properties, .gretl-task-results) .dsl-signature {
     overflow-wrap: anywhere;
     min-width: 0;
+}
+
+/* AsciiDoc supplies inline col widths. Reserve only the status column's
+   intrinsic width, leaving the description the remaining space. */
+.doc-content table:is(.gretl-task-properties, .gretl-task-results) col:nth-child(1) {
+    width: 30% !important;
+}
+
+.doc-content table:is(.gretl-task-properties, .gretl-task-results) col:nth-child(2) {
+    width: auto !important;
+}
+
+.doc-content table:is(.gretl-task-properties, .gretl-task-results) col:last-child {
+    width: 1% !important;
+}
+
+.doc-content table:is(.gretl-task-properties, .gretl-task-results) :is(th, td):last-child {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
 }
 
 .doc-content :is(p, li, dd, th, td),
@@ -42,10 +67,6 @@
     }
 
     .header-content { min-width: 0; }
-    /* AsciiDoc supplies inline col widths; override them only on small screens. */
-    .doc-content table.gretl-task-properties col:nth-child(1) { width: 30% !important; }
-    .doc-content table.gretl-task-properties col:nth-child(2) { width: 46% !important; }
-    .doc-content table.gretl-task-properties col:nth-child(3) { width: 24% !important; }
 }
 
 /* Keep chapter text clear of the sticky navigation, including its borders. */

@@ -557,6 +557,7 @@ Nach einem erzwungenen Prozessende können Cleanup und Abschlussbericht fehlen.
 Vor einem erneuten Lauf sind die Diagnosen der Taskart und bereits erfolgte
 Fachänderungen zu beachten.
 
+[.gretl-task-reference]
 == Taskreferenz
 
 Die thematische Übersicht führt zu den alphabetisch geordneten Taskkapiteln.
@@ -617,7 +618,7 @@ Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
 Jobs werden sie durch die eigenen Eingaben ersetzt.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`directory`# / [.dsl-method]#`path`#
@@ -649,7 +650,7 @@ Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
 Jobs werden sie durch die eigenen Eingaben ersetzt.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`directory`# / [.dsl-method]#`path`#
@@ -682,7 +683,7 @@ defaults 'convert'
 den CSV-Reader. Ergebnis ist [.dsl-method]#`file`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -715,7 +716,7 @@ defaults 'export'
 ist [.dsl-method]#`file`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -748,7 +749,7 @@ Spalten positional übernommen. [.config-key]#`schemaName`#, [.config-key]#`enco
 [.config-key]#`valueSeparator`# und [.config-key]#`batchSize`# sind optional. Ergebnis ist [.dsl-method]#`file`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -781,7 +782,7 @@ an den CSV-Reader durchgereicht. [.code-fragment]#`failOnError=false`# liefert [
 ohne Taskabbruch.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`valid`# / [.config-key]#`boolean`#
@@ -870,7 +871,7 @@ Ergebnisse sind [.config-key]#`status`#, [.config-key]#`bytes`# und [.config-key
 Property-Tabelle fasst die Felder zusammen:
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`status`# / [.config-key]#`integer`#
@@ -918,7 +919,7 @@ bereitstellt. Ergebnisse sind [.config-key]#`executionCount`#, [.config-key]#`tr
 [.config-key]#`executions`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`executionCount`# / [.config-key]#`integer`#
@@ -986,7 +987,7 @@ werden in Reihenfolge ausgeführt; [.code-fragment]#`${name}`# wird aus [.config
 und [.config-key]#`exportFiles`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`executionCount`# / [.config-key]#`integer`#
@@ -1032,7 +1033,7 @@ das Ausgabeverzeichnis, [.dsl-method]#`file`# ist [.literal]#`null`# und [.confi
 abgeschlossenen regulären Dateien in stabiler Reihenfolge.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -1077,7 +1078,7 @@ fehlgeschlagenes Löschen ist ein Taskfehler, kein stiller Teilerfolg.
 Ergebnisse sind [.config-key]#`files`# und [.config-key]#`count`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`files`# / [.config-key]#`list`#
@@ -1119,7 +1120,7 @@ werden mit [.code-fragment]#`overwrite = true`# (Default aus Kompatibilitätsgr�
 Ergebnisse sind [.config-key]#`files`# und [.config-key]#`bytes`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`files`# / [.config-key]#`list`#
@@ -1158,7 +1159,7 @@ Alle FTP-Tasks teilen die Verbindungsfelder [.config-key]#`server`# (host oder h
 im Klartext in Logs oder Fehlern. Ergebnis ist [.config-key]#`files`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`files`# / [.config-key]#`list`#
@@ -1194,7 +1195,7 @@ wird aus [.config-key]#`remoteDir`#, dem Dateinamen und dem Trennzeichen gebilde
 Ergebnisse sind [.config-key]#`remoteFile`# und [.config-key]#`bytes`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`remoteFile`# / [.config-key]#`text`#
@@ -1230,7 +1231,7 @@ Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
 Jobs werden sie durch die eigenen Eingaben ersetzt.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`directory`# / [.dsl-method]#`path`#
@@ -1263,7 +1264,7 @@ defaults 'convert'
 Ergebnis ist [.config-key]#`directory`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`directory`# / [.dsl-method]#`path`#
@@ -1295,7 +1296,7 @@ defaults 'export'
 Ergebnis ist [.dsl-method]#`file`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -1328,7 +1329,7 @@ defaults 'import'
 Ergebnis ist [.dsl-method]#`file`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -1360,7 +1361,7 @@ defaults 'validate'
 [.config-key]#`tableName`# ist erforderlich. Ergebnisse sind [.config-key]#`valid`# und [.config-key]#`logFile`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`valid`# / [.config-key]#`boolean`#
@@ -1399,7 +1400,7 @@ lesbare reguläre Datei sein.
 Ergebnisse sind [.dsl-method]#`file`# und [.config-key]#`bytes`# (Grösse der geschriebenen GZIP-Datei).
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -1442,7 +1443,7 @@ Ergebnisse sind [.dsl-method]#`file`#, [.config-key]#`finalUri`#, [.config-key]#
 bezeichnet die abgeschlossene Zieldatei, [.config-key]#`bytes`# ihre tatsächliche Grösse.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -1486,7 +1487,7 @@ Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
 Jobs werden sie durch die eigenen Eingaben ersetzt.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1518,7 +1519,7 @@ Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
 Jobs werden sie durch die eigenen Eingaben ersetzt.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1550,7 +1551,7 @@ Datei- und Modellpfade gehören zum lokalen Rezeptbestand; beim Übernehmen des
 Jobs werden sie durch die eigenen Eingaben ersetzt.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1579,7 +1580,7 @@ include::../../gretl-integration-tests/src/test/resources/jobs/gpkg-import/job.g
 ----
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1612,7 +1613,7 @@ vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau
 [.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1646,7 +1647,7 @@ vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau
 [.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1684,7 +1685,7 @@ vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau
 [.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1716,7 +1717,7 @@ defaults 'schema'
 ----
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1750,7 +1751,7 @@ vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau
 [.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1783,7 +1784,7 @@ vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau
 [.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1817,7 +1818,7 @@ vorbereitet sein; [.task-type]#`Ili2pgImportSchema`# beschreibt den Schemaaufbau
 [.config-key]#`Ili2pgImportFileSet`# gehören zum lokalen Rezeptbestand.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`logFile`# / [.dsl-method]#`path`#
@@ -1857,7 +1858,7 @@ und [.config-key]#`warnings`# dokumentiert; [.config-key]#`warnings`# zählt die
 erfassten Warnungen.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -1896,7 +1897,7 @@ defaults 'import'
 [.config-key]#`rows`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`rows`# / [.config-key]#`integer`#
@@ -1928,7 +1929,7 @@ defaults 'validate'
 Ergebnisse sind [.config-key]#`valid`# und [.config-key]#`logFile`#; [.config-key]#`failOnError`# defaultet auf [.literal]#`true`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`valid`# / [.config-key]#`boolean`#
@@ -1966,7 +1967,7 @@ Mit [.config-key]#`metadata`# werden die Metadaten der kopierten Objekte ersetzt
 [.config-key]#`private`#. Ergebnisse sind [.config-key]#`keys`# und [.config-key]#`count`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`keys`# / [.config-key]#`list`#
@@ -2002,7 +2003,7 @@ Massenlöschung; der Task liefert die gelöschten Schlüssel als [.config-key]#`
 [.config-key]#`count`# zurück.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`keys`# / [.config-key]#`list`#
@@ -2042,7 +2043,7 @@ würden, werden abgewiesen. Vorhandene Dateien werden mit [.code-fragment]#`over
 (Default) ersetzt. Ergebnisse sind [.config-key]#`files`#, [.config-key]#`count`# und [.config-key]#`bytes`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`files`# / [.config-key]#`list`#
@@ -2084,7 +2085,7 @@ defaults 'upload'
 defaultet auf [.config-key]#`private`#. Ergebnisse sind [.config-key]#`keys`#, [.config-key]#`count`# und [.config-key]#`bytes`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`keys`# / [.config-key]#`list`#
@@ -2124,7 +2125,7 @@ defaults 'export'
 Ergebnis ist [.dsl-method]#`file`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -2158,7 +2159,7 @@ defaults 'import'
 Ergebnis ist [.dsl-method]#`file`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.dsl-method]#`file`# / [.dsl-method]#`path`#
@@ -2189,7 +2190,7 @@ defaults 'validate'
 Es wird genau eine Datei akzeptiert. Ergebnisse sind [.config-key]#`valid`# und [.config-key]#`logFile`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`valid`# / [.config-key]#`boolean`#
@@ -2252,7 +2253,7 @@ Ergebnisse sind [.config-key]#`executionCount`# und [.config-key]#`executions`#.
 verarbeiteten ResultSets in Eingabereihenfolge.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`executionCount`# / [.config-key]#`integer`#
@@ -2297,7 +2298,7 @@ Ergebnisse sind [.config-key]#`files`# (geschriebene Dateien in Eingabereihenfol
 [.config-key]#`count`#.
 
 .Ergebnisfelder
-[cols="2,5,1",options="header"]
+[cols="2,5,1",options="header",role="gretl-task-results"]
 |===
 | Feld / Typ | Bedeutung | Nullable
 | [.config-key]#`files`# / [.config-key]#`list`#

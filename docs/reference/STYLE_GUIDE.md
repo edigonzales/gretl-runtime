@@ -74,15 +74,24 @@ Inline-Code verwenden die Biblios-/Prism-Defaults. Technische Kategorien
 erhalten keine eigene Farbe. Hinweise ersetzen keine reguläre Beschreibung.
 Lange Feldnamen, Pfade und Beispiele dürfen umbrechen.
 
-## Breite Property-Tabellen
+## Breite Tabellen und Taskbeispiele
 
-Der GRETL-Renderer setzt die Tabellenrolle `gretl-task-properties`. Nur diese
-Tabellen nutzen die volle verfügbare Inhaltsbreite neben der Navigation.
-Lauftext, Codeblöcke, Hinweise und gewöhnliche Tabellen behalten maximal `72ch`.
+Der GRETL-Renderer setzt die Tabellenrolle `gretl-task-properties`.
+Ergebnisfeldtabellen tragen die redaktionelle Rolle `gretl-task-results`.
+Der Abschnitt «Taskreferenz» ist mit `gretl-task-reference` gekennzeichnet.
+Beide Tabellenarten und sämtliche Codeblöcke dieses Abschnitts nutzen dieselbe
+volle Inhaltsbreite neben der Navigation. Lauftext, Hinweise, gewöhnliche
+Tabellen und Codeblöcke ausserhalb der Taskkapitel behalten maximal `72ch`.
+
+Die erste Spalte beider Tabellenarten erhält 30% der Breite. Die Beschreibung
+verwendet den verbleibenden Raum neben der automatisch bemessenen Statusspalte.
+«Erforderlich» und «Nullable» werden nicht abgekürzt. Überschriften und Werte
+dieser Spalte bleiben mit `white-space: nowrap` in einer Zeile. Feldnamen und
+Beschreibungen dürfen umbrechen; lange Codezeilen scrollen nur im Codeblock.
 Die Regeln stehen ausschliesslich in `assets/gretl-layout.css`. Das lokale
 `templates/layout.ftl` ergänzt zum gebündelten Biblios-Template nur den Link
 auf dieses Stylesheet. Biblios und seine Standard-Stylesheets bleiben
-unverändert. Lange Tokens dürfen die mobile Seite nicht horizontal verbreitern;
+unverändert. Lange Tokens dürfen die mobile Seite nicht horizontal verbreitern.
 Ein kleiner zusätzlicher Scrollabstand hält Kapitelanker unterhalb der
 Standardnavigation sichtbar.
 
@@ -101,5 +110,7 @@ Vor Abschluss prüfen:
 - Deutsche und englische Katalogtexte existieren ohne Sprachfallback.
 - `./mvnw verify` und erforderliche Dienstprüfungen wurden ausgeführt.
 - Der Thoth-Build hat keine ungelösten Includes oder defekten lokalen Links.
-- Property-Tabellen sind auf breiten Bildschirmen breiter als der Lauftext.
+- In allen Taskkapiteln sind Ergebnisfelder, Property-Tabellen und Code gleich breit.
+- Die Statusüberschriften und -werte bleiben auch auf schmalen Viewports einzeilig.
+- Lauftext und Codebeispiele ausserhalb der Taskreferenz behalten ihre Lesebreite.
 - Auf Desktop, Tablet und Mobilgerät bleiben Navigation und Inhalt lesbar.
