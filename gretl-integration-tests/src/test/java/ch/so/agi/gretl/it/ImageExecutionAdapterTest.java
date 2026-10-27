@@ -84,7 +84,9 @@ class ImageExecutionAdapterTest {
     @Test void finishKeepsImageExitAndTimeoutCancelsAndReapsAtTheBoundary() throws Exception {
         for (boolean timeout : List.of(false, true)) {
             var request = request();
-            Files.writeString(request.directory().resolve("job.stdout.log"), "image output");
+            @SuppressWarnings("unchecked") var secrets = (Map<String, Object>) request.config().get("secrets");
+            secrets.put("plain", Map.of("plaintext", "evidence-plaintext-sentinel"));
+            Files.writeString(request.directory().resolve("job.stdout.log"), "image output evidence-plaintext-sentinel");
             Files.writeString(request.directory().resolve("job.stderr.log"), "image diagnostic");
             Files.createDirectories(request.directory().resolve("reports"));
             Path report = request.directory().resolve("reports/report.json"); Files.writeString(report, "{\"status\":\"FAILED\"}");
@@ -109,7 +111,8 @@ class ImageExecutionAdapterTest {
             var prepared = new ArtifactJobRunner.Prepared(request, request.jobDirectory(), null, ID, report, launch);
             var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared, false), false);
             assertEquals(timeout ? 20 : 42, result.code()); assertEquals(timeout, result.timedOut());
-            assertEquals(ID, result.artifactIdentity()); assertEquals("IMAGE", result.mode()); assertTrue(result.hasValidArtifactIdentity()); assertEquals(report, result.report()); assertEquals("image output", result.out());
+            assertEquals(ID, result.artifactIdentity()); assertEquals("IMAGE", result.mode()); assertTrue(result.hasValidArtifactIdentity()); assertEquals(report, result.report()); assertEquals("image output [REDACTED]", result.out());
+            assertEquals(result.out(), Files.readString(request.directory().resolve("job.stdout.log")));
             assertFalse(process.isAlive()); assertTrue(calls.contains(List.of("rm", "--force", "fake-container")));
             assertEquals(timeout, calls.stream().anyMatch(c -> c.getFirst().equals("stop")));
             assertTrue(Files.readString(request.directory().resolve("execution.json")).contains("\"mode\":\"IMAGE\""));
@@ -170,6 +173,35 @@ class ImageExecutionAdapterTest {
             assertTrue(exception.getMessage().contains("Unmapped IMAGE path"));
         }
     }
+    @Test void plaintextSecretsAreOpaqueAndNeverBecomeCommandArguments() throws Exception {
+        var request = request();
+        Map<String, Object> secrets = new java.util.LinkedHashMap<>();
+        ((Map<?, ?>) request.config().get("secrets"))
+                .forEach((key, value) -> secrets.put(key.toString(), value));
+        List<String> values = List.of("", "  ${UNCHANGED}\r\n", "/unmounted/secret",
+                request.jobDirectory().resolve("private.txt").toString(),
+                "jdbc:postgresql://localhost:4567/db", "http://127.0.0.1:4321/token",
+                "127.0.0.1:2121");
+        for (int i = 0; i < values.size(); i++) {
+            secrets.put("plain" + i, Map.of("plaintext", values.get(i)));
+        }
+        request.config().put("secrets", secrets);
+        var engine = new RecordingEngine();
+        var launch = ImageExecutionAdapter.prepare(request, request.jobDirectory(), settings, engine);
+        var transported = (Map<?, ?>) launch.config().get("secrets");
+        var saved = (Map<?, ?>) ((Map<?, ?>) ch.so.agi.gretl.runtime.logging.Json.parseFile(
+                request.directory().resolve("image-runtime.json"), 1L << 20)).get("secrets");
+        for (int i = 0; i < values.size(); i++) {
+            String alias = "plain" + i;
+            assertEquals(Map.of("plaintext", values.get(i)), transported.get(alias));
+            assertEquals(transported.get(alias), saved.get(alias));
+        }
+        assertFalse(launch.arguments().toString().contains("private.txt"));
+        assertFalse(launch.arguments().toString().contains("127.0.0.1:4321"));
+        assertFalse(launch.environment().containsValue("/unmounted/secret"));
+        assertFalse(engine.calls.stream().anyMatch(c -> c.getFirst().equals("run")));
+    }
+
     @Test void missingDeclaredEnvironmentSecretFailsBeforeContainerStart() throws Exception {
         var request = request();
         @SuppressWarnings("unchecked") var secrets = (Map<String, Object>) request.config().get("secrets");

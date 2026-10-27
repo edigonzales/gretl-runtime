@@ -3,6 +3,12 @@
 **Version:** Spezifikationsvorschlag 4.1, 18. Oktober 2026. **Quellenstand:** 17. Oktober 2026.  
 **Zweck:** Quellen, überprüfte Beobachtungen und eigene Entscheidungen auseinanderhalten. Dieses Kapitel erweitert den Umfang aus [01](01-zielbild-und-mvp.md) nicht.
 
+## Ergänzung vom 27. Oktober 2026 — Klartextquelle für Secrets
+
+**ADR-4.1-PLAINTEXT:** Auf ausdrücklichen Auftrag ergänzt `plaintext` die Secretquellen `environment` und `file` unter `schemaVersion: 1`. Die Form lautet `"dbPassword": {"plaintext": "testpasswort"}`. Pro Alias ist genau eine Quelle erlaubt; direkte Strings als Secreteinträge und automatischer Quellenfallback gehören nicht zum Vertrag. Bestehende Aliasse, Taskfelder und `SecretValue` bleiben unverändert nutzbar.
+
+Der String wird einschliesslich leerer Werte unverändert übernommen und beim tatsächlichen Zugriff vor Herausgabe im bestehenden Maskierer registriert. Quellenobjekte dürfen den Klartext nicht über ihre Stringdarstellung offenlegen. Der Wert bleibt direkt lesbar in der externen Runtimekonfigurationsdatei; Maskierung ist keine Verschlüsselung. Diese begrenzte Erweiterung führt weder neue Providermechanismen noch eine Einbettung von Laufzeitsecrets in Job-JARs ein. Der normative Detailvertrag steht in OPS-022 in [06](06-betrieb-und-auslieferung.md); die Abnahme prüft die Rohproduktsenken vor einer nachträglichen Maskierung durch Testhilfen.
+
 ## Revision 4.1 — Bestätigte Maven-Wahl und begrenzte Buildinfrastruktur
 
 **ADR-4.1-BUILD:** Maven bleibt das alleinige Produktbuildwerkzeug und ist nun ausdrücklich vom Auftraggeber bestätigt. Die verbindliche Ergänzung BLD-001 bis BLD-008 steht in [07, Abschnitt 6.4](07-plattform-und-versionen.md#64-verbindliche-leitlinie-konventioneller-maven-produktbuild): ein projektinterner Root-Parent/Aggregator, kleine Modul-POMs, zentrale Versionen, lokal erklärte Dependencies, normale Lifecyclebindungen und nur begründete zusätzliche Plugins oder Profile. Ein neues internes Buildframework wird nicht entwickelt.

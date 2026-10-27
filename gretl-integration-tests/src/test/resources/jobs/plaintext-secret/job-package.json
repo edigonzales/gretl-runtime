@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 2,
+  "name": "plaintext-secret",
+  "version": "1",
+  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "taskModules": ["database"],
+  "standardFunctions": false,
+  "sources": [],
+  "resources": [],
+  "dependencies": ["org.xerial:sqlite-jdbc:3.53.2.0"]
+}

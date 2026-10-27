@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.so.agi.gretl.runtime.logging.Json;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +14,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class CliFailureModesTest {
     @TempDir
@@ -108,6 +111,45 @@ class CliFailureModesTest {
         assertTrue(json.contains("missing"));
         assertTrue(json.contains("GRETL_NOT_SET_ANYWHERE"));
         assertTrue(json.toLowerCase().contains("secret"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"text", "json"})
+    void plaintextIsMaskedInRawConsoleEventsAndFailureReport(String format) throws Exception {
+        String sentinel = "plaintext-cli-sentinel-" + format;
+        Path script = tempDir.resolve("plaintext.groovy");
+        Files.writeString(script, """
+                action('run') {
+                    def value = secret('credential').reveal()
+                    log().info('plaintext-probe ' + value)
+                    throw new IllegalStateException('plaintext-failure ' + value,
+                            new IllegalArgumentException('plaintext-cause ' + value))
+                }
+                defaults 'run'
+                """);
+        Path config = tempDir.resolve("runtime.json");
+        Files.writeString(config, Json.write(Map.of("schemaVersion", 1,
+                "runtime", Map.of("workRoot", tempDir.resolve("work").toString(),
+                        "reportRoot", tempDir.resolve("reports").toString()),
+                "secrets", Map.of("credential", Map.of("plaintext", sentinel)))));
+        Path report = tempDir.resolve("plaintext-report.json");
+        Result result = run("run", script.toString(), "--config", config.toString(),
+                "--report", report.toString(), "--log-format", format);
+        assertEquals(10, result.code());
+        assertTrue(result.err().contains("plaintext-probe [REDACTED]"));
+        assertFalse(result.out().contains(sentinel));
+        assertFalse(result.err().contains(sentinel));
+        String reportJson = Files.readString(report);
+        assertTrue(reportJson.contains("plaintext-failure [REDACTED]"));
+        assertTrue(reportJson.contains("plaintext-cause [REDACTED]"));
+        assertFalse(reportJson.contains(sentinel));
+        try (var paths = Files.list(tempDir.resolve("reports"))) {
+            var events = paths.filter(path -> path.toString().endsWith(".events.jsonl")).toList();
+            assertEquals(1, events.size());
+            String eventJson = Files.readString(events.getFirst());
+            assertTrue(eventJson.contains("plaintext-probe [REDACTED]"));
+            assertFalse(eventJson.contains(sentinel));
+        }
     }
 
     private Path actionJob(String value) throws Exception {

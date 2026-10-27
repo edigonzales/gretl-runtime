@@ -207,6 +207,8 @@ final class ArtifactJobRunner {
                         clear = Files.readString(request.directory().resolve(file));
                         if (clear.endsWith("\r\n")) clear = clear.substring(0, clear.length() - 2);
                         else if (clear.endsWith("\n")) clear = clear.substring(0, clear.length() - 1);
+                    } else if (secret.get("plaintext") instanceof String plaintext) {
+                        clear = plaintext;
                     } else if (secret.get("environment") instanceof String key) {
                         Object environmentValue = request.environment().get(key);
                         clear = environmentValue == null ? System.getenv(key) : environmentValue.toString();

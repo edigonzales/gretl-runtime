@@ -187,6 +187,18 @@ Unbekannte Corefelder, doppelte JSON-Schlüssel, falsche Typen, ungültige
 Limits/Intervalle und widersprüchliche Secretquellen sind Code 2. Secrets werden
 erst beim Zugriff aufgelöst und vor Logger/Report maskiert.
 
+Pro Secretalias ist genau eine Quelle erlaubt: `{"environment":"GRETL_DB_PASSWORD"}`,
+`{"file":"source-auth.txt"}` oder `{"plaintext":"testpasswort"}`. Die Klartextform
+ergänzt `schemaVersion: 1`; bestehende Referenzen wie `passwordSecret: "dbPassword"`
+und `secret('dbPassword')` bleiben gleich. Es gibt keinen automatischen Fallback.
+Secretdateien enthalten den eigentlichen Wert als UTF-8, höchstens 64 KiB und
+keine NUL-Zeichen; genau ein abschliessendes LF oder CRLF wird entfernt.
+Environment- und Klartextwerte bleiben einschliesslich leerer Strings,
+Leerzeichen und Zeilenumbrüche unverändert; keine Variablenersetzung.
+`plaintext` steht direkt lesbar in der externen Runtimekonfigurationsdatei;
+die Laufzeitmaskierung verschlüsselt diese Datei nicht. Alle Quellen verwenden
+dieselbe Registrierung und dieselben Maskierungsgrenzen beim Zugriff.
+
 ## 5. Logging und Runbericht
 
 - Konsole: Text (Default) oder JSON auf **stderr**; Hilfe/Plan auf stdout.

@@ -62,6 +62,8 @@ Ein Sentinel-Secret wird für den jeweiligen Test erzeugt. Reguläre Logs, Runbe
 
 Die Tests prüfen produktverantwortete Ausgabewege. Sie behaupten keine Sandbox gegen einen Job, der bewusst einen entnommenen Secretwert ausgibt.
 
+Die additive Klartextquelle gemäss ADR-4.1-PLAINTEXT wird mit Environment- und Dateiquellen am gemeinsamen Parser-/Resolververtrag geprüft: genau eine Quelle, nur Stringwerte, unveränderte Klartextwerte einschliesslich leerer Strings und Registrierung erst beim Zugriff. Script- und Job-JAR-Nachweise prüfen Aliasverwendung, maskierte Quellenobjekte, Konsole, Ereignisdatei und Runbericht mit einem Sentinelwert. Dabei werden Rohproduktsenken vor der nachträglichen Maskierung durch Testhilfen ausgewertet. Der Image-Testadapter muss Klartextwerte auch dann unverändert transportieren, wenn sie wie Pfade oder URLs aussehen; dieser Vertragstest benötigt keinen Containerstart.
+
 ## 3. Allgemeine Runtime — Lieferstufe A
 
 ### 3.1 Definition und Plan

@@ -32,12 +32,24 @@ public final class RuntimeConfig {
         return Messages.format(ERROR_LOCALE.get(), key, arguments);
     }
 
-    public record SecretSource(String environment, Path file) {
+    public record SecretSource(String environment, Path file, String plaintext) {
+        public SecretSource(String environment, Path file) {
+            this(environment, file, null);
+        }
+
         public SecretSource {
-            if ((environment == null) == (file == null)) {
+            int sources = (environment != null ? 1 : 0) + (file != null ? 1 : 0)
+                    + (plaintext != null ? 1 : 0);
+            if (sources != 1) {
                 throw new IllegalArgumentException(
-                        "secret source requires exactly one of environment or file");
+                        "secret source requires exactly one of environment, file or plaintext");
             }
+        }
+
+        @Override
+        public String toString() {
+            return "SecretSource[environment=" + environment + ", file=" + file
+                    + ", plaintext=" + (plaintext == null ? "null" : "[REDACTED]") + "]";
         }
     }
 
@@ -170,8 +182,8 @@ public final class RuntimeConfig {
             }
             String value = cache.get(alias);
             if (value == null) {
-                value = source.environment() != null
-                        ? environment.get(source.environment())
+                value = source.plaintext() != null ? source.plaintext()
+                        : source.environment() != null ? environment.get(source.environment())
                         : readSecretFile(source.file(), alias);
                 if (value == null) {
                     throw new IllegalArgumentException(msg("cli.error.config.secretSourceMissing", alias,
@@ -249,7 +261,7 @@ public final class RuntimeConfig {
             }
             Map<String, Object> source = object(entry.getValue(),
                     "secrets." + entry.getKey());
-            rejectUnknown(source, List.of("environment", "file"), "secrets." + entry.getKey());
+            rejectUnknown(source, List.of("environment", "file", "plaintext"), "secrets." + entry.getKey());
             if (source.size() != 1) {
                 throw new StartException(2, msg("cli.error.config.secretSourceExactlyOne", entry.getKey()));
             }
@@ -260,10 +272,16 @@ public final class RuntimeConfig {
                     throw new StartException(2, msg("cli.error.config.secretEnvironmentInvalid"));
                 }
                 result.put(entry.getKey(), new SecretSource(environment, null));
-            } else {
+            } else if (source.containsKey("file")) {
                 Path file = resolve(base, requiredText(source.get("file"),
                         "secrets." + entry.getKey() + ".file"));
                 result.put(entry.getKey(), new SecretSource(null, file));
+            } else {
+                if (!(source.get("plaintext") instanceof String plaintext)) {
+                    throw new StartException(2, msg("cli.error.config.secretPlaintextText",
+                            entry.getKey()));
+                }
+                result.put(entry.getKey(), new SecretSource(null, null, plaintext));
             }
         }
         return result;

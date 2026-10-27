@@ -415,7 +415,18 @@ INFO. Arbeitsbereiche liegen unter [.code-fragment]#`gretl-work`# im Java-Tempor
 Runberichte unter [.code-fragment]#`gretl-reports`# im Startverzeichnis. [.config-key]#`keepWork`# ist
 [.code-fragment]#`on-failure`#.
 
-Eine vollständige Beispielkonfiguration mit einer Datenbankverbindung:
+Die Runtimekonfiguration ist eine UTF-8-JSON-Datei und wird ausdrücklich mit
+[.cli-option]#`--config`# ausgewählt; es gibt keine automatische Dateisuche.
+Eine minimale Datei enthält [.code-fragment]#`{"schemaVersion": 1}`# und verwendet die
+genannten Defaults. Für Script und Job-JAR gilt dasselbe Format:
+
+[source,bash]
+----
+gretl run job.groovy --config runtime.json
+java -jar job.jar --config runtime.json
+----
+
+Beispiel einer [.file-name]#`runtime.json`# mit einer Datenbankverbindung:
 
 [source,json]
 ----
@@ -449,12 +460,61 @@ Eine vollständige Beispielkonfiguration mit einer Datenbankverbindung:
 }
 ----
 
+Die Hauptabschnitte haben folgende Aufgaben. Nur [.config-key]#`schemaVersion`# ist in
+einer angegebenen Konfigurationsdatei zwingend; weggelassene Abschnitte
+verwenden ihre Defaults.
+
+[cols="4,4,5",options="header",role="gretl-runtime-config"]
+|===
+| Feld | Aufgabe | Pflicht oder Vorgabe
+| [.config-key]#`schemaVersion`# | Version des JSON-Formats. | Erforderlich; aktuell die Zahl [.literal]#`1`#.
+| [.config-key]#`language`# | Sprache der Runtime: [.literal]#`de`# oder [.literal]#`en`#. | Optional; <<_secrets_und_sprache,Sprachauswahl>> mit OS-Locale und englischem Fallback.
+| [.config-key]#`runtime`# | Arbeitsbereiche, Berichte, Zeitbudget und Laufidentität. | Optional; Feldvorgaben siehe unten.
+| [.config-key]#`logging`# | Konsolenformat, Level und Ereignisdatei. | Optional; [.literal]#`text`#, [.literal]#`INFO`#, [.code-fragment]#`eventFile=true`#; siehe <<_logging_berichte_und_exitcodes,Logging und Berichte>>.
+| [.config-key]#`params`# | Vorgabewerte für im Job deklarierte öffentliche Parameter, immer als Strings. | Optional; leere Map. Siehe <<_parameter_und_prioritäten,Parameter und Prioritäten>>.
+| [.config-key]#`secrets`# | Benannte Secretquellen: [.config-key]#`environment`#, [.config-key]#`file`# oder [.config-key]#`plaintext`#. | Optional; leere Map. Pro Alias genau eine Quelle; siehe <<_secrets_und_sprache,Secretquellen>>.
+| [.config-key]#`taskConfig`# | Benannte Abschnitte für Tasks, etwa Verbindungen zu Datenbanken. | Optional; leere Map. Inhalt und Pflichtfelder bestimmt die verwendende Taskart.
+|===
+
+Die Felder unter [.config-key]#`runtime`# sind ebenfalls optional:
+
+[cols="4,4,5",options="header",role="gretl-runtime-config"]
+|===
+| Feld | Bedeutung | Vorgabe
+| [.config-key]#`workRoot`# | Wurzel für private Arbeitsbereiche. | [.code-fragment]#`gretl-work`# unter Javas [.code-fragment]#`java.io.tmpdir`#.
+| [.config-key]#`reportRoot`# | Verzeichnis für Runberichte und Ereignisdateien. | [.code-fragment]#`gretl-reports`# im Startverzeichnis.
+| [.config-key]#`keepWork`# | Arbeitsbereiche behalten: [.config-key]#`never`#, [.code-fragment]#`on-failure`# oder [.config-key]#`always`#. | [.code-fragment]#`on-failure`#.
+| [.config-key]#`timeout`# | Positives ISO-8601-Zeitbudget, etwa [.literal]#`PT1H`#. | Kein Jobzeitlimit; Abbruch bleibt kooperativ.
+| [.config-key]#`jobName`# | Stabiler Name des Jobs für Logs und Berichte. | [.env-var]#`GRETL_JOB_NAME`#, sonst Name der Jobquelle.
+| [.config-key]#`correlationId`# | Vom aufrufenden System übergebene Korrelation. | [.env-var]#`GRETL_CORRELATION_ID`#, sonst keine Korrelation.
+|===
+
+Explizite [.config-key]#`jobName`#- und [.config-key]#`correlationId`#-Werte haben Vorrang vor den
+jeweiligen Environmentvariablen. Beide erlauben höchstens 256 Zeichen ohne
+Steuerzeichen. CLI-Optionen wie [.cli-option]#`--work-dir`#, [.cli-option]#`--keep-work`#,
+[.cli-option]#`--timeout`#, [.cli-option]#`--log-format`# und [.cli-option]#`--log-level`# überschreiben die
+entsprechenden Konfigurationswerte. [.cli-option]#`--report`# ersetzt nur die
+Abschlussberichtsdatei, nicht das Verzeichnis der Ereignisdatei.
+Relative Pfade unter [.config-key]#`runtime`# und in Secretdateiquellen beziehen sich
+auf den Ordner der [.file-name]#`runtime.json`#; siehe <<_pfadbasen_und_arbeitsbereiche,Pfadbasen und Arbeitsbereiche>>.
+
 Unbekannte Corefelder, doppelte JSON-Schlüssel und falsche Typen werden
 abgelehnt. Für den Inhalt eines [.config-key]#`taskConfig`#-Alias ist die verwendende Taskart
 verantwortlich. [.code-fragment]#`database = 'edit'`# bezeichnet im Beispiel diesen Alias;
 JDBC-URL und Passwort stehen nicht im Job. Weitere Datenbanktasks verwenden
 entsprechend ihre dokumentierten Aliasfelder. Verbindung und fachlich
 benötigte Tabellen müssen vorbereitet sein.
+
+Die Verweise im Beispiel bilden eine Kette:
+
+. Der Job setzt [.code-fragment]#`database = 'edit'`#.
+. Der Task liest die Verbindung aus [.code-fragment]#`taskConfig.edit`#.
+. Deren [.code-fragment]#`passwordSecret = "dbPassword"`# nennt einen Secretalias, keinen Passwortwert.
+. [.code-fragment]#`secrets.dbPassword`# legt fest, aus welcher Quelle das Passwort stammt.
+
+Wird dort beispielsweise [.code-fragment]#`{"plaintext": "testpasswort"}`# statt der
+Environmentquelle eingetragen, bleiben Job und [.config-key]#`passwordSecret`# gleich.
+Die drei Quellen werden unter <<_secrets_und_sprache,Secrets und Sprache>> erläutert.
 
 === Parameter und Prioritäten
 
@@ -506,10 +566,50 @@ externes Ziel. Mit [.cli-option]#`--keep-work always`# lassen sich Arbeitsdateie
 
 === Secrets und Sprache
 
-Ein Secretalias verweist entweder auf eine Environmentvariable oder auf eine
-Datei. Die Quelle wird erst beim Zugriff mit [.dsl-method]#`secret('alias')`# gelesen.
-Secretdateien sind UTF-8, höchstens 64 KiB gross; ein abschliessendes LF oder
-CRLF wird entfernt. Environmentwerte werden unverändert gelesen.
+Ein Secretalias unter [.config-key]#`secrets`# enthält genau eine Quelle:
+[.config-key]#`environment`#, [.config-key]#`file`# oder [.config-key]#`plaintext`#.
+Der folgende Erklärungsausschnitt zeigt die drei Formen:
+
+[source,json]
+----
+{
+  "secrets": {
+    "dbPassword": {"environment": "GRETL_DB_PASSWORD"},
+    "sourceAuth": {"file": "./secrets/source-auth.txt"},
+    "testPassword": {"plaintext": "testpasswort"}
+  }
+}
+----
+
+* [.config-key]#`environment`# nennt eine Umgebungsvariable des GRETL-Prozesses;
+  deren Wert ist das Secret.
+* [.config-key]#`file`# nennt eine Datei mit dem eigentlichen Secretwert, ohne
+  JSON-Objekt oder Variablenzuweisung. Beispielsweise enthält
+  [.file-name]#`source-auth.txt`# nur den benötigten Authentifizierungswert.
+  Relative Pfade beziehen sich auf den Ordner der Runtimekonfigurationsdatei,
+  unabhängig vom Job- und Startverzeichnis; siehe <<_pfadbasen_und_arbeitsbereiche,Pfadbasen>>.
+* [.config-key]#`plaintext`# enthält den Secretwert direkt als JSON-String.
+  Der Wert steht damit direkt lesbar in der Konfigurationsdatei;
+  die Laufzeitmaskierung verschlüsselt diese Datei nicht.
+
+Secretdateien sind UTF-8, höchstens 64 KiB gross und enthalten keine
+NUL-Zeichen; genau ein abschliessendes LF oder CRLF wird entfernt.
+Environment- und Klartextwerte werden unverändert übernommen, einschliesslich
+leerer Strings, Leerzeichen und Zeilenumbrüche. Es gibt keine Variablenersetzung.
+Kombinierte Quellen, fehlende Quellenfelder, [.literal]#`null`# und andere Werttypen
+als Strings sind Konfigurationsfehler; ein direkter String anstelle des
+Quellenobjekts ist nicht zulässig. Es gibt keinen automatischen Fallback.
+
+[.dsl-method]#`secret('alias')`# liefert zunächst eine maskierte Referenz. Die Quelle wird
+erst bei deren tatsächlicher Verwendung durch den Adapter oder bei
+[.code-fragment]#`reveal()`# aufgelöst. Auch ein bereits eingelesener Klartextwert wird
+erst dann vor der Herausgabe im Maskierer registriert. Fehlende Dateien oder
+Environmentvariablen führen beim Zugriff zu einem Fehler mit Alias und Quelle,
+ohne Secretwert. Eine unbenutzte Quelle verlangt keinen Zugriff auf eine Datei
+oder Environmentvariable. Die Registrierung gilt pro Run für höchstens 256
+verschiedene Werte mit je höchstens 65'536 Java-Zeichen; ein überschreitender
+Zugriff wird vor der Herausgabe abgelehnt.
+
 [.java-type]#`SecretValue`# wird von unterstützten Taskfeldern direkt angenommen. Seine
 Stringdarstellung ist maskiert; ein Passwort deshalb nicht durch gewöhnliche
 Stringkonkatenation in einen Header einbauen.

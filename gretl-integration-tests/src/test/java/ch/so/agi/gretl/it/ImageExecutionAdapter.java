@@ -104,7 +104,8 @@ final class ImageExecutionAdapter {
         }
         Map<String, Object> config = new LinkedHashMap<>();
         request.config().forEach((key, value) -> config.put(key,
-                key.equals("runtime") ? value : translateValue(value, paths, request.endpoints())));
+                key.equals("runtime") || key.equals("secrets")
+                        ? value : translateValue(value, paths, request.endpoints())));
         // Runtime identity is opaque text, even if it starts with a slash or resembles an endpoint.
         if (request.config().get("runtime") instanceof Map<?, ?> runtime) {
             Map<String, Object> translated = new LinkedHashMap<>();

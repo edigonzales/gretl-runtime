@@ -8,9 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.so.agi.gretl.runtime.api.ContextAccessException;
+import ch.so.agi.gretl.runtime.logging.Json;
 import ch.so.agi.gretl.runtime.runner.SecretRegistry;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -107,5 +110,84 @@ class RuntimeConfigTest {
                 () -> runtime.secretResolver(Map.of(), new SecretRegistry()).resolve("s"));
         assertTrue(missing.getMessage().contains("SECRET_ENV"));
         assertFalse(missing.getMessage().contains("from-env"));
+    }
+
+    @Test
+    void plaintextIsPreservedAndRegisteredOnlyOnAccess() throws Exception {
+        Path config = tempDir.resolve("plaintext.json");
+        for (String value : List.of("", "  ", "\t ä🚲 ${UNCHANGED} \\\"\r\n\0")) {
+            Files.writeString(config, Json.write(Map.of("schemaVersion", 1,
+                    "secrets", Map.of("s", Map.of("plaintext", value)))));
+            RuntimeConfig runtime = RuntimeConfig.load(config, tempDir);
+            SecretRegistry registry = new SecretRegistry();
+            var resolver = runtime.secretResolver(Map.of(), registry);
+            assertTrue(registry.values().isEmpty());
+            assertEquals(value, resolver.resolve("s"));
+            assertEquals(List.of(value), registry.values());
+            assertEquals(value, resolver.resolve("s"));
+            assertEquals(1, registry.values().size());
+        }
+    }
+
+    @Test
+    void allSecretSourcesRequireExactlyOneStringSource() throws Exception {
+        Path config = tempDir.resolve("invalid-secret.json");
+        for (String source : List.of("{}", "null", "\"direct-string\"",
+                "{\"plaintext\":null}", "{\"plaintext\":42}", "{\"plaintext\":true}",
+                "{\"plaintext\":[]}", "{\"plaintext\":{}}", "{\"value\":\"sentinel\"}",
+                "{\"environment\":null}", "{\"file\":null}",
+                "{\"environment\":\"ENV\",\"file\":\"auth.txt\"}",
+                "{\"plaintext\":\"sentinel\",\"environment\":\"ENV\"}",
+                "{\"plaintext\":\"sentinel\",\"file\":\"auth.txt\"}",
+                "{\"plaintext\":\"sentinel\",\"environment\":\"ENV\",\"file\":\"auth.txt\"}")) {
+            Files.writeString(config, "{\"schemaVersion\":1,\"secrets\":{\"s\":" + source + "}}");
+            for (Locale locale : List.of(Locale.GERMAN, Locale.ENGLISH)) {
+                StartException failure = assertThrows(StartException.class,
+                        () -> RuntimeConfig.load(config, tempDir, locale));
+                assertEquals(2, failure.code());
+                assertFalse(failure.getMessage().contains("sentinel"));
+            }
+        }
+    }
+
+    @Test
+    void secretSourceDiagnosticsIncludeAllChoicesInBothLanguages() throws Exception {
+        Path config = tempDir.resolve("choices.json");
+        Files.writeString(config, "{\"schemaVersion\":1,\"secrets\":{\"s\":{}}}");
+        for (Locale locale : List.of(Locale.GERMAN, Locale.ENGLISH)) {
+            var failure = assertThrows(StartException.class,
+                    () -> RuntimeConfig.load(config, tempDir, locale));
+            for (String choice : List.of("environment", "file", "plaintext")) {
+                assertTrue(failure.getMessage().contains(choice));
+            }
+        }
+    }
+
+    @Test
+    void secretSourceMasksPlaintextAndPreservesExistingConstructor() {
+        String sentinel = "plaintext-source-sentinel";
+        var plaintext = new RuntimeConfig.SecretSource(null, null, sentinel);
+        assertTrue(plaintext.toString().contains("[REDACTED]"));
+        assertFalse(plaintext.toString().contains(sentinel));
+        assertFalse(Map.of("s", plaintext).toString().contains(sentinel));
+        assertEquals(sentinel, plaintext.plaintext());
+        assertEquals("ENV", new RuntimeConfig.SecretSource("ENV", null).environment());
+        assertEquals(Path.of("auth"), new RuntimeConfig.SecretSource(null, Path.of("auth")).file());
+        assertThrows(IllegalArgumentException.class, () -> new RuntimeConfig.SecretSource(null, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new RuntimeConfig.SecretSource("ENV", null, sentinel));
+    }
+
+    @Test
+    void unusedPlaintextIsNotRegisteredAndOversizedValueFailsBeforeRelease() throws Exception {
+        Path config = tempDir.resolve("large-secret.json");
+        Files.writeString(config, Json.write(Map.of("schemaVersion", 1,
+                "secrets", Map.of("s", Map.of("plaintext", "x".repeat(64 * 1024 + 1))))));
+        RuntimeConfig runtime = RuntimeConfig.load(config, tempDir);
+        SecretRegistry registry = new SecretRegistry();
+        var resolver = runtime.secretResolver(Map.of(), registry);
+        assertTrue(registry.values().isEmpty());
+        assertThrows(ContextAccessException.class, () -> resolver.resolve("s"));
+        assertTrue(registry.values().isEmpty());
     }
 }
