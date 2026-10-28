@@ -517,7 +517,8 @@
   "implementationInputs": {
     "file": "/Users/stefan/sources/gretl-runtime-phase-1-evidence-20261028/attempt-02/implementation-files.json",
     "sha256": "09bf5b714e0cec67cee518a7bca1a7223a60a91671abbb49f2b06f7463795241",
-    "files": 841
+    "files": 841,
+    "capturedAt": "2026-10-28T19:42:44.164593+00:00"
   },
   "designNotes": [
     "GretlProject adds immutable defaultTargetSources metadata while retaining the proposed four-argument construction",
@@ -551,6 +552,18 @@
       "reviewSha256": "6d7579f24dc3c510cb029c88328f683777421b8f47e4148ba87f3b5383f6c091",
       "finding": "MAJOR M1: module import original source line missing",
       "correction": "Token-derived original position and exact regression including comments, strings, CRLF and no side effects; independent retest pending"
+    }
+  ],
+  "supersededPostCommitRuns": [
+    {
+      "candidateSha": "d9831a8dad1630ada6e76cb76f1d74c7372c5707",
+      "command": "./mvnw -B clean verify",
+      "exitCode": 143,
+      "startedAt": "2026-10-28T19:50:37.630520+00:00",
+      "finishedAt": "2026-10-28T19:54:44.292586+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-1-evidence-20261028/attempt-02/after-superseded-doc/console.log",
+      "status": "INTERRUPTED_FOR_DOCUMENTATION_PRECISION",
+      "reason": "Input hash index captured shortly after pretest start, not before; report wording corrected; no product/test changes; no gate claimed for interrupted run"
     }
   ]
 }
