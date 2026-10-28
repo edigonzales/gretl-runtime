@@ -5,6 +5,7 @@ import ch.so.agi.gretl.runtime.groovy.CompilerSettings;
 import ch.so.agi.gretl.runtime.groovy.SourceLocation;
 import groovy.lang.GroovyClassLoader;
 import groovyjarjarantlr4.v4.runtime.CharStreams;
+import groovyjarjarantlr4.v4.runtime.Token;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -19,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.groovy.parser.antlr4.GroovyLexer;
+import org.apache.groovy.parser.antlr4.GroovyLangLexer;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
@@ -93,6 +95,7 @@ public final class GretlProjectParser {
             unit.nextPhase();
             unit.convert();
             var module = unit.getAST();
+            var tokens = new GroovyLangLexer(CharStreams.fromString(source)).getAllTokens();
             // Groovy supplies a shared empty-script sentinel; user-written return statements remain forbidden.
             var statements = List.copyOf(module.getStatementBlock().getStatements());
             if (module.getPackage() != null) throw unsupported(settingsFile, module.getPackage());
@@ -101,8 +104,7 @@ public final class GretlProjectParser {
             if (!module.getModuleStarImports().isEmpty()) {
                 // Groovy 6 leaves module-import AST nodes without source positions.
                 // Lex only to recover the original import token, never to accept settings syntax.
-                var lexer = new GroovyLexer(CharStreams.fromString(source));
-                for (var token = lexer.nextToken(); token.getType() != GroovyLexer.EOF; token = lexer.nextToken()) {
+                for (var token : tokens) {
                     if (token.getType() == GroovyLexer.IMPORT) {
                         throw error("PROJECT_SETTINGS_UNSUPPORTED", new SourceLocation(
                                 settingsFile.toAbsolutePath().normalize().toString(), token.getLine(),
@@ -123,7 +125,6 @@ public final class GretlProjectParser {
             Map<String, SourceLocation> defaults = new LinkedHashMap<>();
             boolean seenInclude = false;
             boolean seenDefaults = false;
-            String[] lines = source.split("\\r\\n|\\r|\\n", -1);
             for (var statement : statements) {
                 if (statement == ReturnStatement.RETURN_NULL_OR_VOID) continue;
                 if (!(statement instanceof ExpressionStatement expression)
@@ -149,7 +150,7 @@ public final class GretlProjectParser {
                 }
                 for (var argument : arguments.getExpressions()) {
                     if (!(argument instanceof ConstantExpression value) || !(value.getValue() instanceof String text)
-                            || !simpleQuotedLiteral(argument, lines)) {
+                            || !simpleQuotedLiteral(argument, tokens)) {
                         throw unsupported(settingsFile, argument);
                     }
                     SourceLocation position = location(settingsFile, argument);
@@ -243,17 +244,34 @@ public final class GretlProjectParser {
         }
     }
 
-    private static boolean simpleQuotedLiteral(ASTNode node, String[] lines) {
-        int line = node.getLineNumber() - 1;
-        int column = node.getColumnNumber() - 1;
-        if (line < 0 || line >= lines.length || column < 0) return false;
-        String originalLine = lines[line];
-        // Groovy columns count codepoints, while String offsets count UTF-16 code units.
-        if (column >= originalLine.codePointCount(0, originalLine.length())) return false;
-        String tail = originalLine.substring(originalLine.offsetByCodePoints(0, column));
-        // A simple quoted constant may contain escaped line continuations.
-        char quote = tail.charAt(0);
-        return (quote == '\'' || quote == '"') && !tail.startsWith(String.valueOf(quote).repeat(3));
+    private static boolean simpleQuotedLiteral(ASTNode node, List<? extends Token> tokens) {
+        long start = sourcePosition(node.getLineNumber(), node.getColumnNumber());
+        long end = sourcePosition(node.getLastLineNumber(), node.getLastColumnNumber());
+        if (node.getLineNumber() < 1 || node.getColumnNumber() < 1 || end <= start) return false;
+        // AST constants may start at enclosing parentheses. Locate their first literal token
+        // with Groovy's own coordinates, without converting columns or splitting source lines.
+        int left = 0, right = tokens.size();
+        while (left < right) {
+            int middle = (left + right) >>> 1;
+            Token token = tokens.get(middle);
+            if (sourcePosition(token.getLine(), token.getCharPositionInLine() + 1) < start) left = middle + 1;
+            else right = middle;
+        }
+        for (int index = left; index < tokens.size(); index++) {
+            Token token = tokens.get(index);
+            if (sourcePosition(token.getLine(), token.getCharPositionInLine() + 1) >= end) return false;
+            if (token.getChannel() != Token.DEFAULT_CHANNEL || token.getType() == GroovyLexer.NL
+                    || token.getType() == GroovyLexer.LPAREN) continue;
+            if (token.getType() != GroovyLexer.StringLiteral) return false;
+            String text = token.getText();
+            char quote = text.charAt(0);
+            return (quote == '\'' || quote == '"') && !text.startsWith(String.valueOf(quote).repeat(3));
+        }
+        return false;
+    }
+
+    private static long sourcePosition(int line, int column) {
+        return ((long) line << 32) | (column & 0xffffffffL);
     }
 
     private ProjectException unsupported(Path settings, ASTNode node) {

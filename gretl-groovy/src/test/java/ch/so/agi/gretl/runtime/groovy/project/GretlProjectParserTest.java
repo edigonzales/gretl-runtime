@@ -259,6 +259,62 @@ class GretlProjectParserTest {
     }
 
     @Test
+    void prj006BareCarriageReturnsFollowGroovySourceCoordinates() throws Exception {
+        record Attempt(String prefix, int line, int defaultColumn) {}
+        for (var attempt : List.of(new Attempt("\r", 1, 11),
+                new Attempt("// heading\r", 1, 21), new Attempt("/* ä */\r", 1, 18),
+                new Attempt("/* 😀 */\r", 1, 18), new Attempt("#!groovy\r", 1, 19),
+                new Attempt("\n", 2, 10), new Attempt("\r\n", 2, 10),
+                new Attempt("#!groovy\n", 2, 10), new Attempt("#!groovy\r\n", 2, 10))) {
+            Path rootOnly = project(attempt.prefix() + "defaults ':run'\r");
+            script(rootOnly, "");
+            var rootModel = new GretlProjectParser().parse(rootOnly);
+            assertEquals(List.of(":run"), rootModel.defaultTargets());
+            assertEquals(new SourceLocation(rootOnly.resolve("settings.gretl").toString(), attempt.line(),
+                    attempt.defaultColumn()), rootModel.defaultTargetSources().get(":run"));
+
+            Path included = project(attempt.prefix() + "include 'a';\rdefaults ':a:run'\r");
+            script(included, "a");
+            var includedModel = new GretlProjectParser().parse(included);
+            assertEquals(List.of(":a"), includedModel.entries().stream()
+                    .map(e -> e.projectPath().canonical()).toList());
+            assertEquals(List.of(":a:run"), includedModel.defaultTargets());
+            assertEquals(new SourceLocation(included.resolve("settings.gretl").toString(), attempt.line(),
+                    attempt.defaultColumn() + 13), includedModel.defaultTargetSources().get(":a:run"));
+        }
+        for (String quote : List.of("'", "\"")) {
+            rejected("include " + quote + "a\\" + "\r" + "b" + quote, "PROJECT_INCLUDE_INVALID", 1);
+            rejected("defaults " + quote + ":a:\\" + "\r" + "run" + quote, "PROJECT_TARGET_INVALID", 1);
+        }
+    }
+
+    @Test
+    void prj004ParenthesizedConstantStringsKeepTheirAstOriginAndQuoteRestrictions() throws Exception {
+        for (String template : List.of("%s", "(%s)", "((%s))", "(/* decoy */ %s)",
+                "(\n /* 😀 */ %s\n)")) {
+            for (String quote : List.of("'", "\"")) {
+                String source = "/* 😀 */ include(" + template.formatted(quote + "a" + quote) + ")\n"
+                        + "/* 🚀 */ defaults(" + template.formatted(quote + ":a:run" + quote) + ")\n";
+                Path root = project(source);
+                script(root, "a");
+                var parsed = new GretlProjectParser().parse(root);
+                assertEquals(List.of(":a"), parsed.entries().stream()
+                        .map(e -> e.projectPath().canonical()).toList());
+                assertEquals(List.of(":a:run"), parsed.defaultTargets());
+                int defaultLine = 1 + (int) source.substring(0, source.indexOf("defaults("))
+                        .chars().filter(c -> c == '\n').count();
+                assertEquals(new SourceLocation(root.resolve("settings.gretl").toString(), defaultLine, 18),
+                        parsed.defaultTargetSources().get(":a:run"));
+            }
+        }
+        rejected("include((/a/))", "PROJECT_SETTINGS_UNSUPPORTED", 1);
+        rejected("include(('''a'''))", "PROJECT_SETTINGS_UNSUPPORTED", 1);
+        rejected("include((\"\"\"a\"\"\"))", "PROJECT_SETTINGS_UNSUPPORTED", 1);
+        rejected("include(('a' + 'b'))", "PROJECT_SETTINGS_UNSUPPORTED", 1);
+        rejected("include((\"a$" + "{1}\"))", "PROJECT_SETTINGS_UNSUPPORTED", 1);
+    }
+
+    @Test
     void prj006SizeLimitCountsUtf8BytesAndMalformedUtf8IsRejected() throws Exception {
         Path root = project("//" + " ".repeat(262142));
         script(root, "");
