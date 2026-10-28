@@ -1,0 +1,2 @@
+include 'source', ':checks:local'
+defaults ':checks:local:run'

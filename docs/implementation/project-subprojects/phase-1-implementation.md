@@ -1,0 +1,70 @@
+# Phase 1 – Projektformat, Namensmodell und deklarativer Parser
+
+## Basis, Auftrag und Rollen
+
+`phaseBaseSha`: `5bc9d367fb3ea3f1e8643c43d0894e8d6eb1bd10`.
+Implementierungsbranch: `codex/project-subprojects-phase-1`. Implementierungsagent A: Codex, aktuelle Sitzung. Der unabhängige Agent B erhält einen frischen Kontext und einen eigenen detached Worktree auf der nach den Vorprüfungen erzeugten Kandidaten-SHA.
+
+Die archivierte [Phase-0-Review](phase-0-review.md) ist PASS für `1ff17246caff404f75303dcc31d2f9814e4bc2aa`; der Diff bis zur Phasenbasis enthält ausschliesslich deren unveränderte Reviewakte. Arbeitsbaum bei Beginn sauber. Repository-/Spec-AGENTS, Spezifikation 1.1 und insbesondere Abschnitte 3, 4.1 und 6–12 wurden mit den bereits gelesenen Runtime-/DSL-/API-/Logging-/Buildverträgen abgeglichen. Die bestehende Implementierung entspricht weiterhin der Phase-0-Bestandsaufnahme.
+
+Auftrag ist ausschliesslich Phase 1. Es gibt noch keine gemeinsame Taskregistrierung, keinen Verzeichnis-Dispatcher, keine Projektquelle, keinen Projektlauf und kein Schema-3-Paket. Phase 2 wird auch nach dieser Review nicht begonnen. Die endgültige Kandidaten-SHA gehört ausschliesslich in den externen Handoff und Bs Reviewbericht, nicht selbstreferenzierend in diesen Commit.
+
+## Umsetzung und Entscheidungen
+
+- Sechs neue Klassen unter `gretl-groovy/src/main/java/ch/so/agi/gretl/runtime/groovy/project/`: `ProjectPath`, `ProjectEntry`, `GretlProject`, `ProjectSourceNames`, `ProjectException` und `GretlProjectParser`. Keine neuen Produktmodule, Dependencies, Plugins oder Profile.
+- `ProjectPath` normalisiert nur den führenden Doppelpunkt, validiert alle Segmente zentral und trennt Root/Include/absolute Referenz. Namen sind case-sensitive. Nur `relativeDirectory()` erzeugt einen betriebssystemgerechten Path; kanonische IDs verwenden ausschliesslich Doppelpunkte. Keine IO im Wertobjekt.
+- Records kopieren Listen/Maps defensiv und normalisieren ihre Pfade absolut. Der Parser gibt Root zuerst und danach ausschliesslich explizite Includes in ihrer angegebenen Reihenfolge zurück; kein rekursiver Scan und keine impliziten Elternjobs.
+- Der Parser prüft reale Projektwurzel, reguläre Dateien und Symlinks am Root sowie entlang der Settings-/Include-Pfade unter dieser Root. Pfadaliase oberhalb der gewählten Root werden beim Bestimmen der realen Root kanonisiert. Der Settings-Read selbst ist auf 256 KiB plus ein Erkennungsbyte begrenzt und folgt keinem finalen Symlink. UTF-8 wird strikt dekodiert. Keine allgemeine Dateisystemsandbox oder atomare Transaktion gegen gleichzeitig ausgetauschte Verzeichnisse wird behauptet.
+- `SourceUnit.parse()` und `convert()` erzeugen ausschliesslich den AST. Es gibt keinen CompilationUnit-Lauf des Settingsparsers, keine semantische Analyse, Bytecodeerzeugung, Instanziierung oder Scriptausführung. Die AST-Allowlist akzeptiert nur implizite `include`-/`defaults`-Aufrufe mit ArgumentList aus konstanten, einfach oder doppelt zitierten Strings. Alle Imports, expliziten Klassen/Methoden, Labels, Annotationen und ausführbaren Ausdrücke werden abgewiesen.
+- Die vorhandenen `CompilerSettings` werden frisch erzeugt, einschliesslich UTF-8, Ziel 25 und deaktiviertem Grape. Für Settings wird allein die Job-Basisklasse auf null gesetzt: Settings sind keine GretlScript-Jobs; andernfalls fügt Groovy eine synthetische BaseScript-Annotation ein. Dies ändert weder CompilerSettings noch den bisherigen Script-/Packagervertrag.
+- Groovy erzeugt für eine leere Quelle den eigenen gemeinsamen `ReturnStatement.RETURN_NULL_OR_VOID`-Knoten. Ausschliesslich diese interne Identität wird akzeptiert; explizites `return` oder `return null` bleibt verboten. Eine zusätzliche lokale Groovy-Probe bestätigt die unterschiedlichen AST-Identitäten. Kein Text-Regex ersetzt die strukturelle Allowlist. Nur die Begrenzung auf einfache/doppelte Literalformen wird anhand der originalen AST-Quellposition geprüft; dadurch werden auch konstante Slashy-/Dreifachquote-Formen abgelehnt.
+- **Begründete additive Signaturergänzung gegenüber dem vorgeschlagenen Record:** `GretlProject` besitzt zusätzlich `Map<String, SourceLocation> defaultTargetSources` und weiterhin einen Vierargument-Konstruktor. So bleiben die geforderten Originalpositionen auch nach Rückgabe des Parsermodells für die spätere Prüfung unbekannter Defaults verfügbar. Die interne immutable ProjectSettings-Struktur hält zusätzlich Include-Positionen für präzise Datei-/Duplikatfehler. Default-Existenz wird in Phase 1 bewusst nicht geprüft, da noch keine Tasks geladen werden.
+- `ProjectException` erweitert den bestehenden `GroovyDslException`-/DiagnosticCarrier-Vertrag. Fehler haben stabile Codes, Ursache und absoluten Originalpfad mit tatsächlicher Zeile/verfügbarer Spalte. Fehlende Dateipositionen bleiben 0. Die bestehenden englischen/deutschen i18n-Kataloge erhalten vierzehn Meldungen; keine zweite Diagnose- oder Loggingplattform.
+- Virtuelle Groovy-Datei- und Einstiegsklassennamen enthalten die vollständige SHA-256 der kanonischen Projekt-ID. Root, `:a:b` und `:a_b` werden mit dem echten Groovy-Compiler zu drei unterschiedlichen Scriptklassen übersetzt; kein Klassenname durch blosses Ersetzen von Doppelpunkten.
+- [Formatdokumentation](README.md), Produkt-README-Link und `examples/project-subprojects/` erklären den aktuellen Umfang. Zwei echte Einzeljobs mit demselben lokalen Tasknamen lesen unterschiedliche lokale UTF-8-Dateien. Parser und unveränderter Einzeljob-Loader/Runner prüfen dieses Repository-Beispiel tatsächlich. Zwei Einzeljobs werden dabei nicht als gemeinsamer Projektlauf ausgegeben.
+
+## Testfallmatrix
+
+| ID | Status | Tatsächliches Orakel und Testzuordnung |
+| --- | --- | --- |
+| PRJ-001 | PASS | `GretlProjectParserTest.prj001RootThenExplicitIncludeOrderAndSettingsPositionsAreStable`: Root zuerst, kanonische Include-Reihenfolge wiederholt stabil, keine impliziten Jobs, Defaultzeile/-spalte und immutable Ergebnissammlungen. |
+| PRJ-002 | PASS | `prj002NestedIncludesNeedNoRootOrImplicitParentJob`: zwei Includes ohne Root und Elternjob; untergeordnete Settings werden nicht evaluiert. |
+| PRJ-003 | PASS | `prj003MalformedAndDuplicateDirectivesHaveCodesAndOriginalPositions`: leere/ungültige Includes, kanonische Duplikate mit beiden Quellen, doppelte Anweisungen/Defaults und fehlende Includes; Codes, Originalzeilen und erwarteter Dateipfad. |
+| PRJ-004 | PASS | `prj004UnsupportedSettingsNeverExecuteOrCreateTheirMarker`: Dateiaktion, println, System.exit, Variablen, GStrings, Operatoren, Listen/Spread, explizite Empfänger, Closures, Imports, Package, Klassen/Methoden, Schleifen, Labels, return und Annotationen einschliesslich ASTTest(CONVERSION)/Grab werden tatsächlich zurückgewiesen; Marker bleibt abwesend. |
+| PRJ-005 | PASS | `ProjectSourceNamesTest.prj005NamesUseTheWholeCanonicalIdentityAndProduceDifferentRealGroovyClasses` und ProjectPathTest: Root, verschachtelte und underscore-basierte Namen eindeutig, volle SHA, tatsächliche Groovy-6-Classgenerierung ohne Settingsausführung. |
+| PRJ-006 | PASS | `prj006*` und `relativeProjectArgumentSpacesAndCrLfKeepTheSameLogicalPathsAndPositions`: fehlende Settings/Skripte, Root-only/leeres Projekt, nicht reguläre Dateien, direkte/intermediäre/interne/externe/dangling Symlinks, Root-Escape, 256-KiB-Bytegrenze, fehlerhaftes UTF-8, relative Rootargumente, Leerzeichen und CRLF. ProjectPathTest lehnt Unix-/Windows-Trennzeichen in logischen Include-Namen ab. |
+| PRJ-007 | PASS | `prj007QualifiedDefaultsAreSyntaxCheckedWithoutLoadingJobs`: nur absolute Ziele; unbekannte qualifizierte Defaults bleiben bis zur späteren Taskregistrierung zulässig; Job-Toplevel/Taskcode wird nicht geladen oder ausgeführt. |
+
+Weitere neue Tests prüfen Recordkopien, echte Syntaxfehler mit Cause/Quelle, deutsche/englische Diagnosen und das tatsächlich ausführbare Formatbeispiel. Die drei neuen Testklassen enthalten insgesamt **17** JUnit-Fälle; eine Testmethode deckt mehrere Varianten desselben Orakels ab. Keine bestehende Assertion wurde geändert, verschoben, deaktiviert oder abgeschwächt.
+
+PRJ-101–115 und PRJ-201–212 sind **NICHT AUSGEFÜHRT / spätere Phasen**. Gate 1 ist erst mit erfolgreichem normalem Reactor auf dem festen Kandidaten und unabhängigem, unverändert archiviertem PASS erfüllt.
+
+## Prüfungen und Nachweise
+
+Evidenzwurzel `E/` ist `/Users/stefan/sources/gretl-runtime-phase-1-evidence-20261028/`, ausserhalb von Git und Maven-clean. Es sind verfügbare lokale Nachweise, kein behaupteter CI-Lauf. Die aktuelle Umgebung ist wie in Phase 0 Temurin OpenJDK 25.0.2+10-LTS, Maven Wrapper 3.3.4/Maven 3.10.0, Groovy 6.0.0, UTF-8, macOS 27.0.1 aarch64. Maven meldet en_US und Europe/Zurich. Versionsausgaben stehen in `E/environment.json`.
+
+| Entwicklungsprüfung | Exitcode | Nachweis / Bedeutung |
+| --- | ---: | --- |
+| `./mvnw -B -pl gretl-groovy -am test -Dtest=ProjectPathTest,ProjectSourceNamesTest,GretlProjectParserTest -Dsurefire.failIfNoSpecifiedTests=false` | 1 | `E/red/`: zuerst geschriebene Tests kompilieren ohne die noch fehlenden Produktklassen nicht; kein behaupteter Testdurchlauf. |
+| Derselbe gezielte Befehl nach erster Implementierung | 1 | `E/targeted-first/`: 15 Fälle, 6 Failures/3 Errors. Synthetische BaseScript-/Leerknoten wurden zunächst mit abgewiesen; ausserdem verwendete eine neu geschriebene Slashy-Gegenprobe eine syntaktisch ungültige Commandform. Log und neue XML-Reports sind erhalten. |
+| Derselbe gezielte Befehl nach Korrektur | 0 | `E/targeted-second/console.log`: 15/0/0/0. Die Slashy-Probe verwendet nun die gültige AST-Form `include(/a/)`, die weiterhin zurückgewiesen werden muss. Keine Lockerung einer bestehenden Assertion oder Norm. |
+| `./mvnw -B -pl gretl-groovy -am test` | 0 | `E/module/`: 16 neue Fälle plus bestehende API-/Runner-/DSL-/i18n-Tests. |
+| `./mvnw -B -pl gretl-groovy -am test` nach Aufnahme des Repository-Beispiels | 0 | `E/module-final/`: 272/0/0/0, einschliesslich aller 17 neuen Fälle; aktive Modul-XML sind separat gesichert. |
+
+Die gezielte Auswahl mit failIfNoSpecifiedTests=false betrifft ausschliesslich die Entwicklungsauswahl in vorgeschalteten Reactormodulen. Die vollständigen Phasengates benutzen weder diese Auswahl noch Skip-Flags oder Assumptions.
+
+### Vollständige Vorprüfung
+
+- `./mvnw -B clean verify` → Exit **0**, **621 Tests**, 0 Failures, 0 Errors, 0 Skips. Die 604 unveränderten bisherigen Fälle und 17 neuen Fälle sind im selben normalen Reactor erreichbar. Ausführung UTC 2026-10-28T19:07:30Z bis 19:14:53Z, Laufzeit 7:22 Minuten.
+- `python3 scripts/audit-job-evidence.py` → Exit **0**. 82 tatsächliche JAR- und 14 Script-Prozesse, kein IMAGE. Dieses Standardgate beansprucht weiterhin nur seine tatsächlich ausgeführten lokalen Fälle, keine vollständige Dienstqualifikation aller 44 Operationen.
+- `E/before-standard/` enthält `console.log`, `audit.log`, `result.json`, aktive JUnit-XML unter `reports/`, Coverage unter `coverage/`, `qualification/summary.json`, `qualification/jar-executions.json`, freigegebene Logs/Reports/Outputs und tatsächlich gestartete `job.jar` unter `artifacts/`. `SHA256SUMS.json` bindet alle gesicherten Dateien; individuelle JAR-SHAs stehen in execution.json und jar-executions.json. Binärnachweise bleiben ausserhalb von Git. Rohkonfiguration und private Secret-/Workspacebestände werden nicht pauschal archiviert.
+- Vor dem Commit ist `sourceRevision=phaseBaseSha`, `sourceDirty=true` korrekt: Produkt-/Teständerungen sind noch uncommittet. Diese Vorprüfung wird nicht als sauberer Kandidatennachweis ausgegeben. Nach dem Commit laufen derselbe normale Reactor und der Audit mit `--source <candidateSha>` erneut; der externe `E/phase-1-handoff.json` bindet SHA, Exitcodes, Logs, XML und Prüfsummen dieses exakten Stands.
+- JUnit-Reports werden ausschliesslich aus den aktiven Reactormodulen gelesen; alte, inaktive GeoTools-Reports bleiben ausgeschlossen. JaCoCo misst die Test-JVMs. Separate Launcher-/JAR-Prozesse liefern echte fachliche Nachweise, aber keine erfundene instrumentierte Coverage.
+
+## Unveränderte Grenzen und offene Nachweise
+
+`gretl-api`, Runner, CLI, Job-Runtime, Packager, Logging, alle vier Taskmodule, sämtliche POMs, Wrapper und CI-Workflows sind unverändert. Auch vorhandene Groovy-Produktklassen und Tests bleiben bytegleich. Geändert sind nur neue Projektklassen/-tests, neue Beispiele/Dokumentation, ein README-Link und die notwendigen Meldungskatalogergänzungen. Keine neue Operationsregistrierung oder Runtimeversion. Die Spezifikation selbst wurde nicht verändert.
+
+Der vollständige Backing-Service-/GeoTools-Aufruf ist in **Phase 1 nicht erneut ausgeführt**: Gate 1 verlangt den normalen Reactor; der vollständige neue Feature-/Dienstnachweis ist Gate 3. Die Phase-0-Full-Archive bleiben historische Baselinebelege und werden nicht als Qualifikation des neuen Kandidaten umetikettiert. Kein GRETL-IMAGE-Lauf, kein neuer Linux-/Windows-/Native-/Leer-Cache-/Produktionsnachweis. Die vorhandenen Compiler-/Native-Access-/Log4j-/GNU-tar-Hinweise bleiben im Log sichtbar und sind durch Phase 0 eingeordnet.
+
+Keine offenen Implementierungsfindings nach den ausgeführten Vorprüfungen. Der unabhängige Review ist noch ausstehend. A erteilt keinen PASS für Gate 1. Nach dessen erfolgreicher unabhängiger Prüfung wird ausschliesslich Bs unveränderter Bericht separat archiviert; Phase 2 bleibt ausdrücklich ausserhalb dieses Auftrags.
