@@ -246,9 +246,12 @@ public final class GretlProjectParser {
     private static boolean simpleQuotedLiteral(ASTNode node, String[] lines) {
         int line = node.getLineNumber() - 1;
         int column = node.getColumnNumber() - 1;
-        if (line < 0 || line >= lines.length || node.getLastLineNumber() != node.getLineNumber()
-                || column < 0 || column >= lines[line].length()) return false;
-        String tail = lines[line].substring(column);
+        if (line < 0 || line >= lines.length || column < 0) return false;
+        String originalLine = lines[line];
+        // Groovy columns count codepoints, while String offsets count UTF-16 code units.
+        if (column >= originalLine.codePointCount(0, originalLine.length())) return false;
+        String tail = originalLine.substring(originalLine.offsetByCodePoints(0, column));
+        // A simple quoted constant may contain escaped line continuations.
         char quote = tail.charAt(0);
         return (quote == '\'' || quote == '"') && !tail.startsWith(String.valueOf(quote).repeat(3));
     }

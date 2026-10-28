@@ -212,6 +212,53 @@ class GretlProjectParserTest {
     }
 
     @Test
+    void prj006SupplementaryUtf8CommentsKeepLiteralSourceColumns() throws Exception {
+        record Attempt(String prefix, int defaultColumn) {}
+        for (var attempt : List.of(new Attempt("/* 😀 */ ", 18), new Attempt("/* ä😀 */ ", 19),
+                new Attempt("/* 😀🚀 */ ", 19))) {
+            Path rootOnly = project(attempt.prefix() + "defaults ':run'");
+            script(rootOnly, "");
+            var rootModel = new GretlProjectParser().parse(rootOnly);
+            assertEquals(List.of(":run"), rootModel.defaultTargets());
+            assertEquals(new SourceLocation(rootOnly.resolve("settings.gretl").toString(), 1,
+                    attempt.defaultColumn()), rootModel.defaultTargetSources().get(":run"));
+
+            Path included = project(attempt.prefix() + "include 'a:b'\r\n"
+                    + attempt.prefix() + "defaults ':a:b:run'\r\n");
+            script(included, "a/b");
+            var includedModel = new GretlProjectParser().parse(included);
+            assertEquals(List.of(":a:b"), includedModel.entries().stream()
+                    .map(e -> e.projectPath().canonical()).toList());
+            assertEquals(List.of(":a:b:run"), includedModel.defaultTargets());
+            assertEquals(new SourceLocation(included.resolve("settings.gretl").toString(), 2,
+                    attempt.defaultColumn()), includedModel.defaultTargetSources().get(":a:b:run"));
+            ProjectException invalid = rejected(attempt.prefix() + "include '..'", "PROJECT_INCLUDE_INVALID", 1);
+            assertEquals(attempt.defaultColumn() - 1, invalid.source().column());
+        }
+        rejected("/* 😀 */ include(/a/)", "PROJECT_SETTINGS_UNSUPPORTED", 1);
+        rejected("/* 😀 */ include '''a'''", "PROJECT_SETTINGS_UNSUPPORTED", 1);
+        rejected("/* 😀 */ include \"\"\"a\"\"\"", "PROJECT_SETTINGS_UNSUPPORTED", 1);
+    }
+
+    @Test
+    void prj004QuotedLineContinuationsRemainConstantStrings() throws Exception {
+        for (String newline : List.of("\n", "\r\n")) {
+            for (String quote : List.of("'", "\"")) {
+                Path root = project("/* 😀 */ include " + quote + "a\\" + newline + "b" + quote + newline
+                        + "/* 🚀 */ defaults " + quote + ":ab:\\" + newline + "run" + quote + newline);
+                script(root, "ab");
+                var parsed = new GretlProjectParser().parse(root);
+                assertEquals(List.of(":ab"), parsed.entries().stream()
+                        .map(e -> e.projectPath().canonical()).toList());
+                assertEquals(List.of(":ab:run"), parsed.defaultTargets());
+                assertEquals(new SourceLocation(root.resolve("settings.gretl").toString(), 3, 18),
+                        parsed.defaultTargetSources().get(":ab:run"));
+                assertEquals(root.resolve("ab/job.groovy"), parsed.entries().getFirst().scriptFile());
+            }
+        }
+    }
+
+    @Test
     void prj006SizeLimitCountsUtf8BytesAndMalformedUtf8IsRejected() throws Exception {
         Path root = project("//" + " ".repeat(262142));
         script(root, "");
