@@ -1,0 +1,510 @@
+{
+  "phase": 0,
+  "phaseBaseSha": "db1ea316ccc72f946fe244942bae2dc9fb485672",
+  "analysedProductSha": "69a55e3ddde25b97325e4463a70d40f75a5e06d4",
+  "implementationAgent": "A: Codex; reviewer must be a separate fresh-context agent",
+  "scope": "Baseline documents only; no featurecode, test, dependency or build change",
+  "javaVersion": "25.0.2+10-LTS",
+  "mavenVersion": "3.10.0",
+  "groovyVersion": "6.0.0",
+  "platform": "macOS 27.0.1 aarch64; Docker Linux arm64; PostGIS amd64 emulation",
+  "environment": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/environment.json",
+  "evidenceRoot": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028",
+  "commandsBeforeCommit": [
+    {
+      "command": "./mvnw -B clean verify",
+      "exitCode": 0,
+      "head": "db1ea316ccc72f946fe244942bae2dc9fb485672",
+      "sourceDirty": true,
+      "startedAt": "2026-10-28T17:59:22.858682+00:00",
+      "finishedAt": "2026-10-28T18:07:09.480062+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/console.log",
+      "consoleSha256": "9f7fb6f3a7a34f52392d1033afcd40f7a197446fa077eb26e112b24066cddd80",
+      "junitXml": [
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-api/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.api.ApiRuntimeTypesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-api/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.api.ApiMetadataTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-api/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.api.ApiIsolationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliDefaultsAndParamsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliHelpAndDefinitionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliPathBasesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliRunIntegrationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CorrelationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliDiagnosticFormattingTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliFailureModesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliOptionsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliDuckDbIntegrationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.AsciiDocTaskRendererTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliSqlIntegrationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliTokenCatalogTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-database-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.database.SqlExecutorOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-database-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.database.DatabaseTaskProviderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-database-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.database.DuckDbSqlExecutorOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-database-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.database.Db2DbOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-dist/target/failsafe-reports/TEST-ch.so.agi.gretl.dist.DistributionIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-dist/target/surefire-reports/TEST-ch.so.agi.gretl.dist.ChecksumManifestTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovyLoaderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovyTaskConfigurationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovySmokeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovyIsolationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovyResultAndInvocationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-i18n/target/surefire-reports/TEST-ch.so.agi.gretl.i18n.MessagesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-i18n/target/surefire-reports/TEST-ch.so.agi.gretl.i18n.LocaleSelectionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-ilivalidator/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.ilivalidator.IliValidatorOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.ValidatorClasspathLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.LibraryScopeLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.PlaintextSecretLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.IoLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.DuckDbLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.CancellationLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.HardeningLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.InterlisLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.ReferencePathLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.FunctionLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.ValidatorLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.FormatLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.SelectedPackageLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/surefire-reports/TEST-ch.so.agi.gretl.it.ImageExecutionAdapterTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/surefire-reports/TEST-ch.so.agi.gretl.it.OperationMetadataTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-integration-tests/target/surefire-reports/TEST-ch.so.agi.gretl.it.ReferenceExamplesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.ModelSearchPathTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.ioxwkf.CsvReaderProbeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.AvOperationsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.Ili2DbFileTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.shapefile.NativeShapefileTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.validation.ValidationFunctionsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.InterlisValidatorTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.ili2db.Ili2DbDatasetNamesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.ioxwkf.Gpkg2ShpEngineTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.InterlisTaskProviderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.ioxwkf.Csv2ExcelEngineTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.ftp.FtpOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.archive.GzipOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.IoTransferCatalogTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.http.CurlOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.IoTaskProviderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.http.HttpDownloadOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.xslt.XslTransformerOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.s3.S3OperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.archive.ExtractOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.runtime.PlanGraphRendererTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.runtime.ParameterFileTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.JobResourcePreparationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.runtime.SetupCompletionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.runtime.RuntimeConfigTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.RunReportWriterTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.DiagnosticFilePermissionsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.LoggingLimitsAndBridgeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.LibraryScopeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.EventJsonDiagnosticTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.LibrarySnapshotTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.LoggingPipelineTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.CancelCauseReportTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.RedactorTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.TextFormatterTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.JsonTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.JobPackageBuilderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.MavenArtifactResolverTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.PackageDescriptorTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.JobPackagerResolutionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.JobCompilerTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkspacePreparationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkspaceOwnershipTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.SetupFailureTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.LocalBudgetRegressionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkspaceRetentionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ParameterResolverTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.OperationRegistryTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.FailureArbiterTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.JobDefinitionBuilderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.StartBoundaryTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkspacePlatformTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkPathOwnershipTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.LoggingScopeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ExecutionPlannerTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.RunControlTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.FailureInfoTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ContextAccessTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.CloseStackTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.BudgetPrecedenceTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.OperationInvocationRunnerTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ResultStoreTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ScopedControlTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.SequentialJobRunnerTest.xml"
+      ],
+      "totals": {
+        "tests": 604,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "audit": {
+        "command": [
+          "python3",
+          "scripts/audit-job-evidence.py"
+        ],
+        "exitCode": 0,
+        "log": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/audit.log"
+      },
+      "artifactExecutions": {
+        "JAR": 82,
+        "SCRIPT": 14
+      },
+      "jarExecutions": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/qualification/jar-executions.json",
+      "summary": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/qualification/summary.json",
+      "manifest": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-standard/SHA256SUMS.json",
+      "manifestSha256": "9088651d65cf89006c100659456fa19b9770370e9a696773f7795f3abcb6cd23",
+      "distributionArchives": [
+        {
+          "file": "gretl-runtime-0.1.0-SNAPSHOT-bin.tar.gz",
+          "sha256": "99b546086d6c9b5a1641e4c4b8322065f7c00413960d4cb42624a95d3fc7fa46"
+        },
+        {
+          "file": "gretl-runtime-0.1.0-SNAPSHOT-bin.zip",
+          "sha256": "badb9c329e500c044754f76df215c87d1dc40d616b511abd4f445cffdd8ee122"
+        }
+      ]
+    },
+    {
+      "command": "./mvnw -B -Pgeotools-probe,backing-services clean verify",
+      "exitCode": 0,
+      "head": "db1ea316ccc72f946fe244942bae2dc9fb485672",
+      "sourceDirty": true,
+      "startedAt": "2026-10-28T18:07:56.108516+00:00",
+      "finishedAt": "2026-10-28T18:19:35.354786+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/console.log",
+      "consoleSha256": "ba619e8c14d70eeaf104ba110a40264080633d6ca8ee498aafb8092861c326d7",
+      "junitXml": [
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-api/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.api.ApiRuntimeTypesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-api/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.api.ApiMetadataTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-api/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.api.ApiIsolationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliDefaultsAndParamsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliHelpAndDefinitionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliPathBasesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliRunIntegrationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CorrelationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliDiagnosticFormattingTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliFailureModesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliOptionsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliDuckDbIntegrationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.AsciiDocTaskRendererTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliSqlIntegrationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-cli/target/surefire-reports/TEST-ch.so.agi.gretl.cli.CliTokenCatalogTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-database-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.database.SqlExecutorOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-database-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.database.DatabaseTaskProviderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-database-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.database.DuckDbSqlExecutorOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-database-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.database.Db2DbOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-dist/target/failsafe-reports/TEST-ch.so.agi.gretl.dist.DistributionIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-dist/target/surefire-reports/TEST-ch.so.agi.gretl.dist.ChecksumManifestTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-geotools-probe/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.geotools.GeoToolsProbeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovyLoaderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovyTaskConfigurationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovySmokeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovyIsolationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-groovy/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.groovy.GroovyResultAndInvocationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-i18n/target/surefire-reports/TEST-ch.so.agi.gretl.i18n.MessagesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-i18n/target/surefire-reports/TEST-ch.so.agi.gretl.i18n.LocaleSelectionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-ilivalidator/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.ilivalidator.IliValidatorOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.ValidatorClasspathLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.LibraryScopeLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.FtpTaskFamilyIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.DuckDbFederationPostgresIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.PlaintextSecretLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.IoLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.ArtifactServicesIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.DuckDbLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.CancellationLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.HardeningLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.S3OriginalArtifactIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.PackagedSqlJobPostgresIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.InterlisLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.InterlisArtifactIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.ReferencePathLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.PostgresSqlExecutorIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.FormatArtifactPostgresIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.FunctionLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.Db2DbPostgresIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.DatabaseArtifactIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.ValidatorLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.FormatLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.FormatPostgresIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.SelectedPackageLocalJobIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.SelectedPackageArtifactIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/failsafe-reports/TEST-ch.so.agi.gretl.it.S3TaskFamilyIT.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/surefire-reports/TEST-ch.so.agi.gretl.it.ImageExecutionAdapterTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/surefire-reports/TEST-ch.so.agi.gretl.it.OperationMetadataTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-integration-tests/target/surefire-reports/TEST-ch.so.agi.gretl.it.ReferenceExamplesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.ModelSearchPathTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.ioxwkf.CsvReaderProbeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.AvOperationsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.Ili2DbFileTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.shapefile.NativeShapefileTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.validation.ValidationFunctionsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.InterlisValidatorTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.ili2db.Ili2DbDatasetNamesTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.ioxwkf.Gpkg2ShpEngineTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.interlis.InterlisTaskProviderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-interlis-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.internal.ioxwkf.Csv2ExcelEngineTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.ftp.FtpOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.archive.GzipOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.IoTransferCatalogTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.http.CurlOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.IoTaskProviderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.http.HttpDownloadOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.xslt.XslTransformerOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.s3.S3OperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-io-tasks/target/surefire-reports/TEST-ch.so.agi.gretl.tasks.io.archive.ExtractOperationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.runtime.PlanGraphRendererTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.runtime.ParameterFileTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.JobResourcePreparationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.runtime.SetupCompletionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-job-runtime/target/surefire-reports/TEST-ch.so.agi.gretl.job.runtime.RuntimeConfigTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.RunReportWriterTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.DiagnosticFilePermissionsTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.LoggingLimitsAndBridgeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.LibraryScopeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.EventJsonDiagnosticTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.LibrarySnapshotTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.LoggingPipelineTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.CancelCauseReportTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.RedactorTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.TextFormatterTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-logging/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.logging.JsonTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.JobPackageBuilderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.MavenArtifactResolverTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.PackageDescriptorTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.JobPackagerResolutionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-packager/target/surefire-reports/TEST-ch.so.agi.gretl.packager.JobCompilerTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkspacePreparationTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkspaceOwnershipTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.SetupFailureTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.LocalBudgetRegressionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkspaceRetentionTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ParameterResolverTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.OperationRegistryTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.FailureArbiterTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.JobDefinitionBuilderTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.StartBoundaryTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkspacePlatformTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.WorkPathOwnershipTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.LoggingScopeTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ExecutionPlannerTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.RunControlTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.FailureInfoTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ContextAccessTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.CloseStackTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.BudgetPrecedenceTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.OperationInvocationRunnerTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ResultStoreTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.ScopedControlTest.xml",
+        "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/reports/gretl-runner/target/surefire-reports/TEST-ch.so.agi.gretl.runtime.runner.SequentialJobRunnerTest.xml"
+      ],
+      "totals": {
+        "tests": 660,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "audit": {
+        "command": [
+          "python3",
+          "scripts/audit-job-evidence.py",
+          "--full"
+        ],
+        "exitCode": 0,
+        "log": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/audit.log"
+      },
+      "artifactExecutions": {
+        "JAR": 160,
+        "SCRIPT": 14
+      },
+      "jarExecutions": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/qualification/jar-executions.json",
+      "summary": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/qualification/summary.json",
+      "manifest": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/before-full/SHA256SUMS.json",
+      "manifestSha256": "9dc4931dcf73688a9b8ebc5d13e23836788e81df307b76305dbbf7c5ed7753bb",
+      "distributionArchives": [
+        {
+          "file": "gretl-runtime-0.1.0-SNAPSHOT-bin.tar.gz",
+          "sha256": "5d2c55f3abf4a6d82af4965e933e4ef55ed8e9e8c55e4470daff8559287c0767"
+        },
+        {
+          "file": "gretl-runtime-0.1.0-SNAPSHOT-bin.zip",
+          "sha256": "1e52ef571d78f73e05a0b1fd613ca8a24fced3cb34e28e237b1a05e0c5cad9d9"
+        }
+      ]
+    }
+  ],
+  "testCases": {
+    "P0-01": "PASS",
+    "P0-02": "PASS",
+    "P0-03": "PASS",
+    "P0-04": "PASS",
+    "P0-05": "PASS",
+    "P0-FULL": "PASS"
+  },
+  "testCaseDefinitions": "phase-0-baseline.md; local P0 IDs map to section 8 phase-0 work items; no PRJ IDs are required in phase 0",
+  "futureTestCases": {
+    "PRJ-001": {
+      "phase": 1,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-002": {
+      "phase": 1,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-003": {
+      "phase": 1,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-004": {
+      "phase": 1,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-005": {
+      "phase": 1,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-006": {
+      "phase": 1,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-007": {
+      "phase": 1,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-101": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-102": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-103": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-104": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-105": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-106": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-107": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-108": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-109": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-110": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-111": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-112": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-113": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-114": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-115": {
+      "phase": 2,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-201": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-202": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-203": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-204": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-205": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-206": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-207": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-208": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-209": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-210": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-211": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    },
+    "PRJ-212": {
+      "phase": 3,
+      "status": "NICHT AUSGEFÜHRT"
+    }
+  },
+  "unchangedInventory": {
+    "files": 801,
+    "fingerprints": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/source-fingerprints.json",
+    "sha256": "bea12994eb16bf0d7240edb09fb0f5d133bd77370367a6f1b45f14cc7aa94b3b",
+    "pomInventory": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/pom-inventory.json"
+  },
+  "protocol": {
+    "gate": "PENDING_INDEPENDENT_REVIEW",
+    "candidateIdentity": "Only in external post-commit handoff and independent review, never self-referenced here",
+    "postCommitHandoff": "/Users/stefan/sources/gretl-runtime-phase-0-evidence-20261028/phase-0-handoff.json",
+    "postCommitTests": [
+      "./mvnw -B clean verify",
+      "./mvnw -B -Pgeotools-probe,backing-services clean verify"
+    ],
+    "reviewScope": "entire phaseBaseSha..candidateSha, detached worktree, independent clean verify, unmodified archived review"
+  },
+  "knownBaselineTestFailures": [],
+  "knownLimitations": [
+    "Local macOS ARM64 development proof; no new Linux CI, Windows, Native or production qualification",
+    "Uses existing Maven cache and installed JDK 25.0.2; no dependency or toolchain update",
+    "Existing javac, native-access, Log4j test-process fallback and GNU-tar compatibility notices remain visible in logs",
+    "PostGIS amd64 image runs under emulation; existing Floci image is not digest pinned",
+    "JaCoCo instruments test JVMs, not forked product processes",
+    "No GRETL IMAGE execution; all 34 new PRJ cases explicitly unexecuted until phases 1-3",
+    "Before-commit catalogs correctly report dirty docs; exact candidate after-tests require sourceDirty=false",
+    "Gate 0 open until independent PASS; phase 1 not begun"
+  ]
+}
