@@ -4,6 +4,7 @@ import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.groovy.CompilerSettings;
 import ch.so.agi.gretl.runtime.groovy.SourceLocation;
 import groovy.lang.GroovyClassLoader;
+import groovyjarjarantlr4.v4.runtime.CharStreams;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import org.apache.groovy.parser.antlr4.GroovyLexer;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
@@ -96,7 +98,19 @@ public final class GretlProjectParser {
             if (module.getPackage() != null) throw unsupported(settingsFile, module.getPackage());
             for (ASTNode node : module.getImports()) throw unsupported(settingsFile, node);
             for (ASTNode node : module.getStarImports()) throw unsupported(settingsFile, node);
-            for (ASTNode node : module.getModuleStarImports()) throw unsupported(settingsFile, node);
+            if (!module.getModuleStarImports().isEmpty()) {
+                // Groovy 6 leaves module-import AST nodes without source positions.
+                // Lex only to recover the original import token, never to accept settings syntax.
+                var lexer = new GroovyLexer(CharStreams.fromString(source));
+                for (var token = lexer.nextToken(); token.getType() != GroovyLexer.EOF; token = lexer.nextToken()) {
+                    if (token.getType() == GroovyLexer.IMPORT) {
+                        throw error("PROJECT_SETTINGS_UNSUPPORTED", new SourceLocation(
+                                settingsFile.toAbsolutePath().normalize().toString(), token.getLine(),
+                                token.getCharPositionInLine() + 1), null, "project.settingsUnsupported");
+                    }
+                }
+                throw unsupported(settingsFile, module.getModuleStarImports().getFirst());
+            }
             for (ASTNode node : module.getStaticImports().values()) throw unsupported(settingsFile, node);
             for (ASTNode node : module.getStaticStarImports().values()) throw unsupported(settingsFile, node);
             for (ASTNode node : module.getMethods()) throw unsupported(settingsFile, node);

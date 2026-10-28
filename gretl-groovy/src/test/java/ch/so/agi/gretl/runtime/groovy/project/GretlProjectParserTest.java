@@ -128,6 +128,30 @@ class GretlProjectParserTest {
     }
 
     @Test
+    void prj004ModuleImportsRetainTheirOriginalTokenPositionWithoutExecution() throws Exception {
+        Path marker = temp.resolve("module-import-must-not-run");
+        String body = "new File('" + marker.toString().replace("\\", "\\\\").replace("'", "\\'")
+                + "').text = 'executed'";
+        record Attempt(String prefix, String declaration, int line, int column) {}
+        for (var attempt : List.of(
+                new Attempt("// heading\n", "import module java.base; ", 2, 1),
+                new Attempt("// import module decoy;\n\n/* import module other; */\n",
+                        "  import module java.base\n", 4, 3),
+                new Attempt("// ä\r\n\r\n", "\timport module java.base; ", 3, 2),
+                new Attempt("def decoy = 'import module fake;'\n", "import module java.base; ", 2, 1))) {
+            Path root = project(attempt.prefix() + attempt.declaration() + body);
+            script(root, "");
+            ProjectException failure = assertThrows(ProjectException.class, () -> new GretlProjectParser().parse(root));
+            assertEquals("PROJECT_SETTINGS_UNSUPPORTED", failure.code());
+            assertEquals(root.resolve("settings.gretl").toString(), failure.source().file());
+            assertEquals(attempt.line(), failure.source().line());
+            assertEquals(attempt.column(), failure.source().column());
+            assertTrue(failure.getMessage().contains("settings.gretl:" + attempt.line() + ":" + attempt.column()));
+            assertFalse(Files.exists(marker));
+        }
+    }
+
+    @Test
     void invalidGroovyHasItsOwnCauseAndActualSyntaxLine() throws Exception {
         ProjectException failure = rejected("// heading\ninclude (", "PROJECT_SETTINGS_INVALID", 2);
         assertNotNull(failure.getCause());
