@@ -4,6 +4,7 @@ import ch.so.agi.gretl.runtime.api.TaskRef;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -13,7 +14,7 @@ import java.util.UUID;
 public record JobDefinition(
         UUID definitionId, List<TaskDefinition<?>> tasks,
         List<ParameterDefinition> parameters, List<String> defaultTargets,
-        List<CleanupDefinition> cleanups, Path jobRoot) {
+        List<CleanupDefinition> cleanups, Path jobRoot, Map<String, Path> sourceFiles) {
 
     public JobDefinition {
         Objects.requireNonNull(definitionId, "definitionId");
@@ -23,6 +24,7 @@ public record JobDefinition(
         cleanups = List.copyOf(cleanups);
         Objects.requireNonNull(jobRoot, "jobRoot");
         jobRoot = jobRoot.toAbsolutePath().normalize();
+        sourceFiles = Map.copyOf(sourceFiles);
 
         Set<String> taskIds = new HashSet<>();
         Set<Integer> indexes = new HashSet<>();
@@ -53,6 +55,13 @@ public record JobDefinition(
                 throw new IllegalArgumentException("duplicate cleanup name: " + cleanup.name());
             }
         }
+    }
+
+    /** Existing Java and single-script definitions have no compiled filename aliases. */
+    public JobDefinition(UUID definitionId, List<TaskDefinition<?>> tasks,
+            List<ParameterDefinition> parameters, List<String> defaultTargets,
+            List<CleanupDefinition> cleanups, Path jobRoot) {
+        this(definitionId, tasks, parameters, defaultTargets, cleanups, jobRoot, Map.of());
     }
 
     public Optional<TaskDefinition<?>> task(String id) {

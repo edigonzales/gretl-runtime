@@ -29,6 +29,7 @@ public final class JobDefinitionBuilder {
     private final Set<String> defaultTargetNames = new HashSet<>();
     private final List<CleanupDefinition> cleanups = new ArrayList<>();
     private final Set<String> cleanupNames = new HashSet<>();
+    private Map<String, Path> sourceFiles = Map.of();
     private boolean frozen;
 
     public JobDefinitionBuilder(Path jobRoot) {
@@ -117,6 +118,12 @@ public final class JobDefinitionBuilder {
         cleanups.add(new CleanupDefinition(name, cleanups.size(), body, source));
     }
 
+    /** Diagnostic aliases supplied by a language adapter, without evaluating any source. */
+    public void sourceFiles(Map<String, Path> files) {
+        ensureNotFrozen();
+        sourceFiles = Map.copyOf(files);
+    }
+
     public JobDefinition freeze() {
         if (frozen) {
             throw new DefinitionException("DEFINITION_ALREADY_FROZEN",
@@ -135,7 +142,7 @@ public final class JobDefinitionBuilder {
             }
         }
         frozen = true;
-        return new JobDefinition(definitionId, tasks, parameters, defaultTargets, cleanups, jobRoot);
+        return new JobDefinition(definitionId, tasks, parameters, defaultTargets, cleanups, jobRoot, sourceFiles);
     }
 
     public boolean isFrozen() {

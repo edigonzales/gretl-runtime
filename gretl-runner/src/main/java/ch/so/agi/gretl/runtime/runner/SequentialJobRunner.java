@@ -29,6 +29,10 @@ public final class SequentialJobRunner {
             throw new IllegalArgumentException("execution plan belongs to another definition");
         }
 
+        return FailureInfo.withSourceFiles(definition.sourceFiles(), () -> execute(definition, plan, input));
+    }
+
+    private JobOutcome execute(JobDefinition definition, ExecutionPlan plan, RunInput input) {
         WorkspaceManager manager = new WorkspaceManager(input.workRoot());
         WorkspaceManager.Workspace workspace;
         try {

@@ -5,7 +5,10 @@ import ch.so.agi.gretl.runtime.api.DiagnosticInfo;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.nio.file.Path;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Bounded, immutable description of a throwable graph. The original throwable
@@ -33,6 +36,13 @@ public record FailureInfo(
     private static final int MAX_DEPTH = 16;
     private static final int MAX_SUPPRESSED = 8;
     private static final int MAX_MESSAGE_CHARS = 2048;
+    // Only the immutable key is process-wide. Values exist for the lexical run call,
+    // including early logger snapshots and resource closes, and are restored on exit.
+    private static final ScopedValue<Map<String, Path>> SOURCE_FILES = ScopedValue.newInstance();
+
+    static <T> T withSourceFiles(Map<String, Path> files, Supplier<T> work) {
+        return ScopedValue.where(SOURCE_FILES, Map.copyOf(files)).call(work::get);
+    }
 
     public FailureInfo {
         if (id == null || id.isBlank()) {
@@ -47,6 +57,19 @@ public record FailureInfo(
         frames = List.copyOf(frames);
         java.util.Objects.requireNonNull(source, "source");
         java.util.Objects.requireNonNull(diagnostic, "diagnostic");
+        if (SOURCE_FILES.isBound() && !SOURCE_FILES.get().isEmpty()) {
+            Map<String, Path> files = SOURCE_FILES.get();
+            frames = frames.stream().map(frame -> {
+                Path original = files.get(frame.fileName());
+                return original == null ? frame : new Frame(frame.className(), frame.methodName(),
+                        original.toString(), frame.lineNumber());
+            }).toList();
+            source = source.map(location -> {
+                Path original = files.get(location.file());
+                return original == null ? location : new SourceLocation(original.toString(),
+                        location.line(), location.column());
+            });
+        }
     }
 
     public FailureInfo(

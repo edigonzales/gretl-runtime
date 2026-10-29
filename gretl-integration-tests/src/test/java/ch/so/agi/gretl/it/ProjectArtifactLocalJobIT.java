@@ -93,6 +93,50 @@ class ProjectArtifactLocalJobIT {
             var resource=paths.filter(p->p.endsWith("job-resources/validation/nested/sql/update.sql")).findFirst().orElseThrow();assertEquals("validation-B\n",Files.readString(resource));
         }
     }
+    @Test void prj209InnerHandlerFailuresKeepOriginalSourceBeforeCaptureEvenWhenCaught() throws Exception {
+        for (boolean script : List.of(true, false)) for (boolean caught : List.of(false, true)) {
+            var request = request("project-inner-" + (caught ? "caught-" : "failed-") + (script ? "script" : "jar"),
+                    caught ? "caught" : "nested-fail", List.of(), "on-failure");
+            var prepared = ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.JAR);
+            var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared, script), false);
+            assertEquals(caught ? 0 : 10, result.code(), result.err());
+            assertRun(result, ORDER, caught ? "SUCCEEDED" : "FAILED");
+            assertEquals("ivd", Files.readString(request.directory().resolve("output/cleanup.txt")));
+            assertEquals(!caught, object(report(result).get("execution")).get("workRetained"));
+            var report = report(result);
+            var invocation = ((List<?>) object(report.get("execution")).get("invocations")).stream()
+                    .map(ProjectArtifactLocalJobIT::object)
+                    .filter(i -> ":import:run".equals(i.get("parentTaskId")) && "FAILED".equals(i.get("status")))
+                    .findFirst().orElseThrow();
+            var failure = ((List<?>) report.get("errors")).stream().map(ProjectArtifactLocalJobIT::object)
+                    .filter(e -> invocation.get("errorRef").equals(e.get("id"))).findFirst().orElseThrow();
+            assertEquals("ch.so.agi.gretl.tasks.io.archive.GzipTaskException", failure.get("type"));
+            assertOriginalInnerSource(object(failure.get("source")));
+            assertNoVirtualFileNames(report.get("errors"));
+            List<Map<String, Object>> rows;
+            try (var paths = Files.list(result.directory().resolve("reports"))) {
+                rows = Files.readAllLines(paths.filter(p -> p.toString().endsWith(".events.jsonl")).findFirst().orElseThrow())
+                        .stream().map(Json::parse).map(ProjectArtifactLocalJobIT::object).toList();
+            }
+            var failed = rows.stream().filter(e -> "gretl.operation.failed".equals(e.get("event_name"))
+                    && ":import:run".equals(e.get("task_id"))).findFirst().orElseThrow();
+            assertOriginalInnerSource(object(failed.get("source")));
+            assertNoVirtualFileNames(rows);
+            assertTrue(rows.stream().anyMatch(e -> "observed-inner-failure".equals(e.get("message"))));
+            if (caught) assertEquals("ch.so.agi.gretl.tasks.io.archive.GzipTaskException",
+                    Files.readString(request.directory().resolve("output/caught.txt")));
+        }
+    }
+    private void assertOriginalInnerSource(Map<String, Object> source) {
+        assertTrue(source.get("file").toString().endsWith("import/job.groovy"), source.toString());
+        assertEquals(10L, source.get("line"));
+    }
+    private void assertNoVirtualFileNames(Object value) {
+        if (value instanceof Map<?, ?> map) {
+            if (map.get("file") instanceof String file) assertFalse(file.startsWith("GretlProject_"), file);
+            map.values().forEach(this::assertNoVirtualFileNames);
+        } else if (value instanceof List<?> list) list.forEach(this::assertNoVirtualFileNames);
+    }
     @Test void prj209TargetSelectionAndNoDataRetainOneCommonCompletion() throws Exception {
         for(boolean empty:List.of(false,true)) {
             var request=request(empty?"project-no-data":"project-selection",empty?"empty":"success",empty?List.of():List.of(":validation:nested:run"),"never");

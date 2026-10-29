@@ -165,6 +165,7 @@ public final class GroovyJobLoader {
             }
         }
         var sourceMap = Map.copyOf(originals);
+        builder.sourceFiles(sourceMap);
         List<JobDslModel> models = new ArrayList<>();
         for (var entry : scripts) {
             String virtual = ProjectSourceNames.virtualGroovyName(entry.projectPath());

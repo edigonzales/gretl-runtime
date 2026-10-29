@@ -5,6 +5,16 @@ parameter('count', type: 'integer', defaultValue: '7', description: 'Count')
 action('run', dependsOn: ':validation:nested:run', after: ':unrelated:run') { ctx ->
     if (parameter(':mode') == 'fail') throw new IllegalStateException('synthetic-project-failure', new IOException('original-cause'))
     if (parameter(':mode') == 'empty') ctx.finishJob('synthetic-empty')
+    if (parameter(':mode') in ['nested-fail', 'caught']) {
+        try {
+            ctx.run(Gzip) { dataFile = file('missing.txt'); gzipFile = workPath('missing.gz') }
+        } catch (ch.so.agi.gretl.tasks.io.archive.GzipTaskException failure) {
+            ctx.log().error('observed-inner-failure', failure)
+            if (parameter(':mode') != 'caught') throw failure
+            java.nio.file.Files.writeString(parameter(':output').parent.resolve('caught.txt'), failure.class.name)
+        }
+        return
+    }
     assert parameter('count') instanceof Long
     assert parameter(':enabled') instanceof Boolean
     def nested = ctx.run(Gzip) { dataFile = file('sql/update.sql'); gzipFile = workPath('nested.gz') }

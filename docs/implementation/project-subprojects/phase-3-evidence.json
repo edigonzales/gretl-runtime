@@ -3,8 +3,8 @@
   "phaseBaseSha": "0a39bf1d70a1478e01f2cddb7ba6c8af80db963a",
   "previousAcceptedCandidate": "3e684678aeafb0a9606a79712344adbc8cd70406",
   "previousReview": "phase-2-review.md",
-  "evidenceRoot": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029",
-  "environment": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/environment.json",
+  "evidenceRoot": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02",
+  "environment": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/environment.json",
   "javaVersion": "25.0.2+10-LTS",
   "mavenVersion": "3.10.0",
   "groovyVersion": "6.0.0",
@@ -303,6 +303,88 @@
       "startedAt": "2026-10-29T05:24:50.643838+00:00",
       "finishedAt": "2026-10-29T05:24:53.838416+00:00",
       "log": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/red-null-frame/console.log"
+    },
+    {
+      "label": "attempt-02/before-full",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-Pgeotools-probe,backing-services",
+        "clean",
+        "verify"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T06:39:24.516547+00:00",
+      "finishedAt": "2026-10-29T06:49:09.170728+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-full/console.log"
+    },
+    {
+      "label": "attempt-02/before-normal",
+      "command": [
+        "./mvnw",
+        "-B",
+        "clean",
+        "verify"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T06:32:09.562489+00:00",
+      "finishedAt": "2026-10-29T06:39:18.462844+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-normal/console.log"
+    },
+    {
+      "label": "attempt-02/inner-source-fixed",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-integration-tests",
+        "-am",
+        "-Dtest=FailureInfoTest,RunnerSourceMappingTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dit.test=ProjectArtifactLocalJobIT",
+        "-Dfailsafe.failIfNoSpecifiedTests=false",
+        "verify"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T06:29:41.522649+00:00",
+      "finishedAt": "2026-10-29T06:31:14.163694+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/inner-source-fixed/console.log"
+    },
+    {
+      "label": "attempt-02/red-inner-source",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-integration-tests",
+        "-am",
+        "-Dtest=ProjectArtifactLocalJobIT",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dit.test=ProjectArtifactLocalJobIT",
+        "-Dfailsafe.failIfNoSpecifiedTests=false",
+        "verify"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T06:26:35.191475+00:00",
+      "finishedAt": "2026-10-29T06:27:50.343203+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/red-inner-source/console.log"
+    },
+    {
+      "label": "attempt-02/source-scope-unit",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-runner",
+        "-am",
+        "-Dtest=FailureInfoTest,RunnerSourceMappingTest,JobDefinitionBuilderTest,SequentialJobRunnerTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "test"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T06:29:02.024918+00:00",
+      "finishedAt": "2026-10-29T06:29:04.495855+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/source-scope-unit/console.log"
     }
   ],
   "normalGate": {
@@ -314,14 +396,14 @@
     ],
     "exitCode": 0,
     "totals": {
-      "tests": 667,
+      "tests": 672,
       "failures": 0,
       "errors": 0,
       "skipped": 0
     },
-    "result": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/before-final-normal/result.json",
-    "checksums": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/before-final-normal/SHA256SUMS.json",
-    "checksumManifestSha256": "db47a864598cbee9af6f9c866fe1ff0db367b7447ce077e0fd96fe8f33d6af6f",
+    "result": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-normal/result.json",
+    "checksums": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-normal/SHA256SUMS.json",
+    "checksumManifestSha256": "c33e11faa866bd0f5e22e09146402212011c6628148830a9445e07f2f6b88c47",
     "audit": {
       "command": [
         "python3",
@@ -330,8 +412,8 @@
       "exitCode": 0,
       "log": "audit.log"
     },
-    "qualification": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/before-final-normal/qualification",
-    "artifacts": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/before-final-normal/artifacts"
+    "qualification": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-normal/qualification",
+    "artifacts": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-normal/artifacts"
   },
   "fullGate": {
     "command": [
@@ -343,14 +425,14 @@
     ],
     "exitCode": 0,
     "totals": {
-      "tests": 723,
+      "tests": 728,
       "failures": 0,
       "errors": 0,
       "skipped": 0
     },
-    "result": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/before-full/result.json",
-    "checksums": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/before-full/SHA256SUMS.json",
-    "checksumManifestSha256": "e1825ce1929e456c9fae1af4c9d804f4eecad957534f1e0b413a23486f57ae20",
+    "result": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-full/result.json",
+    "checksums": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-full/SHA256SUMS.json",
+    "checksumManifestSha256": "e9b8f82272e7eac0d08a410b9bb64d0218b60fcdd015a571e0910d5acac2c7e3",
     "audit": {
       "command": [
         "python3",
@@ -360,10 +442,10 @@
       "exitCode": 0,
       "log": "audit.log"
     },
-    "qualification": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/before-full/qualification",
-    "artifacts": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/before-full/artifacts"
+    "qualification": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-full/qualification",
+    "artifacts": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-full/artifacts"
   },
-  "inputIndex": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/before-inputs.json",
+  "inputIndex": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/attempt-02/before-inputs.json",
   "testCases": {
     "PRJ-201": {
       "status": "PASS",
@@ -407,8 +489,8 @@
     },
     "PRJ-209": {
       "status": "PASS",
-      "tests": "ProjectArtifactLocalJobIT; ProjectSourceFrameTest; bestehende Cancellation-/SIGTERM-JAR-Tests",
-      "oracle": "Unterprojektfehler mit :import:run, wirklicher Cause und Originalzeile 6, Code 10, gemeinsamer Report/Run und ivd-Cleanup; on-failure behaelt reale Ressourcen. NO_DATA und Teilziel ohne nachgelagerte Fachausgabe."
+      "tests": "ProjectArtifactLocalJobIT; ProjectSourceFrameTest; FailureInfoTest; RunnerSourceMappingTest; unchanged cancellation/SIGTERM JAR regressions",
+      "oracle": "Original source and actual line in first operation.failed, all captured frame filenames and referenced report errors for uncaught/caught real Gzip handler failures in script AND JAR; caught original GzipTaskException preserves successful Action/exit0, uncaught exit10; common cleanup/retention, NO_DATA and selected targets. Immutable source metadata, old constructor, lexical nested/exception/no-leak scope, early logs and later resource/cleanup failures."
     },
     "PRJ-210": {
       "status": "PASS",
@@ -454,5 +536,17 @@
     "No real GRETL IMAGE, Native, Windows or production deployment; container services used only as local test fixtures",
     "Groovy Toplevel trusted; settings/path checks are not a general filesystem sandbox or atomic source snapshot"
   ],
-  "independentReview": "PENDING; candidate SHA and exact postcommit normal/full results will be external handoff, not self-referenced here"
+  "independentReview": "PENDING for new candidate; failed attempt01 archived unchanged. Both exact postcommit gates and new candidate SHA will be in external attempt-02/phase-3-handoff.json; fresh independent full cumulative fixed-base review required.",
+  "previousAttempts": [
+    {
+      "candidateSha": "71430e42e5d764628d48abc5837b55d50b8766fd",
+      "verdict": "FAIL",
+      "review": "phase-3-review-attempt-01.md",
+      "reviewSha256": "8fe40dcb3f71a61b68f091a69a610277fa7108907bc88fbbe15da403b70ab37a",
+      "handoff": "/Users/stefan/sources/gretl-runtime-phase-3-evidence-20261029/phase-3-handoff.json",
+      "handoffSha256": "ad7f7802c466163caaa84a63153f73c07933bf6ec53ef9f5b984e470683bd00f",
+      "finding": "MAJOR-1 early inner handler FailureInfo retained virtual source names; corrected before snapshot capture with neutral run-local immutable source metadata"
+    }
+  ],
+  "architectureDecision": "phase-3-implementation.md: correction after review01 documented before neutral contract change; additive immutable sourceFiles metadata with old constructors and lexical Java25 ScopedValue binding for the existing runner only; no global registry or Groovy/operation dependency in runner; no planner/result/control/API changes"
 }
