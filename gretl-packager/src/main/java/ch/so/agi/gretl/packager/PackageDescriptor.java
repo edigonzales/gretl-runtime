@@ -18,20 +18,28 @@ public record PackageDescriptor(
         Path descriptorFile, Path baseDirectory, int schemaVersion,
         String name, String version, String runtimeVersion, String entryScript,
         List<String> sources, List<String> resources, List<Dependency> dependencies,
-        List<String> taskModules, boolean standardFunctions) {
+        List<String> taskModules, boolean standardFunctions, String settingsFile) {
 
     private static final long MAX_DESCRIPTOR_BYTES = 1L << 20;
     private static final Pattern NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]{0,127}");
     private static final Pattern VERSION = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._+\\-]{0,127}");
     private static final Set<String> FIELDS = Set.of(
             "schemaVersion", "name", "version", "runtimeVersion", "entryScript",
-            "sources", "resources", "dependencies", "taskModules", "standardFunctions");
+            "sources", "resources", "dependencies", "taskModules", "standardFunctions", "settingsFile");
 
     public PackageDescriptor(Path descriptorFile, Path baseDirectory, int schemaVersion,
             String name, String version, String runtimeVersion, String entryScript,
             List<String> sources, List<String> resources, List<Dependency> dependencies) {
         this(descriptorFile, baseDirectory, schemaVersion, name, version, runtimeVersion,
                 entryScript, sources, resources, dependencies, List.of(), false);
+    }
+
+    public PackageDescriptor(Path descriptorFile, Path baseDirectory, int schemaVersion,
+            String name, String version, String runtimeVersion, String entryScript,
+            List<String> sources, List<String> resources, List<Dependency> dependencies,
+            List<String> taskModules, boolean standardFunctions) {
+        this(descriptorFile, baseDirectory, schemaVersion, name, version, runtimeVersion,
+                entryScript, sources, resources, dependencies, taskModules, standardFunctions, null);
     }
 
     public record Dependency(String groupId, String artifactId, String version, String classifier) {
@@ -78,7 +86,7 @@ public record PackageDescriptor(
         Map<String, Object> object = stringKeys(raw);
         rejectUnknown(object);
         int schemaVersion = integer(object, "schemaVersion");
-        if (schemaVersion != 1 && schemaVersion != 2) {
+        if (schemaVersion != 1 && schemaVersion != 2 && schemaVersion != 3) {
             throw new PackageException("PACKAGE_DESCRIPTOR_VERSION",
                     PackagerMessages.format("package.descriptorVersion", schemaVersion));
         }
@@ -93,7 +101,14 @@ public record PackageDescriptor(
             throw new PackageException("PACKAGE_VERSION_INVALID",
                     PackagerMessages.get("package.versionInvalid"));
         }
-        String entryScript = text(object, "entryScript");
+        if (schemaVersion == 3 ? object.containsKey("entryScript") : object.containsKey("settingsFile")) {
+            throw new PackageException("PACKAGE_DESCRIPTOR_SCHEMA", PackagerMessages.get("package.project.schema"));
+        }
+        String entryScript = schemaVersion == 3 ? null : text(object, "entryScript");
+        String settingsFile = schemaVersion == 3 ? text(object, "settingsFile") : null;
+        if (schemaVersion == 3 && !"settings.gretl".equals(settingsFile)) {
+            throw new PackageException("PACKAGE_SETTINGS_INVALID", PackagerMessages.get("package.project.settings"));
+        }
         List<String> sources = textList(object, "sources");
         List<String> resources = textList(object, "resources");
         List<Dependency> dependencies = dependencies(object, allowSnapshots);
@@ -107,12 +122,20 @@ public record PackageDescriptor(
 
         Path base = file.getParent().toAbsolutePath().normalize();
         PackageDescriptor value = new PackageDescriptor(file, base, schemaVersion,
-                name, version, runtimeVersion, entryScript, sources, resources, dependencies, taskModules, (Boolean) functions);
+                name, version, runtimeVersion, entryScript, sources, resources, dependencies, taskModules, (Boolean) functions, settingsFile);
         value.validate();
         return value;
     }
 
+    public boolean projectPackage() { return schemaVersion == 3; }
+
+    public Path settingsPath() {
+        if (!projectPackage()) throw new IllegalStateException("Single jobs have no settingsFile");
+        return baseDirectory.resolve(settingsFile);
+    }
+
     public Path entryPath() {
+        if (projectPackage()) throw new IllegalStateException("Projects have no single entryScript");
         return baseDirectory.resolve(entryScript).normalize();
     }
 
@@ -125,18 +148,25 @@ public record PackageDescriptor(
     }
 
     private void validate() throws PackageException {
-        Path entry = safePath(entryScript, "entryScript");
-        if (!Files.isRegularFile(entry, LinkOption.NOFOLLOW_LINKS)) {
-            throw new PackageException("PACKAGE_ENTRY_MISSING",
-                    PackagerMessages.format("package.entryMissing", entryScript));
-        }
-        if (!entry.getParent().equals(baseDirectory)) {
-            throw new PackageException("PACKAGE_ENTRY_LOCATION",
-                    PackagerMessages.get("package.entryLocation"));
-        }
-        if (!entryScript.endsWith(".groovy")) {
-            throw new PackageException("PACKAGE_ENTRY_TYPE",
-                    PackagerMessages.get("package.entryType"));
+        if (projectPackage()) {
+            Path settings = safePath(settingsFile, "settingsFile");
+            if (!Files.isRegularFile(settings, LinkOption.NOFOLLOW_LINKS)) {
+                throw new PackageException("PROJECT_SETTINGS_MISSING", PackagerMessages.format("package.project.settingsMissing", settings));
+            }
+        } else {
+            Path entry = safePath(entryScript, "entryScript");
+            if (!Files.isRegularFile(entry, LinkOption.NOFOLLOW_LINKS)) {
+                throw new PackageException("PACKAGE_ENTRY_MISSING",
+                        PackagerMessages.format("package.entryMissing", entryScript));
+            }
+            if (!entry.getParent().equals(baseDirectory)) {
+                throw new PackageException("PACKAGE_ENTRY_LOCATION",
+                        PackagerMessages.get("package.entryLocation"));
+            }
+            if (!entryScript.endsWith(".groovy")) {
+                throw new PackageException("PACKAGE_ENTRY_TYPE",
+                        PackagerMessages.get("package.entryType"));
+            }
         }
         for (String source : sources) {
             Path path = safePath(source, "sources");

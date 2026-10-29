@@ -136,3 +136,8 @@ Image-Referenz und verwendet denselben Szenariobestand mit denselben Assertions.
 Die zusätzlichen Packager-Qualifikationen bleiben ausdrücklich JAR-Tests,
 die älteren SCRIPT-Regressionen bleiben Skriptprüfungen. Details und Rechte-
 /Endpointkonfiguration stehen in [Job-Artefakttests](job-artifact-tests.md).
+
+
+## Projektpakete
+
+GRETL-Projekte verwenden ausdrücklich Deskriptorschema 3 mit `settingsFile: "settings.gretl"` statt `entryScript`. Die bestehende Auswahl- und Kollisionslogik bleibt gemeinsam. Der [Subprojektvertrag](project-subprojects/README.md) und das [lokale Beispiel](../../examples/project-pipeline/README.md) zeigen Aufruf, Ressourcen, Parameter und den isolierten JAR-Start. Interne Projekt-Jobmetadaten haben Schema 2; dies nummeriert das Dependencyinventar nicht neu.

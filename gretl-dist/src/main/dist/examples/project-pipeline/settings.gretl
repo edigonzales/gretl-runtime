@@ -1,0 +1,2 @@
+include 'prepare', 'checks:local', 'publish'
+defaults ':publish:run'

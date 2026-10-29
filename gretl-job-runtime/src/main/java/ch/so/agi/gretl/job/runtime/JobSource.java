@@ -17,6 +17,8 @@ public interface JobSource {
         return jobRoot();
     }
 
+    default boolean projectMode() { return false; }
+
     String jobName();
 
     String sha256();

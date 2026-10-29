@@ -69,6 +69,17 @@ public final class JobPackageBuilder {
     public PackageResult build(PackageDescriptor descriptor,
                                JobCompiler.CompiledJob compiled,
                                Path output) throws PackageException {
+        return buildInternal(descriptor, compiled, null, output);
+    }
+
+    public PackageResult buildProject(PackageDescriptor descriptor, CompiledProject project, Path output) throws PackageException {
+        if (!descriptor.projectPackage() || project.entries().isEmpty())
+            throw new PackageException("PACKAGE_DESCRIPTOR_SCHEMA", PackagerMessages.get("package.project.compilerSchema"));
+        return buildInternal(descriptor, null, project, output);
+    }
+
+    private PackageResult buildInternal(PackageDescriptor descriptor, JobCompiler.CompiledJob compiled,
+                                        CompiledProject project, Path output) throws PackageException {
         if (classpath.isEmpty()) {
             throw new PackageException("PACKAGE_CLASSPATH_EMPTY",
                     PackagerMessages.get("package.classpathEmpty"));
@@ -88,12 +99,14 @@ public final class JobPackageBuilder {
                     PackagerMessages.get("package.jobRuntimeMissing"));
         }
         validateDeclaredDependencies(descriptor);
-        addCompiled(compiled);
+        addCompiled(project == null ? compiled.classes() : project.classes(),
+                project == null ? compiled.sources() : project.sources());
         addResources(descriptor);
-        addMetadata(descriptor, compiled);
+        addMetadata(descriptor, compiled, project);
         addServices();
         addGroovyModules();
-        return write(output, descriptor, compiled);
+        return write(output, descriptor, project == null ? compiled.entryClass() : project.entries().getFirst().entryClass(),
+                project == null ? compiled.classCount() : project.classes().size());
     }
 
     private void addJar(Path path) throws PackageException {
@@ -208,11 +221,11 @@ public final class JobPackageBuilder {
                 || (second.startsWith("ch.interlis:iox-ili:") && first.startsWith("ch.interlis:av2geobau:"));
     }
 
-    private void addCompiled(JobCompiler.CompiledJob compiled) throws PackageException {
-        for (Map.Entry<String, byte[]> entry : compiled.classes().entrySet()) {
+    private void addCompiled(Map<String, byte[]> classes, List<JobCompiler.SourceFile> sources) throws PackageException {
+        for (Map.Entry<String, byte[]> entry : classes.entrySet()) {
             addEntry(entry.getKey(), entry.getValue(), "compiled job");
         }
-        for (JobCompiler.SourceFile source : compiled.sources()) {
+        for (JobCompiler.SourceFile source : sources) {
             addEntry("META-INF/gretl/sources/" + source.relativePath(),
                     source.text().getBytes(StandardCharsets.UTF_8), "job source");
         }
@@ -250,21 +263,30 @@ public final class JobPackageBuilder {
         }
     }
 
-    private void addMetadata(PackageDescriptor descriptor, JobCompiler.CompiledJob compiled)
+    private void addMetadata(PackageDescriptor descriptor, JobCompiler.CompiledJob compiled, CompiledProject project)
             throws PackageException {
         Map<String, Object> job = new LinkedHashMap<>();
-        job.put("schemaVersion", 1);
+        job.put("schemaVersion", project == null ? 1 : 2);
         job.put("name", descriptor.name());
         job.put("version", descriptor.version());
         job.put("runtimeVersion", descriptor.runtimeVersion());
         job.put("javaFeatureVersion", 25);
-        job.put("entryClass", compiled.entryClass());
-        job.put("entryScript", descriptor.entryScript());
+        if (project == null) {
+            job.put("entryClass", compiled.entryClass());
+            job.put("entryScript", descriptor.entryScript());
+            job.put("scriptSha256", compiled.scriptSha256());
+        } else {
+            job.put("project", true);
+            job.put("settingsFile", descriptor.settingsFile());
+            job.put("defaultTargets", project.defaultTargets());
+            job.put("entries", project.entries().stream().map(e -> Map.of(
+                    "projectPath", e.projectPath().canonical(), "entryScript", e.relativeScriptPath(), "entryClass", e.entryClass())).toList());
+            job.put("projectSha256", project.projectSha256());
+        }
         job.put("resourceRoot", "META-INF/gretl/job-resources/");
         job.put("resourceFiles", resourceNames(descriptor));
-        job.put("sourceFiles", compiled.sources().stream()
+        job.put("sourceFiles", (project == null ? compiled.sources() : project.sources()).stream()
                 .map(JobCompiler.SourceFile::relativePath).toList());
-        job.put("scriptSha256", compiled.scriptSha256());
         job.put("dependencyInventory", "META-INF/gretl/dependencies.json");
         job.put("packagerVersion", packagerVersion);
         addMetadataEntry("META-INF/gretl/job.json", Json.write(job));
@@ -359,7 +381,7 @@ public final class JobPackageBuilder {
     }
 
     private PackageResult write(Path output, PackageDescriptor descriptor,
-                                JobCompiler.CompiledJob compiled) throws PackageException {
+                                String entryClass, int classCount) throws PackageException {
         Path absolute = output.toAbsolutePath().normalize();
         try {
             Path parent = absolute.getParent();
@@ -401,7 +423,7 @@ public final class JobPackageBuilder {
                     PackagerMessages.format("package.writeFailed", output), exception);
         }
         return new PackageResult(absolute, descriptor.name(), descriptor.version(),
-                compiled.entryClass(), compiled.classCount(),
+                entryClass, classCount,
                 resourceNamesUnchecked(descriptor).size());
     }
 

@@ -9,6 +9,9 @@ import ch.so.agi.gretl.job.runtime.RuntimeInfo;
 import ch.so.agi.gretl.runtime.groovy.DefinitionEnvironment;
 import ch.so.agi.gretl.runtime.groovy.GroovyJobLoader;
 import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
+import ch.so.agi.gretl.runtime.groovy.project.CompiledProjectScript;
+import ch.so.agi.gretl.runtime.groovy.project.ProjectPath;
+import ch.so.agi.gretl.runtime.groovy.project.ProjectSourceNames;
 import ch.so.agi.gretl.runtime.logging.Json;
 import ch.so.agi.gretl.runtime.logging.TextFormatter;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
@@ -65,8 +68,9 @@ public final class JobJarMain {
         }
         // Registration needs a logical root; the runner prepares packaged resources.
         Path definitionRoot = Path.of("").toAbsolutePath().normalize();
-        PackagedJobSource source = new PackagedJobSource(metadata, definitionRoot,
-                JobJarMain.class.getClassLoader(), locale);
+        JobSource source = metadata.schemaVersion() == 2
+                ? new PackagedProjectJobSource(metadata, definitionRoot, JobJarMain.class.getClassLoader(), locale)
+                : new PackagedJobSource(metadata, definitionRoot, JobJarMain.class.getClassLoader(), locale);
         JobRuntime runtime = new JobRuntime(System.out, System.err, System.getenv(),
                 definitionRoot, JobJarMain.class.getClassLoader());
         System.exit(runtime.executePackaged(source, args));
@@ -91,7 +95,12 @@ public final class JobJarMain {
                     : new FileAttribute<?>[0];
             Path root = Files.createDirectory(runRoot.resolve("job-resources"), permissions);
             for (String file : metadata.resourceFiles()) {
-                String normalized = safeRelative(file, locale);
+                String normalized;
+                if (metadata.schemaVersion() == 2) {
+                    try { JobMetadata.projectRelative(file, locale); }
+                    catch (IllegalArgumentException failure) { throw new JobJarException("JOB_RESOURCE_PATH", failure.getMessage(), failure); }
+                    normalized = file;
+                } else normalized = safeRelative(file, locale);
                 Path target = root.resolve(normalized).normalize();
                 if (!target.startsWith(root)) {
                     throw new JobJarException("JOB_RESOURCE_PATH",
@@ -132,11 +141,20 @@ public final class JobJarMain {
             int schemaVersion, String name, String version, String runtimeVersion,
             int javaFeatureVersion, String entryClass, String entryScript,
             String resourceRoot, List<String> resourceFiles,
-            List<String> sourceFiles, String scriptSha256) {
+            List<String> sourceFiles, String scriptSha256,
+            List<CompiledProjectScript> projectEntries, List<String> defaultTargets) {
+
+        public JobMetadata(int schemaVersion, String name, String version, String runtimeVersion,
+                           int javaFeatureVersion, String entryClass, String entryScript, String resourceRoot,
+                           List<String> resourceFiles, List<String> sourceFiles, String scriptSha256) {
+            this(schemaVersion, name, version, runtimeVersion, javaFeatureVersion, entryClass, entryScript,
+                    resourceRoot, resourceFiles, sourceFiles, scriptSha256, List.of(), List.of());
+        }
 
         public JobMetadata {
             resourceFiles = List.copyOf(resourceFiles);
             sourceFiles = List.copyOf(sourceFiles);
+            projectEntries = List.copyOf(projectEntries); defaultTargets = List.copyOf(defaultTargets);
         }
 
         static JobMetadata load(ClassLoader loader, Locale locale) throws JobJarException {
@@ -155,6 +173,7 @@ public final class JobJarMain {
                 Map<String, Object> value = new java.util.LinkedHashMap<>();
                 raw.forEach((key, item) -> value.put(String.valueOf(key), item));
                 int schema = integer(value, "schemaVersion", locale);
+                if (schema == 2) return projectMetadata(value, locale);
                 if (schema != 1) {
                     throw new JobJarException("JOB_METADATA_VERSION",
                             Messages.format(locale, "job.error.metadataVersion", schema));
@@ -167,10 +186,76 @@ public final class JobJarMain {
                         strings(value, "resourceFiles", locale),
                         strings(value, "sourceFiles", locale),
                         text(value, "scriptSha256", locale));
+            } catch (IllegalArgumentException exception) {
+                throw new JobJarException("JOB_METADATA_INVALID", Messages.format(locale, "job.project.syntax", exception.getMessage()), exception);
             } catch (IOException exception) {
                 throw new JobJarException("JOB_METADATA_READ",
                         Messages.get(locale, "job.error.metadataRead"), exception);
             }
+        }
+
+        private static JobMetadata projectMetadata(Map<String, Object> value, Locale locale) throws JobJarException {
+            try {
+                var fields = java.util.Set.of("schemaVersion", "name", "version", "runtimeVersion", "javaFeatureVersion",
+                        "project", "settingsFile", "defaultTargets", "entries", "resourceRoot", "resourceFiles", "sourceFiles",
+                        "projectSha256", "dependencyInventory", "packagerVersion");
+                if (!(value.get("schemaVersion") instanceof Number schema) || schema.doubleValue() != 2
+                        || !fields.containsAll(value.keySet()) || !Boolean.TRUE.equals(value.get("project"))
+                        || !"settings.gretl".equals(text(value, "settingsFile", locale))
+                        || !RESOURCE_ROOT.equals(text(value, "resourceRoot", locale))
+                        || !"META-INF/gretl/dependencies.json".equals(text(value, "dependencyInventory", locale)))
+                    throw new IllegalArgumentException(Messages.get(locale, "job.project.fields"));
+                String hash = text(value, "projectSha256", locale);
+                if (!hash.matches("[0-9a-f]{64}")) throw new IllegalArgumentException(Messages.get(locale, "job.project.hash"));
+                List<String> resources = uniqueStrings(value, "resourceFiles", locale);
+                List<String> sources = uniqueStrings(value, "sourceFiles", locale);
+                for (String path : resources) projectRelative(path, locale);
+                for (String path : sources) projectRelative(path, locale);
+                if (!sources.contains("settings.gretl")) throw new IllegalArgumentException(Messages.get(locale, "job.project.settingsSource"));
+                List<String> defaults = uniqueStrings(value, "defaultTargets", locale);
+                for (String target : defaults) if (ProjectPath.parseQualified(target).isRoot())
+                    throw new IllegalArgumentException(Messages.get(locale, "job.project.default"));
+                if (!(value.get("entries") instanceof List<?> entries) || entries.isEmpty())
+                    throw new IllegalArgumentException(Messages.get(locale, "job.project.entries"));
+                var scripts = new ArrayList<CompiledProjectScript>();
+                var paths = new java.util.HashSet<ProjectPath>(); var classes = new java.util.HashSet<String>();
+                for (Object item : entries) {
+                    if (!(item instanceof Map<?, ?> entry) || !entry.keySet().equals(java.util.Set.of("projectPath", "entryScript", "entryClass")))
+                        throw new IllegalArgumentException(Messages.get(locale, "job.project.entryFields"));
+                    if (!(entry.get("projectPath") instanceof String path) || !(entry.get("entryClass") instanceof String type)
+                            || !(entry.get("entryScript") instanceof String script)) throw new IllegalArgumentException(Messages.get(locale, "job.project.entryTypes"));
+                    ProjectPath project = ProjectPath.parseQualified(path);
+                    projectRelative(script, locale);
+                    if (!paths.add(project) || !classes.add(type) || !type.matches("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*(?:\\.\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*)*")
+                            || !sources.contains(script) || (project.isRoot() && !scripts.isEmpty()))
+                        throw new IllegalArgumentException(Messages.format(locale, "job.project.entryInvalid", path));
+                    scripts.add(new CompiledProjectScript(project, type, script, ProjectSourceNames.virtualGroovyName(project)));
+                }
+                if (value.containsKey("packagerVersion")) text(value, "packagerVersion", locale);
+                Object feature = value.get("javaFeatureVersion");
+                if (!(feature instanceof Number number) || number.doubleValue() != number.intValue())
+                    throw new IllegalArgumentException(Messages.get(locale, "job.project.javaInteger"));
+                return new JobMetadata(2, text(value, "name", locale), text(value, "version", locale),
+                        text(value, "runtimeVersion", locale), integer(value, "javaFeatureVersion", locale),
+                        null, "settings.gretl", RESOURCE_ROOT, resources, sources, hash, scripts, defaults);
+            } catch (IllegalArgumentException failure) {
+                throw new JobJarException("JOB_METADATA_INVALID", failure.getMessage(), failure);
+            }
+        }
+
+        private static List<String> uniqueStrings(Map<String, Object> value, String key, Locale locale) throws JobJarException {
+            List<String> list = strings(value, key, locale);
+            if (new java.util.HashSet<>(list).size() != list.size()) throw new JobJarException("JOB_METADATA_INVALID", Messages.format(locale, "job.project.duplicate", key));
+            return list;
+        }
+
+        private static void projectRelative(String value, Locale locale) {
+            if (value.isBlank() || value.contains("\\") || value.contains(":") || value.chars().anyMatch(Character::isISOControl))
+                throw new IllegalArgumentException(Messages.format(locale, "job.project.path", value));
+            Path path = Path.of(value);
+            if (path.isAbsolute() || path.startsWith("..") || !path.normalize().toString().replace('\\', '/').equals(value)
+                    || java.util.Arrays.asList(value.split("/", -1)).contains(""))
+                throw new IllegalArgumentException(Messages.format(locale, "job.project.path", value));
         }
 
         private static String text(Map<String, Object> value, String key, Locale locale)
@@ -213,11 +298,11 @@ public final class JobJarMain {
         }
     }
 
-    static final class PackagedJobSource implements ch.so.agi.gretl.job.runtime.JobSource {
-        private final JobMetadata metadata;
-        private final Path jobRoot;
-        private final ClassLoader classLoader;
-        private final Locale locale;
+    static class PackagedJobSource implements ch.so.agi.gretl.job.runtime.JobSource {
+        final JobMetadata metadata;
+        final Path jobRoot;
+        final ClassLoader classLoader;
+        final Locale locale;
 
         PackagedJobSource(JobMetadata metadata, Path jobRoot, ClassLoader classLoader,
                           Locale locale) {
@@ -259,6 +344,17 @@ public final class JobJarMain {
                     registry, jobRoot, startCwd, sink, locale);
             return new GroovyJobLoader().loadCompiled(metadata.entryClass(),
                     displayFile(), environment, classLoader);
+        }
+    }
+
+    static final class PackagedProjectJobSource extends PackagedJobSource {
+        PackagedProjectJobSource(JobMetadata metadata, Path root, ClassLoader loader, Locale locale) {
+            super(metadata, root, loader, locale);
+        }
+        @Override public boolean projectMode() { return true; }
+        @Override public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink) {
+            return new GroovyJobLoader().loadCompiledProject(metadata.projectEntries(), metadata.defaultTargets(),
+                    new DefinitionEnvironment(registry, jobRoot, startCwd, sink, locale), classLoader);
         }
     }
 

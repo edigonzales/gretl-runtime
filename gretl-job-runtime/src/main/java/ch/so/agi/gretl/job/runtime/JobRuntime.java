@@ -155,6 +155,8 @@ public final class JobRuntime {
                 config.language().orElse(null), locale);
         if (source instanceof ProjectJobSource project) {
             source = project.withLocale(locale);
+        }
+        if (source.projectMode()) {
             for (String target : options.targets()) {
                 try {
                     if (ch.so.agi.gretl.runtime.groovy.project.ProjectPath.parseQualified(target).isRoot()) {

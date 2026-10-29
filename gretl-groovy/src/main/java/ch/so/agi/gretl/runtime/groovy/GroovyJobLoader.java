@@ -3,6 +3,7 @@ package ch.so.agi.gretl.runtime.groovy;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.groovy.project.GretlProject;
+import ch.so.agi.gretl.runtime.groovy.project.CompiledProjectScript;
 import ch.so.agi.gretl.runtime.groovy.project.ProjectException;
 import ch.so.agi.gretl.runtime.groovy.project.ProjectSourceNames;
 import ch.so.agi.gretl.runtime.groovy.project.ProjectTaskIndex;
@@ -127,33 +128,64 @@ public final class GroovyJobLoader {
                                      DefinitionEnvironment environment) {
         java.util.Objects.requireNonNull(project, "project");
         java.util.Objects.requireNonNull(environment, "environment");
-        var builder = new JobDefinitionBuilder(project.root(), environment.locale());
+        List<CompiledProjectScript> scripts = project.entries().stream().map(entry -> new CompiledProjectScript(
+                entry.projectPath(), ProjectSourceNames.entryClassName(entry.projectPath()),
+                project.root().relativize(entry.scriptFile()).toString().replace('\\', '/'),
+                ProjectSourceNames.virtualGroovyName(entry.projectPath()))).toList();
+        return loadProjectScripts(scripts, project.defaultTargets(),
+                new DefinitionEnvironment(environment.registry(), project.root(), environment.startCwd(), environment.userMessages(), environment.locale()),
+                null, project.defaultTargetSources());
+    }
+
+    public JobDefinition loadCompiledProject(List<CompiledProjectScript> scripts, List<String> defaultTargets,
+                                             DefinitionEnvironment environment, ClassLoader classLoader) {
+        java.util.Objects.requireNonNull(classLoader, "classLoader");
+        return loadProjectScripts(List.copyOf(scripts), List.copyOf(defaultTargets), environment, classLoader, Map.of());
+    }
+
+    private JobDefinition loadProjectScripts(List<CompiledProjectScript> scripts, List<String> defaultTargets,
+                                             DefinitionEnvironment environment, ClassLoader compiledLoader,
+                                             Map<String, SourceLocation> defaultSources) {
+        var builder = new JobDefinitionBuilder(environment.jobRoot(), environment.locale());
         var index = new ProjectTaskIndex(environment.locale());
         var configuration = CompilerSettings.create();
-        var loader = new GroovyClassLoader(GroovyJobLoader.class.getClassLoader(), configuration);
-        loader.addClasspath(project.root().toString());
+        var loader = compiledLoader == null ? new GroovyClassLoader(GroovyJobLoader.class.getClassLoader(), configuration) : null;
+        if (loader != null) loader.addClasspath(environment.jobRoot().toString());
+        if (scripts.isEmpty() || scripts.stream().map(CompiledProjectScript::entryClass).distinct().count() != scripts.size()) {
+            throw new ProjectException("PROJECT_DUPLICATE_SCRIPT_CLASS", Messages.get(environment.locale(), "project.compiledEntries"),
+                    new SourceLocation(environment.jobRoot().resolve("settings.gretl").toString(), 0, 0), null);
+        }
         Map<String, Path> originals = new LinkedHashMap<>();
-        for (var entry : project.entries()) {
+        for (var entry : scripts) {
             String virtual = ProjectSourceNames.virtualGroovyName(entry.projectPath());
-            if (originals.putIfAbsent(virtual, entry.scriptFile()) != null) {
+            if (originals.putIfAbsent(virtual, environment.jobRoot().resolve(entry.relativeScriptPath())) != null) {
                 throw new ProjectException("PROJECT_DUPLICATE_SCRIPT_CLASS",
                         Messages.format(environment.locale(), "project.classDuplicate", virtual),
-                        new SourceLocation(entry.scriptFile().toString(), 0, 0), null);
+                        new SourceLocation(environment.jobRoot().resolve(entry.relativeScriptPath()).toString(), 0, 0), null);
             }
         }
         var sourceMap = Map.copyOf(originals);
         List<JobDslModel> models = new ArrayList<>();
-        for (var entry : project.entries()) {
+        for (var entry : scripts) {
             String virtual = ProjectSourceNames.virtualGroovyName(entry.projectPath());
-            JobDslModel model = new JobDslModel(environment, builder, entry.scriptFile(), entry.projectPath(), index,
+            JobDslModel model = new JobDslModel(environment, builder, environment.jobRoot().resolve(entry.relativeScriptPath()), entry.projectPath(), index,
                     virtual, sourceMap);
             models.add(model);
             try {
                 Binding binding = new Binding();
                 binding.setVariable(JobDslModel.BINDING_NAME, model);
                 for (var operation : environment.registry().all()) binding.setVariable(operation.symbol(), operation);
-                GroovyShell shell = new GroovyShell(loader, binding, configuration);
-                Script script = shell.parse(Files.readString(entry.scriptFile(), java.nio.charset.StandardCharsets.UTF_8), virtual);
+                Script script;
+                if (compiledLoader == null) {
+                    GroovyShell shell = new GroovyShell(loader, binding, configuration);
+                    script = shell.parse(Files.readString(environment.jobRoot().resolve(entry.relativeScriptPath()), java.nio.charset.StandardCharsets.UTF_8), virtual);
+                } else {
+                    Class<?> type = Class.forName(entry.entryClass(), false, compiledLoader);
+                    if (!GretlScript.class.isAssignableFrom(type)) throw new ProjectException("INVALID_SCRIPT_BASE",
+                            Messages.get(environment.locale(), "error.groovy.invalidCompiledBase"), model.source(), null);
+                    try { script = (Script) type.getDeclaredConstructor(Binding.class).newInstance(binding); }
+                    catch (java.lang.reflect.InvocationTargetException failure) { throw failure.getCause(); }
+                }
                 registerScript(script, model);
             } catch (GroovyDslException failure) {
                 if (failure.source() != null && failure.source().line() > 0) throw failure;
@@ -169,15 +201,15 @@ public final class GroovyJobLoader {
             }
         }
         index.validateReferences();
-        for (String target : project.defaultTargets()) {
+        for (String target : defaultTargets) {
             if (!index.taskIds().contains(target)) {
                 throw new ProjectException("UNKNOWN_DEFAULT_TARGET",
                         Messages.format(environment.locale(), "project.defaultUnknown", target),
-                        project.defaultTargetSources().getOrDefault(target,
-                                new SourceLocation(project.settingsFile().toString(), 0, 0)), null);
+                        defaultSources.getOrDefault(target,
+                                new SourceLocation(environment.jobRoot().resolve("settings.gretl").toString(), 0, 0)), null);
             }
         }
-        builder.defaults(project.defaultTargets().toArray(String[]::new));
+        builder.defaults(defaultTargets.toArray(String[]::new));
         JobDefinition definition = builder.freeze();
         models.forEach(model -> model.attachDefinition(definition));
         return definition;

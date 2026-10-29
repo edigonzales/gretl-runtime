@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.packager;
 
-import ch.so.agi.gretl.runtime.groovy.CompilerSettings;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -8,13 +7,10 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 import org.codehaus.groovy.control.Phases;
@@ -31,6 +27,23 @@ public final class JobCompiler {
         if (sources.isEmpty()) {
             throw new PackageException("PACKAGE_NO_SOURCES", PackagerMessages.get("package.noSources"));
         }
+        Compilation compilation = compileSources(sources, Map.of(), classpath);
+        if (compilation.scripts().isEmpty()) throw new PackageException("PACKAGE_NO_SCRIPT", PackagerMessages.get("package.noScript"));
+        if (compilation.scripts().size() > 1) throw new PackageException("PACKAGE_MULTIPLE_SCRIPTS",
+                PackagerMessages.format("package.multipleScripts", compilation.scripts().getFirst().name(), compilation.scripts().getLast().name()));
+        ScriptEntry script = compilation.scripts().getFirst();
+        requireBase(script);
+        if (!compilation.classes().containsKey(script.name().replace('.', '/') + ".class"))
+            throw new PackageException("PACKAGE_ENTRY_BYTECODE_MISSING", PackagerMessages.format("package.entryBytecodeMissing", script.name()));
+        return new CompiledJob(script.name(), compilation.classes(), sources, sha256(descriptor.entryPath()));
+    }
+
+    static void requireBase(ScriptEntry script) throws PackageException {
+        if (!"ch.so.agi.gretl.runtime.groovy.GretlScript".equals(script.base()))
+            throw new PackageException("PACKAGE_WRONG_BASE_CLASS", PackagerMessages.format("package.wrongBaseClass", script.base()));
+    }
+
+    static Compilation compileSources(List<SourceFile> sources, Map<Path, String> virtualNames, List<Path> classpath) throws PackageException {
         java.net.URL[] urls = classpath.stream().map(path -> {
             try { return path.toUri().toURL(); }
             catch (java.net.MalformedURLException exception) { throw new IllegalArgumentException(exception); }
@@ -49,7 +62,11 @@ public final class JobCompiler {
                 Class<?> unitType = selected.loadClass("org.codehaus.groovy.control.CompilationUnit");
                 Object unit = unitType.getConstructor(configurationType, java.security.CodeSource.class, loaderType)
                         .newInstance(configuration, null, loader);
-                for (SourceFile source : sources) unitType.getMethod("addSource", java.io.File.class).invoke(unit, source.path().toFile());
+                for (SourceFile source : sources) {
+                    String virtual = virtualNames.get(source.path());
+                    if (virtual == null) unitType.getMethod("addSource", java.io.File.class).invoke(unit, source.path().toFile());
+                    else unitType.getMethod("addSource", String.class, String.class).invoke(unit, virtual, source.text());
+                }
                 try {
                     unitType.getMethod("compile", int.class).invoke(unit, Phases.CLASS_GENERATION);
                 } catch (java.lang.reflect.InvocationTargetException exception) {
@@ -58,27 +75,21 @@ public final class JobCompiler {
                     Throwable cause = exception.getCause();
                     throw new PackageException("PACKAGE_COMPILE_FAILED", PackagerMessages.format("package.compileFailed", cause.getMessage()), cause);
                 }
-                String scriptName = null;
+                List<ScriptEntry> scripts = new ArrayList<>();
                 Object ast = call(unit, "getAST");
                 for (Object module : (List<?>) call(ast, "getModules")) {
+                    String sourceName = (String) call(call(module, "getContext"), "getName");
                     for (Object node : (List<?>) call(module, "getClasses")) {
-                        if (!Boolean.TRUE.equals(call(node, "isScript"))) continue;
-                        String name = (String) call(node, "getName");
-                        if (scriptName != null) throw new PackageException("PACKAGE_MULTIPLE_SCRIPTS",
-                                PackagerMessages.format("package.multipleScripts", scriptName, name));
-                        scriptName = name;
-                        String base = (String) call(call(node, "getSuperClass"), "getName");
-                        if (!"ch.so.agi.gretl.runtime.groovy.GretlScript".equals(base))
-                            throw new PackageException("PACKAGE_WRONG_BASE_CLASS", PackagerMessages.format("package.wrongBaseClass", base));
+                        if (Boolean.TRUE.equals(call(node, "isScript"))) {
+                            scripts.add(new ScriptEntry(sourceName, (String) call(node, "getName"),
+                                    (String) call(call(node, "getSuperClass"), "getName")));
+                        }
                     }
                 }
-                if (scriptName == null) throw new PackageException("PACKAGE_NO_SCRIPT", PackagerMessages.get("package.noScript"));
                 Map<String, byte[]> classes = new TreeMap<>();
                 for (Object compiled : (List<?>) call(unit, "getClasses"))
                     classes.put(((String) call(compiled, "getName")).replace('.', '/') + ".class", (byte[]) call(compiled, "getBytes"));
-                if (!classes.containsKey(scriptName.replace('.', '/') + ".class"))
-                    throw new PackageException("PACKAGE_ENTRY_BYTECODE_MISSING", PackagerMessages.format("package.entryBytecodeMissing", scriptName));
-                return new CompiledJob(scriptName, classes, sources, sha256(descriptor.entryPath()));
+                return new Compilation(classes, scripts);
             }
         } catch (java.lang.reflect.InvocationTargetException exception) {
             Throwable cause = exception.getCause();
@@ -92,9 +103,13 @@ public final class JobCompiler {
         return target.getClass().getMethod(method).invoke(target);
     }
 
-    private List<SourceFile> sourceFiles(PackageDescriptor descriptor) throws PackageException {
+    List<SourceFile> sourceFiles(PackageDescriptor descriptor) throws PackageException {
+        return sourceFiles(descriptor, List.of(descriptor.entryPath()));
+    }
+
+    List<SourceFile> sourceFiles(PackageDescriptor descriptor, List<Path> entries) throws PackageException {
         Map<Path, SourceFile> result = new LinkedHashMap<>();
-        addSource(descriptor, descriptor.entryPath(), result);
+        for (Path entry : entries) addSource(descriptor, entry, result);
         for (Path sourcePath : descriptor.sourcePaths()) {
             if (Files.isDirectory(sourcePath)) {
                 try (Stream<Path> walk = Files.walk(sourcePath)) {
@@ -141,6 +156,9 @@ public final class JobCompiler {
                     PackagerMessages.format("package.entryRead", file), exception);
         }
     }
+
+    record ScriptEntry(String sourceName, String name, String base) { }
+    record Compilation(Map<String, byte[]> classes, List<ScriptEntry> scripts) { }
 
     public record SourceFile(String relativePath, Path path, String text) {
     }

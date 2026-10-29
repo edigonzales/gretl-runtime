@@ -139,3 +139,8 @@ alle Distributionsdateien gegen SHA256SUMS und im vollständigen Gate positive
 Invocations aller 44 Operationen. Signalbedingter Prozessstatus und fachlicher
 Reportstatus bleiben getrennt protokolliert. Der Release-Workflow paketiert
 nach den Tests nicht erneut mit übersprungenen Tests.
+
+
+## Projekt-Fixtures
+
+`ArtifactJobRunner.Request.scriptInput` ist standardmässig `job.groovy`; `.` wählt die Projektwurzel und verlangt einen vorhandenen Schema-3-Deskriptor. Prozess-, Timeout-, Hash- und Redactionpfad bleiben gemeinsam. Der IMAGE-Adapter übersetzt diesen Eingang zu `/job`; dessen Tests starten weiterhin kein Produktimage. `ProjectArtifactLocalJobIT` qualifiziert identische Bytes und Graphen im Script und echten JAR, leeres HOME/PATH ohne Buildwerkzeuge, gelöschte kompilierte Quellkopie, Metadatenschäden, Materialisierungsfehler und Retention. Der Bestand liegt unter `src/test/resources/projects/pipeline`. Die sieben Phase-2-Scriptprozess-Belege bleiben gesondert unter `target/project-script-evidence`.

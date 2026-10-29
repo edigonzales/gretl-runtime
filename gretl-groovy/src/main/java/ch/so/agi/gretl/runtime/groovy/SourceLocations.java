@@ -79,7 +79,7 @@ public final class SourceLocations {
         StackTraceElement[] frames = failure.getStackTrace();
         for (int i = 0; i < Math.min(frames.length, 64); i++) {
             var frame = frames[i];
-            Path original = sources.get(frame.getFileName());
+            Path original = frame.getFileName() == null ? null : sources.get(frame.getFileName());
             if (original != null) frames[i] = new StackTraceElement(frame.getClassLoaderName(), frame.getModuleName(),
                     frame.getModuleVersion(), frame.getClassName(), frame.getMethodName(), original.toString(), frame.getLineNumber());
         }

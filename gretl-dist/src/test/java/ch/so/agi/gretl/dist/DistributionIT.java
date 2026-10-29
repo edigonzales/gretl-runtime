@@ -54,6 +54,30 @@ class DistributionIT {
     }
 
     @Test
+    void schema3ProjectExampleRunsAndPackagesFromExtractedDistribution() throws Exception {
+        Path root = tempDir.resolve("project distribution");
+        unzip(Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip"), root);
+        Path base;
+        try (var paths = Files.list(root)) { base = paths.filter(Files::isDirectory).findFirst().orElseThrow(); }
+        Path project = base.resolve("examples/project-pipeline");
+        Path scriptOutput = tempDir.resolve("script-output.txt");
+        var source = run(base, "run", project.toString(), "--param", ":output=" + scriptOutput);
+        assertEquals(0, source.code(), source.err());
+        byte[] expected = Files.readAllBytes(project.resolve("prepare/data/input.txt"));
+        assertTrue(java.util.Arrays.equals(expected, Files.readAllBytes(scriptOutput)));
+        Path jar = tempDir.resolve("project.jar");
+        var packed = run(base, "package", project.resolve("job-package.json").toString(), "--output", jar.toString());
+        assertEquals(0, packed.code(), packed.err());
+        try (var paths = Files.walk(project)) {
+            for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) Files.delete(path);
+        }
+        Path cwd = Files.createDirectory(tempDir.resolve("foreign project cwd"));
+        var result = runJava(cwd, jar, "--param", ":output=output.txt");
+        assertEquals(0, result.code(), result.err());
+        assertTrue(java.util.Arrays.equals(expected, Files.readAllBytes(cwd.resolve("output.txt"))));
+    }
+
+    @Test
     void distributionDoesNotContainGeoTools() throws Exception {
         Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
         assertTrue(Files.isRegularFile(zip), "distribution zip missing: " + zip);

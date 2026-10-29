@@ -70,6 +70,22 @@ final class PackageArtifactAssertions {
                 assertEquals("jar", artifact.get("kind"));
                 assertFalse(Set.of("gretl-cli", "gretl-packager").contains(artifact.get("artifactId")));
             }
+            var metadata = (Map<?, ?>) Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job.json")).readAllBytes(), StandardCharsets.UTF_8));
+            boolean project = Long.valueOf(3).equals(descriptor.get("schemaVersion"));
+            assertEquals(project ? 2L : 1L, metadata.get("schemaVersion"));
+            if (project) {
+                assertEquals(true, metadata.get("project")); assertFalse(metadata.containsKey("entryClass"));
+                assertFalse(metadata.containsKey("entryScript")); assertEquals("settings.gretl", metadata.get("settingsFile"));
+                Set<Object> classes = new HashSet<>();
+                for (Object value : (List<?>) metadata.get("entries")) {
+                    var entry = (Map<?, ?>) value;
+                    assertTrue(classes.add(entry.get("entryClass")));
+                    present(jar, entry.get("entryClass").toString().replace('.', '/') + ".class",
+                            "META-INF/gretl/sources/" + entry.get("entryScript"));
+                }
+                assertFalse(classes.isEmpty());
+            } else present(jar, metadata.get("entryClass").toString().replace('.', '/') + ".class");
+            for (Object value : (List<?>) metadata.get("resourceFiles")) present(jar, "META-INF/gretl/job-resources/" + value);
             java.nio.file.Files.write(file.getParent().resolve("package-inventory.json"),
                     jar.getInputStream(jar.getJarEntry("META-INF/gretl/dependencies.json")).readAllBytes());
             java.nio.file.Files.write(file.getParent().resolve("job-metadata.json"),

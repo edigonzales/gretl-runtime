@@ -8,7 +8,7 @@ einen gemeinsamen Taskgraphen aus mehreren Jobskripten. Die
 Phase 1 ergänzt im vorhandenen Modul `gretl-groovy` das unveränderliche
 Projektmodell, logische Namenspfade, eindeutige virtuelle Groovy-Quellnamen
 und den Parser. Phase 2 ergänzt den gemeinsamen Script-Projektlauf und
-die CLI-Einbindung. Das Projekt-Fat-JAR gehört zu Phase 3. Der jeweilige Stand wird erst durch den unabhängigen
+die CLI-Einbindung. Phase 3 ergänzt Schema-3-Projekt-Fat-JARs und deren vollständige Artefaktqualifikation. Der jeweilige Stand wird erst durch den unabhängigen
 Phasenreview freigegeben.
 
 Eine `settings.gretl` enthält nur konstante, einfach oder doppelt zitierte
@@ -47,7 +47,27 @@ gegen Parser und unveränderten Einzeljob-Loader geprüft. Das neue
 Projekt mit echten lokalen Operationen. Ein direkter Dateipfad startet weiterhin
 den Einzeldateimodus, ein Verzeichnis erfordert eine `settings.gretl` unmittelbar
 darin. Bestehende Schema-1/2-JARs verwenden denselben bisherigen Startpfad;
-Schema-3-Projektpakete sind erst Gegenstand von Phase 3.
+Schema-3-Projektpakete kompilieren den gesamten expliziten Bestand in ein JAR.
+`settingsFile: "settings.gretl"` ist darin Pflicht, `entryScript` verboten.
+Die Auswahl `taskModules`, `standardFunctions` und explizite Dependencies folgt
+dem bestehenden Schema-2-Auswahlvertrag. `sources` ergänzt ausschliesslich
+Helper, `resources` explizite statische Jobdateien mit ihren Projektpfaden.
+Keine automatische Aufnahme ganzer Repositorys oder Tagesdaten.
+
+```sh
+gretl package examples/project-pipeline/job-package.json --output project.jar
+java -jar project.jar --param :output=output.txt
+```
+
+Der Compiler führt keine Settings, Scriptbodies oder Tasks aus. Alle Einträge
+teilen dieselbe selektierte Compiler-/Dependencyhülle und erhalten eigene
+Klassen und Bindings. Im JAR stehen interne Jobmetadaten Schema 2 mit Entries,
+Defaults und Quellidentität; Einzeljob-JARs behalten interne Metadaten Schema 1.
+Das Dependencyinventar behält seine bisherige Schemafassung. Beim Start werden
+keine Quellen erneut kompiliert oder Settings evaluiert. Materialisierung läuft
+erst nach gültigen Parametern und Plan im eigenen Runworkspace und behält die
+vorhandenen keepWork-Regeln. Der JAR-Weg braucht Java 25 und Laufzeitwerte,
+aber weder Quellcheckout, Buildwerkzeug noch eine GRETL-Installation.
 
 ```sh
 gretl run examples/project-pipeline --param :output=output.txt

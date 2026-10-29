@@ -63,7 +63,7 @@ final class SelectedPackageSupport {
                     + " " + environment.getOrDefault("JAVA_TOOL_OPTIONS", ""));
             Files.writeString(foreign.resolve("runtime.json"), Json.write(config));
             var request = new ArtifactJobRunner.Request(original.id(), original.jobDirectory(), foreign, original.targets(), parameters,
-                    environment, config, original.endpoints(), original.timeout());
+                    environment, config, original.endpoints(), original.timeout(), original.scriptInput());
             var isolated = new ArtifactJobRunner.Prepared(request, prepared.source(), foreign.resolve("job.jar"), prepared.sha256(), foreign.resolve("reports/report.json"), null);
             var running = ArtifactJobRunner.start(isolated, false);
             ArtifactJobRunner.Result result;

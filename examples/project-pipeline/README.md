@@ -36,4 +36,25 @@ Temporäre Ausgaben liegen in den Taskworkspaces. Quellen werden als vertrauensw
 Groovy-Code geladen; Top-Level-Code kann bereits bei Hilfe und Planung laufen.
 
 Ein ausdrücklich übergebener Dateipfad startet weiterhin den Einzeldateimodus.
-Projekt-Fat-JARs sind erst Gegenstand von Phase 3.
+
+Das mitgelieferte `job-package.json` verwendet Schema 3 und wählt nur das
+IO-Modul. Aus dem Repository-Root:
+
+```sh
+./gretl-dist/target/dist/bin/gretl package examples/project-pipeline/job-package.json --output target/project-pipeline.jar
+java -jar target/project-pipeline.jar --help
+java -jar target/project-pipeline.jar --plan
+java -jar target/project-pipeline.jar --param :output=target/packaged-output.txt
+cmp examples/project-pipeline/prepare/data/input.txt target/packaged-output.txt
+```
+
+Das JAR enthält kompilierte Einstiege aller Includes und die ausdrücklich
+gewählte Ressource `prepare/data/input.txt`. Beim Packen laufen weder Settings
+noch Script-Toplevel oder Tasks. Zur Ausführung braucht das JAR Java 25 und
+seine Laufzeitparameter, aber weder Checkout noch GRETL, Maven oder Gradle.
+Relative `path`-Parameter beziehen sich auch dort auf das Start-CWD. Statische
+Ressourcen werden erst beim Run im eigenen Workspace materialisiert; `--help`,
+`--version` und `--plan` erzeugen keinen Ressourcenbestand. Jobhilfe/Plan dürfen
+weiterhin den vertrauenswürdigen Script-Toplevel zur Registrierung ausführen.
+Schemen 1/2 bleiben der Paketweg für Einzeldateijobs; Schema 3 verlangt
+`settingsFile: settings.gretl` und verbietet `entryScript`.

@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,11 +37,14 @@ public final class JobPackager {
         Path catalog = catalogFile();
         List<ResolvedArtifact> selected = new PackageCatalog(catalog, descriptor.runtimeVersion()).select(descriptor);
         List<Path> classpath = selected.stream().map(ResolvedArtifact::file).toList();
-        JobCompiler.CompiledJob compiled = new JobCompiler().compile(descriptor, classpath);
         java.util.Map<Path, PackageDescriptor.Dependency> identities = new java.util.LinkedHashMap<>();
         selected.forEach(artifact -> identities.put(artifact.file(), artifact.identity()));
-        return new JobPackageBuilder(classpath, packagerVersion, identities)
-                .build(descriptor, compiled, output);
+        var builder = new JobPackageBuilder(classpath, packagerVersion, identities);
+        if (descriptor.projectPackage()) {
+            var project = new ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser(locale).parse(descriptor.baseDirectory());
+            return builder.buildProject(descriptor, new ProjectCompiler().compile(project, descriptor, classpath), output);
+        }
+        return builder.build(descriptor, new JobCompiler().compile(descriptor, classpath), output);
     }
 
     static Path catalogFile() throws PackageException {

@@ -147,7 +147,7 @@ final class ImageExecutionAdapter {
                 + environment.getOrDefault("JAVA_TOOL_OPTIONS", ""));
         environment.put("GRETL_LANGUAGE", "de"); environment.put("TZ", "UTC"); environment.put("LANG", "C.UTF-8");
         environment.keySet().stream().sorted().forEach(key -> args.addAll(List.of("--env", key)));
-        args.addAll(List.of(imageId, "run", "/job/job.groovy", "--config", "/config/runtime.json",
+        args.addAll(List.of(imageId, "run", request.scriptInput().equals(".") ? "/job" : "/job/job.groovy", "--config", "/config/runtime.json",
                 "--report", "/reports/report.json", "--log-format", "json"));
         for (String target : request.targets()) args.addAll(List.of("--target", target));
         request.parameters().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e ->

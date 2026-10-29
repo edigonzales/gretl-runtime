@@ -61,3 +61,5 @@ failures:
 
 JSON logs keep their one-object-per-line schema. `HttpDownload` protects an
 existing target by default; `overwrite = true` is the explicit exception.
+
+Project jobs use a declarative `settings.gretl` and `gretl run|check|plan <directory>`. The local `examples/project-pipeline/` runs without services and packages with descriptor schema 3 into one precompiled JAR. See its README for commands. Direct script paths and schema-1/2 single-job packages keep their existing semantics.

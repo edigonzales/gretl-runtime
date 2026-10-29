@@ -11,14 +11,7 @@ import ch.so.agi.gretl.runtime.groovy.project.ProjectException;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
 import java.util.Locale;
 
 /** Explicit project definitions on disk; execution still uses the common runtime and runner. */
@@ -49,32 +42,16 @@ public final class ProjectJobSource implements JobSource {
                 new DefinitionEnvironment(registry, project.root(), startCwd, sink, locale));
     }
 
+    @Override public boolean projectMode() { return true; }
+
     @Override public String sha256() {
         GretlProject project = parse();
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update("gretl-project-source-v1\0".getBytes(StandardCharsets.UTF_8));
-            hashFile(digest, project, project.settingsFile());
-            for (var entry : project.entries()) hashFile(digest, project, entry.scriptFile());
-            return HexFormat.of().formatHex(digest.digest());
-        } catch (NoSuchAlgorithmException failure) {
-            throw new IllegalStateException("SHA-256 unavailable", failure);
-        }
-    }
-
-    private void hashFile(MessageDigest digest, GretlProject project, Path file) {
-        String relative = java.util.stream.StreamSupport.stream(project.root().relativize(file).spliterator(), false)
-                .map(Path::toString).collect(java.util.stream.Collectors.joining("/"));
-        byte[] path = relative.getBytes(StandardCharsets.UTF_8);
-        try (var input = Files.newInputStream(file, LinkOption.NOFOLLOW_LINKS)) {
-            byte[] bytes = input.readAllBytes();
-            digest.update(ByteBuffer.allocate(Long.BYTES).putLong(path.length).array());
-            digest.update(path);
-            digest.update(ByteBuffer.allocate(Long.BYTES).putLong(bytes.length).array());
-            digest.update(bytes);
-        } catch (IOException failure) {
+        try { return ch.so.agi.gretl.runtime.groovy.project.ProjectSourceHash.sha256(project); }
+        catch (IOException failure) {
+            Path failed = failure instanceof java.nio.file.FileSystemException fs && fs.getFile() != null
+                    ? Path.of(fs.getFile()) : project.settingsFile();
             throw new ProjectException("PROJECT_SOURCE_READ_FAILED", Messages.format(locale,
-                    "project.sourceRead", file), new SourceLocation(file.toString(), 0, 0), failure);
+                    "project.sourceRead", failed), new SourceLocation(failed.toString(), 0, 0), failure);
         }
     }
 }

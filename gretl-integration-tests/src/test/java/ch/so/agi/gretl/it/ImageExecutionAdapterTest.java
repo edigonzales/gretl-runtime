@@ -81,6 +81,19 @@ class ImageExecutionAdapterTest {
         assertTrue(engine.calls.contains(List.of("stop", "--time", "35", launch.name())));
         assertTrue(engine.calls.contains(List.of("rm", "--force", launch.name())));
     }
+    @Test void projectDirectoryInputUsesTheSameNonStartingImageBoundary() throws Exception {
+        var base=request();
+        var project=new ArtifactJobRunner.Request("project-contract",base.jobDirectory(),base.directory(),List.of(":a:run"),
+                base.parameters(),base.environment(),base.config(),base.endpoints(),base.timeout(),".");
+        var engine=new RecordingEngine();
+        var launch=ImageExecutionAdapter.prepare(project,project.jobDirectory(),settings,engine);
+        var args=launch.arguments();int index=args.indexOf(ID);
+        assertEquals(List.of(ID,"run","/job"),args.subList(index,index+3));
+        assertFalse(args.contains("/job/job.groovy"));assertTrue(args.contains(":a:run"));
+        engine.failed=true;
+        assertThrows(java.io.IOException.class,()->ImageExecutionAdapter.prepare(project,project.jobDirectory(),settings,engine));
+    }
+
     @Test void finishKeepsImageExitAndTimeoutCancelsAndReapsAtTheBoundary() throws Exception {
         for (boolean timeout : List.of(false, true)) {
             var request = request();

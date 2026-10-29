@@ -27,8 +27,14 @@ final class ArtifactJobRunner {
     record Request(String id, Path jobDirectory, Path directory, List<String> targets,
                    Map<String, ?> parameters, Map<String, ?> environment,
                    Map<String, Object> config, Map<String, Endpoint> endpoints,
-                   Duration timeout) {
+                   Duration timeout, String scriptInput) {
+        Request(String id, Path jobDirectory, Path directory, List<String> targets,
+                Map<String, ?> parameters, Map<String, ?> environment, Map<String, Object> config,
+                Map<String, Endpoint> endpoints, Duration timeout) {
+            this(id, jobDirectory, directory, targets, parameters, environment, config, endpoints, timeout, "job.groovy");
+        }
         Request {
+            if (!List.of("job.groovy", ".").contains(scriptInput)) throw new IllegalArgumentException("Unsupported script input: " + scriptInput);
             targets = List.copyOf(targets);
             parameters = Map.copyOf(parameters);
             environment = Map.copyOf(environment);
@@ -96,6 +102,7 @@ final class ArtifactJobRunner {
         }
         Path descriptor = source.resolve("job-package.json");
         if (!Files.exists(descriptor)) {
+            if (request.scriptInput().equals(".")) throw new IOException("Project fixture requires a schema-3 descriptor");
             Files.writeString(descriptor, Json.write(Map.of(
                     "schemaVersion", 1, "name", "fixture", "version", "1",
                     "runtimeVersion", "0.1.0-SNAPSHOT", "entryScript", "job.groovy",
@@ -130,7 +137,11 @@ final class ArtifactJobRunner {
                 throw new IOException("Packaging failed (not a job result): "
                         + Files.readString(request.directory().resolve("package.stderr.log")));
             }
-            BUILT_FIXTURES.put(key, jar);
+            // Preserve the regular package independently of an execution copy that a
+            // deliberate malformed-JAR test may replace. Links keep bytes/cache semantics.
+            Path reusable = request.directory().resolve("fixture-package.jar");
+            Files.createLink(reusable, jar);
+            BUILT_FIXTURES.put(key, reusable);
         }
         String hash;
         try (var input = Files.newInputStream(jar)) {
@@ -160,7 +171,7 @@ final class ArtifactJobRunner {
         if (script) {
             command.add(scriptLauncher.toString());
             command.add("run");
-            command.add(prepared.source().resolve("job.groovy").toString());
+            command.add(prepared.source().resolve(prepared.request().scriptInput()).normalize().toString());
         } else {
             command.add(Path.of(System.getProperty("java.home"), "bin", "java").toString());
             command.add("-Dfile.encoding=UTF-8");
@@ -222,10 +233,14 @@ final class ArtifactJobRunner {
         String err = redactor.redact(Files.readString(running.err()));
         Files.writeString(running.out(), out);
         Files.writeString(running.err(), err);
-        String identity = running.script()
-                ? HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(
-                        Files.readAllBytes(running.prepared().source().resolve("job.groovy"))))
-                : running.prepared().sha256();
+        String identity = running.prepared().sha256();
+        if (running.script()) {
+            identity = request.scriptInput().equals(".")
+                    ? ch.so.agi.gretl.runtime.groovy.project.ProjectSourceHash.sha256(
+                        new ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser().parse(running.prepared().source()))
+                    : HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(
+                        Files.readAllBytes(running.prepared().source().resolve("job.groovy"))));
+        }
         Map<String, Object> evidence = new LinkedHashMap<>();
         evidence.put("scenario", request.id());
         evidence.put("mode", running.script() ? "SCRIPT" : running.prepared().image() == null ? "JAR" : "IMAGE");
