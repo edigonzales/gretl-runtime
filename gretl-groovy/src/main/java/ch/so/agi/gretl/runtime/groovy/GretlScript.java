@@ -50,7 +50,7 @@ public abstract class GretlScript extends Script {
         boolean required = booleanOption(normalized, "required", false);
         Object defaultValue = normalized.get("defaultValue");
         ParameterDefinition definition = new ParameterDefinition(
-                name, type, description, required, Optional.ofNullable(defaultValue));
+                model.qualifiedParameterId(name), type, description, required, Optional.ofNullable(defaultValue));
         model.builder().registerParameter(definition);
     }
 
@@ -82,6 +82,8 @@ public abstract class GretlScript extends Script {
             throw dsl("UNKNOWN_OPERATION",
                     msg("error.groovy.taskTypeNotLoaded", type.id()), id);
         }
+        id = model.qualifiedTaskId(id);
+        model.ensureAvailable(id);
         Map<String, Object> normalized = options(options, TASK_OPTIONS, "task " + id);
         TaskRegistration.Builder<R> registration = TaskRegistration.builder(
                         id, type.resultType())
@@ -92,8 +94,10 @@ public abstract class GretlScript extends Script {
                 .timeout(duration(normalized.get("timeout"), id))
                 .body(GroovyTaskAdapter.typedBody(type, configure, model))
                 .operation(type)
-                .source(runnerSource(SourceLocations.current(model.scriptFile())));
-        TaskRef<R> ref = model.builder().register(registration.build());
+                .source(runnerSource(model.currentSource()));
+        var task = registration.build();
+        TaskRef<R> ref = model.builder().register(task);
+        model.registerLinks(id, task.dependsOn(), task.after());
         model.registerTask(id, ref, type);
         return ref;
     }
@@ -110,6 +114,8 @@ public abstract class GretlScript extends Script {
         if (body == null) {
             throw dsl("MISSING_ACTION_BODY", msg("error.groovy.actionBody", id), id);
         }
+        id = model.qualifiedTaskId(id);
+        model.ensureAvailable(id);
         Map<String, Object> normalized = options(options, TASK_OPTIONS, "action " + id);
         TaskRegistration.Builder<Object> registration = TaskRegistration.builder(id, Object.class)
                 .description(description(normalized, id))
@@ -118,8 +124,10 @@ public abstract class GretlScript extends Script {
                 .when(condition(normalized.get("when"), id))
                 .timeout(duration(normalized.get("timeout"), id))
                 .body(GroovyTaskAdapter.actionBody(body, model))
-                .source(runnerSource(SourceLocations.current(model.scriptFile())));
-        TaskRef<Object> ref = model.builder().register(registration.build());
+                .source(runnerSource(model.currentSource()));
+        var task = registration.build();
+        TaskRef<Object> ref = model.builder().register(task);
+        model.registerLinks(id, task.dependsOn(), task.after());
         model.registerTask(id, ref, null);
         return ref;
     }
@@ -138,7 +146,7 @@ public abstract class GretlScript extends Script {
                                 + (value == null ? "null" : value.getClass().getName()), null);
             }
         }
-        if (!names.isEmpty()) {
+        if (!names.isEmpty() && !model.projectMode()) {
             model.builder().defaults(names.toArray(String[]::new));
         }
     }
@@ -149,8 +157,9 @@ public abstract class GretlScript extends Script {
             throw dsl("MISSING_CLEANUP_BODY",
                     msg("error.groovy.cleanupBody", name), name);
         }
+        name = model.qualifiedCleanupId(name);
         model.builder().cleanup(name, GroovyTaskAdapter.cleanupBody(body, model),
-                runnerSource(SourceLocations.current(model.scriptFile())));
+                runnerSource(model.currentSource()));
     }
 
     @Override
@@ -308,7 +317,7 @@ public abstract class GretlScript extends Script {
             if (element instanceof TaskRef<?> ref) {
                 links.add(TaskLink.of(ref));
             } else if (element instanceof CharSequence text) {
-                links.add(TaskLink.named(text.toString()));
+                links.add(TaskLink.named(model().qualifiedReference(text.toString())));
             } else {
                 throw new GroovyDslException("INVALID_OPTION_TYPE",
                         msg("error.groovy.optionLinkElement", option, element),

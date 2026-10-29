@@ -37,15 +37,15 @@ public final class GroovyContextFacade {
     }
 
     public Object parameter(String name) {
-        return inner.parameter(name);
+        return inner.parameter(model.parameterReference(name));
     }
 
     public <T> T parameter(String name, Class<T> type) {
-        return inner.parameter(name, type);
+        return inner.parameter(model.parameterReference(name), type);
     }
 
     public Path file(String path) {
-        return inner.file(path);
+        return inner.file(model.resourceRelativePath(path));
     }
 
     public Path path(String path) {

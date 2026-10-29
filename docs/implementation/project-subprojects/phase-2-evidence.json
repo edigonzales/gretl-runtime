@@ -1,0 +1,501 @@
+{
+  "phase": 2,
+  "phaseBaseSha": "761ffa31ca9314f246fbd1420d72f5dbf1dae7ca",
+  "previousAcceptedCandidate": "1935a95f73c45028a04316150e165ec0a61a52a5",
+  "previousReview": "phase-1-review.md",
+  "scope": "Only Phase 2 common script-project runtime; no compiled project or schema 3 work",
+  "environment": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/environment.json",
+  "javaVersion": "25.0.2+10-LTS",
+  "mavenVersion": "3.10.0",
+  "groovyVersion": "6.0.0",
+  "platform": "macOS 27.0.1 aarch64",
+  "evidenceRoot": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029",
+  "commandsBeforeCommit": [
+    {
+      "label": "before-final-normal",
+      "command": [
+        "./mvnw",
+        "-B",
+        "clean",
+        "verify"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T02:28:54.233778+00:00",
+      "finishedAt": "2026-10-29T02:34:30.897567+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-final-normal/console.log"
+    },
+    {
+      "label": "before-normal",
+      "command": [
+        "./mvnw",
+        "-B",
+        "clean",
+        "verify"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T02:22:34.709393+00:00",
+      "finishedAt": "2026-10-29T02:28:11.887015+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-normal/console.log"
+    },
+    {
+      "label": "cli-final-assertions",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-cli",
+        "-am",
+        "test",
+        "-Dtest=CliProjectRunTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T02:28:37.456461+00:00",
+      "finishedAt": "2026-10-29T02:28:42.546662+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/cli-final-assertions/console.log"
+    },
+    {
+      "label": "cli-first",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-cli",
+        "-am",
+        "test",
+        "-Dtest=ProjectHashTest,CliProjectRunTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T01:56:15.734038+00:00",
+      "finishedAt": "2026-10-29T01:56:19.795822+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/cli-first/console.log"
+    },
+    {
+      "label": "cli-parameters",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-cli",
+        "-am",
+        "test",
+        "-Dtest=CliProjectRunTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T02:18:07.738476+00:00",
+      "finishedAt": "2026-10-29T02:18:11.937634+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/cli-parameters/console.log"
+    },
+    {
+      "label": "cli-second",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-cli",
+        "-am",
+        "test",
+        "-Dtest=ProjectHashTest,CliProjectRunTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T01:57:15.445555+00:00",
+      "finishedAt": "2026-10-29T01:57:19.449867+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/cli-second/console.log"
+    },
+    {
+      "label": "integration-project",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-integration-tests",
+        "-am",
+        "verify",
+        "-Dtest=CliProjectRunTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dit.test=ProjectScriptLocalJobIT",
+        "-Dfailsafe.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T02:19:33.456188+00:00",
+      "finishedAt": "2026-10-29T02:19:38.854240+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/integration-project/console.log"
+    },
+    {
+      "label": "integration-project-second",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-integration-tests",
+        "-am",
+        "verify",
+        "-Dtest=CliProjectRunTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dit.test=ProjectScriptLocalJobIT",
+        "-Dfailsafe.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T02:20:16.025212+00:00",
+      "finishedAt": "2026-10-29T02:20:28.331778+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/integration-project-second/console.log"
+    },
+    {
+      "label": "integration-project-third",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-integration-tests",
+        "-am",
+        "verify",
+        "-Dtest=CliProjectRunTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dit.test=ProjectScriptLocalJobIT",
+        "-Dfailsafe.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T02:20:57.354417+00:00",
+      "finishedAt": "2026-10-29T02:21:10.958160+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/integration-project-third/console.log"
+    },
+    {
+      "label": "loader-first",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test",
+        "-Dtest=GroovyProjectLoaderTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T01:49:51.265153+00:00",
+      "finishedAt": "2026-10-29T01:49:53.546472+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/loader-first/console.log"
+    },
+    {
+      "label": "loader-fourth",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test",
+        "-Dtest=GroovyProjectLoaderTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T01:52:18.806232+00:00",
+      "finishedAt": "2026-10-29T01:52:21.681298+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/loader-fourth/console.log"
+    },
+    {
+      "label": "loader-second",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test",
+        "-Dtest=GroovyProjectLoaderTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T01:50:38.370643+00:00",
+      "finishedAt": "2026-10-29T01:50:40.193225+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/loader-second/console.log"
+    },
+    {
+      "label": "loader-third",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test",
+        "-Dtest=GroovyProjectLoaderTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T01:50:57.174504+00:00",
+      "finishedAt": "2026-10-29T01:50:59.975808+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/loader-third/console.log"
+    },
+    {
+      "label": "module-groovy",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T02:11:46.111719+00:00",
+      "finishedAt": "2026-10-29T02:11:51.238315+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/module-groovy/console.log"
+    },
+    {
+      "label": "module-groovy-second",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T02:14:01.906318+00:00",
+      "finishedAt": "2026-10-29T02:14:07.029018+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/module-groovy-second/console.log"
+    },
+    {
+      "label": "red-loader",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test",
+        "-Dtest=GroovyProjectLoaderTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T01:47:17.957634+00:00",
+      "finishedAt": "2026-10-29T01:47:20.730680+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/red-loader/console.log"
+    },
+    {
+      "label": "red-runtime",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-cli",
+        "-am",
+        "test",
+        "-Dtest=ProjectHashTest,CliProjectRunTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T01:55:12.658376+00:00",
+      "finishedAt": "2026-10-29T01:55:15.810671+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/red-runtime/console.log"
+    },
+    {
+      "label": "scope-additional",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test",
+        "-Dtest=ProjectScopeTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T02:21:28.107120+00:00",
+      "finishedAt": "2026-10-29T02:21:31.609770+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/scope-additional/console.log"
+    },
+    {
+      "label": "scope-first",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test",
+        "-Dtest=ProjectScopeTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T02:01:21.429238+00:00",
+      "finishedAt": "2026-10-29T02:01:24.362612+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/scope-first/console.log"
+    },
+    {
+      "label": "scope-second",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test",
+        "-Dtest=ProjectScopeTest,GroovyProjectLoaderTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 0,
+      "startedAt": "2026-10-29T02:06:34.944181+00:00",
+      "finishedAt": "2026-10-29T02:06:38.641326+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/scope-second/console.log"
+    },
+    {
+      "label": "source-first",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "test",
+        "-Dtest=ProjectSourceLocationTest,SourceLocatedFailureTest,ProjectParameterNamesTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false"
+      ],
+      "exitCode": 1,
+      "startedAt": "2026-10-29T02:11:21.811458+00:00",
+      "finishedAt": "2026-10-29T02:11:25.550718+00:00",
+      "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/source-first/console.log"
+    }
+  ],
+  "normalGate": {
+    "command": [
+      "./mvnw",
+      "-B",
+      "clean",
+      "verify"
+    ],
+    "exitCode": 0,
+    "totals": {
+      "tests": 651,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "junitManifest": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-final-normal/result.json",
+    "junitRoot": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-final-normal/reports",
+    "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-final-normal/console.log",
+    "checksums": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-final-normal/SHA256SUMS.json",
+    "checksumManifestSha256": "27e5db27e62ee42d7633aac35f7b9e70022f6c4aa27fb4733662735ab68f7408"
+  },
+  "artifactAudit": {
+    "command": [
+      "python3",
+      "scripts/audit-job-evidence.py"
+    ],
+    "exitCode": 0,
+    "log": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-final-normal/audit.log",
+    "archive": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-final-normal/qualification",
+    "artifacts": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-final-normal/artifacts"
+  },
+  "newProjectProcessEvidence": "before-final-normal/artifacts/gretl-integration-tests/target/project-script-evidence",
+  "inputSha256Index": "/Users/stefan/sources/gretl-runtime-phase-2-evidence-20261029/before-inputs.json",
+  "testCases": {
+    "PRJ-101": {
+      "status": "PASS",
+      "tests": "GroovyProjectLoaderTest; ProjectScriptLocalJobIT",
+      "oracle": "Gleiche Dateinamen und lokale run-Namen liefern getrennte kanonische IDs, richtige Bodywerte und isolierte Bindings."
+    },
+    "PRJ-102": {
+      "status": "PASS",
+      "tests": "CliProjectRunTest; ProjectScriptLocalJobIT",
+      "oracle": "Echter HTTP-ZIP-Download/Extract/Import sowie lokale Gzip/Extract-Pipeline; exakte Reihenfolge, eine Run-ID und ein Bericht."
+    },
+    "PRJ-103": {
+      "status": "PASS",
+      "tests": "ProjectScopeTest; ProjectScriptLocalJobIT",
+      "oracle": "Explizites Zwischenziel selektiert nur dependsOn-Vorgaenger; Publikationsausgabe und unverbundene Action bleiben aus."
+    },
+    "PRJ-104": {
+      "status": "PASS",
+      "tests": "GroovyProjectLoaderTest; ProjectScopeTest; CliProjectRunTest",
+      "oracle": "Vorwaertsreferenz und dokumentierte Ergebnisfelder ueber Includes; fehlende Datenkante liefert UNDECLARED_RESULT_DEPENDENCY."
+    },
+    "PRJ-105": {
+      "status": "PASS",
+      "tests": "ProjectScopeTest",
+      "oracle": "after selektiert keinen weiteren Task und erlaubt weder result noch resultOptional."
+    },
+    "PRJ-106": {
+      "status": "PASS",
+      "tests": "ProjectScopeTest; GroovyProjectLoaderTest",
+      "oracle": "Consumer vor Producer geladen, unselektierter Datenzyklus erkannt, unbekannte Links mit Originalquelle; fremde TaskRefs abgewiesen."
+    },
+    "PRJ-107": {
+      "status": "PASS",
+      "tests": "ProjectScopeTest; ProjectScriptLocalJobIT",
+      "oracle": "Zwei gleichnamige sql/update.sql mit unterschiedlichen Bytes; eigener Scope in when, Konfiguration, Action, ctx.file, innerem ctx.run und typisiertem Cleanup."
+    },
+    "PRJ-108": {
+      "status": "PASS",
+      "tests": "CliProjectRunTest; GroovyProjectLoaderTest",
+      "oracle": "Root/lokal/fremd, Defaults, globale Required-Pruefung, Long/Boolean/Path, CLI > Datei > Runtime > Default, globale Config-/Secret-Aliase; unbekannte/explizit lokale Werte scheitern vor Run."
+    },
+    "PRJ-109": {
+      "status": "PASS",
+      "tests": "ProjectScopeTest",
+      "oracle": "Zwei qualifizierte release-Cleanups einmal in umgekehrter Reihenfolge; Erfolg/Fehler/NO_DATA/Cancellation und ein gemeinsamer Abschluss."
+    },
+    "PRJ-110": {
+      "status": "PASS",
+      "tests": "CliProjectRunTest; ProjectScriptLocalJobIT",
+      "oracle": "help/check/plan/mermaid ohne HTTP, Fachausgabe oder Cleanup; Hilfe zeigt qualifizierte Ziele und Parameter."
+    },
+    "PRJ-111": {
+      "status": "PASS",
+      "tests": "ProjectScopeTest; ProjectScriptLocalJobIT; unveraenderte CLI/DSL/JAR-Regressionen",
+      "oracle": "Expliziter Dateipfad ignoriert absichtlich ungueltige Settings; alte Doppelpunkt-Tasknamen und Punkt-Parameter bleiben erlaubt."
+    },
+    "PRJ-112": {
+      "status": "PASS",
+      "tests": "GroovyProjectLoaderTest; ProjectSourceLocationTest; ProjectScriptLocalJobIT",
+      "oracle": "Originalpfad/Zeile bei Registrierung, Compile/Toplevel, when, Feldkonfiguration, Action, Cleanup; Prozessreport und Eventlog mit qualifizierten IDs und genau einem Start/Terminal."
+    },
+    "PRJ-113": {
+      "status": "PASS",
+      "tests": "ProjectScopeTest; bestehende Runner-/Cancellation-Integrationsregressionen",
+      "oracle": "Fail-fast, NOT_RUN, NO_DATA und kontrollierte Cancellation bleiben im gemeinsamen Runner; Cleanup genau einmal."
+    },
+    "PRJ-114": {
+      "status": "PASS",
+      "tests": "CliProjectRunTest",
+      "oracle": "Unbekanntes qualifiziertes Default/CLI-Ziel und unqualifiziertes CLI-Ziel liefern Startfehler Code 2; keine Run-Dateien."
+    },
+    "PRJ-115": {
+      "status": "PASS",
+      "tests": "ProjectHashTest",
+      "oracle": "Identischer Bestand unter anderer absoluter Root gleicher Hash; Settings-/Jobbytes aendern ihn; Daten/nested Settings/unselektierte Jobs nicht."
+    }
+  },
+  "phase1RegressionCases": {
+    "PRJ-001": "PASS",
+    "PRJ-002": "PASS",
+    "PRJ-003": "PASS",
+    "PRJ-004": "PASS",
+    "PRJ-005": "PASS",
+    "PRJ-006": "PASS",
+    "PRJ-007": "PASS"
+  },
+  "phase3Cases": {
+    "PRJ-201": "NICHT AUSGEFUEHRT",
+    "PRJ-202": "NICHT AUSGEFUEHRT",
+    "PRJ-203": "NICHT AUSGEFUEHRT",
+    "PRJ-204": "NICHT AUSGEFUEHRT",
+    "PRJ-205": "NICHT AUSGEFUEHRT",
+    "PRJ-206": "NICHT AUSGEFUEHRT",
+    "PRJ-207": "NICHT AUSGEFUEHRT",
+    "PRJ-208": "NICHT AUSGEFUEHRT",
+    "PRJ-209": "NICHT AUSGEFUEHRT",
+    "PRJ-210": "NICHT AUSGEFUEHRT",
+    "PRJ-211": "NICHT AUSGEFUEHRT",
+    "PRJ-212": "NICHT AUSGEFUEHRT"
+  },
+  "backingServiceGate": "NICHT AUSGEFUEHRT; Phase 3",
+  "phase3Started": false,
+  "independentReview": "PENDING; exact candidate SHA and postcommit results belong in external handoff; no self-referencing candidate SHA"
+}

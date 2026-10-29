@@ -3,6 +3,10 @@ package ch.so.agi.gretl.runtime.groovy;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.TaskRef;
+import ch.so.agi.gretl.runtime.groovy.project.ProjectPath;
+import ch.so.agi.gretl.runtime.groovy.project.ProjectTaskIndex;
+import ch.so.agi.gretl.runtime.runner.TaskLink;
+import ch.so.agi.gretl.runtime.runner.ParameterException;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.JobDefinitionBuilder;
 import java.nio.file.Path;
@@ -24,9 +28,22 @@ final class JobDslModel {
     private final Map<String, TaskRef<?>> taskRefs = new LinkedHashMap<>();
     private final Map<String, OperationType<?, ?>> taskOperations = new LinkedHashMap<>();
     private final Map<String, OperationType<?, ?>> symbols;
+    private final ProjectPath scope;
+    private final ProjectTaskIndex index;
+    private final String virtualSourceName;
+    private final Map<String, Path> sourceFiles;
     private JobDefinition definition;
 
     JobDslModel(DefinitionEnvironment environment, JobDefinitionBuilder builder, Path scriptFile) {
+        this(environment, builder, scriptFile, null, null, null, Map.of());
+    }
+
+    JobDslModel(DefinitionEnvironment environment, JobDefinitionBuilder builder, Path scriptFile,
+                ProjectPath scope, ProjectTaskIndex index, String virtualSourceName, Map<String, Path> sourceFiles) {
+        this.scope = scope;
+        this.index = index;
+        this.virtualSourceName = virtualSourceName;
+        this.sourceFiles = Map.copyOf(sourceFiles);
         this.environment = environment;
         this.builder = builder;
         this.scriptFile = scriptFile.toAbsolutePath().normalize();
@@ -50,7 +67,7 @@ final class JobDslModel {
     }
 
     SourceLocation source() {
-        return SourceLocations.fallback(scriptFile);
+        return projectMode() ? new SourceLocation(scriptFile.toString(), 0, 0) : SourceLocations.fallback(scriptFile);
     }
 
     Map<String, OperationType<?, ?>> symbols() {
@@ -62,6 +79,10 @@ final class JobDslModel {
     }
 
     void registerTask(String name, TaskRef<?> ref, OperationType<?, ?> operation) {
+        if (projectMode()) {
+            index.register(name, ref, operation, currentSource());
+            return;
+        }
         taskRefs.put(name, ref);
         if (operation == null) {
             taskOperations.remove(name);
@@ -71,6 +92,13 @@ final class JobDslModel {
     }
 
     TaskRef<?> resolveTask(String name, String requestingTask) {
+        if (projectMode()) {
+            try { return index.require(qualifiedReference(name), requestingTask); }
+            catch (GroovyDslException failure) {
+                throw new GroovyDslException(failure.code(), failure.getMessage(), requestingTask, null,
+                        currentSource(), failure.available(), failure);
+            }
+        }
         TaskRef<?> ref = taskRefs.get(name);
         if (ref == null) {
             throw new GroovyDslException("UNKNOWN_TASK_NAME",
@@ -82,11 +110,11 @@ final class JobDslModel {
     }
 
     Optional<OperationType<?, ?>> taskOperation(String name) {
-        return Optional.ofNullable(taskOperations.get(name));
+        return projectMode() ? index.operation(qualifiedReference(name)) : Optional.ofNullable(taskOperations.get(name));
     }
 
     List<String> taskNames() {
-        return List.copyOf(new LinkedHashSet<>(taskRefs.keySet()));
+        return projectMode() ? index.taskIds() : List.copyOf(new LinkedHashSet<>(taskRefs.keySet()));
     }
 
     JobDefinition definition() {
@@ -95,9 +123,61 @@ final class JobDslModel {
 
     void freeze() {
         if (definition == null) {
+            if (projectMode()) throw new GroovyDslException("PROJECT_FREEZE_CONTROLLED", Messages.get(
+                    environment.locale(), "project.freezeControlled"), null, null, currentSource(), List.of(), null);
             definition = builder.freeze();
         }
     }
+
+    boolean projectMode() { return scope != null; }
+
+    String qualifiedTaskId(String name) { return qualifyLocal(name); }
+    String qualifiedParameterId(String name) {
+        if (!projectMode() && name != null && name.contains(":")) {
+            throw new ParameterException("INVALID_PARAMETER_DECLARATION", name,
+                    "Invalid parameter name: " + name);
+        }
+        return qualifyLocal(name);
+    }
+    String qualifiedCleanupId(String name) { return qualifyLocal(name); }
+    String parameterReference(String name) { return qualifiedReference(name); }
+
+    private String qualifyLocal(String name) {
+        if (!projectMode()) return name;
+        try { return scope.qualifyLocal(name); }
+        catch (IllegalArgumentException failure) { throw invalidName(name, failure); }
+    }
+
+    String qualifiedReference(String name) {
+        if (!projectMode()) return name;
+        try { return scope.resolveReference(name); }
+        catch (IllegalArgumentException failure) { throw invalidName(name, failure); }
+    }
+
+    private GroovyDslException invalidName(String name, Throwable cause) {
+        return new GroovyDslException("PROJECT_NAME_INVALID", Messages.format(environment.locale(),
+                "project.nameInvalid", name, scope), null, null, currentSource(), List.of(), cause);
+    }
+
+    void ensureAvailable(String id) { if (projectMode()) index.ensureAvailable(id, currentSource()); }
+
+    void registerLinks(String id, List<TaskLink> dependsOn, List<TaskLink> after) {
+        if (projectMode()) index.rememberLinks(id, dependsOn, after);
+    }
+
+    String resourceRelativePath(String raw) {
+        if (!projectMode() || Path.of(raw).isAbsolute()) return raw;
+        return scope.relativeDirectory().resolve(raw).normalize().toString();
+    }
+
+    SourceLocation currentSource() { return SourceLocations.current(scriptFile, virtualSourceName); }
+    SourceLocation sourceForTask(String id) {
+        SourceLocation current = currentSource();
+        return projectMode() && current.line() == 0 ? index.source(id).orElse(current) : current;
+    }
+    SourceLocation failureSource(Throwable failure) { return SourceLocations.from(failure, scriptFile, virtualSourceName); }
+    void remap(Throwable failure) { if (projectMode()) SourceLocations.remap(failure, sourceFiles); }
+    void attachDefinition(JobDefinition value) { definition = value; }
 
     UserMessageSink userMessages() {
         return environment.userMessages();

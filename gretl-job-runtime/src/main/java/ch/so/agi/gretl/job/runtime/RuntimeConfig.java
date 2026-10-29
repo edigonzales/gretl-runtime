@@ -25,6 +25,8 @@ public final class RuntimeConfig {
     private static final long MAX_CONFIG_BYTES = 16L * 1024 * 1024;
     private static final long MAX_SECRET_BYTES = 64 * 1024;
     private static final Pattern PARAMETER_NAME = Pattern.compile("[A-Za-z][A-Za-z0-9_.-]*");
+    private static final Pattern QUALIFIED_PARAMETER_NAME = Pattern.compile(
+            ":(?:[A-Za-z][A-Za-z0-9_-]*)(?::[A-Za-z][A-Za-z0-9_-]*)*");
     private static final ThreadLocal<Locale> ERROR_LOCALE =
             ThreadLocal.withInitial(() -> Locale.GERMAN);
 
@@ -242,7 +244,8 @@ public final class RuntimeConfig {
     private static Map<String, String> params(Map<String, Object> params) {
         Map<String, String> result = new LinkedHashMap<>();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-            if (!PARAMETER_NAME.matcher(entry.getKey()).matches()) {
+            if (!PARAMETER_NAME.matcher(entry.getKey()).matches()
+                    && !QUALIFIED_PARAMETER_NAME.matcher(entry.getKey()).matches()) {
                 throw new StartException(2, msg("cli.error.config.paramsInvalidName", entry.getKey()));
             }
             if (!(entry.getValue() instanceof String text)) {

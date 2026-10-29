@@ -9,7 +9,8 @@ public record ParameterDefinition(
         boolean required, Optional<Object> defaultValue) {
 
     public ParameterDefinition {
-        if (name == null || !name.matches("[A-Za-z][A-Za-z0-9_.-]*")) {
+        if (name == null || !(name.matches("[A-Za-z][A-Za-z0-9_.-]*")
+                || name.matches(":(?:[A-Za-z][A-Za-z0-9_-]*)(?::[A-Za-z][A-Za-z0-9_-]*)*"))) {
             throw new ParameterException("INVALID_PARAMETER_DECLARATION", name == null ? "?" : name,
                     "Invalid parameter name: " + name);
         }

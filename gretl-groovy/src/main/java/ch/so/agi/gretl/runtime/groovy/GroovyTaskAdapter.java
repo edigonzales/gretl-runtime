@@ -50,7 +50,7 @@ public final class GroovyTaskAdapter {
                 throw new GroovyDslException("CONDITION_NOT_BOOLEAN",
                         msg(model, "error.groovy.conditionNotBoolean",
                                 value == null ? "null" : value.getClass().getName()),
-                        taskId, null, SourceLocations.current(model.scriptFile()),
+                        taskId, null, model.sourceForTask(taskId),
                         List.of(), null);
             }
             return booleanValue;
@@ -60,7 +60,7 @@ public final class GroovyTaskAdapter {
     public static CleanupBody cleanupBody(Closure<?> body, JobDslModel model) {
         return context -> {
             CleanupScope scope = new CleanupScope(context, model);
-            evaluateClosure(body, scope, context, model, "cleanup", null);
+            evaluateClosure(body, scope, model.projectMode() ? scope : context, model, "cleanup", null);
         };
     }
 
@@ -70,7 +70,7 @@ public final class GroovyTaskAdapter {
         if (closure == null) {
             throw new GroovyDslException("MISSING_CLOSURE",
                     msg(model, "error.groovy.missingClosure", role), taskId, null,
-                    SourceLocations.current(model.scriptFile()), List.of(), null);
+                    model.currentSource(), List.of(), null);
         }
         Closure<?> copy = (Closure<?>) closure.rehydrate(
                 delegate, closure.getOwner(), closure.getThisObject());
@@ -85,23 +85,37 @@ public final class GroovyTaskAdapter {
             }
             throw new GroovyDslException("CLOSURE_ARITY",
                     msg(model, "error.groovy.closureArity", role, parameters),
-                    taskId, null, SourceLocations.current(model.scriptFile()),
+                    taskId, null, model.currentSource(),
                     List.of(), null);
         } catch (GroovyDslException exception) {
-            throw withSource(exception, model);
+            GroovyDslException mapped = withSource(exception, model);
+            model.remap(mapped);
+            throw mapped;
         } catch (MissingPropertyException exception) {
-            throw new GroovyDslException("UNKNOWN_PROPERTY",
+            throw mapped(new GroovyDslException("UNKNOWN_PROPERTY",
                     msg(model, "error.groovy.unknownProperty",
                             exception.getProperty(), role),
-                    taskId, exception.getProperty(), SourceLocations.from(exception, model.scriptFile()),
-                    List.of(), exception);
+                    taskId, exception.getProperty(), model.failureSource(exception),
+                    List.of(), exception), model);
         } catch (MissingMethodException exception) {
-            throw new GroovyDslException("UNKNOWN_HELPER",
+            throw mapped(new GroovyDslException("UNKNOWN_HELPER",
                     msg(model, "error.groovy.unknownHelper",
                             exception.getMethod(), role),
-                    taskId, exception.getMethod(), SourceLocations.from(exception, model.scriptFile()),
-                    List.of(), exception);
+                    taskId, exception.getMethod(), model.failureSource(exception),
+                    List.of(), exception), model);
+        } catch (Exception | Error failure) {
+            model.remap(failure);
+            if (model.projectMode() && failure instanceof ch.so.agi.gretl.runtime.runner.ResultAccessException access) {
+                throw new GroovyDslException(access.code(), access.getMessage(), taskId, null,
+                        model.failureSource(access), List.of(), access);
+            }
+            throw failure;
         }
+    }
+
+    private static GroovyDslException mapped(GroovyDslException failure, JobDslModel model) {
+        model.remap(failure);
+        return failure;
     }
 
     private static String msg(JobDslModel model, String key, Object... arguments) {
@@ -114,7 +128,7 @@ public final class GroovyTaskAdapter {
         }
         return new GroovyDslException(exception.code(), exception.getMessage(),
                 exception.taskId(), exception.fieldName(),
-                SourceLocations.from(exception, model.scriptFile()),
+                model.failureSource(exception),
                 exception.available(), exception);
     }
 }

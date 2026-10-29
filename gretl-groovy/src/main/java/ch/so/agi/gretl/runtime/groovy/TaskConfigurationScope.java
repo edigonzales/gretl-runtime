@@ -196,6 +196,6 @@ final class TaskConfigurationScope<C, R> extends AbstractScope {
             String code, String message, String field, List<String> available,
             Throwable cause) {
         return new GroovyDslException(code, message, taskId, field,
-                SourceLocations.current(model.scriptFile()), available, cause);
+                model.sourceForTask(taskId), available, cause);
     }
 }

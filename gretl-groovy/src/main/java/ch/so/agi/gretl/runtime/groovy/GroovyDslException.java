@@ -2,12 +2,13 @@ package ch.so.agi.gretl.runtime.groovy;
 
 import ch.so.agi.gretl.runtime.api.DiagnosticCarrier;
 import ch.so.agi.gretl.runtime.api.DiagnosticInfo;
+import ch.so.agi.gretl.runtime.runner.SourceLocatedFailure;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /** Groovy DSL error with an optional task, field and original source position. */
-public class GroovyDslException extends RuntimeException implements DiagnosticCarrier {
+public class GroovyDslException extends RuntimeException implements DiagnosticCarrier, SourceLocatedFailure {
     private static final long serialVersionUID = 1L;
 
     private final String code;
@@ -53,6 +54,12 @@ public class GroovyDslException extends RuntimeException implements DiagnosticCa
 
     public List<String> available() {
         return List.copyOf(available);
+    }
+
+    @Override
+    public Optional<ch.so.agi.gretl.runtime.runner.SourceLocation> failureSource() {
+        return source == null || source.line() == 0 ? Optional.empty() : Optional.of(
+                new ch.so.agi.gretl.runtime.runner.SourceLocation(source.file(), source.line(), source.column()));
     }
 
     @Override

@@ -137,11 +137,13 @@ public final class JobRuntime {
 
     private int jobCommand(JobOptions options) {
         Path job = options.job();
-        if (job == null || !Files.isRegularFile(job)) {
-            throw new StartException(2, Messages.format(locale,
-                    "cli.error.jobNotFound", job));
-        }
-        return jobCommand(new ScriptJobSource(job, locale), options);
+        return jobCommand(sourceFor(job, locale), options);
+    }
+
+    private JobSource sourceFor(Path input, Locale language) {
+        if (input != null && Files.isRegularFile(input)) return new ScriptJobSource(input, language);
+        if (input != null && Files.isDirectory(input)) return new ProjectJobSource(input, language);
+        throw new StartException(2, Messages.format(language, "cli.error.jobNotFound", input));
     }
 
     private int jobCommand(JobSource source, JobOptions options) {
@@ -151,6 +153,20 @@ public final class JobRuntime {
         locale = LocaleSelection.resolve(options.language(),
                 environment.get("GRETL_LANGUAGE"),
                 config.language().orElse(null), locale);
+        if (source instanceof ProjectJobSource project) {
+            source = project.withLocale(locale);
+            for (String target : options.targets()) {
+                try {
+                    if (ch.so.agi.gretl.runtime.groovy.project.ProjectPath.parseQualified(target).isRoot()) {
+                        throw new IllegalArgumentException("task required");
+                    }
+                } catch (IllegalArgumentException failure) {
+                    throw new ch.so.agi.gretl.runtime.groovy.project.ProjectException("PROJECT_TARGET_INVALID",
+                            Messages.format(locale, "project.cliTargetInvalid", target),
+                            new ch.so.agi.gretl.runtime.groovy.SourceLocation(source.displayFile().toString(), 0, 0), failure);
+                }
+            }
+        }
         String jobName = config.jobName()
                 .or(() -> Optional.ofNullable(environment.get("GRETL_JOB_NAME")))
                 .orElseGet(source::jobName);
@@ -232,6 +248,7 @@ public final class JobRuntime {
                     ResolvedParameters parameters, RuntimeConfig config,
                     OperationRegistry registry, MutableSink userSink,
                     Path explicitReport) {
+        String sourceHash = source.sha256();
         UUID runId = runIds.get();
         Instant commandStarted = clock.instant();
         prepareDirectory(config.workRoot(), "workRoot");
@@ -328,7 +345,7 @@ public final class JobRuntime {
             try {
                 new RunReportWriter(redactor).write(new RunReportInput(
                         context, outcome, definition, plan, source.displayFile(),
-                        source.sha256(), revision,
+                        sourceHash, revision,
                         RuntimeInfo.inventoryHash(registry), loggingState,
                         commandStarted, context.deploymentEnvironment()), report);
             } catch (IOException | SecurityException exception) {

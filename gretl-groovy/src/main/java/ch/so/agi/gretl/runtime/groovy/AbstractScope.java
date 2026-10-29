@@ -117,6 +117,6 @@ abstract class AbstractScope extends GroovyObjectSupport {
         String taskId = facade.taskContext() == null ? null
                 : facade.taskContext().identity().taskId().orElse(null);
         return new GroovyDslException(code, message, taskId, field,
-                SourceLocations.current(model.scriptFile()), available, cause);
+                model.currentSource(), available, cause);
     }
 }

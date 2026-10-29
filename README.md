@@ -32,7 +32,7 @@ XtfToGpkg und Native Image bleiben spätere Aufträge.
 - Snapshot-Veröffentlichung: [`docs/implementation/publish-snapshots.md`](docs/implementation/publish-snapshots.md)
 - Lokalisierung/Diagnose: [`docs/implementation/localization.md`](docs/implementation/localization.md)
 - DAG-Visualisierung: [`docs/implementation/plan-graphs.md`](docs/implementation/plan-graphs.md)
-- Job-Subprojekte, Formatparser und Phasengrenzen: [`project-subprojects/`](docs/implementation/project-subprojects/README.md)
+- Job-Subprojekte, gemeinsamer Scriptlauf und Phasengrenzen: [`project-subprojects/`](docs/implementation/project-subprojects/README.md)
 - Task-Referenz (AsciiDoc/Thoth): [`docs/reference/reference.adoc`](docs/reference/reference.adoc)
 - Core-Task-Migration: [`docs/migration/core-tasks.md`](docs/migration/core-tasks.md)
 - M5-Bericht (historisch): [`docs/implementation/m5-report.md`](docs/implementation/m5-report.md)

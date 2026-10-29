@@ -40,6 +40,7 @@ public final class HelpPrinter {
         out.println("  gretl plan job.groovy [Optionen]");
         out.println("  gretl run job.groovy [Optionen]");
         out.println("  gretl run job.groovy --help");
+        out.println(text("help.global.project"));
         out.println("  gretl package job-package.json --output job.jar");
         out.println();
         out.println(text("help.global.runtimeOptions"));

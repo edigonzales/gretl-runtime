@@ -8,7 +8,7 @@ import java.util.List;
 public final class ProjectException extends GroovyDslException {
     private static final long serialVersionUID = 1L;
 
-    ProjectException(String code, String message, SourceLocation source, Throwable cause) {
+    public ProjectException(String code, String message, SourceLocation source, Throwable cause) {
         super(code, source + (source.column() > 0 ? ":" + source.column() : "")
                 + " [" + code + "] " + message, null, null, source, List.of(), cause);
     }

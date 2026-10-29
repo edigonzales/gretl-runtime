@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /** Restricted job-cleanup scope: no new tasks, no result, no ctx.run. */
-final class CleanupScope extends GroovyObjectSupport {
+final class CleanupScope extends GroovyObjectSupport implements CleanupContext {
     private final CleanupContext context;
     private final JobDslModel model;
 
@@ -22,16 +22,19 @@ final class CleanupScope extends GroovyObjectSupport {
         this.model = model;
     }
 
+    public ch.so.agi.gretl.runtime.api.ExecutionIdentity identity() { return context.identity(); }
+    public java.util.Locale locale() { return context.locale(); }
+
     public Object parameter(String name) {
-        return context.parameter(name);
+        return context.parameter(model.parameterReference(name));
     }
 
     public <T> T parameter(String name, Class<T> type) {
-        return context.parameter(name, type);
+        return context.parameter(model.parameterReference(name), type);
     }
 
     public Path file(String path) {
-        return context.file(path);
+        return context.file(model.resourceRelativePath(path));
     }
 
     public Path path(String path) {
@@ -69,7 +72,7 @@ final class CleanupScope extends GroovyObjectSupport {
     @Override
     public Object getProperty(String name) {
         if ("ctx".equals(name)) {
-            return context;
+            return model.projectMode() ? this : context;
         }
         if ("metaClass".equals(name)) {
             return super.getMetaClass();
@@ -89,14 +92,14 @@ final class CleanupScope extends GroovyObjectSupport {
         throw new GroovyDslException("READ_ONLY_SCOPE",
                 Messages.format(model.environment().locale(),
                         "error.groovy.cleanupReadOnly", name),
-                null, name, SourceLocations.current(model.scriptFile()), java.util.List.of(), null);
+                null, name, model.currentSource(), java.util.List.of(), null);
     }
 
     public SecretValue secret(String alias) {
         throw new GroovyDslException("SECRET_NOT_ALLOWED",
                 Messages.get(model.environment().locale(),
                         "error.groovy.cleanupSecret"),
-                null, "secret", SourceLocations.current(model.scriptFile()),
+                null, "secret", model.currentSource(),
                 java.util.List.of(), null);
     }
 }

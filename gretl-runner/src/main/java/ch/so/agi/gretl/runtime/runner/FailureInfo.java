@@ -107,6 +107,10 @@ public record FailureInfo(
                                 && !frame.fileName().isBlank() && frame.lineNumber() > 0)
                         .findFirst())
                 .map(frame -> new SourceLocation(frame.fileName(), frame.lineNumber(), 0));
+        if (throwable instanceof SourceLocatedFailure located) {
+            var declaredSource = located.failureSource();
+            if (declaredSource.isPresent()) source = declaredSource;
+        }
         return new FailureInfo(
                 id,
                 throwable.getClass().getName(),
