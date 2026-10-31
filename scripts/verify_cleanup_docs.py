@@ -89,6 +89,21 @@ SPEC_QUOTES={(67,'gretl-integration-tests/.../HardeningLocalJobIT.java'):'Abbrev
              (569,'docs/maintenance/cleanup/spec-v1.md'):'Quoted historical prompt template; actual invocation uses spec-v2.md.',
              (591,'docs/maintenance/cleanup/spec-v1.md'):'Quoted reviewer template; actual invocation uses spec-v2.md.'}
 
+# Exact immutable references to deliberately removed historical inputs. New
+# targets/lines or any changed specification bytes remain hard failures.
+SPEC_QUOTES.update({
+ (58,'examples/project-subprojects/README.md'):'DOC-05 example README was consolidated into the current project guide; fixture source remains.',
+ (9,'docs/spec/AGENTS.md'):'Scope statement quotes the historical instruction removed by P2; current rules are AGENTS.md.',
+ (54,'docs/spec/AGENTS.md'):'DOC-01 baseline finding; original source preserved by cleanup-actions.json.',
+ (55,'docs/spec/README.md'):'DOC-02 baseline finding; current navigation is docs/README.md.',
+ (59,'docs/implementation/improvement-plan/requirement-tests.md'):'DOC-06 completed matrix preserved in Git, not a current target.',
+ (60,'docs/implementation/hardening-f1-f4/gretl-runtime-startprompt-f1-f4-neu.md'):'DOC-07 completed prompt intentionally removed; Git preservation is indexed.',
+ (73,'docs/implementation/m7-report.md'):'DOC-11 historical report; summary and verified Git permalink are in docs/history/README.md.',
+ (117,'docs/spec/AGENTS.md'):'Requirement to remove the historical active filename, fulfilled by P2.',
+ (440,'docs/spec/AGENTS.md'):'P1 temporary warning requirement; P2 subsequently removes the old instructions.',
+ (466,'docs/implementation/m0-report.md'):'P2 curation requirement quotes its historical input; source retained in Git.',
+ (569,'docs/spec/AGENTS.md'):'Quoted old prompt explicitly rejects those obsolete instructions.'})
+
 
 def active_sources(root,paths):
     root=Path(root)

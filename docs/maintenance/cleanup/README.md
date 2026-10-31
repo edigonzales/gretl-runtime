@@ -1,201 +1,110 @@
-# Bereinigung: Verfahren und Baseline
+# Bereinigung: Baseline, Prüfungen und Nachweise
 
-Verbindlich für diesen Auftrag ist [Version 1.2](spec-v2.md). Die darin noch
-enthaltenen Beispielpfade `spec-v1.md` werden beim tatsächlichen Aufruf durch
-`--spec docs/maintenance/cleanup/spec-v2.md` ersetzt. Die Spezifikation bleibt
-unverändert; es wird keine zweite normative Kopie angelegt.
+Verbindlicher Auftrag ist die unveränderte [Spezifikation 1.2](spec-v2.md).
+Die in ihren historischen Templates genannten älteren Dateinamen werden beim
+realen Aufruf durch `--spec docs/maintenance/cleanup/spec-v2.md` ersetzt.
 
-Die eingefrorene [Baseline](inventory.json) beschreibt den sauberen Commit
-`8eec03184883ce9d585d46a768b647f2b7a19169`. Gegenüber der analysierten Produktbasis
-`37c6f115980ecabc9a5931afa4bffc9b353f51f2` kamen nur zwei Spezifikationscommits hinzu.
-Die ersten Klassifikationen waren Pfadheuristiken und wurden vom unabhängigen
-Review auf `e439479917226a4fe25a27cd23f1522d41460cd7` ausdrücklich verworfen.
-Sie bleiben als unveränderte ursprüngliche Beobachtung erhalten. Verbindliche
-P0-Planungsentscheidungen stehen jetzt im [Inhaltsassessment](content-assessment.json):
-je Datei eigene Inhaltsbegründung, zitierte Zeilen oder Binär-/Verbrauchsnachweis,
-Baselinehash und vollständige bekannte Nutzer. `--check` prüft die Vollständigkeit,
-die eindeutige Zuordnung und Zitate direkt gegen den Ausgangscommit. Die Klassen
-sind weiterhin geplante Entscheidungen; keine Löschungen wurden bereits ausgeführt.
-Insbesondere die FQCN-Move-Map wird trotz früherer DELETE-Heuristik als
-Vertragsorakel erhalten. P2 muss aktive Verbraucher vor jeder Entfernung migrieren.
-Insbesondere maschinell benutzte Kataloge und Herkunftsnachweise bleiben bis zur
-geprüften Migration ihrer Nutzer erhalten.
+## Inventare und Entscheidungen
 
-## Ausführung
+Das [Inventar](inventory.json) bindet den Ausgangscommit
+`8eec03184883ce9d585d46a768b647f2b7a19169`. Seine 191 Ausgangsdokumente,
+Quellhashes, Operationen, Schemas und übrigen Baseline-Kernfelder bleiben gegen
+den ursprünglichen Inventarcommit unverändert geprüft. `introducedDocumentation`
+ist ein ausdrücklich ergänzbarer Index neuer Dokumentation; die ursprünglichen
+Einträge werden nicht umklassifiziert. Jede aktuelle getrackte oder gestagte
+Dokumentationsdatei braucht eine Klasse. Automatische Nachweispaare haben eine
+hashgeprüfte eigene Archivklassifikation im reinen Nachweiscommit.
+
+Die ersten Pfadheuristiken waren unzureichend. Das quellengebundene
+[Inhaltsassessment](content-assessment.json) enthält die verbindlichen
+Dateientscheidungen, Zitatzeilen, Baselinehashes und bekannten Nutzer.
+Die [P2-Aktionen](cleanup-actions.json) dokumentieren tatsächliche Auswahl,
+Ersatz, Verbraucher, Bytes und Git-Erhaltung. [Historische Quellen](../../history/README.md)
+enthalten wenige Abschluss-SHAs, unveränderte Vertragsorakel, Provenienz und Lizenzen.
+Frühere Fehlversuche und der entfernte dirty Vorcommit-Bericht bleiben in Git
+und den externen Versuchsdaten erhalten; sie sind keine heutigen Freigaben.
+
+## Eigenständige Gates und Review
 
 ```sh
 python3 -m unittest discover -s tests/cleanup_review -v
-python3 scripts/verify_cleanup_docs.py --audit
-python3 scripts/cleanup_review.py --phase P0 --base <vollstaendige-Basis-SHA> \
+python3 scripts/cleanup_inventory.py --check
+python3 scripts/verify_cleanup_docs.py
+python3 scripts/cleanup_review.py --phase P2 --base <vollstaendige-Basis-SHA> \
   --candidate <vollstaendige-Kandidaten-SHA> --spec docs/maintenance/cleanup/spec-v2.md
 ```
 
-`--preflight` prüft Python 3.9+, Git, JDK 25, Maven-Wrapper und den erreichbaren
-Docker-Daemon sowie Live-Verbindung und Rechte; dies qualifiziert keine Phase. Die CLI sucht OpenCode V2, einschliesslich des mit der Desktop-App
-mitgelieferten, mit `--version`/`run --help` geprüften CLI-Einstiegs.
-`OPENCODE_BIN` kann einen expliziten absoluten V2-Pfad festlegen. HOME und
-V2-Profil bleiben erhalten; Zugangsdaten werden ausschliesslich über OpenCodes
-eigene Provider-Anmeldung verwendet. Keine Datenbank wird gelesen oder kopiert.
-Python 3.9.6 genügt.
+A und B führen in getrennten sauberen Kandidaten-Worktrees beide vollständigen
+Maven-Gates, Artefaktaudits und phasenbezogenen Zusatzchecks aus. Standardbelege
+werden vor dem nächsten `clean` extern gesichert. `--implementer-evidence`
+validiert A-Belege und stellt sie getrennt von Bs neu erzeugten Belegen bereit.
+B erhält redigierte, gehashte, nur lesbare Kopien unter
+`target/cleanup-review-evidence/`; rohe Versuchsdaten bleiben geschützt extern.
 
-Die temporäre Konfiguration definiert einen eigenen primären Review-Agenten mit
-V2-`permissions`: grundsätzlich verboten, Lesen/Suchen erlaubt, ausschliesslich
-exakte Git-Lesebefehle erlaubt. Wildcards in Shellfreigaben sind bewusst
-vermieden, damit etwa `git diff --output` keinen Schreibweg öffnet. Die
-Live-Negativprobe fordert ein Schreibwerkzeug und eine verbotene Shellaktion an.
-V2 entfernt gesperrte Schreibwerkzeuge aus dem Werkzeugkatalog; zusätzlich muss
-der echte `session.permission.create`-Evaluator `edit` und `shell` verweigern.
-Eine Selbstbehauptung des Modells allein reicht nicht.
+Python 3.9.6 und Standardbibliothek genügen. `--preflight` prüft Python 3.9+,
+Git, JDK 25, Maven-Wrapper, Docker-Daemon und echte Direktprovider-Verbindung.
+Die mit OpenCode Desktop gelieferte V2-CLI wird unabhängig von einer alten V1
+im PATH ermittelt; `OPENCODE_BIN` erlaubt einen geprüften expliziten V2-Pfad.
+Gespeicherte Anmeldung und HOME bleiben erhalten. Kein ENV-Key wird verlangt,
+kein GUI-Profil oder Credentialstore gelesen, kopiert oder umgeschrieben.
 
-Der V2.2.5-JSONL-Strom enthält `text`, `tool_use` und `step_finish` mit Abschluss
-`reason=stop`, jedoch keine Modellidentität. Deshalb qualifiziert der Runner
-zusätzlich `session export --sanitize`: Sitzungs-ID, Agent, Erfolgsabschluss und
-sämtliche Assistentenmodelle müssen direktes `deepseek/deepseek-flash` bestätigen.
-Die Provider-Metadaten werden über `api provider.get` geprüft; die temporäre
-V2-Konfiguration setzt den direkten API-Endpunkt. Die offizielle
-[DeepSeek-Modellzuordnung](https://api-docs.deepseek.com/quick_start/pricing/)
-wird bei jedem Lauf erneut abgerufen und gehasht. Dies prüft den offiziellen
-Alias, nicht kryptografisch die Modellgewichte.
+Fest ist `deepseek/deepseek-flash` über den direkten DeepSeek-Provider,
+API-ID `deepseek-flash`. Die offizielle
+[Modellzuordnung](https://api-docs.deepseek.com/quick_start/pricing/) wird erneut
+abgerufen und aus derselben MODEL-/MODEL-VERSION-Tabellenspalte geprüft.
+Sitzungsexport und locationgebundene Providerdaten belegen das tatsächliche
+Modell und den direkten Endpunkt; dies ist keine kryptografische Gewichtsattestierung.
+Kein stiller Modellwechsel, `--continue` oder `--auto`.
 
-Jeder Versuch erhält ein neues geschütztes externes Verzeichnis. Die temporäre
-OpenCode-Konfiguration wird vor den Maven-Gates entfernt, damit die Distribution
-keinen schmutzigen Quellstand meldet, und erst danach für den Review angelegt.
-Standardberichte werden vor dem zweiten `clean` kopiert. Beide Gatebelege werden
-anschliessend unter dem ignorierten `target/cleanup-review-evidence/` lesbar
-bereitgestellt. Der Reviewer erhält keinen Zugriff auf externe Rohlogs.
+## Rechte und finaler Bericht
 
-Nur nach technisch validiertem PASS exportiert `--export-evidence <Versuchspfad>`
-die unveränderte Reviewantwort und gebundene Metadaten. Der Implementierungsagent
-committet ausschliesslich diese beiden Dateien. Der Runner prüft beim nächsten
-Phasenaufruf die Whitelist und Bindung des vorherigen Nachweiscommits.
+Die V2-Policy verwendet `permissions`, `shell`, `subagent`: deny-all,
+Lesen/Suchen erlaubt, nur exakte Git-Lesebefehle freigegeben. Credentials,
+Schreiben, fremde Verzeichnisse und Subagenten bleiben gesperrt. Temporäre
+Konfigurationen liegen nur in der eigenen Review-Location. V2-Pfade werden
+kanonisiert; nach Konfigurationswiederherstellung wird ausschliesslich diese
+Location über `debug.location.evict` neu geladen und ihr Agentkatalog geprüft.
+Andere Projekte und der gemeinsame Service werden nicht neu gestartet.
 
-Offizielle technische Grundlagen:
-[CLI](https://opencode.ai/v2/docs/cli/commands),
-[Provider-Anmeldung](https://opencode.ai/v2/docs/cli/providers),
-[V2-Rechte](https://opencode.ai/v2/docs/permissions/),
-[V2-Agenten](https://opencode.ai/v2/docs/agents/),
-[HTTP-API](https://opencode.ai/v2/docs/api).
+Die echte Negativprobe verlangt `printf DENY_TEST` und ein eindeutiges
+Antworttoken. Token ohne beobachteten verweigerten Aufruf qualifiziert nicht.
+Schreibwerkzeuge werden durch V2 aus dem Katalog entfernt. Der echte
+Permission-Evaluator muss zusätzlich `edit` und `shell` verweigern. Die Abweichung
+vom wörtlichen Schreibtoolversuch wurde in P0 als begründeter LOW-Hinweis
+unabhängig akzeptiert; die tatsächliche Schreibsperre und Worktree-Integrität
+sind technisch belegt. Es wird kein ausgeführter Schreibtoolaufruf behauptet.
 
-## Lokale Netzwerkqualifikation
+Der Parser bindet genau einen finalen Bericht an die gestoppte V2-`messageID`.
+Neutrale vorherige Fortschrittstexte brauchen eine zuvor abgeschlossene
+Tool-Nachricht; Zwischenurteile, ungebundene Texte, doppelte Marker/Abschlüsse
+und Vor-/Nachtext in der finalen Antwort sperren. Ohne verlässliche ID-Grenzen
+gilt die strengere Gesamtstromprüfung. SHA, Kriterienmatrix, alle geänderten
+Pfade, Ziele, Regressionen und Findings werden zusätzlich validiert.
 
-Der erste Standardlauf mit Temurin 25.0.2 blieb im unveränderten
-`FtpOperationTest.downloadsWildcardPattern` hängen (Client wartete auf FTP-Abschluss,
-Mock-Server auf Datenverbindung). Der vollständige FTP-Test bestand anschliessend
-mit `JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true`. Beide vollständigen Gates
-werden in dieser Umgebung erneut ausgeführt; die Einstellung gilt auch für die
-unabhängigen Gateprozesse und wird in deren Quell-/Umgebungsmanifest erfasst.
-Der abgebrochene Versuch ist kein PASS. Es wurden weder FTP-Assertions noch
-Produktcode geändert. Externe Diagnose: `/tmp/gretl-P0-A-precommit-be8rldxt/`,
-positive Gegenprobe: `/tmp/gretl-ftp-network-diagnostic-duj1a3fi/`.
+Nur ein fachliches und technisch validiertes PASS exportiert automatisch den
+unveränderten Modelltext und passende Metadaten. Der folgende Commit darf nur
+dieses Nachweispaar enthalten. FAIL verlangt Korrektur und neue Sitzung;
+BLOCKED erlaubt keine Folgephase. Alte Belege werden nie überschrieben oder
+nachträglich freigegeben. Aktuelle unabhängige Nachweise stehen unter [reviews/](reviews/).
 
-## V2-Kontextbindung und Modellzuordnung
+## Dokumentationsausführung
 
-V2.2.5 kodiert den optionalen API-Parameter `location` als OpenAPI-`deepObject`:
-`--param 'location[directory]=<Review-Worktree>'`. Vor `provider.get` wird
-`location.get` mit demselben Parameter aufgerufen und der aufgelöste Pfad geprüft.
-So wird die Providerprüfung an den Review-Worktree gebunden statt an die
-globale Standard-Location. Ein P0-Versuch auf
-`13af7f165b730a31684e6ef58b284e5d7a9d41c2` hatte zwar einen echten inhaltlichen
-DeepSeek-PASS, wurde wegen des ungebundenen nachgelagerten Metadatenaufrufs
-technisch BLOCKED. Er gilt deshalb nicht als Phasenfreigabe.
+Ab P1 führt `cleanup_doc_checks.py` die markierten README-/Website-Befehle aus,
+prüft Dateibytes und Reports, Startseiten-Action und Subprojekte, erzeugt alle
+44 Tabellen unverändert neu und rendert Quarto und Thoth. Thoths JGit braucht
+eine eigene lokale Git-Kopie mit einem privaten Branch auf der exakten
+Kandidaten-SHA. Nur diese Kopie wird angelegt und entfernt; Repositoryrefs und
+vorhandene Biblios-Konfigurationen werden nicht geändert. Gitbefehle, SHA,
+Rendererlogs und HTML bleiben extern gesichert und B zugänglich.
 
-Die offizielle Zuordnung wird aus derselben Tabellenspalte von `MODEL` und
-`MODEL VERSION` gelesen. Ein blosses gemeinsames Vorkommen von API-ID und altem
-Versionsnamen in einer Fussnote genügt nicht. Der Berichtsschema-Validator
-unterscheidet Integer und Boolean und verlangt alle obligatorischen Felder.
-JSON-Inventar und JSON-Evidenz werden weiterhin klassifiziert, aber nicht als
-Markdown interpretiert. Die Lesesperre betrifft `.git` und `.git/*`, wodurch
-`.gitignore` und `.github` für den Reviewer lesbar bleiben.
+Der Linkchecker meldet alle Ziele; historische Quellen werden separat ausgewiesen.
+Nur konkrete Zitate aus der bytegleich gehashten Auftragsspezifikation haben
+exakte Pfad-/Zeilen-Ausnahmen mit Begründung. Neue oder geänderte aktive Ziele
+werden dadurch nicht ausgenommen. Ein entfernter vorhandener Zielpfad muss den
+Negativtest scheitern lassen.
 
-Mit `--implementer-evidence <externes-Verzeichnis>` werden die eigenen,
-sauberen Kandidatengates von A dem Reviewer separat bereitgestellt. Der Runner
-prüft Kandidaten-SHA, Befehle, Log-Digests, Testzahlen und Artefaktaudit, bevor er
-diese sekundären Belege kopiert. Sie ersetzen niemals die unabhängigen B-Gates.
-
-V2 hält zusätzlich Agentkataloge je Location im Speicher. Nach Wiederherstellung
-der temporären Konfiguration wird deshalb ausschliesslich die eigene neue
-Review-Location über die dokumentierte API `debug.location.evict` verworfen und
-mit `location.get` neu geladen. `agent.get` muss danach den primären
-`cleanup-review`-Agenten, das feste Modell und die unverändert restriktiven
-Berechtigungen bestätigen. Andere Locations und der gemeinsame Service werden
-nicht neu gestartet. Alle Pfade werden kanonisiert, damit `/var` und
-`/private/var` auf macOS nicht verschiedene Cache-Kontexte erzeugen.
-
-## Historische Vorprüfungsdaten
-
-[P0-implementation.json](P0-implementation.json) ist ausschliesslich der
-historische erste Vorcommit-Lauf (45 Python-Tests, Quellstand dirty). Sein
-`docsAudit.checked = "AUDIT"` bezeichnet versehentlich den Modus, keine Zielzahl.
-Diese Rohdaten werden nicht nachträglich auf aktuelle Zahlen umgeschrieben und
-sind kein Abschlussbeleg. Für jeden neuen Kandidaten werden eigene und unabhängige
-saubere Kandidatengates neu ausgeführt, deren tatsächlich gemessene Zahlen und
-SHA-Bindungen im externen Versuch sowie später im unabhängigen Review stehen.
-
-Die V2-Edit-Verweigerung entfernt Schreibwerkzeuge aus dem Agentkatalog. Daher
-kann das Modell keinen nicht angebotenen Schreibtoolaufruf absenden; der echte
-V2-Permission-Evaluator weist die explizite Edit-Anfrage zurück. Dieser technisch
-belegte Unterschied zum wörtlichen Versuch aus §4.4 wird dem Reviewer als
-LOW-Resthinweis offengelegt, nicht als ausgeführter Schreibtoolaufruf behauptet.
-
-Der Smoke-Prompt fordert den verbotenen Shellaufruf ausdrücklich als erste Aktion
-an. Zwei Versuche auf `a43085d3d934c2369234cd848c380b9b70b4003c` gaben lediglich
-das Antworttoken zurück und wurden korrekt gesperrt. Die isolierte Liveprobe
-`/private/tmp/gretl-v2-shell-instruction-dkj568il` belegte mit präziserem Prompt
-den tatsächlichen `printf DENY_TEST`-Toolaufruf und seine technische Ablehnung.
-Der Validator verlangt nun genau diesen Befehl; ein anderer verweigerter
-Shellaufruf oder das Antworttoken allein qualifiziert weiterhin nicht.
-
-## Endgültiger Reviewtext und V2-Nachrichtengrenzen
-
-Der echte Review auf `b6f6377b01c7a3b3169aacb90c75c9268c7a5cfb` enthielt eine
-vollständige unabhängige PASS-Matrix ohne Findings, blieb technisch aber BLOCKED:
-Der erste Parser behandelte einen vorherigen neutralen Fortschrittssatz als
-Bestandteil der endgültigen Antwort. §4.3.8 verlangt einen eindeutigen finalen
-Bericht. Der Parser bindet ihn nun an die tatsächliche V2-`messageID` des letzten
-`step_finish(reason=stop)`. Frühere neutrale Texte sind nur nachweislich in zuvor
-abgeschlossenen `tool-calls`-Nachrichten zulässig. Zwischenurteile, weitere
-Abschlüsse, fehlende IDs, doppelte Marker und jeder Vor-/Nachtext in der finalen
-Nachricht bleiben gesperrt. Ohne Nachrichtengrenzen gilt die bisherige strengere
-Gesamtstromprüfung. Rohstream und Originalantwort bleiben extern unverändert;
-exportiert wird ausschliesslich der unveränderte endgültige Modelltext.
-Der frühere BLOCKED-Lauf wird weder neu bewertet noch als Freigabe exportiert.
-Ein neuer Kandidat mit allen Gates und einer neuen unabhängigen Sitzung ist nötig.
-
-## Vollständigkeit hinzugekommener Dokumentation
-
-Der Review auf `fa2e0b063d1e0cfc773666c8b321870ec1741403` meldete FAIL:
-`content-assessment.json` fehlte im Dokumentationsindex. Der Index
-`inventory.json.introducedDocumentation` ist deshalb nun ausdrücklich um genau
-diese Datei, Klasse, Inhaltsbegründung und Nutzer ergänzt. Das ist eine sichtbare
-Metadatenergänzung, keine neue Baseline. Alle übrigen Felder einschliesslich der
-191 Ausgangsdokumente, Quellhashes, Operationen, Testklassen und Ausgangs-SHA
-werden strukturell exakt gegen den ursprünglichen Inventarcommit geprüft.
-Die drei ursprünglichen Einträge im Zusatzindex dürfen ebenfalls nicht geändert
-oder entfernt werden. Die ursprünglichen Inventarbytes bleiben in Git erhalten.
-
-Der Checker erfasst jeden aktuell getrackten oder gestagten dokumentierenden
-Pfad und verlangt seine Klasse im Baseline- oder Zusatzindex. Neue Dokumentation
-der Prüfinfrastruktur selbst wird nicht mehr übersehen. Alte Indexeinträge
-bleiben bei späteren dokumentierten Löschungen als historische Einträge bestehen;
-erfundene Pfade ohne aktuellen oder früheren Git-Inhalt werden zurückgewiesen.
-Ein Negativtest fügt einen neuen JSON-Dokumentationspfad hinzu und prüft, dass
-fehlende Klassifikation, ungültige Klassen, doppelte Einträge sowie Änderungen
-an Baseline-SHA, Quellhash oder Operation-IDs gesperrt bleiben.
-
-## Ausgeführte Dokumentationsprüfungen
-
-Ab P1 führt `scripts/cleanup_doc_checks.py` die markierten Checkout-,
-Distributions- und JAR-Befehle aus README und Website aus. Es prüft Dateibytes
-und erfolgreiche Reports, führt die Startseiten-Action und Subprojektbeispiele
-aus, erzeugt die 44 Tabellen unverändert neu und rendert Quarto und Thoth.
-Die Ergebnisse und gerenderten Seiten werden extern gesichert und B bereitgestellt.
-
-Thoths JGit kann den detached Kandidaten eines verknüpften Worktrees nicht
-zuverlässig klonen. Die Prüfung initialisiert deshalb eine eigene lokale Kopie,
-fetch-t ausschliesslich die exakte Kandidaten-SHA aus dem Prüfcheckout und legt
-nur dort einen Branch `main` auf diesen Commit. Thoth rendert diese Kandidatenkopie.
-Gitbefehle, Quell-SHA und Ausgabe werden gesichert; die temporäre Quellkopie wird
-danach entfernt. Repositoryrefs, vorhandene lokale Biblios-Konfigurationen und
-fremde Thoth-Projekte bleiben unverändert. Der erste P1-Versuch auf `6e8c139`
-bestand beide Maven-Gates, scheiterte jedoch korrekt am Thoth-Rendercheck und
-ist keine Phasenfreigabe.
+Die lokale FTP-Netzwerkqualifikation erforderte
+`JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true`. Beide vollständigen Gates
+verwenden und protokollieren diese Einstellung in dieser Umgebung; Produktcode
+und Assertions wurden dafür nicht geändert. Ein erster hängender Lauf wurde
+abgebrochen und gilt nicht als PASS.

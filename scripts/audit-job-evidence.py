@@ -57,7 +57,7 @@ for file in sorted((root / 'gretl-integration-tests/target/job-evidence').glob('
     row['operations'] = operations
     executions.append(row)
 assert executions, 'No artifact job executions'
-expected = {o['id'] for o in read(root / 'docs/implementation/improvement-plan/operation-inventory.json')}
+expected = {o['id'] for o in read(root / 'docs/history/contracts/operation-baseline.json')}
 if args.full:
     assert len(expected) == 44 and expected <= positive, sorted(expected - positive)
 

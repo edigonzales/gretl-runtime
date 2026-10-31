@@ -96,7 +96,7 @@ für diese Ausführungsnachweise nicht.
 
 Die optionale Ausgabesprache kann per `--lang`, `GRETL_LANGUAGE`, `language`
 in `runtime.json` oder OS-Locale gewählt werden; Fallback ist Englisch.
-Details stehen in [`localization.md`](localization.md).
+Details stehen in [Lokalisierungsvertrag](../architecture/runtime-contracts.md#lokalisierung).
 
 ```json
 {

@@ -133,6 +133,23 @@ def run_command(argv, cwd, destination, timeout=3600, environment=None):
     return evidence
 
 
+ORACLE_TEST='gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/OperationMetadataTest.java'
+ORACLE_MOVES={
+ 'docs/implementation/improvement-plan/operation-inventory.json':'docs/history/contracts/operation-baseline.json',
+ 'docs/implementation/improvement-plan/phase-2-java-moves.json':'docs/history/contracts/java-type-moves.json'}
+
+
+def path_only_oracle_test_move(root,base,path):
+    if path!=ORACLE_TEST:return False
+    original=subprocess.check_output(['git','show',base+':'+path],cwd=root)
+    expected=original
+    for old,new in ORACLE_MOVES.items():
+        if original.count(old.encode())!=1:return False
+        expected=expected.replace(old.encode(),new.encode())
+    target=root/path
+    return target.is_file() and target.read_bytes()==expected
+
+
 def validate_request(r):
     if r.phase not in REQUIRED_IDS:
         raise Blocked('Unknown phase')
@@ -156,7 +173,8 @@ def validate_request(r):
     prefixes = ('scripts/cleanup_', 'scripts/verify_cleanup_', 'tests/cleanup_review/', 'docs/maintenance/cleanup/')
     if r.phase == 'P0' and any(p!='.gitignore' and not p.startswith(prefixes) for p in diff):
         raise Blocked('P0 scope violation')
-    if r.phase in ('P1','P2') and any('/src/main/java/' in p or '/src/test/' in p or p.endswith('pom.xml') for p in diff):
+    if r.phase in ('P1','P2') and any(('/src/main/java/' in p or '/src/test/' in p or p.endswith('pom.xml'))
+            and not (r.phase=='P2' and path_only_oracle_test_move(r.repository_root,r.phase_base_sha,p)) for p in diff):
         raise Blocked('Product/test/build mutation outside documentation phase')
     baseline_spec=git(r.repository_root,'show',r.initial_baseline_sha+':'+specification_path)
     if baseline_spec!=r.specification_file.read_text().strip():
@@ -286,6 +304,8 @@ def run_independent_gates(worktree,r,evidence_dir):
     run_command([sys.executable,'scripts/verify_cleanup_docs.py']+(['--audit'] if r.phase=='P0' else []),worktree,evidence_dir/'docs-audit',timeout=120,environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
     if r.phase!='P0':
         run_command([sys.executable,'scripts/cleanup_doc_checks.py','--evidence',str(evidence_dir/'docs-runtime')],worktree,evidence_dir/'docs-runtime-command',timeout=1200,environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+    if r.phase in ('P2','P3'):
+        run_command([sys.executable,'scripts/cleanup_history_check.py'],worktree,evidence_dir/'history-check',timeout=180,environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
     # clean in the second build cannot destroy the first gate's external evidence.
     visible=worktree/'target/cleanup-review-evidence'
     visible.mkdir(parents=True)
@@ -298,6 +318,8 @@ def run_independent_gates(worktree,r,evidence_dir):
     if r.phase!='P0':
         shutil.copytree(evidence_dir/'docs-runtime',visible/'docs-runtime')
         shutil.copytree(evidence_dir/'docs-runtime-command',visible/'docs-runtime-command')
+    if r.phase in ('P2','P3'):
+        shutil.copytree(evidence_dir/'history-check',visible/'history-check')
     save(visible/'manifest.json', {'candidateSha':r.candidate_sha,'commands':[dataclasses.asdict(x) for x in runs],
          'environment':{'python':sys.version,'platform':platform.platform()}})
     for p in visible.rglob('*'):
@@ -350,7 +372,7 @@ def review_config(r):
     rules += [{'action':'shell','resource':x,'effect':'allow'} for x in dict.fromkeys(commands)]
     return {'$schema':'https://opencode.ai/config.json', 'model':MODEL,
             'providers':{'deepseek':{'settings':{'baseURL':'https://api.deepseek.com'},'models':{'deepseek-flash':{'modelID':'deepseek-flash'}}}},
-            'permissions':rules,'tool_output':{'max_lines':20000,'max_bytes':2097152},
+            'permissions':rules,'tool_output':{'max_lines':100000 if r.phase in ('P2','P3') else 20000,'max_bytes':8388608 if r.phase in ('P2','P3') else 2097152},
             'agents':{'cleanup-review':{'description':'Independent read-only cleanup reviewer','mode':'primary','model':MODEL,'permissions':rules}}}
 
 

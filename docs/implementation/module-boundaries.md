@@ -37,7 +37,7 @@ in der Standarddistribution. Das zusätzliche klassifizierte Ressourcenartefakt
 `gretl-interlis-tasks:jar:standard-functions` enthält nur die bisherige
 18er-Serviceauswahl, keinen weiteren OperationProvider und keine kopierten
 Klassen. Das allgemeine Taskartefakt benötigt dieses Artefakt nicht.
-Siehe [Validator-Erweiterungen](validator-functions.md).
+Siehe [Validator-Erweiterungen](job-packaging.md#validatorfunktionen).
 
 [Jobtest-Verträge](job-artifact-tests.md) beschreiben Verbraucher und Nachweise.
 

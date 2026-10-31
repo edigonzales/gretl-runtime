@@ -38,9 +38,9 @@ als separater JAR-Nachweis. `PackagedSqlJobPostgresIT` bleibt eine zusätzliche
 ältere JAR-Regression.
 
 Die Originalzuordnung mit unveränderten Quellhashes, Originalassertionen und
-Dateiprüfsummen steht im [Phase-1-Inventar](improvement-plan/original-scenarios.json).
+Dateiprüfsummen steht im [Phase-1-Inventar](../history/provenance/original-scenarios.json).
 Die aktuelle Zuordnung, alle Varianten und konkret begründete Anpassungen
-stehen im [Phase-2-Portnachweis](improvement-plan/phase-2-scenario-mapping.md).
+stehen im [Phase-2-Portnachweis](../history/provenance/scenario-mapping.json).
 Die [Jobtest-Verträge](job-artifact-tests.md) erklären Artefaktbau, separate
 Prozesse, Evidenz und die spätere ausdrückliche IMAGE-Konfiguration.
 
@@ -65,7 +65,7 @@ getestetem Commit; Secretquellen bleiben ausgeschlossen.
 JaCoCo misst die Test-JVMs und aggregiert die aktiven Produktmodule. Nicht
 instrumentierte Job-/Launcherprozesse werden separat fachlich geprüft und
 liefern keine erfundene Coverage. Testanzahl und Codeabdeckung werden getrennt
-im jeweiligen Phasenbericht angegeben; siehe [Build](build.md).
+in den SHA-gebundenen Gateberichten angegeben; siehe [Build](build.md).
 
 Nach jedem CI-Gate läuft `scripts/audit-job-evidence.py --source <Commit-SHA>`;
 der vollständige Lauf ergänzt `--full`. Der Audit prüft die vorhandenen

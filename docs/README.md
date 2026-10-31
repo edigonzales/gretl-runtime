@@ -9,17 +9,18 @@ Diese Seiten beschreiben den implementierten Stand von GRETL Runtime:
 - [Jobpaketierung und Schemas 1/2/3](implementation/job-packaging.md)
 - [Subprojekte und gemeinsamer Taskgraph](implementation/project-subprojects/README.md)
 - [Job-Artefakttests und IMAGE-Vorbereitung](implementation/job-artifact-tests.md)
-- [Lokalisierung](implementation/localization.md) und [Plangraphen](implementation/plan-graphs.md)
-- [Validatorfunktionen](implementation/validator-functions.md)
+- [Lokalisierung](architecture/runtime-contracts.md#lokalisierung) und [Plangraphen](architecture/runtime-contracts.md#plangraphen)
+- [Validatorfunktionen](implementation/job-packaging.md#validatorfunktionen)
 - [Taskreferenz](reference/reference.adoc) und [deren Generierung](reference/README.md)
 - [Manuelle Snapshot-Veröffentlichung](implementation/publish-snapshots.md)
 
-## Historische Quellen
+## Technische Verträge und historische Quellen
 
-`docs/spec/` und die abgeschlossenen Implementierungs-/Reviewserien unter
-`docs/implementation/` dokumentieren frühere Sollstände und geprüfte Commits.
-Ihre Phasensperren und Testzahlen sind keine aktuellen Produktanforderungen.
-Die [Cleanup-Spezifikation](maintenance/cleanup/spec-v2.md) und das
-[Bewertungsverfahren](maintenance/cleanup/README.md) steuern die gezielte
-Kuration dieses Bestands. Bis zur überprüften Kuration bleiben die Originale
-erhalten. Für neue Arbeiten gelten die aktuellen Regeln in [AGENTS.md](../AGENTS.md).
+- [Implementierte API-, DSL-, Runner-, Logging- und Sicherheitsverträge](architecture/runtime-contracts.md)
+- [Publisher, XtfToGpkg und Native Image: nicht gelieferter Backlog](backlog/publisher-and-native.md)
+- [Kuratiertes historisches Wissen, Herkunft und Abschluss-SHAs](history/README.md)
+
+Die frühere Soll-Spezifikation und abgeschlossene Agentenpläne sind aus dem
+aktiven Baum entfernt. Die [Cleanup-Spezifikation](maintenance/cleanup/spec-v2.md)
+und das [Verfahren](maintenance/cleanup/README.md) dokumentieren Auswahl und
+Nachweise. Für neue Arbeiten gelten die [Repository-Regeln](../AGENTS.md).

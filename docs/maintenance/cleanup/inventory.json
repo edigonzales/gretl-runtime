@@ -8983,9 +8983,9 @@
     },
     {
       "path": "docs/maintenance/cleanup/content-assessment.json",
-      "classification": "ACTIVE",
+      "classification": "ARCHIVE",
       "plannedPhase": "P0",
-      "reason": "Quellengebundene Inhaltsentscheidungen für alle 191 Baseline-Dokumente; ergänzt ausdrücklich die verworfenen Pfadheuristiken, ohne Ausgangsdaten neu zu erzeugen.",
+      "reason": "Abgeschlossene quellengebundene P0-Inhaltsentscheidungen und Originalzitate bleiben als historisches Orakel für Baseline- und Kurationstests erhalten; aktuelle Aktionen stehen in cleanup-actions.json.",
       "consumers": [
         "scripts/cleanup_inventory.py",
         "docs/maintenance/cleanup/README.md",
@@ -9009,6 +9009,90 @@
       "classification": "ARCHIVE",
       "plannedPhase": "P1",
       "reason": "Automatische P0-Nachweismetadaten mit Kandidaten-, Provider- und Evidenzdigests für den getrennten Nachweiscommit; keine Produktstatusquelle."
+    },
+    {
+      "path": "docs/history/README.md",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/licenses/sogis-gretl-MIT.txt",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/licenses/gretl-next-MIT.txt",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/contracts/java-type-moves.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/contracts/operation-baseline.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/provenance/scenario-mapping.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/provenance/original-scenarios.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/provenance/fixture-files.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/provenance/package-fixtures.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/provenance/local-models.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/history/qualification/linux-ci.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P2",
+      "reason": "Kuratiertes historisches Quellen-/Herkunfts- oder Vertragsdokument; bewahrt ausdrücklich SHA-gebundene Aussagen, Lizenzen und unveränderte Testorakel."
+    },
+    {
+      "path": "docs/architecture/runtime-contracts.md",
+      "classification": "ACTIVE",
+      "plannedPhase": "P2",
+      "reason": "Aktueller quellengeprüfter technischer Vertrag bzw. maschinenlesbare P2-Aktionsliste mit Nutzern, Ersatz und Git-Erhaltung."
+    },
+    {
+      "path": "docs/backlog/publisher-and-native.md",
+      "classification": "DECISION",
+      "plannedPhase": "P2",
+      "reason": "Nicht implementierte Publisher-/Native-/XtfToGpkg-Entscheidungen mit abgegrenztem künftigen Umfang; kein neuer Arbeitsauftrag."
+    },
+    {
+      "path": "docs/maintenance/cleanup/cleanup-actions.json",
+      "classification": "ACTIVE",
+      "plannedPhase": "P2",
+      "reason": "Aktueller quellengeprüfter technischer Vertrag bzw. maschinenlesbare P2-Aktionsliste mit Nutzern, Ersatz und Git-Erhaltung."
     }
   ]
 }

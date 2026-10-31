@@ -42,7 +42,7 @@ class OperationMetadataTest {
 
     @Test void entireCatalogMatchesVersionedIdentityAndResultContracts() throws Exception {
         var registry = OperationRegistry.load(getClass().getClassLoader());
-        var expected = (List<?>) Json.parseFile(Path.of("../docs/implementation/improvement-plan/operation-inventory.json"), 1_000_000);
+        var expected = (List<?>) Json.parseFile(Path.of("../docs/history/contracts/operation-baseline.json"), 1_000_000);
         assertEquals(44, registry.all().size());
         var actual = new ArrayList<Object>();
         for (var registered : registry.registered()) {
@@ -55,7 +55,7 @@ class OperationMetadataTest {
         }
         Map<Object, Object> byId = new HashMap<>();
         for (Object row : actual) byId.put(((Map<?, ?>) row).get("id"), row);
-        var moves = (Map<?, ?>) Json.parseFile(Path.of("../docs/implementation/improvement-plan/phase-2-java-moves.json"), 100_000);
+        var moves = (Map<?, ?>) Json.parseFile(Path.of("../docs/history/contracts/java-type-moves.json"), 100_000);
         for (Object row : expected) {
             Object id = ((Map<?, ?>) row).get("id");
             // Keep every DSL/result-field contract from the accepted baseline.

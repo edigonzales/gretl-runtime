@@ -32,7 +32,7 @@ Dies ist keine allgemeine Sandbox für ausführbaren Jobcode oder dessen
 Dateisystemzugriffe. Die Sicherheitsprüfung bezieht sich auf das deklarative
 Projektformat und seine Definitionspfade.
 
-Das [lokale Formatbeispiel](../../../examples/project-subprojects/README.md)
+Das [lokale Formatbeispiel](../../../examples/project-subprojects/)
 zeigt Includes und lokale Namensräume. Das
 [Pipelinebeispiel](../../../examples/project-pipeline/README.md) läuft als ein
 Projekt mit echten lokalen Operationen. Ein direkter Dateipfad startet weiterhin
@@ -102,3 +102,19 @@ Quellhashs. Er ist kein Hash der gesamten Abhängigkeitswelt.
 GRETL-Job-Subprojekte führen weder Gradle- noch Maven-Builds aus. Es gibt keine
 verschachtelten Runs und keine neue `.gretl`-Endung für Jobskripte;
 `settings.gretl` ist die Projektdatei, die Jobs bleiben `job.groovy`.
+
+## Kleines Include-Beispiel
+
+Der Bestand `examples/project-subprojects/` bindet `:source` und `:checks:local`
+ein; ein Elternjob unter `checks/` wird nicht automatisch aufgenommen. Beide
+lokalen Tasks heissen `run` und lesen die eigene `input.txt`. Nach dem Build,
+aus dem Repository-Root:
+
+```sh
+gretl-dist/target/dist/bin/gretl check examples/project-subprojects
+gretl-dist/target/dist/bin/gretl run examples/project-subprojects --target :source:run
+gretl-dist/target/dist/bin/gretl run examples/project-subprojects --target :checks:local:run
+```
+
+Die Prozessprüfung führt beide Ziele aus und kontrolliert die unterschiedlichen
+lokalen Daten. Das Pipelinebeispiel zeigt zusätzlich Datenabhängigkeiten und JARs.

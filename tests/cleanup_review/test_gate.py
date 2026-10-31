@@ -132,6 +132,28 @@ class GateTest(unittest.TestCase):
             markdown.write_text(markdown.read_text()+'tampered')
             with self.assertRaises(SystemExit):inventory.verified_proof_classes(names)
 
+    def test_p2_oracle_paths_allow_no_assertion_or_other_source_changes(self):
+        path=self.root/c.ORACLE_TEST;path.parent.mkdir(parents=True)
+        original=('class OperationMetadataTest {\n  assertEquals(44, size);\n'+
+                  '\n'.join(c.ORACLE_MOVES)+'\n}\n').encode()
+        path.write_bytes(original);subprocess.run(['git','add',c.ORACLE_TEST],cwd=self.root,check=True)
+        subprocess.run(['git','commit','-qm','original oracle consumers'],cwd=self.root,check=True)
+        base=c.git(self.root,'rev-parse','HEAD');expected=original
+        for old,new in c.ORACLE_MOVES.items():expected=expected.replace(old.encode(),new.encode())
+        path.write_bytes(expected);self.assertTrue(c.path_only_oracle_test_move(self.root,base,c.ORACLE_TEST))
+        for bad in [expected.replace(b'assertEquals(44, size)',b'assertTrue(true)'),expected+b'\n']:
+            path.write_bytes(bad);self.assertFalse(c.path_only_oracle_test_move(self.root,base,c.ORACLE_TEST))
+        self.assertFalse(c.path_only_oracle_test_move(self.root,base,'OtherTest.java'))
+
+    def test_strict_links_fail_after_an_existing_target_is_removed(self):
+        (self.root/'README.md').write_text('[target](docs/target.md)\n')
+        target=self.root/'docs/target.md';target.parent.mkdir();target.write_text('# Target\n')
+        subprocess.run(['git','add','README.md','docs'],cwd=self.root,check=True)
+        with mock.patch('builtins.print'):
+            self.assertEqual(0,docs.main(['--root',str(self.root)]))
+            target.unlink()
+            self.assertEqual(10,docs.main(['--root',str(self.root)]))
+
     def test_bound_pass(self): self.evaluate()
     def test_wrong_sha(self):
         self.review['candidateSha']='f'*40
