@@ -8,8 +8,16 @@ unverändert; es wird keine zweite normative Kopie angelegt.
 Die eingefrorene [Baseline](inventory.json) beschreibt den sauberen Commit
 `8eec03184883ce9d585d46a768b647f2b7a19169`. Gegenüber der analysierten Produktbasis
 `37c6f115980ecabc9a5931afa4bffc9b353f51f2` kamen nur zwei Spezifikationscommits hinzu.
-Klassifikationen sind geplante Entscheidungen, keine bereits ausgeführten
-Löschungen. Jeder Eintrag enthält Inhaltsüberschriften, Hash, Nutzer und Grund.
+Die ersten Klassifikationen waren Pfadheuristiken und wurden vom unabhängigen
+Review auf `e439479917226a4fe25a27cd23f1522d41460cd7` ausdrücklich verworfen.
+Sie bleiben als unveränderte ursprüngliche Beobachtung erhalten. Verbindliche
+P0-Planungsentscheidungen stehen jetzt im [Inhaltsassessment](content-assessment.json):
+je Datei eigene Inhaltsbegründung, zitierte Zeilen oder Binär-/Verbrauchsnachweis,
+Baselinehash und vollständige bekannte Nutzer. `--check` prüft die Vollständigkeit,
+die eindeutige Zuordnung und Zitate direkt gegen den Ausgangscommit. Die Klassen
+sind weiterhin geplante Entscheidungen; keine Löschungen wurden bereits ausgeführt.
+Insbesondere die FQCN-Move-Map wird trotz früherer DELETE-Heuristik als
+Vertragsorakel erhalten. P2 muss aktive Verbraucher vor jeder Entfernung migrieren.
 Insbesondere maschinell benutzte Kataloge und Herkunftsnachweise bleiben bis zur
 geprüften Migration ihrer Nutzer erhalten.
 
@@ -22,8 +30,8 @@ python3 scripts/cleanup_review.py --phase P0 --base <vollstaendige-Basis-SHA> \
   --candidate <vollstaendige-Kandidaten-SHA> --spec docs/maintenance/cleanup/spec-v2.md
 ```
 
-`--preflight` qualifiziert ausschliesslich die Live-Verbindung und Rechte, keine
-Phase. Die CLI sucht OpenCode V2, einschliesslich des mit der Desktop-App
+`--preflight` prüft Python 3.9+, Git, JDK 25, Maven-Wrapper und den erreichbaren
+Docker-Daemon sowie Live-Verbindung und Rechte; dies qualifiziert keine Phase. Die CLI sucht OpenCode V2, einschliesslich des mit der Desktop-App
 mitgelieferten, mit `--version`/`run --help` geprüften CLI-Einstiegs.
 `OPENCODE_BIN` kann einen expliziten absoluten V2-Pfad festlegen. HOME und
 V2-Profil bleiben erhalten; Zugangsdaten werden ausschliesslich über OpenCodes
@@ -112,3 +120,19 @@ mit `location.get` neu geladen. `agent.get` muss danach den primären
 Berechtigungen bestätigen. Andere Locations und der gemeinsame Service werden
 nicht neu gestartet. Alle Pfade werden kanonisiert, damit `/var` und
 `/private/var` auf macOS nicht verschiedene Cache-Kontexte erzeugen.
+
+## Historische Vorprüfungsdaten
+
+[P0-implementation.json](P0-implementation.json) ist ausschliesslich der
+historische erste Vorcommit-Lauf (45 Python-Tests, Quellstand dirty). Sein
+`docsAudit.checked = "AUDIT"` bezeichnet versehentlich den Modus, keine Zielzahl.
+Diese Rohdaten werden nicht nachträglich auf aktuelle Zahlen umgeschrieben und
+sind kein Abschlussbeleg. Für jeden neuen Kandidaten werden eigene und unabhängige
+saubere Kandidatengates neu ausgeführt, deren tatsächlich gemessene Zahlen und
+SHA-Bindungen im externen Versuch sowie später im unabhängigen Review stehen.
+
+Die V2-Edit-Verweigerung entfernt Schreibwerkzeuge aus dem Agentkatalog. Daher
+kann das Modell keinen nicht angebotenen Schreibtoolaufruf absenden; der echte
+V2-Permission-Evaluator weist die explizite Edit-Anfrage zurück. Dieser technisch
+belegte Unterschied zum wörtlichen Versuch aus §4.4 wird dem Reviewer als
+LOW-Resthinweis offengelegt, nicht als ausgeführter Schreibtoolaufruf behauptet.

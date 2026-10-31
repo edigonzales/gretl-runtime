@@ -246,10 +246,32 @@ def snapshot_reports(worktree,destination,full=False):
     return result
 
 
+def qualify_environment(worktree, evidence_dir):
+    """Fail before live inference/builds if a mandatory local prerequisite is absent."""
+    if sys.version_info < (3, 9):
+        raise Blocked('Python 3.9+ required')
+    results = {}
+    checks = [('python', [sys.executable, '--version']), ('git', ['git', '--version']),
+              ('java', ['java', '-version']), ('maven', ['./mvnw', '-version']),
+              ('docker', ['docker', 'info', '--format', '{{.ServerVersion}}']),
+              ('os', ['uname', '-a'])]
+    for name, argv in checks:
+        run = run_command(argv, worktree, evidence_dir/('environment-'+name), timeout=60)
+        results[name] = run.stdout_path.read_text() + run.stderr_path.read_text()
+    if not re.search(r'(?:openjdk|java) version "25(?:[.\"]|$)', results['java']):
+        raise Blocked('JDK 25 required: environment-java')
+    if not re.search(r'Apache Maven 3\.', results['maven']):
+        raise Blocked('Maven wrapper did not identify Apache Maven 3')
+    if not re.search(r'^\d+\.\d+', results['docker'].strip()):
+        raise Blocked('Docker daemon did not return a server version')
+    save(evidence_dir/'environment.json', {'status':'QUALIFIED', 'python':sys.version,
+                                         'checks':list(results), 'checkedAt':now()})
+
+
 def run_independent_gates(worktree,r,evidence_dir):
     runs=[]
-    for name,argv in [('java',['java','-version']),('maven',['./mvnw','-version']),('os',['uname','-a'])]:
-        run_command(argv,worktree,evidence_dir/('environment-'+name),timeout=60)
+    if not (evidence_dir/'environment.json').exists():
+        qualify_environment(worktree,evidence_dir)
     save(evidence_dir/'source.json',{'head':git(worktree,'rev-parse','HEAD'),'status':git(worktree,'status','--porcelain=v1'),'python':sys.version,'JAVA_TOOL_OPTIONS':redact(os.environ.get('JAVA_TOOL_OPTIONS',''))})
     for name,argv in [('python',[sys.executable,'-m','unittest','discover','-s','tests/cleanup_review','-v']),
                       ('standard',['./mvnw','-B','clean','verify']),
@@ -265,9 +287,9 @@ def run_independent_gates(worktree,r,evidence_dir):
     # clean in the second build cannot destroy the first gate's external evidence.
     visible=worktree/'target/cleanup-review-evidence'
     visible.mkdir(parents=True)
-    for name in ('python','standard','full','standard-audit','full-audit','invariants','docs-audit','environment-java','environment-maven','environment-os'):
+    for name in ('python','standard','full','standard-audit','full-audit','invariants','docs-audit','environment-java','environment-maven','environment-os','environment-python','environment-git','environment-docker'):
         shutil.copytree(evidence_dir/name,visible/name)
-    for name in ['source.json','provider.json','preflight.json','official-model-mapping.html']:
+    for name in ['source.json','provider.json','preflight.json','environment.json','official-model-mapping.html']:
         if (evidence_dir/name).exists(): shutil.copyfile(evidence_dir/name,visible/name)
     for name in ['smoke','smoke-provenance','deny-edit','deny-shell']:
         if (evidence_dir/name).is_dir(): shutil.copytree(evidence_dir/name,visible/name)
@@ -703,6 +725,7 @@ def main(argv=None):
     try:
         worktree=(evidence_dir/'worktree').resolve()
         create_detached_worktree(r,evidence_dir)
+        qualify_environment(worktree,evidence_dir)
         env=prepare_opencode_environment(r)
         executable=discover_opencode_v2(r)
         details['provider']=inspect_v2_auth_and_models(executable,r,evidence_dir,env)

@@ -13,6 +13,7 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]/'scripts'))
 import cleanup_review as c
+import cleanup_inventory as inventory
 import verify_cleanup_docs as docs
 
 
@@ -48,6 +49,26 @@ class GateTest(unittest.TestCase):
     def events(self):
         return [{'type':'text','sessionID':'ses_test','part':{'text':c.BEGIN+'\n'+json.dumps(self.review)+'\n'+c.END}},
                 {'type':'step_finish','sessionID':'ses_test','part':{'reason':'stop'}}]
+
+    def test_content_assessment_is_complete_and_source_bound(self):
+        raw=(self.root/'README.md').read_bytes()
+        row={'path':'README.md','sha256':c.digest(self.root/'README.md'),'consumers':['old.md']}
+        baseline={'initialBaselineSha':self.sha,'documents':[row]}
+        assessment={'baselineSha':self.sha,'documents':[dict(path='README.md',baselineSha256=row['sha256'],
+          classification='ACTIVE',plannedPhase='P1',reason='The candidate contains new source text; keep the current user entry and verify execution contexts against real CLI runs.',
+          contentReferences=[{'line':1,'text':'new source'}],consumers=['old.md'])]}
+        path=self.root/'assessment.json';c.save(path,assessment)
+        with mock.patch.object(inventory,'ROOT',self.root),mock.patch.object(inventory,'ASSESSMENT',path):
+            self.assertEqual({'README.md'},set(inventory.content_assessments(baseline)))
+            mutations=[lambda x:x['documents'].clear(),
+                       lambda x:x['documents'].append(copy.deepcopy(x['documents'][0])),
+                       lambda x:x['documents'][0].update(reason='Filename looked old'),
+                       lambda x:x['documents'][0].update(baselineSha256='f'*64),
+                       lambda x:x['documents'][0].update(consumers=[]),
+                       lambda x:x['documents'][0].update(contentReferences=[{'line':1,'text':'invented evidence'}])]
+            for mutate in mutations:
+                value=copy.deepcopy(assessment);mutate(value);c.save(path,value)
+                with self.assertRaises(SystemExit):inventory.content_assessments(baseline)
 
     def test_bound_pass(self): self.evaluate()
     def test_wrong_sha(self):
@@ -120,10 +141,52 @@ class GateTest(unittest.TestCase):
     def test_missing_failed_gate(self):
         self.gates.pop()
         with self.assertRaises(c.Blocked): self.evaluate()
-    def test_missing_docker_build_exit(self):
+    def test_missing_docker_blocks_actual_gate_before_maven(self):
+        calls=[]
+        def command(argv,cwd,destination,**kwargs):
+            calls.append(argv)
+            if argv[0]=='docker':
+                raise FileNotFoundError('docker')
+            destination.mkdir();out=destination/'stdout.log';err=destination/'stderr.log'
+            out.write_text('openjdk version "25.0.2"\nApache Maven 3.10.0\n');err.write_text('')
+            return c.CommandEvidence(tuple(argv),cwd,0,out,err,c.now(),c.now())
+        evidence=self.root/'missing-docker';evidence.mkdir()
+        with mock.patch.object(c,'run_command',side_effect=command):
+            with self.assertRaises(FileNotFoundError):c.run_independent_gates(self.root,self.r,evidence)
+        self.assertTrue(any(a[0]=='docker' for a in calls))
+        self.assertFalse(any('verify' in a for a in calls))
+
+    def test_environment_rejects_old_python_wrong_jdk_and_dead_daemon(self):
+        with mock.patch.object(c.sys,'version_info',(3,8)):
+            with self.assertRaisesRegex(c.Blocked,'Python 3.9'):c.qualify_environment(self.root,self.root)
+        for failure in ['java','docker']:
+            evidence=self.root/('bad-environment-'+failure);evidence.mkdir()
+            def command(argv,cwd,destination,**kwargs):
+                destination.mkdir();out=destination/'stdout.log';err=destination/'stderr.log'
+                text=('openjdk version "17.0.2"' if failure=='java' else 'openjdk version "25.0.2"')+'\nApache Maven 3.10.0\n'
+                if argv[0]=='docker':text='' if failure=='docker' else '29.8.1'
+                out.write_text(text);err.write_text('')
+                return c.CommandEvidence(tuple(argv),cwd,0,out,err,c.now(),c.now())
+            with mock.patch.object(c,'run_command',side_effect=command),self.assertRaises(c.Blocked):
+                c.qualify_environment(self.root,evidence)
+
+    def test_nonzero_maven_gate_stops_before_full_gate_or_review(self):
         for code in [1,125]:
-            fake=self.root/'fake-opencode'; fake.write_text('#!/bin/sh\nexit '+str(code)+'\n'); fake.chmod(0o700)
-            with self.assertRaises(c.Blocked): c.run_command([str(fake)],self.root,self.root/('exit-'+str(code)),timeout=5)
+            evidence=self.root/('bad-build-'+str(code));evidence.mkdir()
+            c.save(evidence/'environment.json',{'status':'QUALIFIED'})
+            fake=self.root/'mvnw';fake.write_text('#!/bin/sh\nexit '+str(code)+'\n');fake.chmod(0o700)
+            calls=[];real=c.run_command
+            def command(argv,cwd,destination,**kwargs):
+                calls.append(argv)
+                if argv[0]=='./mvnw':return real(argv,cwd,destination,**kwargs)
+                return c.CommandEvidence(tuple(argv),cwd,0,self.root/'out',self.root/'err',c.now(),c.now())
+            with mock.patch.object(c,'run_command',side_effect=command):
+                with self.assertRaisesRegex(c.Blocked,'Command exit '+str(code)):
+                    c.run_independent_gates(self.root,self.r,evidence)
+            self.assertEqual([['./mvnw','-B','clean','verify']],[a for a in calls if a[0]=='./mvnw'])
+            self.assertFalse((evidence/'full').exists())
+            self.assertEqual(code,json.loads((evidence/'standard/command.json').read_text())['return_code'])
+
     def test_fake_cli_success_process(self):
         fake=self.root/'fake-opencode'
         fake.write_text('#!'+sys.executable+'\nprint('+repr('\n'.join(json.dumps(e) for e in self.events()))+')\n'); fake.chmod(0o700)
@@ -310,6 +373,7 @@ class GateTest(unittest.TestCase):
         try:
             os.chdir(self.root)
             with mock.patch.object(c,'validate_request'),mock.patch.object(c,'allocate_evidence_dir',return_value=evidence), \
+                 mock.patch.object(c,'qualify_environment'), \
                  mock.patch.object(c,'discover_opencode_v2',return_value=Path('/fake')), \
                  mock.patch.object(c,'inspect_v2_auth_and_models',return_value={}), \
                  mock.patch.object(c,'activate_review_agent'), \
