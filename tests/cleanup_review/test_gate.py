@@ -227,7 +227,38 @@ class GateTest(unittest.TestCase):
         with mock.patch.object(c,'run_command',side_effect=fake_command):
             self.assertEqual('ses_test',c.validate_session(Path('/fake'),run,self.root,self.root/'bound-session',{}))
         self.assertIn('location.get',calls[1]);self.assertIn('provider.get',calls[2])
-        for argv in calls[1:]:self.assertIn('location[directory]='+str(self.root),argv)
+        for argv in calls[1:]:self.assertIn('location[directory]='+str(self.root.resolve()),argv)
+    def test_scoped_activation_reloads_only_owned_canonical_location(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            evidence=Path(tmp).resolve();worktree=evidence/'worktree'
+            c.git(self.root,'worktree','add','--detach',str(worktree),self.sha)
+            config=worktree/'.opencode/opencode.jsonc';config.parent.mkdir()
+            expected=c.review_config(self.r);c.save(config,expected)
+            calls=[];weaken=[]
+            def fake_command(argv,cwd,destination,**kwargs):
+                calls.append(argv);destination.mkdir()
+                if 'agent.get' in argv:
+                    value={'location':{'directory':str(worktree)},'data':{'id':'cleanup-review','mode':'primary',
+                        'model':{'id':'deepseek-flash','providerID':'deepseek'},
+                        'permissions':expected['agents']['cleanup-review']['permissions']+weaken}}
+                else:value={'directory':str(worktree)}
+                out=destination/'out';out.write_text(json.dumps(value))
+                return c.CommandEvidence(tuple(argv),cwd,0,out,destination/'err',c.now(),c.now())
+            try:
+                with mock.patch.object(c,'run_command',side_effect=fake_command):
+                    c.activate_review_agent(Path('/fake'),worktree,self.r,evidence,{},'positive')
+                self.assertEqual(['location.get','debug.location.evict','location.get','agent.get'],[argv[2] for argv in calls])
+                for argv in calls:self.assertIn('location[directory]='+str(worktree),argv)
+                weaken.append({'action':'edit','resource':'*','effect':'allow'})
+                with mock.patch.object(c,'run_command',side_effect=fake_command):
+                    with self.assertRaisesRegex(c.Blocked,'permissions'):
+                        c.activate_review_agent(Path('/fake'),worktree,self.r,evidence,{},'weakened')
+            finally:
+                config.unlink();config.parent.rmdir();c.git(self.root,'worktree','remove','--force',str(worktree))
+    def test_scoped_activation_refuses_implementation_location(self):
+        with mock.patch.object(c,'run_command') as command:
+            with self.assertRaises(c.Blocked):c.activate_review_agent(Path('/fake'),self.root,self.r,self.root.parent,{},'forbidden')
+            command.assert_not_called()
     def test_implementer_evidence_binding_and_digest(self):
         with tempfile.TemporaryDirectory() as tmp:
             parent=Path(tmp);source=parent/'own';source.mkdir();worktree=parent/'review';worktree.mkdir();evidence=parent/'evidence';evidence.mkdir()
@@ -281,11 +312,13 @@ class GateTest(unittest.TestCase):
             with mock.patch.object(c,'validate_request'),mock.patch.object(c,'allocate_evidence_dir',return_value=evidence), \
                  mock.patch.object(c,'discover_opencode_v2',return_value=Path('/fake')), \
                  mock.patch.object(c,'inspect_v2_auth_and_models',return_value={}), \
+                 mock.patch.object(c,'activate_review_agent'), \
                  mock.patch.object(c,'live_preflight',side_effect=KeyboardInterrupt()),mock.patch('builtins.print'):
                 code=c.main(['--phase','P0','--base',self.base,'--candidate',self.sha,'--spec','README.md'])
             self.assertEqual(20,code)
             self.assertFalse((evidence/'worktree').exists())
             self.assertEqual('BLOCKED',json.loads((evidence/'gate-result.json').read_text())['verdict'])
+            self.assertIn('interrupted',json.loads((evidence/'gate-result.json').read_text())['details']['reason'])
             self.assertEqual(self.sha,c.git(self.root,'rev-parse','HEAD'))
             self.assertTrue(inventory.exists())
         finally:

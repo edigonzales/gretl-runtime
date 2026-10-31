@@ -103,3 +103,12 @@ Mit `--implementer-evidence <externes-Verzeichnis>` werden die eigenen,
 sauberen Kandidatengates von A dem Reviewer separat bereitgestellt. Der Runner
 prüft Kandidaten-SHA, Befehle, Log-Digests, Testzahlen und Artefaktaudit, bevor er
 diese sekundären Belege kopiert. Sie ersetzen niemals die unabhängigen B-Gates.
+
+V2 hält zusätzlich Agentkataloge je Location im Speicher. Nach Wiederherstellung
+der temporären Konfiguration wird deshalb ausschliesslich die eigene neue
+Review-Location über die dokumentierte API `debug.location.evict` verworfen und
+mit `location.get` neu geladen. `agent.get` muss danach den primären
+`cleanup-review`-Agenten, das feste Modell und die unverändert restriktiven
+Berechtigungen bestätigen. Andere Locations und der gemeinsame Service werden
+nicht neu gestartet. Alle Pfade werden kanonisiert, damit `/var` und
+`/private/var` auf macOS nicht verschiedene Cache-Kontexte erzeugen.

@@ -177,7 +177,7 @@ def validate_request(r):
 def allocate_evidence_dir(r):
     if r.phase not in REQUIRED_IDS or not re.fullmatch('[0-9a-f]{40}',r.candidate_sha):
         raise Blocked('Invalid phase/SHA cannot name an evidence directory')
-    parent = Path(tempfile.gettempdir())/'gretl-runtime-cleanup-review'/r.phase/r.candidate_sha
+    parent = Path(tempfile.gettempdir()).resolve()/'gretl-runtime-cleanup-review'/r.phase/r.candidate_sha
     parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     for attempt in range(1,10000):
         path = parent/('attempt-%02d' % attempt)
@@ -190,7 +190,7 @@ def allocate_evidence_dir(r):
 
 
 def create_detached_worktree(r, evidence_dir):
-    worktree = evidence_dir/'worktree'
+    worktree = (evidence_dir/'worktree').resolve()
     git(r.repository_root, 'worktree','add','--detach',str(worktree),r.candidate_sha)
     verify_worktree_unchanged(worktree,r)
     save(evidence_dir/'initial-worktree.json', {'head':git(worktree,'rev-parse','HEAD'), 'status':git(worktree,'status','--porcelain=v1')})
@@ -319,7 +319,7 @@ def review_config(r):
             commands.append('git show '+r.phase_base_sha+':'+path)
     rules=[{'action':'*','resource':'*','effect':'deny'}]
     rules += [{'action':x,'resource':'*','effect':'allow'} for x in ('read','glob','grep')]
-    rules += [{'action':'read','resource':x,'effect':'deny'} for x in ('.env','*.env','**/.env*','**/auth.json','**/opencode.db*','.git','.git/*')]
+    rules += [{'action':'read','resource':x,'effect':'deny'} for x in ('.env*','*.env','**/.env*','**/auth.json','**/opencode.db*','.git','.git/*')]
     rules += [{'action':'shell','resource':x,'effect':'allow'} for x in dict.fromkeys(commands)]
     return {'$schema':'https://opencode.ai/config.json', 'model':MODEL,
             'providers':{'deepseek':{'settings':{'baseURL':'https://api.deepseek.com'},'models':{'deepseek-flash':{'modelID':'deepseek-flash'}}}},
@@ -412,6 +412,7 @@ def parse_final_review(jsonl_path):
 
 
 def validate_session(executable,run,worktree,evidence_dir,env):
+    worktree=worktree.resolve()
     evidence_dir.mkdir(parents=True,exist_ok=False,mode=0o700)
     events=parse_stream(run.stdout_path)
     sessions={e.get('sessionID') for e in events}
@@ -456,7 +457,8 @@ def live_preflight(executable,worktree,r,evidence_dir,env):
     prompt=('Qualification only, no implementation. Attempt the write tool to create target/forbidden-write.txt '
             'containing DENY_TEST, then attempt shell command printf DENY_TEST. Both are forbidden. '
             'If write is absent from the tool catalogue, do not work around it. '
-            'Reply exactly GRETL_SMOKE_OK after the shell is denied. No other work.')
+            'Reply exactly GRETL_SMOKE_OK after the shell is denied. No other work. '
+            'Do not output commentary or intermediate text; output only the final token after the probes.')
     run=run_command([str(executable),'run','--agent','cleanup-review','--model',MODEL,'--format','json',prompt],
                     worktree,evidence_dir/'smoke',timeout=180,environment=env)
     events=parse_stream(run.stdout_path)
@@ -479,6 +481,48 @@ def live_preflight(executable,worktree,r,evidence_dir,env):
     save(evidence_dir/'preflight.json',{'status':'QUALIFIED','sessionID':session,'editDeniedBy':'V2 session.permission.create',
         'shellDeniedBy':'Live tool event and V2 permission evaluator','model':MODEL,'notAPhaseReview':True})
     return run
+
+
+def activate_review_agent(executable,worktree,r,evidence_dir,env,label):
+    """Cold-load only our canonical temporary Location after config restoration.
+
+    V2 caches agent catalogues. Never reload the shared service or another project.
+    Canonical paths prevent separate /var and /private/var Location caches on macOS.
+    """
+    worktree=worktree.resolve()
+    if worktree!=(evidence_dir/'worktree').resolve() or worktree==r.repository_root.resolve():
+        raise Blocked('Refusing to refresh a Location outside the owned review worktree')
+    if git(worktree,'rev-parse','HEAD')!=r.candidate_sha:
+        raise Blocked('Review Location HEAD mismatch')
+    config=worktree/'.opencode/opencode.jsonc'
+    expected=review_config(r)
+    if config.is_symlink() or json.loads(config.read_text())!=expected:
+        raise Blocked('Review configuration changed before activation')
+    location_param='location[directory]='+str(worktree)
+    destination=evidence_dir/('activation-'+label)
+    destination.mkdir(mode=0o700)
+    def api(name,args):
+        return run_command([str(executable),'api',*args,'--param',location_param],worktree,
+                           destination/name,timeout=60,environment=env)
+    api('resolve-before',['location.get'])
+    api('evict-owned-location',['debug.location.evict'])
+    location=api('resolve-after',['location.get'])
+    resolved=json.loads(location.stdout_path.read_text()).get('directory','')
+    if Path(resolved).resolve()!=worktree: raise Blocked('Activation resolved a different Location')
+    run=api('agent',['agent.get','--param','agentID=cleanup-review'])
+    payload=json.loads(run.stdout_path.read_text())
+    if Path(payload.get('location',{}).get('directory','')).resolve()!=worktree:
+        raise Blocked('Agent catalogue is not bound to the review Location')
+    agent=payload.get('data',{})
+    if agent.get('id')!='cleanup-review' or agent.get('mode')!='primary' or agent.get('model')!={'id':'deepseek-flash','providerID':'deepseek'}:
+        raise Blocked('Review agent/model missing after scoped activation')
+    rules=agent.get('permissions',[])
+    required=expected['agents']['cleanup-review']['permissions']
+    matches=[i for i in range(len(rules)-len(required)+1) if rules[i:i+len(required)]==required]
+    if not matches or any(rule.get('effect')!='deny' for rule in rules[max(matches)+len(required):]):
+        raise Blocked('Effective review permissions do not preserve the qualified policy')
+    save(destination/'policy.json',{'location':str(worktree),'id':agent['id'],'model':agent['model'],
+                                  'permissions':rules,'configurationSha256':digest(config)})
 
 
 def changed_paths(r):
@@ -657,7 +701,7 @@ def main(argv=None):
     signal.signal(signal.SIGTERM,terminate)
     verdict,code,details='BLOCKED',20,{}
     try:
-        worktree=evidence_dir/'worktree'
+        worktree=(evidence_dir/'worktree').resolve()
         create_detached_worktree(r,evidence_dir)
         env=prepare_opencode_environment(r)
         executable=discover_opencode_v2(r)
@@ -667,6 +711,7 @@ def main(argv=None):
         config.parent.mkdir(exist_ok=True)
         save(config,review_config(r))
         config_created=True
+        activate_review_agent(executable,worktree,r,evidence_dir,env,'smoke')
         live_preflight(executable,worktree,r,evidence_dir,env)
         if args.preflight:
             verdict,code='QUALIFIED',0
@@ -679,6 +724,11 @@ def main(argv=None):
                 attach_implementer_evidence(args.implementer_evidence,worktree,r,evidence_dir)
             config.parent.mkdir()
             save(config,review_config(r))
+            activate_review_agent(executable,worktree,r,evidence_dir,env,'review')
+            activation_view=worktree/'target/cleanup-review-evidence/activation-review'
+            shutil.copytree(evidence_dir/'activation-review',activation_view)
+            for path in activation_view.rglob('*'):
+                if path.is_file():path.chmod(0o400)
             result=invoke_opencode(worktree,r,evidence_dir,env,executable)
             validate_session(executable,result,worktree,evidence_dir/'review-provenance',env)
             review=parse_final_review(result.stdout_path)
