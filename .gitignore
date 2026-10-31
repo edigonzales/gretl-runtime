@@ -8,3 +8,6 @@ target/
 build/
 docs/reference/biblios.local.yml
 docs/reference/.thoth/
+
+# Python cleanup review tools
+__pycache__/
