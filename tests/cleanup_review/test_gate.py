@@ -70,6 +70,30 @@ class GateTest(unittest.TestCase):
                 value=copy.deepcopy(assessment);mutate(value);c.save(path,value)
                 with self.assertRaises(SystemExit):inventory.content_assessments(baseline)
 
+    def test_documentation_index_catches_new_files_without_mutating_baseline(self):
+        original={'initialBaselineSha':self.base,'documents':[{'path':'README.md','sha256':'frozen'}],
+                  'introducedDocumentation':[],'operationIds':['gretl.existing']}
+        value=copy.deepcopy(original)
+        (self.root/'docs').mkdir()
+        (self.root/'docs/new-assessment.json').write_text('{"decisions": []}\n')
+        subprocess.run(['git','add','docs/new-assessment.json'],cwd=self.root,check=True)
+        paths=inventory.tracked(self.root)
+        with mock.patch.object(inventory,'ROOT',self.root):
+            with self.assertRaisesRegex(SystemExit,'Unclassified'):inventory.verify_documentation_index(value,original,paths)
+            entry=dict(path='docs/new-assessment.json',classification='ACTIVE',plannedPhase='P0',reason='The source-bound assessment documents the individual content decisions and is consumed by the inventory checker and the review workflow.')
+            value['introducedDocumentation']=[entry]
+            self.assertEqual(2,inventory.verify_documentation_index(value,original,paths))
+            for mutate in [lambda v:v['documents'][0].update(sha256='rewritten'),
+                           lambda v:v.update(initialBaselineSha=self.sha),
+                           lambda v:v.update(operationIds=['gretl.changed']),
+                           lambda v:v['introducedDocumentation'].append(copy.deepcopy(entry)),
+                           lambda v:v['introducedDocumentation'][0].update(classification='UNKNOWN')]:
+                bad=copy.deepcopy(value);mutate(bad)
+                with self.assertRaises(SystemExit):inventory.verify_documentation_index(bad,original,paths)
+            frozen=copy.deepcopy(value);changed=copy.deepcopy(value)
+            changed['introducedDocumentation'][0]['reason']='Changed original record'
+            with self.assertRaisesRegex(SystemExit,'Original introduced'):inventory.verify_documentation_index(changed,frozen,paths)
+
     def test_bound_pass(self): self.evaluate()
     def test_wrong_sha(self):
         self.review['candidateSha']='f'*40

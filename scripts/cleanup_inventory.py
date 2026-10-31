@@ -54,14 +54,51 @@ def content_assessments(baseline):
     return by_path
 
 
+def verify_documentation_index(baseline, original, paths):
+    """Immutable baseline core; explicit additive index for later documentation.
+
+    Updating introducedDocumentation is metadata maintenance, never a new source
+    baseline. Original entries cannot be removed/reclassified. Every current
+    document must be covered, including new files of the review tooling itself.
+    """
+    core=lambda value:{k:v for k,v in value.items() if k!='introducedDocumentation'}
+    if core(baseline)!=core(original):
+        raise SystemExit('Frozen P0 baseline core changed')
+    rows=baseline.get('introducedDocumentation',[])
+    introduced={r['path']:r for r in rows}
+    if len(rows)!=len(introduced):raise SystemExit('Duplicate introduced documentation')
+    old={r['path']:r for r in original.get('introducedDocumentation',[])}
+    if any(introduced.get(name)!=row for name,row in old.items()):
+        raise SystemExit('Original introduced-documentation record changed')
+    known={r['path'] for r in baseline['documents']}
+    current={p for p in paths if documented(p)}
+    missing=current-known-set(introduced)
+    if missing:raise SystemExit('Unclassified current documentation: '+str(sorted(missing)))
+    for name,row in introduced.items():
+        if name in known or not documented(name) or row.get('classification') not in {'ACTIVE','ARCHIVE','DECISION','DELETE'} or row.get('plannedPhase') not in {'P0','P1','P2','P3'}:
+            raise SystemExit('Invalid introduced-documentation record: '+name)
+        if len(row.get('reason',''))<(20 if name in old else 70):
+            raise SystemExit('Missing introduced-documentation reason: '+name)
+        # Records stay historical after a later documented deletion; phantom
+        # entries are not permitted. Current paths must be tracked or staged.
+        if name not in current and not subprocess.check_output(
+                ['git','log','--format=%H','--diff-filter=A','HEAD','--',name],cwd=ROOT,text=True).strip():
+            raise SystemExit('Introduced document has no current or historical source: '+name)
+    return len(current)
+
+
 def generate():
     raise SystemExit('Refusing to regenerate frozen baseline; use inventory.json and content-assessment.json')
 
 
 def check():
     baseline=json.loads(OUT.read_text())
-    assessments=content_assessments(baseline)
     paths=tracked(ROOT)
+    first=subprocess.check_output(['git','log','--diff-filter=A','--format=%H','--',str(OUT.relative_to(ROOT))],cwd=ROOT,text=True).splitlines()
+    if not first:raise SystemExit('Missing original P0 inventory commit')
+    original=json.loads(subprocess.check_output(['git','show',first[-1]+':'+str(OUT.relative_to(ROOT))],cwd=ROOT))
+    covered=verify_documentation_index(baseline,original,paths)
+    assessments=content_assessments(baseline)
     current=sorted(set(m for p in paths if '/src/main/java/' in p and p.endswith('.java')
         and p.startswith(('gretl-io-tasks/','gretl-database-tasks/','gretl-interlis-tasks/','gretl-ilivalidator/'))
         for m in re.findall(r'"(gretl\.[a-z0-9-]+)"',(ROOT/p).read_text())))
@@ -73,11 +110,7 @@ def check():
     descriptor=(ROOT/baseline['descriptorContract']).read_text()
     schemas=sorted(set(int(x) for x in re.findall(r'schemaVersion != ([0-9]+)',descriptor)))
     if schemas!=baseline['descriptorSchemas']: raise SystemExit('Descriptor acceptance changed')
-    first=subprocess.check_output(['git','log','--diff-filter=A','--format=%H','--',str(OUT.relative_to(ROOT))],cwd=ROOT,text=True).splitlines()
-    if first:
-        frozen=subprocess.check_output(['git','show',first[-1]+':'+str(OUT.relative_to(ROOT))],cwd=ROOT)
-        if frozen!=OUT.read_bytes(): raise SystemExit('Frozen P0 inventory changed')
-    print(json.dumps({'operationIdsUnchanged':len(current),'descriptorSchemas':schemas,'productionJavaUnchanged':len(baseline['productionJava']),'contentReviewedDocuments':len(assessments),'contentClasses':dict(collections.Counter(r['classification'] for r in assessments.values()))}))
+    print(json.dumps({'operationIdsUnchanged':len(current),'descriptorSchemas':schemas,'productionJavaUnchanged':len(baseline['productionJava']),'currentDocumentationCovered':covered,'introducedDocumentation':len(baseline['introducedDocumentation']),'contentReviewedDocuments':len(assessments),'contentClasses':dict(collections.Counter(r['classification'] for r in assessments.values()))}))
 
 
 if __name__ == '__main__':

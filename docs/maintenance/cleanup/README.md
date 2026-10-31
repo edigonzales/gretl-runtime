@@ -160,3 +160,24 @@ Gesamtstromprüfung. Rohstream und Originalantwort bleiben extern unverändert;
 exportiert wird ausschliesslich der unveränderte endgültige Modelltext.
 Der frühere BLOCKED-Lauf wird weder neu bewertet noch als Freigabe exportiert.
 Ein neuer Kandidat mit allen Gates und einer neuen unabhängigen Sitzung ist nötig.
+
+## Vollständigkeit hinzugekommener Dokumentation
+
+Der Review auf `fa2e0b063d1e0cfc773666c8b321870ec1741403` meldete FAIL:
+`content-assessment.json` fehlte im Dokumentationsindex. Der Index
+`inventory.json.introducedDocumentation` ist deshalb nun ausdrücklich um genau
+diese Datei, Klasse, Inhaltsbegründung und Nutzer ergänzt. Das ist eine sichtbare
+Metadatenergänzung, keine neue Baseline. Alle übrigen Felder einschliesslich der
+191 Ausgangsdokumente, Quellhashes, Operationen, Testklassen und Ausgangs-SHA
+werden strukturell exakt gegen den ursprünglichen Inventarcommit geprüft.
+Die drei ursprünglichen Einträge im Zusatzindex dürfen ebenfalls nicht geändert
+oder entfernt werden. Die ursprünglichen Inventarbytes bleiben in Git erhalten.
+
+Der Checker erfasst jeden aktuell getrackten oder gestagten dokumentierenden
+Pfad und verlangt seine Klasse im Baseline- oder Zusatzindex. Neue Dokumentation
+der Prüfinfrastruktur selbst wird nicht mehr übersehen. Alte Indexeinträge
+bleiben bei späteren dokumentierten Löschungen als historische Einträge bestehen;
+erfundene Pfade ohne aktuellen oder früheren Git-Inhalt werden zurückgewiesen.
+Ein Negativtest fügt einen neuen JSON-Dokumentationspfad hinzu und prüft, dass
+fehlende Klassifikation, ungültige Klassen, doppelte Einträge sowie Änderungen
+an Baseline-SHA, Quellhash oder Operation-IDs gesperrt bleiben.

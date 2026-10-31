@@ -8980,6 +8980,17 @@
       "classification": "ARCHIVE",
       "plannedPhase": "P0",
       "reason": "SHA- and command-bound own P0 qualification evidence; no independent review verdict."
+    },
+    {
+      "path": "docs/maintenance/cleanup/content-assessment.json",
+      "classification": "ACTIVE",
+      "plannedPhase": "P0",
+      "reason": "Quellengebundene Inhaltsentscheidungen für alle 191 Baseline-Dokumente; ergänzt ausdrücklich die verworfenen Pfadheuristiken, ohne Ausgangsdaten neu zu erzeugen.",
+      "consumers": [
+        "scripts/cleanup_inventory.py",
+        "docs/maintenance/cleanup/README.md",
+        "tests/cleanup_review/test_gate.py"
+      ]
     }
   ]
 }
