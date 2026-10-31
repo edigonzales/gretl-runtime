@@ -1,7 +1,6 @@
-# Jobpaketierung und Migration
+# Jobpaketierung und Auswahl
 
-Stand: Phase 3, Spezifikation 4.1, Vertrag PKG-019 in
-[12 — Jobpaketierung](../spec/12-job-paketierung.md). Der Packager ist ein
+Der Packager ist ein
 Authoring-Werkzeug. Ein erzeugter Job startet mit Java 25 ohne Maven,
 Quellcheckout oder installierte GRETL-Distribution.
 
@@ -13,6 +12,7 @@ Quellcheckout oder installierte GRETL-Distribution.
 | `schemaVersion: 2` | Gemeinsame Job-Runtime plus ausdrücklich gewählte `taskModules`, `standardFunctions` und deklarierte Erweiterungen. |
 | Schema 2 mit fehlenden oder leeren `taskModules` | Keine Standardtaskmodule. Actions und explizite Erweiterungen bleiben möglich. |
 | Schema 2 ohne `standardFunctions` | Keine Standardfunktionsauswahl. |
+| `schemaVersion: 3` | Projekt mit `settingsFile` und derselben expliziten Modulauswahl wie Schema 2. |
 
 Die Modulnamen sind `io` (13 Operationen), `database` (3), `interlis` (27)
 und `ilivalidator` (1). Ganze Maven-Artefakte und ihre Laufzeitabhängigkeiten

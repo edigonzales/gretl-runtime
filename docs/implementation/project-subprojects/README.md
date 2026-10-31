@@ -1,15 +1,7 @@
 # GRETL-Job-Subprojekte
 
-Die [Spezifikation 1.1](gretl-runtime-subprojekte-spezifikation.md) beschreibt
-einen gemeinsamen Taskgraphen aus mehreren Jobskripten. Die
-[Phase-0-Baseline](phase-0-baseline.md) und ihr
-[unabhängiger Review](phase-0-review.md) bilden den freigegebenen Ausgangspunkt.
-
-Phase 1 ergänzt im vorhandenen Modul `gretl-groovy` das unveränderliche
-Projektmodell, logische Namenspfade, eindeutige virtuelle Groovy-Quellnamen
-und den Parser. Phase 2 ergänzt den gemeinsamen Script-Projektlauf und
-die CLI-Einbindung. Phase 3 ergänzt Schema-3-Projekt-Fat-JARs und deren vollständige Artefaktqualifikation. Der jeweilige Stand wird erst durch den unabhängigen
-Phasenreview freigegeben.
+Projekte verbinden mehrere explizit eingebundene Jobskripte zu einem gemeinsamen
+Taskgraphen. Scriptlauf und Schema-3-Projekt-JAR verwenden dieselben Verträge.
 
 Eine `settings.gretl` enthält nur konstante, einfach oder doppelt zitierte
 Stringargumente an `include` und `defaults`, jeweils höchstens eine Anweisung:
@@ -41,8 +33,7 @@ Dateisystemzugriffe. Die Sicherheitsprüfung bezieht sich auf das deklarative
 Projektformat und seine Definitionspfade.
 
 Das [lokale Formatbeispiel](../../../examples/project-subprojects/README.md)
-ist bereits mit dem bisherigen Einzeldateiaufruf je Skript ausführbar und wird
-gegen Parser und unveränderten Einzeljob-Loader geprüft. Das neue
+zeigt Includes und lokale Namensräume. Das
 [Pipelinebeispiel](../../../examples/project-pipeline/README.md) läuft als ein
 Projekt mit echten lokalen Operationen. Ein direkter Dateipfad startet weiterhin
 den Einzeldateimodus, ein Verzeichnis erfordert eine `settings.gretl` unmittelbar

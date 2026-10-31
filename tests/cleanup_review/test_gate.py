@@ -94,6 +94,44 @@ class GateTest(unittest.TestCase):
             changed['introducedDocumentation'][0]['reason']='Changed original record'
             with self.assertRaisesRegex(SystemExit,'Original introduced'):inventory.verify_documentation_index(changed,frozen,paths)
 
+    def test_active_docs_keep_unknown_sources_and_report_history(self):
+        path=self.root/'docs/maintenance/cleanup/content-assessment.json';path.parent.mkdir(parents=True)
+        c.save(path,{'documents':[{'path':'docs/old.md','classification':'DELETE'},
+                                  {'path':'docs/current.md','classification':'ACTIVE'}]})
+        active,historical=docs.active_sources(self.root,['docs/old.md','docs/current.md','website/new.qmd'])
+        self.assertEqual(['docs/current.md','website/new.qmd'],active)
+        self.assertEqual(['docs/old.md'],historical)
+        page=self.root/'website/new.qmd';page.parent.mkdir();page.write_text('[bad](missing.qmd)')
+        self.assertFalse(docs.audit(self.root,['website/new.qmd'])[0]['exists'])
+
+    def test_spec_exception_cannot_hide_unknown_or_modified_source(self):
+        rows=[dict(source='docs/maintenance/cleanup/spec-v2.md',line=420,
+                   target='docs/maintenance/cleanup/spec-v1.md',exists=False)]
+        spec=self.root/'docs/maintenance/cleanup/spec-v2.md';spec.parent.mkdir(parents=True);spec.write_text('changed')
+        self.assertEqual([],docs.classify_exceptions(self.root,copy.deepcopy(rows)))
+        with mock.patch.object(docs,'SPEC_HASH',c.digest(spec)):
+            self.assertEqual(1,len(docs.classify_exceptions(self.root,copy.deepcopy(rows))))
+            for key,value in [('line',421),('target','missing-new.md'),('source','docs/current.md')]:
+                changed=copy.deepcopy(rows);changed[0][key]=value
+                self.assertEqual([],docs.classify_exceptions(self.root,changed))
+
+    def test_generated_proof_inventory_requires_exact_child_and_text_digest(self):
+        folder=self.root/'docs/maintenance/cleanup/reviews';folder.mkdir(parents=True)
+        prefix=folder/('P0-'+self.sha[:7]+'-review')
+        raw=c.BEGIN+'\n'+json.dumps(self.review)+'\n'+c.END
+        markdown=prefix.with_suffix('.md');markdown.write_text('Independent OpenCode / direct DeepSeek review. Automatically copied, no editorial changes.\n\n'+raw+'\n')
+        import hashlib
+        names={str(prefix.with_suffix(ext).relative_to(self.root)) for ext in ['.md','.json']}
+        value=dict(phase='P0',candidateSha=self.sha,verdict='PASS',reviewTextSha256=hashlib.sha256(raw.encode()).hexdigest(),
+                   documentationClasses=[dict(path=name,classification='ARCHIVE',reason='Immutable independent review proof for the exact tested candidate SHA.') for name in sorted(names)])
+        c.save(prefix.with_suffix('.json'),value)
+        subprocess.run(['git','add','docs'],cwd=self.root,check=True)
+        subprocess.run(['git','commit','-qm','proof-only'],cwd=self.root,check=True)
+        with mock.patch.object(inventory,'ROOT',self.root):
+            self.assertEqual(names,set(inventory.verified_proof_classes(names)))
+            markdown.write_text(markdown.read_text()+'tampered')
+            with self.assertRaises(SystemExit):inventory.verified_proof_classes(names)
+
     def test_bound_pass(self): self.evaluate()
     def test_wrong_sha(self):
         self.review['candidateSha']='f'*40

@@ -284,6 +284,8 @@ def run_independent_gates(worktree,r,evidence_dir):
             snapshot_reports(worktree,evidence_dir/name,full=(name=='full'))
     run_command([sys.executable,'scripts/cleanup_inventory.py','--check'],worktree,evidence_dir/'invariants',timeout=120,environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
     run_command([sys.executable,'scripts/verify_cleanup_docs.py']+(['--audit'] if r.phase=='P0' else []),worktree,evidence_dir/'docs-audit',timeout=120,environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+    if r.phase!='P0':
+        run_command([sys.executable,'scripts/cleanup_doc_checks.py','--evidence',str(evidence_dir/'docs-runtime')],worktree,evidence_dir/'docs-runtime-command',timeout=1200,environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
     # clean in the second build cannot destroy the first gate's external evidence.
     visible=worktree/'target/cleanup-review-evidence'
     visible.mkdir(parents=True)
@@ -293,6 +295,9 @@ def run_independent_gates(worktree,r,evidence_dir):
         if (evidence_dir/name).exists(): shutil.copyfile(evidence_dir/name,visible/name)
     for name in ['smoke','smoke-provenance','deny-edit','deny-shell']:
         if (evidence_dir/name).is_dir(): shutil.copytree(evidence_dir/name,visible/name)
+    if r.phase!='P0':
+        shutil.copytree(evidence_dir/'docs-runtime',visible/'docs-runtime')
+        shutil.copytree(evidence_dir/'docs-runtime-command',visible/'docs-runtime-command')
     save(visible/'manifest.json', {'candidateSha':r.candidate_sha,'commands':[dataclasses.asdict(x) for x in runs],
          'environment':{'python':sys.version,'platform':platform.platform()}})
     for p in visible.rglob('*'):
@@ -723,7 +728,9 @@ def export_evidence(directory,r):
     save(prefix.with_suffix('.json'),{'schemaVersion':1,'phase':r.phase,'phaseBaseSha':r.phase_base_sha,
         'candidateSha':r.candidate_sha,'verdict':'PASS','gateResultSha256':digest(directory/'gate-result.json'),
         'reviewTextSha256':digest(directory/'review-final.txt'),'evidenceDirectory':str(directory),
-        'provider':result['details']['provider']})
+        'provider':result['details']['provider'],
+        'documentationClasses':[{'path':str(prefix.with_suffix(ext).relative_to(r.repository_root)),
+          'classification':'ARCHIVE','reason':'Immutable independent '+r.phase+' review evidence bound to candidate '+r.candidate_sha+'.'} for ext in ('.md','.json')]})
     print('Proof files exported; commit only '+str(prefix.relative_to(r.repository_root))+'.{md,json}')
 
 

@@ -1,7 +1,7 @@
 # Module und produktive Grenzen
 
-Stand: Umbauphase 3, Spezifikation 4.1. Die historischen M0–M7-Berichte
-beschreiben ihre damaligen Commits. Für den aktuellen Zuschnitt gilt diese Seite.
+Die aufgelösten Maven-Abhängigkeiten und die vorhandenen Grenztests bestimmen
+den aktuellen Zuschnitt.
 
 | Artefakt (`ch.so.agi.gretl`, Version `0.1.0-SNAPSHOT`) | Verantwortung | Erlaubte interne Produktionsabhängigkeiten |
 | --- | --- | --- |
@@ -39,7 +39,6 @@ in der Standarddistribution. Das zusätzliche klassifizierte Ressourcenartefakt
 Klassen. Das allgemeine Taskartefakt benötigt dieses Artefakt nicht.
 Siehe [Validator-Erweiterungen](validator-functions.md).
 
-[Java-/Maven-Migration](../migration/phase-2-java-maven.md) und
 [Jobtest-Verträge](job-artifact-tests.md) beschreiben Verbraucher und Nachweise.
 
 Der [Paketierungsvertrag](job-packaging.md) macht die vier Taskmodule auch als

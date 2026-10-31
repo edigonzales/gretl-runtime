@@ -1,4 +1,4 @@
-# GRETL next – Quarto-Webseite
+# GRETL Runtime – Quarto-Webseite
 
 Dies ist ein vollständig nachbearbeitbares Quarto-Webseitenprojekt für `next.gretl.app`.
 
@@ -35,3 +35,7 @@ Die Webseite bindet **Recursive** lokal als woff2 ein. Überschriften und andere
 Die wichtigsten Farben stehen in `styles.scss` oben unter `:root`. Der Farbverlauf der grossen Überschrift ist in `.gradient-text` definiert. Der CSS-Abschnitt für die Titelseite beginnt beim Kommentar `Landing page`.
 
 Der Code auf der Titelseite ist ein normaler Quarto-Codeblock. Er bleibt auswählbar und kopierbar; es wird kein Bildgenerator benötigt.
+
+Die Domain `next.gretl.app` bleibt erhalten. Die Seiten beschreiben die aktuelle
+Runtime; Veröffentlichung ist ein separater manueller Schritt. Quickstarts
+werden mit der gebauten Distribution tatsächlich ausgeführt.

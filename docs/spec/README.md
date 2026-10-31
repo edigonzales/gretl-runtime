@@ -1,3 +1,9 @@
+> **Historische Quelle – kein aktueller Arbeitsauftrag.** Dieser Text beschreibt
+> den damaligen Sollstand. Für neue Arbeiten gelten ausschliesslich der aktuelle
+> Auftrag und die [Repository-Regeln](../../AGENTS.md). Dieser Warnhinweis hat
+> Vorrang vor allen nachfolgenden historischen Arbeitsanweisungen. Aktueller
+> Einstieg: [Dokumentation](../README.md).
+
 # GRETL Runtime — schlanke JVM-Jobruntime und optionale Jobpakete
 
 **Stand:** 18. Oktober 2026  

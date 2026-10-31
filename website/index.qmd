@@ -16,8 +16,8 @@ body-classes: landing-page
 ::: {.hero-copy}
 
 <h1 class="hero-title">
-  <span>GRETL next,</span>
-  <span class="gradient-text">reengineered.</span>
+  <span>GRETL Runtime,</span>
+  <span class="gradient-text">jobs on Java 25.</span>
 </h1>
 
 <p class="hero-lead">
@@ -38,12 +38,11 @@ body-classes: landing-page
 
 ::: {.hero-code}
 ```{.groovy code-line-numbers="true"}
-task('analyse', DuckDbSqlExecutor) {
-    database = workPath('work.duckdb')
-    sqlFiles = [file('sql/analyse.sql')]
+action('hello') {
+    println 'Hello GRETL Runtime'
 }
 
-defaults 'analyse'
+defaults 'hello'
 ```
 :::
 
@@ -78,8 +77,8 @@ Query PostgreSQL, GeoPackage and CSV through one prepared DuckDB session.
 <i class="bi bi-book"></i>
 :::
 ::: {.benefit-copy}
-### Versioned docs
-Keep examples, task reference and release documentation clearly separated.
+### Task reference
+Explore 44 operation chapters and generated field tables.
 :::
 :::
 
@@ -88,8 +87,8 @@ Keep examples, task reference and release documentation clearly separated.
 <i class="bi bi-diagram-3"></i>
 :::
 ::: {.benefit-copy}
-### Lightweight control plane
-Schedule jobs, route them to workers and keep run history without replacing Gradle.
+### Executable job JARs
+Compile selected modules and resources into a job that runs with Java 25.
 :::
 :::
 

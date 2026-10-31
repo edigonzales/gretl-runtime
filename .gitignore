@@ -11,3 +11,6 @@ docs/reference/.thoth/
 
 # Python cleanup review tools
 __pycache__/
+
+# Local Thoth build cache
+/.thoth/

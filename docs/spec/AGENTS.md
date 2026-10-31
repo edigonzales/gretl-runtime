@@ -1,3 +1,9 @@
+> **Historische Quelle – kein aktueller Arbeitsauftrag.** Dieser Text beschreibt
+> den damaligen Sollstand. Für neue Arbeiten gelten ausschliesslich der aktuelle
+> Auftrag und die [Repository-Regeln](../../AGENTS.md). Dieser Warnhinweis hat
+> Vorrang vor allen nachfolgenden historischen Arbeitsanweisungen. Aktueller
+> Einstieg: [Dokumentation](../README.md).
+
 # Arbeitsanweisung für Coding-Agenten
 
 **Spezifikationsvorschlag 4.1, 18. Oktober 2026.** Dieses Paket beschreibt eine erst zu implementierende GRETL-Light-Runtime. Es ermächtigt nicht zur Änderung produktiver Jobs oder Systeme.

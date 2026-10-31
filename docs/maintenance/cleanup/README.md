@@ -181,3 +181,21 @@ erfundene Pfade ohne aktuellen oder früheren Git-Inhalt werden zurückgewiesen.
 Ein Negativtest fügt einen neuen JSON-Dokumentationspfad hinzu und prüft, dass
 fehlende Klassifikation, ungültige Klassen, doppelte Einträge sowie Änderungen
 an Baseline-SHA, Quellhash oder Operation-IDs gesperrt bleiben.
+
+## Ausgeführte Dokumentationsprüfungen
+
+Ab P1 führt `scripts/cleanup_doc_checks.py` die markierten Checkout-,
+Distributions- und JAR-Befehle aus README und Website aus. Es prüft Dateibytes
+und erfolgreiche Reports, führt die Startseiten-Action und Subprojektbeispiele
+aus, erzeugt die 44 Tabellen unverändert neu und rendert Quarto und Thoth.
+Die Ergebnisse und gerenderten Seiten werden extern gesichert und B bereitgestellt.
+
+Thoths JGit kann den detached Kandidaten eines verknüpften Worktrees nicht
+zuverlässig klonen. Die Prüfung initialisiert deshalb eine eigene lokale Kopie,
+fetch-t ausschliesslich die exakte Kandidaten-SHA aus dem Prüfcheckout und legt
+nur dort einen Branch `main` auf diesen Commit. Thoth rendert diese Kandidatenkopie.
+Gitbefehle, Quell-SHA und Ausgabe werden gesichert; die temporäre Quellkopie wird
+danach entfernt. Repositoryrefs, vorhandene lokale Biblios-Konfigurationen und
+fremde Thoth-Projekte bleiben unverändert. Der erste P1-Versuch auf `6e8c139`
+bestand beide Maven-Gates, scheiterte jedoch korrekt am Thoth-Rendercheck und
+ist keine Phasenfreigabe.

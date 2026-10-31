@@ -54,6 +54,36 @@ def content_assessments(baseline):
     return by_path
 
 
+def verified_proof_classes(paths):
+    """The §4.7 proof-only exception carries its own machine-generated index."""
+    result={}
+    for name in paths:
+        match=re.fullmatch(r'docs/maintenance/cleanup/reviews/(P[0-3])-([0-9a-f]{7})-review.json',name)
+        if not match:continue
+        value=json.loads((ROOT/name).read_text())
+        classes=value.get('documentationClasses')
+        if not classes:continue  # Older proof is explicitly in introducedDocumentation.
+        phase,short=match.groups();candidate=value.get('candidateSha','')
+        pair={name,name[:-5]+'.md'}
+        if value.get('phase')!=phase or value.get('verdict')!='PASS' or not re.fullmatch('[0-9a-f]{40}',candidate) or candidate[:7]!=short:
+            raise SystemExit('Invalid generated proof identity: '+name)
+        addition=subprocess.check_output(['git','log','--diff-filter=A','--format=%H','HEAD','--',name],cwd=ROOT,text=True).splitlines()
+        if not addition:raise SystemExit('Proof has no committed provenance: '+name)
+        commit=addition[-1]
+        parent=subprocess.check_output(['git','rev-parse',commit+'^'],cwd=ROOT,text=True).strip()
+        changed=set(subprocess.check_output(['git','diff-tree','--no-commit-id','--name-only','-r',commit],cwd=ROOT,text=True).splitlines())
+        if parent!=candidate or changed!=pair:raise SystemExit('Proof is not the allowed proof-only child: '+name)
+        if {row.get('path') for row in classes}!=pair or len(classes)!=2 or any(row.get('classification')!='ARCHIVE' or len(row.get('reason',''))<30 for row in classes):
+            raise SystemExit('Invalid generated proof classifications: '+name)
+        markdown=(ROOT/(name[:-5]+'.md')).read_text()
+        header='Independent OpenCode / direct DeepSeek review. Automatically copied, no editorial changes.\n\n'
+        if not markdown.startswith(header) or not markdown.endswith('\n'):raise SystemExit('Proof text wrapper changed')
+        raw=markdown[len(header):-1]
+        if hashlib.sha256(raw.encode()).hexdigest()!=value.get('reviewTextSha256'):raise SystemExit('Proof text digest changed')
+        result.update({row['path']:row for row in classes})
+    return result
+
+
 def verify_documentation_index(baseline, original, paths):
     """Immutable baseline core; explicit additive index for later documentation.
 
@@ -72,7 +102,8 @@ def verify_documentation_index(baseline, original, paths):
         raise SystemExit('Original introduced-documentation record changed')
     known={r['path'] for r in baseline['documents']}
     current={p for p in paths if documented(p)}
-    missing=current-known-set(introduced)
+    proof_classes=verified_proof_classes(current)
+    missing=current-known-set(introduced)-set(proof_classes)
     if missing:raise SystemExit('Unclassified current documentation: '+str(sorted(missing)))
     for name,row in introduced.items():
         if name in known or not documented(name) or row.get('classification') not in {'ACTIVE','ARCHIVE','DECISION','DELETE'} or row.get('plannedPhase') not in {'P0','P1','P2','P3'}:

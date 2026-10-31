@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Audit local documentation targets; no network requests, Python 3.9+."""
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -82,15 +83,48 @@ def audit(root, paths=None):
     return rows
 
 
+SPEC_HASH='c0bb1b7488853de397d540c9d0aadf2cb62744a2a18808bd043f03cf0a9c0946'
+SPEC_QUOTES={(67,'gretl-integration-tests/.../HardeningLocalJobIT.java'):'Abbreviated baseline finding; actual test is under src/test/java/ch/so/agi/gretl/it.',
+             (420,'docs/maintenance/cleanup/spec-v1.md'):'Immutable older filename in requirement; canonical authorized input is spec-v2.md.',
+             (569,'docs/maintenance/cleanup/spec-v1.md'):'Quoted historical prompt template; actual invocation uses spec-v2.md.',
+             (591,'docs/maintenance/cleanup/spec-v1.md'):'Quoted reviewer template; actual invocation uses spec-v2.md.'}
+
+
+def active_sources(root,paths):
+    root=Path(root)
+    assessment=root/'docs/maintenance/cleanup/content-assessment.json'
+    if not assessment.exists():return list(paths),[]
+    decisions={r['path']:r['classification'] for r in json.loads(assessment.read_text())['documents']}
+    # These are specifically inventoried legacy sources, pending P2 curation.
+    # Unknown/new pages always receive the hard gate.
+    historical=[p for p in paths if decisions.get(p) in {'DELETE','ARCHIVE','DECISION'}]
+    return [p for p in paths if p not in historical],historical
+
+
+def classify_exceptions(root,rows):
+    spec=Path(root)/'docs/maintenance/cleanup/spec-v2.md'
+    qualified=spec.is_file() and hashlib.sha256(spec.read_bytes()).hexdigest()==SPEC_HASH
+    exceptions=[]
+    for row in rows:
+        key=(row['line'],row['target'])
+        if not row['exists'] and qualified and row['source']=='docs/maintenance/cleanup/spec-v2.md' and key in SPEC_QUOTES:
+            row['historicalException']=SPEC_QUOTES[key];exceptions.append(row)
+    return exceptions
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, default=ROOT)
     parser.add_argument('--audit', action='store_true', help='Report baseline defects without granting a docs PASS')
     parser.add_argument('--output', type=Path)
     args = parser.parse_args(argv)
-    rows = audit(args.root)
+    paths=[p for p in tracked(args.root) if documented(p)]
+    selected,historical=active_sources(args.root,paths) if not args.audit else (paths,[])
+    rows = audit(args.root,selected)
+    exceptions=classify_exceptions(args.root,rows) if not args.audit else []
     result = {'mode': 'AUDIT' if args.audit else 'STRICT', 'targets': rows,
-              'broken': [r for r in rows if not r['exists']]}
+              'historicalSources':historical,'knownHistoricalExceptions':exceptions,
+              'broken': [r for r in rows if not r['exists'] and 'historicalException' not in r]}
     output = json.dumps(result, indent=2, ensure_ascii=False) + '\n'
     if args.output:
         args.output.write_text(output)

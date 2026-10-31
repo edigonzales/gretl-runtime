@@ -1,60 +1,91 @@
-# gretl-runtime
+# GRETL Runtime
 
-Implementierung der GRETL Runtime auf Basis der Spezifikation 4.1 in
-[`docs/spec/`](docs/spec/).
+GRETL Runtime führt Groovy-Jobs mit einem sequenziellen Taskgraphen auf Java 25 aus.
+Der aktuelle Entwicklungsstand ist `0.1.0-SNAPSHOT`. Die Standarddistribution
+enthält 44 Operationen für HTTP, FTP, S3, Archive, SQL, DuckDB, INTERLIS und
+Dateiformate. Eigene Actions und Java-Operationen verwenden denselben Runner.
+Ein Job kann als Script oder als vorkompiliertes ausführbares Job-JAR laufen.
 
-**Aktueller Stand: `0.1.0-SNAPSHOT` – Script-Runtime mit 44 Operationen und
-optionalem Job-Fat-JAR-Packager.** Die
-öffentliche Java-API, der sequenzielle Runner, die Groovy-6-Fassade,
-Logging/Runbericht, die Tasks `HttpDownload`, `Curl`, `Gzip`, `Extract`,
-`FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete`, `S3Download`, `S3Upload`,
-`S3Delete`, `S3Bucket2Bucket`, `Db2Db`, `DuckDbSqlExecutor`, `Csv2Excel`,
-`CsvImport`, `CsvExport`, `JsonImport`, `CsvValidator`, `JsonValidator`,
-`Gpkg2Shp`, `GpkgImport`, `GpkgExport`, `ShpImport`, `ShpExport`,
-`GpkgValidator`, `ShpValidator`, `Ili2pgImportSchema`, `Ili2pgImport`,
-`Ili2pgExport`, `Ili2pgDelete`, `Ili2pgReplace`, `Ili2pgUpdate`,
-`Ili2pgValidate`, `Ili2gpkgImport`, `Ili2duckdbImportSchema`,
-`Ili2duckdbImport`, `Ili2duckdbExport`, `Av2ch`, `Av2geobau`, `Gpkg2Dxf`,
-`SqlExecutor`, `XslTransformer` und `IliValidator` sowie die Scriptdistribution sind
-umgesetzt. M5-Anwenderabnahme
-ist bestanden. M6 ergänzt `gretl package`, vorkompilierte Job-JARs und eine
-JAR-Laufzeit mit materialisierten Jobressourcen.
+## Aus dem Git-Checkout starten
 
-Die M5-Release-/Pilotentscheidung bleibt offen. Der Packager löst deklarierte
-Maven-Koordinaten aus dem lokalen Repository/Central auf; eine vollständig
-minimale Runtime-Auswahl und der Linux-x86-64-Nachweis stehen noch aus
-(siehe [`m7-report.md`](docs/implementation/m7-report.md)). Publisher,
-XtfToGpkg und Native Image bleiben spätere Aufträge.
-
-- Build-Anleitung: [`docs/implementation/build.md`](docs/implementation/build.md)
-- M6-Bericht: [`docs/implementation/m6-report.md`](docs/implementation/m6-report.md)
-- M7-Release-/Packager-Bericht: [`docs/implementation/m7-report.md`](docs/implementation/m7-report.md)
-- Snapshot-Veröffentlichung: [`docs/implementation/publish-snapshots.md`](docs/implementation/publish-snapshots.md)
-- Lokalisierung/Diagnose: [`docs/implementation/localization.md`](docs/implementation/localization.md)
-- DAG-Visualisierung: [`docs/implementation/plan-graphs.md`](docs/implementation/plan-graphs.md)
-- Job-Subprojekte, gemeinsamer Scriptlauf, Projekt-JARs und Phasengrenzen: [`project-subprojects/`](docs/implementation/project-subprojects/README.md)
-- Task-Referenz (AsciiDoc/Thoth): [`docs/reference/reference.adoc`](docs/reference/reference.adoc)
-- Core-Task-Migration: [`docs/migration/core-tasks.md`](docs/migration/core-tasks.md)
-- M5-Bericht (historisch): [`docs/implementation/m5-report.md`](docs/implementation/m5-report.md)
-- M5-Anwenderprotokoll: [`docs/implementation/m5-user-acceptance.md`](docs/implementation/m5-user-acceptance.md)
-- M4-Bericht (historisch): [`docs/implementation/m4-report.md`](docs/implementation/m4-report.md)
-- M3-Bericht (historisch): [`docs/implementation/m3-report.md`](docs/implementation/m3-report.md)
-- M2-Bericht (historisch): [`docs/implementation/m2-report.md`](docs/implementation/m2-report.md)
-- M1-Bericht (historisch): [`docs/implementation/m1-report.md`](docs/implementation/m1-report.md)
-- M0-Bericht (historisch): [`docs/implementation/m0-report.md`](docs/implementation/m0-report.md)
-- Standardprüfung: `./mvnw -B clean verify` mit JDK 25
-- Vollständig mit echten Diensten: `./mvnw -B -Pgeotools-probe,backing-services clean verify`
-- Modulübersicht: [`module-boundaries.md`](docs/implementation/module-boundaries.md)
-- Java-/Maven-Migration: [`phase-2-java-maven.md`](docs/migration/phase-2-java-maven.md)
-- Fachliche JAR-Jobs und IMAGE-Vorbereitung: [`job-artifact-tests.md`](docs/implementation/job-artifact-tests.md)
-- Phasenplan und versionsbezogene Testzahlen: [`improvement-plan/`](docs/implementation/improvement-plan/)
-- Versionierte Paket-/Modulauswahl: [`job-packaging.md`](docs/implementation/job-packaging.md)
-- Teststrategie: [`docs/implementation/testing.md`](docs/implementation/testing.md)
-- Scriptdistribution: `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip`
-
-Paketieren und starten:
+JDK 25 und der Maven-Wrapper werden für den Build benötigt. Docker wird für
+das vollständige Dienstprofil benötigt. Vom Repository-Root:
 
 ```sh
-./bin/gretl package examples/ili-validator/job-package.json --output /tmp/ili-job.jar
-java -jar /tmp/ili-job.jar --report /tmp/ili-job-report.json
+./mvnw -B clean verify
+./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
+
+Der Build erzeugt `gretl-dist/target/dist/` und ZIP-/TAR-Distributionen.
+Das mitgelieferte Minimalbeispiel kopiert eine synthetische Textdatei:
+
+```groovy
+parameter('output', type: 'path', required: true, description: 'Output text file')
+action('write') {
+    def target = parameter('output')
+    java.nio.file.Files.createDirectories(target.parent)
+    java.nio.file.Files.copy(file('message.txt'), target)
+}
+defaults 'write'
+```
+
+<!-- cleanup-example: checkout -->
+```sh
+gretl_demo_dir="$(mktemp -d)"
+printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
+./gretl-dist/target/dist/bin/gretl run gretl-dist/src/main/dist/examples/minimal-action/job.groovy --param output="$gretl_demo_dir/message.txt" --config "$gretl_demo_dir/runtime.json" --work-dir "$gretl_demo_dir/work" --report "$gretl_demo_dir/script-report.json"
+cmp gretl-dist/src/main/dist/examples/minimal-action/message.txt "$gretl_demo_dir/message.txt"
+```
+
+`file('message.txt')` ist relativ zum Jobverzeichnis. Ein `path`-Parameter
+bezieht sich auf das ursprüngliche Startverzeichnis; hier ist er absolut.
+
+## Entpackte Scriptdistribution
+
+Die folgenden Befehle gelten **im Distributionsroot**, der `bin/`, `lib/` und
+`examples/` enthält. Im Checkout ist dies nach dem Build auch
+`gretl-dist/target/dist/`.
+
+<!-- cleanup-example: distribution -->
+```sh
+gretl_demo_dir="$(mktemp -d)"
+printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
+./bin/gretl run examples/minimal-action/job.groovy --param output="$gretl_demo_dir/message.txt" --config "$gretl_demo_dir/runtime.json" --work-dir "$gretl_demo_dir/work" --report "$gretl_demo_dir/script-report.json"
+cmp examples/minimal-action/message.txt "$gretl_demo_dir/message.txt"
+```
+
+Die Scriptdistribution benötigt zur Ausführung Java 25. Ein expliziter
+Scriptdateipfad startet einen Einzeljob. Ein Projektverzeichnis benötigt eine
+`settings.gretl`; seine Tasks und Parameter haben qualifizierte Namen.
+
+## Job-JAR bauen und starten
+
+Auch diese Paketierbefehle gelten im Distributionsroot. Das Minimalpaket wählt
+mit Deskriptorschema 2 keine Standardtaskmodule aus.
+
+<!-- cleanup-example: jar -->
+```sh
+gretl_demo_dir="$(mktemp -d)"
+printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
+./bin/gretl package examples/minimal-action/job-package.json --output "$gretl_demo_dir/job.jar"
+java -jar "$gretl_demo_dir/job.jar" --param output="$gretl_demo_dir/jar-message.txt" --config "$gretl_demo_dir/runtime.json" --work-dir "$gretl_demo_dir/work" --report "$gretl_demo_dir/jar-report.json"
+cmp examples/minimal-action/message.txt "$gretl_demo_dir/jar-message.txt"
+```
+
+Das fertige JAR benötigt Java 25 und seine Laufzeitwerte. Paketieren führt
+keine Jobtasks aus. Schemas 1 und 2 bleiben für Einzeljobs unterstützt;
+Schema 3 bündelt Projekte mit `settings.gretl`. Details stehen im
+[Paketierungsvertrag](docs/implementation/job-packaging.md).
+
+## Dokumentation und Grenzen
+
+Die [aktuelle Dokumentation](docs/README.md) führt zu Build, Tests, Modulen,
+Projekten und der [Taskreferenz](docs/reference/reference.adoc).
+Die [lokale Projektpipeline](examples/project-pipeline/README.md) zeigt einen
+gemeinsamen Taskgraphen und ein Schema-3-JAR ohne externe Dienste.
+
+Publisher, XtfToGpkg und Native Image sind nicht geliefert. Die Runtime enthält
+keinen Scheduler und keine Control Plane. Ausführbare Groovy-Jobs sind
+vertrauenswürdiger Anwendungscode; Top-Level-Code kann beim Definitionsladen
+für Hilfe, Check und Planung laufen. Plattform- und Releasefreigaben brauchen
+jeweils eigene, an einen Commit gebundene Nachweise.

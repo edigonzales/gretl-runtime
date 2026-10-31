@@ -34,7 +34,7 @@ werden nicht als CI-Artefakte hochgeladen.
 
 ## IMAGE-Vertrag für die spätere ausdrückliche Qualifikation
 
-Im jetzigen Auftrag wird kein GRETL-Image gestartet. Die aktuelle CI-Matrix
+Ein echter GRETL-Image-Lauf ist noch nicht qualifiziert. Die aktuelle CI-Matrix
 enthält ausschliesslich JAR. `ImageExecutionAdapterTest` prüft Start, Mounts,
 Pfade mit Leerzeichen, Arbeitsverzeichnis, Benutzer, Secrets, Endpoints,
 Parameter, Zielauswahl, Reportpfad, unveränderte Exitcodes, Timeout und Abbruch
@@ -106,7 +106,7 @@ erreichbare Hostadresse. `imageExtraHost` stellt bei Bedarf die Docker-
 Timeout/Abbruch beenden und reap-en auch den Docker-Client; verbleibende
 Testcontainer werden ausdrücklich entfernt. Normales Ende bewahrt Exitcode,
 Ausgaben und Report. Die zusätzlichen ausdrücklich als SCRIPT geführten
-Phase-1-Regressionen bleiben Host-Skriptstarts und werden so protokolliert.
+Scriptregressionen bleiben Host-Skriptstarts und werden so protokolliert.
 Die IMAGE-Fälle starten ausschliesslich den Produktlauncher im Produktimage.
 
 ## Auswahlpakete und CI-Evidenz
@@ -143,4 +143,4 @@ nach den Tests nicht erneut mit übersprungenen Tests.
 
 ## Projekt-Fixtures
 
-`ArtifactJobRunner.Request.scriptInput` ist standardmässig `job.groovy`; `.` wählt die Projektwurzel und verlangt einen vorhandenen Schema-3-Deskriptor. Prozess-, Timeout-, Hash- und Redactionpfad bleiben gemeinsam. Der IMAGE-Adapter übersetzt diesen Eingang zu `/job`; dessen Tests starten weiterhin kein Produktimage. `ProjectArtifactLocalJobIT` qualifiziert identische Bytes und Graphen im Script und echten JAR, leeres HOME/PATH ohne Buildwerkzeuge, gelöschte kompilierte Quellkopie, Metadatenschäden, Materialisierungsfehler und Retention. Der Bestand liegt unter `src/test/resources/projects/pipeline`. Die sieben Phase-2-Scriptprozess-Belege bleiben gesondert unter `target/project-script-evidence`.
+`ArtifactJobRunner.Request.scriptInput` ist standardmässig `job.groovy`; `.` wählt die Projektwurzel und verlangt einen vorhandenen Schema-3-Deskriptor. Prozess-, Timeout-, Hash- und Redactionpfad bleiben gemeinsam. Der IMAGE-Adapter übersetzt diesen Eingang zu `/job`; dessen Tests starten weiterhin kein Produktimage. `ProjectArtifactLocalJobIT` qualifiziert identische Bytes und Graphen im Script und echten JAR, leeres HOME/PATH ohne Buildwerkzeuge, gelöschte kompilierte Quellkopie, Metadatenschäden, Materialisierungsfehler und Retention. Der Bestand liegt unter `src/test/resources/projects/pipeline`. Die Scriptprozess-Belege bleiben gesondert unter `target/project-script-evidence`.

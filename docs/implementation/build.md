@@ -1,144 +1,98 @@
-# Build-Anleitung GRETL Runtime
+# Build und Distribution
 
-**Stand:** Umsetzungsphase 3, Spezifikation 4.1. Die aktuellen
-[Modulgrenzen](module-boundaries.md), [Java-/Maven-Migration](../migration/phase-2-java-maven.md)
-und [Artefaktjobtests](job-artifact-tests.md) ergänzen die ursprüngliche
-M0–M7-Entwicklung. Die damaligen Meilensteinberichte bleiben historische Nachweise.
+## Voraussetzungen und vollständige Gates
 
-## 1. Voraussetzungen
+JDK 25 muss die aktive JVM sein. Der eingecheckte Maven-Wrapper verwendet
+Maven 3.10.0; ein System-Maven ist für den Reactor nicht erforderlich.
+Versionen und Dependencies stehen zentral in `pom.xml`, die Modulgrenzen in
+[der Modulübersicht](module-boundaries.md).
 
-- **JDK 25** muss die aktive Toolchain sein; `JAVA_HOME` zeigt auf dieses JDK.
-  Die tatsächlich geprüften Patchstände und Plattformen stehen im Phasenbericht.
-- **Netzwerkzugriff** auf:
-  - Maven Central für Maven, Plugins, Groovy 6.0.0, SLF4J/Logback,
-    Commons Compress, pgJDBC und die Testbibliothek H2,
-  - `https://jars.interlis.ch` für die M0-Qualifikation,
-  - `https://repo.osgeo.org/repository/release/` nur für `geotools-probe`.
-- **Kein System-Maven** ist erforderlich. Der Wrapper lädt Maven `3.10.0` mit
-  fixierter SHA-256-Prüfsumme und erzwingt JDK 25/Maven 3.10.x.
-- **Keine externen Dienste im Standardbuild.** PostgreSQL wird für den
-  optionalen Live-Nachweis als lokaler Container gestartet; der Standardbuild
-  nutzt H2 für SQL-Transaktionstests.
-
-## 2. Standardprüfung
+Der Build benötigt Zugriff auf Maven Central und die in den POMs erklärten
+INTERLIS-Repositories. Das optionale GeoTools-Profil verwendet zusätzlich das
+OSGeo-Repository. Docker muss für das vollständige Dienstprofil erreichbar sein.
+Vom Repository-Root:
 
 ```sh
-export JAVA_HOME=/pfad/zu/temurin-25.0.4.1+1/Contents/Home
-export PATH="$JAVA_HOME/bin:$PATH"
-
-./mvnw -v          # Maven 3.10.0 und Java 25
-./mvnw clean verify
-```
-
-`verify` baut API, Runner, Groovy, i18n, Logging, die vier Taskmodule,
-Job-Runtime, CLI und Packager, die externe FileSize-Extension, die vollständige
-Distribution und das Integrationsmodul. Lokale fachliche Job-JARs laufen bereits
-im Standardbuild. Die jeweils tatsächlichen Testzahlen stehen in den
-[Phasenberichten](improvement-plan/); Sollzahlen sind kein Ausführungsnachweis.
-Das Profil `backing-services` ergänzt verpflichtende echte PostgreSQL/PostGIS-,
-FTP- und S3-Dienste. Die vollständige Phasenprüfung lautet:
-
-```sh
+./mvnw -version
 ./mvnw -B clean verify
 ./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
 
-### Artefakte
+Der Standard-Reactor führt Unit-, Komponenten-, Distributions- und lokale
+fachliche Job-JAR-Tests aus. Das Vollprofil ergänzt die isolierte GeoTools-Probe
+sowie echte PostgreSQL/PostGIS-, FTP- und S3-Prüfungen. Fehlendes Docker ist ein
+Fehler. Die [Teststrategie](testing.md) beschreibt Szenarien und Aussagegrenzen.
+Teiltests ersetzen diese beiden Gates nicht.
 
-| Artefakt | Ort |
-|---|---|
-| API-JAR | `gretl-api/target/gretl-api-0.1.0-SNAPSHOT.jar` |
-| Runner-JAR | `gretl-runner/target/gretl-runner-0.1.0-SNAPSHOT.jar` |
-| Groovy-Adapter | `gretl-groovy/target/gretl-groovy-0.1.0-SNAPSHOT.jar` |
-| Logging | `gretl-logging/target/gretl-logging-0.1.0-SNAPSHOT.jar` |
-| Lokalisierung | `gretl-i18n/target/gretl-i18n-0.1.0-SNAPSHOT.jar` |
-| Datenbank-Tasks | `gretl-database-tasks/target/gretl-database-tasks-0.1.0-SNAPSHOT.jar` |
-| IO-Tasks | `gretl-io-tasks/target/gretl-io-tasks-0.1.0-SNAPSHOT.jar` |
-| INTERLIS-/Format-Tasks | `gretl-interlis-tasks/target/gretl-interlis-tasks-0.1.0-SNAPSHOT.jar` |
-| IliValidator | `gretl-ilivalidator/target/gretl-ilivalidator-0.1.0-SNAPSHOT.jar` |
-| CLI | `gretl-cli/target/gretl-cli-0.1.0-SNAPSHOT.jar` |
-| Packager | `gretl-packager/target/gretl-packager-0.1.0-SNAPSHOT.jar` |
-| Job-JAR-Runtime | `gretl-job-runtime/target/gretl-job-runtime-0.1.0-SNAPSHOT.jar` |
-| Erweiterungs-JAR | `examples/file-size-extension/target/file-size-extension-0.1.0-SNAPSHOT.jar` |
-| Scriptdistribution | `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip` und `.tar.gz` |
-| Prüfsummen | `SHA256SUMS` im Distributionsarchiv |
-
-### Gezielte Aufrufe
+Testzahlen gelten jeweils für den getesteten SHA. Sichere Surefire-/Failsafe-XML,
+Konsolenlogs, Jobberichte und Artefaktidentitäten vor dem nächsten `clean`.
+Die CI und die Cleanup-Gates führen anschliessend den Artefaktaudit aus:
 
 ```sh
-./mvnw -pl gretl-cli -am test
-./mvnw -pl gretl-database-tasks -am test
-./mvnw -pl gretl-io-tasks -am test
-./mvnw -pl gretl-ilivalidator -am test
-./mvnw -pl gretl-dist -am verify
-./mvnw -Pgeotools-probe verify -Dmaven.repo.local=/tmp/m5-fresh-final
+python3 scripts/audit-job-evidence.py --source <vollstaendige-Kandidaten-SHA>
+python3 scripts/audit-job-evidence.py --full --source <vollstaendige-Kandidaten-SHA>
 ```
 
-`gretl-dist` benötigt `package` (Assembly) vor der Failsafe-Prüfung; `verify`
-erledigt beides. Die frühere M0-Testbaugruppe entfällt; ihre Artefaktprüfung
-ist in den Distributions-IT verschoben.
+Der erste Audit gehört direkt zum Standardlauf, der zweite zum Vollprofil.
+Er baut keine Ersatzartefakte. Eine lokale Qualifikation ersetzt keine separate
+Release- oder Plattformfreigabe. Für die dokumentierte macOS-FTP-Diagnose siehe
+[Cleanup-Verfahren](../maintenance/cleanup/README.md).
 
-## 3. Scriptdistribution benutzen
+## Artefakte und Ausführungskontexte
+
+`gretl-dist/target/dist/` enthält den aufgebauten Distributionsroot. Die Archive
+liegen unter `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip` und
+entsprechend `.tar.gz`. Nach Entpacken wird aus dem enthaltenen Root gestartet:
 
 ```sh
-cd gretl-dist/target
-unzip gretl-runtime-0.1.0-SNAPSHOT-bin.zip
-cd gretl-runtime-0.1.0-SNAPSHOT
-export JAVA_HOME=/pfad/zu/temurin-25
 ./bin/gretl --version
 ./bin/gretl operations
-./bin/gretl run examples/download-extract/job.groovy --help
-./bin/gretl run examples/ili-validator/job.groovy --help
-./bin/gretl run examples/action-nodata/nodata.groovy --help
-./bin/gretl operations IliValidator
-./bin/gretl run examples/ili-validator/job.groovy --lang en --help
-./bin/gretl package examples/ili-validator/job-package.json --output /tmp/ili-job.jar
-java -jar /tmp/ili-job.jar --help
-java -jar /tmp/ili-job.jar --report /tmp/ili-job-report.json
+./bin/gretl run examples/minimal-action/job.groovy --help
 ```
 
-Layout:
+Im Git-Checkout lautet der Launcherpfad dagegen
+`./gretl-dist/target/dist/bin/gretl`. Vollständige tatsächlich geprüfte
+Script-/JAR-Beispiele stehen im [Root-README](../../README.md).
 
-```text
-bin/gretl
-lib/runtime/     CLI, Groovy, Runner, API, Logging, Logback, Groovy-JSON
-lib/tasks/       IO-, Datenbank-, INTERLIS-/Format-Tasks, IliValidator
-lib/extensions/  Standardfunktionsauswahl und eigene Task-JARs / Dependencies
-examples/        Download/Extract, SQL, IliValidator, Token/Katalog, Action/NO_DATA
-inventory.json   Module, Tasks, Artefakte, Dependencyversionen, Quellcommit
-package-catalog.json Maven-Identitäten, qualifizierte Kanten und Eingabehashes
-SHA256SUMS       SHA-256 aller Distributionsdateien mit relativen Pfaden
-```
+| Distributionspfad | Inhalt |
+| --- | --- |
+| `bin/` | Launcher mit Signalweitergabe an die JVM |
+| `lib/runtime/` | CLI, Groovy, Runner, API, Logging und Voraussetzungen |
+| `lib/tasks/` | Vier fachliche Taskmodule und ihre Dependencies |
+| `lib/extensions/` | Standardfunktionen und zusätzliche kompatible Erweiterungen |
+| `examples/` | Einzeljobs, minimale Action und Projektpipeline |
+| `inventory.json` | Artefakte, Versionen und Quellidentität |
+| `package-catalog.json` | Qualifizierte Maven-Identitäten und Eingabehashes |
+| `SHA256SUMS` | Prüfsummen der Distributionsdateien |
 
-Die Property-Tabellen der AsciiDoc-Referenz werden aus derselben Distribution
-erzeugt:
+`gretl package descriptor.json --output job.jar` kompiliert ohne Jobausführung.
+Das fertige JAR benötigt Java 25 und Laufzeitparameter. Externe deklarierte
+Dependencies werden beim Paketieren durch Maven aufgelöst; die Auswahl und
+Compilerisolation erklärt der [Paketierungsvertrag](job-packaging.md).
+Projekt-JARs und Einzeljob-Schemas 1/2 bleiben getrennt im Deskriptor, verwenden
+aber dieselbe Runtime. GeoTools wird nicht in die Standarddistribution aufgenommen.
+
+## Dokumentationsprüfung
+
+Nach einem aktuellen Distributionsbuild, aus dem Repository-Root:
 
 ```sh
-./scripts/generate-task-docs.sh
+./gretl-dist/target/dist/bin/gretl operations --format adoc --lang de --output docs/reference/generated
+python3 -m unittest discover -s tests/cleanup_review -v
+python3 scripts/verify_cleanup_docs.py
+quarto render website/
 ```
 
-Das Skript schreibt ausschliesslich `docs/reference/generated/task-*.adoc`.
-Jede Datei enthält nur die Property-Tabelle. Die redaktionelle Hauptdatei
-`docs/reference/reference.adoc` wird nicht generiert; sie bindet die Tabellen
-manuell ein. Die Distributions-IT prüft, dass jede Tabelle eingebunden ist und
-keine Include-Datei fehlt. Die Thoth-Konfiguration
-`docs/reference/biblios.yml` ist eingecheckt. Rendern mit Thoth Biblios ist in
-[`docs/reference/README.md`](../reference/README.md) beschrieben; Thoth bleibt ein
-externes Werkzeug und ist keine Maven-Abhängigkeit.
+Die 44 generierten Tasktabellen werden gegen die Distribution und die Includes
+in `reference.adoc` geprüft. Die [Referenzanleitung](../reference/README.md)
+beschreibt den tatsächlichen Thoth-Biblios-Build. Quarto rendert die Website
+nach `website/_site/`; [Website-Pflege](../../website/README.md) beschreibt die
+Quellen. Generierte Ausgaben und lokale Thoth-Konfigurationen werden ignoriert.
+Bei Änderungen an Quickstarts müssen deren Befehle laufen und Ausgabedateien,
+Inhalt, Exitstatus und Reports geprüft werden. Ein statischer Linkcheck genügt
+für diese Ausführungsnachweise nicht.
 
-Der Launcher verwendet einen gemeinsamen Klassenpfad und `exec java`, damit
-Signale den Java-Prozess erreichen. Ein eigener Task wird vor dem Start in
-`lib/extensions` gelegt; ein Neubau des Runners ist nicht nötig. Hot-Reload und
-JAR-Auswahl aus einem laufenden Job sind nicht vorgesehen.
-
-`gretl package descriptor.json --output job.jar` prüft den Deskriptor,
-kompiliert den Job und deklarierte Groovy-Helfer zu Bytecode, prüft Klassen-
-und Ressourcenkollisionen und schreibt ein ausführbares JAR. Das JAR enthält
-die gemeinsame Job-Runtime und die gewählten vollständigen Maven-Artefakte; `java -jar` benötigt weder
-Maven noch Gradle noch eine installierte GRETL-Distribution. Beim Packen wird
-der Job nicht ausgeführt.
-
-## 4. Runtimekonfiguration, Pfade und Secrets
+## Runtimekonfiguration, Pfade und Secrets
 
 Die optionale Ausgabesprache kann per `--lang`, `GRETL_LANGUAGE`, `language`
 in `runtime.json` oder OS-Locale gewählt werden; Fallback ist Englisch.
@@ -199,7 +153,7 @@ Leerzeichen und Zeilenumbrüche unverändert; keine Variablenersetzung.
 die Laufzeitmaskierung verschlüsselt diese Datei nicht. Alle Quellen verwenden
 dieselbe Registrierung und dieselben Maskierungsgrenzen beim Zugriff.
 
-## 5. Logging und Runbericht
+## Logging und Runbericht
 
 - Konsole: Text (Default) oder JSON auf **stderr**; Hilfe/Plan auf stdout.
 - Ereignisdatei: `<runId>.events.jsonl` unter `runtime.reportRoot`, 0600,
@@ -219,359 +173,8 @@ dieselbe Registrierung und dieselben Maskierungsgrenzen beim Zugriff.
   `Meldung`, `Feld`, `Task`, `Quelle` und `Ursache`. JSON/JSONL bleiben
   schema-stabil.
 
-Nicht umgesetzt: Heartbeat-Timer, Progress-Koaleszenz und taskgebundene
-MDC-Anreicherung von Fremdbibliothekslogs. Das ist im M5-Bericht als offene
-Logging-Lücke ausgewiesen.
-
-## 6. Tasks und Grenzen
-
-### HttpDownload
-
-- GET/POST, Header (Text/SecretValue), Body nur POST, 1-GiB-Default.
-- Redirects aus, kein Auto-Retry, temporäre Datei + atomare Veröffentlichung,
-  SHA-256.
-- Standardmässig kein Überschreiben; `overwrite = true` ersetzt eine vorhandene
-  reguläre Zieldatei erst nach erfolgreichem Download. Verzeichnisse und
-  Symlinks bleiben als Ziel unzulässig.
-- Sichere Fehlerdiagnose mit Methode/Origin/Status/Bytes/Phase.
-
-### Curl
-
-- Eigener HTTP-Request-/Response-Task, nicht Teil von `HttpDownload`.
-- GET/POST, Text-/Binär-/Multipart-Body, Basic Auth, Header mit
-  `SecretValue`, exakter `expectedStatusCode`, optionaler `expectedBody`.
-- Response maximal `maxBytes` (Default 16 MiB); Output optional und atomar;
-  ohne `overwrite` wird eine vorhandene Datei nicht ersetzt.
-- Redirects aus, kein Auto-Retry, Passwort nicht im Klartext, kein Body-Dump
-  in Fehlern. Ergebnisse: `status`, `bytes`, `outputFile`.
-
-### Gzip
-
-- Komprimiert genau eine Eingabedatei; temporäre Ausgabe und atomare
-  Veröffentlichung.
-- `overwrite` ist aus Kompatibilitätsgründen standardmässig `true`;
-  `overwrite = false` schützt vorhandene Ziele.
-- Ergebnisse: `file`, `bytes`; Quelle und Ziel müssen verschieden sein.
-
-### XslTransformer
-
-- Transformiert eine Liste von XML-Dateien mit lokalem Stylesheet oder
-  Klassenpfad-Ressource unter `xslt/`.
-- Standarderweiterung `xtf`; Ausgabekollisionen sind Fehler.
-- `overwrite` standardmässig `true`; vorhandene Ziele werden nach erfolgreicher
-  Transformation ersetzt.
-- Saxon 11.4, keine externen Entities/DOCTYPEs/Netzwerkzugriffe; lokale
-  Stylesheet-Includes bleiben erlaubt. Ergebnisse: `files`, `count`.
-
-### FTP-Tasks
-
-- `FtpList`, `FtpDownload`, `FtpUpload`, `FtpDelete` teilen
-  `server`/`user`/`password` (SecretValue), `systemType`, `fileSeparator`,
-  `passiveMode` und `controlKeepAliveTimeout`.
-- Download/Upload unterstützen ASCII/BINARY; Download schützt lokale Pfade und
-  kann vorhandene Ziele mit `overwrite` ersetzen.
-- `remoteFiles` sind Namen oder Wildcards; leere Listen bedeuten „alle Dateien“
-  im entfernten Verzeichnis.
-- Ergebnisse: Dateilisten, Bytes, entfernter Pfad bzw. Löschzähler; keine
-  Passwort- oder Inhaltslogs, keine automatischen Retries.
-
-### CSV-/JSON-Tasks
-
-- `Csv2Excel`, `CsvImport`, `CsvExport` und `JsonImport` sind Ports der
-  gretl-next-Engines. CSV und Excel laufen über `iox-wkf`/`iox-formats`,
-  JSON über Jackson.
-- `CsvValidator` und `JsonValidator` validieren mit ilivalidator und den
-  IOX-Readern gegen INTERLIS-Modelle. Die früheren Strukturprüfungen sind
-  entfernt.
-
-### Geo-Datei-Tasks
-
-- `Gpkg2Shp`, `GpkgImport`, `GpkgExport`, `ShpImport`, `ShpExport`,
-  `GpkgValidator` und `ShpValidator` sind Ports aus gretl-next.
-- Shapefile-I/O nutzt den nativen gretl-next-Reader/Writer. Die Hop-Regeln für
-  DBF-NULLs, Encoding-Auswahl, CPG, Sidecars und atomisches Überschreiben sind
-  zurückportiert.
-- `GpkgValidator` und `ShpValidator` validieren mit ilivalidator und den
-  jeweiligen IOX-Readern gegen INTERLIS-Modelle.
-- GDAL/DuckDB-spatial wird in diesen Tasks nicht mehr verwendet;
-  `DuckDbSqlExecutor` bleibt davon getrennt.
-
-### GeoTools-Abgrenzung
-
-- `gretl-next` hält `gretl-core` frei von GeoTools und führt GeoTools im
-  separaten `gretl-geotools`-Plugin. Die Runtime übernimmt diese Grenze:
-  `iox-wkf` und `iox-formats` excludieren `org.geotools:*`; ein
-  Enforcer-Guard `ban-geotools` verbietet `org.geotools` und
-  `org.geotools.ogc` in allen produktiven Modulen.
-- Nur das explizite Testprofil `-Pgeotools-probe` überschreibt den Guard.
-- `DistributionIT` prüft zusätzlich das ZIP auf GeoTools-JARs.
-
-### M7-Release-/Packager-Härtung
-
-- Der aktuelle [Auswahlvertrag](job-packaging.md) verwendet einen generierten,
-  qualifizierten Maven-Katalog. Schema 1 erhält den Vollkatalog; Schema 2 wählt
-  Taskmodule ausdrücklich. Externe deklarierte Artefakte werden vor dem
-  Kompilieren aufgelöst. Der Host-Classpath ergänzt keine fehlende Deklaration.
-  Maven wird nur beim Paketieren benötigt.
-- Der Linux-x86-64-Workflow liegt unter `.github/workflows/release-candidate.yml`.
-- Offene Release-Bedingungen stehen in [`m7-report.md`](m7-report.md).
-
-### ili2db-/AV-/DXF-Tasks
-
-- `Ili2pg*`, `Ili2gpkgImport` und `Ili2duckdb*` sind Ports der gretl-next-
-  ili2db-Engines. PostgreSQL läuft über JDBC, GeoPackage und DuckDB über
-  Dateidatenbanken.
-- `Av2ch` und `Av2geobau` nutzen av2ch/av2geobau; `Gpkg2Dxf` schreibt
-  ili2gpkg-Klassentabellen als DXF.
-- Die Runtime-Felder bilden die gretl-next-Optionsfläche ab: Schema-, Import-,
-  Export-, Dataset-, Validierungs-, Proxy- und Dateioptionen werden mit
-  Defaults validiert und auf `Config` abgebildet.
-- Der Packager bevorzugt bei identischen INTERLIS-Modellklassen die
-  kanonische iox-ili-Version, weil av2geobau eine private Kopie einbettet.
-- `DistributionIT` prüft das Inventar auf alle 44 Tasks und das neue
-  Task-JAR; der Job-Paketierungstest deckt den Modellklassen-Sonderfall ab.
-
-### Datenbank-Tasks
-
-- `Db2Db` löst Quell- und Zielverbindung über `taskConfig`-Aliasse auf; die
-  Zugangsdaten bleiben aus dem Job und den Logs heraus.
-- Transfers bestehen aus SQL-Datei, Zieltabelle, `deleteAllRows` und optionalen
-  Geometriespalten (WKT/WKB/GeoJSON mit EPSG). Alle Transfers laufen in einer
-  Zieltransaktion.
-- `sqlParameters`/`sqlParameterSets`, `batchSize` und `fetchSize` entsprechen
-  der bisherigen Semantik.
-- `DuckDbSqlExecutor` führt SQL-Dateien gegen eine DuckDB-Datei oder
-  In-Memory-Datenbank aus und unterstützt die gretl-next-Föderation:
-  CSV-, GeoPackage- und PostgreSQL-Quellen, beschreibbare PostgreSQL-Ziele
-  sowie Parquet-, GeoPackage-, XLSX- und PostgreSQL-Exporte.
-- Quellen und Ziele werden über `view` oder `materialize` aufgebaut; Exporte
-  laufen nach den SQL-Dateien, Dateiexporte atomar über Temp-Dateien.
-- DuckDB-Extensions (`spatial`, `postgres`, `excel`) werden geladen und mit
-  `installExtensions` bei Bedarf installiert.
-- DuckDB 1.5.2.0 bringt native Bibliotheken mit; das Job-JAR-Limit für einzelne
-  Einträge wurde deshalb auf 256 MiB angehoben.
-
-### S3-Tasks
-
-- `S3Download`, `S3Upload`, `S3Delete` und `S3Bucket2Bucket` teilen
-  `accessKey`, `secretKey` (SecretValue), `endpoint` und `region`.
-- Upload akzeptiert `sourceFile`, `sourceDir` (nur direkte Dateien) oder
-  `sourceFiles`; Objekt-Schlüssel sind Dateinamen, Duplikate werden abgewiesen.
-- Download schützt lokale Pfade, unterstützt `key` oder den ganzen Bucket und
-  schreibt atomar; `overwrite` defaultet auf `true`.
-- Delete und Bucket2Bucket arbeiten paginiert; Ergebnisse sind Schlüssel und
-  Zähler. `acl` defaultet auf `private`.
-- AWS SDK v2 nutzt den URL-Connection-Client, damit die Job-JAR frei von
-  Netty-/Apache-HTTP-4-Konflikten bleibt.
-
-### Extract
-
-- ZIP/GZIP-Modus explizit; 4-GiB- und 10'000-Eintrag-Default.
-- Traversal-/Absolutpfad-/Symlink-/Kollisionsschutz, keine Überschreibung,
-  sortierte Dateiliste.
-
-### SqlExecutor
-
-- PostgreSQL-Alias aus `taskConfig`.
-- Vollständige Scripts ohne Regex-Split; PreparedStatements mit den
-  dokumentierten Bindern; eine Transaktion mit Commit/Rollback.
-- ResultSets werden konsumiert/geschlossen; `SqlResult` enthält Updatezahlen.
-- Der Standardtest nutzt H2; der echte PostgreSQL-17-Lauf ist optional.
-
-### IliValidator
-
-- `dataFile` und `modelDirectory` sind Pflichtpfade; `validationConfig` ist
-  optional.
-- Die reale `ilivalidator:1.15.0` validiert mit lokalen Modellen.
-- Der Handler installiert pro Invocation einen `EhiLogger`-Listener und entfernt
-  ihn im `finally`; Engineausgabe wird in den geschützten
-  `validation-report.txt` im Invocation-Workspace umgeleitet.
-- Ergebnis: `ValidationResult(file, reportFile, warnings)`.
-- Ungültige Transfers enden mit einer sicheren Task-Exception, ERROR-Diagnose
-  und restricted Reportartefakt; gültige Läufe melden eine INFO-Diagnose.
-- Kein EHI-Feldadapter, kein Sampling und keine separate Validator-JVM in M5.
-
-## 7. Backing-Service-Integration
-
-```sh
-./mvnw -Pbacking-services verify
-```
-
-Das Profil bindet `gretl-integration-tests` ein und startet über Testcontainers
-einen PostgreSQL-16-/PostGIS-Container sowie einen echten FTP-Container. Die
-Tests prüfen echte Groovy-Jobs über die CLI, inklusive Schema-Isolation,
-Transaktion/Rollback, Prepared-Statements, FTP-Upload/Download/Delete,
-Passive Mode und Secret-Redaction. Docker muss laufen; fehlt Docker, bricht das
-Profil mit einer klaren Meldung ab. Der Standard-`verify` bleibt Docker-frei.
-
-Kombiniert mit GeoTools und Backing-Services werden **416 Tests** ausgeführt.
-Die vollständige Teststrategie steht in [`testing.md`](testing.md).
-
-## 8. Profil `geotools-probe`
-
-```sh
-./mvnw -Pgeotools-probe verify
-```
-
-Die GeoTools-Probe ergänzt vier unabhängige Kompatibilitätsfälle.
-Die tatsächlichen Gesamtzahlen stehen im jeweiligen Phasenbericht.
-GeoTools 35.2 bleibt eine gesonderte Testprobe, kein öffentlicher Task und kein
-Bestandteil der Scriptdistribution.
-
-## 9. Plugins, Versionen und Buildstruktur
-
-| Modul | Rolle | Standardbuild |
-|---|---|---|
-| `gretl-api` | JDK-only SPI | ja |
-| `gretl-runner` | sequenzieller Runner | ja |
-| `gretl-groovy` | Groovy-6-DSL | ja |
-| `gretl-i18n` | englischer Quellkatalog, deutscher Katalog | ja |
-| `gretl-logging` | Events, Redaction, Report | ja |
-| `gretl-database-tasks` | SqlExecutor, Db2Db, DuckDB-Föderation | ja |
-| `gretl-interlis-tasks` | 27 Format-/Validierungs-/ili2db-/AV-Operationen | ja |
-| `gretl-io-tasks` | 13 HTTP-/Archiv-/XSLT-/FTP-/S3-Operationen | ja |
-| `gretl-ilivalidator` | reale INTERLIS-Validierung (B) | ja |
-| `gretl-cli` | Authoring-Kommandos und Startübersetzung | ja |
-| `gretl-job-runtime` | gemeinsamer Skript-/JAR-Startvertrag | ja |
-| `gretl-packager` | Paketierungswerkzeug | ja |
-| `gretl-integration-tests` | lokale JAR-Jobs, Diensttests mit Profil | ja |
-| `examples/file-size-extension` | separat gebautes Erweiterungs-JAR | ja |
-| `gretl-dist` | Scriptdistribution/Assembly | ja |
-| `gretl-geotools-probe` | GeoTools-Testprobe | nur Profil |
-
-Zentrale Versionen: Groovy 6.0.0 (`groovy`, `groovy-json`), SLF4J 2.0.20,
-Logback 1.6.5, Commons Compress 1.27.1, pgJDBC 42.7.14, H2 2.3.232 (nur Test),
-ilivalidator 1.15.0 / ehibasics 1.4.1, Saxon 11.4, xmlresolver 4.4.3,
-Commons Net 3.6, AWS SDK v2 2.15.64 (URL-Connection-Client), DuckDB 1.5.2.0,
-iox-wkf 2.0.1-20250417.084407-2, iox-formats 1.0.3, ili2c 5.6.8, iox-ili 1.24.4,
-Apache POI 5.2.5, Jackson 2.17.2,
-Testcontainers 1.21.4 (nur `backing-services`), Floci 1.10.0 (nur Test),
-JUnit 5.14.4, GeoTools 35.2 (nur Profil).
-
-Zusätzliche Plugins: `maven-assembly-plugin` 3.7.1 für die Distribution,
-`maven-failsafe-plugin` 3.6.0 für die Distributions-IT. Kein Groovy-
-Produktcompiler, kein Shade-Plugin, keine globale Fachdependency in API/Runner.
-
-## 10. Dependency-/Grenzprüfung
-
-```sh
-./mvnw -pl gretl-api dependency:tree -Dscope=compile
-./mvnw -pl gretl-runner dependency:tree -Dscope=compile
-./mvnw -pl gretl-cli dependency:tree
-./mvnw -pl gretl-database-tasks dependency:tree
-./mvnw -pl gretl-io-tasks dependency:tree
-jdeps --multi-release 25 --ignore-missing-deps -summary \
-  gretl-runner/target/gretl-runner-0.1.0-SNAPSHOT.jar
-jdeps --multi-release 25 --ignore-missing-deps -summary \
-  gretl-database-tasks/target/gretl-database-tasks-0.1.0-SNAPSHOT.jar
-```
-
-Die Tests prüfen zusätzlich API-/Runner-Importgrenzen, das Fehlen von
-Publisher-/XtfToGpkg-Symbolen, den standardmässigen Taskkatalog und das
-Erweiterungs-JAR im isolierten Distributionslauf.
-
-## 11. Bekannte Warnungen und Grenzen
-
-- Testmodule ohne `src/main/java` erzeugen harmlose
-  Compiler-Zustandswarnungen zu `target/classes`.
-- Die Distributionsassembly kann den internen `gretl-dist`-Projektartefakt-
-  Hinweis ausgeben; das ZIP enthält dennoch Launcher, Runtime, Tasks, Beispiele
-  und Erweiterungsbereich.
-- Das Profil `backing-services` benötigt Docker und lädt die gepinnten
-  PostGIS-/FTP-Images; ohne Docker schlägt es bewusst fehl. Der Standard-`verify`
-  bleibt Docker-frei.
-- `inventory.json` und `SHA256SUMS` sind vorhanden. Die Prüfsummen sind keine
-  Signatur; `sourceRevision` nennt den Quellcommit, `sourceDirty` kennzeichnet lokale Änderungen. Der
-  Report-Inventarhash bleibt ein Katalogfingerabdruck, kein Hash aller JARs.
-- Weiterführende Logging-Arbeiten wie Heartbeat und Progress-Koaleszenz sind
-  kein Erweiterungsauftrag dieses Umsetzungsplans. Der vorhandene
-  SIGTERM-/Abschlussvertrag ist als Skript- und JAR-Regression abgesichert.
-- Standardtests nutzen H2; der echte PostgreSQL-Lauf ist Teil des
-  Docker-backed `backing-services`-Gates. Commit-Unbekanntheit nach
-  Verbindungsverlust ist nicht fault-injiziert.
-- DuckDB bringt native Bibliotheken mit. Das Job-JAR erlaubt deshalb einzelne
-  Einträge bis 256 MiB; die JDBC-Nutzung erzeugt unter JDK 25 eine
-  Native-Access-Warnung, die den Lauf nicht beeinflusst.
-- M5 enthält keine EHI-spezifische Feldbrücke, keinen Massen-Sampling-Test und
-  keine separate Validator-JVM.
-- Der ursprüngliche M6-Vollclasspath wurde in Phase 3 durch den
-  [versionierten Auswahlvertrag](job-packaging.md) ersetzt. Die damaligen
-  Meilensteinberichte bleiben historische Nachweise.
-- Das Job-JAR wird mit einem eigenen, getesteten Java-Merger statt mit einem
-  Maven-Shade-Mojo gebaut; Service-, Groovy- und Lizenz-Merges sowie
-  Klassen-/Ressourcenkollisionen sind implementiert. Publisher, XtfToGpkg und
-  Native Image sind nicht Bestandteil von M6.
-
-## 12. M5-Abnahme und M6-Grenzen
-
-Die kurze Anwenderabnahme wurde mit P1/P2/P3 durchgeführt; alle vier TC-U-Fälle
-sind bestanden, einschliesslich der Re-Tests für TC-U02 und TC-U03. Das
-Protokoll steht in [`m5-user-acceptance.md`](m5-user-acceptance.md). Der
-M6-Packager ist die optionale Lieferstufe C; Publisher, XtfToGpkg und Native
-Image bleiben spätere, getrennte Aufträge. Die M5- und M6-Berichte halten die
-jeweiligen Grenzen fest.
-
-## 13. Snapshot-Veröffentlichung
-
-Die produktiven Maven-Artefakte und die Scriptdistribution werden unter
-`0.1.0-SNAPSHOT` nach `https://jars.interlis.guru/snapshots` veröffentlicht.
-Die vollständige Anleitung steht in
-[`publish-snapshots.md`](publish-snapshots.md).
-
-Der GitHub-Actions-Workflow `.github/workflows/publish-snapshots.yml` heisst
-**publish artefacts** und läuft bei jedem Push sowie manuell über
-`workflow_dispatch`. Er führt zuerst
-`./mvnw -B clean verify` und
-`./mvnw -B -Pgeotools-probe,backing-services clean verify` aus. Nur auf `main`
-deployt er anschliessend mit
-`-DskipTests -DskipITs`; die Repository-Secrets `MAVEN_USERNAME` und
-`MAVEN_PASSWORD` werden nur im Deploy-Schritt injiziert.
-
-Lokal:
-
-```sh
-export MAVEN_USERNAME='...'
-export MAVEN_PASSWORD='...'
-./scripts/publish-snapshots.sh
-```
-
-Das Skript nutzt `docs/implementation/publish-settings.xml` mit
-Environment-Platzhaltern und das Maven-Profil `publish-snapshots`. Die
-Distribution wird als `gretl-dist` mit den Classifiers `bin` (ZIP) und
-`bin-tar-gz` (TAR.GZ) angehängt.
-
-## Coverage und Artefaktjobs
-
-JaCoCo 0.8.14 ist für Java-25-Bytecode gepinnt ([offizieller Versionsnachweis](https://www.jacoco.org/jacoco/trunk/doc/changes.html)). Das Plugin instrumentiert die
-Surefire-/Failsafe-JVMs und erzeugt bei `verify` Line-/Branch-Berichte unter
-`<modul>/target/site/jacoco/`. Das testseitige Integrationsmodul aggregiert die
-verfügbaren Reactorbeiträge unter `gretl-integration-tests/target/site/jacoco-aggregate/`.
-Die Compile-Abhängigkeiten dieses ausschliesslichen Testmoduls erlauben dabei
-die Zuordnung der Produktklassen und Quellen; sie ändern keine Produktabhängigkeit.
-
-Separat gestartete Launcher-, Packager- und `java -jar`-Prozesse sind bewusst
-**nicht instrumentiert**. Ihre fachlichen Assertions sind Ausführungsnachweise,
-aber kein gemessener Anteil der JaCoCo-Abdeckung. Testzahlen und Coverage werden
-getrennt ausgewiesen; es gibt keine globale Prozenthürde.
-
-Das Integrationsmodul ist einmal im normalen Reactor enthalten und hängt für die
-Buildreihenfolge explizit von `gretl-dist` ab. Standardmässig führt Failsafe dort
-`*JobIT` aus (derzeit die lokalen `*LocalJobIT`-Klassen); `backing-services` erweitert die Auswahl auf sämtliche `*IT`.
-Damit bleiben lokale Artefaktjobs Docker-frei und Diensttests ausdrücklich opt-in.
-Die beiden vollständigen Prüfwege bleiben:
-
-```sh
-./mvnw -B clean verify
-./mvnw -B -Pgeotools-probe,backing-services clean verify
-```
-
-Die JAR-Szenarien liegen unter `gretl-integration-tests/src/test/resources/jobs/`.
-`ArtifactJobRunner` kopiert jedes Szenario frisch, ruft den regulären Packager der
-gebauten Distribution auf und startet `java -jar` ohne Testclasspath. Prozessdaten,
-SHA-256, Report, Logs und Outputs bleiben unter `target/job-evidence/` erhalten.
-Vor einem erneuten `clean` müssen benötigte Nachweise gesichert werden.
-
-Der Release-Workflow verwendet die Distribution des vollständigen verifizierten
-Builds ohne erneuten Package-Build. `scripts/audit-job-evidence.py` kontrolliert
-Prüfsummen, Commitprovenienz und im vollständigen Lauf alle 44 positiven JAR-
-Operationsnachweise. Der separate IMAGE-Workflow ist ausschliesslich manuell.
+Bibliothekslogs werden über lexikalische Run-/Task-/Invocation-Scopes zugeordnet;
+`LibraryScopeLocalJobIT` prüft diesen Vertrag. Heartbeat-Timer und
+Progress-Koaleszenz sind nicht umgesetzt; akzeptierte Intervallfelder sind kein
+Nachweis für solche Timer. Die Maskierung gilt für verwaltete Log-/Reportsenken.
+Ausführbarer eigener Groovy-Code ist keine allgemeine Sandbox.

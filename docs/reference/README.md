@@ -11,7 +11,7 @@ verlinkt auf 44 alphabetisch geordnete Taskkapitel.
   auf [gretl-next](https://github.com/edigonzales/gretl-next/tree/main/docs/reference),
   Ausgangsstand der Hauptdatei: Git-Blob `3250307aaa7e46aac1052ad31cf3a400b324fa27`.
   Alte Gradle-Beispiele und Aussagen werden gegen die Runtimeimplementierung
-  geprüft und auf die Spezifikation 4.1 angepasst.
+  geprüft und auf die implementierte Runtime angepasst.
 - `generated/task-*.adoc` enthalten ausschliesslich Eingabefeldtabellen aus
   `OperationType`/`InputField` der tatsächlich ausgelieferten Distribution.
   Sie werden nie von Hand bearbeitet. Tasktexte, vollständige Beispiele und

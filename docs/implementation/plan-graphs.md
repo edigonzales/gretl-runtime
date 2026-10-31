@@ -55,6 +55,7 @@ Mermaid wird nicht über einen Netzwerkdienst gerendert.
 - Es wird nur der ausgewählte Plan gezeigt; nicht ausgewählte Tasks fehlen.
 - Es gibt keine Bild-, PNG- oder SVG-Ausgabe.
 - Die Graphausgabe ist ein Planungsartefakt; Task-Closures werden nicht
-  ausgeführt und es entstehen keine Work-/Report-Verzeichnisse.
+  ausgeführt und es entstehen keine Work-/Report-Verzeichnisse. Vertrauenswürdiger
+  Groovy-Top-Level-Code kann beim Laden der Definition ausgeführt werden.
 - Die technischen Kantenlabels `dependsOn` und `after` bleiben
   sprachneutral; Titel und Fehlermeldungen folgen der Locale.

@@ -1,25 +1,39 @@
 ---
 title: "Getting Started"
-description: "Create and run a small GRETL next job."
+description: "Run a local file job with GRETL Runtime."
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Create a Gradle project, apply the plugin and register your first task.
+Start in a Git checkout with JDK 25. Build the distribution using the Maven
+wrapper; Docker is required for the full service gate:
 
-```groovy
-plugins {
-    id 'ch.so.agi.gretl'
-}
-
-import ch.so.agi.gretl.tasks.SqlExecutor
-
-tasks.register('executeSql', SqlExecutor) {
-    database 'jdbc:sqlite:build/example.db'
-    sqlFiles 'sql/init.sql'
-}
+```sh
+./mvnw -B clean verify
+./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
 
-Run the task:
+Change into `gretl-dist/target/dist/`. This is the distribution root, containing
+`bin/`, `lib/` and `examples/`. An unpacked distribution has the same layout.
+The bundled minimal action copies a local synthetic text file:
 
-```bash
-./gradlew executeSql
+<!-- cleanup-example: website -->
+```sh
+gretl_demo_dir="$(mktemp -d)"
+printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
+./bin/gretl run examples/minimal-action/job.groovy --param output="$gretl_demo_dir/message.txt" --config "$gretl_demo_dir/runtime.json" --work-dir "$gretl_demo_dir/work" --report "$gretl_demo_dir/script-report.json"
+cmp examples/minimal-action/message.txt "$gretl_demo_dir/message.txt"
 ```
+
+Package the same job, still from the distribution root:
+
+<!-- cleanup-example: website-jar -->
+```sh
+gretl_demo_dir="$(mktemp -d)"
+printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
+./bin/gretl package examples/minimal-action/job-package.json --output "$gretl_demo_dir/job.jar"
+java -jar "$gretl_demo_dir/job.jar" --param output="$gretl_demo_dir/jar-message.txt" --config "$gretl_demo_dir/runtime.json" --work-dir "$gretl_demo_dir/work" --report "$gretl_demo_dir/jar-report.json"
+cmp examples/minimal-action/message.txt "$gretl_demo_dir/jar-message.txt"
+```
+
+The executable JAR needs Java 25 and its runtime parameters. Project jobs use
+`settings.gretl` and descriptor schema 3; single-job schemas 1 and 2 remain
+supported. Follow the [documentation](docs.qmd) for configuration and projects.

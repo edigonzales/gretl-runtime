@@ -8991,6 +8991,24 @@
         "docs/maintenance/cleanup/README.md",
         "tests/cleanup_review/test_gate.py"
       ]
+    },
+    {
+      "path": "docs/README.md",
+      "classification": "ACTIVE",
+      "plannedPhase": "P1",
+      "reason": "Aktuelle Navigation zu implementierten Anwender-, Entwicklungs- und Referenzverträgen; trennt historische Sollstände von heutigen Anleitungen."
+    },
+    {
+      "path": "docs/maintenance/cleanup/reviews/P0-76b92e1-review.md",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P1",
+      "reason": "Automatisch übernommener unabhängiger P0-PASS auf 76b92e156d8155057122eb7a8c2fd30e3dc22758; historische SHA-gebundene Reviewantwort, kein neuer Auftrag."
+    },
+    {
+      "path": "docs/maintenance/cleanup/reviews/P0-76b92e1-review.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P1",
+      "reason": "Automatische P0-Nachweismetadaten mit Kandidaten-, Provider- und Evidenzdigests für den getrennten Nachweiscommit; keine Produktstatusquelle."
     }
   ]
 }
