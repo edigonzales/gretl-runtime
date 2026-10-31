@@ -9,6 +9,7 @@ import argparse
 import dataclasses
 import datetime
 import hashlib
+from html.parser import HTMLParser
 import json
 import os
 import platform
@@ -318,12 +319,38 @@ def review_config(r):
             commands.append('git show '+r.phase_base_sha+':'+path)
     rules=[{'action':'*','resource':'*','effect':'deny'}]
     rules += [{'action':x,'resource':'*','effect':'allow'} for x in ('read','glob','grep')]
-    rules += [{'action':'read','resource':x,'effect':'deny'} for x in ('.env','*.env','**/.env*','**/auth.json','**/opencode.db*','.git*')]
+    rules += [{'action':'read','resource':x,'effect':'deny'} for x in ('.env','*.env','**/.env*','**/auth.json','**/opencode.db*','.git','.git/*')]
     rules += [{'action':'shell','resource':x,'effect':'allow'} for x in dict.fromkeys(commands)]
     return {'$schema':'https://opencode.ai/config.json', 'model':MODEL,
             'providers':{'deepseek':{'settings':{'baseURL':'https://api.deepseek.com'},'models':{'deepseek-flash':{'modelID':'deepseek-flash'}}}},
             'permissions':rules,'tool_output':{'max_lines':20000,'max_bytes':2097152},
             'agents':{'cleanup-review':{'description':'Independent read-only cleanup reviewer','mode':'primary','model':MODEL,'permissions':rules}}}
+
+
+def verify_official_mapping(html):
+    """Bind the API-name column to MODEL VERSION, not a historical footnote."""
+    class ModelTable(HTMLParser):
+        def __init__(self):
+            super().__init__(); self.cell=None; self.row=[]; self.rows=[]
+        def handle_starttag(self,tag,attrs):
+            if tag=='tr': self.row=[]
+            if tag in ('td','th'): self.cell=[]
+        def handle_data(self,data):
+            if self.cell is not None: self.cell.append(data)
+        def handle_endtag(self,tag):
+            if tag in ('td','th') and self.cell is not None:
+                self.row.append(' '.join(''.join(self.cell).split())); self.cell=None
+            if tag=='tr' and self.row: self.rows.append(self.row)
+    parser=ModelTable(); parser.feed(html)
+    column=None; versions=[]
+    for row in parser.rows:
+        if row[0]=='MODEL':
+            columns=[i for i,value in enumerate(row) if re.sub(r'\(\d+\)$','',value)=='deepseek-flash']
+            column=columns[0] if len(columns)==1 else None
+        elif row[0]=='MODEL VERSION' and column is not None and len(row)>column:
+            versions.append(row[column]); column=None
+    if versions!=[CHECKPOINT]:
+        raise Blocked('Official API-name/version column mapping changed or ambiguous; specification revision required')
 
 
 def inspect_v2_auth_and_models(executable,r,evidence_dir,env):
@@ -342,9 +369,10 @@ def inspect_v2_auth_and_models(executable,r,evidence_dir,env):
     with urllib.request.urlopen(req,timeout=30) as response:
         if response.geturl().split('/')[2]!='api-docs.deepseek.com':
             raise Blocked('Unexpected official mapping host')
-        html=response.read(2*1024*1024).decode('utf-8')
-    if 'deepseek-flash' not in html or CHECKPOINT not in html:
-        raise Blocked('Official alias mapping changed; specification revision required')
+        body=response.read(2*1024*1024+1)
+        if len(body)>2*1024*1024: raise Blocked('Official mapping response truncated')
+        html=body.decode('utf-8')
+    verify_official_mapping(html)
     (evidence_dir/'official-model-mapping.html').write_text(html)
     meta={'executable':str(executable),'executableSha256':digest(executable),'version':runs['version'].stdout_path.read_text().strip(),
           'model':MODEL,'apiModelId':'deepseek-flash','provider':'deepseek','endpoint':'https://api.deepseek.com',
@@ -404,9 +432,18 @@ def validate_session(executable,run,worktree,evidence_dir,env):
     models=[info.get('model',{})]+[m.get('model',{}) for m in data.get('messages',[]) if m.get('type')=='assistant']
     if len(models)<2 or any(any(m.get(k)!=v for k,v in expected.items()) for m in models):
         raise Blocked('Wrong provider/API model in actual session')
-    provider=run_command([str(executable),'api','provider.get','--param','providerID=deepseek'],worktree,evidence_dir/'effective-provider',timeout=60,environment=env)
-    metadata=json.loads(provider.stdout_path.read_text())['data']
-    if metadata.get('id')!='deepseek' or metadata.get('integrationID')!='deepseek' or metadata.get('settings',{}).get('baseURL') not in ('https://api.deepseek.com','https://api.deepseek.com/v1'):
+    location_param='location[directory]='+str(worktree)
+    location=run_command([str(executable),'api','location.get','--param',location_param],worktree,
+                         evidence_dir/'effective-location',timeout=60,environment=env)
+    resolved=json.loads(location.stdout_path.read_text()).get('directory','')
+    if Path(resolved).resolve()!=worktree.resolve(): raise Blocked('Provider metadata resolved a different location')
+    provider=run_command([str(executable),'api','provider.get','--param','providerID=deepseek','--param',location_param],
+                         worktree,evidence_dir/'effective-provider',timeout=60,environment=env)
+    payload=json.loads(provider.stdout_path.read_text())
+    if Path(payload.get('location',{}).get('directory','')).resolve()!=worktree.resolve():
+        raise Blocked('Provider metadata is not bound to review worktree')
+    metadata=payload['data']
+    if metadata.get('package')!='@opencode/ai/providers/deepseek' or metadata.get('id')!='deepseek' or metadata.get('integrationID')!='deepseek' or metadata.get('settings',{}).get('baseURL') not in ('https://api.deepseek.com','https://api.deepseek.com/v1'):
         raise Blocked('Effective provider is not direct DeepSeek')
     save(evidence_dir/'session-provenance.json',{'sessionID':session,'model':expected,'endpoint':metadata['settings']['baseURL'],
         'jsonlSha256':digest(run.stdout_path),'sanitizedExportSha256':digest(export.stdout_path)})
@@ -451,13 +488,18 @@ def changed_paths(r):
 
 def evaluate_review(review,r,worktree,gate_runs):
     if not isinstance(review,dict): raise Blocked('Review must be an object')
-    if review.get('schemaVersion')!=1 or review.get('phase')!=r.phase or review.get('phaseBaseSha')!=r.phase_base_sha or review.get('candidateSha')!=r.candidate_sha:
+    if type(review.get('schemaVersion')) is not int or review.get('schemaVersion')!=1 or review.get('phase')!=r.phase or review.get('phaseBaseSha')!=r.phase_base_sha or review.get('candidateSha')!=r.candidate_sha:
         raise Blocked('Review phase/SHA/schema mismatch')
+    required_types={'phase':str,'phaseBaseSha':str,'candidateSha':str,'verdict':str,'scopeComplete':bool,
+                    'requirements':list,'independentInspection':dict,'findings':list,'openQuestions':list,'recommendation':str}
+    if any(type(review.get(key)) is not kind for key,kind in required_types.items()) or not review['recommendation'].strip():
+        raise Blocked('Incomplete/invalid report schema')
     if review.get('verdict')=='BLOCKED': raise Blocked('Reviewer BLOCKED: '+str(review.get('recommendation')))
     if review.get('verdict')=='FAIL': raise Failed('Reviewer FAIL: '+str(review.get('findings')))
     if review.get('verdict')!='PASS' or review.get('scopeComplete') is not True:
         raise Blocked('Incomplete review')
     rows=review.get('requirements',[])
+    if any(not isinstance(x,dict) for x in rows): raise Blocked('Invalid criterion rows')
     if sorted(x.get('id','') for x in rows)!=sorted(REQUIRED_IDS[r.phase]):
         raise Blocked('Missing/duplicate/unknown criterion')
     inspection=review.get('independentInspection',{})
@@ -466,7 +508,10 @@ def evaluate_review(review,r,worktree,gate_runs):
     for key in ['objectivesAssessment','regressionAssessment']:
         if not isinstance(inspection.get(key),str) or len(inspection[key].strip())<40:
             raise Blocked('Missing substantive '+key)
-    covered=set(inspection.get('criticalPaths',[]))
+    paths=inspection.get('criticalPaths')
+    if not isinstance(paths,list) or any(not isinstance(p,str) for p in paths):
+        raise Blocked('Invalid inspected paths')
+    covered=set(paths)
     changed=changed_paths(r)
     for row in rows:
         if row.get('status')!='PASS' or not row.get('evidence'): raise Blocked('Criterion not evidenced PASS')
@@ -507,6 +552,8 @@ Diff-Dateien:\n%s
 ''' % (r.phase,r.phase_base_sha,r.candidate_sha,r.initial_baseline_sha,
        str(r.specification_file.relative_to(r.repository_root)),r.phase_base_sha,r.candidate_sha,r.phase_base_sha,r.candidate_sha,
        r.initial_baseline_sha,r.candidate_sha,','.join(REQUIRED_IDS[r.phase]),diff)
+    if (worktree/'target/cleanup-review-evidence/implementer-own-gates.json').is_file():
+        prompt += '\nDie eigenen exakten Kandidatengates von A stehen separat in target/cleanup-review-evidence/implementer-own-gates.json und implementer-own-gates/. Pruefe beide Rollen getrennt; A-Evidenz ersetzt keine unabhaengige Bewertung.\n'
     (evidence_dir/'review-prompt.txt').write_text(prompt)
     return run_command([str(executable),'run','--agent','cleanup-review','--model',MODEL,'--format','json',prompt],worktree,evidence_dir/'opencode-review',timeout=2400,environment=environment)
 
@@ -515,6 +562,45 @@ def write_gate_result(evidence_dir,r,verdict,details):
     hashes={str(p.relative_to(evidence_dir)):digest(p) for p in evidence_dir.rglob('*')
             if p.is_file() and 'worktree' not in p.relative_to(evidence_dir).parts and p.name!='gate-result.json'}
     save(evidence_dir/'gate-result.json',dict(schemaVersion=1,verdict=verdict,request=dataclasses.asdict(r),details=details,hashes=hashes,finishedAt=now()))
+
+
+def attach_implementer_evidence(source,worktree,r,evidence_dir):
+    """Expose A's archived checks as separate secondary evidence, never as B's verdict."""
+    source=source.resolve()
+    for target in (r.repository_root.resolve(),worktree.resolve(),evidence_dir.resolve()):
+        if source==target or source in target.parents or target in source.parents:
+            raise Blocked('Implementer evidence must be external and disjoint from review destinations')
+    result=json.loads((source/'own-gates-result.json').read_text())
+    info=json.loads((source/'source.json').read_text())
+    if result.get('status')!='PASSED_OWN_GATES' or result.get('candidateSha')!=r.candidate_sha or info.get('head')!=r.candidate_sha or info.get('status')!='':
+        raise Blocked('Implementer evidence is not bound to the clean candidate')
+    summary={'role':'Implementer A; secondary evidence distinct from independent B checks',
+             'candidateSha':r.candidate_sha,'source':info,'gates':{}}
+    for name,argv in [('standard',['./mvnw','-B','clean','verify']),
+                      ('full',['./mvnw','-B','-Pgeotools-probe,backing-services','clean','verify'])]:
+        command=json.loads((source/name/'command.json').read_text())
+        reports=json.loads((source/name/'reports.json').read_text())
+        audit=json.loads((source/name/'qualification/summary.json').read_text())
+        if command.get('argv')!=argv or command.get('return_code')!=0 or command.get('failure') is not None:
+            raise Blocked('Implementer command is not the complete gate')
+        for stream in ('stdout','stderr'):
+            if digest(source/name/(stream+'.log'))!=command.get(stream+'Sha256'):
+                raise Blocked('Implementer log digest mismatch')
+        counts=reports.get('counts',{})
+        if not counts.get('tests') or any(counts.get(k)!=0 for k in ('failures','errors','skipped')):
+            raise Blocked('Implementer tests incomplete')
+        if audit.get('sourceRevision')!=r.candidate_sha or audit.get('sourceDirty') is not False or audit.get('tests')!=counts:
+            raise Blocked('Implementer artifact audit mismatch')
+        summary['gates'][name]={'counts':counts,'command':argv,'returnCode':0,
+                              'reports':'implementer-own-gates/'+name+'/reports.json'}
+    if any(p.is_symlink() for p in source.rglob('*')):
+        raise Blocked('Implementer evidence contains symlinks')
+    visible=worktree/'target/cleanup-review-evidence'
+    for parent in (evidence_dir,visible):
+        shutil.copytree(source,parent/'implementer-own-gates')
+        save(parent/'implementer-own-gates.json',summary)
+    for p in visible.rglob('*'):
+        if p.is_file():p.chmod(0o400)
 
 
 def export_evidence(directory,r):
@@ -549,6 +635,7 @@ def main(argv=None):
     parser.add_argument('--spec',type=Path,required=True)
     parser.add_argument('--preflight',action='store_true')
     parser.add_argument('--export-evidence',type=Path)
+    parser.add_argument('--implementer-evidence',type=Path,help='Archived exact-candidate own gates; exposed separately to B')
     args=parser.parse_args(argv)
     root=Path(git(Path.cwd(),'rev-parse','--show-toplevel'))
     inventory=json.loads((root/'docs/maintenance/cleanup/inventory.json').read_text())
@@ -588,6 +675,8 @@ def main(argv=None):
             config.parent.rmdir()
             verify_worktree_unchanged(worktree,r)
             gates=run_independent_gates(worktree,r,evidence_dir)
+            if args.implementer_evidence:
+                attach_implementer_evidence(args.implementer_evidence,worktree,r,evidence_dir)
             config.parent.mkdir()
             save(config,review_config(r))
             result=invoke_opencode(worktree,r,evidence_dir,env,executable)

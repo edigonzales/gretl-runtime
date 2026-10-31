@@ -52,7 +52,7 @@ def audit(root, paths=None):
     rows = []
     for name in sorted(paths if paths is not None else [p for p in tracked(root) if documented(p)]):
         path = root / name
-        if path.suffix not in TEXT_SUFFIXES or not path.is_file():
+        if path.suffix not in {'.md','.qmd','.adoc','.yml','.yaml'} or not path.is_file():
             continue
         for line_no, link, kind in targets(path, path.read_text(encoding='utf-8', errors='replace')):
             url = urlsplit(link)

@@ -56,6 +56,21 @@ class GateTest(unittest.TestCase):
     def test_wrong_phase(self):
         self.review['phase']='P1'
         with self.assertRaises(c.Blocked): self.evaluate()
+    def test_schema_version_boolean_is_not_integer(self):
+        self.review['schemaVersion']=True
+        with self.assertRaises(c.Blocked): self.evaluate()
+    def test_missing_or_invalid_required_report_fields(self):
+        for field,bad in [('recommendation',None),('recommendation',''),('requirements',{}),('findings',{}),('scopeComplete','true')]:
+            with self.subTest(field=field,bad=bad):
+                value=copy.deepcopy(self.review);value[field]=bad
+                with self.assertRaises(c.Blocked):self.evaluate(value)
+    def test_mapping_is_bound_to_api_column(self):
+        html='<table><tr><th>MODEL</th><th>deepseek-flash(1)</th><th>deepseek-v4-pro</th></tr><tr><td>MODEL VERSION</td><td>'+c.CHECKPOINT+'</td><td>other</td></tr></table>'
+        c.verify_official_mapping(html)
+        for broken in [html.replace(c.CHECKPOINT,'a-new-flash')+'<p>'+c.CHECKPOINT+'</p>',
+                       html.replace('<td>'+c.CHECKPOINT+'</td><td>other</td>','<td>other</td><td>'+c.CHECKPOINT+'</td>'),
+                       html+html,'<p>deepseek-flash '+c.CHECKPOINT+'</p>']:
+            with self.subTest(html=broken),self.assertRaises(c.Blocked):c.verify_official_mapping(broken)
     def test_missing_unknown_duplicate_criterion(self):
         for ids in [self.review['requirements'][:-1], self.review['requirements']+[self.review['requirements'][0]], [dict(id='P0-99')]]:
             with self.subTest(ids=[x['id'] for x in ids]):
@@ -192,6 +207,51 @@ class GateTest(unittest.TestCase):
             fake=c.CommandEvidence(('fake',),self.root,0,export,self.root/'err','a','b')
             with mock.patch.object(c,'run_command',return_value=fake):
                 with self.assertRaisesRegex(c.Blocked,'Wrong provider/API model'): c.validate_session(Path('/fake'),run,self.root,self.root/('provenance-'+model['providerID']+model['id']),{})
+    def test_provider_metadata_uses_resolved_review_location(self):
+        run=c.CommandEvidence(('fake',),self.root,0,self.root/'events',self.root/'err',c.now(),c.now())
+        run.stdout_path.write_text('\n'.join(json.dumps(e) for e in self.events()))
+        calls=[]
+        model={'id':'deepseek-flash','providerID':'deepseek'}
+        def fake_command(argv,cwd,destination,**kwargs):
+            calls.append(argv)
+            destination.mkdir()
+            if 'export' in argv:
+                value={'info':{'id':'ses_test','agent':'cleanup-review','outcome':'succeeded','model':model,
+                               'time':{'created':int(c.datetime.datetime.now(c.datetime.timezone.utc).timestamp()*1000)}},
+                       'messages':[{'type':'assistant','model':model}]}
+            elif 'location.get' in argv:value={'directory':str(self.root)}
+            else:value={'location':{'directory':str(self.root)},'data':{'id':'deepseek','integrationID':'deepseek',
+                  'package':'@opencode/ai/providers/deepseek','settings':{'baseURL':'https://api.deepseek.com'}}}
+            out=destination/'out';out.write_text(json.dumps(value))
+            return c.CommandEvidence(tuple(argv),cwd,0,out,destination/'err',c.now(),c.now())
+        with mock.patch.object(c,'run_command',side_effect=fake_command):
+            self.assertEqual('ses_test',c.validate_session(Path('/fake'),run,self.root,self.root/'bound-session',{}))
+        self.assertIn('location.get',calls[1]);self.assertIn('provider.get',calls[2])
+        for argv in calls[1:]:self.assertIn('location[directory]='+str(self.root),argv)
+    def test_implementer_evidence_binding_and_digest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            parent=Path(tmp);source=parent/'own';source.mkdir();worktree=parent/'review';worktree.mkdir();evidence=parent/'evidence';evidence.mkdir()
+            c.save(source/'own-gates-result.json',{'status':'PASSED_OWN_GATES','candidateSha':self.sha})
+            c.save(source/'source.json',{'head':self.sha,'status':''})
+            counts={'tests':1,'failures':0,'errors':0,'skipped':0}
+            for name,argv in [('standard',['./mvnw','-B','clean','verify']),('full',['./mvnw','-B','-Pgeotools-probe,backing-services','clean','verify'])]:
+                gate=source/name;gate.mkdir();(gate/'qualification').mkdir()
+                for stream in ['stdout','stderr']:(gate/(stream+'.log')).write_text('verified')
+                c.save(gate/'command.json',{'argv':argv,'return_code':0,'failure':None,'stdoutSha256':c.digest(gate/'stdout.log'),'stderrSha256':c.digest(gate/'stderr.log')})
+                c.save(gate/'reports.json',{'counts':counts})
+                c.save(gate/'qualification/summary.json',{'sourceRevision':self.sha,'sourceDirty':False,'tests':counts})
+            (worktree/'target/cleanup-review-evidence').mkdir(parents=True)
+            c.attach_implementer_evidence(source,worktree,self.r,evidence)
+            self.assertEqual(self.sha,json.loads((evidence/'implementer-own-gates.json').read_text())['candidateSha'])
+            (source/'standard/stdout.log').write_text('tampered')
+            with self.assertRaisesRegex(c.Blocked,'digest mismatch'):c.attach_implementer_evidence(source,worktree,self.r,evidence)
+    def test_implementer_evidence_rejects_foreign_sha(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source=Path(tmp)/'own';source.mkdir()
+            c.save(source/'own-gates-result.json',{'status':'PASSED_OWN_GATES','candidateSha':'f'*40})
+            c.save(source/'source.json',{'head':'f'*40,'status':''})
+            with self.assertRaisesRegex(c.Blocked,'clean candidate'):
+                c.attach_implementer_evidence(source,Path(tmp)/'review',self.r,Path(tmp)/'evidence')
     def test_isolated_profile_without_gui_login(self):
         def fake_command(argv,cwd,destination,**kwargs):
             destination.mkdir()
@@ -252,6 +312,9 @@ class GateTest(unittest.TestCase):
     def test_inline_code_reference_negative(self):
         (self.root/'README.md').write_text('Run `examples/missing/job.groovy`.')
         self.assertFalse(docs.audit(self.root,['README.md'])[0]['exists'])
+    def test_json_evidence_is_not_markdown(self):
+        (self.root/'evidence.json').write_text(json.dumps({'contentEvidence':'[historic](missing.md)'}))
+        self.assertEqual([],docs.audit(self.root,['evidence.json']))
     def test_quarto_target_negative(self):
         (self.root/'website').mkdir()
         (self.root/'website/_quarto.yml').write_text('href: start.qmd\n')

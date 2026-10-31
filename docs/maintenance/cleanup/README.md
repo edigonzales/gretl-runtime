@@ -79,3 +79,27 @@ unabhängigen Gateprozesse und wird in deren Quell-/Umgebungsmanifest erfasst.
 Der abgebrochene Versuch ist kein PASS. Es wurden weder FTP-Assertions noch
 Produktcode geändert. Externe Diagnose: `/tmp/gretl-P0-A-precommit-be8rldxt/`,
 positive Gegenprobe: `/tmp/gretl-ftp-network-diagnostic-duj1a3fi/`.
+
+## V2-Kontextbindung und Modellzuordnung
+
+V2.2.5 kodiert den optionalen API-Parameter `location` als OpenAPI-`deepObject`:
+`--param 'location[directory]=<Review-Worktree>'`. Vor `provider.get` wird
+`location.get` mit demselben Parameter aufgerufen und der aufgelöste Pfad geprüft.
+So wird die Providerprüfung an den Review-Worktree gebunden statt an die
+globale Standard-Location. Ein P0-Versuch auf
+`13af7f165b730a31684e6ef58b284e5d7a9d41c2` hatte zwar einen echten inhaltlichen
+DeepSeek-PASS, wurde wegen des ungebundenen nachgelagerten Metadatenaufrufs
+technisch BLOCKED. Er gilt deshalb nicht als Phasenfreigabe.
+
+Die offizielle Zuordnung wird aus derselben Tabellenspalte von `MODEL` und
+`MODEL VERSION` gelesen. Ein blosses gemeinsames Vorkommen von API-ID und altem
+Versionsnamen in einer Fussnote genügt nicht. Der Berichtsschema-Validator
+unterscheidet Integer und Boolean und verlangt alle obligatorischen Felder.
+JSON-Inventar und JSON-Evidenz werden weiterhin klassifiziert, aber nicht als
+Markdown interpretiert. Die Lesesperre betrifft `.git` und `.git/*`, wodurch
+`.gitignore` und `.github` für den Reviewer lesbar bleiben.
+
+Mit `--implementer-evidence <externes-Verzeichnis>` werden die eigenen,
+sauberen Kandidatengates von A dem Reviewer separat bereitgestellt. Der Runner
+prüft Kandidaten-SHA, Befehle, Log-Digests, Testzahlen und Artefaktaudit, bevor er
+diese sekundären Belege kopiert. Sie ersetzen niemals die unabhängigen B-Gates.
