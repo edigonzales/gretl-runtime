@@ -136,3 +136,11 @@ kann das Modell keinen nicht angebotenen Schreibtoolaufruf absenden; der echte
 V2-Permission-Evaluator weist die explizite Edit-Anfrage zurück. Dieser technisch
 belegte Unterschied zum wörtlichen Versuch aus §4.4 wird dem Reviewer als
 LOW-Resthinweis offengelegt, nicht als ausgeführter Schreibtoolaufruf behauptet.
+
+Der Smoke-Prompt fordert den verbotenen Shellaufruf ausdrücklich als erste Aktion
+an. Zwei Versuche auf `a43085d3d934c2369234cd848c380b9b70b4003c` gaben lediglich
+das Antworttoken zurück und wurden korrekt gesperrt. Die isolierte Liveprobe
+`/private/tmp/gretl-v2-shell-instruction-dkj568il` belegte mit präziserem Prompt
+den tatsächlichen `printf DENY_TEST`-Toolaufruf und seine technische Ablehnung.
+Der Validator verlangt nun genau diesen Befehl; ein anderer verweigerter
+Shellaufruf oder das Antworttoken allein qualifiziert weiterhin nicht.

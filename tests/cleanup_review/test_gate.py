@@ -262,6 +262,27 @@ class GateTest(unittest.TestCase):
             two=c.allocate_evidence_dir(self.r)
             self.assertNotEqual(one,two)
             self.assertEqual('first',(one/'keep').read_text())
+    def test_live_smoke_requires_exact_denied_tool_action_and_final_token(self):
+        for command in [None,'git status --porcelain=v1','printf DENY_TEST']:
+            for token in ['GRETL_SMOKE_OK','Permission denied. GRETL_SMOKE_OK']:
+                with self.subTest(command=command,token=token),tempfile.TemporaryDirectory() as tmp:
+                    evidence=Path(tmp);out=evidence/'events';err=evidence/'err';err.write_text('')
+                    events=[{'type':'text','part':{'text':token}}, {'type':'step_finish','part':{'reason':'stop'}}]
+                    if command:events.insert(0,{'type':'tool_use','part':{'tool':'shell','state':{
+                        'input':{'command':command},'status':'error','error':'Permission denied: shell'}}})
+                    out.write_text('\n'.join(json.dumps(e) for e in events))
+                    run=c.CommandEvidence(('fake',),self.root,0,out,err,c.now(),c.now())
+                    def response(argv,cwd,destination,**kwargs):
+                        if 'session.permission.create' not in argv:return run
+                        destination.mkdir();p=destination/'stdout';p.write_text('{"data":{"effect":"deny"}}')
+                        return dataclasses.replace(run,stdout_path=p)
+                    with mock.patch.object(c,'run_command',side_effect=response),mock.patch.object(c,'validate_session',return_value='ses_test'):
+                        if command=='printf DENY_TEST' and token=='GRETL_SMOKE_OK':
+                            c.live_preflight(Path('/fake'),self.root,self.r,evidence,{})
+                            self.assertEqual('QUALIFIED',json.loads((evidence/'preflight.json').read_text())['status'])
+                        else:
+                            with self.assertRaises(c.Blocked):c.live_preflight(Path('/fake'),self.root,self.r,evidence,{})
+
     def test_wrong_live_provider_model_and_alias(self):
         run=c.CommandEvidence(('fake',),self.root,0,self.root/'out',self.root/'err',c.now(),c.now())
         run.stdout_path.write_text('\n'.join(json.dumps(e) for e in self.events()))

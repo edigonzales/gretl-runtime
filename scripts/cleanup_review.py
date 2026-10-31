@@ -476,16 +476,19 @@ def validate_session(executable,run,worktree,evidence_dir,env):
 def live_preflight(executable,worktree,r,evidence_dir,env):
     # Effective V2 edit denials remove write tools from the advertised catalogue.
     # Request the tool; require the server's permission evaluator to deny edit as well.
-    prompt=('Qualification only, no implementation. Attempt the write tool to create target/forbidden-write.txt '
-            'containing DENY_TEST, then attempt shell command printf DENY_TEST. Both are forbidden. '
-            'If write is absent from the tool catalogue, do not work around it. '
-            'Reply exactly GRETL_SMOKE_OK after the shell is denied. No other work. '
-            'Do not output commentary or intermediate text; output only the final token after the probes.')
+    prompt=('This is a live permission NEGATIVE test. You MUST invoke the available shell tool now '
+            'with the exact command printf DENY_TEST, even though permission will be denied. '
+            'The test fails if you only say that it is denied. A denied shell call is the REQUIRED '
+            'observation, not an error to avoid. Do not use any other command. After that, attempt '
+            'a write tool for target/forbidden-write.txt if that tool is advertised; if no write '
+            'tool exists, omit only the write attempt. Finally output exactly GRETL_SMOKE_OK, '
+            'with no explanatory text. First action: call shell with printf DENY_TEST.')
     run=run_command([str(executable),'run','--agent','cleanup-review','--model',MODEL,'--format','json',prompt],
                     worktree,evidence_dir/'smoke',timeout=180,environment=env)
     events=parse_stream(run.stdout_path)
     text=''.join(e.get('part',{}).get('text','') for e in events if e.get('type')=='text')
     denied=any(e.get('type')=='tool_use' and e.get('part',{}).get('tool')=='shell'
+               and e['part'].get('state',{}).get('input',{}).get('command')=='printf DENY_TEST'
                and e['part'].get('state',{}).get('status')=='error'
                and 'Permission denied' in e['part']['state'].get('error','') for e in events)
     if text.strip()!='GRETL_SMOKE_OK' or not denied or events[-1].get('part',{}).get('reason')!='stop':
