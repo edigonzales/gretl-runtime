@@ -138,6 +138,24 @@ class GateTest(unittest.TestCase):
         with self.assertRaises(c.Blocked): c.parse_final_review(self.stream(self.events()+self.events()))
     def test_contradictory_intermediate(self):
         with self.assertRaises(c.Blocked): c.parse_final_review(self.stream([{'type':'text','part':{'text':'FAIL'}}]+self.events()))
+    def test_final_message_boundary_allows_only_completed_neutral_progress(self):
+        final=self.events()
+        for event in final:event['part']['messageID']='msg_final'
+        progress=[{'type':'text','part':{'messageID':'msg_tools','text':"I'll start by reading the specification and checking the source."}},
+                  {'type':'step_finish','part':{'messageID':'msg_tools','reason':'tool-calls'}}]
+        self.assertEqual(self.review,c.parse_final_review(self.stream(progress+final)))
+        self.assertEqual(final[0]['part']['text'],c.final_review_text(progress+final))
+        for verdict in ['FAIL','PASS','BLOCKED','Freigabe erteilt','All checks passed']:
+            bad=copy.deepcopy(progress);bad[0]['part']['text']=verdict
+            with self.assertRaises(c.Blocked):c.parse_final_review(self.stream(bad+final))
+        variants=[progress[:1]+final, # no completed tool-message boundary
+                  [dict(type='text',part={'text':'neutral but unbound'})]+final,
+                  progress+[dict(type='step_finish',part={'messageID':'msg_other','reason':'stop'})]+final]
+        wrong=copy.deepcopy(final);wrong[-1]['part']['messageID']='msg_other';variants.append(progress+wrong)
+        extra=copy.deepcopy(final);extra[0]['part']['text']='Introduction\n'+extra[0]['part']['text'];variants.append(progress+extra)
+        for events in variants:
+            with self.assertRaises(c.Blocked):c.parse_final_review(self.stream(events))
+
     def test_missing_failed_gate(self):
         self.gates.pop()
         with self.assertRaises(c.Blocked): self.evaluate()

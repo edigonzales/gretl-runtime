@@ -415,19 +415,49 @@ def parse_stream(path):
     return events
 
 
-def parse_final_review(jsonl_path):
-    events=parse_stream(jsonl_path)
-    texts=[e.get('part',{}).get('text','') for e in events if e.get('type')=='text']
-    text='\n'.join(texts)
-    if text.count(BEGIN)!=1 or text.count(END)!=1:
-        raise Blocked('Missing/ambiguous final review markers')
-    before,tail=text.split(BEGIN)
-    body,after=tail.split(END)
-    if before.strip() or after.strip():
-        raise Blocked('Contradictory/nonfinal review text')
-    # V2 live qualification determines completion and provenance; never accept exit 0 alone.
+def final_review_text(events):
+    """Bind the sole final report to V2's stopped assistant message (§4.3.8).
+
+    Earlier neutral tool-progress messages are not the final answer. Never accept
+    an earlier verdict, an unbound preamble, multiple reports or final commentary.
+    """
     if not events or events[-1].get('type')!='step_finish' or events[-1].get('part',{}).get('reason')!='stop':
         raise Blocked('Stream ended without final completion')
+    texts=[(n,e.get('part',{})) for n,e in enumerate(events) if e.get('type')=='text']
+    all_text='\n'.join(part.get('text','') for _,part in texts)
+    if all_text.count(BEGIN)!=1 or all_text.count(END)!=1:
+        raise Blocked('Missing/ambiguous final review markers')
+    final_id=events[-1]['part'].get('messageID')
+    if final_id:
+        final=[(n,p) for n,p in texts if p.get('messageID')==final_id]
+        if not final:raise Blocked('Final report not bound to stopped message')
+        first=final[0][0]
+        for index,part in texts:
+            if part.get('messageID')==final_id:continue
+            mid=part.get('messageID');progress=part.get('text','')
+            completed=any(index<n<first and e.get('type')=='step_finish'
+                          and e.get('part',{}).get('messageID')==mid
+                          and e['part'].get('reason')=='tool-calls' for n,e in enumerate(events))
+            if not mid or index>=first or not completed or re.search(
+                    r'\b(?:PASS|FAIL|BLOCKED|verdict|approved|passed|failed|Freigabe|abgenommen|bestanden)\b',progress,re.I):
+                raise Blocked('Contradictory or unbound intermediate review text')
+        if any(e.get('type')=='step_finish' and e.get('part',{}).get('reason')=='stop' for e in events[:-1]):
+            raise Blocked('Multiple final completions')
+        text='\n'.join(p.get('text','') for _,p in final)
+    else:
+        # Minimal qualified fixtures/older event shape: no trustworthy message
+        # boundary exists, so retain the strict no-preamble whole-stream rule.
+        text=all_text
+    before,tail=text.split(BEGIN) if BEGIN in text else ('', '')
+    if END not in tail:raise Blocked('Final markers outside stopped message')
+    body,after=tail.split(END)
+    if before.strip() or after.strip():raise Blocked('Contradictory/nonfinal review text')
+    return text
+
+
+def parse_final_review(jsonl_path):
+    text=final_review_text(parse_stream(jsonl_path))
+    body=text.split(BEGIN)[1].split(END)[0]
     try: review=json.loads(body)
     except ValueError as exc: raise Blocked('Invalid review JSON: '+str(exc))
     return review
@@ -603,7 +633,8 @@ def evaluate_review(review,r,worktree,gate_runs):
 
 def invoke_opencode(worktree,r,evidence_dir,environment,executable):
     diff=git(worktree,'diff','--name-status','--find-renames',r.phase_base_sha+'..'+r.candidate_sha)
-    prompt='''Du bist der unabhängige Agent B, ohne Implementierungsbeteiligung. Prüfe streng und inhaltlich die Bereinigung.
+    prompt='''Keine Fortschritts- oder Einleitungstexte ausgeben; vor dem endgültigen JSON ausschliesslich Tools benutzen.
+Du bist der unabhängige Agent B, ohne Implementierungsbeteiligung. Prüfe streng und inhaltlich die Bereinigung.
 Phase %s; phaseBaseSha %s; candidateSha %s; initialBaselineSha %s.
 Lies vollständig %s sowie scripts/cleanup_review.py und die Phase-Kriterien. Alte AGENTS-Pläne sind keine neuen Arbeitsaufträge.
 Prüfe selbst git status --porcelain=v1, git diff --name-status --find-renames %s..%s und git diff %s..%s.
@@ -758,7 +789,7 @@ def main(argv=None):
             result=invoke_opencode(worktree,r,evidence_dir,env,executable)
             validate_session(executable,result,worktree,evidence_dir/'review-provenance',env)
             review=parse_final_review(result.stdout_path)
-            final_text='\n'.join(e.get('part',{}).get('text','') for e in parse_stream(result.stdout_path) if e.get('type')=='text')
+            final_text=final_review_text(parse_stream(result.stdout_path))
             (evidence_dir/'review-final.txt').write_text(final_text)
             save(evidence_dir/'review.json',review)
             evaluate_review(review,r,worktree,gates)

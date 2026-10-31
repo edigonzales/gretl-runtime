@@ -144,3 +144,19 @@ das Antworttoken zurück und wurden korrekt gesperrt. Die isolierte Liveprobe
 den tatsächlichen `printf DENY_TEST`-Toolaufruf und seine technische Ablehnung.
 Der Validator verlangt nun genau diesen Befehl; ein anderer verweigerter
 Shellaufruf oder das Antworttoken allein qualifiziert weiterhin nicht.
+
+## Endgültiger Reviewtext und V2-Nachrichtengrenzen
+
+Der echte Review auf `b6f6377b01c7a3b3169aacb90c75c9268c7a5cfb` enthielt eine
+vollständige unabhängige PASS-Matrix ohne Findings, blieb technisch aber BLOCKED:
+Der erste Parser behandelte einen vorherigen neutralen Fortschrittssatz als
+Bestandteil der endgültigen Antwort. §4.3.8 verlangt einen eindeutigen finalen
+Bericht. Der Parser bindet ihn nun an die tatsächliche V2-`messageID` des letzten
+`step_finish(reason=stop)`. Frühere neutrale Texte sind nur nachweislich in zuvor
+abgeschlossenen `tool-calls`-Nachrichten zulässig. Zwischenurteile, weitere
+Abschlüsse, fehlende IDs, doppelte Marker und jeder Vor-/Nachtext in der finalen
+Nachricht bleiben gesperrt. Ohne Nachrichtengrenzen gilt die bisherige strengere
+Gesamtstromprüfung. Rohstream und Originalantwort bleiben extern unverändert;
+exportiert wird ausschliesslich der unveränderte endgültige Modelltext.
+Der frühere BLOCKED-Lauf wird weder neu bewertet noch als Freigabe exportiert.
+Ein neuer Kandidat mit allen Gates und einer neuen unabhängigen Sitzung ist nötig.
