@@ -125,7 +125,11 @@ Die 294 im P0-Orakel erfassten Java-Quellen bleiben byteidentisch. Dazu gehören
 vier Dateien mit fünf historischen Kommentarzeilen: drei Runtime-Dateien und
 der externe FileSize-Beispielprovider. Ihre Herkunftsetiketten sind in der
 Restinventur einzeln als historische Kommentare begründet; sie sind keine neuen
-Arbeitsaufträge. Fachliche `phase`-/`failurePhase`-, `Legacy`-, `Selected`-,
+Arbeitsaufträge. Nummerierte Bezeichnungen wie `Phase 7` werden einschliesslich
+Leerzeichen, Bindestrich oder Unterstrich als historische Marker erkannt, niemals
+als fachliche Ausführungsphase. Die Prüfung verlangt alle vier benannten Dateien
+und fünf eindeutige Kommentarzeilen; mehrere Marker derselben Zeile zählen einmal.
+Fachliche `phase`-/`failurePhase`-, `Legacy`-, `Selected`-,
 `Probe`- und `Fixture`-Namen bleiben mit ihren konkreten Bedeutungen und Pfaden
 erhalten. Geschützte Spezifikation, Baselines und unveränderte unabhängige Reviews
 werden gehasht, nicht nachträglich umgeschrieben.

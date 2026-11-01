@@ -422,8 +422,8 @@
     {
       "path": "docs/maintenance/cleanup/README.md",
       "kind": "protected-history-or-review-evidence",
-      "sha256": "8ca563f467d7690e36d01e40ee879e8bae2138a999094d5622582938406cf86e",
-      "bytes": 8229,
+      "sha256": "b6bf1ba8c45a8bdf427e4fd3b4d9b20437db3f425358557ed14cdea08e1cd4a9",
+      "bytes": 8542,
       "disposition": "RETAIN_IMMUTABLE_EVIDENCE",
       "matches": []
     },
@@ -9349,10 +9349,10 @@
       "matches": [
         {
           "line": 13,
-          "token": "Phase",
+          "token": "Phase 7",
           "context": " * adapter level) and is not part of the Phase 7 core.",
-          "classification": "execution-or-error-phase",
-          "reason": "Execution/setup/cleanup/logging or failure phase (including failurePhase and qualified review phases); semantic contract rather than an implementation milestone."
+          "classification": "historical-source-comment",
+          "reason": "Historical migration-layer comment distinguishing format core from IOX adapter option parsing, not a future Phase 7 assignment. Package-private implementation is unchanged; public Db2Shp/Shp2Db and schemas must not be cosmetically refactored."
         }
       ]
     },

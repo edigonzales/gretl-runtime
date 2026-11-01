@@ -12,8 +12,8 @@ ROOT=Path(__file__).resolve().parents[1]
 MANIFEST='docs/maintenance/cleanup/rest-inventory.json'
 BASE='27aa194f47412a9ac6f0a69dbc55f5a22adf12d6'
 INITIAL='8eec03184883ce9d585d46a768b647f2b7a19169'
-TOKENS=re.compile(r'\b\w*(?:[Pp]robe|[Ff]ixture|[Ll]egacy|[Ss]elected|[Pp]hase|[Hh]ardening)\w*\b|\b[Mm][0-7]\b')
-HISTORICAL=re.compile(r'\b(?:M[0-7]|[Pp]hase[ _-]*[0-9]+|[Hh]ardening)\b|GretlM0Fixture|m0-points|gretl_m0_points')
+TOKENS=re.compile(r'\b[Pp]hase[ _-]*[0-9]+\w*\b|\b\w*(?:[Pp]robe|[Ff]ixture|[Ll]egacy|[Ss]elected|[Pp]hase|[Hh]ardening)\w*\b|\b[Mm][0-7]\b')
+HISTORICAL=re.compile(r'\b(?:M[0-7]|[Hh]ardening)\b|\b[Pp]hase[ _-]*[0-9]+\w*\b|GretlM0Fixture|m0-points|gretl_m0_points')
 COMMENTS={
  'examples/file-size-extension/src/main/java/example/ExampleProvider.java':
   'Historical origin comment on the real externally packaged FileSize operation example; class and API names are already neutral. Its exact source is part of the frozen P0 production-source oracle, so preserve it rather than cosmetically changing the SPI example. It is not a current M0 assignment.',
@@ -29,7 +29,9 @@ def sha(data):return hashlib.sha256(data).hexdigest()
 
 
 def reason(path,line,token):
-    if HISTORICAL.search(token):
+    # Keep a numbered historical phrase intact, and also inspect its context:
+    # callers must never turn "Phase 7" into a generic execution-phase exception.
+    if HISTORICAL.search(token) or ('phase' in token.lower() and HISTORICAL.search(line)):
         if path in COMMENTS and (line.lstrip().startswith(('*','//'))):return 'historical-source-comment',COMMENTS[path]
         raise RuntimeError('Unclassified historical marker: '+path+': '+line)
     low=token.lower()
@@ -135,9 +137,13 @@ def check(root):
         if any(r['path'] not in classes for r in additions):raise RuntimeError('Uninventoried current file')
         actual['files']=[r for r in actual['files'] if r['path'] in known]
     if actual!=expected:raise RuntimeError('Rest inventory stale: regenerate explicitly, inspect new markers and re-review candidate')
+    historical={(r['path'],m['line']) for r in expected['files'] for m in r['matches'] if m['classification']=='historical-source-comment'}
+    if {p for p,line in historical}!=set(COMMENTS) or len(historical)!=5:
+        raise RuntimeError('Historical source-comment classification must cover exactly the four documented files and five lines')
     return dict(status='PASS',sourceRevision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),
       manifestSha256=sha((root/MANIFEST).read_bytes()),filesByKind=dict(collections.Counter(r['kind'] for r in expected['files'])),
       markerClassifications=dict(collections.Counter(m['classification'] for r in expected['files'] for m in r['matches'])),
+      historicalSourceComments=dict(files=len({p for p,line in historical}),lines=len(historical),locations=[dict(path=p,line=line) for p,line in sorted(historical)]),
       testPreservation=test_preservation(root),postReviewProofFiles=[r['path'] for r in additions])
 
 

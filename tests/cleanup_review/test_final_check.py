@@ -11,6 +11,27 @@ import cleanup_final_check as final
 
 
 class FinalCheckTest(unittest.TestCase):
+    def test_numbered_phase_phrases_are_not_execution_phase_exceptions(self):
+        path='gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/core/ShapefileWriteOptions.java'
+        for phrase in ('Phase2','Phase 7','phase-7','Phase_7','Phase2Later'):
+            line=' * adapter level) and is not part of the '+phrase+' core.'
+            with self.subTest(phrase=phrase):
+                tokens=[m.group(0) for m in final.TOKENS.finditer(line)]
+                self.assertIn(phrase,tokens)
+                self.assertEqual('historical-source-comment',final.reason(path,line,phrase)[0])
+                with self.assertRaises(RuntimeError):final.reason('website/features.qmd',line,phrase)
+        # Also prevent the original bug for a caller that supplies a split token.
+        self.assertEqual('historical-source-comment',final.reason(path,' * Phase 7 core.','Phase')[0])
+        with self.assertRaises(RuntimeError):final.reason('website/features.qmd','Phase 7 coming later','Phase')
+
+    def test_scan_rejects_unknown_spaced_and_hyphenated_historical_phases(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);subprocess.run(['git','init','-q',directory],check=True)
+            page=root/'website/features.qmd';page.parent.mkdir()
+            for text in ('Phase 7 is pending','phase-2 is pending','Phase_3 is pending'):
+                page.write_text(text+'\n')
+                with self.subTest(text=text),self.assertRaisesRegex(RuntimeError,'Unclassified historical marker'):final.scan(root)
+
     def test_unknown_historical_names_fail(self):
         for path,line,token in [('website/features.qmd','Phase2 coming later','Phase2'),
                                 ('gretl-api/src/main/java/NewM0.java','NewM0.java','M0'),
