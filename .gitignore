@@ -14,3 +14,6 @@ __pycache__/
 
 # Local Thoth build cache
 /.thoth/
+
+# Private matrix proof sets, retained across Maven clean
+/.gretl-verification/

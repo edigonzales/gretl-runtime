@@ -65,6 +65,36 @@ class ArtifactJobRunnerTest {
         assertTrue(ArtifactJobRunner.stop(process));
         assertEquals(137, process.exitValue());
     }
+    @Test void realUncooperativeHostChildIsForciblyReaped() throws Exception {
+        Path ready = root.resolve("ready");
+        var child = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin/java").toString(),
+                "-cp", System.getProperty("java.class.path"), StubbornChild.class.getName(), ready.toString())
+                .redirectOutput(root.resolve("child.out").toFile()).redirectError(root.resolve("child.err").toFile()).start();
+        try {
+            long deadline = System.nanoTime() + Duration.ofSeconds(10).toNanos();
+            while (!Files.exists(ready)) {
+                assertTrue(child.isAlive(), Files.readString(root.resolve("child.err")));
+                assertTrue(System.nanoTime() < deadline, "No child checkpoint");
+                Thread.sleep(10);
+            }
+            long started = System.nanoTime();
+            assertTrue(ArtifactJobRunner.stop(child), "Blocking shutdown hook requires force termination");
+            assertFalse(child.isAlive());
+            assertNotEquals(0, child.exitValue());
+            assertTrue(System.nanoTime() - started < Duration.ofSeconds(45).toNanos());
+        } finally {
+            if (child.isAlive()) { child.destroyForcibly(); assertTrue(child.waitFor(5, java.util.concurrent.TimeUnit.SECONDS)); }
+        }
+    }
+    public static class StubbornChild {
+        public static void main(String[] args) throws Exception {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                for (;;) java.util.concurrent.locks.LockSupport.parkNanos(1_000_000_000L);
+            }));
+            Files.writeString(Path.of(args[0]), "ready");
+            for (;;) Thread.sleep(1000);
+        }
+    }
     @Test void scriptArgumentsHaveNoShellSplittingOrPackagingBoundary() throws Exception {
         var request = new ArtifactJobRunner.Request("arguments", root, root, List.of("a"), Map.of("value", "ä b;$HOME"),
                 Map.of(), Map.of(), Map.of(), Duration.ofSeconds(1), ArtifactJobRunner.JobInput.script("anders ü.groovy"), ArtifactJobRunner.Invocation.run());

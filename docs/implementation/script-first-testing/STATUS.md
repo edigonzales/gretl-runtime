@@ -36,6 +36,8 @@ Host macOS/ARM64, Docker Linux/ARM64; PostGIS teilweise AMD64-emuliert.
 Keine echte GRETL-IMAGE-Qualifikation behauptet.
 
 Diese reine Nachweisablage ändert den geprüften Produktkandidaten nicht.
-Nächste Aktion: TST2-Phasenbasis an diesem Nachweiscommit festhalten,
-Methoden/Varianten klassifizieren, unabhängigen Szenariokatalog und
-SCRIPT-/JAR-local/full-Matrix samt Fehlgrün-Proben umsetzen.
+TST2-Phasenbasis: `6bf473df13f1c33677e1a4a4f33fd49776aa6546`.
+[Implementierungsbericht TST2](implementation/TST2.md).
+Gezielte SCRIPT-/JAR-Entwicklungsprüfungen bestanden; der feste Kandidat
+und seine vollständigen Phasengates werden als nächster Schritt ausgeführt.
+TST3 bleibt bis zum gültigen unabhängigen TST2-PASS gesperrt.

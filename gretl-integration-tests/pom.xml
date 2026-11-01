@@ -174,6 +174,15 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <executions>
           <execution>
@@ -186,6 +195,7 @@
         <configuration>
           <includes><include>${gretl.test.includes}</include></includes>
           <systemPropertyVariables>
+            <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
             <gretl.test.reactorDistribution>${maven.multiModuleProjectDirectory}/gretl-dist/target/dist</gretl.test.reactorDistribution>
             <gretl.test.distributionArchive>${maven.multiModuleProjectDirectory}/gretl-dist/target/gretl-runtime-${project.version}-bin.zip</gretl.test.distributionArchive>
           </systemPropertyVariables>

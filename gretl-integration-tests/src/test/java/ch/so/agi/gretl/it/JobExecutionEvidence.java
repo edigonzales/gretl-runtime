@@ -20,6 +20,12 @@ final class JobExecutionEvidence {
         row.put("sha256", result.artifactIdentity());
         row.put("exitCode", result.code()); row.put("timedOut", result.timedOut()); row.put("aborted", result.aborted());
         row.put("durationMillis", result.duration().toMillis());
+        if (Files.isRegularFile(result.report())) {
+            var report = (Map<?, ?>) Json.parseFile(result.report(), 16L << 20);
+            if (report.get("identity") instanceof Map<?, ?> identity)
+                row.put("reportIdentity", Map.of("runId", identity.get("runId"),
+                        "commandId", identity.get("commandId"), "sha256", JobInputSnapshot.hash(result.report())));
+        }
         row.put("process", Map.of("state", result.forciblyKilled() ? "FORCED_TERMINATION" : result.timedOut() ? "TIMED_OUT"
                         : result.aborted() ? "CANCELLED" : "EXITED", "exitCode", result.code(),
                 "timedOut", result.timedOut(), "cancellationRequested", result.aborted(), "forciblyKilled", result.forciblyKilled(),
@@ -29,6 +35,7 @@ final class JobExecutionEvidence {
     private static Map<String, Object> base(ArtifactJobRunner.Prepared prepared) {
         var request = prepared.request();
         var row = new LinkedHashMap<String, Object>();
+        row.putAll(JobTestContext.identity(request.directory()));
         row.put("schemaVersion", 2); row.put("scenario", request.id()); row.put("mode", prepared.mode().name());
         row.put("suiteRunId", System.getProperty("gretl.test.runId", "development"));
         row.put("executionKind", prepared.mode() == ArtifactJobRunner.Mode.JAR ? "PRECOMPILED_JOB" : "SCRIPT");
@@ -49,8 +56,11 @@ final class JobExecutionEvidence {
         return row;
     }
     static void failure(ArtifactJobRunner.Request request, ArtifactJobRunner.Mode mode, String state, Exception cause) throws IOException {
-        write(request.directory(), Map.of("schemaVersion", 2, "scenario", request.id(), "mode", mode.name(),
+        Map<String, Object> row = new LinkedHashMap<>(JobTestContext.identity(request.directory()));
+        row.putAll(Map.of("schemaVersion", 2, "scenario", request.id(), "mode", mode.name(),
+                "suiteRunId", System.getProperty("gretl.test.runId", "development"),
                 "process", Map.of("state", state, "causeType", cause.getClass().getName())));
+        write(request.directory(), row);
     }
     private static void write(Path directory, Map<String, Object> row) throws IOException {
         Path temporary = Files.createTempFile(directory, "execution-", ".tmp");

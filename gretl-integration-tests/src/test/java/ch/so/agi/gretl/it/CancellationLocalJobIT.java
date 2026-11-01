@@ -7,19 +7,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class CancellationLocalJobIT {
     @ParameterizedTest
-    @CsvSource({"false,false", "true,false", "false,true", "true,true"})
-    void cooperativeCancelAndSigtermFinishOnce(boolean script, boolean sigterm) throws Exception {
-        Path root = ArtifactJobRunner.directory("cancel-" + script + "-" + sigterm);
+    @CsvSource({"false", "true"})
+    void cooperativeCancelAndSigtermFinishOnce(boolean sigterm) throws Exception {
+        var mode = ArtifactJobRunner.Mode.configured();
+        Path root = ArtifactJobRunner.directory("cancel-" + mode + "-" + sigterm);
         try (var watch = FileSystems.getDefault().newWatchService()) {
             root.resolve("output").register(watch, StandardWatchEventKinds.ENTRY_CREATE);
             var request = new ArtifactJobRunner.Request("cancel", ArtifactJobRunner.fixture("cancellation"),
                     root, List.of(), Map.of("signals", root.resolve("output")), Map.of(),
                     JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
-            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request, script ? ArtifactJobRunner.Mode.SCRIPT : ArtifactJobRunner.Mode.JAR));
+            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request));
             try {
                 await(root.resolve("output/ready"), running.process(), watch);
                 if (sigterm) ArtifactJobRunner.cancel(running);
@@ -41,16 +43,16 @@ class CancellationLocalJobIT {
         }
     }
 
-    @ParameterizedTest
-    @CsvSource({"false", "true"})
-    void originalFailureWinsOverSigtermDuringCleanup(boolean script) throws Exception {
-        Path root = ArtifactJobRunner.directory("failed-shutdown-" + script);
+    @Test
+    void originalFailureWinsOverSigtermDuringCleanup() throws Exception {
+        var mode = ArtifactJobRunner.Mode.configured();
+        Path root = ArtifactJobRunner.directory("failed-shutdown-" + mode);
         try (var watch = FileSystems.getDefault().newWatchService()) {
             root.resolve("output").register(watch, StandardWatchEventKinds.ENTRY_CREATE);
             var request = new ArtifactJobRunner.Request("failed-shutdown", ArtifactJobRunner.fixture("cancellation"),
                     root, List.of(), Map.of("signals", root.resolve("output"), "fail", "true"), Map.of(),
                     JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
-            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request, script ? ArtifactJobRunner.Mode.SCRIPT : ArtifactJobRunner.Mode.JAR));
+            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request));
             try {
                 await(root.resolve("output/ready"), running.process(), watch);
                 ArtifactJobRunner.cancel(running);
@@ -67,16 +69,16 @@ class CancellationLocalJobIT {
         }
     }
 
-    @ParameterizedTest
-    @CsvSource({"false", "true"})
-    void runnerTimeoutReapsTheProcessAndPreservesCooperativeReport(boolean script) throws Exception {
-        Path root = ArtifactJobRunner.directory("runner-timeout-" + script);
+    @Test
+    void runnerTimeoutReapsTheProcessAndPreservesCooperativeReport() throws Exception {
+        var mode = ArtifactJobRunner.Mode.configured();
+        Path root = ArtifactJobRunner.directory("runner-timeout-" + mode);
         try (var watch = FileSystems.getDefault().newWatchService()) {
             root.resolve("output").register(watch, StandardWatchEventKinds.ENTRY_CREATE);
             var request = new ArtifactJobRunner.Request("runner-timeout", ArtifactJobRunner.fixture("cancellation"),
                     root, List.of(), Map.of("signals", root.resolve("output")), Map.of(),
                     JobRunner.baseConfig(root), Map.of(), Duration.ofMillis(10));
-            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request, script ? ArtifactJobRunner.Mode.SCRIPT : ArtifactJobRunner.Mode.JAR));
+            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request));
             try {
                 await(root.resolve("output/ready"), running.process(), watch);
                 var result = ArtifactJobRunner.finish(running, false);

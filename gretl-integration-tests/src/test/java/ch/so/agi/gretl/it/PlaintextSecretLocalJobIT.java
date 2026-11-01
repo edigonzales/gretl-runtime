@@ -11,25 +11,24 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
 
 /** Checks product output before ArtifactJobRunner applies its evidence redaction. */
 class PlaintextSecretLocalJobIT {
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void scriptAndJarResolvePlaintextThroughAliasesAndMaskRawOutputs(boolean script) throws Exception {
-        Path root = ArtifactJobRunner.directory("plaintext-" + script);
-        String sentinel = "plaintext-artifact-sentinel-" + script;
+    @Test
+    void scriptAndJarResolvePlaintextThroughAliasesAndMaskRawOutputs() throws Exception {
+        var mode = ArtifactJobRunner.Mode.configured();
+        Path root = ArtifactJobRunner.directory("plaintext-" + mode);
+        String sentinel = "plaintext-artifact-sentinel-common";
         var config = JobRunner.baseConfig(root);
         config.put("secrets", Map.of("dbPassword", Map.of("plaintext", sentinel)));
         JobRunner.taskConfig(config, "edit", Map.of(
                 "jdbcUrl", "jdbc:sqlite:" + root.resolve("output/probe.sqlite"),
                 "user", "test", "passwordSecret", "dbPassword"));
-        var request = new ArtifactJobRunner.Request("plaintext-" + script,
+        var request = new ArtifactJobRunner.Request("plaintext-" + mode,
                 ArtifactJobRunner.fixture("plaintext-secret"), root, List.of(),
                 Map.of("output", root.resolve("output")), Map.of(), config, Map.of(), Duration.ofSeconds(45));
-        var prepared = ArtifactJobRunner.prepare(request, script ? ArtifactJobRunner.Mode.SCRIPT : ArtifactJobRunner.Mode.JAR);
+        var prepared = ArtifactJobRunner.prepare(request);
         var running = ArtifactJobRunner.start(prepared);
         try {
             assertTrue(running.process().waitFor(45, TimeUnit.SECONDS), "Product process timed out");
