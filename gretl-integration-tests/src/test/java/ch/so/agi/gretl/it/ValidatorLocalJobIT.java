@@ -24,7 +24,7 @@ class ValidatorLocalJobIT {
         assertFalse(result.timedOut());
         assertTrue(Files.readString(root.resolve("output/validation.log")).contains("validation done"));
         assertTrue(Files.readString(result.report()).contains("SUCCEEDED"));
-        assertEquals(System.getProperty("gretl.test.executionMode", "JAR"), result.mode());
+        assertEquals(ArtifactJobRunner.Mode.configured().name(), result.mode());
         assertTrue(result.hasValidArtifactIdentity());
     }
 

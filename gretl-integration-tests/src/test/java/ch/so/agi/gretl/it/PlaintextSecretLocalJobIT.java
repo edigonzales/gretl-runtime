@@ -29,8 +29,8 @@ class PlaintextSecretLocalJobIT {
         var request = new ArtifactJobRunner.Request("plaintext-" + script,
                 ArtifactJobRunner.fixture("plaintext-secret"), root, List.of(),
                 Map.of("output", root.resolve("output")), Map.of(), config, Map.of(), Duration.ofSeconds(45));
-        var prepared = ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.JAR);
-        var running = ArtifactJobRunner.start(prepared, script);
+        var prepared = ArtifactJobRunner.prepare(request, script ? ArtifactJobRunner.Mode.SCRIPT : ArtifactJobRunner.Mode.JAR);
+        var running = ArtifactJobRunner.start(prepared);
         try {
             assertTrue(running.process().waitFor(45, TimeUnit.SECONDS), "Product process timed out");
             assertEquals(10, running.process().exitValue());

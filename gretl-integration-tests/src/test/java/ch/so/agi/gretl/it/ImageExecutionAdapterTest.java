@@ -84,7 +84,7 @@ class ImageExecutionAdapterTest {
     @Test void projectDirectoryInputUsesTheSameNonStartingImageBoundary() throws Exception {
         var base=request();
         var project=new ArtifactJobRunner.Request("project-contract",base.jobDirectory(),base.directory(),List.of(":a:run"),
-                base.parameters(),base.environment(),base.config(),base.endpoints(),base.timeout(),".");
+                base.parameters(),base.environment(),base.config(),base.endpoints(),base.timeout(), ArtifactJobRunner.JobInput.project("."), ArtifactJobRunner.Invocation.run());
         var engine=new RecordingEngine();
         var launch=ImageExecutionAdapter.prepare(project,project.jobDirectory(),settings,engine);
         var args=launch.arguments();int index=args.indexOf(ID);
@@ -97,8 +97,7 @@ class ImageExecutionAdapterTest {
     @Test void finishKeepsImageExitAndTimeoutCancelsAndReapsAtTheBoundary() throws Exception {
         for (boolean timeout : List.of(false, true)) {
             var request = request();
-            @SuppressWarnings("unchecked") var secrets = (Map<String, Object>) request.config().get("secrets");
-            secrets.put("plain", Map.of("plaintext", "evidence-plaintext-sentinel"));
+            request = withConfig(request, "secrets", "plain", Map.of("plaintext", "evidence-plaintext-sentinel"));
             Files.writeString(request.directory().resolve("job.stdout.log"), "image output evidence-plaintext-sentinel");
             Files.writeString(request.directory().resolve("job.stderr.log"), "image diagnostic");
             Files.createDirectories(request.directory().resolve("reports"));
@@ -108,6 +107,7 @@ class ImageExecutionAdapterTest {
                 public java.io.OutputStream getOutputStream() { return java.io.OutputStream.nullOutputStream(); }
                 public java.io.InputStream getInputStream() { return java.io.InputStream.nullInputStream(); }
                 public java.io.InputStream getErrorStream() { return java.io.InputStream.nullInputStream(); }
+                public long pid() { return 1; }
                 public int waitFor() { alive = false; return exitValue(); }
                 public boolean waitFor(long time, java.util.concurrent.TimeUnit unit) { return !alive; }
                 public int exitValue() { if (alive) throw new IllegalThreadStateException(); return timeout ? 20 : 42; }
@@ -121,8 +121,8 @@ class ImageExecutionAdapterTest {
                 public void control(List<String> args) { calls.add(args); if (args.getFirst().equals("stop")) process.destroy(); }
             };
             var launch = new ImageExecutionAdapter.Launch(engine, "fake-container", ID, List.of("run", ID), Map.of(), Map.of());
-            var prepared = new ArtifactJobRunner.Prepared(request, request.jobDirectory(), null, ID, report, launch);
-            var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared, false), false);
+            var prepared = new ArtifactJobRunner.Prepared(request, request.jobDirectory(), report, JobInputSnapshot.capture(request.jobDirectory()), new ArtifactJobRunner.ImageLaunch(null, launch));
+            var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared), false);
             assertEquals(timeout ? 20 : 42, result.code()); assertEquals(timeout, result.timedOut());
             assertEquals(ID, result.artifactIdentity()); assertEquals("IMAGE", result.mode()); assertTrue(result.hasValidArtifactIdentity()); assertEquals(report, result.report()); assertEquals("image output [REDACTED]", result.out());
             assertEquals(result.out(), Files.readString(request.directory().resolve("job.stdout.log")));
@@ -160,11 +160,12 @@ class ImageExecutionAdapterTest {
         ((Map<?, ?>) base.config().get("runtime")).forEach((key, value) -> runtime.put(key.toString(), value));
         String opaque = "/ci/review/42";
         runtime.put("correlationId", opaque); runtime.put("jobName", "/ci/job");
-        base.config().put("runtime", runtime);
+        var changedConfig = new java.util.LinkedHashMap<>(base.config());
+        changedConfig.put("runtime", runtime);
         var environment = new java.util.LinkedHashMap<String, Object>(base.environment());
         environment.put("GRETL_CORRELATION_ID", opaque); environment.put("GRETL_JOB_REVISION", "/refs/review/42");
         var request = new ArtifactJobRunner.Request(base.id(), base.jobDirectory(), base.directory(), base.targets(),
-                base.parameters(), environment, base.config(), base.endpoints(), base.timeout());
+                base.parameters(), environment, changedConfig, base.endpoints(), base.timeout());
         var launch = ImageExecutionAdapter.prepare(request, request.jobDirectory(), settings, new RecordingEngine());
         assertEquals(opaque, ((Map<?, ?>) launch.config().get("runtime")).get("correlationId"));
         assertEquals("/ci/job", ((Map<?, ?>) launch.config().get("runtime")).get("jobName"));
@@ -198,7 +199,9 @@ class ImageExecutionAdapterTest {
         for (int i = 0; i < values.size(); i++) {
             secrets.put("plain" + i, Map.of("plaintext", values.get(i)));
         }
-        request.config().put("secrets", secrets);
+        var changed = new java.util.LinkedHashMap<>(request.config()); changed.put("secrets", secrets);
+        request = new ArtifactJobRunner.Request(request.id(), request.jobDirectory(), request.directory(), request.targets(),
+                request.parameters(), request.environment(), changed, request.endpoints(), request.timeout());
         var engine = new RecordingEngine();
         var launch = ImageExecutionAdapter.prepare(request, request.jobDirectory(), settings, engine);
         var transported = (Map<?, ?>) launch.config().get("secrets");
@@ -217,12 +220,20 @@ class ImageExecutionAdapterTest {
 
     @Test void missingDeclaredEnvironmentSecretFailsBeforeContainerStart() throws Exception {
         var request = request();
-        @SuppressWarnings("unchecked") var secrets = (Map<String, Object>) request.config().get("secrets");
-        secrets.put("missingEnvironment", Map.of("environment", "GRETL_IMAGE_MISSING_SECRET_25F0019"));
-        var exception = assertThrows(java.io.IOException.class, () -> ImageExecutionAdapter.prepare(request, request.jobDirectory(), settings, new RecordingEngine()));
+        request = withConfig(request, "secrets", "missingEnvironment", Map.of("environment", "GRETL_IMAGE_MISSING_SECRET_25F0019"));
+        var finalRequest = request;
+        var exception = assertThrows(java.io.IOException.class, () -> ImageExecutionAdapter.prepare(finalRequest, finalRequest.jobDirectory(), settings, new RecordingEngine()));
         assertTrue(exception.getMessage().contains("Missing IMAGE secret environment"));
     }
 
+    @SuppressWarnings("unchecked")
+    private static ArtifactJobRunner.Request withConfig(ArtifactJobRunner.Request request, String section, String key, Object value) {
+        var config = new java.util.LinkedHashMap<>(request.config());
+        var nested = new java.util.LinkedHashMap<>((Map<String, Object>) config.get(section));
+        nested.put(key, value); config.put(section, nested);
+        return new ArtifactJobRunner.Request(request.id(), request.jobDirectory(), request.directory(), request.targets(),
+                request.parameters(), request.environment(), config, request.endpoints(), request.timeout(), request.input(), request.invocation());
+    }
     @Test void explicitImageNetworkLauncherAndNonRootUserAreRequired() {
         assertThrows(IllegalArgumentException.class, () -> new ImageExecutionAdapter.Settings(null, "/bin/gretl", "net", "1:1", ""));
         assertThrows(IllegalArgumentException.class, () -> new ImageExecutionAdapter.Settings("x", "gretl", "net", "1:1", ""));

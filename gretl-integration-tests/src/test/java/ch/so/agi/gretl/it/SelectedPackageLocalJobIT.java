@@ -96,7 +96,7 @@ class SelectedPackageLocalJobIT {
         PackageArtifactAssertions.verify(jar, source.resolve("job-package.json"));
         var request = new ArtifactJobRunner.Request("selected-external", source, root, List.of(), Map.of("output", root.resolve("output")),
                 Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
-        var prepared = new ArtifactJobRunner.Prepared(request, source, jar, hash(jar), root.resolve("reports/report.json"), null);
+        var prepared = ArtifactJobRunner.existingJar(request, source, jar, root.resolve("reports/report.json"), JobInputSnapshot.capture(source));
         var result = SelectedPackageSupport.detached(prepared);
         assertEquals(0, result.code(), result.err()); assertEquals("5", Files.readString(root.resolve("output/bytes.txt")));
         assertTrue(Files.readString(result.report()).contains("example.file-size"));

@@ -63,21 +63,21 @@ final class SelectedPackageSupport {
                     + " " + environment.getOrDefault("JAVA_TOOL_OPTIONS", ""));
             Files.writeString(foreign.resolve("runtime.json"), Json.write(config));
             var request = new ArtifactJobRunner.Request(original.id(), original.jobDirectory(), foreign, original.targets(), parameters,
-                    environment, config, original.endpoints(), original.timeout(), original.scriptInput());
-            var isolated = new ArtifactJobRunner.Prepared(request, prepared.source(), foreign.resolve("job.jar"), prepared.sha256(), foreign.resolve("reports/report.json"), null);
-            var running = ArtifactJobRunner.start(isolated, false);
+                    environment, config, original.endpoints(), original.timeout(), original.input(), original.invocation());
+            var isolated = ArtifactJobRunner.existingJar(request, prepared.source(), foreign.resolve("job.jar"), foreign.resolve("reports/report.json"), prepared.inputSnapshot());
+            var running = ArtifactJobRunner.start(isolated);
             ArtifactJobRunner.Result result;
             try { result = ArtifactJobRunner.finish(running, false); }
             finally { if (running.process().isAlive()) ArtifactJobRunner.stop(running); }
             for (String directory : List.of("reports", "output")) {
                 delete(original.directory().resolve(directory)); copy(foreign.resolve(directory), original.directory().resolve(directory));
             }
-            for (String file : List.of("execution.json", "command.json", "job.stdout.log", "job.stderr.log"))
+            for (String file : List.of("execution.json", "input-manifest.json", "command.json", "job.stdout.log", "job.stderr.log"))
                 Files.copy(foreign.resolve(file), original.directory().resolve(file), StandardCopyOption.REPLACE_EXISTING);
             Files.writeString(original.directory().resolve("isolation.json"), Json.write(Map.of("foreignCwd", foreign.toString(),
                     "sourceDeleted", !Files.exists(prepared.source()), "path", environment.get("PATH"), "emptyMavenCache", !Files.exists(foreign.resolve("home/.m2")))));
             return new ArtifactJobRunner.Result(result.code(), result.out(), result.err(), original.directory().resolve("reports/report.json"),
-                    original.directory(), result.duration(), result.timedOut(), result.aborted(), result.artifactIdentity(), "JAR");
+                    original.directory(), result.duration(), result.timedOut(), result.aborted(), result.artifactIdentity(), "JAR", result.forciblyKilled());
         } finally { delete(foreign); }
     }
     private static Object relocate(Object value, Path original, Path foreign) {

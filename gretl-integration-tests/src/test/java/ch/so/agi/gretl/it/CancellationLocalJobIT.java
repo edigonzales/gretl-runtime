@@ -19,7 +19,7 @@ class CancellationLocalJobIT {
             var request = new ArtifactJobRunner.Request("cancel", ArtifactJobRunner.fixture("cancellation"),
                     root, List.of(), Map.of("signals", root.resolve("output")), Map.of(),
                     JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
-            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request), script);
+            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request, script ? ArtifactJobRunner.Mode.SCRIPT : ArtifactJobRunner.Mode.JAR));
             try {
                 await(root.resolve("output/ready"), running.process(), watch);
                 if (sigterm) ArtifactJobRunner.cancel(running);
@@ -50,7 +50,7 @@ class CancellationLocalJobIT {
             var request = new ArtifactJobRunner.Request("failed-shutdown", ArtifactJobRunner.fixture("cancellation"),
                     root, List.of(), Map.of("signals", root.resolve("output"), "fail", "true"), Map.of(),
                     JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
-            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request), script);
+            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request, script ? ArtifactJobRunner.Mode.SCRIPT : ArtifactJobRunner.Mode.JAR));
             try {
                 await(root.resolve("output/ready"), running.process(), watch);
                 ArtifactJobRunner.cancel(running);
@@ -76,7 +76,7 @@ class CancellationLocalJobIT {
             var request = new ArtifactJobRunner.Request("runner-timeout", ArtifactJobRunner.fixture("cancellation"),
                     root, List.of(), Map.of("signals", root.resolve("output")), Map.of(),
                     JobRunner.baseConfig(root), Map.of(), Duration.ofMillis(10));
-            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request), script);
+            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request, script ? ArtifactJobRunner.Mode.SCRIPT : ArtifactJobRunner.Mode.JAR));
             try {
                 await(root.resolve("output/ready"), running.process(), watch);
                 var result = ArtifactJobRunner.finish(running, false);

@@ -21,14 +21,14 @@ class ProjectArtifactLocalJobIT {
         var descriptor=object(Json.parseFile(input.resolve("job-package.json"),1L<<20));descriptor.put("name",id);
         Files.writeString(input.resolve("job-package.json"),Json.write(descriptor));
         return new ArtifactJobRunner.Request(id,input,root,targets,Map.of(":output",root.resolve("output/result.txt"),":mode",mode,":import:count","9"),
-                Map.of(),config,Map.of(),Duration.ofSeconds(60),".");
+                Map.of(),config,Map.of(),Duration.ofSeconds(60), ArtifactJobRunner.JobInput.project("."), ArtifactJobRunner.Invocation.run());
     }
     @Test void prj202203204206210211SameIndependentBytesAndGraphInScriptAndDetachedJar() throws Exception {
         var sourceRequest=request("project-script","success",List.of(),"never");
-        var sourcePrepared=ArtifactJobRunner.prepare(sourceRequest,ArtifactJobRunner.Mode.JAR);
+        var sourcePrepared=ArtifactJobRunner.prepare(sourceRequest,ArtifactJobRunner.Mode.SCRIPT);
         assertFalse(Files.exists(sourceRequest.directory().resolve("toplevel-marker.txt")),"No Toplevel during packaging");
         assertFalse(Files.exists(sourceRequest.directory().resolve("reports/report.json")));
-        var script=ArtifactJobRunner.finish(ArtifactJobRunner.start(sourcePrepared,true),false);
+        var script=ArtifactJobRunner.finish(ArtifactJobRunner.start(sourcePrepared),false);
         assertEquals(0,script.code(),script.err());assertRun(script,ORDER,"SUCCEEDED");
         String expected="download-A\n|import-C\n|9|true|helper";
         assertEquals(expected,Files.readString(sourceRequest.directory().resolve("output/result.txt")));
@@ -72,8 +72,8 @@ class ProjectArtifactLocalJobIT {
         for(String id:List.of("version","help","plan")) try(var paths=Files.walk(request.directory().resolve("controls/"+id))) {
             assertFalse(paths.anyMatch(p->p.getFileName().toString().equals("job-resources")));
         }
-        var strippedPrepared=new ArtifactJobRunner.Prepared(request,prepared.source(),stripped,hash(stripped),prepared.report(),null);
-        var run=ArtifactJobRunner.finish(ArtifactJobRunner.start(strippedPrepared,false),false);
+        var strippedPrepared=ArtifactJobRunner.existingJar(request, prepared.source(), stripped, prepared.report(), prepared.inputSnapshot());
+        var run=ArtifactJobRunner.finish(ArtifactJobRunner.start(strippedPrepared),false);
         assertEquals(0,run.code(),run.err());assertRun(run,ORDER,"SUCCEEDED");
         // Keep audit bound to the actual executed JAR, not the superseded package input.
         assertEquals(strippedPrepared.sha256(),hash(stripped));Files.delete(prepared.jar());Files.createLink(prepared.jar(),stripped);
@@ -81,7 +81,7 @@ class ProjectArtifactLocalJobIT {
     @Test void prj209FailurePreservesCauseCleanupOriginalLineAndRetainedProjectResources() throws Exception {
         var request=request("project-failure","fail",List.of(),"on-failure");
         var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.JAR);
-        var result=ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared,false),false);
+        var result=ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared),false);
         assertEquals(10,result.code(),result.err());assertRun(result,ORDER,"FAILED");
         assertEquals("ivd",Files.readString(request.directory().resolve("output/cleanup.txt")));
         assertFalse(Files.exists(request.directory().resolve("output/result.txt")));
@@ -97,8 +97,8 @@ class ProjectArtifactLocalJobIT {
         for (boolean script : List.of(true, false)) for (boolean caught : List.of(false, true)) {
             var request = request("project-inner-" + (caught ? "caught-" : "failed-") + (script ? "script" : "jar"),
                     caught ? "caught" : "nested-fail", List.of(), "on-failure");
-            var prepared = ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.JAR);
-            var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared, script), false);
+            var prepared = ArtifactJobRunner.prepare(request, script ? ArtifactJobRunner.Mode.SCRIPT : ArtifactJobRunner.Mode.JAR);
+            var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared), false);
             assertEquals(caught ? 0 : 10, result.code(), result.err());
             assertRun(result, ORDER, caught ? "SUCCEEDED" : "FAILED");
             assertEquals("ivd", Files.readString(request.directory().resolve("output/cleanup.txt")));
@@ -153,8 +153,8 @@ class ProjectArtifactLocalJobIT {
             if(mode.equals("metadata")) rewrite(prepared.jar(),changed,"META-INF/gretl/job.json","{\"schemaVersion\":2,\"project\":true}");
             else if(mode.equals("syntax")) rewrite(prepared.jar(),changed,"META-INF/gretl/job.json","{");
             else rewrite(prepared.jar(),changed,"META-INF/gretl/job-resources/validation/nested/sql/update.sql",null);
-            var altered=new ArtifactJobRunner.Prepared(request,prepared.source(),changed,hash(changed),prepared.report(),null);
-            var result=ArtifactJobRunner.finish(ArtifactJobRunner.start(altered,false),false);
+            var altered=ArtifactJobRunner.existingJar(request, prepared.source(), changed, prepared.report(), prepared.inputSnapshot());
+            var result=ArtifactJobRunner.finish(ArtifactJobRunner.start(altered),false);
             assertEquals(2,result.code(),result.err()); assertTrue(result.err().contains(mode.equals("resource")?"JOB_RESOURCE_MISSING":"JOB_METADATA_INVALID"),result.err());
             assertFalse(result.err().contains("gretl.run.started"));assertFalse(Files.exists(prepared.report()));
             assertEquals(altered.sha256(),hash(changed));Files.delete(prepared.jar());Files.createLink(prepared.jar(),changed);

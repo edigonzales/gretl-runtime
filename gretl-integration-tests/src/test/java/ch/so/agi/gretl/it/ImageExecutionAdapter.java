@@ -60,6 +60,8 @@ final class ImageExecutionAdapter {
     }
     record Launch(Engine engine, String name, String imageId, List<String> arguments,
                   Map<String, String> environment, Map<String, Object> config) {
+        Launch { arguments = List.copyOf(arguments); environment = Map.copyOf(environment); config = Map.copyOf(config); }
+        @Override public String toString() { return "ImageLaunch[" + name + ", " + imageId + "]"; }
         Process start(Path directory) throws IOException { return engine.start(arguments, directory, environment); }
         void cancel() throws Exception { engine.control(List.of("stop", "--time", "35", name)); }
         void remove() throws Exception {
@@ -145,9 +147,11 @@ final class ImageExecutionAdapter {
         environment.put("HOME", "/work/home"); environment.put("TMPDIR", "/work/tmp");
         environment.put("JAVA_TOOL_OPTIONS", "-Duser.home=/work/home -Djava.io.tmpdir=/work/tmp "
                 + environment.getOrDefault("JAVA_TOOL_OPTIONS", ""));
+        environment.put("GRETL_JAVA_OPTS", "-Dfile.encoding=UTF-8 -Duser.timezone=UTC -Duser.language=de "
+                + environment.getOrDefault("GRETL_JAVA_OPTS", ""));
         environment.put("GRETL_LANGUAGE", "de"); environment.put("TZ", "UTC"); environment.put("LANG", "C.UTF-8");
         environment.keySet().stream().sorted().forEach(key -> args.addAll(List.of("--env", key)));
-        args.addAll(List.of(imageId, "run", request.scriptInput().equals(".") ? "/job" : "/job/job.groovy", "--config", "/config/runtime.json",
+        args.addAll(List.of(imageId, "run", request.input().resolveAgainst(Path.of("/job")).toString(), "--config", "/config/runtime.json",
                 "--report", "/reports/report.json", "--log-format", "json"));
         for (String target : request.targets()) args.addAll(List.of("--target", target));
         request.parameters().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e ->

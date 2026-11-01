@@ -16,46 +16,133 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-/** Artifact boundary: regular distribution packager, then a fresh java -jar process.
+/** Process boundary: actual distribution SCRIPT by default, optional JAR or IMAGE.
  * Capture uses OS file redirection: no pipe can deadlock or remain undrained.
  * Evidence survives JUnit temp cleanup under target/job-evidence.
  */
 final class ArtifactJobRunner {
-    enum Mode { JAR, IMAGE }
-    private static final Map<String, Path> BUILT_FIXTURES = new LinkedHashMap<>();
+    enum Mode {
+        SCRIPT, IMAGE, JAR;
+        static Mode configured() {
+            String value = System.getProperty("gretl.test.executionMode");
+            return value == null ? SCRIPT : parse(value);
+        }
+        static Mode parse(String value) {
+            if (value == null || value.isBlank()) throw new IllegalArgumentException("Empty execution mode");
+            try { return valueOf(value.toUpperCase(java.util.Locale.ROOT)); }
+            catch (IllegalArgumentException e) { throw new IllegalArgumentException("Unknown execution mode: " + value); }
+        }
+    }
+    enum InputKind { SCRIPT_FILE, PROJECT_DIRECTORY }
+    record JobInput(InputKind kind, String relativePath) {
+        JobInput {
+            java.util.Objects.requireNonNull(kind);
+            Path path = Path.of(relativePath);
+            if (relativePath.isBlank() || path.isAbsolute() || path.normalize().startsWith(".."))
+                throw new IllegalArgumentException("Input must stay within the staged root");
+            relativePath = path.normalize().toString();
+            if (relativePath.isEmpty()) relativePath = ".";
+        }
+        static JobInput script(String file) { return new JobInput(InputKind.SCRIPT_FILE, file); }
+        static JobInput project(String directory) { return new JobInput(InputKind.PROJECT_DIRECTORY, directory); }
+        Path resolveAgainst(Path source) {
+            Path selected = source.resolve(relativePath).toAbsolutePath().normalize();
+            if (Files.exists(selected, java.nio.file.LinkOption.NOFOLLOW_LINKS)
+                    && (kind == InputKind.SCRIPT_FILE ? !Files.isRegularFile(selected, java.nio.file.LinkOption.NOFOLLOW_LINKS)
+                    : !Files.isDirectory(selected, java.nio.file.LinkOption.NOFOLLOW_LINKS)))
+                throw new IllegalArgumentException("Selected input type does not match " + kind);
+            // Missing selections intentionally reach the real CLI.
+            return selected;
+        }
+    }
+    enum Verb { RUN, CHECK, PLAN }
+    record Invocation(Verb verb, boolean help, String graphFormat, Path graphOutput) {
+        Invocation {
+            java.util.Objects.requireNonNull(verb);
+            if ((graphFormat != null || graphOutput != null) && (verb != Verb.PLAN || help)
+                    || graphOutput != null && graphFormat == null
+                    || graphFormat != null && !List.of("mermaid", "plantuml").contains(graphFormat))
+                throw new IllegalArgumentException("Invalid graph invocation");
+            if (help && verb != Verb.RUN) throw new IllegalArgumentException("Job help uses RUN");
+        }
+        static Invocation run() { return new Invocation(Verb.RUN, false, null, null); }
+        static Invocation check() { return new Invocation(Verb.CHECK, false, null, null); }
+        static Invocation plan() { return plan(null, null); }
+        static Invocation plan(String format, Path output) { return new Invocation(Verb.PLAN, false, format, output); }
+        static Invocation jobHelp() { return new Invocation(Verb.RUN, true, null, null); }
+    }
     record Endpoint(String host, String image) {}
     record Request(String id, Path jobDirectory, Path directory, List<String> targets,
                    Map<String, ?> parameters, Map<String, ?> environment,
                    Map<String, Object> config, Map<String, Endpoint> endpoints,
-                   Duration timeout, String scriptInput) {
+                   Duration timeout, JobInput input, Invocation invocation) {
         Request(String id, Path jobDirectory, Path directory, List<String> targets,
                 Map<String, ?> parameters, Map<String, ?> environment, Map<String, Object> config,
                 Map<String, Endpoint> endpoints, Duration timeout) {
-            this(id, jobDirectory, directory, targets, parameters, environment, config, endpoints, timeout, "job.groovy");
+            this(id, jobDirectory, directory, targets, parameters, environment, config, endpoints, timeout,
+                    JobInput.script("job.groovy"), Invocation.run());
         }
         Request {
-            if (!List.of("job.groovy", ".").contains(scriptInput)) throw new IllegalArgumentException("Unsupported script input: " + scriptInput);
             targets = List.copyOf(targets);
             parameters = Map.copyOf(parameters);
             environment = Map.copyOf(environment);
+            config = copyConfig(config);
             endpoints = Map.copyOf(endpoints);
+            java.util.Objects.requireNonNull(input);
+            java.util.Objects.requireNonNull(invocation);
             for (var values : List.of(parameters, environment)) values.forEach((key, value) -> {
                 if (!(value instanceof String || value instanceof Path))
                     throw new IllegalArgumentException("Request value must be text or a local Path: " + key);
             });
-            if (!id.matches("[A-Za-z0-9._-]+") || timeout.isNegative() || timeout.isZero()) {
+            if (!id.matches("[A-Za-z0-9._-]+") || timeout.isNegative() || timeout.isZero())
                 throw new IllegalArgumentException("Invalid scenario identity or timeout");
-            }
+        }
+        @Override public String toString() { return "Request[" + id + ", " + input.kind() + "]"; }
+    }
+    sealed interface JobLaunch permits ScriptLaunch, JarLaunch, ImageLaunch {
+        Mode mode();
+        CandidateDistribution distribution();
+    }
+    record ScriptLaunch(CandidateDistribution distribution, List<String> arguments) implements JobLaunch {
+        ScriptLaunch { java.util.Objects.requireNonNull(distribution); arguments = List.copyOf(arguments); }
+        public Mode mode() { return Mode.SCRIPT; }
+    }
+    record JarLaunch(CandidateDistribution distribution, Path jar, String sha256) implements JobLaunch {
+        JarLaunch {
+            java.util.Objects.requireNonNull(distribution);
+            jar = jar.toAbsolutePath().normalize();
+            if (!sha256.matches("[0-9a-f]{64}")) throw new IllegalArgumentException("Invalid JAR identity");
+        }
+        public Mode mode() { return Mode.JAR; }
+    }
+    record ImageLaunch(CandidateDistribution distribution, ImageExecutionAdapter.Launch image) implements JobLaunch {
+        public Mode mode() { return Mode.IMAGE; }
+    }
+    record Prepared(Request request, Path source, Path report, JobInputSnapshot inputSnapshot, JobLaunch launch) {
+        Prepared { java.util.Objects.requireNonNull(launch); java.util.Objects.requireNonNull(inputSnapshot); }
+        Mode mode() { return launch.mode(); }
+        Path jar() { return launch instanceof JarLaunch jar ? jar.jar() : null; }
+        String sha256() { return launch instanceof JarLaunch jar ? jar.sha256()
+                : launch instanceof ImageLaunch image ? image.image().imageId() : inputSnapshot.treeSha256(); }
+        ImageExecutionAdapter.Launch image() { return launch instanceof ImageLaunch image ? image.image() : null; }
+        Prepared withReport(Path newReport) {
+            JobLaunch changed = launch instanceof ScriptLaunch script
+                    ? ScriptExecutionAdapter.prepare(request, source, newReport, script.distribution()) : launch;
+            return new Prepared(request, source, newReport, inputSnapshot, changed);
         }
     }
-    record Prepared(Request request, Path source, Path jar, String sha256, Path report, ImageExecutionAdapter.Launch image) {}
+    static Prepared existingJar(Request request, Path source, Path jar, Path report,
+                                 JobInputSnapshot snapshot) throws IOException {
+        return new Prepared(request, source, report, snapshot,
+                new JarLaunch(CandidateDistribution.resolve(), jar, JobInputSnapshot.hash(jar)));
+    }
     record Result(int code, String out, String err, Path report, Path directory,
-                  Duration duration, boolean timedOut, boolean aborted, String artifactIdentity, String mode) {
+                  Duration duration, boolean timedOut, boolean aborted, String artifactIdentity, String mode, boolean forciblyKilled) {
         boolean hasValidArtifactIdentity() {
             return artifactIdentity.matches(mode.equals("IMAGE") ? "sha256:[0-9a-f]{64}" : "[0-9a-f]{64}");
         }
     }
-    record Running(Prepared prepared, Process process, Path out, Path err, Instant started, boolean script) {}
+    record Running(Prepared prepared, Process process, Path out, Path err, Instant started, long startedNanos) {}
 
     static Path directory(String id) throws IOException {
         Path root = Path.of("target", "job-evidence", id + "-" + UUID.randomUUID())
@@ -71,11 +158,19 @@ final class ArtifactJobRunner {
     }
 
     static Prepared prepare(Request request) throws Exception {
-        return prepare(request, Mode.valueOf(System.getProperty("gretl.test.executionMode", "JAR")));
+        return prepare(request, Mode.configured());
     }
 
     /** Explicit JAR selection is used only by tests of the packager artifact itself. */
     static Prepared prepare(Request request, Mode mode) throws Exception {
+        try { return prepareInWorkspace(request, mode); }
+        catch (Exception e) {
+            JobExecutionEvidence.failure(request, mode, "PREPARE_FAILED", e);
+            throw e;
+        }
+    }
+
+    private static Prepared prepareInWorkspace(Request request, Mode mode) throws Exception {
         Path source = request.directory().resolve("source");
         if (Files.exists(source)) throw new IOException("Scenario work copy already exists: " + source);
         try (var paths = Files.walk(request.jobDirectory())) {
@@ -86,115 +181,67 @@ final class ArtifactJobRunner {
                 else Files.copy(path, target);
             }
         }
+        request = stagedRequest(request, source);
         Files.createDirectories(request.directory().resolve("cwd"));
         Files.createDirectories(request.directory().resolve("reports"));
         Files.writeString(request.directory().resolve("runtime.json"), Json.write(jsonValue(request.config())));
         Path report = request.directory().resolve("reports/report.json");
-        if (mode == Mode.IMAGE) {
-            var image = ImageExecutionAdapter.prepare(request, source, ImageExecutionAdapter.Settings.configured(), new ImageExecutionAdapter.Docker());
-            return new Prepared(request, source, null, image.imageId(), report, image);
-        }
-        List<String> resources;
-        try (var paths = Files.list(source)) {
-            resources = paths.filter(p -> !p.getFileName().toString().equals("job.groovy")
-                            && !p.getFileName().toString().equals("job-package.json"))
-                    .map(p -> p.getFileName().toString()).sorted().toList();
-        }
-        Path descriptor = source.resolve("job-package.json");
-        if (!Files.exists(descriptor)) {
-            if (request.scriptInput().equals(".")) throw new IOException("Project fixture requires a schema-3 descriptor");
-            Files.writeString(descriptor, Json.write(Map.of(
-                    "schemaVersion", 1, "name", "fixture", "version", "1",
-                    "runtimeVersion", "0.1.0-SNAPSHOT", "entryScript", "job.groovy",
-                    "sources", List.of(), "resources", resources, "dependencies", List.of())));
-        }
-        Path distribution = Path.of("..", "gretl-dist", "target", "dist").toAbsolutePath().normalize();
-        Path launcher = distribution.resolve("bin/gretl");
-        if (!Files.isRegularFile(launcher)) throw new IOException("Candidate distribution missing: " + launcher);
-        Path jar = request.directory().resolve("job.jar");
-        List<String> command = List.of(launcher.toString(), "package", descriptor.toString(),
-                "--output", jar.toString());
-        MessageDigest fixtureDigest = MessageDigest.getInstance("SHA-256");
-        try (var paths = Files.walk(source)) {
-            for (Path file : paths.filter(Files::isRegularFile).sorted().toList()) {
-                fixtureDigest.update(source.relativize(file).toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                fixtureDigest.update(Files.readAllBytes(file));
-            }
-        }
-        // Per test JVM only: reuse a regular packager build of byte-identical fixtures.
-        // Every execution still gets its own job.jar, process, parameters and filesystem.
-        String key = HexFormat.of().formatHex(fixtureDigest.digest());
-        Path built = BUILT_FIXTURES.get(key);
-        if (built != null) {
-            Files.createLink(jar, built);
-            Files.writeString(request.directory().resolve("package-reuse.txt"), built.toString());
-        } else {
-            Process packaging = process(command, request.directory(), request.environment(), "package").start();
-            try {
-                if (!packaging.waitFor(120, TimeUnit.SECONDS)) throw new IOException("Packaging timed out: " + request.id());
-            } finally { if (packaging.isAlive()) stop(packaging); }
-            if (packaging.exitValue() != 0 || !Files.isRegularFile(jar)) {
-                throw new IOException("Packaging failed (not a job result): "
-                        + Files.readString(request.directory().resolve("package.stderr.log")));
-            }
-            // Preserve the regular package independently of an execution copy that a
-            // deliberate malformed-JAR test may replace. Links keep bytes/cache semantics.
-            Path reusable = request.directory().resolve("fixture-package.jar");
-            Files.createLink(reusable, jar);
-            BUILT_FIXTURES.put(key, reusable);
-        }
-        String hash;
-        try (var input = Files.newInputStream(jar)) {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] buffer = new byte[65536];
-            int count;
-            while ((count = input.read(buffer)) >= 0) digest.update(buffer, 0, count);
-            hash = HexFormat.of().formatHex(digest.digest());
-        }
-        Files.writeString(request.directory().resolve("runtime.json"), Json.write(jsonValue(request.config())));
-        PackageArtifactAssertions.verify(jar, descriptor);
-        return new Prepared(request, source, jar, hash, report, null);
+        CandidateDistribution distribution = CandidateDistribution.resolve();
+        JobInputSnapshot snapshot = JobInputSnapshot.capture(source);
+        request.input().resolveAgainst(source);
+        JobLaunch launch = switch (mode) {
+            case SCRIPT -> ScriptExecutionAdapter.prepare(request, source, report, distribution);
+            case JAR -> JarExecutionAdapter.prepare(request, source, report, distribution);
+            case IMAGE -> new ImageLaunch(distribution, ImageExecutionAdapter.prepare(request, source,
+                    ImageExecutionAdapter.Settings.configured(), new ImageExecutionAdapter.Docker()));
+        };
+        return new Prepared(request, source, report, snapshot, launch);
     }
 
-    static Running start(Prepared prepared, boolean script) throws IOException {
-        return start(prepared, script, Path.of("..", "gretl-dist", "target", "dist", "bin", "gretl")
-                .toAbsolutePath().normalize());
-    }
-
-    static Running start(Prepared prepared, boolean script, Path scriptLauncher) throws IOException {
-        if (!script && prepared.image() != null) {
-            Files.writeString(prepared.request().directory().resolve("command.json"), Json.write(prepared.image().arguments()));
-            return new Running(prepared, prepared.image().start(prepared.request().directory()),
-                    prepared.request().directory().resolve("job.stdout.log"), prepared.request().directory().resolve("job.stderr.log"), Instant.now(), false);
+    static Running start(Prepared prepared) throws IOException {
+        Request request = prepared.request();
+        try {
+            if (prepared.launch().distribution() != null) prepared.launch().distribution().verifyFiles();
+            if (prepared.mode() != Mode.JAR) prepared.inputSnapshot().verifyUnchanged(prepared.source());
+            else if (!JobInputSnapshot.hash(prepared.jar()).equals(prepared.sha256())) throw new IOException("Prepared JAR changed");
+            List<String> command;
+            if (prepared.launch() instanceof ScriptLaunch script) {
+                command = script.arguments();
+                if (!command.equals(ScriptExecutionAdapter.arguments(request, prepared.source(), prepared.report(), script.distribution().launcher())))
+                    throw new IOException("SCRIPT launch does not match its prepared input/invocation");
+            }
+            else if (prepared.image() != null) command = prepared.image().arguments();
+            else {
+                command = new ArrayList<>(List.of(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
+                        "-Dfile.encoding=UTF-8", "-Duser.timezone=UTC", "-Duser.language=de", "-jar", prepared.jar().toString()));
+                ScriptExecutionAdapter.appendOptions(command, request, prepared.report(), true);
+            }
+            Files.writeString(request.directory().resolve("command.json"), Json.write(command));
+            Instant started = Instant.now();
+            long nanos = System.nanoTime();
+            JobExecutionEvidence.started(prepared, started);
+            Process process;
+            if (prepared.image() != null) process = prepared.image().start(request.directory());
+            else {
+                ProcessBuilder builder = process(command, request.directory(), request.environment(), "job");
+                builder.directory(request.directory().resolve("cwd").toFile());
+                process = builder.start();
+            }
+            return new Running(prepared, process, request.directory().resolve("job.stdout.log"),
+                    request.directory().resolve("job.stderr.log"), started, nanos);
+        } catch (IOException e) {
+            JobExecutionEvidence.failure(request, prepared.mode(), "LAUNCH_FAILED", e);
+            if (prepared.image() != null) try { prepared.image().remove(); } catch (Exception cleanup) { e.addSuppressed(cleanup); }
+            throw e;
         }
-        List<String> command = new ArrayList<>();
-        if (script) {
-            command.add(scriptLauncher.toString());
-            command.add("run");
-            command.add(prepared.source().resolve(prepared.request().scriptInput()).normalize().toString());
-        } else {
-            command.add(Path.of(System.getProperty("java.home"), "bin", "java").toString());
-            command.add("-Dfile.encoding=UTF-8");
-            command.add("-Duser.timezone=UTC");
-            command.add("-Duser.language=de");
-            command.add("-jar");
-            command.add(prepared.jar().toString());
-        }
-        command.addAll(List.of("--config", prepared.request().directory().resolve("runtime.json").toString(),
-                "--report", prepared.report().toString(), "--log-format", "json"));
-        for (String target : prepared.request().targets()) command.addAll(List.of("--target", target));
-        prepared.request().parameters().forEach((key, value) -> command.addAll(List.of("--param", key + "=" + value)));
-        Files.writeString(prepared.request().directory().resolve("command.json"), Json.write(command));
-        Instant started = Instant.now();
-        ProcessBuilder builder = process(command, prepared.request().directory(), prepared.request().environment(), "job");
-        builder.directory(prepared.request().directory().resolve("cwd").toFile());
-        Process process = builder.start();
-        return new Running(prepared, process, prepared.request().directory().resolve("job.stdout.log"),
-                prepared.request().directory().resolve("job.stderr.log"), started, script);
     }
 
     static Result run(Request request) throws Exception {
-        Running running = start(prepare(request), false);
+        return run(request, Mode.configured());
+    }
+
+    static Result run(Request request, Mode mode) throws Exception {
+        Running running = start(prepare(request, mode));
         try {
             return finish(running, false);
         } finally {
@@ -204,9 +251,14 @@ final class ArtifactJobRunner {
 
     static Result finish(Running running, boolean aborted) throws Exception {
         Process process = running.process();
-        boolean timedOut = !process.waitFor(running.prepared().request().timeout().toMillis(), TimeUnit.MILLISECONDS);
-        if (timedOut) stop(running);
-        if (!running.script() && running.prepared().image() != null) running.prepared().image().remove();
+        long remaining = running.prepared().request().timeout().toNanos() - (System.nanoTime() - running.startedNanos());
+        boolean timedOut = !process.waitFor(Math.max(1, remaining), TimeUnit.NANOSECONDS);
+        boolean forced = false;
+        if (timedOut) {
+            cancel(running);
+            forced = stop(process);
+        }
+        if (running.prepared().image() != null) running.prepared().image().remove();
         // waitFor/stop has reaped the process; redirected streams are now complete.
         Request request = running.prepared().request();
         var registry = new ch.so.agi.gretl.runtime.runner.SecretRegistry();
@@ -233,32 +285,17 @@ final class ArtifactJobRunner {
         String err = redactor.redact(Files.readString(running.err()));
         Files.writeString(running.out(), out);
         Files.writeString(running.err(), err);
+        if (running.prepared().mode() != Mode.JAR) running.prepared().inputSnapshot().verifyUnchanged(running.prepared().source());
         String identity = running.prepared().sha256();
-        if (running.script()) {
-            identity = request.scriptInput().equals(".")
-                    ? ch.so.agi.gretl.runtime.groovy.project.ProjectSourceHash.sha256(
-                        new ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser().parse(running.prepared().source()))
-                    : HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(
-                        Files.readAllBytes(running.prepared().source().resolve("job.groovy"))));
-        }
-        Map<String, Object> evidence = new LinkedHashMap<>();
-        evidence.put("scenario", request.id());
-        evidence.put("mode", running.script() ? "SCRIPT" : running.prepared().image() == null ? "JAR" : "IMAGE");
-        evidence.put("sha256", identity);
-        evidence.put("exitCode", process.exitValue());
-        evidence.put("timedOut", timedOut);
-        evidence.put("aborted", aborted);
-        evidence.put("durationMillis", Duration.between(running.started(), Instant.now()).toMillis());
-        evidence.put("endpoints", request.endpoints().entrySet().stream().collect(
-                java.util.stream.Collectors.toMap(Map.Entry::getKey, e -> e.getValue().host())));
-        evidence.put("report", running.prepared().report().toString());
-        Files.writeString(request.directory().resolve("execution.json"), Json.write(evidence));
-        return new Result(process.exitValue(), out, err, running.prepared().report(), request.directory(),
-                Duration.between(running.started(), Instant.now()), timedOut, aborted, identity, evidence.get("mode").toString());
+        Result result = new Result(process.exitValue(), out, err, running.prepared().report(), request.directory(),
+                Duration.ofNanos(System.nanoTime() - running.startedNanos()), timedOut, aborted, identity,
+                running.prepared().mode().name(), forced);
+        JobExecutionEvidence.completed(running, result);
+        return result;
     }
 
     static void cancel(Running running) throws Exception {
-        if (!running.script() && running.prepared().image() != null) running.prepared().image().cancel();
+        if (running.prepared().image() != null) running.prepared().image().cancel();
         else running.process().destroy();
     }
 
@@ -266,23 +303,25 @@ final class ArtifactJobRunner {
         try { cancel(running); }
         finally {
             stop(running.process());
-            if (!running.script() && running.prepared().image() != null) running.prepared().image().remove();
+            if (running.prepared().image() != null) running.prepared().image().remove();
         }
     }
 
-    static void stop(Process process) throws InterruptedException {
+    static boolean stop(Process process) throws InterruptedException {
         process.destroy();
         if (!process.waitFor(35, TimeUnit.SECONDS)) {
             process.descendants().forEach(ProcessHandle::destroyForcibly);
             process.destroyForcibly();
-            process.waitFor();
+            if (!process.waitFor(5, TimeUnit.SECONDS)) throw new IllegalStateException("Process survived force termination");
+            return true;
         }
+        return false;
     }
 
     static ProcessBuilder process(List<String> command, Path directory,
                                            Map<String, ?> environment, String prefix) {
         ProcessBuilder builder = new ProcessBuilder(command).directory(directory.toFile());
-        for (String key : List.of("CLASSPATH", "JAVA_TOOL_OPTIONS", "_JAVA_OPTIONS", "JDK_JAVA_OPTIONS", "JAVA_OPTS")) {
+        for (String key : List.of("CLASSPATH", "JAVA_TOOL_OPTIONS", "_JAVA_OPTIONS", "JDK_JAVA_OPTIONS", "JAVA_OPTS", "GRETL_JAVA_OPTS")) {
             builder.environment().remove(key);
         }
         for (String key : List.of("GRETL_JOB_NAME", "GRETL_CORRELATION_ID", "GRETL_JOB_REVISION",
@@ -290,6 +329,7 @@ final class ArtifactJobRunner {
             builder.environment().remove(key);
         }
         builder.environment().put("GRETL_LANGUAGE", "de");
+        builder.environment().put("GRETL_JAVA_OPTS", "-Dfile.encoding=UTF-8 -Duser.timezone=UTC -Duser.language=de");
         environment.forEach((key, value) -> builder.environment().put(key, value.toString()));
         builder.environment().put("JAVA_HOME", System.getProperty("java.home"));
         builder.environment().put("TZ", "UTC");
@@ -307,6 +347,43 @@ final class ArtifactJobRunner {
             return result;
         }
         if (value instanceof List<?> list) return list.stream().map(ArtifactJobRunner::jsonValue).toList();
+        return value;
+    }
+
+    private static Request stagedRequest(Request request, Path source) {
+        return new Request(request.id(), request.jobDirectory(), request.directory(), request.targets(),
+                rebaseMap(request.parameters(), request.jobDirectory(), source),
+                rebaseMap(request.environment(), request.jobDirectory(), source),
+                rebaseMap(request.config(), request.jobDirectory(), source), request.endpoints(), request.timeout(), request.input(), request.invocation());
+    }
+    private static Map<String, Object> rebaseMap(Map<String, ?> map, Path original, Path staged) {
+        Map<String, Object> copy = new LinkedHashMap<>();
+        map.forEach((key, value) -> copy.put(key, rebaseValue(value, original.toAbsolutePath().normalize(), staged)));
+        return copy;
+    }
+    private static Object rebaseValue(Object value, Path original, Path staged) {
+        if (value instanceof Path path && path.isAbsolute() && path.normalize().startsWith(original))
+            return staged.resolve(original.relativize(path.normalize()));
+        if (value instanceof Map<?, ?> map) {
+            Map<String, Object> copy = new LinkedHashMap<>();
+            map.forEach((key, entry) -> copy.put(key.toString(), rebaseValue(entry, original, staged)));
+            return copy;
+        }
+        if (value instanceof List<?> list) return list.stream().map(entry -> rebaseValue(entry, original, staged)).toList();
+        return value;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> copyConfig(Map<String, Object> config) {
+        return (Map<String, Object>) immutableValue(config);
+    }
+    private static Object immutableValue(Object value) {
+        if (value instanceof Map<?, ?> map) {
+            Map<String, Object> copy = new LinkedHashMap<>();
+            map.forEach((key, entry) -> copy.put(key.toString(), immutableValue(entry)));
+            return java.util.Collections.unmodifiableMap(copy);
+        }
+        if (value instanceof List<?> list) return list.stream().map(ArtifactJobRunner::immutableValue).toList();
         return value;
     }
 

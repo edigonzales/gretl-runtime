@@ -7,7 +7,8 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--full', action='store_true', help='Require all 44 positive JAR operation proofs')
+parser.add_argument('--full', action='store_true', help='Require every positive standard operation in the selected mode')
+parser.add_argument('--mode', choices=['SCRIPT', 'JAR'], default='SCRIPT')
 parser.add_argument('--source', help='Require clean distribution from this commit (CI)')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
@@ -37,12 +38,55 @@ executions = []
 positive = set()
 for file in sorted((root / 'gretl-integration-tests/target/job-evidence').glob('*/execution.json')):
     row = read(file)
-    assert row['mode'] in {'JAR', 'SCRIPT'}, 'Mandatory CI must not execute GRETL IMAGE'
+    assert row['mode'] in {'JAR', 'SCRIPT'}, 'IMAGE requires its real qualification gate'
+    assert row['schemaVersion'] == 2 and row['process']['state'] != 'STARTED', str(file)
+    if row['process']['state'] in {'PREPARE_FAILED', 'LAUNCH_FAILED'}:
+        # Explicit harness negatives are not successful job executions.
+        assert row['scenario'] == 'source-contract', str(file)
+        continue
+    assert row['sourceRevision'] == catalog['sourceRevision'], str(file)
+    assert row['sourceDirty'] == catalog['sourceDirty'], str(file)
+    assert not row['process']['forciblyKilled'], str(file)
+    assert row['process']['exitCode'] == row['exitCode'], str(file)
+    runtime = row['runtime']
+    runtime_root = Path(runtime['root'])
+    if runtime_root.exists():
+        assert sha(runtime_root / 'SHA256SUMS') == runtime['distributionManifestSha256'], str(file)
+        for line in (runtime_root / 'SHA256SUMS').read_text().splitlines():
+            checksum, relative = line.split(maxsplit=1)
+            assert sha(runtime_root / relative) == checksum, str(file)
+    else:
+        # The unpacked-ZIP contract deletes its private install after verifying it.
+        # It has exactly the canonical manifest; derived extension installs remain available.
+        assert runtime['distributionManifestSha256'] == sha(dist / 'SHA256SUMS'), str(file)
+    command = read(file.parent / 'command.json')
+    inventory = read(file.parent / 'input-manifest.json')
+    assert inventory['treeSha256'] == row['input']['treeSha256'], str(file)
+    canonical = ['gretl-input-v1', [[f['path'], f['size'], f['sha256']] for f in inventory['files']]]
+    assert hashlib.sha256(json.dumps(canonical, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest() == inventory['treeSha256'], str(file)
+    if row['mode'] == 'SCRIPT':
+        assert row['executionKind'] == 'SCRIPT' and 'jobJar' not in row and 'image' not in row, str(file)
+        assert Path(command[0]) == runtime_root / 'bin/gretl' and command[1] in {'run', 'check', 'plan'}, str(file)
+        source = file.parent / 'source'
+        assert Path(command[2]) == (source / row['input']['relativePath']).resolve(), str(file)
+        assert not (file.parent / 'job.jar').exists() and not (file.parent / 'package.stdout.log').exists(), str(file)
+        for entry in inventory['files']:
+            actual = source / entry['path']
+            assert actual.resolve().is_relative_to(source.resolve()), str(file)
+            assert actual.stat().st_size == entry['size'] and sha(actual) == entry['sha256'], str(file)
+
     if row['mode'] == 'JAR':
-        jar = file.parent / 'job.jar'
-        assert sha(jar) == row['sha256'], str(jar)
+        assert row['executionKind'] == 'PRECOMPILED_JOB' and '-jar' in command, str(file)
+        jar = Path(row['jobJar']['path'])
+        if not jar.exists():
+            jar = file.parent / 'job.jar'  # retained byte-identical detached execution copy
+        assert sha(jar) == row['sha256'] == row['jobJar']['sha256'], str(jar)
+        assert command[command.index('-jar') + 1] == row['jobJar']['path'], str(file)
         assert (file.parent / 'package-inventory.json').is_file(), str(file.parent)
-    reports = list((file.parent / 'reports').glob('report.json'))
+    report_path = Path(row['report'])
+    if not report_path.exists() and (file.parent / 'reports/report.json').exists():
+        report_path = file.parent / 'reports/report.json'  # detached execution archive
+    reports = [report_path] if report_path.is_file() else []
     operations = []
     if reports:
         report = read(reports[0])
@@ -51,15 +95,15 @@ for file in sorted((root / 'gretl-integration-tests/target/job-evidence').glob('
             assert row['reportExitCode'] == row['exitCode'], str(file)
         operations = [{k: invocation[k] for k in ('operationId', 'status')}
                       for invocation in report['execution'].get('invocations', [])]
-        if row['mode'] == 'JAR':
+        if row['mode'] == args.mode:
             positive.update(i['operationId'] for i in operations if i['status'] == 'SUCCEEDED')
     row['directory'] = str(file.parent.relative_to(root))
     row['operations'] = operations
     executions.append(row)
-assert executions, 'No artifact job executions'
+assert executions and any(row['mode'] == args.mode for row in executions), 'No selected-mode job executions'
 expected = {o['id'] for o in read(root / 'docs/history/contracts/operation-baseline.json')}
 if args.full:
-    assert len(expected) == 44 and expected <= positive, sorted(expected - positive)
+    assert expected <= positive, sorted(expected - positive)
 
 namespace = {'m': 'http://maven.apache.org/POM/4.0.0'}
 modules = [m.text for m in ET.parse(root / 'pom.xml').getroot().findall('m:modules/m:module', namespace)]
@@ -80,9 +124,9 @@ for file in sorted(root / module / 'target/site/jacoco/jacoco.xml' for module in
 assert coverage, 'No measured coverage'
 output = root / 'gretl-integration-tests/target/qualification'
 output.mkdir(exist_ok=True)
-(output / 'jar-executions.json').write_text(json.dumps(executions, indent=2) + '\n')
+(output / 'executions.json').write_text(json.dumps(executions, indent=2) + '\n')
 summary = dict(sourceRevision=catalog['sourceRevision'], sourceDirty=catalog['sourceDirty'],
-               tests=tests, successfulJarOperations=sorted(positive), full=args.full,
+               tests=tests, mode=args.mode, successfulOperations=sorted(positive), full=args.full,
                distributionCatalogSha256=sha(dist / 'package-catalog.json'),
                archives=[dict(file=p.name, sha256=sha(p)) for p in sorted((root / 'gretl-dist/target').glob('*-bin.*'))],
                coverage=coverage, coverageLimit='Separate launcher and java -jar processes are not instrumented')

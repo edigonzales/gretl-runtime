@@ -15,7 +15,7 @@ class DatabaseArtifactIT {
             Path root = ArtifactJobRunner.directory("database-chain");
             var request = request(root, lease, List.of());
             var prepared = ArtifactJobRunner.prepare(request);
-            var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared, false), false);
+            var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared), false);
             assertEquals(0, result.code(), result.err());
             try (var db = connection(lease); var statement = db.createStatement();
                  var rows = statement.executeQuery("select id, name from colors_copy order by id")) {
@@ -25,7 +25,7 @@ class DatabaseArtifactIT {
             }
             // A fresh job process and work copy, using the same scenario and database lease.
             Path cancelRoot = ArtifactJobRunner.directory("database-cancel");
-            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request(cancelRoot, lease, List.of("never"))), false);
+            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request(cancelRoot, lease, List.of("never"))));
             try {
                 awaitQuery(lease, running.process());
                 ArtifactJobRunner.cancel(running);

@@ -18,10 +18,12 @@ class LibraryScopeLocalJobIT {
         try (var paths = Files.walk(distribution)) {
             for (Path p : paths.toList()) {
                 Path to = extended.resolve(distribution.relativize(p));
-                if (Files.isDirectory(p)) Files.createDirectories(to); else Files.createLink(to, p);
+                if (Files.isDirectory(p)) Files.createDirectories(to); else Files.copy(p, to);
             }
         }
         Files.copy(provider, extended.resolve("lib/extensions/logging-provider.jar"));
+        rewriteManifest(extended);
+        var scriptDistribution = CandidateDistribution.at(extended);
         for (boolean script : List.of(true, false)) {
             Path root = ArtifactJobRunner.directory("library-scopes-" + (script ? "script" : "jar"));
             Path source = Files.createDirectories(root.resolve("source"));
@@ -41,21 +43,25 @@ class LibraryScopeLocalJobIT {
                     """);
             SelectedPackageSupport.descriptor(source, List.of(), false, List.of(external.group + ":logging-provider:1.0"));
             Path jar = root.resolve("job.jar");
-            var packed = external.pack(source.resolve("job-package.json"), jar, "logging-" + script, List.of(), false);
-            assertEquals(0, packed.code(), packed.err()); PackageArtifactAssertions.verify(jar, source.resolve("job-package.json"));
-            try (var zip = new java.util.jar.JarFile(jar.toFile())) {
-                assertNotNull(zip.getJarEntry("external/logging/ScopeProvider.class"));
-                assertNull(zip.getJarEntry("ch/so/agi/gretl/cli/Main.class"));
+            if (!script) {
+                var packed = external.pack(source.resolve("job-package.json"), jar, "logging-" + script, List.of(), false);
+                assertEquals(0, packed.code(), packed.err()); PackageArtifactAssertions.verify(jar, source.resolve("job-package.json"));
+                try (var zip = new java.util.jar.JarFile(jar.toFile())) {
+                    assertNotNull(zip.getJarEntry("external/logging/ScopeProvider.class"));
+                    assertNull(zip.getJarEntry("ch/so/agi/gretl/cli/Main.class"));
+                }
             }
             Map<String,Object> config = JobRunner.baseConfig(root);
             JobRunner.secret(root, config, "scopeDummy", "provider-dummy-secret-72819");
             config.put("logging", Map.of("libraryLevels", Map.of("fixture.scope", "INFO")));
             Files.writeString(root.resolve("runtime.json"), Json.write(config));
             var request = new ArtifactJobRunner.Request("library-scopes", source, root, List.of(), Map.of(), Map.of(), config, Map.of(), Duration.ofSeconds(45));
-            var prepared = new ArtifactJobRunner.Prepared(request, source, jar, hash(jar), root.resolve("reports/report.json"), null);
+            var prepared = script ? new ArtifactJobRunner.Prepared(request, source, root.resolve("reports/report.json"), JobInputSnapshot.capture(source),
+                    ScriptExecutionAdapter.prepare(request, source, root.resolve("reports/report.json"), scriptDistribution))
+                    : ArtifactJobRunner.existingJar(request, source, jar, root.resolve("reports/report.json"), JobInputSnapshot.capture(source));
             ArtifactJobRunner.Result result;
             if (script) {
-                var running = ArtifactJobRunner.start(prepared, true, extended.resolve("bin/gretl"));
+                var running = ArtifactJobRunner.start(prepared);
                 try { result = ArtifactJobRunner.finish(running, false); }
                 finally { if (running.process().isAlive()) ArtifactJobRunner.stop(running); }
             } else result = SelectedPackageSupport.detached(prepared);
@@ -106,6 +112,14 @@ class LibraryScopeLocalJobIT {
             Files.writeString(root.resolve("provider-identity.json"), Json.write(Map.of("coordinate", external.group + ":logging-provider:1.0",
                     "sha256", hash(provider), "scriptDistributionCatalogSha256", hash(distribution.resolve("package-catalog.json")))));
         }
+    }
+    static void rewriteManifest(Path distribution) throws Exception {
+        List<String> lines = new ArrayList<>();
+        try (var walk = Files.walk(distribution)) {
+            for (Path file : walk.filter(Files::isRegularFile).filter(p -> !p.getFileName().toString().equals("SHA256SUMS")).sorted().toList())
+                lines.add(hash(file) + "  " + distribution.relativize(file).toString().replace('\\', '/'));
+        }
+        Files.write(distribution.resolve("SHA256SUMS"), lines);
     }
     static Map<?,?> message(List<Map<?,?>> records, String text) {
         var found = records.stream().filter(e -> text.equals(e.get("message"))).toList();
