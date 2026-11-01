@@ -101,3 +101,32 @@ vollen Scope ausgewählt: Die manipulierte Vereinigung enthält dann alle
 Damit prüft die Gegenprobe tatsächlich eine unzulässige Modusvereinigung.
 Der erste Kandidat wird nicht zum Review eingereicht; der korrigierte
 Kandidat bekommt frische Phasengates. Phasenbasis unverändert.
+
+
+## Fester Kandidat und unabhängige Abnahme
+
+Geprüfter Produktkandidat: `b1440bfd678d4ea83d70e51778b09997c441aace`.
+Eigene Standardprüfung 693 Tests, vollständige SCRIPT-/JAR-Prüfungen je
+749 Tests, überall Exit 0 und 0 Failures/Errors/Skips. Beide Vollmodi decken
+alle 44 Standardoperationen separat positiv ab; 174 gemeinsame Inputs sind
+bytegleich. Alle lokalen und vollständigen Auditproben, Reviewstarter- und
+Dokumentationsprüfungen bestanden. Die Archive wurden zusätzlich nach den
+nächsten clean-Läufen erfolgreich erneut auditiert.
+
+[Unabhängiger Review](../reviews/TST2-r1-b1440bfd678d.md) und
+[strukturiertes Urteil](../reviews/TST2-r1-b1440bfd678d.verdict.json): PASS.
+Standard und zusätzliche JAR/local-Prüfung je 693 Tests, beide Vollmodi je
+749 Tests, keine Failures/Errors/Skips. Die eigene neue Projektgegenprobe
+liefert feste Erwartungsbytes in SCRIPT/JAR; Entfernen eines erwarteten
+Szenariobelegs aus einer zuvor positiven Auditkopie scheitert korrekt.
+
+Agent A hat Prozessabschluss, strukturierte Kriterien/Checks, saubere
+Revisionen, tatsächliche XML-Zahlen, alle erhaltenen Distributionsmanifeste,
+tatsächlichen JAR- und Reportbytes sowie Gegenprobenausgaben nachgeprüft.
+OpenCode und äusserer Starter sind beendet, Exit 0; keine relevanten
+unbeendeten Review-Jobprozesse. Keine offenen Muss-Findings.
+
+Präzisierung der früheren Kurzangabe „Starts“: LOCAL umfasst 135 erwartete
+Szenarien, davon 133 tatsächliche CLI-Prozessabschlüsse und zwei
+Infrastruktur-Negative; FULL entsprechend 213/211/2. Kein Infrastrukturfehler
+wird als positiver Fachoperationsbeleg gezählt. TST3 ist damit freigegeben.

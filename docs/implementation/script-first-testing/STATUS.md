@@ -7,8 +7,8 @@ nicht vorhanden. Kein Push, Merge oder Release.
 | Phase | Stand | Geprüfter Produktkandidat |
 | --- | --- | --- |
 | TST1 | PASS, unabhängig abgenommen | `52ca5bee2e52f7c07106d305e071add1c3c3724a` |
-| TST2 | IN_PROGRESS | noch kein Kandidat |
-| TST3 | noch nicht begonnen | — |
+| TST2 | PASS, unabhängig abgenommen | `b1440bfd678d4ea83d70e51778b09997c441aace` |
+| TST3 | IN_PROGRESS | noch kein Kandidat |
 | TST4 | noch nicht begonnen | — |
 
 TST1: [unveränderter OpenCode-Bericht](reviews/TST1-r1-52ca5bee2e52.md),
@@ -35,9 +35,32 @@ Rohbelege:
 Host macOS/ARM64, Docker Linux/ARM64; PostGIS teilweise AMD64-emuliert.
 Keine echte GRETL-IMAGE-Qualifikation behauptet.
 
-Diese reine Nachweisablage ändert den geprüften Produktkandidaten nicht.
 TST2-Phasenbasis: `6bf473df13f1c33677e1a4a4f33fd49776aa6546`.
 [Implementierungsbericht TST2](implementation/TST2.md).
-Gezielte SCRIPT-/JAR-Entwicklungsprüfungen bestanden; der feste Kandidat
-und seine vollständigen Phasengates werden als nächster Schritt ausgeführt.
-TST3 bleibt bis zum gültigen unabhängigen TST2-PASS gesperrt.
+
+## TST2-Abnahme
+
+TST2: [unveränderter OpenCode-Bericht](reviews/TST2-r1-b1440bfd678d.md),
+[Urteil](reviews/TST2-r1-b1440bfd678d.verdict.json).
+Bericht SHA-256: `589c844fadceb7abef3437e695bdae3b02aefa9779276c70100b4b26e6b32a52`.
+
+Eigene frische Gates: Standard 693, SCRIPT/full und JAR/full je 749 Tests;
+überall 0 Failures/Errors/Skips und Exit 0. Beide Vollmodi weisen alle
+44 Standardoperationen separat positiv nach. 174 gemeinsame Fachszenarien
+besitzen identische Inputbytes. Szenariomengen: LOCAL 135, FULL 213; darin
+je zwei ausdrücklich geprüfte Infrastruktur-Negative, also 133 bzw. 211
+abgeschlossene CLI-Prozesse. Alle Archive bestehen auch nach weiterem clean.
+
+Unabhängig: Standard und JAR/local je 693, SCRIPT/full und JAR/full je
+749 Tests, sämtliche Audits und Negativproben grün. Eigene Projektgegenprobe
+mit festen Erwartungsbytes in SCRIPT/JAR, geändertem Input und kaputtem
+Descriptor sowie eigener fehlender-Szenario-Probe nachgeprüft. OpenCode
+2.2.5, direkter DeepSeek-Flash-1017-Vertrag; Prozess und Orchestrator
+beendet (Exit 0), alle zehn Kriterien erfüllt, keine offenen Muss-Findings.
+Beide HEADs unverändert und sauber; keine verbleibenden Review-Jobprozesse.
+
+Rohbelege: `/Users/stefan/sources/gretl-review-output-TST2-1-b1440bfd678d/`
+und `/Users/stefan/sources/gretl-script-first-evidence/TST2-candidate-b1440bfd678d4ea83d70e51778b09997c441aace/`.
+Diese Nachweisablage ändert den geprüften Produktkandidaten nicht.
+Nächster Schritt: TST3-Phasenbasis an diesem Nachweiscommit festhalten;
+generisches Runtime-Image und tatsächliche externe SCRIPT-Jobs qualifizieren.
