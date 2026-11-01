@@ -39,6 +39,7 @@
     <!-- Product baseline, spec 07. The wrapper pins Maven 3.10.0 separately. -->
     <java.version>25</java.version>
     <gretl.test.includes>**/*JobIT.java</gretl.test.includes>
+    <gretl.test.executionMode>SCRIPT</gretl.test.executionMode>
     <jacoco.version>0.8.14</jacoco.version>
     <maven.compiler.release>25</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -358,6 +359,16 @@
     <profile>
       <id>backing-services</id>
       <properties><gretl.test.includes>**/*IT.java</gretl.test.includes></properties>
+    </profile>
+    <profile>
+      <id>job-image</id>
+      <properties><gretl.test.executionMode>IMAGE</gretl.test.executionMode></properties>
+      <build><plugins><plugin>
+        <groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId>
+        <executions><execution><id>require-image-mode</id><phase>validate</phase><goals><goal>enforce</goal></goals>
+          <configuration><rules><requireProperty><property>gretl.test.executionMode</property><regex>IMAGE</regex><message>job-image requires executionMode=IMAGE</message></requireProperty></rules></configuration>
+        </execution></executions>
+      </plugin></plugins></build>
     </profile>
   </profiles>
 </project>

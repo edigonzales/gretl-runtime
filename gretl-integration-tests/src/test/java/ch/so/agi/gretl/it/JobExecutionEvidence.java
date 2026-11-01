@@ -48,7 +48,17 @@ final class JobExecutionEvidence {
                     "launcherRelativePath", "bin/gretl"));
         }
         if (prepared.jar() != null) row.put("jobJar", Map.of("path", prepared.jar().toString(), "sha256", prepared.sha256()));
-        if (prepared.image() != null) row.put("image", Map.of("id", prepared.image().imageId()));
+        if (prepared.image() != null) {
+            var image = new LinkedHashMap<String,Object>(); image.put("id",prepared.image().imageId());
+            if (prepared.image().proofFile() != null) {
+                image.put("proof","image-proof.json");
+                try {
+                    var proof = (Map<?,?>)Json.parseFile(prepared.image().proofFile(),8L<<20);
+                    image.put("os",proof.get("os")); image.put("architecture",proof.get("architecture"));
+                } catch (IOException exception) { throw new java.io.UncheckedIOException(exception); }
+            }
+            row.put("image",image);
+        }
         row.put("invocation", Map.of("verb", request.invocation().verb().name(), "help", request.invocation().help()));
         row.put("command", "command.json"); row.put("report", prepared.report().toString());
         row.put("endpoints", request.endpoints().entrySet().stream().collect(

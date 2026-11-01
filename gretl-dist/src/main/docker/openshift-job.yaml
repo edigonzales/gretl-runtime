@@ -1,0 +1,43 @@
+# Template: replace ${GRETL_IMAGE} with the published generic candidate image digest.
+# Create gretl-job (job.groovy) and gretl-runtime-config (runtime.json) ConfigMaps separately.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gretl-script-example
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: gretl
+          image: ${GRETL_IMAGE}
+          args: [run, /job/job.groovy, --config, /config/runtime.json, --report, /reports/report.json, --param, output=/outputs/result.txt]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - {name: job, mountPath: /job, readOnly: true}
+            - {name: config, mountPath: /config, readOnly: true}
+            - {name: work, mountPath: /work}
+            - {name: temp, mountPath: /tmp}
+            - {name: reports, mountPath: /reports}
+            - {name: outputs, mountPath: /outputs}
+            - {name: cwd, mountPath: /run}
+      volumes:
+        - name: job
+          configMap: {name: gretl-job, defaultMode: 0444}
+        - name: config
+          configMap: {name: gretl-runtime-config, defaultMode: 0444}
+        - {name: work, emptyDir: {}}
+        - {name: temp, emptyDir: {}}
+        - {name: reports, emptyDir: {}}
+        - {name: outputs, emptyDir: {}}
+        - {name: cwd, emptyDir: {}}

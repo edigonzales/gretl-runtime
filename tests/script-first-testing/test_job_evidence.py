@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--evidence-root', type=Path, required=True)
-parser.add_argument('--mode', choices=['SCRIPT','JAR'], required=True)
+parser.add_argument('--mode', choices=['SCRIPT','JAR','IMAGE'], required=True)
 parser.add_argument('--scope', choices=['local','full'], required=True)
 options = parser.parse_args()
 repository = Path(__file__).resolve().parents[2]
@@ -55,6 +55,19 @@ class AuditNegatives(unittest.TestCase):
         row['mode']='SCRIPT';self.save(path,row);self.audit()
     def test_E03_stale_revision(self):
         path,row=self.row(lambda r:'sourceRevision' in r);row['sourceRevision']='0'*40;self.save(path,row);self.audit()
+    def test_E04_correct_labels_wrong_actual_image_bytes(self):
+        actual=self.root/'gretl-dist/target/image/extracted/bin/gretl'
+        actual.write_bytes(actual.read_bytes()+b'\n# wrong actual image bytes\n')
+        self.audit()
+    def test_E08_changed_input_identity(self):
+        path,row=self.row(lambda r:r['mode']=='IMAGE' and 'input' in r)
+        inventory=path.parent/'input-manifest.json';data=json.loads(inventory.read_text())
+        self.assertTrue(data['files']);data['files'][0]['sha256']='0'*64
+        self.save(inventory,data);self.audit()
+    def test_E11_recording_engine_is_not_real_container(self):
+        path,row=self.row(lambda r:r['mode']=='IMAGE' and 'image' in r)
+        proof=path.parent/'image-proof.json';data=json.loads(proof.read_text())
+        data.pop('container');self.save(proof,data);self.audit()
     def test_E05_missing_required_report(self):
         path,row=self.row(lambda r:'reportIdentity' in r)
         report=path.parent/('explicit-reports' if Path(row['report']).parent.name=='explicit-reports' else 'reports')/'report.json'
@@ -102,6 +115,7 @@ class AuditNegatives(unittest.TestCase):
         fake=Path(self.scratch.name)/'fake';(fake/'scripts').mkdir(parents=True)
         shutil.copyfile(repository/'scripts/verify-job-matrix.sh',fake/'scripts/verify-job-matrix.sh')
         shutil.copyfile(repository/'scripts/preserve-job-evidence.py',fake/'scripts/preserve-job-evidence.py')
+        shutil.copyfile(repository/'scripts/run-maven-gate.py',fake/'scripts/run-maven-gate.py')
         (fake/'pom.xml').write_text('<project xmlns="http://maven.apache.org/POM/4.0.0"><modules/></project>')
         (fake/'mvnw').write_text('#!/bin/sh\necho deliberate-maven-failure\nexit 37\n');(fake/'mvnw').chmod(0o700)
         for command in (['git','init','-q'],['git','add','.'],['git','-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture']):
@@ -111,6 +125,9 @@ class AuditNegatives(unittest.TestCase):
         self.assertFalse(list((Path(self.scratch.name)/'matrix').glob('*/complete.json')))
 
 names = unittest.defaultTestLoader.getTestCaseNames(AuditNegatives)
+if options.mode != 'IMAGE':
+    for name in ('test_E04_correct_labels_wrong_actual_image_bytes','test_E08_changed_input_identity','test_E11_recording_engine_is_not_real_container'):
+        names.remove(name)
 if options.scope == 'local':
     names.remove('test_E07_other_modes_cannot_fill_operations')
     print('LOCAL selection: E07 operation coverage is selected only in FULL scope.', flush=True)

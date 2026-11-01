@@ -63,7 +63,9 @@ class ProjectProcessLocalJobIT {
                 JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45), ArtifactJobRunner.JobInput.project("."), ArtifactJobRunner.Invocation.run()));
         assertEquals(2, result.code(), result.err()); assertFalse(result.timedOut());
         assertFalse(result.err().contains("ClassNotFoundException"), result.err());
-        assertFalse(Files.exists(result.report())); assertFalse(Files.exists(root.resolve("work")));
+        assertFalse(Files.exists(result.report()));
+        if(ArtifactJobRunner.Mode.configured()!=ArtifactJobRunner.Mode.IMAGE) assertFalse(Files.exists(root.resolve("work")));
+        else try(var files=Files.list(root.resolve("work"))) { assertEquals(Set.of("home","tmp"),files.map(p->p.getFileName().toString()).collect(java.util.stream.Collectors.toSet())); }
         assertTrue(result.err().toLowerCase(java.util.Locale.ROOT).contains(kind.equals("cycle") ? "zykl" : "absent"), result.err());
     }
     @ParameterizedTest @ValueSource(strings = {":a:run", ":b:run"})
@@ -91,7 +93,7 @@ class ProjectProcessLocalJobIT {
         SelectedPackageSupport.copy(original.jobDirectory(), fixture);
         Files.delete(fixture.resolve("job-package.json"));
         var request = new ArtifactJobRunner.Request(original.id(),fixture,original.directory(),original.targets(),original.parameters(),original.environment(),original.config(),original.endpoints(),original.timeout(),original.input(),original.invocation());
-        var result = ArtifactJobRunner.run(request, ArtifactJobRunner.Mode.SCRIPT);
+        var result = ArtifactJobRunner.run(request, ArtifactJobRunner.Mode.configured()==ArtifactJobRunner.Mode.IMAGE ? ArtifactJobRunner.Mode.IMAGE : ArtifactJobRunner.Mode.SCRIPT);
         assertEquals(0,result.code(),result.err());
         assertEquals("download-A\n|import-C\n|9|true|helper",Files.readString(request.directory().resolve("output/result.txt")));
         assertFalse(Files.exists(request.directory().resolve("job.jar")));

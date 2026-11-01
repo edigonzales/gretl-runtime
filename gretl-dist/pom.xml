@@ -300,4 +300,14 @@
       </plugin>
     </plugins>
   </build>
+  <profiles><profile><id>job-image</id><build><plugins><plugin>
+    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-antrun-plugin</artifactId>
+    <executions><execution><id>build-generic-runtime-image</id><phase>pre-integration-test</phase><goals><goal>run</goal></goals>
+      <configuration><target><exec executable="bash" failonerror="true">
+        <arg value="${maven.multiModuleProjectDirectory}/scripts/build-runtime-image.sh"/>
+        <arg value="--distribution"/><arg value="${project.build.directory}/dist"/>
+        <arg value="--output"/><arg value="${project.build.directory}/image"/>
+      </exec></target></configuration>
+    </execution></executions>
+  </plugin></plugins></build></profile></profiles>
 </project>

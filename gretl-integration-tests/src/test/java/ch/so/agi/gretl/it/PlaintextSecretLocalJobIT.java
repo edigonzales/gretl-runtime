@@ -27,7 +27,7 @@ class PlaintextSecretLocalJobIT {
                 "user", "test", "passwordSecret", "dbPassword"));
         var request = new ArtifactJobRunner.Request("plaintext-" + mode,
                 ArtifactJobRunner.fixture("plaintext-secret"), root, List.of(),
-                Map.of("output", root.resolve("output")), Map.of(), config, Map.of(), Duration.ofSeconds(45));
+                Map.of("output", root.resolve("output")), Map.of(), config, Map.of("sqlite",new ArtifactJobRunner.Endpoint("jdbc:sqlite:" + root.resolve("output/probe.sqlite"),"jdbc:sqlite:/outputs/probe.sqlite")), Duration.ofSeconds(45));
         var prepared = ArtifactJobRunner.prepare(request);
         var running = ArtifactJobRunner.start(prepared);
         try {

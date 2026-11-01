@@ -9,12 +9,26 @@ import org.junit.jupiter.api.Test;
 
 /** All tests here start the candidate launcher with external uncompiled sources. */
 class ScriptProcessLocalJobIT {
+    private static ArtifactJobRunner.Mode sourceMode() {
+        return ArtifactJobRunner.Mode.configured()==ArtifactJobRunner.Mode.IMAGE ? ArtifactJobRunner.Mode.IMAGE : ArtifactJobRunner.Mode.SCRIPT;
+    }
     private static ArtifactJobRunner.Request request(Path fixture, Path root, String name, ArtifactJobRunner.Invocation invocation) throws Exception {
-        Path tools = Files.createDirectory(root.resolve("runtime-bin"));
-        Files.createSymbolicLink(tools.resolve("dirname"), Path.of("/usr/bin/dirname"));
-        return new ArtifactJobRunner.Request("source-contract", fixture, root, List.of(), Map.of("output", root.resolve("output/value.txt")),
-                Map.of("PATH", tools.toString(), "GRETL_JAVA_OPTS", "-Dgretl.packager.maven=/deliberate-failing-packager"),
-                JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(30), ArtifactJobRunner.JobInput.script(name), invocation);
+        return request(fixture,root,name,invocation,sourceMode());
+    }
+    private static ArtifactJobRunner.Request request(Path fixture, Path root, String name, ArtifactJobRunner.Invocation invocation, ArtifactJobRunner.Mode mode) throws Exception {
+        var environment=new LinkedHashMap<String,Object>();
+        environment.put("GRETL_JAVA_OPTS","-Dgretl.packager.maven=/deliberate-failing-packager");
+        if(mode!=ArtifactJobRunner.Mode.IMAGE) {
+            Path tools=Files.createDirectory(root.resolve("runtime-bin"));
+            Files.createSymbolicLink(tools.resolve("dirname"),Path.of("/usr/bin/dirname"));
+            environment.put("PATH",tools.toString());
+        }
+        return new ArtifactJobRunner.Request("source-contract",fixture,root,List.of(),Map.of("output",root.resolve("output/value.txt")),environment,
+                JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(45),ArtifactJobRunner.JobInput.script(name),invocation);
+    }
+    private static void assertNoRunWorkspace(Path root) throws Exception {
+        if(sourceMode()!=ArtifactJobRunner.Mode.IMAGE) assertFalse(Files.exists(root.resolve("work")));
+        else try(var files=Files.list(root.resolve("work"))) { assertEquals(Set.of("home","tmp"),files.map(p->p.getFileName().toString()).collect(java.util.stream.Collectors.toSet())); }
     }
     private static String job(String value) {
         return "parameter('output', type: 'path', required: true, description: 'External output')\naction('write') { System.getenv('PATH').split(java.io.File.pathSeparator).each { assert !new File(it, 'mvn').exists(); assert !new File(it, 'gradle').exists() }; java.nio.file.Files.writeString(parameter('output'), java.nio.file.Files.readString(file('payload.txt')) + '" + value + "') }; defaults 'write'\n";
@@ -36,8 +50,8 @@ class ScriptProcessLocalJobIT {
                 }
                 if (i==2) Files.writeString(fixture.resolve(name), job("edited-ö"));
                 Path root = ArtifactJobRunner.directory("external-edit-" + i);
-                var prepared = ArtifactJobRunner.prepare(request(fixture, root, name, ArtifactJobRunner.Invocation.run()), ArtifactJobRunner.Mode.SCRIPT);
-                assertNull(prepared.jar()); assertNull(prepared.image());
+                var prepared = ArtifactJobRunner.prepare(request(fixture, root, name, ArtifactJobRunner.Invocation.run()), sourceMode());
+                assertNull(prepared.jar()); assertEquals(sourceMode()==ArtifactJobRunner.Mode.IMAGE,prepared.image()!=null);
                 var running = ArtifactJobRunner.start(prepared);
                 ArtifactJobRunner.Result result;
                 try { result = ArtifactJobRunner.finish(running, false); }
@@ -75,7 +89,7 @@ class ScriptProcessLocalJobIT {
             Files.writeString(fixture.resolve("payload.txt"), "unpacked|");
             Files.writeString(fixture.resolve("job.groovy"), job("external"));
             Path root = ArtifactJobRunner.directory("unpacked-script");
-            var request = request(fixture, root, "job.groovy", ArtifactJobRunner.Invocation.run());
+            var request = request(fixture, root, "job.groovy", ArtifactJobRunner.Invocation.run(),ArtifactJobRunner.Mode.SCRIPT);
             var canonical = ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.SCRIPT);
             var prepared = new ArtifactJobRunner.Prepared(request, canonical.source(), canonical.report(), canonical.inputSnapshot(),
                     ScriptExecutionAdapter.prepare(request, canonical.source(), canonical.report(), distribution));
@@ -96,15 +110,15 @@ class ScriptProcessLocalJobIT {
             for (var invocation : List.of(ArtifactJobRunner.Invocation.check(), ArtifactJobRunner.Invocation.plan(),
                     ArtifactJobRunner.Invocation.plan("mermaid", null), ArtifactJobRunner.Invocation.jobHelp())) {
                 Path root = ArtifactJobRunner.directory("source-controls");
-                var result = ArtifactJobRunner.run(request(fixture, root, "job.groovy", invocation), ArtifactJobRunner.Mode.SCRIPT);
+                var result = ArtifactJobRunner.run(request(fixture, root, "job.groovy", invocation), sourceMode());
                 assertEquals(0, result.code(), result.err()); assertFalse(result.timedOut());
                 assertFalse(Files.exists(root.resolve("output/value.txt"))); assertFalse(Files.exists(result.report()));
-                assertFalse(Files.exists(root.resolve("work")));
+                assertNoRunWorkspace(root);
                 if (invocation.graphFormat() != null) assertTrue(result.out().contains("flowchart"), result.out());
             }
             Files.writeString(fixture.resolve("job.groovy"), "parameter('output', type: 'path', description: 'Unused external output'); action('noise') { for (int i=0;i<5000;i++) { System.out.println('O' * 100); System.err.println('E' * 100) } }; defaults 'noise'");
             Path root = ArtifactJobRunner.directory("source-large-streams");
-            var result = ArtifactJobRunner.run(request(fixture, root, "job.groovy", ArtifactJobRunner.Invocation.run()), ArtifactJobRunner.Mode.SCRIPT);
+            var result = ArtifactJobRunner.run(request(fixture, root, "job.groovy", ArtifactJobRunner.Invocation.run()), sourceMode());
             assertEquals(0, result.code(), result.err()); assertFalse(result.timedOut());
             assertEquals(5000, result.out().lines().filter(line -> line.equals("O".repeat(100))).count());
             assertEquals(5000, result.err().lines().filter(line -> line.equals("E".repeat(100))).count());
@@ -118,12 +132,12 @@ class ScriptProcessLocalJobIT {
             Files.writeString(fixture.resolve("payload.txt"), "independent|");
             SelectedPackageSupport.descriptor(fixture, List.of(), false, List.of());
             Path first = ArtifactJobRunner.directory("jar-cache-mutation");
-            var original = ArtifactJobRunner.prepare(request(fixture, first, "job.groovy", ArtifactJobRunner.Invocation.run()), ArtifactJobRunner.Mode.JAR);
+            var original = ArtifactJobRunner.prepare(request(fixture, first, "job.groovy", ArtifactJobRunner.Invocation.run(),ArtifactJobRunner.Mode.JAR), ArtifactJobRunner.Mode.JAR);
             String expectedHash = original.sha256();
             Files.write(original.jar(), new byte[]{0, 1, 2});
             assertNotEquals(expectedHash, JobInputSnapshot.hash(original.jar()));
             Path next = ArtifactJobRunner.directory("jar-cache-reuse");
-            var reused = ArtifactJobRunner.prepare(request(fixture, next, "job.groovy", ArtifactJobRunner.Invocation.run()), ArtifactJobRunner.Mode.JAR);
+            var reused = ArtifactJobRunner.prepare(request(fixture, next, "job.groovy", ArtifactJobRunner.Invocation.run(),ArtifactJobRunner.Mode.JAR), ArtifactJobRunner.Mode.JAR);
             assertEquals(expectedHash, JobInputSnapshot.hash(reused.jar()));
             assertTrue(Files.isRegularFile(next.resolve("package-reuse.txt")));
             var running = ArtifactJobRunner.start(reused);
@@ -150,7 +164,7 @@ class ScriptProcessLocalJobIT {
                 var input = variant.equals("settings") ? ArtifactJobRunner.JobInput.project(".") : base.input();
                 var request = new ArtifactJobRunner.Request(base.id(), fixture, root, base.targets(), base.parameters(), base.environment(),
                         base.config(), base.endpoints(), base.timeout(), input, base.invocation());
-                var result = ArtifactJobRunner.run(request, ArtifactJobRunner.Mode.SCRIPT);
+                var result = ArtifactJobRunner.run(request, sourceMode());
                 assertEquals(2, result.code(), result.err()); assertFalse(result.timedOut());
                 assertFalse(result.err().contains("ClassNotFoundException"), result.err());
                 assertTrue(result.err().contains(variant.equals("settings") ? "settings.gretl" : variant.equals("syntax") ? "bad.groovy" : "missing.groovy"), result.err());
@@ -165,7 +179,7 @@ class ScriptProcessLocalJobIT {
         try {
             Files.writeString(fixture.resolve("job.groovy"), job("never"));
             Path root = ArtifactJobRunner.directory("source-launch-failure");
-            var prepared = ArtifactJobRunner.prepare(request(fixture, root, "job.groovy", ArtifactJobRunner.Invocation.run()), ArtifactJobRunner.Mode.SCRIPT);
+            var prepared = ArtifactJobRunner.prepare(request(fixture, root, "job.groovy", ArtifactJobRunner.Invocation.run(),ArtifactJobRunner.Mode.SCRIPT), ArtifactJobRunner.Mode.SCRIPT);
             Files.delete(root.resolve("cwd"));
             assertThrows(java.io.IOException.class, () -> ArtifactJobRunner.start(prepared));
             var proof = (Map<?,?>)Json.parseFile(root.resolve("execution.json"),1L<<20);

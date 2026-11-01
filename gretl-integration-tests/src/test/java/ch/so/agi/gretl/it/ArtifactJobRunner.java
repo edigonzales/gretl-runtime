@@ -125,9 +125,10 @@ final class ArtifactJobRunner {
         String sha256() { return launch instanceof JarLaunch jar ? jar.sha256()
                 : launch instanceof ImageLaunch image ? image.image().imageId() : inputSnapshot.treeSha256(); }
         ImageExecutionAdapter.Launch image() { return launch instanceof ImageLaunch image ? image.image() : null; }
-        Prepared withReport(Path newReport) {
+        Prepared withReport(Path newReport) throws IOException {
             JobLaunch changed = launch instanceof ScriptLaunch script
-                    ? ScriptExecutionAdapter.prepare(request, source, newReport, script.distribution()) : launch;
+                    ? ScriptExecutionAdapter.prepare(request, source, newReport, script.distribution())
+                    : launch instanceof ImageLaunch image ? new ImageLaunch(image.distribution(),image.image().withReport(newReport,request)) : launch;
             return new Prepared(request, source, newReport, inputSnapshot, changed);
         }
     }
@@ -210,7 +211,7 @@ final class ArtifactJobRunner {
                 if (!command.equals(ScriptExecutionAdapter.arguments(request, prepared.source(), prepared.report(), script.distribution().launcher())))
                     throw new IOException("SCRIPT launch does not match its prepared input/invocation");
             }
-            else if (prepared.image() != null) command = prepared.image().arguments();
+            else if (prepared.image() != null) { command = new ArrayList<>(List.of("docker")); command.addAll(prepared.image().arguments()); }
             else {
                 command = new ArrayList<>(List.of(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
                         "-Dfile.encoding=UTF-8", "-Duser.timezone=UTC", "-Duser.language=de", "-jar", prepared.jar().toString()));
@@ -255,10 +256,13 @@ final class ArtifactJobRunner {
         boolean timedOut = !process.waitFor(Math.max(1, remaining), TimeUnit.NANOSECONDS);
         boolean forced = false;
         if (timedOut) {
-            cancel(running);
-            forced = stop(process);
+            if (running.prepared().image() != null) forced = stopImage(running);
+            else { cancel(running); forced = stop(process); }
         }
-        if (running.prepared().image() != null) running.prepared().image().remove();
+        if (running.prepared().image() != null) {
+            try { forced |= running.prepared().image().completed(); }
+            finally { running.prepared().image().remove(); }
+        }
         // waitFor/stop has reaped the process; redirected streams are now complete.
         Request request = running.prepared().request();
         var registry = new ch.so.agi.gretl.runtime.runner.SecretRegistry();
@@ -300,11 +304,23 @@ final class ArtifactJobRunner {
     }
 
     static void stop(Running running) throws Exception {
-        try { cancel(running); }
-        finally {
-            stop(running.process());
-            if (running.prepared().image() != null) running.prepared().image().remove();
+        if (running.prepared().image() != null) {
+            try { stopImage(running); }
+            finally { running.prepared().image().remove(); }
+        } else {
+            try { cancel(running); }
+            finally { stop(running.process()); }
         }
+    }
+
+    private static boolean stopImage(Running running) throws Exception {
+        // Bound the actual container lifetime before reaping its client process.
+        running.prepared().image().cancel(35);
+        Process process=running.process();
+        if (process.waitFor(5,TimeUnit.SECONDS)) return false;
+        process.destroyForcibly();
+        if (!process.waitFor(5,TimeUnit.SECONDS)) throw new IllegalStateException("Docker client survived force termination");
+        return true;
     }
 
     static boolean stop(Process process) throws InterruptedException {

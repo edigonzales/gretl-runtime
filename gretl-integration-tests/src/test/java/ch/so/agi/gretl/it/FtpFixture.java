@@ -47,7 +47,10 @@ final class FtpFixture implements AutoCloseable {
                     .withCreateContainerCmdModifier(command ->
                             command.withHostName("ftp").withAliases("ftp"))
                     .waitingFor(Wait.forListeningPort());
-            if (ArtifactJobRunner.Mode.configured() == ArtifactJobRunner.Mode.IMAGE) candidate.withNetworkMode(System.getProperty("gretl.test.imageNetwork"));
+            if (ArtifactJobRunner.Mode.configured() == ArtifactJobRunner.Mode.IMAGE) {
+                candidate.withLabel("gretl.verification.run",System.getProperty("gretl.test.runId","development"));
+                candidate.withNetworkMode(System.getProperty("gretl.test.imageNetwork"));
+            }
             try {
                 candidate.start();
                 return candidate;

@@ -19,7 +19,7 @@ class JobProcessLifecycleLocalJobIT {
     @Test void requiredReportWriteFailureCannotBecomeSuccess() throws Exception {
         var request = request("report-write-failure", "action('write') { java.nio.file.Files.writeString(parameter('output'), 'task-completed') }; defaults 'write'", Map.of());
         var prepared = ArtifactJobRunner.prepare(request);
-        Path blocked = Files.writeString(request.directory().resolve("blocked-report"), "preserve-this-file");
+        Path blocked = Files.writeString(request.directory().resolve("reports/blocked-report"), "preserve-this-file");
         var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared.withReport(blocked.resolve("report.json"))), false);
         assertEquals(2, result.code(), result.err()); assertFalse(result.timedOut());
         assertEquals("preserve-this-file", Files.readString(blocked));

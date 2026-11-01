@@ -30,7 +30,7 @@ class ProjectScriptLocalJobIT {
         for (int i = 0; i < plan.size(); i++) {
             String script = List.of("prepare/job.groovy", "checks/local/job.groovy", "publish/job.groovy").get(i);
             var source = object(plan.get(i).get("source"));
-            assertEquals(root.resolve("run/source").resolve(script).toRealPath().toString(), source.get("file"));
+            assertEquals(originalSource(root,"run",script), source.get("file"));
             assertEquals(1L, source.get("line"));
         }
     }
@@ -71,14 +71,14 @@ class ProjectScriptLocalJobIT {
         var execution = object(report.get("execution")); assertEquals("FAILED", execution.get("status"));
         String errorRef = objects(execution.get("tasks")).getLast().get("errorRef").toString();
         var failure = objects(report.get("errors")).stream().filter(e -> e.get("id").equals(errorRef)).findFirst().orElseThrow();
-        assertEquals(root.resolve("failure/source/publish/job.groovy").toRealPath().toString(), object(failure.get("source")).get("file"));
+        assertEquals(originalSource(root,"failure","publish/job.groovy"), object(failure.get("source")).get("file"));
         assertEquals(3L, object(failure.get("source")).get("line"));
         assertTrue(text.contains("IllegalStateException")); assertFalse(text.matches("(?s).*GretlProject_[a-f0-9]+\\.groovy.*"));
         Path events = eventFile(root, "failure");
         var event = Files.readAllLines(events).stream().map(Json::parse).map(ProjectScriptLocalJobIT::object)
                 .filter(e -> "gretl.task.failed".equals(e.get("event_name"))).findFirst().orElseThrow();
         assertEquals(":publish:run", event.get("task_id"));
-        assertTrue(Files.readString(events).contains(root.resolve("failure/source/publish/job.groovy").toRealPath().toString()));
+        assertTrue(Files.readString(events).contains(originalSource(root,"failure","publish/job.groovy")));
     }
 
     private Path copyExample(String name) throws Exception {
@@ -118,11 +118,15 @@ class ProjectScriptLocalJobIT {
                 : ArtifactJobRunner.JobInput.script(fixture.relativize(input).toString());
         var request = new ArtifactJobRunner.Request("project-script-" + id, fixture, directory, targets, parameters, Map.of(),
                 JobRunner.baseConfig(directory), Map.of(), java.time.Duration.ofSeconds(60), selected, invocation);
-        var result = ArtifactJobRunner.run(request, ArtifactJobRunner.Mode.SCRIPT);
+        var result = ArtifactJobRunner.run(request, ArtifactJobRunner.Mode.configured()==ArtifactJobRunner.Mode.IMAGE ? ArtifactJobRunner.Mode.IMAGE : ArtifactJobRunner.Mode.SCRIPT);
         return new Result(result.code(), result.out(), result.err());
     }
+    private String originalSource(Path root,String id,String relative) throws Exception {
+        return ArtifactJobRunner.Mode.configured()==ArtifactJobRunner.Mode.IMAGE ? "/job/"+relative : root.resolve(id+"/source/"+relative).toRealPath().toString();
+    }
     private static void assertNoRunWork(Path root) throws Exception {
-        assertFalse(Files.exists(root.resolve("work")));
+        if(ArtifactJobRunner.Mode.configured()!=ArtifactJobRunner.Mode.IMAGE) assertFalse(Files.exists(root.resolve("work")));
+        else try(var files=Files.list(root.resolve("work"))) { assertEquals(java.util.Set.of("home","tmp"),files.map(p->p.getFileName().toString()).collect(java.util.stream.Collectors.toSet())); }
         try (var files = Files.list(root.resolve("reports"))) { assertEquals(0, files.count()); }
     }
 

@@ -34,10 +34,9 @@ class RuntimeSafetyLocalJobIT {
             assertEquals(PosixFilePermissions.fromString("rwxrwx---"),
                     Files.getPosixFilePermissions(root.resolve(name)), "Existing " + name + " permissions");
         assertEquals("foreign-owned-file", Files.readString(root.resolve("work/foreign.txt")));
-        Path runRoot;
-        try (var paths = Files.list(root.resolve("work"))) {
-            runRoot = paths.filter(Files::isDirectory).findFirst().orElseThrow();
-        }
+        var identity=(Map<?,?>)((Map<?,?>)Json.parseFile(result.report(),8L<<20)).get("identity");
+        Path runRoot=root.resolve("work").resolve(identity.get("runId").toString());
+        assertTrue(Files.isDirectory(runRoot),"The actual owned run workspace");
         try (var paths = Files.walk(runRoot)) {
             for (Path path : paths.filter(Files::isDirectory).toList())
                 assertEquals(PosixFilePermissions.fromString("rwx------"), Files.getPosixFilePermissions(path), path.toString());
@@ -101,10 +100,11 @@ class RuntimeSafetyLocalJobIT {
         var mode = ArtifactJobRunner.Mode.configured();
         Path root = ArtifactJobRunner.directory("runtime-safety-start-" + mode);
         var prepared = prepare(root, "permissions");
-        Path blocked = Files.writeString(root.resolve("blocked-root"), "keep");
-        Map<String,Object> config = (Map<String,Object>) Json.parseFile(root.resolve("runtime.json"), 1L << 20);
-        ((Map<String,Object>) config.get("runtime")).put("workRoot", blocked.toString());
-        Files.writeString(root.resolve("runtime.json"), Json.write(config));
+        Path blocked = Files.writeString(root.resolve("reports/blocked-root"), "keep");
+        Path configFile=root.resolve(mode==ArtifactJobRunner.Mode.IMAGE ? "image-runtime.json" : "runtime.json");
+        Map<String,Object> config = (Map<String,Object>) Json.parseFile(configFile, 1L << 20);
+        ((Map<String,Object>) config.get("runtime")).put("workRoot",mode==ArtifactJobRunner.Mode.IMAGE ? "/reports/blocked-root" : blocked.toString());
+        Files.writeString(configFile, Json.write(config));
         var result = run(prepared);
         assertEquals(2, result.code(), result.err());
         assertFalse(Files.exists(result.report()));

@@ -25,6 +25,7 @@ class ImageExecutionAdapterTest {
         public String inspect(List<String> args) throws Exception {
             calls.add(List.copyOf(args));
             if (failed) throw new java.io.IOException("missing prerequisite");
+            if (args.contains("{{json .Config.Entrypoint}}")) return "[\"/product/bin/gretl\"]";
             return args.getFirst().equals("image") ? ID : "present";
         }
         public Process start(List<String> args, Path directory, Map<String, String> env) {
@@ -52,10 +53,11 @@ class ImageExecutionAdapterTest {
         var launch = ImageExecutionAdapter.prepare(request, request.jobDirectory(), settings, engine);
         var args = launch.arguments();
         assertEquals(ID, launch.imageId());
+        assertFalse(args.contains("--entrypoint"));
         assertEquals(List.of("info", "--format", "{{.ServerVersion}}"), engine.calls.getFirst());
         assertTrue(engine.calls.stream().anyMatch(c -> c.contains(settings.image())));
         assertTrue(engine.calls.stream().anyMatch(c -> c.getFirst().equals("network")));
-        assertTrue(args.containsAll(List.of("--rm", "--init", "--sig-proxy=true", currentUser(), "gretl-test-network", "/run", "/product/bin/gretl", ID, "/job/job.groovy", "first", "second", "output=/outputs/a b.txt", "count=12", "/reports/report.json")));
+        assertTrue(args.containsAll(List.of("--init", "--read-only", "--sig-proxy=true", currentUser(), "gretl-test-network", "/run", ID, "/job/job.groovy", "first", "second", "output=/outputs/a b.txt", "count=12", "/reports/report.json")));
         assertTrue(args.stream().anyMatch(a -> a.contains("source with spaces") || a.contains("scenario with spaces/source,target=/job,readonly")));
         assertTrue(args.stream().anyMatch(a -> a.endsWith("target=/secrets/password,readonly")));
         assertTrue(args.stream().anyMatch(a -> a.endsWith("target=/config/runtime.json,readonly")));
@@ -78,7 +80,7 @@ class ImageExecutionAdapterTest {
         assertTrue(ch.so.agi.gretl.runtime.logging.Json.write(ArtifactJobRunner.jsonValue(request.config()))
                 .contains(request.jobDirectory().resolve("data.txt").toString()));
         launch.cancel(); launch.remove();
-        assertTrue(engine.calls.contains(List.of("stop", "--time", "35", launch.name())));
+        assertTrue(engine.calls.contains(List.of("kill", "--signal=TERM", launch.name())));
         assertTrue(engine.calls.contains(List.of("rm", "--force", launch.name())));
     }
     @Test void projectDirectoryInputUsesTheSameNonStartingImageBoundary() throws Exception {
@@ -127,7 +129,7 @@ class ImageExecutionAdapterTest {
             assertEquals(ID, result.artifactIdentity()); assertEquals("IMAGE", result.mode()); assertTrue(result.hasValidArtifactIdentity()); assertEquals(report, result.report()); assertEquals("image output [REDACTED]", result.out());
             assertEquals(result.out(), Files.readString(request.directory().resolve("job.stdout.log")));
             assertFalse(process.isAlive()); assertTrue(calls.contains(List.of("rm", "--force", "fake-container")));
-            assertEquals(timeout, calls.stream().anyMatch(c -> c.getFirst().equals("stop")));
+            assertEquals(timeout, calls.contains(List.of("stop", "--time", "35", "fake-container")));
             assertTrue(Files.readString(request.directory().resolve("execution.json")).contains("\"mode\":\"IMAGE\""));
         }
     }
@@ -234,7 +236,33 @@ class ImageExecutionAdapterTest {
         return new ArtifactJobRunner.Request(request.id(), request.jobDirectory(), request.directory(), request.targets(),
                 request.parameters(), request.environment(), config, request.endpoints(), request.timeout(), request.input(), request.invocation());
     }
+    @Test void missingSecretFileNeverBecomesADirectory() throws Exception {
+        var request=request(); Path secret=request.directory().resolve("secret-password.txt"); Files.delete(secret);
+        assertThrows(java.io.IOException.class,()->ImageExecutionAdapter.prepare(request,request.jobDirectory(),settings,new RecordingEngine()));
+        assertFalse(Files.exists(secret));
+    }
+    @Test void mismatchedDefaultEntrypointIsRejectedWithoutAnOverride() throws Exception {
+        var request=request();
+        var engine=new ImageExecutionAdapter.Engine() {
+            public String inspect(List<String> args) { return args.contains("{{json .Config.Entrypoint}}") ? "[\"/wrong/launcher\"]" : args.getFirst().equals("image") ? ID : "present"; }
+            public Process start(List<String> args,Path root,Map<String,String> env) { fail("No fallback");return null; }
+            public void control(List<String> args) { fail("No start to clean up"); }
+        };
+        assertThrows(java.io.IOException.class,()->ImageExecutionAdapter.prepare(request,request.jobDirectory(),settings,engine));
+    }
+    @Test void checkPlanAndHelpUseTheActualImageInvocationWithoutRunOptions() throws Exception {
+        var base=request();
+        for(var invocation:List.of(ArtifactJobRunner.Invocation.check(),ArtifactJobRunner.Invocation.plan("mermaid",null),ArtifactJobRunner.Invocation.jobHelp())) {
+            var request=new ArtifactJobRunner.Request(base.id(),base.jobDirectory(),base.directory(),base.targets(),base.parameters(),base.environment(),base.config(),base.endpoints(),base.timeout(),base.input(),invocation);
+            var args=ImageExecutionAdapter.prepare(request,request.jobDirectory(),settings,new RecordingEngine()).arguments();
+            assertEquals(invocation.verb().name().toLowerCase(java.util.Locale.ROOT),args.get(args.indexOf(ID)+1));
+            assertFalse(args.contains("--report")); assertFalse(args.contains("--entrypoint"));
+            assertEquals(invocation.help(),args.contains("--help"));
+            if(invocation.graphFormat()!=null) assertTrue(args.contains("mermaid"));
+        }
+    }
     @Test void explicitImageNetworkLauncherAndNonRootUserAreRequired() {
+        assertEquals("1001234567:0",new ImageExecutionAdapter.Settings("x","/bin/gretl","net","1001234567:0","").user());
         assertThrows(IllegalArgumentException.class, () -> new ImageExecutionAdapter.Settings(null, "/bin/gretl", "net", "1:1", ""));
         assertThrows(IllegalArgumentException.class, () -> new ImageExecutionAdapter.Settings("x", "gretl", "net", "1:1", ""));
         assertThrows(IllegalArgumentException.class, () -> new ImageExecutionAdapter.Settings("x", "/bin/gretl", "host", "1:1", ""));

@@ -32,9 +32,11 @@ for module in modules:
     copy(target / 'site/jacoco/jacoco.xml')
     for file in target.glob('*-bin.*'): copy(file)
 tree(root / 'gretl-dist/target/dist')
+copy(root / 'gretl-dist/target/image/candidate.json')
+tree(root / 'gretl-dist/target/image/extracted')
 tree(root / 'gretl-integration-tests/target/qualification')
 allowed = {'execution.json', 'command.json', 'input-manifest.json', 'package-inventory.json', 'isolation.json',
-           'distribution-SHA256SUMS', 'job.jar', 'job.stdout.log', 'job.stderr.log', 'image-proof.json'}
+           'distribution-SHA256SUMS', 'container.id', 'job.jar', 'job.stdout.log', 'job.stderr.log', 'image-proof.json'}
 executions = [p.parent for name in ('job-evidence', 'project-script-evidence') for p in (root/'gretl-integration-tests/target'/name).rglob('execution.json')]
 for execution in sorted(executions):
     if not execution.is_dir(): continue

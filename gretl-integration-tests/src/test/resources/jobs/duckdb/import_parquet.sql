@@ -1,3 +1,4 @@
+INSTALL spatial;
 LOAD spatial;
 
 CREATE TABLE bewilligte_ews AS SELECT * FROM read_parquet(${pwd}||'/data/ch.so.afu.bewilligte_erdwaermeanlagen.parquet');

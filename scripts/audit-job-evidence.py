@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--full', action='store_true', help='Require every positive standard operation in the selected mode')
-parser.add_argument('--mode', choices=['SCRIPT', 'JAR'], default='SCRIPT')
+parser.add_argument('--mode', choices=['SCRIPT', 'JAR', 'IMAGE'], default='SCRIPT')
 parser.add_argument('--scope', choices=['local', 'full'], default='local')
 parser.add_argument('--run-id')
 parser.add_argument('--evidence-root', type=Path, help='Isolated repository-shaped evidence copy')
@@ -21,11 +21,14 @@ repository = Path(__file__).resolve().parents[1]
 root = args.evidence_root.resolve() if args.evidence_root else repository
 original_root = Path(json.loads((root / 'retention.json').read_text())['originalRoot']) if args.evidence_root else root
 args.full = args.full or args.scope == 'full'
+def selected(row):
+    return (args.full or row['scope'] == 'LOCAL') and (row['family'] != 'IMAGE_CONTRACT' or args.mode == 'IMAGE')
+
 contracts = json.loads((repository / 'gretl-integration-tests/src/test/resources/qualification/scenarios.json').read_text())
-expected_cases = {c['id']: c for c in contracts['testcases'] if args.full or c['scope'] == 'LOCAL'}
-expected_scenarios = {s['id']: s for s in contracts['scenarios'] if args.full or s['scope'] == 'LOCAL'}
-assert len(expected_cases) == len([c for c in contracts['testcases'] if args.full or c['scope'] == 'LOCAL']), 'Duplicate expected test'
-assert len(expected_scenarios) == len([s for s in contracts['scenarios'] if args.full or s['scope'] == 'LOCAL']), 'Duplicate expected scenario'
+expected_cases = {c['id']: c for c in contracts['testcases'] if selected(c)}
+expected_scenarios = {s['id']: s for s in contracts['scenarios'] if selected(s)}
+assert len(expected_cases) == len([c for c in contracts['testcases'] if selected(c)]), 'Duplicate expected test'
+assert len(expected_scenarios) == len([s for s in contracts['scenarios'] if selected(s)]), 'Duplicate expected scenario'
 
 # The catalog is independent of results. Every declared source method must remain classified.
 for source in (repository / 'gretl-integration-tests/src/test/java/ch/so/agi/gretl/it').glob('*.java'):
@@ -77,6 +80,7 @@ def verify_manifest(directory):
     actual = {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file() and p.name != 'SHA256SUMS'}
     assert not any(p.is_symlink() for p in directory.rglob('*')), 'Distribution symlink'
     assert actual == set(files), 'Distribution inventory mismatch'
+    return files
 
 dist = root / 'gretl-dist/target/dist'
 catalog = read(dist / 'package-catalog.json')
@@ -98,12 +102,12 @@ for file in sorted(p for name in ('job-evidence', 'project-script-evidence') for
     contract = expected_scenarios[scenario_id]
     assert row['testCaseId'] == contract['test'] and row['testCaseId'] in junit, str(file)
     assert row['testFamily'] == contract['family'], str(file)
-    expected_mode = args.mode if contract['family'] == 'COMMON' else contract['modes'][0]
+    expected_mode = args.mode if args.mode in contract['modes'] else contract['modes'][0]
     assert row['mode'] == expected_mode, (str(file), row['mode'], expected_mode)
     run_ids.add(row['suiteRunId'])
     if args.run_id: assert row['suiteRunId'] == args.run_id, str(file)
     assert row['process']['state'] in contract['processStates'], (str(file), row['process'], contract)
-    assert row['mode'] in {'JAR', 'SCRIPT'}, 'IMAGE requires its real qualification gate'
+    assert row['mode'] in {'JAR', 'SCRIPT', 'IMAGE'}, str(file)
     assert row['schemaVersion'] == 2 and row['process']['state'] != 'STARTED', str(file)
     if row['process']['state'] in {'PREPARE_FAILED', 'LAUNCH_FAILED'}:
         # Explicit harness negatives are not successful job executions.
@@ -111,7 +115,7 @@ for file in sorted(p for name in ('job-evidence', 'project-script-evidence') for
         continue
     assert row['sourceRevision'] == catalog['sourceRevision'], str(file)
     assert row['sourceDirty'] == catalog['sourceDirty'], str(file)
-    assert not row['process']['forciblyKilled'], str(file)
+    assert row['process']['forciblyKilled'] == contract.get('forciblyKilled', False), str(file)
     assert row['process']['exitCode'] == row['exitCode'], str(file)
     runtime = row['runtime']
     runtime_root = Path(runtime['root'])
@@ -129,17 +133,47 @@ for file in sorted(p for name in ('job-evidence', 'project-script-evidence') for
     assert inventory['treeSha256'] == row['input']['treeSha256'], str(file)
     canonical = ['gretl-input-v1', [[f['path'], f['size'], f['sha256']] for f in inventory['files']]]
     assert hashlib.sha256(json.dumps(canonical, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest() == inventory['treeSha256'], str(file)
-    if row['mode'] == 'SCRIPT':
-        assert row['executionKind'] == 'SCRIPT' and 'jobJar' not in row and 'image' not in row, str(file)
-        assert Path(command[0]) == runtime_root / 'bin/gretl' and command[1] in {'run', 'check', 'plan'}, str(file)
-        source = file.parent / 'source'
-        source_identity = original_root / source.relative_to(root) if args.evidence_root else source
-        assert Path(command[2]) == (source_identity / row['input']['relativePath']).resolve(), str(file)
+    source = file.parent / 'source'
+    source_identity = original_root / source.relative_to(root) if args.evidence_root else source
+    if row['mode'] in {'SCRIPT', 'IMAGE'}:
+        assert row['executionKind'] == 'SCRIPT' and 'jobJar' not in row, str(file)
         assert not (file.parent / 'job.jar').exists() and not (file.parent / 'package.stdout.log').exists(), str(file)
         for entry in inventory['files'] if source.exists() or not args.evidence_root else []:
             actual = source / entry['path']
             assert actual.resolve().is_relative_to(source.resolve()), str(file)
             assert actual.stat().st_size == entry['size'] and sha(actual) == entry['sha256'], str(file)
+    if row['mode'] == 'SCRIPT':
+        assert 'image' not in row, str(file)
+        assert Path(command[0]) == runtime_root / 'bin/gretl' and command[1] in {'run', 'check', 'plan'}, str(file)
+        assert Path(command[2]) == (source_identity / row['input']['relativePath']).resolve(), str(file)
+    if row['mode'] == 'IMAGE':
+        proof = read(file.parent / 'image-proof.json')
+        candidate = read(root / 'gretl-dist/target/image/candidate.json')
+        for key in ('id','sourceRevision','sourceDirty','distributionManifestSha256','os','architecture','baseReference','entrypoint','user','files'):
+            assert proof[key] == candidate[key], 'IMAGE candidate metadata mismatch: ' + key
+        expected_base = next(line.split()[1] for line in (repository / 'gretl-dist/src/main/docker/Dockerfile').read_text().splitlines() if line.startswith('FROM '))
+        assert proof['baseReference'] == expected_base and re.search(r'@sha256:[a-f0-9]{64}$', expected_base), 'Wrong IMAGE base reference'
+        extracted = root / 'gretl-dist/target/image/extracted'
+        verify_manifest(extracted)
+        assert sha(extracted / 'SHA256SUMS') == runtime['distributionManifestSha256'], 'Wrong actual image distribution bytes'
+        assert {f['path']:f['sha256'] for f in proof['files']} == verify_manifest(dist), 'Wrong image file inventory'
+        assert proof['id'] == candidate['id'] == row['image']['id'], 'Wrong IMAGE identity'
+        assert proof['sourceRevision'] == catalog['sourceRevision'] and proof['sourceDirty'] == catalog['sourceDirty'], str(file)
+        assert proof['distributionManifestSha256'] == runtime['distributionManifestSha256'], str(file)
+        assert proof['os'] == row['image']['os'] == 'linux' and proof['architecture'] == row['image']['architecture'] == candidate['architecture'], str(file)
+        assert proof['entrypoint'] == ['/opt/gretl/bin/gretl'] and proof['user'] == '10001:0', str(file)
+        assert command[:2] == ['docker','run'] and '--entrypoint' not in command and '-jar' not in command and 'package' not in command, 'IMAGE is not external SCRIPT'
+        index = command.index(proof['id'])
+        assert command[index+1] in {'run','check','plan'} and command[index+2] == str(Path('/job') / row['input']['relativePath']), str(file)
+        assert '--read-only' in command and '--pull=never' in command, str(file)
+        mounts = [command[i+1] for i,x in enumerate(command) if x == '--mount']
+        assert any('source='+str(source_identity)+',target=/job,readonly' in m for m in mounts), 'Source mount is not read-only'
+        container = proof['container']
+        assert container['id'] == (file.parent/'container.id').read_text().strip(), str(file)
+        assert re.fullmatch('[a-f0-9]{64}',container['id']) and container['image'] == proof['id'], str(file)
+        assert container['running'] is False and proof['removed'] is True and container['oomKilled'] is False, str(file)
+        assert container['exitCode'] == row['exitCode'] and container['readOnlyRoot'] is True, str(file)
+        assert container['user'] == command[command.index('--user')+1] and not container['user'].startswith('0:'), str(file)
 
     if row['mode'] == 'JAR':
         assert row['executionKind'] == 'PRECOMPILED_JOB' and '-jar' in command, str(file)
@@ -151,11 +185,14 @@ for file in sorted(p for name in ('job-evidence', 'project-script-evidence') for
         assert (file.parent / 'package-inventory.json').is_file(), str(file.parent)
     report_path = Path(row['report'])
     retained_report = file.parent / ('explicit-reports' if report_path.parent.name == 'explicit-reports' else 'reports') / report_path.name
-    if args.evidence_root: report_path = retained_report
+    if args.evidence_root:
+        report_path = root / report_path.relative_to(original_root) if report_path.is_relative_to(original_root) else retained_report
     if not args.evidence_root and not report_path.exists() and (file.parent / 'reports/report.json').exists():
         report_path = file.parent / 'reports/report.json'  # detached execution archive
     reports = [report_path] if report_path.is_file() else []
-    assert bool(reports) == (contract['report'] == 'REQUIRED'), (str(file), contract['report'])
+    if contract['report'] == 'OPTIONAL_FORCED_TERMINATION':
+        assert contract.get('forciblyKilled') is True and row['process']['forciblyKilled'] is True, str(file)
+    else: assert bool(reports) == (contract['report'] == 'REQUIRED'), (str(file), contract['report'])
     operations = []
     if reports:
         report = read(reports[0])
@@ -173,7 +210,7 @@ for file in sorted(p for name in ('job-evidence', 'project-script-evidence') for
             assert row['reportExitCode'] == row['exitCode'], str(file)
         operations = [{k: invocation[k] for k in ('operationId', 'status')}
                       for invocation in report['execution'].get('invocations', [])]
-        if row['mode'] == args.mode:
+        if row['mode'] == args.mode and not row['process']['forciblyKilled']:
             positive.update(i['operationId'] for i in operations if i['status'] == 'SUCCEEDED')
     row['directory'] = str(file.parent.relative_to(root))
     row['operations'] = operations
@@ -207,7 +244,7 @@ output = root / 'gretl-integration-tests/target/qualification'
 output.mkdir(exist_ok=True)
 (output / 'executions.json').write_text(json.dumps(executions, indent=2) + '\n')
 summary = dict(sourceRevision=catalog['sourceRevision'], sourceDirty=catalog['sourceDirty'],
-               tests=tests, mode=args.mode, suiteRunId=next(iter(run_ids)), scenarioCount=len(seen), testCaseCount=len(junit), scenarioCatalogSha256=sha(repository / 'gretl-integration-tests/src/test/resources/qualification/scenarios.json'), successfulOperations=sorted(positive), full=args.full,
+               tests=tests, mode=args.mode, requiredPositiveOperations=sorted(expected & positive), suiteRunId=next(iter(run_ids)), scenarioCount=len(seen), testCaseCount=len(junit), scenarioCatalogSha256=sha(repository / 'gretl-integration-tests/src/test/resources/qualification/scenarios.json'), successfulOperations=sorted(positive), full=args.full,
                distributionCatalogSha256=sha(dist / 'package-catalog.json'),
                archives=[dict(file=p.name, sha256=sha(p)) for p in sorted((root / 'gretl-dist/target').glob('*-bin.*'))],
                coverage=coverage, coverageLimit='Separate launcher and java -jar processes are not instrumented')

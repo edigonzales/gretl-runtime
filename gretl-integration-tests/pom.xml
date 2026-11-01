@@ -178,6 +178,8 @@
         <configuration>
           <systemPropertyVariables>
             <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
+            <gretl.test.executionMode>${gretl.test.executionMode}</gretl.test.executionMode>
+            <gretl.test.imageMetadata>${maven.multiModuleProjectDirectory}/gretl-dist/target/image/candidate.json</gretl.test.imageMetadata>
           </systemPropertyVariables>
         </configuration>
       </plugin>
@@ -194,8 +196,11 @@
         </executions>
         <configuration>
           <includes><include>${gretl.test.includes}</include></includes>
+          <excludes><exclude>**/ImageRuntimeIT.java</exclude></excludes>
           <systemPropertyVariables>
             <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
+            <gretl.test.executionMode>${gretl.test.executionMode}</gretl.test.executionMode>
+            <gretl.test.imageMetadata>${maven.multiModuleProjectDirectory}/gretl-dist/target/image/candidate.json</gretl.test.imageMetadata>
             <gretl.test.reactorDistribution>${maven.multiModuleProjectDirectory}/gretl-dist/target/dist</gretl.test.reactorDistribution>
             <gretl.test.distributionArchive>${maven.multiModuleProjectDirectory}/gretl-dist/target/gretl-runtime-${project.version}-bin.zip</gretl.test.distributionArchive>
           </systemPropertyVariables>
@@ -205,4 +210,11 @@
       </plugin>
     </plugins>
   </build>
+  <profiles><profile><id>job-image</id><build><plugins><plugin>
+    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-failsafe-plugin</artifactId>
+    <configuration>
+      <includes combine.self="override"><include>${gretl.test.includes}</include><include>**/ImageRuntimeIT.java</include></includes>
+      <excludes combine.self="override"/>
+    </configuration>
+  </plugin></plugins></build></profile></profiles>
 </project>
