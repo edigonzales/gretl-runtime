@@ -75,3 +75,29 @@ unveränderliche Kandidatenqualifikation ausgegeben.
 Nächster Schritt: sauberer Kandidatencommit, frische SCRIPT/local-,
 SCRIPT/full- und JAR/full-Gates, isolierte Audit-Negativkopien sowie
 unabhängiger Review mit eigenen Gegenproben.
+
+
+## Erster Kandidat und Archivkorrektur
+
+Am Kandidaten `e61d85237d2fdb6b84030c3701d2003748fc7a3c` bestehen
+die frische Dockerfreie Standardprüfung und der Live-Audit: 693 Tests,
+0 Failures/Errors/Skips, 135 erwartete Starts und 126 konkrete
+JUnit-Varianten im Integrationstestmodul. Fremde Java-/Classpath-Overrides
+wurden zusätzlich gesetzt; die Produktprozesse bereinigen sie.
+
+Die nachfolgende positive Archivgegenprobe fand einen Sicherungsfehler:
+Die private Extensiondistribution liegt neben ihrem Prozessverzeichnis
+und fehlte im erhaltenen Bestand. Der Archivierer bewahrt nun auch diese
+tatsächlich referenzierten Runtimebytes. Der Audit liest sein unabhängiges
+Operationssoll aus dem versionierten Checkout statt aus einem Archiv,
+das bewusst keine komplette Repositorykopie enthält. Nur aktive Profile
+werden archiviert; alte GeoTools-Ausgaben gehören nicht zu LOCAL.
+
+Die korrigierte unveränderte Archivkopie besteht; die lokalen
+Auditmutationen scheitern wie erwartet. Eine positive Archivprüfung ist
+jetzt zwingende Voraussetzung vor jeder Mutationssuite. E07 wird nur im
+vollen Scope ausgewählt: Die manipulierte Vereinigung enthält dann alle
+44 Standardoperationen, der angeforderte Modus selbst jedoch keine.
+Damit prüft die Gegenprobe tatsächlich eine unzulässige Modusvereinigung.
+Der erste Kandidat wird nicht zum Review eingereicht; der korrigierte
+Kandidat bekommt frische Phasengates. Phasenbasis unverändert.

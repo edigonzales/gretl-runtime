@@ -24,7 +24,7 @@ def tree(path):
 copy(root / 'pom.xml')
 ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
 modules = [m.text for m in ET.parse(root/'pom.xml').getroot().findall('m:modules/m:module', ns)]
-modules.append('gretl-geotools-probe')
+if len(sys.argv) > 3 and sys.argv[3] == 'full': modules.append('gretl-geotools-probe')
 for module in modules:
     target = root / module / 'target'
     for kind in ('surefire-reports', 'failsafe-reports'):
@@ -47,7 +47,7 @@ for execution in sorted(executions):
             actual = execution / Path(artifact).name
             if actual.exists(): copy(actual)
         runtime = row.get('runtime', {}).get('root')
-        if runtime and Path(runtime).is_relative_to(execution) and Path(runtime).exists(): tree(Path(runtime))
+        if runtime and Path(runtime).is_relative_to(root/'gretl-integration-tests/target/job-evidence') and Path(runtime).exists(): tree(Path(runtime))
     tree(execution / 'reports')
     # Some permission contracts intentionally select a separate explicit report directory.
     tree(execution / 'explicit-reports')

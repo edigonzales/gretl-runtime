@@ -26,6 +26,8 @@ class AuditNegatives(unittest.TestCase):
         cls.command = ['python3', str(repository/'scripts/audit-job-evidence.py'), '--mode',options.mode,'--scope',options.scope,
                        '--run-id',cls.summary['suiteRunId']]
         if not cls.summary['sourceDirty']: cls.command += ['--source',cls.summary['sourceRevision']]
+        baseline = subprocess.run(cls.command+['--evidence-root',str(cls.source)],capture_output=True,text=True)
+        if baseline.returncode: raise RuntimeError('Unchanged baseline must pass before any mutation: '+baseline.stderr[-3000:])
     def setUp(self):
         self.scratch = tempfile.TemporaryDirectory(prefix='gretl-audit-negative-')
         self.root = Path(self.scratch.name)/'proof'
@@ -38,6 +40,7 @@ class AuditNegatives(unittest.TestCase):
     def audit(self, success=False):
         result = subprocess.run(self.command+['--evidence-root',str(self.root)],capture_output=True,text=True)
         self.assertEqual(result.returncode == 0, success, result.stdout[-1500:]+result.stderr[-3000:])
+        return result
     def row(self, predicate=lambda row: True):
         for path in self.executions:
             row=json.loads(path.read_text())
@@ -75,14 +78,24 @@ class AuditNegatives(unittest.TestCase):
         path=next((self.root/'gretl-integration-tests/target/failsafe-reports').glob('TEST-*.xml'))
         tree=ET.parse(path);tree.getroot().find('testcase').set('name','foreignMethod');tree.write(path);self.audit()
     def test_E07_other_modes_cannot_fill_operations(self):
-        if options.scope!='full':return # Not a required operation-coverage gate in local scope.
+        self.assertEqual('full', options.scope)
+        expected = {o['id'] for o in json.loads((repository/'docs/history/contracts/operation-baseline.json').read_text())}
+        other_mode_filled = False
         for path in self.executions:
             row=json.loads(path.read_text())
-            if row['mode']!=options.mode or 'reportIdentity' not in row:continue
+            if 'reportIdentity' not in row:continue
             report=path.parent/('explicit-reports' if Path(row['report']).parent.name=='explicit-reports' else 'reports')/'report.json'
-            data=json.loads(report.read_text());data['execution']['invocations']=[];report.write_text(json.dumps(data))
+            data=json.loads(report.read_text())
+            if row['mode']==options.mode: data['execution']['invocations']=[]
+            elif not other_mode_filled:
+                # The union is complete, but the requested mode has no positives.
+                data['execution']['invocations']=[{'operationId':i,'status':'SUCCEEDED'} for i in sorted(expected)]
+                other_mode_filled=True
+            report.write_text(json.dumps(data))
             row['reportIdentity']['sha256']=hashlib.sha256(report.read_bytes()).hexdigest();self.save(path,row)
-        self.audit()
+        self.assertTrue(other_mode_filled)
+        result=self.audit()
+        self.assertIn('missingPositiveOperations',result.stderr)
     def test_E09_started_only(self):
         path,row=self.row();row['process']['state']='STARTED';self.save(path,row);self.audit()
     def test_E10_maven_failure_is_not_hidden(self):
@@ -97,4 +110,9 @@ class AuditNegatives(unittest.TestCase):
         self.assertEqual(37,result.returncode,result.stdout+result.stderr)
         self.assertFalse(list((Path(self.scratch.name)/'matrix').glob('*/complete.json')))
 
-unittest.main(argv=[__file__],verbosity=2)
+names = unittest.defaultTestLoader.getTestCaseNames(AuditNegatives)
+if options.scope == 'local':
+    names.remove('test_E07_other_modes_cannot_fill_operations')
+    print('LOCAL selection: E07 operation coverage is selected only in FULL scope.', flush=True)
+result = unittest.TextTestRunner(verbosity=2).run(unittest.TestSuite(AuditNegatives(name) for name in names))
+raise SystemExit(0 if result.wasSuccessful() else 1)

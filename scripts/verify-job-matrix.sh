@@ -50,7 +50,7 @@ if [ "$BUILD_EXIT" -eq 0 ]; then
   set -e
 fi
 printf '%s\n' "$AUDIT_EXIT" > "$OUT/audit-exit.txt"
-python3 scripts/preserve-job-evidence.py "$ROOT" "$OUT/evidence"
+python3 scripts/preserve-job-evidence.py "$ROOT" "$OUT/evidence" "$SCOPE"
 if [ "$BUILD_EXIT" -ne 0 ]; then exit "$BUILD_EXIT"; fi
 if [ "$AUDIT_EXIT" -ne 0 ]; then cat "$OUT/audit.log" >&2; exit "$AUDIT_EXIT"; fi
 [ "$SHA" = "$(git rev-parse HEAD)" ] && [ -z "$(git status --porcelain --untracked-files=normal)" ]
