@@ -8,7 +8,7 @@ nicht vorhanden. Kein Push, Merge oder Release.
 | --- | --- | --- |
 | TST1 | PASS, unabhängig abgenommen | `52ca5bee2e52f7c07106d305e071add1c3c3724a` |
 | TST2 | PASS, unabhängig abgenommen | `b1440bfd678d4ea83d70e51778b09997c441aace` |
-| TST3 | IN_PROGRESS | noch kein Kandidat |
+| TST3 | IN_PROGRESS, Auditkorrektur vor frischen Gates | siehe Implementierungsbericht |
 | TST4 | noch nicht begonnen | — |
 
 TST1: [unveränderter OpenCode-Bericht](reviews/TST1-r1-52ca5bee2e52.md),
@@ -64,3 +64,9 @@ und `/Users/stefan/sources/gretl-script-first-evidence/TST2-candidate-b1440bfd67
 Diese Nachweisablage ändert den geprüften Produktkandidaten nicht.
 Nächster Schritt: TST3-Phasenbasis an diesem Nachweiscommit festhalten;
 generisches Runtime-Image und tatsächliche externe SCRIPT-Jobs qualifizieren.
+
+[TST3-Implementierungsbericht](implementation/TST3.md): echte IMAGE- und
+OpenShift-Gegenproben umgesetzt. Der erste Kandidat besteht sämtliche
+Java-Gates; sein IMAGE-Audit scheitert an Python-3.9-Nanosekundenparsing.
+Die präzise Korrektur samt Grenzprobe ist umgesetzt; neue feste Gates
+und unabhängiger TST3-Review folgen. TST4 bleibt noch nicht begonnen.

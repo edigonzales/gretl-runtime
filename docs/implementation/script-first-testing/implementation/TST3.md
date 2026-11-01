@@ -130,3 +130,33 @@ Diese Entwicklungsstände sind keine unveränderliche Kandidatenabnahme.
 73 Dokumentationswerkzeugtests, 21 Reviewstartertests, Linkprüfung und
 Quarto-Render erfolgreich. OpenCode 2.2.5 Bereitschaftsprobe abgeschlossen;
 direkte offizielle DeepSeek-Flash-1017-Zuordnung am 01.11.2026 erneut geprüft.
+
+## Nanosekundengenaue Auditkorrektur
+
+Erster sauberer Kandidat: `dc9b58f5114a91eee1f2dd1ea4437d47f9e9e5f4`.
+Frische Standardprüfung 696 Tests; SCRIPT/full und JAR/full je 752 Tests,
+alle Mavenläufe Exit 0, keine Failures/Errors/Skips. Beide Vollmodi besitzen
+44 positive Standardoperationen und 174 bytegleiche COMMON-Inputs.
+Die Archive bestehen nach weiterem clean. Auch IMAGE/full besteht mit
+757 Tests ohne Failures/Errors/Skips; anschliessend scheitert das Gate
+jedoch korrekt, weil der Audit eine gültige Linux-Zeit mit neun
+Nachkommastellen auf dem vorhandenen Python 3.9 nicht parsen kann.
+Dieser Kandidat wird deshalb nicht zum unabhängigen Review eingereicht.
+
+Der Audit wandelt jetzt RFC-3339-Zeiten exakt in ganzzahlige Nanosekunden
+um. Die Reihenfolge von Prozessstart, Reportstart, Reportende und
+Prozessende bleibt strikt. Kein Abschneiden auf Mikrosekunden und keine
+Toleranzerweiterung. Die neue Gegenprobe verschiebt ein tatsächliches
+Reportende um genau eine Nanosekunde hinter das zugehörige Prozessende
+und aktualisiert seinen Bytehash; der Audit lehnt genau die Lebensdauer
+ab. So kann eine blosse Präzisionsreduktion die Probe nicht erfüllen.
+
+Der unveränderte gesicherte IMAGE-Vollnachweis besteht mit dem korrigierten
+Auditor: 757 Tests, 220 erwartete Szenarien, 44 Standardoperationen.
+Alle 16 IMAGE/full-Negativproben bestehen, darunter falsche tatsächliche
+Imagebytes bei korrekter Provenienz, verändertes Inputinventar, fehlende
+reale Containerfakten und die Nanosekunden-Grenzverletzung. Der frühere
+äussere Gateexit bleibt 1; es wird keine erfolgreiche Kandidatenabnahme
+rückwirkend erzeugt. Neuer Kandidat und frische Phasengates folgen.
+Die Negativauswahl umfasst nun SOURCE/JAR local zwölf, full dreizehn sowie
+IMAGE local fünfzehn und full sechzehn Prüfungen.

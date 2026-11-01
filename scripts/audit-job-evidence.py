@@ -5,7 +5,7 @@ import hashlib
 import json
 import re
 from functools import lru_cache
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -21,6 +21,15 @@ repository = Path(__file__).resolve().parents[1]
 root = args.evidence_root.resolve() if args.evidence_root else repository
 original_root = Path(json.loads((root / 'retention.json').read_text())['originalRoot']) if args.evidence_root else root
 args.full = args.full or args.scope == 'full'
+def instant_nanos(value):
+    # Python 3.9 accepts only 3/6 fractional digits; Linux Instant uses up to nine.
+    # Keep the original nanosecond precision for the lifetime comparison.
+    match = re.fullmatch(r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?(Z|[+-]\d{2}:\d{2})', value)
+    assert match, 'Invalid timestamp: ' + value
+    date = datetime.fromisoformat(match[1] + match[3].replace('Z', '+00:00'))
+    delta = date - datetime(1970, 1, 1, tzinfo=timezone.utc)
+    return (delta.days * 86400 + delta.seconds) * 1000000000 + int((match[2] or '').ljust(9, '0'))
+
 def selected(row):
     return (args.full or row['scope'] == 'LOCAL') and (row['family'] != 'IMAGE_CONTRACT' or args.mode == 'IMAGE')
 
@@ -199,7 +208,7 @@ for file in sorted(p for name in ('job-evidence', 'project-script-evidence') for
         identity = row['reportIdentity']
         assert sha(report_path) == identity['sha256'], 'Report bytes changed: ' + str(file)
         assert report['identity']['runId'] == identity['runId'] and report['identity']['commandId'] == identity['commandId'], str(file)
-        assert datetime.fromisoformat(row['process']['startedAt'].replace('Z','+00:00')) <= datetime.fromisoformat(report['execution']['startedAt'].replace('Z','+00:00')) <= datetime.fromisoformat(report['execution']['finishedAt'].replace('Z','+00:00')) <= datetime.fromisoformat(row['process']['finishedAt'].replace('Z','+00:00')), 'Report outside process lifetime: ' + str(file)
+        assert instant_nanos(row['process']['startedAt']) <= instant_nanos(report['execution']['startedAt']) <= instant_nanos(report['execution']['finishedAt']) <= instant_nanos(row['process']['finishedAt']), 'Report outside process lifetime: ' + str(file)
         event = file.parent / 'reports' / (identity['runId'] + '.events.jsonl')
         assert event.is_file(), 'Missing matching events: ' + str(file)
         events = [json.loads(line) for line in event.read_text().splitlines() if line.strip()]

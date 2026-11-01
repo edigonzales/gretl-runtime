@@ -3,6 +3,7 @@
 import argparse
 import json
 import hashlib
+from datetime import datetime, timedelta
 import os
 from pathlib import Path
 import shutil
@@ -78,6 +79,19 @@ class AuditNegatives(unittest.TestCase):
         def report(pair):
             p,r=pair;return p.parent/('explicit-reports' if Path(r['report']).parent.name=='explicit-reports' else 'reports')/'report.json'
         shutil.copyfile(report(second),report(first));self.audit()
+    def test_E05_report_outside_process_lifetime_with_nanos(self):
+        path,row=self.row(lambda r:'reportIdentity' in r)
+        report=path.parent/('explicit-reports' if Path(row['report']).parent.name=='explicit-reports' else 'reports')/Path(row['report']).name
+        data=json.loads(report.read_text())
+        finish=row['process']['finishedAt'];self.assertTrue(finish.endswith('Z'))
+        base,_,fraction=finish[:-1].partition('.')
+        nanos=int(fraction.ljust(9,'0'))+1
+        if nanos==1000000000:
+            base=(datetime.strptime(base,'%Y-%m-%dT%H:%M:%S')+timedelta(seconds=1)).isoformat();nanos=0
+        # Exactly one nanosecond outside must fail, even though a microsecond truncation would hide it.
+        data['execution']['finishedAt']=base+'.'+format(nanos,'09d')+'Z'
+        self.save(report,data);row['reportIdentity']['sha256']=hashlib.sha256(report.read_bytes()).hexdigest();self.save(path,row)
+        result=self.audit();self.assertIn('Report outside process lifetime',result.stderr)
     def test_E06_skipped_junit(self):
         path=next((self.root/'gretl-integration-tests/target/failsafe-reports').glob('TEST-*.xml'))
         tree=ET.parse(path);ET.SubElement(tree.getroot().find('testcase'),'skipped');tree.write(path);self.audit()
