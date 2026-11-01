@@ -26,7 +26,7 @@ class ProjectArtifactLocalJobIT {
     @Test void prj202203204206210211SameIndependentBytesAndGraphInScriptAndDetachedJar() throws Exception {
         var sourceRequest=request("project-script","success",List.of(),"never");
         var sourcePrepared=ArtifactJobRunner.prepare(sourceRequest,ArtifactJobRunner.Mode.SCRIPT);
-        assertFalse(Files.exists(sourceRequest.directory().resolve("toplevel-marker.txt")),"No Toplevel during packaging");
+        assertFalse(Files.exists(sourceRequest.directory().resolve("toplevel-marker.txt")),"Source preparation must not execute Toplevel code");
         assertFalse(Files.exists(sourceRequest.directory().resolve("reports/report.json")));
         var script=ArtifactJobRunner.finish(ArtifactJobRunner.start(sourcePrepared),false);
         assertEquals(0,script.code(),script.err());assertRun(script,ORDER,"SUCCEEDED");
@@ -35,6 +35,8 @@ class ProjectArtifactLocalJobIT {
         assertEquals("ivd",Files.readString(sourceRequest.directory().resolve("output/cleanup.txt")));
         var jarRequest=request("project-detached","success",List.of(),"never");
         var prepared=ArtifactJobRunner.prepare(jarRequest,ArtifactJobRunner.Mode.JAR);
+        assertFalse(Files.exists(jarRequest.directory().resolve("toplevel-marker.txt")), "Project packaging must not execute Toplevel code");
+        assertFalse(Files.exists(prepared.report()), "Project packaging must not create a run report");
         var result=SelectedPackageSupport.detached(prepared);
         assertEquals(0,result.code(),result.err());assertRun(result,ORDER,"SUCCEEDED");
         assertEquals(expected,Files.readString(jarRequest.directory().resolve("output/result.txt")));

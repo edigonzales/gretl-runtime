@@ -20,6 +20,10 @@
   SCRIPT/full 742 Tests; jeweils Maven und passender Audit Exit 0,
   keine Failures/Errors/Skips. SCRIPT/full deckt alle 44 geforderten
   Standardoperationen ab. Berichte vor jedem `clean` gesichert.
-- Nächste Aktion: lokaler Kandidatencommit, frische unveränderte Kandidatengates
+- Erster fester Kandidat `3e60341597904094383f5394e544ecb125c184fd`:
+  alle eigenen Gates frisch grün und vollständig beendet. Eigene Durchsicht
+  fand noch zwei nach der JAR-Vorbereitung ausdrücklich zu erhaltende
+  No-Toplevel-/No-Report-Checks. Testvertrag wiederhergestellt; kein Review-PASS.
+- Nächste Aktion: neuer Kandidatencommit, alle frischen Kandidatengates erneut
   und anschliessend unabhängiger OpenCode-TST1-Review im detached Worktree.
 - Kein Phasen-PASS, keine Veröffentlichung.

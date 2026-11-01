@@ -132,3 +132,20 @@ Noch fällig: lokaler Kandidatencommit, frische feste Kandidatengates und
 unabhängiger TST1-Review mit neuer Gegenprobe. Der tatsächliche Kandidaten-SHA
 wird nach dem Commit in der externen Übergabe festgehalten. TST2 ist noch
 nicht freigegeben.
+
+
+## Erster fester Kandidat und eigene Nacharbeit
+
+Am ersten Kandidaten `3e60341597904094383f5394e544ecb125c184fd`
+sind Standard (686 Tests), JAR/local (686 Tests), SCRIPT/full (742 Tests),
+alle drei Audits sowie die Orchestrierungs- und Dokumentationschecks frisch
+mit Exit 0 abgeschlossen; überall 0 Failures/Errors/Skips und saubere
+Commitprovenienz. Die komplette äussere Gatesitzung ist beendet.
+
+Die eigene Durchsicht fand dennoch eine bei der Migration verschobene
+Prüfbedeutung: Der bisherige No-Toplevel-/No-Report-Check nach JAR-Vorbereitung
+prüfte nun nur die SCRIPT-Vorbereitung. Beide Checks stehen zusätzlich wieder
+ausdrücklich nach der Schema-3-JAR-Paketierung. Das ist eine Wiederherstellung
+des Testvertrags, kein behaupteter neuer Produktfehler. Der erste Kandidat
+wird deshalb nicht zur unabhängigen Abnahme eingereicht. Der neue Kandidat
+erhält erneut sämtliche frischen Pflichtgates; die Phasenbasis bleibt unverändert.
