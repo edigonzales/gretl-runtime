@@ -267,14 +267,14 @@
                 <requireJavaVersion>
                   <version>[25,26)</version>
                   <message>
-                    GRETL Runtime M0 must be built with a Java 25 toolchain.
+                    GRETL Runtime must be built with a Java 25 toolchain.
                     Set JAVA_HOME to the qualified JDK 25 before running ./mvnw.
                   </message>
                 </requireJavaVersion>
                 <requireMavenVersion>
                   <version>[3.10.0,3.11)</version>
                   <message>
-                    GRETL Runtime M0 must be built with the repository Maven wrapper
+                    GRETL Runtime must be built with the repository Maven wrapper
                     (Maven 3.10.0). Use ./mvnw, not an arbitrary system Maven.
                   </message>
                 </requireMavenVersion>
@@ -340,7 +340,7 @@
     </profile>
 
     <!--
-      The GeoTools probe is an explicitly separated M0/B qualification profile.
+      The GeoTools probe is an explicitly separated compatibility qualification profile.
       It is not part of the default product build and its test dependencies are
       not part of any runtime or standard distribution artifact.
     -->

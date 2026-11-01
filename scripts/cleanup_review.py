@@ -306,6 +306,8 @@ def run_independent_gates(worktree,r,evidence_dir):
         run_command([sys.executable,'scripts/cleanup_doc_checks.py','--evidence',str(evidence_dir/'docs-runtime')],worktree,evidence_dir/'docs-runtime-command',timeout=1200,environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
     if r.phase in ('P2','P3'):
         run_command([sys.executable,'scripts/cleanup_history_check.py'],worktree,evidence_dir/'history-check',timeout=180,environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+    if r.phase=='P3':
+        run_command([sys.executable,'scripts/cleanup_final_check.py'],worktree,evidence_dir/'final-check',timeout=180,environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
     # clean in the second build cannot destroy the first gate's external evidence.
     visible=worktree/'target/cleanup-review-evidence'
     visible.mkdir(parents=True)
@@ -320,6 +322,8 @@ def run_independent_gates(worktree,r,evidence_dir):
         shutil.copytree(evidence_dir/'docs-runtime-command',visible/'docs-runtime-command')
     if r.phase in ('P2','P3'):
         shutil.copytree(evidence_dir/'history-check',visible/'history-check')
+    if r.phase=='P3':
+        shutil.copytree(evidence_dir/'final-check',visible/'final-check')
     save(visible/'manifest.json', {'candidateSha':r.candidate_sha,'commands':[dataclasses.asdict(x) for x in runs],
          'environment':{'python':sys.version,'platform':platform.platform()}})
     for p in visible.rglob('*'):
@@ -363,9 +367,12 @@ def review_config(r):
               'git diff --name-status --find-renames '+r.phase_base_sha+'..'+r.candidate_sha,
               'git diff '+r.phase_base_sha+'..'+r.candidate_sha,
               'git diff '+r.initial_baseline_sha+'..'+r.candidate_sha]
-    for path in git(r.repository_root,'diff','--name-only','--diff-filter=D',r.phase_base_sha+'..'+r.candidate_sha).splitlines():
-        if re.fullmatch(r'[A-Za-z0-9_./-]+',path):
-            commands.append('git show '+r.phase_base_sha+':'+path)
+    bases=list(dict.fromkeys([r.phase_base_sha]+([r.initial_baseline_sha] if r.phase=='P3' else [])))
+    for base in bases:
+        commands.append('git diff --name-status --find-renames '+base+'..'+r.candidate_sha)
+        for path in git(r.repository_root,'diff','--name-only','--no-renames','--diff-filter=D',base+'..'+r.candidate_sha).splitlines():
+            if re.fullmatch(r'[A-Za-z0-9_./-]+',path):
+                commands.append('git show '+base+':'+path)
     rules=[{'action':'*','resource':'*','effect':'deny'}]
     rules += [{'action':x,'resource':'*','effect':'allow'} for x in ('read','glob','grep')]
     rules += [{'action':'read','resource':x,'effect':'deny'} for x in ('.env*','*.env','**/.env*','**/auth.json','**/opencode.db*','.git','.git/*')]
@@ -609,7 +616,8 @@ def activate_review_agent(executable,worktree,r,evidence_dir,env,label):
 
 def changed_paths(r):
     # --no-renames deliberately includes both old and new names in required inspection coverage.
-    return set(git(r.repository_root,'diff','--name-only','--no-renames',r.phase_base_sha+'..'+r.candidate_sha).splitlines())
+    base=r.initial_baseline_sha if r.phase=='P3' else r.phase_base_sha
+    return set(git(r.repository_root,'diff','--name-only','--no-renames',base+'..'+r.candidate_sha).splitlines())
 
 
 def evaluate_review(review,r,worktree,gate_runs):
@@ -660,6 +668,9 @@ def evaluate_review(review,r,worktree,gate_runs):
 
 def invoke_opencode(worktree,r,evidence_dir,environment,executable):
     diff=git(worktree,'diff','--name-status','--find-renames',r.phase_base_sha+'..'+r.candidate_sha)
+    if r.phase=='P3':
+        diff+='\nKumulativ seit initialBaselineSha:\n'+git(worktree,'diff','--name-status','--find-renames',r.initial_baseline_sha+'..'+r.candidate_sha)
+    diff+='\nVollstaendige erforderliche Einzelpfade (einschliesslich alter Namen):\n'+'\n'.join(sorted(changed_paths(r)))
     prompt='''Keine Fortschritts- oder Einleitungstexte ausgeben; vor dem endgültigen JSON ausschliesslich Tools benutzen.
 Du bist der unabhängige Agent B, ohne Implementierungsbeteiligung. Prüfe streng und inhaltlich die Bereinigung.
 Phase %s; phaseBaseSha %s; candidateSha %s; initialBaselineSha %s.

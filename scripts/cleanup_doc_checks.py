@@ -9,6 +9,9 @@ import re
 import shutil
 import subprocess
 import tempfile
+import http.server
+import threading
+import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -61,6 +64,37 @@ def run(root,evidence,thoth=None):
         expected=(root/'examples/project-subprojects'/project/'input.txt').read_text().strip()
         if expected not in (evidence/(label+'.stderr')).read_text()+(evidence/(label+'.stdout')).read_text():
             raise RuntimeError('Subproject example did not read its own input: '+label)
+    # Both copies execute in their documented CWD. Only a loopback HTTP fixture
+    # is served; use the actual published ZIP and compare every extracted byte.
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        def __init__(self,*args,**kwargs):super().__init__(*args,directory=str(root/'examples/download-extract'),**kwargs)
+        def log_message(self,*args):pass
+    with http.server.ThreadingHTTPServer(('127.0.0.1',0),Handler) as server:
+        thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+        try:
+            for context,cwd in [('checkout',root),('distribution',dist)]:
+                for example in ('download-extract','project-pipeline'):
+                    label=context+'-'+example;output=evidence/label;output.mkdir()
+                    report=evidence/(label+'-report.json')
+                    source='examples/'+example+('/job.groovy' if example=='download-extract' else '')
+                    argv=[str(dist/'bin/gretl'),'run',source,'--config',str(config),
+                          '--work-dir',str(output/'work'),'--report',str(report)]
+                    if example=='download-extract':
+                        argv+=['--param','quelle=http://127.0.0.1:%d/data.zip'%server.server_port,'--param','ziel='+str(output/'extracted')]
+                    else:argv+=['--param',':output='+str(output/'pipeline.txt')]
+                    command(label,argv,cwd)
+                    execution=json.loads(report.read_text()).get('execution',{})
+                    if execution.get('exitCode')!=0 or execution.get('status')!='SUCCEEDED':raise RuntimeError('Example report failed: '+label)
+                    if example=='download-extract':
+                        with zipfile.ZipFile(cwd/'examples/download-extract/data.zip') as archive:
+                            expected={name:archive.read(name) for name in archive.namelist() if not name.endswith('/')}
+                        actual={str(p.relative_to(output/'extracted')):p.read_bytes() for p in (output/'extracted').rglob('*') if p.is_file()}
+                        if actual!=expected:raise RuntimeError('Extracted example bytes differ: '+label)
+                        results[-1]['outputHashes']={p:hashlib.sha256(data).hexdigest() for p,data in actual.items()}
+                    else:
+                        if (output/'pipeline.txt').read_bytes()!=(cwd/'examples/project-pipeline/prepare/data/input.txt').read_bytes():raise RuntimeError('Pipeline bytes differ: '+label)
+                        results[-1]['outputSha256']=hashlib.sha256((output/'pipeline.txt').read_bytes()).hexdigest()
+        finally:server.shutdown();thread.join(timeout=5)
     before={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'docs/reference/generated').glob('task-*.adoc')}
     command('reference-generate',[str(dist/'bin/gretl'),'operations','--format','adoc','--lang','de','--output',str(root/'docs/reference/generated')],root)
     after={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'docs/reference/generated').glob('task-*.adoc')}

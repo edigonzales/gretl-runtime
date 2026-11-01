@@ -203,6 +203,26 @@ class GateTest(unittest.TestCase):
         self.review['openQuestions']=['Required proof missing']
         with self.assertRaises(c.Blocked): self.evaluate()
     def test_p3_cumulative_ids(self): self.assertEqual(24,len(c.REQUIRED_IDS['P3']))
+
+    def test_p3_requires_earlier_deleted_paths_and_read_access(self):
+        # The current phase changes only a new file; the earlier deletion must
+        # still be inspected, with access to its exact original bytes.
+        (self.root/'final.txt').write_text('final change\n')
+        subprocess.run(['git','add','.'],cwd=self.root,check=True)
+        subprocess.run(['git','commit','-qm','final phase'],cwd=self.root,check=True)
+        final=c.git(self.root,'rev-parse','HEAD')
+        self.r=dataclasses.replace(self.r,phase='P3',phase_base_sha=self.sha,candidate_sha=final)
+        self.review.update(phase='P3',phaseBaseSha=self.sha,candidateSha=final)
+        self.review['requirements']=[dict(id=i,status='PASS',evidence=[dict(path='final.txt',
+          observation='Final addition inspected against the actual candidate source.',commandOrReference='git diff')]) for i in c.REQUIRED_IDS['P3']]
+        self.review['independentInspection']['criticalPaths']=['README.md','final.txt']
+        with self.assertRaisesRegex(c.Blocked,'old.md'):self.evaluate()
+        self.review['independentInspection']['criticalPaths'].append('old.md')
+        self.evaluate()
+        commands={x['resource'] for x in c.review_config(self.r)['permissions'] if x['action']=='shell' and x['effect']=='allow'}
+        self.assertIn('git show '+self.base+':old.md',commands)
+        self.assertNotIn('git show '+self.sha+':old.md',commands)
+        self.assertEqual({'old.md','README.md','final.txt'},c.changed_paths(self.r))
     def test_valid_jsonl(self): self.assertEqual(self.review,c.parse_final_review(self.stream(self.events())))
     def test_empty_exit_zero(self):
         with self.assertRaises(c.Blocked): c.parse_final_review(self.stream([]))

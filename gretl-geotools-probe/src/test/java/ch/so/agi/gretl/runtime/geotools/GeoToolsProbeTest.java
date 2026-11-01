@@ -32,7 +32,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
 /**
- * Spec 07 section 7 / TC-G01..G04: isolated GeoTools 35.2 compatibility probe.
+ * TC-G01..G04: isolated GeoTools 35.2 compatibility probe.
  * The additional GeoTools test dependencies are declared only in this profile
  * module and are not part of the standard distribution or task catalog.
  */
@@ -53,7 +53,7 @@ class GeoToolsProbeTest {
                 "geographic target must be used as longitude/latitude");
 
         SimpleFeatureType type = pointType(lv95);
-        Path shp = tempDir.resolve("m0-points.shp");
+        Path shp = tempDir.resolve("compatibility-points.shp");
         GeometryFactory geometryFactory = new GeometryFactory();
 
         ShapefileDataStore store = new ShapefileDataStore(shp.toUri().toURL());
@@ -75,8 +75,8 @@ class GeoToolsProbeTest {
         }
 
         assertTrue(Files.isRegularFile(shp));
-        assertTrue(Files.isRegularFile(tempDir.resolve("m0-points.shx")));
-        assertTrue(Files.isRegularFile(tempDir.resolve("m0-points.dbf")));
+        assertTrue(Files.isRegularFile(tempDir.resolve("compatibility-points.shx")));
+        assertTrue(Files.isRegularFile(tempDir.resolve("compatibility-points.dbf")));
 
         ShapefileDataStore readStore = new ShapefileDataStore(shp.toUri().toURL());
         readStore.setCharset(StandardCharsets.UTF_8);
@@ -103,7 +103,7 @@ class GeoToolsProbeTest {
         assertPoint(features.get(0), 2600000.125, 1200000.25, "Äpfel & Öl", null, 12.5);
         assertPoint(features.get(1), 2600010.0, 1200000.0, "Mühle", "gesetzt", 0.0);
         assertPoint(features.get(2), 2600010.0, 1200010.0, "Test", null, -3.25);
-        assertDbfFieldLengths(tempDir.resolve("m0-points.dbf"));
+        assertDbfFieldLengths(tempDir.resolve("compatibility-points.dbf"));
 
         // TC-G04: after disposing the stores, every output file is reopenable and removable.
         try (var files = Files.list(tempDir)) {
@@ -114,7 +114,7 @@ class GeoToolsProbeTest {
             }
         }
         for (String suffix : List.of(".shp", ".shx", ".dbf", ".prj", ".cpg", ".fix", ".qix", ".shp.xml")) {
-            Files.deleteIfExists(tempDir.resolve("m0-points" + suffix));
+            Files.deleteIfExists(tempDir.resolve("compatibility-points" + suffix));
         }
         try (var files = Files.list(tempDir)) {
             assertEquals(List.of(), files.map(path -> path.getFileName().toString()).toList(),
@@ -203,7 +203,7 @@ class GeoToolsProbeTest {
 
     private static SimpleFeatureType pointType(CoordinateReferenceSystem crs) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("gretl_m0_points");
+        builder.setName("gretl_compatibility_points");
         builder.setCRS(crs);
         builder.add("the_geom", Point.class);
         addString(builder, "name", 50);

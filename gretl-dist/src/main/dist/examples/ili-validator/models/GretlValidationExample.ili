@@ -1,6 +1,6 @@
 INTERLIS 2.3;
 
-MODEL GretlM0Fixture (en)
+MODEL GretlValidationExample (en)
   AT "mailto:test@example.invalid"
   VERSION "2026-10-18" =
 
@@ -13,4 +13,4 @@ MODEL GretlM0Fixture (en)
 
   END Site;
 
-END GretlM0Fixture.
+END GretlValidationExample.

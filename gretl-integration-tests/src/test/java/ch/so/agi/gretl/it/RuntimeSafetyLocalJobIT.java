@@ -14,12 +14,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/** Runs the hardening boundaries through the production launcher and regular job JARs. */
-class HardeningLocalJobIT {
+/** Runs the runtime-safety boundaries through the production launcher and regular job JARs. */
+class RuntimeSafetyLocalJobIT {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void preservesExistingRootsAndProtectsOwnedRunAndDiagnostics(boolean script) throws Exception {
-        Path root = ArtifactJobRunner.directory("hardening-permissions-" + script);
+        Path root = ArtifactJobRunner.directory("runtime-safety-permissions-" + script);
         for (String name : List.of("work", "reports", "explicit-reports")) {
             Path directory = Files.createDirectories(root.resolve(name));
             Files.setPosixFilePermissions(directory, PosixFilePermissions.fromString("rwxrwx---"));
@@ -56,7 +56,7 @@ class HardeningLocalJobIT {
     @ParameterizedTest
     @CsvSource({"true,caughtTimeout", "false,caughtTimeout", "true,closeTimeout", "false,closeTimeout"})
     void localBudgetRemainsCancelledAfterCatchOrResourceClose(boolean script, String target) throws Exception {
-        Path root = ArtifactJobRunner.directory("hardening-budget-" + target + "-" + script);
+        Path root = ArtifactJobRunner.directory("runtime-safety-budget-" + target + "-" + script);
         var result = run(prepare(root, target), script);
         assertFalse(result.timedOut(), result.err());
         assertEquals(20, result.code(), result.err());
@@ -73,14 +73,14 @@ class HardeningLocalJobIT {
     @ParameterizedTest
     @CsvSource({"true,blockedTask", "false,blockedTask", "true,originalFailure", "false,originalFailure"})
     void setupFailureStillCleansUpAndReportsTheOriginalCause(boolean script, String target) throws Exception {
-        Path root = ArtifactJobRunner.directory("hardening-setup-" + target + "-" + script);
+        Path root = ArtifactJobRunner.directory("runtime-safety-setup-" + target + "-" + script);
         var result = run(prepare(root, target), script);
         assertFalse(result.timedOut(), result.err());
         assertEquals(10, result.code(), result.err());
         assertTrue(Files.isRegularFile(root.resolve("output/cleaned")), "Cleanup without workspace I/O must execute");
         assertFalse(Files.exists(root.resolve("output/unexpected")));
         String report = Files.readString(result.report());
-        if (target.equals("originalFailure")) assertTrue(report.contains("original-hardening-failure"), report);
+        if (target.equals("originalFailure")) assertTrue(report.contains("original-runtime-safety-failure"), report);
         else {
             assertTrue(report.contains("task-000004"), report);
             Map<?,?> parsed = (Map<?,?>) Json.parse(report);
@@ -98,7 +98,7 @@ class HardeningLocalJobIT {
     @ValueSource(booleans = {true, false})
     @SuppressWarnings("unchecked")
     void failedStartHasNoRunReportOrCleanupEffects(boolean script) throws Exception {
-        Path root = ArtifactJobRunner.directory("hardening-start-" + script);
+        Path root = ArtifactJobRunner.directory("runtime-safety-start-" + script);
         var prepared = prepare(root, "permissions");
         Path blocked = Files.writeString(root.resolve("blocked-root"), "keep");
         Map<String,Object> config = (Map<String,Object>) Json.parseFile(root.resolve("runtime.json"), 1L << 20);
@@ -116,7 +116,7 @@ class HardeningLocalJobIT {
     @ParameterizedTest
     @CsvSource({"true,requestedCancel,REQUESTED", "false,requestedCancel,REQUESTED", "true,interruptedCancel,INTERRUPTED", "false,interruptedCancel,INTERRUPTED"})
     void concreteControlCauseSurvivesTheProductEntry(boolean script, String target, String reason) throws Exception {
-        Path root = ArtifactJobRunner.directory("hardening-cause-" + target + "-" + script);
+        Path root = ArtifactJobRunner.directory("runtime-safety-cause-" + target + "-" + script);
         var result = run(prepare(root, target), script);
         assertEquals(20, result.code(), result.err());
         assertTerminal(result, "CANCELLED", 20);
@@ -143,8 +143,8 @@ class HardeningLocalJobIT {
         Map<String, Object> runtime = new LinkedHashMap<>((Map<String, Object>) config.get("runtime"));
         runtime.put("keepWork", "always");
         config.put("runtime", runtime);
-        var request = new ArtifactJobRunner.Request("hardening-" + target,
-                ArtifactJobRunner.fixture("hardening"), root, List.of(target),
+        var request = new ArtifactJobRunner.Request("runtime-safety-" + target,
+                ArtifactJobRunner.fixture("runtime-safety"), root, List.of(target),
                 Map.of("output", root.resolve("output")), Map.of(), config, Map.of(), Duration.ofSeconds(45));
         return ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.JAR);
     }

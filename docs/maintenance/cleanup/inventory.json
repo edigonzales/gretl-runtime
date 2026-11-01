@@ -9093,6 +9093,12 @@
       "classification": "ACTIVE",
       "plannedPhase": "P2",
       "reason": "Aktueller quellengeprüfter technischer Vertrag bzw. maschinenlesbare P2-Aktionsliste mit Nutzern, Ersatz und Git-Erhaltung."
+    },
+    {
+      "path": "docs/maintenance/cleanup/rest-inventory.json",
+      "classification": "ARCHIVE",
+      "plannedPhase": "P3",
+      "reason": "SHA-bound complete final scope inventory with per-marker semantic decisions, protected historical evidence hashes, and reproducible rejection of stale or unclassified names; a retained qualification oracle, not a new implementation plan."
     }
   ]
 }

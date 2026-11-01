@@ -92,6 +92,7 @@ SPEC_QUOTES={(67,'gretl-integration-tests/.../HardeningLocalJobIT.java'):'Abbrev
 # Exact immutable references to deliberately removed historical inputs. New
 # targets/lines or any changed specification bytes remain hard failures.
 SPEC_QUOTES.update({
+ (68,'gretl-dist/src/main/dist/examples/ili-validator/models/GretlM0Fixture.ili'):'NAME-02 immutable original path; P3 atomically renames model and references to GretlValidationExample.ili.',
  (58,'examples/project-subprojects/README.md'):'DOC-05 example README was consolidated into the current project guide; fixture source remains.',
  (9,'docs/spec/AGENTS.md'):'Scope statement quotes the historical instruction removed by P2; current rules are AGENTS.md.',
  (54,'docs/spec/AGENTS.md'):'DOC-01 baseline finding; original source preserved by cleanup-actions.json.',

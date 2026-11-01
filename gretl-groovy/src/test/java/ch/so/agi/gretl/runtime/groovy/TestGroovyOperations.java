@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** Local-only fixture operations for the M2 Groovy harness. */
+/** Local-only fixture operations for the Groovy harness. */
 final class TestGroovyOperations {
     static final AtomicInteger BUILDER_CREATIONS = new AtomicInteger();
     static final AtomicInteger HANDLER_CREATIONS = new AtomicInteger();

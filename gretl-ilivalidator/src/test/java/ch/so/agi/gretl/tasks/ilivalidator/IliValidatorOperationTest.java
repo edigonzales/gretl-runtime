@@ -24,7 +24,7 @@ class IliValidatorOperationTest {
     @Test
     void validatesValidAndInvalidTransferWithProtectedReportAndCleanup() throws Exception {
         Path models = Files.createDirectories(tempDir.resolve("models"));
-        Files.writeString(models.resolve("GretlM0Fixture.ili"), model());
+        Files.writeString(models.resolve("GretlValidationExample.ili"), model());
         Path valid = tempDir.resolve("valid.xtf");
         Path invalid = tempDir.resolve("invalid.xtf");
         Files.writeString(valid, transfer(true));
@@ -102,7 +102,7 @@ class IliValidatorOperationTest {
     private static String model() {
         return """
                 INTERLIS 2.3;
-                MODEL GretlM0Fixture (en)
+                MODEL GretlValidationExample (en)
                   AT "mailto:test@example.invalid"
                   VERSION "2026-10-18" =
                   TOPIC Site =
@@ -111,7 +111,7 @@ class IliValidatorOperationTest {
                       value : 0.0 .. 1000.0;
                     END Punkt;
                   END Site;
-                END GretlM0Fixture.
+                END GretlValidationExample.
                 """;
     }
 
@@ -120,16 +120,16 @@ class IliValidatorOperationTest {
         return """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
-                <HEADERSECTION SENDER="gretl-m0" VERSION="2.3">
-                <MODELS><MODEL NAME="GretlM0Fixture" VERSION="2026-10-18" URI="https://example.invalid"></MODEL></MODELS>
+                <HEADERSECTION SENDER="gretl-validation-example" VERSION="2.3">
+                <MODELS><MODEL NAME="GretlValidationExample" VERSION="2026-10-18" URI="https://example.invalid"></MODEL></MODELS>
                 </HEADERSECTION>
                 <DATASECTION>
-                <GretlM0Fixture.Site BID="b1">
-                <GretlM0Fixture.Site.Punkt TID="p1">
+                <GretlValidationExample.Site BID="b1">
+                <GretlValidationExample.Site.Punkt TID="p1">
                 %s
                 <value>12.5</value>
-                </GretlM0Fixture.Site.Punkt>
-                </GretlM0Fixture.Site>
+                </GretlValidationExample.Site.Punkt>
+                </GretlValidationExample.Site>
                 </DATASECTION>
                 </TRANSFER>
                 """.formatted(name);

@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-/** Small executable M2 harness; test fixture only, not a product runner. */
+/** Small executable Groovy harness; test fixture only, not a product runner. */
 final class GroovyHarness {
     final Path tempDir;
     final Path jobDir;

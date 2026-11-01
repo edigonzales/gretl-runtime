@@ -113,7 +113,7 @@ Die IMAGE-Fälle starten ausschliesslich den Produktlauncher im Produktimage.
 
 Die 13 kanonischen Fixturewurzeln besitzen Schema-2-Deskriptoren. Originaldaten,
 SQL, Modelle und fachliche Assertions bleiben erhalten; die ursprüngliche
-Phase-2-Provenienzdatei beschreibt weiterhin deren damaligen Stand. Siehe den
+historische Provenienzdatei beschreibt weiterhin deren damaligen Stand. Siehe den
 [Auswahl- und Migrationsvertrag](job-packaging.md). `PackageArtifactAssertions`
 prüft bei jedem JAR-Build die gewählten Provider, Meldungen, Services und die
 familienabhängig ausgeschlossenen Engines. Eingabeinventar und Descriptor

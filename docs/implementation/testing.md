@@ -38,9 +38,9 @@ als separater JAR-Nachweis. `PackagedSqlJobPostgresIT` bleibt eine zusätzliche
 ältere JAR-Regression.
 
 Die Originalzuordnung mit unveränderten Quellhashes, Originalassertionen und
-Dateiprüfsummen steht im [Phase-1-Inventar](../history/provenance/original-scenarios.json).
+Dateiprüfsummen steht im [historischen Szenarioinventar](../history/provenance/original-scenarios.json).
 Die aktuelle Zuordnung, alle Varianten und konkret begründete Anpassungen
-stehen im [Phase-2-Portnachweis](../history/provenance/scenario-mapping.json).
+stehen im [historischen Portnachweis](../history/provenance/scenario-mapping.json).
 Die [Jobtest-Verträge](job-artifact-tests.md) erklären Artefaktbau, separate
 Prozesse, Evidenz und die spätere ausdrückliche IMAGE-Konfiguration.
 
@@ -72,3 +72,24 @@ der vollständige Lauf ergänzt `--full`. Der Audit prüft die vorhandenen
 verifizierten Artefakte, ohne neue JARs zu bauen. Das separate manuelle
 `image-qualification.yml` ist vorbereitet und wurde in diesem Auftrag nicht
 ausgeführt. Die zusätzlichen Paketqualifikationen bleiben ausdrücklich JAR.
+
+## Beispielquellen und Drift
+
+Bei gemeinsamen Pfaden ist `examples/` die kanonische Quelle. Die Distribution
+behält gezielte Kopien unter `gretl-dist/src/main/dist/examples/`, damit sie ohne
+Checkout ausführbar ist. `ExampleConsistencyTest` prüft im Standard-Reaktor alle
+16 bisherigen Paare auf Vorhandensein und alle gemeinsamen Dateien auf Bytegleichheit;
+neu hinzugefügte gemeinsame Pfade werden ebenfalls verglichen. Eine absichtlich
+beschädigte beziehungsweise fehlende Scriptkopie muss den Test scheitern lassen.
+Ein zusätzlicher Kopiergenerator oder eine Umstellung des Distributionsbuilds ist
+für diesen kleinen Bestand nicht erforderlich.
+
+Die einzige Textausnahme ist `project-pipeline/README.md`: der Checkout erklärt
+Build und Start über `./gretl-dist/target/dist/bin/gretl`, die ausgelieferte Fassung
+beginnt beim entpackten Root mit `bin/gretl`. Beide beschreiben denselben Graphen;
+die Job-, Settings-, Ressourcen- und Paketdateien sind bytegleich. Beim Beispiel
+`download-extract/job.groovy` ist auch der optionale Overwrite-Kommentar in beiden
+Kopien identisch. `cleanup_doc_checks.py` führt Download/Extract mit einem lokalen
+HTTP-Testserver sowie die Projektpipeline jeweils aus Checkout und Distribution
+aus, vergleicht alle Ausgabebytes und prüft erfolgreiche Reports. Damit beruht die
+bewusste README-Trennung auf zwei tatsächlich ausgeführten Kontexten.

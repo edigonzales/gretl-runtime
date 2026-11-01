@@ -2784,7 +2784,7 @@
     },
     {
       "previousPath": "docs/implementation/job-artifact-tests.md",
-      "action": "KEEP",
+      "action": "REWRITE",
       "classification": "ACTIVE",
       "reason": "Beschreibt JAR-/IMAGE-Testadapter, Auswahlpakete und Projekt-Fixtures; IMAGE-Vorbereitung von tatsächlich ausgeführter Containerqualifikation trennen.",
       "replacementPath": "docs/implementation/job-artifact-tests.md",
@@ -2887,7 +2887,9 @@
           "path": "docs/maintenance/cleanup/reviews/P1-3a55b85-review.md",
           "handling": "preserved_SHA_bound_history"
         }
-      ]
+      ],
+      "subsequentPhase": "P3",
+      "subsequentReason": "P3 removes historical labels and documents canonical example sources, the context-specific README exception, and executable drift/regression evidence; original P2 source hash remains preserved."
     },
     {
       "previousPath": "docs/implementation/job-packaging.md",
@@ -8850,5 +8852,7 @@
     }
   },
   "decisionSource": "content-assessment.json",
-  "scope": "Documentation curation; production API/operation/schema/test assertions unchanged"
+  "scope": "Documentation curation; production API/operation/schema/test assertions unchanged",
+  "subsequentPhase": "P3",
+  "subsequentPhaseBaseSha": "27aa194f47412a9ac6f0a69dbc55f5a22adf12d6"
 }

@@ -338,8 +338,8 @@ class DistributionIT {
         Path jobDir = tempDir.resolve("ili-invalid");
         Files.createDirectories(jobDir.resolve("models"));
         Files.createDirectories(jobDir.resolve("data"));
-        Files.copy(base.resolve("examples/ili-validator/models/GretlM0Fixture.ili"),
-                jobDir.resolve("models/GretlM0Fixture.ili"));
+        Files.copy(base.resolve("examples/ili-validator/models/GretlValidationExample.ili"),
+                jobDir.resolve("models/GretlValidationExample.ili"));
         Files.copy(base.resolve("examples/ili-validator/data/invalid.xtf"),
                 jobDir.resolve("data/invalid.xtf"));
         Files.writeString(jobDir.resolve("job.groovy"), """

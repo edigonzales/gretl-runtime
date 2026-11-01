@@ -14,8 +14,8 @@
   <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>GRETL M0 FileSize example extension</name>
-  <description>Separately built example OperationProvider used by M0 qualification.</description>
+  <name>GRETL FileSize example extension</name>
+  <description>Separately built example OperationProvider used by extension qualification.</description>
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>

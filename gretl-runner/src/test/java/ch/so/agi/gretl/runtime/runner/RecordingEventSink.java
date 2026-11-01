@@ -3,7 +3,7 @@ package ch.so.agi.gretl.runtime.runner;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Recording event sink for M1 lifecycle assertions. */
+/** Recording event sink for runner lifecycle assertions. */
 final class RecordingEventSink implements RunEventSink {
     private final List<RunEvent> events = new ArrayList<>();
 

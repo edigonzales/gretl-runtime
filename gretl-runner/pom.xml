@@ -15,7 +15,7 @@
 
   <name>GRETL Runtime Runner</name>
   <description>
-    Sequential Java job runner for milestone M1. It depends on the JDK-only API
+    Sequential Java job runner. It depends on the JDK-only API
     and contains no Gradle, Groovy, logging-backend or domain-library type.
   </description>
 

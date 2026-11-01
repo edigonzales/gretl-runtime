@@ -10,6 +10,7 @@ parameter('ziel',
 task('download', HttpDownload) {
     url = parameter('quelle')
     output = workPath('daten.zip')
+    // Optional: overwrite = true, um eine vorhandene Zieldatei zu ersetzen.
 }
 
 task('entpacken', Extract, dependsOn: 'download') {

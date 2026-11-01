@@ -15,7 +15,7 @@
 
   <name>GRETL GeoTools compatibility probe</name>
   <description>
-    Isolated M0/B test profile. It is activated only with -Pgeotools-probe and
+    Isolated GeoTools compatibility test profile. It is activated only with -Pgeotools-probe and
     is neither a public task nor part of the standard distribution.
   </description>
 
@@ -80,7 +80,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Explicitly disclosed GeoTools test-only modules (spec 07 section 7). -->
+    <!-- Explicit GeoTools test-only dependencies; never distributed. -->
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-main</artifactId>

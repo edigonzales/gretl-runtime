@@ -75,7 +75,7 @@ class SequentialJobRunnerTest {
         assertEquals(2, sink.count("gretl.task.finished"));
         RunEvent runStarted = sink.first("gretl.run.started");
         assertEquals(Optional.of(outcome.runId()), runStarted.runId());
-        assertEquals("m1-test", runStarted.jobName().orElseThrow());
+        assertEquals("runner-test", runStarted.jobName().orElseThrow());
         RunEvent taskStarted = sink.first("gretl.task.started");
         assertEquals(Optional.of("a"), taskStarted.taskId());
         assertTrue(taskStarted.invocationId().isEmpty());

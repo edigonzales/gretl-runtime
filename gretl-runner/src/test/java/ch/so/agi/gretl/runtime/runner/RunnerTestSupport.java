@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-/** Common builders for M1 runner tests. */
+/** Common builders for runner tests. */
 final class RunnerTestSupport {
     private RunnerTestSupport() {
     }
@@ -33,7 +33,7 @@ final class RunnerTestSupport {
                 .startCwd(tempDir)
                 .jobRoot(tempDir)
                 .workRoot(tempDir.resolve("work"))
-                .jobName("m1-test")
+                .jobName("runner-test")
                 .runId(UUID.randomUUID())
                 .clock(Clock.fixed(Instant.parse("2026-10-18T10:00:00Z"), ZoneOffset.UTC))
                 .monotonicClock(monotonic)

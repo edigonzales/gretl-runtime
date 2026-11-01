@@ -40,7 +40,7 @@ action('blockedTask', dependsOn: 'blockWorkspace') {
 action('originalFailure') {
     def runRoot = workPath('anchor').parent.parent
     Files.writeString(runRoot.resolve('cleanup-000'), 'occupied-cleanup-workspace')
-    throw new IllegalStateException('original-hardening-failure')
+    throw new IllegalStateException('original-runtime-safety-failure')
 }
 
 // Real process cancellation causes, independent of timeout timing.
@@ -53,6 +53,6 @@ action('interruptedCancel') {
 
 cleanup('externalCleanup') {
     Files.writeString(parameter('output').resolve('cleaned'), 'cleaned-without-workspace')
-    log().info('hardening-cleanup-complete')
+    log().info('runtime-safety-cleanup-complete')
 }
 defaults 'permissions'

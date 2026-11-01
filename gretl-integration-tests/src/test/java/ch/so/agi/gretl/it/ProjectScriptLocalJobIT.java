@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
-/** Phase 2 script-project proof through the candidate distribution, without packaging a project. */
+/** Script-project execution proof through the candidate distribution, without packaging a project. */
 class ProjectScriptLocalJobIT {
     @Test
     void prj101102107112PublishedExampleRunsAsOneGraphFromForeignCwd() throws Exception {

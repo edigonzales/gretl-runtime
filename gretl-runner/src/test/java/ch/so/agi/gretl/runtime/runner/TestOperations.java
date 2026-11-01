@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** Small independent Java operations used by M1 tests; not product tasks. */
+/** Small independent Java operations used by runner tests; not product tasks. */
 final class TestOperations {
     private TestOperations() {
     }

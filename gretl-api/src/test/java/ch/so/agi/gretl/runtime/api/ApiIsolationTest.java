@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 /**
- * TC-A01/M0 guard: the API artifact must stay JDK-only.
+ * TC-A01 isolation guard: the API artifact must stay JDK-only.
  */
 class ApiIsolationTest {
 

@@ -108,3 +108,31 @@ Die lokale FTP-Netzwerkqualifikation erforderte
 verwenden und protokollieren diese Einstellung in dieser Umgebung; Produktcode
 und Assertions wurden dafür nicht geändert. Ein erster hängender Lauf wurde
 abgebrochen und gilt nicht als PASS.
+
+## Abschlussinventur
+
+Die [Restinventur](rest-inventory.json) erfasst Dateinamen und Inhalte sämtlicher
+produktiver Java-Dateien, Java-Tests, Testressourcen, INTERLIS-/XTF-Dateien,
+aktueller Dokumentation, Website, Beispiele sowie Build-/Lokalisierungstexte.
+`scripts/cleanup_final_check.py` prüft den vollständigen Pfad-/Hashbestand,
+exakte RuntimeSafety-Namenssubstitutionen, unveränderte Assertionszahlen der
+übrigen bearbeiteten Java-Tests und alle ursprünglichen Modell-/XTF-Bytes.
+Nur das synthetische Distributionsmodell erhält den ausdrücklich verlangten
+neuen Namen. Kundenmodelle, Einheiten `m2`/`m3` und das Katastermodell DM01
+bleiben erhalten.
+
+Die 294 im P0-Orakel erfassten Java-Quellen bleiben byteidentisch. Dazu gehören
+vier Dateien mit fünf historischen Kommentarzeilen: drei Runtime-Dateien und
+der externe FileSize-Beispielprovider. Ihre Herkunftsetiketten sind in der
+Restinventur einzeln als historische Kommentare begründet; sie sind keine neuen
+Arbeitsaufträge. Fachliche `phase`-/`failurePhase`-, `Legacy`-, `Selected`-,
+`Probe`- und `Fixture`-Namen bleiben mit ihren konkreten Bedeutungen und Pfaden
+erhalten. Geschützte Spezifikation, Baselines und unveränderte unabhängige Reviews
+werden gehasht, nicht nachträglich umgeschrieben.
+
+P3 verlangt alle 24 Kriterien erneut. Das Gate fordert kumulative Einzelpfade
+seit der ursprünglichen Baseline und erlaubt dem Reviewer den lesenden Zugriff
+auf exakt diese früheren gelöschten Git-Blobs. Ein Test beweist, dass ein nur auf
+den P3-Diff beschränkter Bericht abgewiesen wird. P3 führt die Restprüfung in A
+und B zusätzlich zu beiden vollständigen Maven-Gates und allen bisherigen
+Dokumentations-/Historienprüfungen aus.

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** ServiceLoader fixture for the M1 registry test. */
+/** ServiceLoader fixture for the registry isolation test. */
 public final class TestOperationProvider implements OperationProvider {
     private static final AtomicInteger HANDLERS = new AtomicInteger();
 
