@@ -1,7 +1,7 @@
 # GRETL Runtime
 
 GRETL Runtime führt Groovy-Jobs mit einem sequenziellen Taskgraphen auf Java 25 aus.
-Der aktuelle Entwicklungsstand ist `0.1.0-SNAPSHOT`. Die Standarddistribution
+Der aktuelle Entwicklungsstand ist `6.0.0-SNAPSHOT`. Die Standarddistribution
 enthält 44 Operationen für HTTP, FTP, S3, Archive, SQL, DuckDB, INTERLIS und
 Dateiformate. Eigene Actions und Java-Operationen verwenden denselben Runner.
 SCRIPT ist der Hauptweg; ein Job kann zusätzlich als vorkompiliertes Job-JAR

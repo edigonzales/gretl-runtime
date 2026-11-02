@@ -29,7 +29,7 @@ final class SelectedPackageSupport {
         try (var files = Files.list(source)) { resources = files.filter(p -> !Set.of("job.groovy", "job-package.json").contains(p.getFileName().toString()))
                 .map(p -> p.getFileName().toString()).sorted().toList(); }
         Files.writeString(source.resolve("job-package.json"), Json.write(Map.of("schemaVersion", 2, "name", "selected-package", "version", "1",
-                "runtimeVersion", "0.1.0-SNAPSHOT", "entryScript", "job.groovy", "resources", resources,
+                "runtimeVersion", "6.0.0-SNAPSHOT", "entryScript", "job.groovy", "resources", resources,
                 "taskModules", modules, "standardFunctions", functions, "dependencies", dependencies)));
     }
     static ArtifactJobRunner.Result detached(ArtifactJobRunner.Request request) throws Exception {

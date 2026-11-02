@@ -19,7 +19,7 @@ explizite Abhängigkeiten und dokumentierte Ergebnisfelder verbinden diese
 Bausteine. Taskhilfe und Property-Tabellen verwenden dieselben Metadaten.
 Eigene Taskbibliotheken können vor dem Start bereitgestellt werden.
 
-Der aktuelle Stand ist [.code-fragment]#`0.1.0-SNAPSHOT`#. Die erste Zielplattform ist Linux
+Der aktuelle Stand ist [.code-fragment]#`6.0.0-SNAPSHOT`#. Die erste Zielplattform ist Linux
 x86-64; zusätzliche Plattformen benötigen ihre eigenen Fach- und
 Treibernachweise. Ein lokaler Lauf auf einem anderen Betriebssystem ist noch
 keine allgemeine Plattformfreigabe.
@@ -39,10 +39,10 @@ Bibliotheken ihrer Taskarten. Maven und Gradle werden beim Scriptstart nicht
 benötigt. Der mitgelieferte Launcher [.code-fragment]#`bin/gretl`# ist ein Shellscript.
 
 Die Snapshot-Artefakte stehen im
-link:https://jars.interlis.guru/snapshots/ch/so/agi/gretl/gretl-dist/0.1.0-SNAPSHOT/[Snapshot-Verzeichnis].
+link:https://jars.interlis.guru/snapshots/ch/so/agi/gretl/gretl-dist/6.0.0-SNAPSHOT/[Snapshot-Verzeichnis].
 Für die Installation das ZIP mit dem Classifier [.config-key]#`bin`# oder das TAR.GZ mit dem
 Classifier [.code-fragment]#`bin-tar-gz`# herunterladen. Die
-link:https://jars.interlis.guru/snapshots/ch/so/agi/gretl/gretl-dist/0.1.0-SNAPSHOT/maven-metadata.xml[Maven-Metadaten]
+link:https://jars.interlis.guru/snapshots/ch/so/agi/gretl/gretl-dist/6.0.0-SNAPSHOT/maven-metadata.xml[Maven-Metadaten]
 benennen die timestamped Snapshot-Dateien. Ein Snapshot kann durch einen
 neueren Build ersetzt werden; für einen nachvollziehbaren Betrieb das
 konkrete Archiv und seine Prüfsummen aufbewahren.
@@ -52,7 +52,7 @@ Nach dem Download, hier unter dem lokalen Namen [.file-name]#`gretl-runtime.zip`
 [source,bash]
 ----
 unzip gretl-runtime.zip
-cd gretl-runtime-0.1.0-SNAPSHOT
+cd gretl-runtime-6.0.0-SNAPSHOT
 export JAVA_HOME=/pfad/zu/jdk-25
 export PATH="$JAVA_HOME/bin:$PWD/bin:$PATH"
 java -version
@@ -84,7 +84,7 @@ nötig. Der eingecheckte Maven-Wrapper lädt Maven selbst:
 [source,bash]
 ----
 ./mvnw verify
-unzip gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip
+unzip gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip
 ----
 
 Der Build benötigt Zugriff auf die im Projekt konfigurierten Maven-Repositories.

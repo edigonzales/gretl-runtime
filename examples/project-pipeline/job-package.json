@@ -2,7 +2,7 @@
   "schemaVersion": 3,
   "name": "local-project-pipeline",
   "version": "1",
-  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "runtimeVersion": "6.0.0-SNAPSHOT",
   "settingsFile": "settings.gretl",
   "sources": [],
   "resources": [

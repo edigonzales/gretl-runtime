@@ -15,7 +15,7 @@ class ProjectPackageDescriptorTest {
     @Test void prj201Schema3IsSeparateAndLegacyConstructorsRemainUsable() throws Exception {
         Files.writeString(root.resolve("settings.gretl"), ""); Files.writeString(root.resolve("job.groovy"), "action('run') {}\n");
         Path file = root.resolve("job-package.json");
-        var fields = new LinkedHashMap<String,Object>(Map.of("schemaVersion",3,"name","project","version","1","runtimeVersion","0.1.0-SNAPSHOT","settingsFile","settings.gretl","taskModules",List.of("io")));
+        var fields = new LinkedHashMap<String,Object>(Map.of("schemaVersion",3,"name","project","version","1","runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl","taskModules",List.of("io")));
         Files.writeString(file,Json.write(fields)); var descriptor=PackageDescriptor.load(file);
         assertTrue(descriptor.projectPackage()); assertEquals(root.resolve("settings.gretl"),descriptor.settingsPath());
         assertThrows(IllegalStateException.class,descriptor::entryPath);

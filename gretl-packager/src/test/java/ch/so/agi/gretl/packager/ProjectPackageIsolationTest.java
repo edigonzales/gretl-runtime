@@ -14,7 +14,7 @@ class ProjectPackageIsolationTest {
     @TempDir Path root;
     @Test void prj210SelectedCompilerNeverInheritsHostPackagerClassesAndGrabStaysDisabled() throws Exception {
         Files.writeString(root.resolve("settings.gretl"),"defaults ':run'\n");
-        Path file=root.resolve("job-package.json");Files.writeString(file,Json.write(Map.of("schemaVersion",3,"name","isolated","version","1","runtimeVersion","0.1.0-SNAPSHOT","settingsFile","settings.gretl")));
+        Path file=root.resolve("job-package.json");Files.writeString(file,Json.write(Map.of("schemaVersion",3,"name","isolated","version","1","runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl")));
         var descriptor=PackageDescriptor.load(file);
         Path host = Path.of(JobPackager.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         var selected=JobPackager.currentClasspath().stream().filter(path->!path.equals(host)).toList();

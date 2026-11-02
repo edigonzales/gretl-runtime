@@ -24,6 +24,8 @@ jobs:
         run: scripts/verify-job-matrix.sh --mode SCRIPT --scope local --output "$RUNNER_TEMP/gretl-standard"
       - name: Reject incomplete and foreign standard evidence
         run: python3 tests/script-first-testing/test_job_evidence.py --mode SCRIPT --scope local --evidence-root "$RUNNER_TEMP/gretl-standard/SCRIPT/evidence"
+      - name: Test publication download verification
+        run: python3 -m unittest discover -s tests/publication -v
       - name: Preserve standard evidence
         if: always()
         uses: actions/upload-artifact@v4

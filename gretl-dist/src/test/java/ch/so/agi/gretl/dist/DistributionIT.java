@@ -35,7 +35,7 @@ class DistributionIT {
     @Test
     void selectedMinimalExampleRunsFromVerifiedDistribution() throws Exception {
         Path root = tempDir.resolve("minimal distribution");
-        unzip(Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip"), root);
+        unzip(Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip"), root);
         Path base;
         try (var files = Files.list(root)) { base = files.filter(Files::isDirectory).findFirst().orElseThrow(); }
         Path job = tempDir.resolve("minimal.jar");
@@ -56,7 +56,7 @@ class DistributionIT {
     @Test
     void schema3ProjectExampleRunsAndPackagesFromExtractedDistribution() throws Exception {
         Path root = tempDir.resolve("project distribution");
-        unzip(Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip"), root);
+        unzip(Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip"), root);
         Path base;
         try (var paths = Files.list(root)) { base = paths.filter(Files::isDirectory).findFirst().orElseThrow(); }
         Path project = base.resolve("examples/project-pipeline");
@@ -79,7 +79,7 @@ class DistributionIT {
 
     @Test
     void distributionDoesNotContainGeoTools() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip");
         assertTrue(Files.isRegularFile(zip), "distribution zip missing: " + zip);
         try (ZipInputStream input = new ZipInputStream(Files.newInputStream(zip))) {
             ZipEntry entry;
@@ -93,7 +93,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionStartsAndLoadsStandardAndExtensionTasks() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip");
         assertTrue(Files.isRegularFile(zip), "distribution zip missing: " + zip);
         Path root = tempDir.resolve("dist");
         unzip(zip, root);
@@ -199,7 +199,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionDownloadsAndExtractsWithLocalServer() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist2");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -244,7 +244,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionRunsOptionalAndNoDataExamples() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist4");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -267,7 +267,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionRunsTokenCatalogExample() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist5");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -323,7 +323,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionRunsRealInterlisValidator() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist3");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -359,7 +359,7 @@ class DistributionIT {
 
     @Test
     void extractedDistributionPackagesAndRunsIliValidatorJar() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist6");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -373,7 +373,7 @@ class DistributionIT {
         Path foreignCwd = Files.createDirectories(tempDir.resolve("foreign-cwd"));
         ProcessResult version = runJava(foreignCwd, jar, "--version");
         assertEquals(0, version.code(), version.err());
-        assertTrue(version.out().contains("ili-validator 0.1.0-SNAPSHOT"));
+        assertTrue(version.out().contains("ili-validator 6.0.0-SNAPSHOT"));
 
         ProcessResult help = runJava(foreignCwd, jar, "--help");
         assertEquals(0, help.code(), help.err());
@@ -394,7 +394,7 @@ class DistributionIT {
 
     @Test
     void generatedAsciiDocReferenceMatchesCheckedInDocs() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist-docs");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
@@ -485,19 +485,19 @@ class DistributionIT {
 
     @Test
     void packagedJarDoesNotExecuteAtBuildAndSupportsParametersAndCustomTasks() throws Exception {
-        Path zip = Path.of("target", "gretl-runtime-0.1.0-SNAPSHOT-bin.zip");
+        Path zip = Path.of("target", "gretl-runtime-6.0.0-SNAPSHOT-bin.zip");
         Path root = tempDir.resolve("dist7");
         unzip(zip, root);
         Path base = Files.list(root).filter(Files::isDirectory).findFirst().orElseThrow();
         Path extension = Path.of(Class.forName("example.ExampleProvider")
                 .getProtectionDomain().getCodeSource().getLocation().toURI());
         Path repository = tempDir.resolve("controlled-package-repository");
-        Path artifact = repository.resolve("ch/so/agi/gretl/examples/file-size-extension/0.1.0-SNAPSHOT");
+        Path artifact = repository.resolve("ch/so/agi/gretl/examples/file-size-extension/6.0.0-SNAPSHOT");
         Files.createDirectories(artifact);
-        Files.copy(extension, artifact.resolve("file-size-extension-0.1.0-SNAPSHOT.jar"));
+        Files.copy(extension, artifact.resolve("file-size-extension-6.0.0-SNAPSHOT.jar"));
         try (JarFile jarFile = new JarFile(extension.toFile())) {
             Files.copy(jarFile.getInputStream(jarFile.getJarEntry("META-INF/maven/ch.so.agi.gretl.examples/file-size-extension/pom.xml")),
-                    artifact.resolve("file-size-extension-0.1.0-SNAPSHOT.pom"));
+                    artifact.resolve("file-size-extension-6.0.0-SNAPSHOT.pom"));
         }
 
         Path jobDir = Files.createDirectories(tempDir.resolve("package-param-job"));
@@ -521,12 +521,12 @@ class DistributionIT {
                   "schemaVersion": 1,
                   "name": "parameter-demo",
                   "version": "2026.10.18",
-                  "runtimeVersion": "0.1.0-SNAPSHOT",
+                  "runtimeVersion": "6.0.0-SNAPSHOT",
                   "entryScript": "job.groovy",
                   "sources": [],
                   "resources": ["data.txt"],
                   "dependencies": [
-                    "ch.so.agi.gretl.examples:file-size-extension:0.1.0-SNAPSHOT"
+                    "ch.so.agi.gretl.examples:file-size-extension:6.0.0-SNAPSHOT"
                   ]
                 }
                 """);
@@ -570,7 +570,7 @@ class DistributionIT {
     @Test
     void packagedResourcesFollowRunRetentionAndAreNotOpenedForHelpOrPlan() throws Exception {
         Path unpacked = tempDir.resolve("resource-dist");
-        unzip(Path.of("target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip"), unpacked);
+        unzip(Path.of("target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip"), unpacked);
         Path base;
         try (var paths = Files.list(unpacked)) { base = paths.filter(Files::isDirectory).findFirst().orElseThrow(); }
         Path source = Files.createDirectory(tempDir.resolve("resource-source"));
@@ -597,7 +597,7 @@ class DistributionIT {
                 """);
         Files.writeString(source.resolve("job-package.json"), """
                 {"schemaVersion":2,"name":"resources","version":"1",
-                 "runtimeVersion":"0.1.0-SNAPSHOT","entryScript":"job.groovy",
+                 "runtimeVersion":"6.0.0-SNAPSHOT","entryScript":"job.groovy",
                  "taskModules":[],"standardFunctions":false,"sources":[],
                  "resources":["data.txt"],"dependencies":[]}
                 """);

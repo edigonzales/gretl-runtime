@@ -25,7 +25,7 @@ final class JarExecutionAdapter {
             if (request.input().kind() == ArtifactJobRunner.InputKind.PROJECT_DIRECTORY) throw new IOException("Project fixture requires a schema-3 descriptor");
             Files.writeString(descriptor, Json.write(Map.of(
                     "schemaVersion", 1, "name", "fixture", "version", "1",
-                    "runtimeVersion", "0.1.0-SNAPSHOT", "entryScript", request.input().relativePath(),
+                    "runtimeVersion", "6.0.0-SNAPSHOT", "entryScript", request.input().relativePath(),
                     "sources", List.of(), "resources", resources, "dependencies", List.of())));
         }
         var metadata = (Map<?, ?>) Json.parseFile(descriptor, 1L << 20);

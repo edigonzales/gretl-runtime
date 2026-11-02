@@ -66,7 +66,7 @@ class PackagedSqlJobPostgresIT {
                   "schemaVersion": 1,
                   "name": "postgres-job",
                   "version": "2026.10.19",
-                  "runtimeVersion": "0.1.0-SNAPSHOT",
+                  "runtimeVersion": "6.0.0-SNAPSHOT",
                   "entryScript": "job.groovy",
                   "sources": [],
                   "resources": ["insert.sql"],

@@ -3,7 +3,7 @@
 Die aufgelösten Maven-Abhängigkeiten und die vorhandenen Grenztests bestimmen
 den aktuellen Zuschnitt.
 
-| Artefakt (`ch.so.agi.gretl`, Version `0.1.0-SNAPSHOT`) | Verantwortung | Erlaubte interne Produktionsabhängigkeiten |
+| Artefakt (`ch.so.agi.gretl`, Version `6.0.0-SNAPSHOT`) | Verantwortung | Erlaubte interne Produktionsabhängigkeiten |
 | --- | --- | --- |
 | gretl-api | Neutrale Java-SPI, Metadaten und Kontexte | keine; ausschliesslich JDK |
 | gretl-i18n | Meldungskataloge | keine |

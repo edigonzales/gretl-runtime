@@ -32,7 +32,7 @@ Beispiel für einen schmalen Validatorjob mit lokalen Daten und Modellen:
   "schemaVersion": 2,
   "name": "validation",
   "version": "1.0.0",
-  "runtimeVersion": "0.1.0-SNAPSHOT",
+  "runtimeVersion": "6.0.0-SNAPSHOT",
   "entryScript": "job.groovy",
   "sources": [],
   "resources": ["data", "models"],

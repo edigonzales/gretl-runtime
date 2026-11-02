@@ -19,7 +19,7 @@ class ProjectMetadataTest {
         var metadata=read(valid()); assertEquals(2,metadata.schemaVersion());assertEquals(1,metadata.projectEntries().size());
         assertThrows(UnsupportedOperationException.class,()->metadata.projectEntries().clear());
         assertEquals(List.of(":a:run"),metadata.defaultTargets());
-        var old = new JobJarMain.JobMetadata(1,"old","1","0.1.0-SNAPSHOT",25,"job","job.groovy",JobJarMain.RESOURCE_ROOT,List.of(),List.of("job.groovy"),"a".repeat(64));
+        var old = new JobJarMain.JobMetadata(1,"old","1","6.0.0-SNAPSHOT",25,"job","job.groovy",JobJarMain.RESOURCE_ROOT,List.of(),List.of("job.groovy"),"a".repeat(64));
         assertTrue(old.projectEntries().isEmpty());assertEquals("job",old.entryClass());
     }
     @Test void prj207MalformedFieldsClassesPathsAndMixedSchemasFailBeforeInstantiation() throws Exception {
@@ -58,7 +58,7 @@ class ProjectMetadataTest {
 
     private Map<String,Object> valid() {
         var m=new LinkedHashMap<String,Object>();
-        m.putAll(Map.of("schemaVersion",2,"name","project","version","1","runtimeVersion","0.1.0-SNAPSHOT","javaFeatureVersion",25,"project",true,"settingsFile","settings.gretl","entries",List.of(entry(":a")),"defaultTargets",List.of(":a:run")));
+        m.putAll(Map.of("schemaVersion",2,"name","project","version","1","runtimeVersion","6.0.0-SNAPSHOT","javaFeatureVersion",25,"project",true,"settingsFile","settings.gretl","entries",List.of(entry(":a")),"defaultTargets",List.of(":a:run")));
         m.put("resourceRoot",JobJarMain.RESOURCE_ROOT);m.put("resourceFiles",List.of("a/data.txt"));m.put("sourceFiles",List.of("settings.gretl","a/job.groovy"));m.put("projectSha256","a".repeat(64));m.put("dependencyInventory","META-INF/gretl/dependencies.json");return m;
     }
     private Map<String,String> entry(String path) {var project=ProjectPath.parseQualified(path);return Map.of("projectPath",path,"entryClass",ProjectSourceNames.entryClassName(project),"entryScript","a/job.groovy");}

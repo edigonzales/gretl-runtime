@@ -60,7 +60,7 @@ Plattformfreigabe. Für die macOS-FTP-Diagnose siehe
 ## Artefakte und Ausführungskontexte
 
 `gretl-dist/target/dist/` enthält den aufgebauten Distributionsroot. Die Archive
-liegen unter `gretl-dist/target/gretl-runtime-0.1.0-SNAPSHOT-bin.zip` und
+liegen unter `gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip` und
 entsprechend `.tar.gz`. Nach Entpacken wird aus dem enthaltenen Root gestartet:
 
 ```sh

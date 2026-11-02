@@ -18,7 +18,7 @@ final class ExternalPackageFixture {
         Path helperClasses = compile("external/dependency/ProbeHelper.java", "package external.dependency; public final class ProbeHelper { public static String marker() { return \"" + nonce + "\"; } public static String stamp(String self) { return self + \"-" + nonce + "\"; } }", "");
         helper = publish("helper", helperClasses, Map.of("META-INF/groovy/org.codehaus.groovy.runtime.ExtensionModule",
                 "moduleName=external-fixture\nmoduleVersion=1.0\nextensionClasses=external.dependency.ProbeHelper\n"), "");
-        Path api = Path.of("../gretl-api/target/gretl-api-0.1.0-SNAPSHOT.jar").toAbsolutePath().normalize();
+        Path api = Path.of("../gretl-api/target/gretl-api-6.0.0-SNAPSHOT.jar").toAbsolutePath().normalize();
         assertTrue(Files.isRegularFile(api));
         String source = Files.readString(Path.of("../examples/file-size-extension/src/main/java/example/ExampleProvider.java"))
                 .replace("package example;", "package external.probe;")
@@ -27,11 +27,11 @@ final class ExternalPackageFixture {
         provider = publish("external-file-size", classes,
                 Map.of("META-INF/services/ch.so.agi.gretl.runtime.api.OperationProvider", "external.probe.ExampleProvider\n"),
                 "<dependency><groupId>" + group + "</groupId><artifactId>helper</artifactId><version>1.0</version></dependency>"
-                + "<dependency><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-api</artifactId><version>0.1.0-SNAPSHOT</version><scope>provided</scope></dependency>");
+                + "<dependency><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-api</artifactId><version>6.0.0-SNAPSHOT</version><scope>provided</scope></dependency>");
     }
     Path loggingProvider() throws Exception {
         Path runtime = Path.of("../gretl-dist/target/dist/lib/runtime").toAbsolutePath().normalize();
-        Path api = Path.of("../gretl-api/target/gretl-api-0.1.0-SNAPSHOT.jar").toAbsolutePath().normalize();
+        Path api = Path.of("../gretl-api/target/gretl-api-6.0.0-SNAPSHOT.jar").toAbsolutePath().normalize();
         String classpath;
         try (var files = Files.list(runtime)) {
             classpath = files.filter(p -> p.toString().endsWith(".jar")).map(Path::toString)
@@ -41,7 +41,7 @@ final class ExternalPackageFixture {
                 Files.readString(Path.of("src/test/resources/logging/ScopeProvider.java")), api + java.io.File.pathSeparator + classpath);
         return publish("logging-provider", classes,
                 Map.of("META-INF/services/ch.so.agi.gretl.runtime.api.OperationProvider", "external.logging.ScopeProvider\n"),
-                "<dependency><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-api</artifactId><version>0.1.0-SNAPSHOT</version><scope>provided</scope></dependency>"
+                "<dependency><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-api</artifactId><version>6.0.0-SNAPSHOT</version><scope>provided</scope></dependency>"
                 + "<dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>2.0.20</version><scope>provided</scope></dependency>"
                 + "<dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.6.5</version><scope>provided</scope></dependency>");
     }

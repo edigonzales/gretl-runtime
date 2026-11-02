@@ -24,7 +24,7 @@ class JobPackageBuilderTest {
         Path descriptorFile = tempDir.resolve("job-package.json");
         Files.writeString(descriptorFile, """
                 {"schemaVersion":1,"name":"builder-demo","version":"1",
-                 "runtimeVersion":"0.1.0-SNAPSHOT","entryScript":"job.groovy",
+                 "runtimeVersion":"6.0.0-SNAPSHOT","entryScript":"job.groovy",
                  "sources":[],"resources":[],"dependencies":[]}
                 """);
         PackageDescriptor descriptor = PackageDescriptor.load(descriptorFile);
@@ -42,7 +42,7 @@ class JobPackageBuilderTest {
                 List.of(new JobCompiler.SourceFile("job.groovy",
                         tempDir.resolve("job.groovy"), "action('run') { }")), "a".repeat(64));
         Path output = tempDir.resolve("out/job.jar");
-        var result = new JobPackageBuilder(List.of(first, second), "0.1.0-SNAPSHOT")
+        var result = new JobPackageBuilder(List.of(first, second), "6.0.0-SNAPSHOT")
                 .build(descriptor, compiled, output);
 
         assertEquals("job", result.entryClass());
@@ -73,7 +73,7 @@ class JobPackageBuilderTest {
         Path descriptorFile = tempDir.resolve("job-package.json");
         Files.writeString(descriptorFile, """
                 {"schemaVersion":1,"name":"conflict-demo","version":"1",
-                 "runtimeVersion":"0.1.0-SNAPSHOT","entryScript":"job.groovy",
+                 "runtimeVersion":"6.0.0-SNAPSHOT","entryScript":"job.groovy",
                  "sources":[],"resources":[],"dependencies":[]}
                 """);
         PackageDescriptor descriptor = PackageDescriptor.load(descriptorFile);
@@ -87,7 +87,7 @@ class JobPackageBuilderTest {
                 Map.of("job.class", new byte[] {1}), List.of(), "a".repeat(64));
 
         PackageException error = assertThrows(PackageException.class,
-                () -> new JobPackageBuilder(List.of(first, second), "0.1.0-SNAPSHOT")
+                () -> new JobPackageBuilder(List.of(first, second), "6.0.0-SNAPSHOT")
                         .build(descriptor, compiled, tempDir.resolve("conflict.jar")));
         assertEquals("PACKAGE_CLASS_CONFLICT", error.code());
         assertTrue(error.getMessage().contains("conflict-a"));
@@ -101,7 +101,7 @@ class JobPackageBuilderTest {
         Path descriptorFile = tempDir.resolve("job-package.json");
         Files.writeString(descriptorFile, """
                 {"schemaVersion":1,"name":"model-copy-demo","version":"1",
-                 "runtimeVersion":"0.1.0-SNAPSHOT","entryScript":"job.groovy",
+                 "runtimeVersion":"6.0.0-SNAPSHOT","entryScript":"job.groovy",
                  "sources":[],"resources":[],"dependencies":[]}
                 """);
         PackageDescriptor descriptor = PackageDescriptor.load(descriptorFile);
@@ -114,7 +114,7 @@ class JobPackageBuilderTest {
         JobCompiler.CompiledJob compiled = new JobCompiler.CompiledJob("job",
                 Map.of("job.class", new byte[] {1}), List.of(), "a".repeat(64));
         Path output = tempDir.resolve("model-copy.jar");
-        new JobPackageBuilder(List.of(canonical, embedded), "0.1.0-SNAPSHOT", Map.of(
+        new JobPackageBuilder(List.of(canonical, embedded), "6.0.0-SNAPSHOT", Map.of(
                 canonical, new PackageDescriptor.Dependency("ch.interlis", "iox-ili", "1.24.4"),
                 embedded, new PackageDescriptor.Dependency("ch.interlis", "av2geobau", "1.4.2")))
                 .build(descriptor, compiled, output);

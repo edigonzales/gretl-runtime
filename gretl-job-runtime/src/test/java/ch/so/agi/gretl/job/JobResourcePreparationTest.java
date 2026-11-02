@@ -18,7 +18,7 @@ class JobResourcePreparationTest {
     @TempDir Path root;
 
     private JobJarMain.PackagedJobSource source(String resource) {
-        var metadata = new JobJarMain.JobMetadata(1, "fixture", "1", "0.1.0-SNAPSHOT", 25,
+        var metadata = new JobJarMain.JobMetadata(1, "fixture", "1", "6.0.0-SNAPSHOT", 25,
                 "Fixture", "job.groovy", JobJarMain.RESOURCE_ROOT, List.of(resource), List.of(), "hash");
         ClassLoader loader = new ClassLoader() {
             @Override public InputStream getResourceAsStream(String name) {

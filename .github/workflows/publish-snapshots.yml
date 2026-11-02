@@ -29,6 +29,15 @@ jobs:
           java-version: '25'
           cache: maven
       # Deployment retains the existing Maven path; skips apply only after both required jobs passed.
+      - name: Require publishing credentials
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+        run: |
+          if [[ -z "$MAVEN_USERNAME" || -z "$MAVEN_PASSWORD" ]]; then
+            echo "Configure Actions secrets MAVEN_USERNAME and MAVEN_PASSWORD for interlis-snapshots." >&2
+            exit 2
+          fi
       - name: Publish snapshot artefacts
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
@@ -39,3 +48,21 @@ jobs:
           -Ppublish-snapshots
           -DskipTests -DskipITs
           deploy
+      - name: Download published runtime and execute an external Groovy job
+        run: |
+          VERSION=$(python3 -c 'import json; print(json.load(open("gretl-dist/target/dist/package-catalog.json"))["runtimeVersion"])')
+          python3 scripts/verify-published-runtime.py \
+            --repository https://jars.interlis.guru/snapshots \
+            --version "$VERSION" --source "$GITHUB_SHA" \
+            --output "$RUNNER_TEMP/gretl-published-runtime"
+      - name: Preserve publication smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-runtime-smoke-${{ github.sha }}
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/gretl-published-runtime/*.json
+            ${{ runner.temp }}/gretl-published-runtime/*.log
+            ${{ runner.temp }}/gretl-published-runtime/result.txt
+          if-no-files-found: warn

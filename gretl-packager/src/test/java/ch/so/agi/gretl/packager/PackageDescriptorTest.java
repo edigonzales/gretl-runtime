@@ -24,7 +24,7 @@ class PackageDescriptorTest {
                   "schemaVersion": 1,
                   "name": "demo",
                   "version": "2026.10.18",
-                  "runtimeVersion": "0.1.0-SNAPSHOT",
+                  "runtimeVersion": "6.0.0-SNAPSHOT",
                   "entryScript": "job.groovy",
                   "sources": [],
                   "resources": ["sql"],

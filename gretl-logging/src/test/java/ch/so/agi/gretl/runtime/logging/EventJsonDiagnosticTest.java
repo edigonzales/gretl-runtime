@@ -32,7 +32,7 @@ class EventJsonDiagnosticTest {
 
         Map<String, Object> json = EventJson.encode(event,
                 new LogContext("command-1", UUID.randomUUID(), "job",
-                        "0.1.0-SNAPSHOT", Optional.empty()), true);
+                        "6.0.0-SNAPSHOT", Optional.empty()), true);
         Map<?, ?> error = (Map<?, ?>) json.get("error");
 
         assertEquals("UNKNOWN_CONFIGURATION_FIELD", error.get("code"));
