@@ -1,0 +1,312 @@
+{
+  "schemaVersion": 1,
+  "assignment": "gretl-script-first-testing",
+  "phase": "TST3",
+  "attempt": 1,
+  "baseSha": "ad8d21dc55a0b71f85ff8fde47845678ee1f4d3f",
+  "assignmentBaseSha": "520b59be12f7966be46d0eaaca046c6ee3dc04f7",
+  "candidateSha": "17dca71d8344095eefc586ed1c4f610c02675f22",
+  "verdict": "PASS",
+  "reviewer": {
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "apiHost": "api.deepseek.com",
+    "openCodeVersion": "2.2.5",
+    "modelMappingEvidence": "OpenCode 2.2.5, provider deepseek, model deepseek/deepseek-flash -> API deepseek-flash -> canonical deepseek/deepseek-v4.1-flash-1017; apiHost api.deepseek.com; verified 2026-11-01T22:50:30Z for candidate 17dca71d8344095eefc586ed1c4f610c02675f22 in /Users/stefan/sources/gretl-script-first-evidence/tst3-opencode-readiness-17dca71/model-proof.json"
+  },
+  "criteria": [
+    {
+      "id": "TST3-01",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-TST3-1-17dca71d8344/gretl-dist/src/main/docker/Dockerfile",
+        "/Users/stefan/sources/gretl-review-TST3-1-17dca71d8344/scripts/build-runtime-image.py",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-dist/target/image/candidate.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-dist/target/image/extracted/SHA256SUMS",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/image-id-before.txt"
+      ]
+    },
+    {
+      "id": "TST3-02",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-TST3-1-17dca71d8344/gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/ImageExecutionAdapter.java",
+        "/Users/stefan/sources/gretl-review-TST3-1-17dca71d8344/gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/ImageRuntimeIT.java",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-integration-tests/target/job-evidence",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/entrypoint.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/summary.txt"
+      ]
+    },
+    {
+      "id": "TST3-03",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-integration-tests/target/job-evidence",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/changed/out1/ergebnis mit leerzeichen ü.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/changed/out2/ergebnis mit leerzeichen ü.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-a-source-sha.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/counterprobe-console.log"
+      ]
+    },
+    {
+      "id": "TST3-04",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-TST3-1-17dca71d8344/gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/ImageRuntimeIT.java",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/permissions/out/status.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/permissions/out/nested dir ü/ergebnis.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/openshift/copy/status.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/summary.txt"
+      ]
+    },
+    {
+      "id": "TST3-05",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-integration-tests/target/qualification/executions.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/maven.log",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/network-id.txt",
+        "/Users/stefan/sources/gretl-review-TST3-1-17dca71d8344/gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/ImageExecutionAdapter.java"
+      ]
+    },
+    {
+      "id": "TST3-06",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-integration-tests/target/job-evidence",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/permissions/out/probe.sqlite",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/openshift/copy/native.sqlite",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/openshift/copy/native.duckdb",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-e-native.txt"
+      ]
+    },
+    {
+      "id": "TST3-07",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-integration-tests/target/qualification/summary.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-integration-tests/target/qualification/executions.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/image-local-negative.log"
+      ]
+    },
+    {
+      "id": "TST3-08",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/maven.log",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/cleanup.log",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/cleanup-container-ids.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/cancel/reports/report.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/summary.txt"
+      ]
+    },
+    {
+      "id": "TST3-09",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/image-full-negative.log",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-d-relabelled.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-d-root-user.txt",
+        "/Users/stefan/sources/gretl-review-TST3-1-17dca71d8344/gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/ImageExecutionAdapterTest.java",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/counterprobe-console.log"
+      ]
+    },
+    {
+      "id": "TST3-10",
+      "result": "fulfilled",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/review.md",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/verdict.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/standard/SCRIPT/maven-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/script-full/SCRIPT/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/jar-full/JAR/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-local/IMAGE/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/counterprobe-console.log"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "standard",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/standard/SCRIPT/maven-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/standard/SCRIPT/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/standard/SCRIPT/evidence/gretl-integration-tests/target/qualification/summary.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/standard/SCRIPT/maven.log"
+      ]
+    },
+    {
+      "id": "standard-negative",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/standard-negative.log"
+      ]
+    },
+    {
+      "id": "script-full",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/script-full/SCRIPT/maven-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/script-full/SCRIPT/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/script-full/SCRIPT/evidence/gretl-integration-tests/target/qualification/summary.json"
+      ]
+    },
+    {
+      "id": "script-full-negative",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/script-full-negative.log"
+      ]
+    },
+    {
+      "id": "jar-full",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/jar-full/JAR/maven-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/jar-full/JAR/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/jar-full/JAR/evidence/gretl-integration-tests/target/qualification/summary.json"
+      ]
+    },
+    {
+      "id": "jar-full-negative",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/jar-full-negative.log"
+      ]
+    },
+    {
+      "id": "image-full",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/maven-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-integration-tests/target/qualification/summary.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-dist/target/image/candidate.json"
+      ]
+    },
+    {
+      "id": "image-full-negative",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/image-full-negative.log"
+      ]
+    },
+    {
+      "id": "image-local",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-local/IMAGE/maven-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-local/IMAGE/audit-exit.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-local/IMAGE/evidence/gretl-integration-tests/target/qualification/summary.json"
+      ]
+    },
+    {
+      "id": "image-local-negative",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/image-local-negative.log"
+      ]
+    },
+    {
+      "id": "common-input-parity",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/common-input-parity.log",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/script-full/SCRIPT/evidence/gretl-integration-tests/target/qualification/executions.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/jar-full/JAR/evidence/gretl-integration-tests/target/qualification/executions.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/image-full/IMAGE/evidence/gretl-integration-tests/target/qualification/executions.json"
+      ]
+    },
+    {
+      "id": "review-validator",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/review-validator/output.log"
+      ]
+    },
+    {
+      "id": "docs-generate",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/docs-generate/output.log"
+      ]
+    },
+    {
+      "id": "docs-tests",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/docs-tests/output.log"
+      ]
+    },
+    {
+      "id": "docs-links",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/docs-links/output.log"
+      ]
+    },
+    {
+      "id": "docs-render",
+      "result": "passed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/checks/docs-render/output.log"
+      ]
+    }
+  ],
+  "counterprobes": [
+    {
+      "description": "CP-A: own external Unicode job with spaces, invalid unused job-package.json, default image entrypoint; first run exact marker CP-A-v1, then only source text changed to CP-A-v2, second run with the unchanged image id sha256:e47c5309c56665b6c15e31d619fc066c139e5ee5e30db1b8841e70f7e0871fe5; no job.jar",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/counterprobe-console.log",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/changed/out1/ergebnis mit leerzeichen ü.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/changed/out2/ergebnis mit leerzeichen ü.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-a-source-sha.txt"
+      ]
+    },
+    {
+      "description": "CP-B: read-only /job and runtime, non-root host UID/GID, writable private work/output/report/temp, rejected write to /job, unicode nested output, independent SQLite value sqlite-CP-B-ü",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/permissions/out/status.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/permissions/out/probe.sqlite",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-b-sqlite.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/summary.txt"
+      ]
+    },
+    {
+      "description": "CP-C: cooperative cancellation after real checkpoint via docker kill SIGTERM; container exit 143, report status CANCELLED/exit 20, no successor task, own container removed",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/cancel/reports/report.json",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/summary.txt"
+      ]
+    },
+    {
+      "description": "CP-E: arbitrary OpenShift-style UID 1007654321 with GID 0, read-only root/source/runtime, fresh writable tmpfs volumes, no-new-privileges and no capabilities; independent SQLite and DuckDB reads of CP-E-ü",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/openshift/copy/status.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/openshift/copy/native.sqlite",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/openshift/copy/native.duckdb",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-e-native.txt"
+      ]
+    },
+    {
+      "description": "CP-D: unchanged evidence copy passes; relabelled IMAGE-as-SCRIPT and root container user evidence are rejected by the real audit",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-d-baseline.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-d-relabelled.txt",
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/counterprobes/logs/cp-d-root-user.txt"
+      ]
+    },
+    {
+      "description": "Independent live image byte verification: docker create/cp from sha256:e47c5309c56665b6c15e31d619fc066c139e5ee5e30db1b8841e70f7e0871fe5 yields 126 files whose SHA256SUMS-inventory equals distribution manifest 15a12c62600cbd78b75ea7d347e666e2d7155fcea831b8e250283b25379e0ded",
+      "evidence": [
+        "/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/review.md"
+      ]
+    }
+  ],
+  "openMandatoryFindings": [],
+  "missingRequiredChecks": [],
+  "report": "review.md"
+}

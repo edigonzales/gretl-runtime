@@ -8,8 +8,8 @@ nicht vorhanden. Kein Push, Merge oder Release.
 | --- | --- | --- |
 | TST1 | PASS, unabhängig abgenommen | `52ca5bee2e52f7c07106d305e071add1c3c3724a` |
 | TST2 | PASS, unabhängig abgenommen | `b1440bfd678d4ea83d70e51778b09997c441aace` |
-| TST3 | IN_PROGRESS, Auditkorrektur vor frischen Gates | siehe Implementierungsbericht |
-| TST4 | noch nicht begonnen | — |
+| TST3 | PASS, unabhängig abgenommen | `17dca71d8344095eefc586ed1c4f610c02675f22` |
+| TST4 | IN_PROGRESS | noch kein Kandidat |
 
 TST1: [unveränderter OpenCode-Bericht](reviews/TST1-r1-52ca5bee2e52.md),
 [Urteil](reviews/TST1-r1-52ca5bee2e52.verdict.json).
@@ -70,3 +70,32 @@ OpenShift-Gegenproben umgesetzt. Der erste Kandidat besteht sämtliche
 Java-Gates; sein IMAGE-Audit scheitert an Python-3.9-Nanosekundenparsing.
 Die präzise Korrektur samt Grenzprobe ist umgesetzt; neue feste Gates
 und unabhängiger TST3-Review folgen. TST4 bleibt noch nicht begonnen.
+
+
+## TST3-Abnahme
+
+Produktkandidat: `17dca71d8344095eefc586ed1c4f610c02675f22`.
+[Unveränderter unabhängiger Bericht](reviews/TST3-r1-17dca71d8344.md),
+[strukturiertes Urteil](reviews/TST3-r1-17dca71d8344.verdict.json): PASS.
+Bericht SHA-256:
+`1f1af0d29fa4f6d19ceb54f19ef5decd771df0679ae3d04fe88e0c2338d7cb27`.
+
+Eigene und unabhängige frische Gates: Standard 696, SCRIPT/full 752,
+JAR/full 752, IMAGE/full 757 und IMAGE/local 701 Tests. Überall Exit 0,
+keine Failures/Errors/Skips; alle 44 Standardoperationen separat pro
+Vollmodus. 174 COMMON-Inputbäume bytegleich. Alle ausgewählten
+Negativproben (12/13/13/16/15) und Dokumentationsprüfungen bestanden;
+Archive nach clean erneut auditiert und tatsächliche Runtimebytes geprüft.
+
+Reviewer: OpenCode 2.2.5, direkter DeepSeek-Flash-1017-Weg. Prozess und
+Orchestrator beendet, Exit 0, beide HEADs unverändert und sauber, alle
+zehn Kriterien erfüllt. Eigene neue Unicode-/Quellwechsel-, Rechte-,
+SQLite-/DuckDB-, Signal- und Evidenzgegenproben nachgeprüft; 36 Assertions.
+Unbekannte UID `1007654321:0`, read-only Root/Quelle, frische Volumes,
+CapEff 0 und NoNewPrivs 1 mit nativer Arbeit zusätzlich bestätigt.
+Keine echte Clusteradmission/PVC- oder AMD64-native-Imageprüfung behauptet.
+
+Rohbelege: `/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/`
+und `/Users/stefan/sources/gretl-script-first-evidence/TST3-candidate-17dca71d8344095eefc586ed1c4f610c02675f22/`.
+Die unabhängige Gesamtprüfung beginnt jetzt als TST4: reguläre CI-Matrix,
+restliche Fehlgrün-Proben, aktive Anleitungen und kumulative 38 Kriterien.

@@ -160,3 +160,29 @@ reale Containerfakten und die Nanosekunden-Grenzverletzung. Der frühere
 rückwirkend erzeugt. Neuer Kandidat und frische Phasengates folgen.
 Die Negativauswahl umfasst nun SOURCE/JAR local zwölf, full dreizehn sowie
 IMAGE local fünfzehn und full sechzehn Prüfungen.
+
+
+## Feste eigene Gates und unabhängiger Abschluss
+
+Korrigierter Kandidat `17dca71d8344095eefc586ed1c4f610c02675f22`:
+Standard 696, SCRIPT/full und JAR/full je 752, IMAGE/full 757 und
+IMAGE/local 701 Tests. Eigene und unabhängige Läufe jeweils vollständig
+mit Exit 0 und ohne Failures/Errors/Skips. Alle 44 Standardoperationen
+pro Vollmodus, 174 identische COMMON-Inputs über drei Modi. Alle fälligen
+Negativproben und Dokumentationsprüfungen bestanden. Die Archivkopien
+wurden nach clean erneut geprüft; tatsächliche Runtime-/JAR-/Imagebytes,
+Reporthashes und XML-Zahlen wurden nachgelesen.
+
+[Unabhängiger Bericht](../reviews/TST3-r1-17dca71d8344.md) und
+[Urteil](../reviews/TST3-r1-17dca71d8344.verdict.json): gültiges PASS.
+Bericht SHA-256:
+`1f1af0d29fa4f6d19ceb54f19ef5decd771df0679ae3d04fe88e0c2338d7cb27`.
+Die eigene externe Quellwechselprobe liefert im unveränderten Image
+`quelle-ü\n|CP-A-v1-λ` und nach reinem Scriptedit
+`quelle-ü\n|CP-A-v2-ω`. Zusätzlich unbekannte UID `1007654321:0` mit
+nativer SQLite-/DuckDB-Arbeit, tatsächlichem kooperativem SIGTERM sowie
+isolierten falschen Imagebelegen geprüft. Alle 36 eigenen Assertions
+bestanden; Gegenproben und Rohbelege wurden vom Orchestrator nachgeprüft.
+OpenCode-Prozess und Wrapper beendet (0), alle zehn Kriterien erfüllt,
+keine offenen Muss-Findings und keine relevanten Reviewkinder übrig.
+TST3 ist abgeschlossen; TST4 folgt an der Basis dieses Nachweiscommits.
