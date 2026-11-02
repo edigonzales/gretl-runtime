@@ -59,7 +59,7 @@ class OperationCatalogExporterTest {
         assertEquals(CatalogJsonCodec.State.INCOMPATIBLE,codec.decode(new byte[0],null).state());
         assertEquals(CatalogJsonCodec.State.INCOMPATIBLE,codec.decode(bytes,"0".repeat(64)).state());
         String json=new String(bytes,java.nio.charset.StandardCharsets.UTF_8);
-        for (String broken : List.of(json.replaceFirst("schemaVersion\":1","schemaVersion\":2"),json.replaceFirst("test","changed"),json.replaceFirst("\\{","{\"extra\":true,"),json.replaceFirst("\\{","{\"schemaVersion\":1,")))
+        for (String broken : List.of(json + " {}",json.replaceFirst("schemaVersion\":1", "schemaVersion\":\"1\""),json.replaceFirst("\"required\":(?:true|false),", ""),json.replaceFirst("schemaVersion\":1","schemaVersion\":2"),json.replaceFirst("test","changed"),json.replaceFirst("\\{","{\"extra\":true,"),json.replaceFirst("\\{","{\"schemaVersion\":1,")))
             assertEquals(CatalogJsonCodec.State.INCOMPATIBLE,codec.decode(broken.getBytes(java.nio.charset.StandardCharsets.UTF_8),null).state());
         var duplicate=new ArrayList<>(c.operations()); duplicate.add(c.operations().getFirst());
         var bad=codec.identify(new OperationCatalog(1,"test","1","",c.producers(),duplicate,"COMPLETE"));

@@ -13,6 +13,10 @@ public final class CatalogJsonCodec {
             .streamReadConstraints(com.fasterxml.jackson.core.StreamReadConstraints.builder().maxNestingDepth(64).maxStringLength(1_000_000).build()).build())
             .enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
             .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+            .enable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
+            .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+            .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
             .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
     public enum State { AVAILABLE, PARTIAL, UNAVAILABLE, INCOMPATIBLE }
     public record CatalogLoadResult(State state, Optional<OperationCatalog> catalog, List<String> problems) {

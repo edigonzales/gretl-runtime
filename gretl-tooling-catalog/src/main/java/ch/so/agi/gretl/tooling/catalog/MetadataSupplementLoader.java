@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tooling.catalog;
 
 import ch.so.agi.gretl.runtime.api.OperationType;
+import ch.so.agi.gretl.runtime.api.OperationProvider;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import java.io.*;
@@ -15,11 +16,14 @@ public final class MetadataSupplementLoader {
     }
     private final ObjectMapper mapper = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
     public List<Supplement> loadFromOwnedResources(ClassLoader loader) throws IOException {
-        // Provider modules use a shared resource name so ClassLoader enumeration discovers all.
+        // Provider-qualified resource names also coexist in a packaged runtime JAR.
+        // Discover identities from the same SPI, never from a second provider/operation list.
         var result = new ArrayList<Supplement>();
-        var urls = loader.getResources("META-INF/gretl/tooling/metadata.json");
-        while (urls.hasMoreElements()) {
-            try (var in = urls.nextElement().openStream()) { result.addAll(read(in)); }
+        for (var provider : ServiceLoader.load(OperationProvider.class, loader).stream().toList()) {
+            var urls = loader.getResources("META-INF/gretl/tooling/" + provider.type().getName() + ".json");
+            while (urls.hasMoreElements()) {
+                try (var in = urls.nextElement().openStream()) { result.addAll(read(in)); }
+            }
         }
         return List.copyOf(result);
     }
@@ -27,12 +31,18 @@ public final class MetadataSupplementLoader {
         byte[] data = in.readNBytes(1024 * 1024 + 1);
         if (data.length > 1024 * 1024) throw new IOException("Supplement too large");
         JsonNode root = mapper.readTree(data);
-        if (root == null || root.path("schemaVersion").asInt() != 1 || !root.path("fields").isArray()) throw new IOException("Supplement schema");
+        if (root == null || !root.path("schemaVersion").isInt() || root.path("schemaVersion").asInt() != 1 || !root.path("fields").isArray()) throw new IOException("Supplement schema");
         requireKeys(root, Set.of("schemaVersion", "fields"));
         var result = new ArrayList<Supplement>();
         for (var row : root.get("fields")) {
             requireKeys(row, Set.of("operationId","field","shape","pathRole","sensitive","hints"));
             if (!row.path("operationId").isTextual() || !row.path("field").isTextual()) throw new IOException("Supplement target");
+            if (row.has("sensitive") && !row.get("sensitive").isBoolean()) throw new IOException("Supplement sensitive must be boolean");
+            if (row.has("pathRole") && !row.get("pathRole").isTextual()) throw new IOException("Supplement pathRole must be text");
+            if (row.has("hints")) {
+                if (!row.get("hints").isObject()) throw new IOException("Supplement hints must be an object");
+                for (var hint : row.get("hints")) if (!hint.isTextual()) throw new IOException("Supplement hint values must be text");
+            }
             result.add(new Supplement(row.get("operationId").textValue(), row.get("field").textValue(),
                     row.has("shape") ? mapper.treeToValue(row.get("shape"), OperationCatalog.ValueShape.class) : null,
                     row.has("pathRole") ? row.get("pathRole").textValue() : null,
