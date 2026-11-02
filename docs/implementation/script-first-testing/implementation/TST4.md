@@ -108,3 +108,32 @@ Nächste Schritte: sauberer Produktkandidat, frische Dockerfreie Standard-
 prüfung und ALL/full, erhaltene zusätzliche Distributions-/Paketstartprobe,
 Dokumentationsbeispiele sowie unabhängiger OpenCode-Gesamtreview aller
 38 Kriterien. Keine frühere Phasenabnahme wird auf einen neuen SHA umetikettiert.
+
+
+## Ergebnis am eingefrorenen Kandidaten
+
+Produktkandidat `3655842006d94a7cada138e91d88aa143190606b`: eigene und
+unabhängige Standardprüfung 696 Tests, SCRIPT/full 752, JAR/full 752,
+IMAGE/full 757; überall Exit 0 und 0 Failures/Errors/Skips. Szenarien
+135/213/213/220; getrennt je Vollmodus alle 44 Pflichtoperationen, 174
+bytegleiche COMMON-Inputs. Negativsuiten 17/17/21, Publikationskontrollen 4,
+Reviewstarter 21, Dokumentationswerkzeuge 73, Links, ausgeführte Beispiele
+und beide Renderer grün. ZIP-Checksum-/ILI-Paketstartprobe erhalten und
+mit dem entpackten Launcher bestanden. Archive über spätere cleans hinweg
+nochmals geprüft; gewöhnlicher Mavenstandard ohne Propertyoverrides belegt.
+
+[Unveränderter kumulativer OpenCode-Bericht](../reviews/TST4-r1-3655842006d9.md)
+und [Urteil](../reviews/TST4-r1-3655842006d9.verdict.json): **PASS**, alle
+38 Kriterien erfüllt, keine offenen Muss-Findings. Bericht SHA-256
+`5a30b53bcd27e7adf91e035667c93765e7955df45df35eac13aff2800edfa385`.
+Tatsächliches Prozess-/Sessionende und Orchestratorexit 0, beide Checkouts
+sauber und unverändert, Rohlogs, Runtime-/Imagebytes und feste
+Gegenprobenergebnisse unabhängig nachgeprüft. Eigene neue Quellenjobs in
+SCRIPT und tatsächlichem IMAGE, Quelländerung ohne Neubau, Modus- und
+Altruntime-Manipulation sowie E12-RED/GREEN unabhängig bestätigt.
+
+Identitäten, Zahlen, Plattformgrenzen und private Rohbelegpfade stehen im
+[Abschlussstatus](../STATUS.md#tst4-abnahme-und-abschluss). Die beiden
+Unterbrechungen des externen eigenen Evidenzhelfers sind dort transparent
+abgegrenzt; sämtliche Produktgates bestanden am unveränderten Kandidaten.
+Die nachfolgende Ablage ändert ausschliesslich Nachweise, keinen Produktcode.

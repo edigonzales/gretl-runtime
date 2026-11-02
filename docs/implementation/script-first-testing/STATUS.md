@@ -9,7 +9,7 @@ nicht vorhanden. Kein Push, Merge oder Release.
 | TST1 | PASS, unabhängig abgenommen | `52ca5bee2e52f7c07106d305e071add1c3c3724a` |
 | TST2 | PASS, unabhängig abgenommen | `b1440bfd678d4ea83d70e51778b09997c441aace` |
 | TST3 | PASS, unabhängig abgenommen | `17dca71d8344095eefc586ed1c4f610c02675f22` |
-| TST4 | IN_PROGRESS | noch kein Kandidat |
+| TST4 | PASS, kumulativ unabhängig abgenommen | `3655842006d94a7cada138e91d88aa143190606b` |
 
 TST1: [unveränderter OpenCode-Bericht](reviews/TST1-r1-52ca5bee2e52.md),
 [Urteil](reviews/TST1-r1-52ca5bee2e52.verdict.json).
@@ -99,3 +99,74 @@ Rohbelege: `/Users/stefan/sources/gretl-review-output-TST3-1-17dca71d8344/`
 und `/Users/stefan/sources/gretl-script-first-evidence/TST3-candidate-17dca71d8344095eefc586ed1c4f610c02675f22/`.
 Die unabhängige Gesamtprüfung beginnt jetzt als TST4: reguläre CI-Matrix,
 restliche Fehlgrün-Proben, aktive Anleitungen und kumulative 38 Kriterien.
+
+
+## TST4-Abnahme und Abschluss
+
+Finaler geprüfter **Produkt-SHA**: `3655842006d94a7cada138e91d88aa143190606b`.
+Phasenbasis: `15666544e55af21e16598e94c46294f9bdcae2c9`.
+[Unveränderter unabhängiger Gesamtbericht](reviews/TST4-r1-3655842006d9.md),
+[strukturiertes Urteil](reviews/TST4-r1-3655842006d9.verdict.json): **PASS**
+für alle 38 Kriterien TST1–TST4, keine offenen Muss-Findings.
+Bericht SHA-256:
+`5a30b53bcd27e7adf91e035667c93765e7955df45df35eac13aff2800edfa385`.
+
+Eigene und unabhängige frische Gates am unveränderten Kandidaten:
+
+| Gate | Tests | Failures / Errors / Skips | deklarierte Szenarien | positive Pflichtoperationen |
+| --- | ---: | --- | ---: | ---: |
+| Standard, SCRIPT/local | 696 | 0 / 0 / 0 | 135 | 21 |
+| SCRIPT/full | 752 | 0 / 0 / 0 | 213 | 44 |
+| JAR/full | 752 | 0 / 0 / 0 | 213 | 44 |
+| IMAGE/full | 757 | 0 / 0 / 0 | 220 | 44 |
+
+Je Gate Maven- und Auditexit 0. Standard tatsächlich ohne Modus-/Run-ID-/
+Kandidatenproperty mit unerreichbarem Docker-Socket; 17-stellige gemeinsame
+Maven-Run-ID in JUnit und Prozessen. Die Vollmatrix besteht aus drei
+vollständigen sauberen Mavenläufen einschliesslich GeoTools und echten
+Backing-Services. 174 COMMON-Inputbäume bytegleich. Alle Archive nach
+späteren clean-Läufen erneut erfolgreich auditiert, JUnit-Zahlen und
+Runtimebytes durch Codex unabhängig nachgeprüft.
+
+Negativproben 17/17/21 für SCRIPT/JAR/IMAGE bestanden; vier
+Publikationskontrollen, 21 Reviewstartertests, 73 Dokumentationswerkzeugtests,
+Linkprüfung, 19 ausgeführte Dokumentationsbefehle, 44 generierte Tabellen
+und Quarto-/Thoth-Render bestanden. Erhaltene ZIP-Checksum-/ILI-Paketstartprobe
+auch direkt mit dem entpackten Launcher bestanden. Kein echter Deploy.
+Zwei Unterbrechungen ausschliesslich im externen eigenen Evidenzhelfer
+(CWD-Eventlogs und fehlende Wiederaufnahmevariable) sind samt Korrektur in
+`orchestrator-interruption.json` dokumentiert; keine Produktkorrektur,
+kein stiller Testskip, alle tatsächlichen Restprüfungen ausgeführt.
+
+Unabhängiges Image:
+`sha256:5b407a5399ead724540a1fdbdb168dd9fb5d54012d76c03a4c91a5dd8b3fe844`.
+Runtimeinventar SHA-256:
+`85439e843b5c34414aaa629fe50b56c62e1cbfeed768aabe7796525d4d9b6f2c`,
+126 tatsächliche Runtime-Dateien. Der neue externe Reviewerjob liefert
+SCRIPT A/B und im selben unveränderten Image B/C, jeweils exakt
+`externer-inhalt-ä\n|review-counterprobe-<Marker>`. Keine Job-JAR-Paketierung;
+kaputter unbenutzter Descriptor. Geprüfte Quellhashes passen zu den Reports.
+Eigene Modus-/Altruntime-Manipulationen scheitern nach gültiger Baseline.
+Die frühere E12-Lücke wurde erneut unabhängig reproduziert (alt Exit 0,
+aktueller Guard Exit 1).
+
+OpenShift-relevante Bedingungen am finalen Kandidaten erneut real geprüft:
+unbekannte UID `1001234567:0`, read-only Root/Quelle, frische Schreibvolumes,
+SQLite/DuckDB, CapEff 0, NoNewPrivs 1; kein passwd-Write oder privilegierter
+Workaround. Host macOS/ARM64, Container Linux/ARM64, PostGIS teilweise
+AMD64-emuliert. Keine echte OpenShift-Clusteradmission/PVC-, AMD64-native-
+oder entfernte CI-Ausführung behauptet.
+
+OpenCode 2.2.5 / direkter DeepSeek Flash 1017, Zuordnung am 02.11.2026
+verifiziert. Tatsächlicher privater Reviewprozess und Orchestrator vollständig
+beendet, beide Exit 0; alle 38 Kriterien erfüllt, beide HEADs sauber und
+unverändert; keine relevanten Kinderprozesse oder eigenen Container/Netze
+übrig. Technische und fachliche Rohvalidierung durch Codex abgeschlossen.
+
+Rohbelege:
+`/Users/stefan/sources/gretl-review-output-TST4-1-3655842006d9/` und
+`/Users/stefan/sources/gretl-script-first-evidence/TST4-candidate-3655842006d94a7cada138e91d88aa143190606b/`.
+Diese unveränderte Reviewablage und Statusfortschreibung sind ein reiner
+Nachweiscommit; der oben genannte Produkt-SHA bleibt der abgenommene Stand.
+**TST1 bis TST4 abgeschlossen.** Kein fünfter Review, kein Push, Merge,
+Release, Image-Push oder produktiver Job.
