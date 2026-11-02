@@ -1,0 +1,611 @@
+{
+  "session": "ses_e626048a0fferDJcwNQSZh7tDo",
+  "candidateSha": "ac861d9deb1f623c33d0b38d31ab2030d24aec82",
+  "metadata": [
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    },
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    }
+  ],
+  "verifiedAt": "2026-11-02T19:15:58.294Z"
+}

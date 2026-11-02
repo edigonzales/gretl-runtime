@@ -15,7 +15,7 @@ final class GretlAstExtractor {
         Extraction { declarations=List.copyOf(declarations);opaque=List.copyOf(opaque); }
     }
     private static final Set<String> DSL=Set.of("task","action","parameter","defaults","cleanup","include");
-    private static final Set<String> HELPERS=Set.of("parameter","result","resultOptional","file","path","workPath","taskConfig","config","secret","sensitive");
+    private static final Set<String> HELPERS=Set.of("parameter","result","resultOptional","file","path","workPath","config","secret","sensitive");
     private final SourceText source;
     private final TokenIndex tokens;
     private final ParserCoordinateMapper coordinates;
@@ -71,20 +71,37 @@ final class GretlAstExtractor {
         var body=closure==null?null:span(closure);var full=span(call);var header=new TextSpan(full.startUtf16(),body==null?full.endUtf16():body.startUtf16());
         BodyInfo info=closure==null?BodyInfo.empty():body(closure,kind==DeclarationKind.TASK);
         var refs=new ArrayList<>(info.references());var properties=new ArrayList<>(info.properties());
+        var invocations=new ArrayList<>(info.invocations());var locals=new ArrayList<>(info.locals());
+        boolean unknownReferences=info.unknownReferences();
         for(var arg:args)if(arg instanceof MapExpression map)for(var entry:map.getMapEntryExpressions()){
-            Expression v=entry.getValueExpression();if(v instanceof ClosureExpression c){var parsedOption=body(c,false);refs.addAll(parsedOption.references());properties.addAll(parsedOption.properties());}else refs.addAll(references(v,Set.of(),Set.of()));
+            Expression v=entry.getValueExpression();
+            if(v instanceof ClosureExpression c){
+                var parsedOption=body(c,false);refs.addAll(parsedOption.references());properties.addAll(parsedOption.properties());
+                invocations.addAll(parsedOption.invocations());locals.addAll(parsedOption.locals());unknownReferences|=parsedOption.unknownReferences();
+            }else{
+                var parsedOption=references(new ExpressionStatement(v),Set.of(),Set.of());
+                refs.addAll(parsedOption.references());properties.addAll(parsedOption.properties());invocations.addAll(parsedOption.invocations());
+                unknownReferences|=parsedOption.unknownReferences();
+            }
         }
+        for(var argument:positional){
+            var parsedArgument=references(new ExpressionStatement(argument),Set.of(),Set.of());
+            refs.addAll(parsedArgument.references());properties.addAll(parsedArgument.properties());invocations.addAll(parsedArgument.invocations());
+            unknownReferences|=parsedArgument.unknownReferences();
+        }
+        invocations.sort(Comparator.comparingInt(i->i.span().startUtf16()));locals.sort(Comparator.comparingInt(l->l.span().startUtf16()));
+        refs.sort(Comparator.comparingInt(r->r.span().startUtf16()));properties.sort(Comparator.comparingInt(p->p.span().startUtf16()));
         boolean staticName=name!=null||kind==DeclarationKind.DEFAULTS||kind==DeclarationKind.INCLUDE;
         var coverage=new Coverage(staticName?Completeness.COMPLETE:Completeness.PARTIAL,
-                info.unknownReferences()?Completeness.PARTIAL:Completeness.COMPLETE,info.dynamicFields()?Completeness.PARTIAL:Completeness.COMPLETE,Completeness.COMPLETE);
-        return new Declaration(kind,name,literal,binding,bindingSpan,operation,options,targets,statementSpan,full,header,body,info.fields(),info.locals(),info.invocations(),refs,properties,coverage,false);
+                unknownReferences?Completeness.PARTIAL:Completeness.COMPLETE,info.dynamicFields()?Completeness.PARTIAL:Completeness.COMPLETE,Completeness.COMPLETE);
+        return new Declaration(kind,name,literal,binding,bindingSpan,operation,options,targets,statementSpan,full,header,body,info.fields(),locals,invocations,refs,properties,coverage,false);
     }
     private record BodyInfo(List<FieldAssignment> fields,List<LocalVariable> locals,List<InnerInvocation> invocations,List<CallValue> references,List<PropertyValue> properties,boolean dynamicFields,boolean unknownReferences) {
         static BodyInfo empty(){return new BodyInfo(List.of(),List.of(),List.of(),List.of(),List.of(),false,false);}
     }
     private BodyInfo body(ClosureExpression closure,boolean configuration) {return body(closure,configuration,Set.of());}
     private BodyInfo body(ClosureExpression closure,boolean configuration,Set<String> inherited) {
-        var fields=new ArrayList<FieldAssignment>();var locals=new ArrayList<LocalVariable>();var invocations=new ArrayList<InnerInvocation>();
+        var fields=new ArrayList<FieldAssignment>();var locals=new ArrayList<LocalVariable>();
         var localNames=new HashSet<String>(inherited);boolean dynamicFields=false;
         var statements=closure.getCode() instanceof BlockStatement block?block.getStatements():List.of(closure.getCode());
         Set<String> aliases=new HashSet<>(Set.of("ctx"));
@@ -103,8 +120,15 @@ final class GretlAstExtractor {
                 fields.add(new FieldAssignment(v.getName(),span(v),value(b.getRightExpression(),allowedAliases,localNames),span(b)));
             } else if(configuration&&!(statement instanceof EmptyStatement))dynamicFields=true;
         }
-        var refs=new ArrayList<CallValue>();var properties=new ArrayList<PropertyValue>();boolean[] unknown={false};
-        closure.getCode().visit(new CodeVisitorSupport(){
+        var references=references(closure.getCode(),localNames,allowedAliases);
+        return new BodyInfo(List.copyOf(fields),List.copyOf(locals),references.invocations(),references.references(),references.properties(),dynamicFields,references.unknownReferences());
+    }
+    private record ReferenceInfo(List<InnerInvocation> invocations,List<CallValue> references,List<PropertyValue> properties,boolean unknownReferences) { }
+    /** One conservative reference walk for declaration bodies and every option value. */
+    private ReferenceInfo references(Statement code,Set<String> names,Set<String> aliases){
+        var localNames=new HashSet<>(names);var allowedAliases=new HashSet<>(aliases);
+        var invocations=new ArrayList<InnerInvocation>();var refs=new ArrayList<CallValue>();var properties=new ArrayList<PropertyValue>();boolean[] unknown={false};
+        code.visit(new CodeVisitorSupport(){
             final Deque<Set<String>> hidden=new ArrayDeque<>();
             private Set<String> hiddenNow(){var result=new HashSet<>(localNames);hidden.forEach(result::addAll);return result;}
             private Set<String> receiversNow(){var result=new HashSet<>(allowedAliases);hidden.forEach(result::removeAll);return result;}
@@ -135,16 +159,7 @@ final class GretlAstExtractor {
                 super.visitMethodCallExpression(call);
             }
         });
-        return new BodyInfo(List.copyOf(fields),List.copyOf(locals),List.copyOf(invocations),List.copyOf(refs),List.copyOf(properties),dynamicFields,unknown[0]);
-    }
-    private List<CallValue> references(Expression expression,Set<String> aliases,Set<String> hidden) {
-        var result=new ArrayList<CallValue>();expression.visit(new CodeVisitorSupport(){@Override public void visitMethodCallExpression(MethodCallExpression call){
-            String name=call.getMethodAsString(),receiver=receiver(call);
-            if(helper(name)&&((implicit(call)&&!shadowed.contains(name)&&!hidden.contains(name))||(receiver!=null&&aliases.contains(receiver)&&!hidden.contains(receiver)))){
-                var v=value(call);if(v instanceof CallValue c)result.add(c);
-            }
-            super.visitMethodCallExpression(call);
-        }});return result;
+        return new ReferenceInfo(List.copyOf(invocations),List.copyOf(refs),List.copyOf(properties),unknown[0]);
     }
     ValueExpression value(Expression expression) { return value(expression,Set.of(),shadowed); }
     private ValueExpression value(Expression expression,Set<String> aliases,Set<String> hidden) {

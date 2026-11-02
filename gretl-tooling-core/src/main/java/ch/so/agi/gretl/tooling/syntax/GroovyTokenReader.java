@@ -62,7 +62,15 @@ public final class GroovyTokenReader {
         catch(RuntimeException | org.apache.groovy.parser.antlr4.GroovySyntaxError e){
             int offset=mapper.lexerOffset(lexer._tokenStartCharIndex);problems.add(new SyntaxProblem("LEXICAL_ERROR",new TextSpan(offset,Math.min(source.text().length(),offset+1)),"Incomplete Groovy token"));
         }
-        if(gstrings>0){var span=new TextSpan(gstart,source.text().length());raw.add(new LexToken(GroovyLexer.GStringBegin,"GString",source.slice(span),span,Channel.STRING));if(!limited)problems.add(new SyntaxProblem("LEXICAL_ERROR",span,"Unterminated interpolated string"));}
+        if(gstrings>0){
+            var span=new TextSpan(gstart,source.text().length());raw.add(new LexToken(GroovyLexer.GStringBegin,"GString",source.slice(span),span,Channel.STRING));
+            if(span.length()>MAX_LITERAL_UTF16){
+                // The aggregate literal envelope subsumes a token/nesting limit inside it.
+                problems.removeIf(p->p.code().equals("PARSE_LIMIT")&&span.contains(p.span()));
+                limited=true;problems.add(new SyntaxProblem("PARSE_LIMIT",span,"Unterminated interpolated string exceeds syntax analysis budget"));
+            }
+            if(!limited)problems.add(new SyntaxProblem("LEXICAL_ERROR",span,"Unterminated interpolated string"));
+        }
         // Comment tokens are reported as NL by Groovy. Retain one comment range, not an overlapping newline.
         var commentSpans=new HashSet<TextSpan>();comments.forEach(c->commentSpans.add(c.span()));
         raw.removeIf(t->commentSpans.contains(t.span()));

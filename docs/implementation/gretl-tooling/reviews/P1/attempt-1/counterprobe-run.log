@@ -1,0 +1,9 @@
+javac exit 0
+java exit 1
+PASS mixed-safe-unsafe-islands spans, phantom suppression, partial syntax
+FAIL when-option foreign receiver coverage: java.lang.AssertionError: references must be PARTIAL, actual COMPLETE
+FAIL when-option inner ctx.run modeled: java.lang.AssertionError: expected one inner invocation, actual 0
+FAIL huge unterminated GString PARSE_LIMIT: java.lang.AssertionError: expected PARSE_LIMIT for huge unterminated GString, actual [SyntaxProblem[code=SYNTAX_ERROR, span=TextSpan[startUtf16=70011, endUtf16=70011], message=Incomplete or invalid Groovy syntax]]
+failures=3
+
+

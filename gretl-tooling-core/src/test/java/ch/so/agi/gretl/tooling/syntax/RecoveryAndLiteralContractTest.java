@@ -40,6 +40,15 @@ class RecoveryAndLiteralContractTest {
             var doc=parser.parse(SourceText.job(text));assertTrue(doc.problems().stream().anyMatch(p->p.code().equals("PARSE_LIMIT")),doc.problems().toString());
         }
     }
+    @Test void unterminatedGStringChecksTheSameUtf16BudgetAtEof(){
+        for(String body:List.of("x".repeat(70000),"😀".repeat(35000))){
+            var source=SourceText.job("def s = \"${"+body);var doc=parser.parse(source);
+            assertTrue(doc.tokens().budgetExceeded());assertEquals(Completeness.PARTIAL,doc.coverage().syntax());
+            assertEquals(1,doc.problems().size());var problem=doc.problems().getFirst();assertEquals("PARSE_LIMIT",problem.code());
+            assertEquals(source.text().length(),problem.span().endUtf16());assertEquals('"',source.text().charAt(problem.span().startUtf16()));
+            assertEquals(source.text(),doc.tokens().all().stream().map(TokenIndex.LexToken::text).collect(java.util.stream.Collectors.joining()));
+        }
+    }
     @Test void primitiveLiteralsAndTypedHelperNamesRemainKnown(){
         var doc=parser.parse(SourceText.job("parameter('n', type:'integer', description:'count', defaultValue:-5); task('a', Echo) { input=parameter('n', Long) }"));
         assertTrue(doc.problems().isEmpty(),doc.problems().toString());
@@ -60,5 +69,14 @@ class RecoveryAndLiteralContractTest {
         var first=doc.declarations().getFirst().fields().getFirst();var second=doc.declarations().get(1).fields().getFirst();
         assertTrue(second.nameSpan().startUtf16()>first.nameSpan().endUtf16());assertEquals("'second'",doc.source().slice(second.value().span()));
         assertEquals(4,doc.source().lines().positionAt(second.nameSpan().startUtf16()).line());
+    }
+    @Test void mergerKeepsSeparateErrorsAndCoalescesOnlyTheSameOverlappingProblem(){
+        var lexical=new SyntaxProblem("LEXICAL_ERROR",new TextSpan(3,10),"unfinished token");
+        var parsed=new SyntaxProblem("SYNTAX_ERROR",new TextSpan(5,6),"specific parser position");
+        var separate=new SyntaxProblem("SYNTAX_ERROR",new TextSpan(20,21),"independent second error");
+        var limit=new SyntaxProblem("PARSE_LIMIT",new TextSpan(0,30),"explicit bounded state");
+        var merged=new ParseResultMerger().problems(List.of(lexical,limit),List.of(parsed,separate));
+        assertEquals(List.of(limit,parsed,separate),merged);
+        assertEquals(List.of(parsed),new ParseResultMerger().problems(List.of(parsed),List.of(parsed)));
     }
 }

@@ -34,6 +34,45 @@ class ParserAdversarialTest {
             assertTrue(doc.problems().isEmpty(),doc.problems().toString());assertEquals(List.of("real"),doc.declarations().stream().map(Declaration::name).filter(Objects::nonNull).toList());
         }
     }
+    @Test void everyOptionValueUsesTheSameConservativeReferenceWalk(){
+        for(String option:List.of("when: { c -> builder.check() }","when: builder.check()","description: builder.describe()")){
+            var doc=parser.parse(SourceText.job("task('a', Echo, "+option+") { input='x' }"));
+            assertTrue(doc.problems().isEmpty(),doc.problems().toString());var task=doc.declarations().getFirst();
+            assertEquals(Completeness.PARTIAL,task.coverage().references(),option);
+            assertEquals(Completeness.COMPLETE,task.coverage().fieldAssignments(),option);
+            assertEquals(List.of("input"),task.fields().stream().map(FieldAssignment::name).toList());
+        }
+        var known=parser.parse(SourceText.job("task('a', Echo, when: { c -> c.parameter('enabled', Boolean) }) { input='x' }"));
+        assertEquals(Completeness.COMPLETE,known.declarations().getFirst().coverage().references());
+        assertEquals(1,known.declarations().getFirst().references().size());
+        var header=parser.parse(SourceText.job("task('a', builder.choose()) { input='x' }"));
+        assertEquals(Completeness.PARTIAL,header.declarations().getFirst().coverage().references());
+    }
+    @Test void optionInvocationsAndLocalsKeepOriginalSpansAndDoNotBecomeDagTasks(){
+        String text="task('a', Echo, when: { c -> def local='flag'; c.run(Echo) { input=result('source').file } }) { input='x'; ctx.run(Echo) { input='body' } }";
+        var doc=parser.parse(SourceText.job(text));assertTrue(doc.problems().isEmpty(),doc.problems().toString());
+        assertEquals(1,doc.declarations().size());var task=doc.declarations().getFirst();assertEquals(2,task.invocations().size());
+        assertTrue(task.invocations().getFirst().span().endUtf16()<task.invocations().get(1).span().startUtf16());
+        assertTrue(doc.source().slice(task.invocations().getFirst().span()).startsWith("c.run(Echo)"));
+        assertEquals("result('source').file",doc.source().slice(task.invocations().getFirst().fields().getFirst().value().span()));
+        assertEquals(List.of("local"),task.locals().stream().map(LocalVariable::name).toList());
+        assertEquals(List.of("input"),task.fields().stream().map(FieldAssignment::name).toList());
+        assertEquals(List.of("file"),task.properties().stream().map(PropertyValue::property).toList());
+        assertEquals(1,task.references().stream().filter(r->r.name().equals("result")).count());
+    }
+    @Test void optionLocalShadowingDoesNotLeakIntoTheTaskBody(){
+        var doc=parser.parse(SourceText.job("task('a', Echo, when: { c -> def result={n->n}; result('opaque') }) { input=result('source') }"));
+        assertTrue(doc.problems().isEmpty(),doc.problems().toString());var task=doc.declarations().getFirst();
+        assertEquals(Completeness.PARTIAL,task.coverage().references());
+        assertEquals(1,task.references().size());assertEquals("source",((LiteralValue)task.references().getFirst().arguments().getFirst()).value());
+    }
+    @Test void configIsTheCurrentHelperAndTaskConfigIsNotAnInventedAlias(){
+        var doc=parser.parse(SourceText.job("task('a', Echo) { input=config('key') }; task('b', Echo) { input=taskConfig('key') }"));
+        assertEquals(Completeness.COMPLETE,doc.declarations().getFirst().coverage().references());
+        assertInstanceOf(CallValue.class,doc.declarations().getFirst().fields().getFirst().value());
+        assertEquals(Completeness.PARTIAL,doc.declarations().get(1).coverage().references());
+        assertInstanceOf(OpaqueExpression.class,doc.declarations().get(1).fields().getFirst().value());
+    }
     @Test void allCurrentRepositoryGroovyExamplesParseWithoutExecution() throws Exception {
         Path examples=Path.of("../examples");int count=0;
         try(var files=Files.walk(examples)){
