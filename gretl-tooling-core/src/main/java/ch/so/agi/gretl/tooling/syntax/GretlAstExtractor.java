@@ -99,7 +99,7 @@ final class GretlAstExtractor {
     private record BodyInfo(List<FieldAssignment> fields,List<LocalVariable> locals,List<InnerInvocation> invocations,List<CallValue> references,List<PropertyValue> properties,boolean dynamicFields,boolean unknownReferences) {
         static BodyInfo empty(){return new BodyInfo(List.of(),List.of(),List.of(),List.of(),List.of(),false,false);}
     }
-    private BodyInfo body(ClosureExpression closure,boolean configuration) {return body(closure,configuration,Set.of());}
+    private BodyInfo body(ClosureExpression closure,boolean configuration) {return body(closure,configuration,shadowed);}
     private BodyInfo body(ClosureExpression closure,boolean configuration,Set<String> inherited) {
         var fields=new ArrayList<FieldAssignment>();var locals=new ArrayList<LocalVariable>();
         var localNames=new HashSet<String>(inherited);boolean dynamicFields=false;
@@ -121,7 +121,7 @@ final class GretlAstExtractor {
             } else if(configuration&&!(statement instanceof EmptyStatement))dynamicFields=true;
         }
         var references=references(closure.getCode(),localNames,allowedAliases);
-        return new BodyInfo(List.copyOf(fields),List.copyOf(locals),references.invocations(),references.references(),references.properties(),dynamicFields,references.unknownReferences());
+        return new BodyInfo(List.copyOf(fields),List.copyOf(locals),references.invocations(),references.references(),references.properties(),dynamicFields||(configuration&&references.unknownReferences()),references.unknownReferences());
     }
     private record ReferenceInfo(List<InnerInvocation> invocations,List<CallValue> references,List<PropertyValue> properties,boolean unknownReferences) { }
     /** One conservative reference walk for declaration bodies and every option value. */

@@ -73,6 +73,25 @@ class ParserAdversarialTest {
         assertEquals(Completeness.PARTIAL,doc.declarations().get(1).coverage().references());
         assertInstanceOf(OpaqueExpression.class,doc.declarations().get(1).fields().getFirst().value());
     }
+    @Test void capturedTopLevelVariablesCannotMasqueradeAsContextOrTaskFields(){
+        var context=parser.parse(SourceText.job("def ctx=[parameter:{ n->n }]; task('a', Echo) { input=ctx.parameter('hidden') }"));
+        assertTrue(context.problems().isEmpty());var task=context.declarations().getFirst();
+        assertTrue(task.references().isEmpty());assertEquals(Completeness.PARTIAL,task.coverage().references());
+        assertInstanceOf(OpaqueExpression.class,task.fields().getFirst().value());
+        var field=parser.parse(SourceText.job("def input='captured'; task('a', Echo) { input='local assignment'; output='field' }"));
+        assertTrue(field.problems().isEmpty());assertEquals(List.of("output"),field.declarations().getFirst().fields().stream().map(FieldAssignment::name).toList());
+        var unknown=parser.parse(SourceText.job("task('a', Echo) { def local=foreignConfigure(); input='known' }"));
+        assertEquals(List.of("input"),unknown.declarations().getFirst().fields().stream().map(FieldAssignment::name).toList());
+        assertEquals(Completeness.PARTIAL,unknown.declarations().getFirst().coverage().fieldAssignments());
+    }
+    @Test void explicitContextParametersOverrideCapturedNamesButImplicitContextsDoNot(){
+        var doc=parser.parse(SourceText.job("def ctx=[parameter:{ n->n }]; task('a', Echo) { ctx -> input=ctx.parameter('real') }; task('b', Echo, when:{ ctx.parameter('foreign') }) { input='x' }; action('c') { ctx.run(Echo) { input='notAnInvocation' } }"));
+        assertTrue(doc.problems().isEmpty(),doc.problems().toString());var real=doc.declarations().getFirst();
+        assertEquals(Completeness.COMPLETE,real.coverage().references());assertEquals(1,real.references().size());
+        assertEquals("real",((LiteralValue)real.references().getFirst().arguments().getFirst()).value());
+        assertTrue(doc.declarations().get(1).references().isEmpty());assertEquals(Completeness.PARTIAL,doc.declarations().get(1).coverage().references());
+        assertTrue(doc.declarations().get(2).invocations().isEmpty());assertEquals(Completeness.PARTIAL,doc.declarations().get(2).coverage().references());
+    }
     @Test void allCurrentRepositoryGroovyExamplesParseWithoutExecution() throws Exception {
         Path examples=Path.of("../examples");int count=0;
         try(var files=Files.walk(examples)){
