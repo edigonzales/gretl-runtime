@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "fields": [
+    {
+      "operationId": "gretl.http-download",
+      "field": "output",
+      "pathRole": "OUTPUT"
+    },
+    {
+      "operationId": "gretl.http-download",
+      "field": "headers",
+      "sensitive": true
+    },
+    {
+      "operationId": "gretl.extract",
+      "field": "archive",
+      "pathRole": "JOB_RESOURCE"
+    },
+    {
+      "operationId": "gretl.extract",
+      "field": "outputDirectory",
+      "pathRole": "OUTPUT"
+    }
+  ]
+}

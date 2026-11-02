@@ -1,15 +1,15 @@
 # GRETL Tooling – aktueller Auftragsstatus
 
-**Initialzustand des Spezifikationspakets · 2. November 2026.**  
-Es wurde noch keine Implementierungsphase dieses Auftrags ausgeführt oder unabhängig abgenommen. Die Paketprüfung ist keine Produktprüfung.
+**Arbeitsstand · 2. November 2026.**
+P0 ist in Umsetzung. Keine Phase ist unabhängig abgenommen.
 
-`assignmentBase`: beim Arbeitsbeginn aus dem tatsächlichen lokalen Checkout setzen.  
-`requirementsDigest`: durch den geprüften Orchestrator aus normativen Dateien ermitteln.  
+`assignmentBase`: `185fc6700b5cb2897f724d457610a57f059b3421`.
+`requirementsDigest`: durch den geprüften Orchestrator aus normativen Dateien ermitteln.
 Primärplattform/Toolchain/Reviewbereitschaft: in P0 tatsächlich nachweisen.
 
 | Phase | Ziel | Status | geprüfter Produkt-SHA | unabhängiger Review |
 |---|---|---|---|---|
-| P0 | Verträge, Katalog, Reviewkette | PLANNED | — | — |
+| P0 | Verträge, Katalog, Reviewkette | IN_PROGRESS | — | — |
 | P1 | Sicherer Parser und Recovery | PLANNED | — | — |
 | P2 | Projekte, Snapshots, Semantik | PLANNED | — | — |
 | P3 | Queries und Editplanung | PLANNED | — | — |
@@ -21,7 +21,7 @@ Primärplattform/Toolchain/Reviewbereitschaft: in P0 tatsächlich nachweisen.
 
 ## Aktuell erlaubter nächster Schritt
 
-P0 nach CODEX_STARTPROMPT beginnen. Alle späteren Phasen sind bis zum jeweils gültigen Vorphasen-PASS gesperrt.
+P0 nach CODEX_STARTPROMPT vervollständigen und unabhängig prüfen. Alle späteren Phasen sind bis zum jeweils gültigen Vorphasen-PASS gesperrt.
 
 ## Fortschreibung
 

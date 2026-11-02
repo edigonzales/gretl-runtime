@@ -23,10 +23,8 @@ import java.util.Set;
 
 /** Groovy 6 script base class for the canonical GRETL job surface. */
 public abstract class GretlScript extends Script {
-    private static final Set<String> TASK_OPTIONS = Set.of(
-            "dependsOn", "after", "description", "when", "timeout");
-    private static final Set<String> PARAMETER_OPTIONS = Set.of(
-            "type", "required", "description", "defaultValue");
+    private static final Set<String> TASK_OPTIONS = ch.so.agi.gretl.language.DslVocabulary.taskOptions();
+    private static final Set<String> PARAMETER_OPTIONS = ch.so.agi.gretl.language.DslVocabulary.parameterOptions();
 
     public GretlScript() {
         super();

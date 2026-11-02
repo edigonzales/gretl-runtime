@@ -17,6 +17,9 @@
   </description>
 
   <modules>
+    <module>gretl-language-contract</module>
+    <module>gretl-tooling-core</module>
+    <module>gretl-tooling-catalog</module>
     <module>gretl-api</module>
     <module>gretl-runner</module>
     <module>gretl-groovy</module>

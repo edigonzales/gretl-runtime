@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "externalAdoptions": [],
+  "internalExtractions": [
+    {
+      "repository": "https://github.com/edigonzales/gretl-runtime",
+      "commit": "185fc6700b5cb2897f724d457610a57f059b3421",
+      "originalPath": "gretl-groovy/src/main/java/ch/so/agi/gretl/runtime/groovy/project/ProjectPath.java",
+      "originalSha256": "01377b41fb3b31efc684585c6b5f5443a0191e9dd942d788c99bef6561cec49a",
+      "newPath": "gretl-language-contract/src/main/java/ch/so/agi/gretl/language/ProjectNameRules.java",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Stefan Ziegler",
+      "changes": "Pure logical-name implementation extracted; filesystem adapter and public ProjectPath API retained. Added reference rendering and immutable segments accessor."
+    }
+  ],
+  "newImplementationLicense": "MIT",
+  "otherGretlCheckoutRequired": false
+}
