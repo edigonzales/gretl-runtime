@@ -1,0 +1,591 @@
+{
+  "schemaVersion": 1,
+  "derivedFrom": {
+    "path": "EXECUTION_PLAN.md",
+    "sha256": "3864034f573090332fb16a6e285534b8804594f99be350b24884cb3765153b64"
+  },
+  "criterionCount": 81,
+  "phases": [
+    {
+      "id": "P0",
+      "title": "Arbeitsfähige Basis, gemeinsame Verträge und Operationskatalog",
+      "dependsOn": [],
+      "testFocus": [
+        "T01",
+        "T02",
+        "T03",
+        "T33",
+        "T34"
+      ],
+      "guiCases": [],
+      "criteria": [
+        {
+          "id": "P0-01",
+          "mandatory": true,
+          "description": "Aktueller HEAD, fremde Änderungen, Toolchain, aktive Dokumentation und Änderungen seit dem Recherchepin sind dokumentiert; kein Reset und keine Wiederausführung abgeschlossener Aufträge."
+        },
+        {
+          "id": "P0-02",
+          "mandatory": true,
+          "description": "OpenCode 2.x mit vorhandener Anmeldung, direkter DeepSeek API und belegter Flash-1017-Zuordnung führt einen echten unabhängigen Bereitschaftstest aus; keine erzwungene neue Key-ENV und kein Providerfallback."
+        },
+        {
+          "id": "P0-03",
+          "mandatory": true,
+          "description": "Neue Modul-/Paketgrenzen sind im Build prüfbar; Produktionskern braucht keine andere GRETL-Variante und keine ausführenden Runtime-/Taskmodule; keine leeren späteren LSP-/UIattrappen."
+        },
+        {
+          "id": "P0-04",
+          "mandatory": true,
+          "description": "Reine DSL-/Projektnameverträge sind implementiert und gegen die aktuelle Runtime verhaltensgleich geprüft; bestehende öffentliche APIs und Fehlermodi bleiben erhalten."
+        },
+        {
+          "id": "P0-05",
+          "mandatory": true,
+          "description": "Der deterministische Operationskatalog enthält alle aktuell mitgelieferten Operationen, Eingaben, Ausgänge, Defaults und erlaubten Werte aus der SPI; keine handgepflegte zweite Operationsliste."
+        },
+        {
+          "id": "P0-06",
+          "mandatory": true,
+          "description": "Katalogschema, Digests, Ergänzungsressourcen und Unavailable-/Incompatible-Zustände sind geprüft; unbekannte IDs, Kollisionen oder Schemafehler werden nicht zu leerem Erfolg."
+        },
+        {
+          "id": "P0-07",
+          "mandatory": true,
+          "description": "Der Export liest keine Secrets, führt keine Handler/Builder/Converter aus und erzeugt nur beschreibende Daten; LSP-Datenartefakt kann später ohne Exporterclasspath konsumiert werden."
+        },
+        {
+          "id": "P0-08",
+          "mandatory": true,
+          "description": "Zugehörige Tests, Lizenz-/Übernahmeinventur, Dependencyprüfung und geltende vollständige Repository-Gates sind frisch belegt; frühe GUIinfrastrukturprobe dokumentiert reale Grenzen."
+        },
+        {
+          "id": "P0-09",
+          "mandatory": true,
+          "description": "Der Revieworchestrator besitzt echte Bereitschafts-/Start-/Wait-/Gatefunktionen und negative Tests gegen falsche SHAs, fremde Kriterien, fehlende Belege, laufende Prozesse und vorgefertigtes PASS; keine Selbstfreigabe."
+        }
+      ]
+    },
+    {
+      "id": "P1",
+      "title": "Sicherer Parser, Fehler-Recovery und Sourcebereiche",
+      "dependsOn": [
+        "P0"
+      ],
+      "testFocus": [
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "guiCases": [],
+      "criteria": [
+        {
+          "id": "P1-01",
+          "mandatory": true,
+          "description": "Reiner Parse-/Convertpfad führt keinen Toplevel-, Settings-, Grab-, AST-Test-, Provider- oder Jobcode aus; Sideeffect- und Classpathgegenproben sind wirksam."
+        },
+        {
+          "id": "P1-02",
+          "mandatory": true,
+          "description": "Aktuelle task-/action-/parameter-/defaults-/cleanup-Syntax einschliesslich Map-first-Optionen und aller Defaultziele wird korrekt extrahiert."
+        },
+        {
+          "id": "P1-03",
+          "mandatory": true,
+          "description": "Direkte Feldzuweisungen, lokale Variablen, frei programmierte Actions und innere ctx.run-Aufrufe sind getrennt modelliert; keine Gradle-Methodenpflicht oder erfundene DAGtasks."
+        },
+        {
+          "id": "P1-04",
+          "mandatory": true,
+          "description": "Tokenisierung versteht Kommentare, Quotearten, GStrings und Klammern; Tasktext in Kommentaren/Strings erzeugt keine Deklarationen."
+        },
+        {
+          "id": "P1-05",
+          "mandatory": true,
+          "description": "Unvollständige Köpfe, fehlende Klammern und beschädigte Ausdrücke erhalten sichere Strukturinseln und konkrete Coverage; Recovery ersetzt nicht die ganze Datei durch leere Daten."
+        },
+        {
+          "id": "P1-06",
+          "mandatory": true,
+          "description": "Syntaxprobleme bleiben auch ohne Tasks erhalten, tragen echte Positionen und werden nicht verdoppelt; Parser-/Scannerzusammenführung besitzt explizite Tests."
+        },
+        {
+          "id": "P1-07",
+          "mandatory": true,
+          "description": "UTF-16-Spans, Parserkoordinaten, CRLF, BOM, Emoji und getrennte Literal-/Inhaltsspans sind korrekt; keine indexOf-Erstfundstellenheuristik."
+        },
+        {
+          "id": "P1-08",
+          "mandatory": true,
+          "description": "Dynamische Registrierung, fremde Receiver und verschattete DSLnamen werden konservativ markiert; nicht verstandener Groovytext bleibt original erhalten."
+        },
+        {
+          "id": "P1-09",
+          "mandatory": true,
+          "description": "Parser-/Security-/Recoverytests einschliesslich Altbefund-Gegenfällen und geltende Rootgates bestehen; Grössen-/Rekursionsgrenzen verhindern ungebundene Analyse."
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "Projekte, Snapshots und statische Semantik",
+      "dependsOn": [
+        "P1"
+      ],
+      "testFocus": [
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13"
+      ],
+      "guiCases": [],
+      "criteria": [
+        {
+          "id": "P2-01",
+          "mandatory": true,
+          "description": "Unveränderliche Source-/Workspace-/Katalogsnapshots mit Versionsvektor, Bufferoverlay und Generationen verhindern Mischstände; Close/Reopen/Diskänderung sind korrekt."
+        },
+        {
+          "id": "P2-02",
+          "mandatory": true,
+          "description": "settings.gretl, Includes, Root-/Subprojektjobs, lokale und qualifizierte Namen sowie Projektdefaults entsprechen der tatsächlichen Runtime; Workspacefolder bleiben fachlich getrennt."
+        },
+        {
+          "id": "P2-03",
+          "mandatory": true,
+          "description": "Tasks, Actions, Parameter und Cleanupnamen/Scopes werden gebunden; doppelte/mehrdeutige/dynamische Referenzen besitzen unterscheidbare Ergebnisse."
+        },
+        {
+          "id": "P2-04",
+          "mandatory": true,
+          "description": "Gemeinsame PlanSemantics erhält vollständige dependsOn-Zyklusprüfung, reine after-Reihenfolge, targetabhängige Mischzyklen und stabile Reihenfolge; Runtimeparität ist getestet."
+        },
+        {
+          "id": "P2-05",
+          "mandatory": true,
+          "description": "result/resultOptional verlangen die passende direkte/transitive Datenkette; Ausgabecompletion/-diagnosen beruhen auf dem Producerkatalog, nicht auf erfundenen Actionresultaten."
+        },
+        {
+          "id": "P2-06",
+          "mandatory": true,
+          "description": "Parameterdeklaration/-lesen, Toplevelverbot, Typen und required/default sowie Feld-/Enum-/Pflichtprüfungen sind scopesicher; dynamische Fälle werden nicht als bewiesene Fehler ausgegeben."
+        },
+        {
+          "id": "P2-07",
+          "mandatory": true,
+          "description": "file/workPath/externe Parameterpfade werden unterschieden; jobrelative SQLanalyse nutzt aktuelle Runtimefelder/-regeln, Dirty-SQL und Dateiänderungen, ohne DB- oder Secretzugriffe."
+        },
+        {
+          "id": "P2-08",
+          "mandatory": true,
+          "description": "Partielle Coverage begrenzt Diagnosen/Mutationsrechte; Katalogausfall und unbekannte Fachwerte werden nicht verwechselt; IO/Queue/Projektgrössen sind begrenzt."
+        },
+        {
+          "id": "P2-09",
+          "mandatory": true,
+          "description": "Snapshot-/Projekt-/Semantik-/SQLtests, unabhängige statisch-versus-Runtimeparität und alle fälligen Repositoryregressionen bestehen."
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "title": "Language Queries und verlustarme Editplanung",
+      "dependsOn": [
+        "P2"
+      ],
+      "testFocus": [
+        "T14",
+        "T15",
+        "T16",
+        "T17",
+        "T25"
+      ],
+      "guiCases": [],
+      "criteria": [
+        {
+          "id": "P3-01",
+          "mandatory": true,
+          "description": "Completion unterstützt Operationen, Optionen, Felder, Werte, Parameter, Resultfelder, Dependencies und sichere Pfade mit korrekten Ersetzungsbereichen und ohne Vorschläge in Kommentaren."
+        },
+        {
+          "id": "P3-02",
+          "mandatory": true,
+          "description": "Hover/SignatureHelp erklären aktuelle DSL und Metadaten; Outline/Folding/Filelinks, Definition/References und die neutrale Graphprojektion verwenden denselben Snapshot."
+        },
+        {
+          "id": "P3-03",
+          "mandatory": true,
+          "description": "Rename/PrepareRename erfassen alle belegten Referenzarten und Projektformen; dynamische/readonly/unvollständige Ziele führen zu konkreter Ablehnung statt Teilrename."
+        },
+        {
+          "id": "P3-04",
+          "mandatory": true,
+          "description": "AddTask/AddAction/AddParameter/SetField/RemoveField/SetTaskOption/SetDefaults liefern tatsächlich geprüfte Pläne für den unterstützten statischen Bereich."
+        },
+        {
+          "id": "P3-05",
+          "mandatory": true,
+          "description": "Abhängigkeits- und Ergebnisbindungen erzeugen die richtigen Header-/Feldänderungen zusammen; after und dependsOn bleiben verschieden, transitive Ketten werden respektiert."
+        },
+        {
+          "id": "P3-06",
+          "mandatory": true,
+          "description": "Delete/Disconnect sind referenz- und coveragegesichert; keine versteckte Kaskade, keine Entfernung noch benötigter Ergebnisabhängigkeiten."
+        },
+        {
+          "id": "P3-07",
+          "mandatory": true,
+          "description": "Gezielte Token-/Sourceedits erhalten Kommentare, EOL, opake Codebereiche und unberührte Texte; Stringquotes werden nie verdoppelt; keine Whole-file-Neugenerierung."
+        },
+        {
+          "id": "P3-08",
+          "mandatory": true,
+          "description": "Jeder Plan hat Source-/Projekt-/Katalogpreconditions, wird in Memory angewendet und erneut geprüft; No-op, stale und fehlerhafte Postimages werden zuverlässig behandelt."
+        },
+        {
+          "id": "P3-09",
+          "mandatory": true,
+          "description": "Alle Query-/Editintents und angewendeten QuickFixes sind positiv/negativ getestet; echte Runtimebeispiele bleiben erhalten; aktuelle vollständige Repository-Gates bestehen."
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "title": "Eigenständiger Java-LSP mit echtem stdio-Protokoll",
+      "dependsOn": [
+        "P3"
+      ],
+      "testFocus": [
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22"
+      ],
+      "guiCases": [],
+      "criteria": [
+        {
+          "id": "P4-01",
+          "mandatory": true,
+          "description": "Startbares unabhängiges Serverartefakt enthält nur erlaubte Dependencies und Katalogdaten, läuft mit Java25 ohne andere GRETL-Checkouts und hält stdout JSON-RPC-rein."
+        },
+        {
+          "id": "P4-02",
+          "mandatory": true,
+          "description": "Initialize/Initialized/Shutdown/Exit und Fehlerzustände sind korrekt; Shutdown+Exit beendet den wirklichen Prozess auch bei offen gehaltenem stdin und räumt eigene Executor auf."
+        },
+        {
+          "id": "P4-03",
+          "mandatory": true,
+          "description": "Full-/Incrementaländerungen, mehrere Events, UTF-16, Close/Reopen und Versionsprüfungen sind geordnet; Cancellation und obsolete-result-drop funktionieren unter Last."
+        },
+        {
+          "id": "P4-04",
+          "mandatory": true,
+          "description": "Completion/Hover/SignatureHelp/Definition/References/PrepareRename/Rename/Symbols/Links/Folding/CodeActions werden tatsächlich über Standard-LSP geliefert, nicht nur im Unitadapter."
+        },
+        {
+          "id": "P4-05",
+          "mandatory": true,
+          "description": "Diagnosen tragen korrekte URI/Version/Range/RelatedInformation und DE/EN-Anzeige; fehlende Positionen/Metadaten werden nicht zu irreführendem Zeile-1-Erfolg."
+        },
+        {
+          "id": "P4-06",
+          "mandatory": true,
+          "description": "Configuration-, Workspacefolder- und WatchedFilesmeldungen ändern den echten Analysezustand; ungültige Updates werden atomar abgelehnt, SQL/Settingsänderungen invalidieren richtig."
+        },
+        {
+          "id": "P4-07",
+          "mandatory": true,
+          "description": "gretl/catalog, graph, planEdit, validateEdit und navigation samt analysisReady sind getypt, versioniert und im tatsächlichen Launcher registriert; keine unimplementierten Capabilities."
+        },
+        {
+          "id": "P4-08",
+          "mandatory": true,
+          "description": "Readonly-/Trust-/Pfad-/Message-/Budgetregeln und Clientcapabilities werden respektiert; Server schreibt keine Jobdateien und startet keine Jobs/Plugins."
+        },
+        {
+          "id": "P4-09",
+          "mandatory": true,
+          "description": "Echte stdio-Vertrags-, Race-, Lebenszyklus-, Archiv-/Dependencytests sowie alle fälligen Rootgates bestehen; kein Modelerfrontend vorgezogen."
+        }
+      ]
+    },
+    {
+      "id": "P5",
+      "title": "Installierter VS-Code-Texteditor",
+      "dependsOn": [
+        "P4"
+      ],
+      "testFocus": [
+        "T23",
+        "T24"
+      ],
+      "guiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "criteria": [
+        {
+          "id": "P5-01",
+          "mandatory": true,
+          "description": "VSIX besitzt eigene Runtime-Identität, tatsächliches Server-/Katalogbundle und dokumentierte Java25-Voraussetzung; isolierte Installation ohne andere GRETL-Repos funktioniert."
+        },
+        {
+          "id": "P5-02",
+          "mandatory": true,
+          "description": "job.groovy/settings.gretl und ausdrücklich zugewiesene andere Jobdateien werden unterstützt; normale fremde Groovy-/Gradleprojekte werden nicht ungefragt übernommen."
+        },
+        {
+          "id": "P5-03",
+          "mandatory": true,
+          "description": "Completion, Hover, Signaturen, Problems, Navigation, References und Outline sind durch echte Tastatur-/Mausaktionen sichtbar und sourcegenau."
+        },
+        {
+          "id": "P5-04",
+          "mandatory": true,
+          "description": "Rename/QuickFixes arbeiten auf aktuellen Buffern, bewahren native Undo/Redo und Dirtyzustände und lehnen bekannte Konflikte ab; keine fs.writeFile-Abkürzung."
+        },
+        {
+          "id": "P5-05",
+          "mandatory": true,
+          "description": "Einfaches gültiges Jobtemplate, Status/Output und verständliche Konfigurations-/Java-/Bundlefehler sind bedienbar; keine eingebauten Geheimnisse."
+        },
+        {
+          "id": "P5-06",
+          "mandatory": true,
+          "description": "Stop/Restart/Crash-Recovery erhält ungespeicherte Texte, entfernt alte Sessions und beendet nur eigene Prozesse ohne Neustartschleife."
+        },
+        {
+          "id": "P5-07",
+          "mandatory": true,
+          "description": "Workspace Trust, erlaubte Konfiguration und Workspacehost-/Remote-URIgrenzen sind implementiert; keine UI-Felder als Sprachkonfiguration durchgereicht."
+        },
+        {
+          "id": "P5-08",
+          "mandatory": true,
+          "description": "G01–G10 laufen mit frisch installiertem VSIX und echtem Server; Screenshots plus Assertions/Artefakthashes liegen vor, nicht nur Extension-APIaufrufe."
+        },
+        {
+          "id": "P5-09",
+          "mandatory": true,
+          "description": "Client-/Host-/Prozess-/GUIprüfungen, Dependencyinventur und fällige Repository-Gates bestehen; weiterhin keine vorgezogene grafische Produktarbeit."
+        }
+      ]
+    },
+    {
+      "id": "P6",
+      "title": "Interaktiver statischer Jobgraph",
+      "dependsOn": [
+        "P5"
+      ],
+      "testFocus": [
+        "T25",
+        "T26"
+      ],
+      "guiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "criteria": [
+        {
+          "id": "P6-01",
+          "mandatory": true,
+          "description": "Der Graph stammt ausschliesslich aus aktuellem Sprachkernsnapshot, enthält alle statisch bekannten Deklarationen und trennt Definitionssicht von targetbezogener Vorschau."
+        },
+        {
+          "id": "P6-02",
+          "mandatory": true,
+          "description": "Tasks/Actions/Projektcontainer sowie Parameter-/Cleanup-/dynamische Bereiche haben fachlich richtige Darstellung; keine erfundenen parallel laufenden Tasks."
+        },
+        {
+          "id": "P6-03",
+          "mandatory": true,
+          "description": "dependsOn/after/Resultbindungen sind getrennt, Producer→Consumer korrekt; Partials, unaufgelöste Referenzen und Diagnosen werden ehrlich dargestellt."
+        },
+        {
+          "id": "P6-04",
+          "mandatory": true,
+          "description": "Echter CustomTextEditor mit option-Priorität, lokalen React-Flow-Nodes und ELKworker funktioniert; kein statisches SVG oder zweiter Server als Ersatz."
+        },
+        {
+          "id": "P6-05",
+          "mandatory": true,
+          "description": "Node-Drag, Pan/Zoom/Fit, Auswahl und einfache Filter sind tatsächlich bedienbar und verändern weder Source noch Registrierungsreihenfolge/Dirtymarker."
+        },
+        {
+          "id": "P6-06",
+          "mandatory": true,
+          "description": "Quelle↔Diagramm-Navigation und Liveupdates verwenden exakte aktuelle Identitäten; schnelle Edits/Restart/Panelwechsel verwerfen alte Antworten."
+        },
+        {
+          "id": "P6-07",
+          "mandatory": true,
+          "description": "Viewstate bleibt getrennt von Fachgraph/Source und wird nur bei eindeutiger Identität übernommen; mehrere Panels und Cleanup funktionieren."
+        },
+        {
+          "id": "P6-08",
+          "mandatory": true,
+          "description": "CSP, lokale Assets, validierte Nachrichten, sichere Labels sowie Light/Dark/HighContrast und leere/partielle/stale Ansichten sind implementiert und geprüft."
+        },
+        {
+          "id": "P6-09",
+          "mandatory": true,
+          "description": "G11–G16 und Editor-Smoke bestehen mit aktuellen Bildern/Geometrie-/Sourcebelegen; betroffene Kern-/LSP-/UItests und Pflichtrootgates sind grün."
+        }
+      ]
+    },
+    {
+      "id": "P7",
+      "title": "Echter grafischer Modeler und Text-Roundtrip",
+      "dependsOn": [
+        "P6"
+      ],
+      "testFocus": [
+        "T27",
+        "T28",
+        "T31"
+      ],
+      "guiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "criteria": [
+        {
+          "id": "P7-01",
+          "mandatory": true,
+          "description": "Aus leerer Datei lassen sich Parameter, HttpDownload, Extract, Ergebnisbindung und Defaultziel grafisch zu einem vollständigen Job erstellen, speichern und wieder öffnen."
+        },
+        {
+          "id": "P7-02",
+          "mandatory": true,
+          "description": "Palette benutzt alle aktuellen Katalogoperationen; Formulare unterstützen die belegten Wertformen/Enums/Listen/Maps und explizite Parameter-/Datei-/WorkPath-/Secretaliasmodi."
+        },
+        {
+          "id": "P7-03",
+          "mandatory": true,
+          "description": "Dependencygesten ändern korrekt den Consumerkopf; after-Auswahl und targetabhängige Zyklusregeln bleiben erhalten; abgelehnte Aktionen lassen Source unverändert."
+        },
+        {
+          "id": "P7-04",
+          "mandatory": true,
+          "description": "Output→Input-Verbindung setzt Ergebnisreferenz und nur nötige Datenabhängigkeit zusammen; Disconnect berücksichtigt verbleibende transitive Ketten und betroffene Referenzen."
+        },
+        {
+          "id": "P7-05",
+          "mandatory": true,
+          "description": "Umbenennen/Löschen/Defaults verwenden Corepläne und vollständige Referenzprüfung; kein unsicheres Teilrename, Cascade-Delete oder Verlust weiterer Defaultziele."
+        },
+        {
+          "id": "P7-06",
+          "mandatory": true,
+          "description": "Actions, opake Ausdrücke, dynamische Registrierung und Kommentare bleiben bei umgebenden grafischen Änderungen unverändert; gesperrte Aktionen erklären den Grund und bieten Textnavigation."
+        },
+        {
+          "id": "P7-07",
+          "mandatory": true,
+          "description": "Fachliche Änderungen benutzen native Textedits/Undo/Redo; Layout ist view-only; Stale-/Dirty-/Multifilekonflikte führen zu Neuplanung/Ablehnung, nicht stillem Überschreiben."
+        },
+        {
+          "id": "P7-08",
+          "mandatory": true,
+          "description": "Der grafisch erzeugte echte Groovytext läuft in einem separaten lokalen Runtime-SCRIPT-Fixturetest mit geprüftem Ergebnis; kein Jobstart beim normalen Editieren."
+        },
+        {
+          "id": "P7-09",
+          "mandatory": true,
+          "description": "G17–G25, echte Roundtrip-/Preservation-/Negativtests und geltende vollständige Rootgates bestehen; GUIaktionen und passende Source-/Artefaktzustände sind nachgewiesen."
+        }
+      ]
+    },
+    {
+      "id": "P8",
+      "title": "Resilienz, saubere Distribution und kumulative Abnahme",
+      "dependsOn": [
+        "P7"
+      ],
+      "testFocus": [
+        "T29",
+        "T30",
+        "T32",
+        "T34"
+      ],
+      "guiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "criteria": [
+        {
+          "id": "P8-01",
+          "mandatory": true,
+          "description": "Frischer Build und isolierte Installation funktionieren ohne gretl-next/andere GRETL-Varianten; Maven-/npm-Auflösung und tatsächliche Archive enthalten keine versteckten Altdependencies."
+        },
+        {
+          "id": "P8-02",
+          "mandatory": true,
+          "description": "Ausgelieferte Server-/Katalog-/Schema-/UIartefakte besitzen geprüfte zusammengehörige Digests/Versionen und vollständige Lizenzen; kein Source-Checkout oder Installationsnetzwerk für die Nutzung erforderlich."
+        },
+        {
+          "id": "P8-03",
+          "mandatory": true,
+          "description": "Gesamte neue Java-/LSP-/Frontend-/Host-/GUI-Suite G01–G30 auf tatsächlicher Primärplattform und alle geltenden Rootgates sind frisch am finalen Kandidaten bestanden."
+        },
+        {
+          "id": "P8-04",
+          "mandatory": true,
+          "description": "Echter Linux-Java-LSP-Distributionsstart ist belegt; weitere getestete und ungetestete Betriebssystem-/Remoteumfänge sind ehrlich getrennt, keine Universalbehauptung aus Crossbuild."
+        },
+        {
+          "id": "P8-05",
+          "mandatory": true,
+          "description": "Schnelle Edits, Katalog-/Schemafehler, Crash/Restart, Multiroot, readonly, Workspace Trust und Offline bleiben ohne Datenverlust kontrolliert; G26–G30 sind belegt."
+        },
+        {
+          "id": "P8-06",
+          "mandatory": true,
+          "description": "Ressourcen-/Last-/Parserbudgettests zeigen begrenzte Queues/Snapshots/Worker und stabile Obsoletebehandlung; Performancewerte sind gemessen, nicht erfunden."
+        },
+        {
+          "id": "P8-07",
+          "mandatory": true,
+          "description": "Benutzer-/Build-/Architektur-/Protokoll-/Testdokumentation erklärt tatsächliche Funktionen, statische Grenzen, Javaanforderung, Jobausführung ausserhalb des Editors und Fehlerbehebung konsistent."
+        },
+        {
+          "id": "P8-08",
+          "mandatory": true,
+          "description": "Alle 81 Kriterien sind einzeln auf aktuelle Code-/Testbelege abgebildet; vorherige PASS-Identitäten, erhaltene FAIL-Berichte und kumulativer Assignmentdiff sind nachvollziehbar."
+        },
+        {
+          "id": "P8-09",
+          "mandatory": true,
+          "description": "Mindestens zwei neue unabhängige übergreifende Gegenfälle und wirksame negative Harness-/Paketproben sind dokumentiert; Kandidat bleibt unverändert, keine Publikation oder produktive Ausführung."
+        }
+      ]
+    }
+  ]
+}

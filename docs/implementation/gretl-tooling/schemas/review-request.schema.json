@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "review-request.schema.json",
+  "title": "GRETL Tooling independent review request",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "reviewId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "P6",
+        "P7",
+        "P8"
+      ]
+    },
+    "assignmentBase": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "phaseBase": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "candidateSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "worktree": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceDirectory": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requirementsDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "repositoryRulesDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "plan": {
+      "type": "string",
+      "minLength": 1
+    },
+    "architecture": {
+      "type": "string",
+      "minLength": 1
+    },
+    "testMatrix": {
+      "type": "string",
+      "minLength": 1
+    },
+    "implementationReport": {
+      "type": "string",
+      "minLength": 1
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^P[0-8]-0[1-9]$"
+      },
+      "minItems": 9,
+      "maxItems": 81,
+      "uniqueItems": true
+    },
+    "requiredChecks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cwd": {
+            "type": "string",
+            "minLength": 1
+          },
+          "argv": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "cwd",
+          "argv",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "requiredGuiCases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^G(?:0[1-9]|[12][0-9]|30)$"
+      },
+      "uniqueItems": true
+    },
+    "notRequiredAdditionalChecks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "kind"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "modelIdentityEvidence": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cumulative": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "reviewId",
+    "phase",
+    "assignmentBase",
+    "phaseBase",
+    "candidateSha",
+    "worktree",
+    "evidenceDirectory",
+    "requirementsDigest",
+    "repositoryRulesDigest",
+    "plan",
+    "architecture",
+    "testMatrix",
+    "implementationReport",
+    "criteria",
+    "requiredChecks",
+    "requiredGuiCases",
+    "notRequiredAdditionalChecks",
+    "artifacts",
+    "modelIdentityEvidence"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "phase": {
+            "const": "P8"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "cumulative"
+        ],
+        "properties": {
+          "cumulative": {
+            "const": true
+          },
+          "criteria": {
+            "minItems": 81,
+            "maxItems": 81
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "criteria": {
+            "minItems": 9,
+            "maxItems": 9
+          },
+          "cumulative": {
+            "const": false
+          }
+        }
+      }
+    }
+  ]
+}
