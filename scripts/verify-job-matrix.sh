@@ -27,6 +27,11 @@ case "$DEST/" in "$ROOT/"*/target/*|"$ROOT/target/"*) echo 'Evidence must surviv
 mkdir -p "$DEST"
 if [ "$MODE" = ALL ]; then
   for selected in SCRIPT JAR IMAGE; do "$ROOT/scripts/verify-job-matrix.sh" --mode "$selected" --scope "$SCOPE" --output "$DEST"; done
+  # Recheck retained bytes after every later clean before granting a matrix PASS.
+  for selected in SCRIPT JAR IMAGE; do
+    SELECTED_RUN_ID=$(cat "$DEST/$selected/run-id.txt")
+    python3 "$ROOT/scripts/audit-job-evidence.py" --source "$SHA" --mode "$selected" --scope "$SCOPE" --run-id "$SELECTED_RUN_ID" --evidence-root "$DEST/$selected/evidence" > "$DEST/$selected/final-audit.log" 2>&1
+  done
   python3 - "$DEST" "$SHA" "$SCOPE" <<'PY'
 import json,sys
 from pathlib import Path

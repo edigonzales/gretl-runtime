@@ -7,96 +7,37 @@ permissions:
   contents: read
 
 jobs:
+  qualification:
+    uses: ./.github/workflows/qualification.yml
   linux-x86_64:
     name: Linux x86-64 release candidate
+    needs: qualification
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '25'
           cache: maven
-
-      - name: Standard verification
-        run: ./mvnw -B clean verify
-
-      - name: Audit standard artifact identities
-        run: python3 scripts/audit-job-evidence.py --source "${{ github.sha }}"
-
-      - name: Preserve standard verification evidence
-        if: always()
-        uses: actions/upload-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: standard-evidence-${{ github.sha }}
-          path: |
-            **/target/surefire-reports/
-            **/target/failsafe-reports/
-            **/target/site/jacoco*/
-            **/target/qualification/
-            **/target/job-evidence/**/execution.json
-            **/target/job-evidence/**/package-inventory.json
-            **/target/job-evidence/**/package-descriptor.json
-            **/target/job-evidence/**/job-metadata.json
-            **/target/job-evidence/**/isolation.json
-            **/target/job-evidence/**/*.events.jsonl
-            gretl-dist/target/dist/package-catalog.json
-            gretl-dist/target/dist/inventory.json
-            gretl-dist/target/dist/SHA256SUMS
-            **/target/job-evidence/**/report.json
-            **/target/job-evidence/**/*.stdout.log
-            **/target/job-evidence/**/*.stderr.log
-            **/target/job-evidence/**/output/
-
-      - name: Full verification
-        run: ./mvnw -B -Pgeotools-probe,backing-services clean verify
-
-      - name: Audit full artifact identities and all 44 operations
-        run: python3 scripts/audit-job-evidence.py --full --source "${{ github.sha }}"
-
-      - name: Preserve full verification evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: full-evidence-${{ github.sha }}
-          path: |
-            **/target/surefire-reports/
-            **/target/failsafe-reports/
-            **/target/site/jacoco*/
-            **/target/service-evidence/
-            **/target/qualification/
-            **/target/job-evidence/**/execution.json
-            **/target/job-evidence/**/package-inventory.json
-            **/target/job-evidence/**/package-descriptor.json
-            **/target/job-evidence/**/job-metadata.json
-            **/target/job-evidence/**/isolation.json
-            **/target/job-evidence/**/*.events.jsonl
-            gretl-dist/target/dist/package-catalog.json
-            gretl-dist/target/dist/inventory.json
-            gretl-dist/target/dist/SHA256SUMS
-            **/target/job-evidence/**/report.json
-            **/target/job-evidence/**/*.stdout.log
-            **/target/job-evidence/**/*.stderr.log
-            **/target/job-evidence/**/output/
-
-      - name: Verify distribution checksums
+          name: verified-runtime-${{ github.sha }}
+          path: qualified-runtime
+      - name: Verify qualified distribution checksums
         run: |
-          unzip -q gretl-dist/target/gretl-runtime-*-bin.zip -d /tmp/gretl-dist
-          cd /tmp/gretl-dist/gretl-runtime-*
+          unzip -q qualified-runtime/gretl-runtime-*-bin.zip -d "$RUNNER_TEMP/gretl-dist"
+          cd "$RUNNER_TEMP"/gretl-dist/gretl-runtime-*
           sha256sum -c SHA256SUMS
-
-      - name: Package and start a job
+      - name: Package and start a job from that distribution
         run: |
-          cd /tmp/gretl-dist/gretl-runtime-*
-          ./bin/gretl package examples/ili-validator/job-package.json --output /tmp/ili-job.jar
-          java -jar /tmp/ili-job.jar --report /tmp/ili-job-report.json
-
-      - name: Upload distribution
+          cd "$RUNNER_TEMP"/gretl-dist/gretl-runtime-*
+          ./bin/gretl package examples/ili-validator/job-package.json --output "$RUNNER_TEMP/ili-job.jar"
+          java -jar "$RUNNER_TEMP/ili-job.jar" --report "$RUNNER_TEMP/ili-job-report.json"
+      - name: Upload qualified distribution
         uses: actions/upload-artifact@v4
         with:
           name: gretl-runtime-linux-x86_64
-          path: gretl-dist/target/gretl-runtime-*-bin.zip
+          path: qualified-runtime/gretl-runtime-*-bin.zip
+          if-no-files-found: error

@@ -36,18 +36,20 @@ Maven-Ausgaben maskiert.
 
 Im GitHub-Repository sind die Actions-Secrets `MAVEN_USERNAME` und
 `MAVEN_PASSWORD` hinterlegt. Der Workflow
-`.github/workflows/publish-snapshots.yml` heisst **publish artefacts** und
-läuft bei **jedem Push** sowie manuell über `workflow_dispatch`.
+`.github/workflows/publish-snapshots.yml` heisst **verification and snapshots** und
+läuft bei Push, Pull Request und manuell über `workflow_dispatch`.
 
 Ablauf:
 
-1. Java 25 wird bereitgestellt.
-2. `./mvnw -B clean verify` und
-   `./mvnw -B -Pgeotools-probe,backing-services clean verify` führen die beiden
-   vollständigen Gates aus, einschliesslich echter Dienstcontainer. Die
-   Artefaktidentitäten und alle 44 positiven Operationsnachweise werden geprüft.
-3. Nur auf `main` werden danach die getesteten Artefakte mit
-   `-Ppublish-snapshots -DskipTests -DskipITs deploy` veröffentlicht.
+1. Der wiederverwendbare `qualification.yml` prüft mit JDK 25 den
+   Dockerfreien SCRIPT-Standard und `verify-job-matrix.sh --mode ALL --scope full`.
+   SCRIPT, JAR und tatsächliches IMAGE-SCRIPT besitzen getrennte vollständige
+   Fach-/Operationsnachweise desselben Commits, gesichert vor clean.
+2. Erst wenn beide Qualifikationsjobs erfolgreich sind, darf der davon
+   abhängige Publikationsjob beginnen. Pull Requests veröffentlichen nie.
+3. Nur auf `main` bleibt der vorhandene Maven-Deployweg
+   `-Ppublish-snapshots -DskipTests -DskipITs deploy` aktiv. Diese Flags betreffen
+   ausschliesslich den Deploy nach den Pflichtgates, nicht die Qualifikation.
 
 Manuell starten:
 
@@ -57,28 +59,28 @@ gh run list --workflow publish-snapshots.yml
 gh run watch <run-id>
 ```
 
-Alternativ im GitHub-UI unter **Actions → publish artefacts → Run workflow**.
+Alternativ im GitHub-UI unter **Actions → verification and snapshots → Run workflow**.
 
 ## 4. Veröffentlichen lokal
 
-Zuerst die normale Prüfung:
-
-```sh
-./mvnw -o clean verify
-```
-
-Dann der Snapshot-Deploy:
+Ein gesondert autorisierter lokaler Publishaufruf erfolgt über:
 
 ```sh
 ./scripts/publish-snapshots.sh
 ```
 
-Das Skript prüft die beiden Environmentvariablen und ruft auf:
+Das Skript prüft zuerst beide Credentialvariablen, führt dann den Dockerfreien
+Standard und ALL/full ohne übernommene Skipargumente aus und bewahrt deren
+Evidenz unter `.gretl-verification/`. `GRETL_PUBLICATION_EVIDENCE` kann einen
+anderen Zielpfad wählen. Erst nach erfolgreichen Gates folgt der bisherige
+Deploy mit `publish-settings.xml`, Profil `publish-snapshots` und den
+Deploy-Flags `-DskipTests -DskipITs`. Ein Fehler in einem Pflichtgate beendet
+das Skript vor jedem Deploy. Zusätzliche Argumente gelten nur für den Deploy.
 
-```sh
-./mvnw -s docs/implementation/publish-settings.xml \
-  -Ppublish-snapshots clean deploy
-```
+Das Schreiben dieser Verdrahtung führt keine Publikation aus. Für diesen
+Implementierungsauftrag sind Push, Merge, Release und tatsächlicher Deploy
+nicht beauftragt; die Kontrolltests verwenden ausschliesslich Fake-Programme
+und synthetische Credentials.
 
 Maven erzeugt für `0.1.0-SNAPSHOT` timestamped Snapshot-Artefakte und
 aktualisiert `maven-metadata.xml`. Der Deploy bricht bei fehlenden

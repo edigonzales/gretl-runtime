@@ -5,6 +5,9 @@ import json
 import hashlib
 from datetime import datetime, timedelta
 import os
+import signal
+import time
+import uuid
 from pathlib import Path
 import shutil
 import subprocess
@@ -104,6 +107,38 @@ class AuditNegatives(unittest.TestCase):
     def test_E06_unmatched_junit_method(self):
         path=next((self.root/'gretl-integration-tests/target/failsafe-reports').glob('TEST-*.xml'))
         tree=ET.parse(path);tree.getroot().find('testcase').set('name','foreignMethod');tree.write(path);self.audit()
+    def test_E06_missing_candidate_property(self):
+        path=next((self.root/'gretl-integration-tests/target/failsafe-reports').glob('TEST-*.xml'))
+        tree=ET.parse(path);properties=tree.getroot().find('properties')
+        for prop in list(properties):
+            if prop.get('name')=='gretl.test.candidateSha':properties.remove(prop)
+        tree.write(path);self.audit()
+    def test_E06_failure_and_error_are_not_success(self):
+        path=next((self.root/'gretl-integration-tests/target/failsafe-reports').glob('TEST-*.xml'))
+        for tag in ('failure','error'):
+            tree=ET.parse(path);case=tree.getroot().find('testcase')
+            for old in list(case):
+                if old.tag in ('failure','error'):case.remove(old)
+            ET.SubElement(case,tag);tree.write(path)
+            self.assertIn('Unsuccessful JUnit',self.audit().stderr)
+    def test_E12_reduced_expectation_from_successes_is_rejected(self):
+        fake=Path(self.scratch.name)/'checker'
+        paths=['scripts/audit-job-evidence.py','docs/history/contracts/operation-baseline.json',
+               'gretl-dist/src/main/docker/Dockerfile','gretl-integration-tests/src/test/resources/qualification/scenarios.json']
+        for relative in paths:
+            target=fake/relative;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(repository/relative,target)
+        relative='gretl-integration-tests/src/test/java/ch/so/agi/gretl/it'
+        shutil.copytree(repository/relative,fake/relative)
+        command=self.command.copy();command[1]=str(fake/'scripts/audit-job-evidence.py')
+        baseline=subprocess.run(command+['--evidence-root',str(self.root)],capture_output=True,text=True)
+        self.assertEqual(0,baseline.returncode,baseline.stderr)
+        path,row=self.row(lambda r:r.get('testFamily')=='COMMON' and 'invalidGraph' in r.get('testCaseId',''))
+        path.unlink()
+        catalog=fake/'gretl-integration-tests/src/test/resources/qualification/scenarios.json'
+        data=json.loads(catalog.read_text());data['scenarios']=[r for r in data['scenarios'] if r['id']!=row['scenarioId']]
+        self.save(catalog,data)
+        result=subprocess.run(command+['--evidence-root',str(self.root)],capture_output=True,text=True)
+        self.assertNotEqual(0,result.returncode);self.assertIn('Reduced scenario contract',result.stderr)
     def test_E07_other_modes_cannot_fill_operations(self):
         self.assertEqual('full', options.scope)
         expected = {o['id'] for o in json.loads((repository/'docs/history/contracts/operation-baseline.json').read_text())}
@@ -125,22 +160,68 @@ class AuditNegatives(unittest.TestCase):
         self.assertIn('missingPositiveOperations',result.stderr)
     def test_E09_started_only(self):
         path,row=self.row();row['process']['state']='STARTED';self.save(path,row);self.audit()
-    def test_E10_maven_failure_is_not_hidden(self):
+    def fake_matrix(self,maven,audit='raise SystemExit(41)'):
         fake=Path(self.scratch.name)/'fake';(fake/'scripts').mkdir(parents=True)
-        shutil.copyfile(repository/'scripts/verify-job-matrix.sh',fake/'scripts/verify-job-matrix.sh')
-        shutil.copyfile(repository/'scripts/preserve-job-evidence.py',fake/'scripts/preserve-job-evidence.py')
-        shutil.copyfile(repository/'scripts/run-maven-gate.py',fake/'scripts/run-maven-gate.py')
+        for script in ('verify-job-matrix.sh','preserve-job-evidence.py','run-maven-gate.py'):
+            shutil.copyfile(repository/'scripts'/script,fake/'scripts'/script)
+        (fake/'scripts/audit-job-evidence.py').write_text(audit+'\n')
         (fake/'pom.xml').write_text('<project xmlns="http://maven.apache.org/POM/4.0.0"><modules/></project>')
-        (fake/'mvnw').write_text('#!/bin/sh\necho deliberate-maven-failure\nexit 37\n');(fake/'mvnw').chmod(0o700)
+        (fake/'mvnw').write_text(maven);(fake/'mvnw').chmod(0o700)
         for command in (['git','init','-q'],['git','add','.'],['git','-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture']):
             subprocess.run(command,cwd=fake,check=True,capture_output=True)
-        result=subprocess.run(['bash','scripts/verify-job-matrix.sh','--output',str(Path(self.scratch.name)/'matrix')],cwd=fake,capture_output=True,text=True)
+        return fake
+    def test_E10_maven_failure_is_not_hidden(self):
+        fake=self.fake_matrix('#!/bin/sh\necho deliberate-maven-failure\nexit 37\n')
+        output=Path(self.scratch.name)/'matrix'
+        result=subprocess.run(['bash','scripts/verify-job-matrix.sh','--output',str(output)],cwd=fake,capture_output=True,text=True)
         self.assertEqual(37,result.returncode,result.stdout+result.stderr)
-        self.assertFalse(list((Path(self.scratch.name)/'matrix').glob('*/complete.json')))
+        self.assertFalse(list(output.glob('*/complete.json')))
+    def test_E10_audit_failure_is_not_hidden(self):
+        fake=self.fake_matrix('#!/bin/sh\necho successful-fake-maven\nexit 0\n')
+        output=Path(self.scratch.name)/'matrix'
+        result=subprocess.run(['bash','scripts/verify-job-matrix.sh','--output',str(output)],cwd=fake,capture_output=True,text=True)
+        self.assertEqual(41,result.returncode,result.stdout+result.stderr)
+        self.assertEqual('0',(output/'SCRIPT/maven-exit.txt').read_text().strip())
+        self.assertEqual('41',(output/'SCRIPT/audit-exit.txt').read_text().strip())
+        self.assertFalse(list(output.glob('*/complete.json')))
+    def test_E10_signal_reaps_owned_resources_and_preserves_foreign_control(self):
+        image=json.loads((self.source/'gretl-dist/target/image/candidate.json').read_text())['id']
+        # This infrastructure negative starts sleeping controls, never a qualified product job.
+        fake=self.fake_matrix("""#!/bin/sh
+set -eu
+docker run -d --name "gretl-signal-$GRETL_VERIFICATION_RUN_ID" --label "gretl.verification.run=$GRETL_VERIFICATION_RUN_ID" --network "gretl-verification-$GRETL_VERIFICATION_RUN_ID" --entrypoint /bin/sh "$GRETL_SIGNAL_PROBE_IMAGE" -c 'sleep 180'
+echo signal-probe-ready
+while :; do sleep 1; done
+""")
+        foreign='gretl-control-'+uuid.uuid4().hex
+        output=Path(self.scratch.name)/'matrix';process=None
+        try:
+            subprocess.run(['docker','run','-d','--name',foreign,'--network','none','--entrypoint','/bin/sh',image,'-c','sleep 180'],check=True,capture_output=True,timeout=20)
+            env=os.environ.copy();env['GRETL_SIGNAL_PROBE_IMAGE']=image
+            process=subprocess.Popen(['bash','scripts/verify-job-matrix.sh','--mode','IMAGE','--output',str(output)],cwd=fake,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+            deadline=time.monotonic()+35
+            log=output/'IMAGE/maven.log'
+            while not (log.exists() and 'signal-probe-ready' in log.read_text()):
+                self.assertIsNone(process.poll(),'Gate exited before real owned-container checkpoint')
+                self.assertLess(time.monotonic(),deadline,'Missing signal checkpoint');time.sleep(.05)
+            run=(output/'IMAGE/run-id.txt').read_text().strip()
+            process.send_signal(signal.SIGTERM);text,_=process.communicate(timeout=55)
+            self.assertEqual(143,process.returncode,text)
+            owned=subprocess.check_output(['docker','container','ls','--all','--quiet','--filter','label=gretl.verification.run='+run],text=True)
+            self.assertFalse(owned.strip());self.assertFalse(list(output.glob('*/complete.json')))
+            network=subprocess.run(['docker','network','inspect','gretl-verification-'+run],capture_output=True,text=True)
+            self.assertNotEqual(0,network.returncode)
+            self.assertEqual('true',subprocess.check_output(['docker','inspect','--format','{{.State.Running}}',foreign],text=True).strip())
+        finally:
+            if process is not None and process.poll() is None:
+                process.terminate()
+                try:process.communicate(timeout=55)
+                except subprocess.TimeoutExpired:process.kill();process.communicate(timeout=5)
+            subprocess.run(['docker','rm','--force',foreign],capture_output=True,timeout=20)
 
 names = unittest.defaultTestLoader.getTestCaseNames(AuditNegatives)
 if options.mode != 'IMAGE':
-    for name in ('test_E04_correct_labels_wrong_actual_image_bytes','test_E08_changed_input_identity','test_E11_recording_engine_is_not_real_container'):
+    for name in ('test_E04_correct_labels_wrong_actual_image_bytes','test_E08_changed_input_identity','test_E11_recording_engine_is_not_real_container','test_E10_signal_reaps_owned_resources_and_preserves_foreign_control'):
         names.remove(name)
 if options.scope == 'local':
     names.remove('test_E07_other_modes_cannot_fill_operations')

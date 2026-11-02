@@ -1,146 +1,175 @@
-# Fachliche Jobtests: JAR und vorbereitetes IMAGE
+# Fachliche Jobtests mit SCRIPT, JAR und IMAGE
 
-`ArtifactJobRunner` verwendet denselben kanonischen Jobbestand, dieselben
-Parameter und dieselben fachlichen Java-Assertions für beide Transporte.
-Die unabhängigen Leser/Clients laufen ausserhalb des Jobprozesses. Ergänzende
-ältere `GretlCli.run`-Prüfungen bleiben ausdrücklich Komponententests.
+`ArtifactJobRunner` verwendet kanonische Quellen, Parameter und dieselben
+unabhängigen fachlichen Java-Assertions in drei Modi. **SCRIPT ist der
+Default.** Er startet die gebaute Distribution mit einer externen Groovy-Datei
+oder einem Projekt. IMAGE startet denselben SCRIPT-Weg im generischen
+Runtime-Container. JAR bleibt eine zusätzliche vorkompilierte Auslieferungsform.
+Ältere `GretlCli.run`-Tests bleiben ausdrücklich Komponentenprüfungen.
 
-Standard: `./mvnw -B clean verify`. Der normale Reactor baut die Distribution
-und führt lokale `*JobIT` aus. Vollständig:
-`./mvnw -B -Pgeotools-probe,backing-services clean verify`.
-Dieser Weg ergänzt echte PostgreSQL/PostGIS-, FTP- und S3-Container sowie die
-isolierte GeoTools-Probe. Fehlendes Docker lässt das Dienstprofil scheitern.
-Alle 44 Operationen benötigen positive fachliche JAR-Nachweise; erwartete
-Negativfälle prüfen Code, konkrete fachliche Ursache und/oder Originaldiagnosen.
-Ein Start-/Classpathfehler genügt nicht.
+## Einstieg und Pflichtumfang
 
-JAR: Jeder Fixture-Build läuft über den regulären aktuellen Distributions-
-Packager. Danach startet ein eigener `java -jar`-Prozess ohne Testclasspath.
-Innerhalb derselben Test-JVM darf ein bereits regulär gebautes, bytegleiches
-kanonisches Fixture-JAR erneut verwendet werden. Pro Ausführung entstehen
-eigene Quellkopie, leere Ausgabe, Konfiguration, Prozess und Report. Die
-Prüfsumme wird am tatsächlich gestarteten JAR berechnet; die Wiederverwendung
-steht in `package-reuse.txt`. Dieser rein testseitige Build spart wiederholtes
-Bündeln derselben expliziten Modulauswahl, ohne einen Produkt-Runtimecache einzuführen.
-
-`target/job-evidence/<Szenario>-<UUID>/` enthält `execution.json` mit Modus,
-SHA-256 bzw. Image-ID, Exitcode, Timeout, Abbruch und Dauer, den Aufruf,
-getrennte umgeleitete stdout/stderr-Dateien, Reports und unabhängige Ergebnisse.
-Dateiumleitung vermeidet ungeleerte Prozesspipes. Die Suite wartet auf das
-Prozessende und bereinigt bei Timeout/Abbruch. Secrets liegen in privaten
-Dateien, erscheinen nicht als Containerargumentwerte und werden aus den
-archivierten Konsolenlogs redigiert. Secretdateien und Rohkonfigurationen
-werden nicht als CI-Artefakte hochgeladen.
-
-## IMAGE-Vertrag für die spätere ausdrückliche Qualifikation
-
-Ein echter GRETL-Image-Lauf ist noch nicht qualifiziert. Die aktuelle CI-Matrix
-enthält ausschliesslich JAR. `ImageExecutionAdapterTest` prüft Start, Mounts,
-Pfade mit Leerzeichen, Arbeitsverzeichnis, Benutzer, Secrets, Endpoints,
-Parameter, Zielauswahl, Reportpfad, unveränderte Exitcodes, Timeout und Abbruch
-an einer aufzeichnenden Engine-Grenze ohne echten Containerstart.
-
-Ein späterer Aufruf benötigt ausdrücklich:
+JDK 25 und der vorhandene Maven-Wrapper sind erforderlich. Vom sauberen
+Repository-Root, mit Nachweisen ausserhalb von Maven-`target`:
 
 ```sh
-./mvnw -B -Pgeotools-probe,backing-services clean verify \
-  -Dgretl.test.executionMode=IMAGE \
-  -Dgretl.test.image=registry.example/gretl:qualified \
-  -Dgretl.test.imageLauncher=/opt/gretl/bin/gretl \
-  -Dgretl.test.imageNetwork=gretl-test-network \
-  -Dgretl.test.imageUser=1001:1001 \
-  -Dgretl.test.imageExtraHost=services:host-gateway
+# Alltag: Unit-, Komponenten-, Distributions-, lokale SCRIPT- und Pakettests; ohne Docker.
+./mvnw -B clean verify
+
+# Vollständige einzelne Modi einschliesslich echter Dienste und GeoTools-Probe.
+scripts/verify-job-matrix.sh --mode SCRIPT --scope full --output ../gretl-script-full
+scripts/verify-job-matrix.sh --mode JAR --scope full --output ../gretl-jar-full
+scripts/verify-job-matrix.sh --mode IMAGE --scope full --output ../gretl-image-full
+
+# Gesamte Qualifikation auf demselben Commit.
+scripts/verify-job-matrix.sh --mode ALL --scope full --output ../gretl-all-full
+
+# Lokale Containerfälle ohne die externen PostgreSQL-/FTP-/S3-Dienste.
+scripts/verify-job-matrix.sh --mode IMAGE --scope local --output ../gretl-image-local
 ```
 
-Das Image muss eine vollständige zur Kandidatenversion passende Skriptruntime
-mit genau diesem absoluten Launcherpfad und dieselbe JVM/Fachumgebung enthalten.
-Docker-Daemon, Image und ausdrücklich vorbereitetes benanntes Dienstnetz müssen
-vorhanden sein. Der Adapter zieht kein Image nach und fällt nie auf JAR zurück;
-fehlende Voraussetzungen sind Fehler. Vor dem Start löst `docker image inspect`
-die explizite Referenz in die unveränderliche `sha256:…`-Image-ID auf und startet
-genau diese. Ein erfolgreich übersprungener IMAGE-Fall ist nicht vorgesehen.
+IMAGE/local benötigt Docker für den Produktcontainer. Fehlende Docker-,
+Netzwerk-, Mount- oder Imagevoraussetzungen sind Fehler, kein Skip und kein
+Fallback auf einen anderen Modus. Vollständige Modi benötigen je alle 44
+positiven Standardoperationen. Eine Vereinigungsmenge verschiedener Modi
+kann diese Pflicht nicht erfüllen. Teiltests dienen der Entwicklung; sie
+ersetzen die jeweils fälligen Phasengates nicht.
 
-Benutzer und Gruppe sind numerisch und nicht root; die UID muss das private
-Szenarioverzeichnis besitzen und Zugriff auf die Mounts haben. Die private
-Dateiumgebung bleibt privat. HOME, TMPDIR sowie die JVM-Properties user.home
-und java.io.tmpdir liegen in vorbereiteten beschreibbaren Unterverzeichnissen
-von /work; native Bibliotheken und DuckDB-Erweiterungen benötigen keine
-Schreibrechte im Image. Der Aufruf verwendet `--rm --init`, Signalweitergabe,
-`--user`, das benannte Netz und `/run` als Arbeitsverzeichnis. Docker muss die
-lokalen Bind-Mount-Quellen erreichen können; ein fremder Docker-Host ohne diese
-Dateien erfüllt die Voraussetzung nicht.
+## Vorbereitung und echte Prozesse
+
+`JobInput` unterscheidet eine Scriptdatei von einer Projektwurzel;
+`Invocation` trägt `run`, `check`, `plan`, Graphausgabe oder Hilfe. Der
+Default ist die Datei `job.groovy`, nicht ein eingebauter Job. Ein Projekt
+wird ausdrücklich mit `JobInput.project(".")` gewählt. SCRIPT und IMAGE
+benötigen keinen Paketdeskriptor und ignorieren einen unbenutzten kaputten
+`job-package.json`. Ungültige Groovy-/Settings-Inhalte erreichen den
+wirklichen CLI-Prozess; das bytebasierte Inputinventar parst sie nicht vorab.
+
+SCRIPT startet `<geprüfte-distribution>/bin/gretl run <externe-quelle>` ohne
+Testclasspath oder Paketierung. JAR verwendet den regulären aktuellen
+Distributionspackager und danach einen eigenen `java -jar`-Prozess. Der
+Cache berücksichtigt Runtime-, Input- und Descriptorbytes; jede Ausführung
+bekommt eine eigene Kopie. Manipulierte JARs werden unter ihrem tatsächlichen
+Dateinamen gehasht und archiviert. `PackageArtifactAssertions`,
+`SelectedPackage*`, `ProjectArtifactLocalJobIT` und die ursprünglichen
+Schema-/Modul-/Toplevel-/Isolationstests bleiben ausdrücklich erhalten.
+
+## Generisches IMAGE und OpenShift
+
+Das Profil `job-image` baut nach der Distribution das generische
+[Runtime-Image](../../gretl-dist/src/main/docker/README.md). Sein tatsächlicher
+Default-Entrypoint ist `/opt/gretl/bin/gretl`; gestartet wird beispielsweise
+`run /job/job.groovy` oder `run /job`. Kein Job-JAR, kein Entrypointoverride
+und kein Job im Buildkontext. Der Builder vergleicht die tatsächlichen
+`/opt/gretl`-Bytes im Image mit der gebauten Distribution; Labels allein
+genügen nicht. Der Adapter verwendet die unveränderliche Image-ID aus
+`candidate.json` und zieht beim Jobstart kein anderes Image nach.
 
 | Hostbereich | Containerpfad | Zugriff |
 | --- | --- | --- |
-| frische kanonische Quell-/Eingabekopie | /job | nur lesen |
-| Ausgabe | /outputs | lesen/schreiben |
-| Runtime-Arbeit | /work | lesen/schreiben |
-| Reports | /reports | lesen/schreiben |
-| Arbeitsverzeichnis | /run | lesen/schreiben |
-| übersetzte Runtimekonfiguration | /config/runtime.json | nur lesen |
-| ausdrücklich konfigurierte Secretdateien | /secrets/Alias | nur lesen |
+| private Quell-/Eingabekopie | `/job` | read-only |
+| Ausgabe | `/outputs` | lesen/schreiben |
+| Runtime-Arbeit | `/work` | lesen/schreiben |
+| Reports | `/reports` | lesen/schreiben |
+| fremdes Start-CWD | `/run` | lesen/schreiben |
+| übersetzte Runtimekonfiguration | `/config/runtime.json` | read-only |
+| ausdrücklich konfigurierte Secretdateien | `/secrets/Alias` | read-only |
 
-Lokale Pfadwerte in Parametern, Environment und Fachkonfiguration werden im
-gemeinsamen Java-Request als `java.nio.file.Path` übergeben. JAR serialisiert
-sie zu denselben CLI-/JSON-Textwerten; IMAGE übersetzt sie anhand dieser
-Mounts. Ein nicht gemounteter absoluter `Path` scheitert. Relative
-Parameterpfade bleiben relativ zum jeweiligen Arbeitsverzeichnis.
+Die normalen privaten Bindmounts verwenden die numerische non-root UID/GID
+des Hostbenutzers. Root und Jobmount sind read-only, Capabilities entfernt,
+`no-new-privileges` gesetzt. Native Bibliotheken benötigen ausführbaren
+Tempbereich. Der Adapter setzt HOME/Temp auf vorbereitete private
+`/work/home` und `/work/tmp`; das Image selbst verwendet `/work` und `/tmp`,
+damit frisch eingehängte leere Volumes funktionieren.
 
-Strings bleiben Textwerte. Der FTP-Serverpfad `remoteDir=/home/gretl/<lease>`
-ist beispielsweise in beiden Modi derselbe String und keine lokale
-Mountquelle. Runtimeidentität und die entsprechenden GRETL-ENV-Werte sind
-opaque, auch bei führendem `/`. Die normativ bekannten lokalen Pfadfelder
-`runtime.workRoot`, `runtime.reportRoot`, Secretdateien und
-`GRETL_TERMINATION_MESSAGE_PATH` werden ausdrücklich als Pfade behandelt;
-relative Runtimepfade beziehen sich weiterhin auf das Konfigurationsverzeichnis.
-Dienstendpoints erhalten
-explizite Host-/Image-Paare; localhost-Endpunkte ohne Zuordnung scheitern.
-PostgreSQL-, FTP- und S3-Fixtures treten dem benannten Netz als `postgres`, `ftp`
-und `s3` bei. FTP verwendet dort die passive Adresse `ftp`; der unabhängige
-Hostclient verwendet EPSV. Die lokalen HTTP-Fixtures binden alle Interfaces;
-`gretl.test.httpImageHost` ist standardmässig `services`, konfigurierbar für die
-erreichbare Hostadresse. `imageExtraHost` stellt bei Bedarf die Docker-
-`host-gateway`-Zuordnung her. Es wird kein Hostnetz vorausgesetzt.
+`ImageRuntimeIT` prüft nach Imagebau erzeugte und geänderte externe Jobs
+mit unveränderter Image-ID, echte SQLite-/DuckDB-Arbeit, read-only Quellen,
+kontrollierte Cancellation und erzwungenen Timeout. Eine zusätzliche
+OpenShift-Gegenprobe verwendet unbekannte UID mit Gruppe 0 und frischen
+Volumes; siehe [Jobvorlage](../../gretl-dist/src/main/docker/openshift-job.yaml).
+Kein passwd-Write, keine privilegierte SCC und keine 777-Reparatur.
+Clusteradmission, SELinux-/PVC-Konfiguration und produktive Jobs wurden lokal
+nicht ausgeführt. Die Qualifikation benennt ihre tatsächliche Architektur;
+ein Multiarch-Basisindex ist keine ausgeführte Freigabe aller Plattformen.
 
-`docker stop --time 35` gibt der Runtime ihren begrenzten Abschlusszeitraum.
-Timeout/Abbruch beenden und reap-en auch den Docker-Client; verbleibende
-Testcontainer werden ausdrücklich entfernt. Normales Ende bewahrt Exitcode,
-Ausgaben und Report. Die zusätzlichen ausdrücklich als SCRIPT geführten
-Scriptregressionen bleiben Host-Skriptstarts und werden so protokolliert.
-Die IMAGE-Fälle starten ausschliesslich den Produktlauncher im Produktimage.
+Lokale Pfadwerte im Java-Request sind `Path`; nur diese und die normativ
+bekannten Runtime-/Secretpfade werden übersetzt. Relative Parameterpfade
+bleiben relativ zum jeweiligen Start-CWD. Strings bleiben Businesswerte:
+`remoteDir=/home/gretl/<lease>` ist ein FTP-Serverpfad, keine Mountquelle.
+Runtimeidentitäten sind opaque. Endpoints erhalten ausdrückliche Host-/
+Containerpaare. PostgreSQL, FTP und S3 verwenden im eigenen Testnetz die
+Aliasse `postgres`, `ftp` und `s3`. HTTP bindet alle Interfaces und nutzt
+auf macOS `host.docker.internal`, auf Linux `services:host-gateway`.
+Hostnetzwerk und vollständige HOME-/Testclasspath-Mounts werden nicht benötigt.
 
-## Auswahlpakete und CI-Evidenz
+Explizite Cancellation liefert SIGTERM ohne auf das Cleanup zu warten.
+Beim Timeout begrenzt `docker stop --time 35` zuerst die Containerlaufzeit;
+der Client wird anschliessend begrenzt reap-ed. Exit 137/Force-kill wird
+nicht als kontrolliertes CANCELLED ausgegeben. Nur eigene Container und
+das eigene markierte Netz werden entfernt.
 
-Die 13 kanonischen Fixturewurzeln besitzen Schema-2-Deskriptoren. Originaldaten,
-SQL, Modelle und fachliche Assertions bleiben erhalten; die ursprüngliche
-historische Provenienzdatei beschreibt weiterhin deren damaligen Stand. Siehe den
-[Auswahl- und Migrationsvertrag](job-packaging.md). `PackageArtifactAssertions`
-prüft bei jedem JAR-Build die gewählten Provider, Meldungen, Services und die
-familienabhängig ausgeschlossenen Engines. Eingabeinventar und Descriptor
-werden neben dem JAR gesichert.
+## Sollbestand, JUnit und Evidenz
 
-Die zusätzlichen `SelectedPackageLocalJobIT` und `SelectedPackageArtifactIT`
-qualifizieren ausdrücklich den JAR-Packager. Sie benutzen eine explizite
-JAR-Auswahl und dokumentieren diese auch bei einem späteren IMAGE-Gesamtlauf.
-Das ist kein Fallback des gemeinsamen Szenariobestands: dessen IMAGE-Auswahl
-bleibt strikt. Die Paketfälle löschen die kompilierte Quellkopie und starten
-mit leerem HOME, ohne Maven im PATH und aus fremdem CWD. `isolation.json`
-hält diese Bedingungen fest.
+Der versionierte [Szenariokatalog](../../gretl-integration-tests/src/test/resources/qualification/scenarios.json)
+ordnet alle Methoden/Parameterinstanzen COMMON, SCRIPT_CONTRACT,
+IMAGE_CONTRACT, PACKAGE_CONTRACT oder COMPONENT zu. Feste `expectedStarts`
+pro Methode und deklarierte Startvarianten sind unabhängig von Ist-Logs.
+Eine Katalogreduktion ist sichtbar und wird gegen diese Startzahlen sowie
+die vorhandenen Java-Testmethoden geprüft. Es gibt keinen Generator, der
+fehlende Ergebnisse in einen kleineren Sollbestand umwandelt.
 
-`image-qualification.yml` ist ausschliesslich manuell aktivierbar und verlangt
-eine Image-Referenz. Er zieht nur das ausdrücklich angegebene Produktimage,
-bereitet das Dienstnetz vor und verwendet den oben dokumentierten vollständigen
-Aufruf. Er ist im aktuellen Auftrag nicht ausgeführt worden. Die Pflichtmatrix
-enthält weiterhin ausschliesslich JAR und die nicht startenden Adaptertests.
+Pro Start liegen unter `target/job-evidence/<Szenario>-<UUID>/`:
+`execution.json`, `command.json`, Inputinventar, getrennte stdout/stderr,
+passende Reports/Ereignisse und fachliche Ausgaben. JAR ergänzt tatsächliche
+JAR-/Paketinventare, IMAGE den tatsächlichen Container-/Imagebeleg. Die
+JUnit-Erweiterung bindet jeden Start an die ausgeführte Methode und Variante.
+Eine gültige Kindprozessausführung ohne erfolgreiche unabhängige JUnit-
+Assertion ist kein qualifizierter Erfolg.
 
-Der CI-Audit schreibt `target/qualification/summary.json` und
-`jar-executions.json`. Er berechnet jeden gestarteten JAR-Hash erneut, prüft
-alle Distributionsdateien gegen SHA256SUMS und im vollständigen Gate positive
-Invocations aller 44 Operationen. Signalbedingter Prozessstatus und fachlicher
-Reportstatus bleiben getrennt protokolliert. Der Release-Workflow paketiert
-nach den Tests nicht erneut mit übersprungenen Tests.
+Der Audit prüft Modus, Run, Quellen-SHA, vollständige Szenarien, tatsächliche
+Runtime-/JAR-/Imagebytes, Report-/Eventidentität und Prozesslebensdauer.
+Zeitvergleiche behalten volle Nanosekundenpräzision auch auf Python 3.9.
+Der gewöhnliche Mavenweg bekommt eine gemeinsame Build-Run-ID; der
+Matrixstarter setzt zusätzlich UUID und expliziten Kandidaten-SHA.
+Explizite Matrixprüfungen verlangen diese JUnit-Kandidatenbindung.
+`--full` bleibt ein Alias des vollen Scopes.
 
+Der Matrixstarter sichert vor jedem `clean` einen kuratierten Bestand,
+dessen Auditor ohne Live-Workspace funktioniert. Er enthält auch redigierte
+Dienstdiagnosen, den festen Katalog und tatsächlich referenzierte Bytes.
+Rohkonfigurationen, Secretdateien, Sourcebäume und Workspaces werden nicht
+pauschal veröffentlicht. Ausgaben werden nicht überschrieben. Der Starter
+propagiert Maven-/Audit-/Dockerfehler und schreibt `complete.json` erst nach
+erfolgreichem Ende und Cleanup. ALL verlangt drei vollständige Nachweise
+mit demselben Quellencommit und bytegleichen COMMON-Inputs. Vor dem
+Matrixabschluss werden alle drei Archive nach den späteren clean-Läufen
+erneut über den wirklichen Audit geprüft.
 
-## Projekt-Fixtures
+Gezielte Negativkopien werden so geprüft:
 
-`ArtifactJobRunner.Request.scriptInput` ist standardmässig `job.groovy`; `.` wählt die Projektwurzel und verlangt einen vorhandenen Schema-3-Deskriptor. Prozess-, Timeout-, Hash- und Redactionpfad bleiben gemeinsam. Der IMAGE-Adapter übersetzt diesen Eingang zu `/job`; dessen Tests starten weiterhin kein Produktimage. `ProjectArtifactLocalJobIT` qualifiziert identische Bytes und Graphen im Script und echten JAR, leeres HOME/PATH ohne Buildwerkzeuge, gelöschte kompilierte Quellkopie, Metadatenschäden, Materialisierungsfehler und Retention. Der Bestand liegt unter `src/test/resources/projects/pipeline`. Die Scriptprozess-Belege bleiben gesondert unter `target/project-script-evidence`.
+```sh
+python3 tests/script-first-testing/test_job_evidence.py \
+  --mode IMAGE --scope full --evidence-root ../gretl-all-full/IMAGE/evidence
+```
+
+E01–E12 decken fehlende/vertauschte/alte Belege, falsche Bytes, Reports,
+JUnit-Failure/Error/Skip, getrennte Operationsmengen, Sourcekonsistenz,
+STARTED ohne Abschluss, Maven-/Audit-/Signalfehler, RecordingEngine und
+reduzierten Erwartungsbestand ab. Signalproben bereinigen eigene Ressourcen
+und kontrollieren, dass ein eigener fremd markierter Kontrollcontainer lebt.
+
+## CI und Aussagegrenzen
+
+Push und Pull Requests rufen über `publish-snapshots.yml` den gemeinsamen
+`qualification.yml` auf: Dockerfreier Standard und vollständiges ALL/full.
+Snapshot-Publikation sowie Release-Candidate-Auslieferung hängen von beiden
+Gates ab. Der Releasepfad verwendet die bereits qualifizierte ZIP-Datei und
+bewahrt seine zusätzliche Checksum-/Paketstartprobe. Der manuelle
+`image-qualification.yml` dient zusätzlicher IMAGE-Diagnose und ist nicht
+der einzige Imageprüfweg. Artefakte sind je Modus/SHA getrennt und kuratiert.
+
+Eine Workflowdatei ist kein ausgeführter Remote-CI-Lauf. Die lokalen
+Phasenberichte nennen tatsächlich ausgeführte Gates und Plattformen;
+Branch-Protection-Einstellungen bleiben eine administrative Aufgabe.
+JaCoCo misst instrumentierte Test-JVMs. Separate Launcher-, Job-JAR- und
+Containerprozesse werden fachlich geprüft, ohne erfundene Coverage.

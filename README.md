@@ -4,7 +4,8 @@ GRETL Runtime führt Groovy-Jobs mit einem sequenziellen Taskgraphen auf Java 25
 Der aktuelle Entwicklungsstand ist `0.1.0-SNAPSHOT`. Die Standarddistribution
 enthält 44 Operationen für HTTP, FTP, S3, Archive, SQL, DuckDB, INTERLIS und
 Dateiformate. Eigene Actions und Java-Operationen verwenden denselben Runner.
-Ein Job kann als Script oder als vorkompiliertes ausführbares Job-JAR laufen.
+SCRIPT ist der Hauptweg; ein Job kann zusätzlich als vorkompiliertes Job-JAR
+oder als externes Script im generischen Runtime-Image laufen.
 
 ## Aus dem Git-Checkout starten
 
@@ -15,6 +16,19 @@ das vollständige Dienstprofil benötigt. Vom Repository-Root:
 ./mvnw -B clean verify
 ./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
+
+Der Standardweg benötigt kein Docker und startet lokale Fachjobs als
+SCRIPT-Prozesse. Die vollständige Qualifikation aller Auslieferungswege
+läuft am sauberen Commit mit:
+
+```sh
+scripts/verify-job-matrix.sh --mode ALL --scope full --output ../gretl-all-full
+```
+
+Jeder Modus besitzt eigene Fach-/Operationsnachweise. Das
+[generische Image](gretl-dist/src/main/docker/README.md) führt externe
+Groovy-Dateien oder Projekte aus und unterstützt die OpenShift-UID-/
+Volume-Bedingungen; konkrete Jobs werden nicht ins Image eingebaut.
 
 Der Build erzeugt `gretl-dist/target/dist/` und ZIP-/TAR-Distributionen.
 Das mitgelieferte Minimalbeispiel kopiert eine synthetische Textdatei:

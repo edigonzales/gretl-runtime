@@ -35,6 +35,8 @@ tree(root / 'gretl-dist/target/dist')
 copy(root / 'gretl-dist/target/image/candidate.json')
 tree(root / 'gretl-dist/target/image/extracted')
 tree(root / 'gretl-integration-tests/target/qualification')
+tree(root / 'gretl-integration-tests/target/service-evidence')
+copy(root / 'gretl-integration-tests/src/test/resources/qualification/scenarios.json')
 allowed = {'execution.json', 'command.json', 'input-manifest.json', 'package-inventory.json', 'isolation.json',
            'distribution-SHA256SUMS', 'container.id', 'job.jar', 'job.stdout.log', 'job.stderr.log', 'image-proof.json'}
 executions = [p.parent for name in ('job-evidence', 'project-script-evidence') for p in (root/'gretl-integration-tests/target'/name).rglob('execution.json')]

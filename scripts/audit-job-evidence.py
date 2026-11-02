@@ -39,6 +39,14 @@ expected_scenarios = {s['id']: s for s in contracts['scenarios'] if selected(s)}
 assert len(expected_cases) == len([c for c in contracts['testcases'] if selected(c)]), 'Duplicate expected test'
 assert len(expected_scenarios) == len([s for s in contracts['scenarios'] if selected(s)]), 'Duplicate expected scenario'
 
+# Fixed declarations, not a catalog reconstructed from successful executions.
+for case in contracts['testcases']:
+    starts = case['expectedStarts']
+    assert isinstance(starts, int) and starts >= 0, 'Invalid declared start count: ' + case['id']
+    if case['family'] in {'COMMON', 'SCRIPT_CONTRACT', 'IMAGE_CONTRACT'}:
+        assert starts > 0, 'Process contract cannot silently become component-only: ' + case['id']
+    assert sum(row['test'] == case['id'] for row in contracts['scenarios']) == starts, 'Reduced scenario contract: ' + case['id']
+
 # The catalog is independent of results. Every declared source method must remain classified.
 for source in (repository / 'gretl-integration-tests/src/test/java/ch/so/agi/gretl/it').glob('*.java'):
     for method in re.findall(r'@(?:Test|ParameterizedTest)\b(?:(?!\bvoid\b).)*?\bvoid\s+(\w+)\s*\(', source.read_text(), re.S):
@@ -47,11 +55,18 @@ for source in (repository / 'gretl-integration-tests/src/test/java/ch/so/agi/gre
 
 # A process becomes qualified only through its successful JUnit invocation.
 junit = {}
+junit_run_ids = set()
 for file in sorted((root / 'gretl-integration-tests/target').glob('*-reports/TEST-*.xml')):
     suite = ET.parse(file).getroot()
     properties = {p.get('name'):p.get('value') for p in suite.findall('properties/property')}
     if args.run_id: assert properties.get('gretl.test.runId') == args.run_id, 'Foreign JUnit run: ' + str(file)
-    if args.source: assert properties.get('gretl.test.candidateSha') == args.source, 'Foreign JUnit candidate: ' + str(file)
+    junit_run = properties.get('gretl.test.runId')
+    assert junit_run and junit_run != 'development', 'Missing JUnit run identity: ' + str(file)
+    junit_run_ids.add(junit_run)
+    # Explicit matrix qualification requires the explicit candidate property. The ordinary
+    # Maven entry point binds source through verified runtime/execution bytes and this run ID.
+    if args.source and (args.run_id or properties.get('gretl.test.candidateSha')):
+        assert properties.get('gretl.test.candidateSha') == args.source, 'Foreign JUnit candidate: ' + str(file)
     for case in suite.findall('testcase'):
         name = case.attrib['name']
         method = name.split('(', 1)[0]
@@ -61,6 +76,7 @@ for file in sorted((root / 'gretl-integration-tests/target').glob('*-reports/TES
         assert not any(case.find(tag) is not None for tag in ('failure', 'error', 'skipped')), 'Unsuccessful JUnit: ' + key
         junit[key] = case
 assert set(expected_cases) == set(junit), {'missingJUnit': sorted(set(expected_cases)-set(junit)), 'unclassifiedJUnit': sorted(set(junit)-set(expected_cases))}
+assert len(junit_run_ids) == 1, 'Mixed JUnit suite runs'
 seen = set()
 run_ids = set()
 
@@ -114,6 +130,7 @@ for file in sorted(p for name in ('job-evidence', 'project-script-evidence') for
     expected_mode = args.mode if args.mode in contract['modes'] else contract['modes'][0]
     assert row['mode'] == expected_mode, (str(file), row['mode'], expected_mode)
     run_ids.add(row['suiteRunId'])
+    assert row['suiteRunId'] in junit_run_ids, 'Process/JUnit run mismatch: ' + str(file)
     if args.run_id: assert row['suiteRunId'] == args.run_id, str(file)
     assert row['process']['state'] in contract['processStates'], (str(file), row['process'], contract)
     assert row['mode'] in {'JAR', 'SCRIPT', 'IMAGE'}, str(file)

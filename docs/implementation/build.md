@@ -19,23 +19,42 @@ Vom Repository-Root:
 ```
 
 Der Standard-Reactor führt Unit-, Komponenten-, Distributions- und lokale
-fachliche Job-JAR-Tests aus. Das Vollprofil ergänzt die isolierte GeoTools-Probe
+fachliche SCRIPT-Prozesse und die erhaltenen JAR-Paketverträge aus. Das Vollprofil ergänzt die isolierte GeoTools-Probe
 sowie echte PostgreSQL/PostGIS-, FTP- und S3-Prüfungen. Fehlendes Docker ist ein
 Fehler. Die [Teststrategie](testing.md) beschreibt Szenarien und Aussagegrenzen.
 Teiltests ersetzen diese beiden Gates nicht.
 
 Testzahlen gelten jeweils für den getesteten SHA. Sichere Surefire-/Failsafe-XML,
 Konsolenlogs, Jobberichte und Artefaktidentitäten vor dem nächsten `clean`.
-Die CI und die Cleanup-Gates führen anschliessend den Artefaktaudit aus:
+Für überprüfte und vor clean gesicherte Modusnachweise verwendet die CI
+den Matrixstarter am sauberen Kandidaten:
 
 ```sh
-python3 scripts/audit-job-evidence.py --source <vollstaendige-Kandidaten-SHA>
-python3 scripts/audit-job-evidence.py --full --source <vollstaendige-Kandidaten-SHA>
+scripts/verify-job-matrix.sh --mode SCRIPT --scope full --output ../gretl-script-full
+scripts/verify-job-matrix.sh --mode JAR --scope full --output ../gretl-jar-full
+scripts/verify-job-matrix.sh --mode IMAGE --scope local --output ../gretl-image-local
+scripts/verify-job-matrix.sh --mode ALL --scope full --output ../gretl-all-full
 ```
 
-Der erste Audit gehört direkt zum Standardlauf, der zweite zum Vollprofil.
-Er baut keine Ersatzartefakte. Eine lokale Qualifikation ersetzt keine separate
-Release- oder Plattformfreigabe. Für die dokumentierte macOS-FTP-Diagnose siehe
+IMAGE startet externe Scripts/Projekte im generischen Runtime-Container,
+auch local mit Docker. ALL führt drei saubere vollständige Läufe aus,
+sichert vor jedem nächsten clean und prüft alle 44 Operationen je Modus.
+Der [Image-/OpenShift-Weg](../../gretl-dist/src/main/docker/README.md)
+beschreibt Basisdigest, tatsächliche Runtimebytes, UID und Volumes.
+
+Ein gewöhnlicher frischer Standardbuild kann weiterhin direkt auditiert
+werden, bevor ein weiterer Build seine Nachweise ersetzt:
+
+```sh
+python3 scripts/audit-job-evidence.py --source <vollstaendige-Kandidaten-SHA> --mode SCRIPT --scope local
+```
+
+Er erhält eine gemeinsame Maven-Build-Run-ID. Der Matrixstarter setzt
+eine UUID und explizite JUnit-Kandidatenbindung; deren Fehlen ist im
+Matrixaudit ein Fehler. Der Auditor baut keine Ersatzartefakte. Ein
+Vollprofil-Audit verwendet `--scope full` beziehungsweise den erhaltenen
+Alias `--full`. Eine lokale Qualifikation ist keine separate Release- oder
+Plattformfreigabe. Für die macOS-FTP-Diagnose siehe
 [Cleanup-Verfahren](../maintenance/cleanup/README.md).
 
 ## Artefakte und Ausführungskontexte

@@ -62,6 +62,7 @@ Volumes müssen für diese Identität beschreibbar sein; bei persistenten
 Volumes müssen deren Eigentums-/Gruppenrechte zum Namespace passen.
 `/job` und die Runtimekonfiguration werden read-only eingebunden;
 `/work`, `/tmp`, `/reports`, `/outputs` und `/run` sind beschreibbare Volumes.
+Die Vorlage gibt dem 30-Sekunden-Abschlussbudget 45 Sekunden Pod-Grace.
 Das Beispiel verwendet `emptyDir`; dauerhafte Ergebnisse benötigen einen
 passenden PVC oder einen externen fachlichen Export.
 

@@ -8,11 +8,12 @@ Diese Seiten beschreiben den implementierten Stand von GRETL Runtime:
 - [Module und Abhängigkeitsgrenzen](implementation/module-boundaries.md)
 - [Jobpaketierung und Schemas 1/2/3](implementation/job-packaging.md)
 - [Subprojekte und gemeinsamer Taskgraph](implementation/project-subprojects/README.md)
-- [Job-Artefakttests und IMAGE-Vorbereitung](implementation/job-artifact-tests.md)
+- [SCRIPT-, JAR- und reale IMAGE-Fachtests](implementation/job-artifact-tests.md)
+- [Generisches Runtime-Image und OpenShift](../gretl-dist/src/main/docker/README.md)
 - [Lokalisierung](architecture/runtime-contracts.md#lokalisierung) und [Plangraphen](architecture/runtime-contracts.md#plangraphen)
 - [Validatorfunktionen](implementation/job-packaging.md#validatorfunktionen)
 - [Taskreferenz](reference/reference.adoc) und [deren Generierung](reference/README.md)
-- [Manuelle Snapshot-Veröffentlichung](implementation/publish-snapshots.md)
+- [Snapshot-Veröffentlichung und Pflichtgates](implementation/publish-snapshots.md)
 
 ## Technische Verträge und historische Quellen
 

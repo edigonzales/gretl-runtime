@@ -9,6 +9,7 @@ spec:
   template:
     spec:
       restartPolicy: Never
+      terminationGracePeriodSeconds: 45
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true

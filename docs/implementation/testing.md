@@ -9,7 +9,7 @@ aufgerufen:
 ```
 
 Der normale Reactor enthält Unit-, Komponenten-, Distributions- und lokale
-fachliche JAR-Jobtests (`*JobIT`). Das Dienstprofil ergänzt die vollständigen
+fachliche SCRIPT-Prozesse (`*JobIT`) plus ausdrücklich erhaltene JAR-Paketverträge. Das Dienstprofil ergänzt die vollständigen
 `*IT` gegen echte Container; fehlendes Docker ist ein Fehler. Die getrennte
 GeoTools-Probe nimmt keine GeoTools-JARs in die Standarddistribution auf.
 
@@ -29,12 +29,12 @@ GeoTools-Probe nimmt keine GeoTools-JARs in die Standarddistribution auf.
 | FTP und S3 | ArtifactServicesIT; unabhängige FTP-/AWS-Clients |
 | Abbruch, SIGTERM und Abschlussreihenfolge | CancellationLocalJobIT und DatabaseArtifactIT |
 | Ausgewählte vollständige Pakete, externe Extension, Hostverunreinigung und Lauf ohne Buildumgebung | SelectedPackageLocalJobIT, SelectedPackageArtifactIT und DistributionIT; [Auswahlvertrag](job-packaging.md) |
-| IMAGE-Vorbereitung | ImageExecutionAdapterTest ohne echten GRETL-Image-Start |
+| Reale generische IMAGE-SCRIPT-Läufe und OpenShift-UID | ImageRuntimeIT, gemeinsame Fachsuite und echte Container; RecordingEngine nur zusätzliche Komponentenprüfung |
 
 Die älteren `PostgresSqlExecutorIT`, `Db2DbPostgresIT`,
 `DuckDbFederationPostgresIT`, `FormatPostgresIT`, `FtpTaskFamilyIT` und
 `S3TaskFamilyIT` bleiben zusätzliche CLI-Komponentenprüfungen. Sie zählen nicht
-als separater JAR-Nachweis. `PackagedSqlJobPostgresIT` bleibt eine zusätzliche
+als separater Produktprozess- oder Modusnachweis. `PackagedSqlJobPostgresIT` bleibt eine zusätzliche
 ältere JAR-Regression.
 
 Die Originalzuordnung mit unveränderten Quellhashes, Originalassertionen und
@@ -42,7 +42,7 @@ Dateiprüfsummen steht im [historischen Szenarioinventar](../history/provenance/
 Die aktuelle Zuordnung, alle Varianten und konkret begründete Anpassungen
 stehen im [historischen Portnachweis](../history/provenance/scenario-mapping.json).
 Die [Jobtest-Verträge](job-artifact-tests.md) erklären Artefaktbau, separate
-Prozesse, Evidenz und die spätere ausdrückliche IMAGE-Konfiguration.
+Prozesse, Evidenz und die tatsächliche externe SCRIPT-Ausführung im IMAGE.
 
 PostgreSQL/PostGIS: digestgepinntes `postgis/postgis:16-3.4`, pro Test isoliertes
 Schema und `currentSchema=<Lease>,public`; Erweiterungen `postgis` und
@@ -56,22 +56,37 @@ Cleanup. Dessen Bibliothek verwendet `floci/floci:latest` ohne Digest-Override;
 dies wird ausdrücklich nicht als gepinnt ausgewiesen. Die lokale S3-Emulation
 prüft keine produktive AWS-Zugriffsberechtigung. Testzugänge sind synthetisch.
 
-Die Tests laufen sequenziell pro Failsafe-JVM. Die Standarddistribution wird im
-Reactor vor den Jobtests gebaut. Docker-Dienste bleiben auch bei zurückgestellter
-GRETL-Image-Ausführung obligatorisch. IMAGE ist keine aktuelle CI-Pflichtmatrix.
-Beide CI-Wege archivieren Reports, Prüfsummen, Konsolenlogs und Ergebnisse je
-getestetem Commit; Secretquellen bleiben ausgeschlossen.
+Die Tests laufen sequenziell pro Failsafe-JVM. SCRIPT ist der Hauptweg;
+JAR und IMAGE führen die COMMON-Fälle mit denselben Quellen und Orakeln aus.
+IMAGE startet den Produktlauncher mit externem Script/Projekt, kein
+Job-JAR. Die Standarddistribution wird vorher im Reactor gebaut.
 
-JaCoCo misst die Test-JVMs und aggregiert die aktiven Produktmodule. Nicht
-instrumentierte Job-/Launcherprozesse werden separat fachlich geprüft und
-liefern keine erfundene Coverage. Testanzahl und Codeabdeckung werden getrennt
-in den SHA-gebundenen Gateberichten angegeben; siehe [Build](build.md).
+```sh
+scripts/verify-job-matrix.sh --mode ALL --scope full --output ../gretl-all-full
+```
 
-Nach jedem CI-Gate läuft `scripts/audit-job-evidence.py --source <Commit-SHA>`;
-der vollständige Lauf ergänzt `--full`. Der Audit prüft die vorhandenen
-verifizierten Artefakte, ohne neue JARs zu bauen. Das separate manuelle
-`image-qualification.yml` ist vorbereitet und wurde in diesem Auftrag nicht
-ausgeführt. Die zusätzlichen Paketqualifikationen bleiben ausdrücklich JAR.
+Dieser Pflichtweg umfasst drei vollständige Läufe mit echten Diensten,
+getrennter Operationsabdeckung und gesicherten Nachweisen vor clean.
+`--scope local` lässt die externen Dienste weg; IMAGE/local benötigt
+weiterhin Docker. Der feste Szenariokatalog und seine Startzahlen werden
+gegen alle tatsächlich ausgeführten JUnit-Varianten und Prozesse geprüft.
+Fehler, Skips, fehlende oder fremde Fälle sind kein qualifizierter Erfolg.
+Alle E01–E12-Proben stehen in `tests/script-first-testing/test_job_evidence.py`.
+
+Die reguläre Push-/PR-CI und der Release-Candidate-Weg verwenden
+`qualification.yml`: Dockerfreier Standard und ALL/full auf demselben
+Commit. Publikation hängt von beiden Gates ab. Der manuelle IMAGE-Workflow
+ist eine zusätzliche Diagnose. Jeder Modus archiviert seine kuratierten
+Reports, Identitäten, Logs, Inventare und Ergebnisse; Secretquellen und
+Rohkonfiguration bleiben ausgeschlossen. Workflowverdrahtung wird nicht als
+bereits ausgeführter Remote-CI-Lauf bezeichnet.
+
+JaCoCo misst Test-JVMs und aktive Produktmodule. Separate Launcher-,
+Job-JAR- und Containerprozesse liefern fachliche Nachweise, keine erfundene
+Codecoverage. Die [Jobtest-Verträge](job-artifact-tests.md) erklären
+Quelle/Input, JUnitbindung, nanosekundengenaue Zeitprüfung und Cleanup.
+Testzahlen gelten für den jeweiligen SHA. Tatsächliche Plattform und
+nicht ausgeführte Cluster-/Architekturprüfungen stehen im Phasenbericht.
 
 ## Beispielquellen und Drift
 

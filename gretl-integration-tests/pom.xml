@@ -178,6 +178,7 @@
         <configuration>
           <systemPropertyVariables>
             <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
+            <gretl.test.runId>${gretl.test.runId}</gretl.test.runId>
             <gretl.test.executionMode>${gretl.test.executionMode}</gretl.test.executionMode>
             <gretl.test.imageMetadata>${maven.multiModuleProjectDirectory}/gretl-dist/target/image/candidate.json</gretl.test.imageMetadata>
           </systemPropertyVariables>
@@ -199,6 +200,7 @@
           <excludes><exclude>**/ImageRuntimeIT.java</exclude></excludes>
           <systemPropertyVariables>
             <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
+            <gretl.test.runId>${gretl.test.runId}</gretl.test.runId>
             <gretl.test.executionMode>${gretl.test.executionMode}</gretl.test.executionMode>
             <gretl.test.imageMetadata>${maven.multiModuleProjectDirectory}/gretl-dist/target/image/candidate.json</gretl.test.imageMetadata>
             <gretl.test.reactorDistribution>${maven.multiModuleProjectDirectory}/gretl-dist/target/dist</gretl.test.reactorDistribution>
