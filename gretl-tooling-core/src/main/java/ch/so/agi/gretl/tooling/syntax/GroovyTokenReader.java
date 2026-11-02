@@ -13,6 +13,7 @@ import static ch.so.agi.gretl.tooling.syntax.TokenIndex.*;
 public final class GroovyTokenReader {
     public static final int MAX_LITERAL_UTF16=65_536;
     public static final int MAX_NUMBER_UTF16=4_096;
+    public static final int MAX_LOGICAL_STATEMENT_TOKENS=512;
     public TokenIndex lex(SourceText source,ParseOptions budget,CancellationToken cancellation) {
         var mapper=new ParserCoordinateMapper(source);var raw=new ArrayList<LexToken>();var comments=new ArrayList<LexToken>();var problems=new ArrayList<SyntaxProblem>();
         var lexer=new GroovyLangLexer(CharStreams.fromString(source.hasBom()?" "+source.text().substring(1):source.text())) {
@@ -22,11 +23,23 @@ public final class GroovyTokenReader {
             }
         };
         lexer.removeErrorListeners();lexer.setErrorIgnored(true);
-        int nesting=0,gstrings=0,gstart=-1,tokenCount=0;boolean limited=false;
+        int nesting=0,grouping=0,gstrings=0,gstart=-1,tokenCount=0,statementTokens=0,previousType=Token.INVALID_TYPE;boolean limited=false,pendingLineBreak=false;
         try {
             while(true) {
                 cancellation.check();Token token=lexer.nextToken();if(token.getType()==Token.EOF)break;
                 int type=token.getType();var span=new TextSpan(mapper.lexerOffset(token.getStartIndex()),mapper.lexerOffset(token.getStopIndex()+1));
+                // A newline is a safe complexity boundary only outside parenthesized groups,
+                // after a complete operand and before an unambiguous new statement operand.
+                // Continued .property, operators, calls, ternaries and unary chains never reset it.
+                if(type==GroovyLexer.NL)pendingLineBreak=true;
+                else if(type!=GroovyLexer.SH_COMMENT){
+                    if(type==GroovyLexer.SEMI||(pendingLineBreak&&grouping==0&&canEndStatement(previousType)&&canStartStatement(type)))statementTokens=0;
+                    pendingLineBreak=false;
+                    if(++statementTokens>MAX_LOGICAL_STATEMENT_TOKENS){limited=true;problems.add(new SyntaxProblem("PARSE_LIMIT",span,"Logical statement exceeds syntax analysis budget"));break;}
+                    previousType=type;
+                }
+                if(type==GroovyLexer.LPAREN||type==GroovyLexer.LBRACK)grouping++;
+                if(type==GroovyLexer.RPAREN||type==GroovyLexer.RBRACK)grouping=Math.max(0,grouping-1);
                 if(type==GroovyLexer.LPAREN||type==GroovyLexer.LBRACK||type==GroovyLexer.LBRACE)nesting++;
                 if(type==GroovyLexer.RPAREN||type==GroovyLexer.RBRACK||type==GroovyLexer.RBRACE)nesting=Math.max(0,nesting-1);
                 if(nesting>budget.maxNesting()||++tokenCount>budget.maxTokens()) {limited=true;problems.add(new SyntaxProblem("PARSE_LIMIT",span,"Syntax analysis budget exceeded"));break;}
@@ -58,6 +71,12 @@ public final class GroovyTokenReader {
         for(var token:raw){if(token.span().startUtf16()<cursor)continue;if(token.span().startUtf16()>cursor)addGap(ledger,source,cursor,token.span().startUtf16());ledger.add(token);cursor=token.span().endUtf16();}
         if(cursor<source.text().length())addGap(ledger,source,cursor,source.text().length());
         return new TokenIndex(ledger,problems,limited);
+    }
+    private static boolean canEndStatement(int type) {
+        return type==GroovyLexer.Identifier||type==GroovyLexer.CapitalizedIdentifier||type==GroovyLexer.StringLiteral||type==GroovyLexer.GStringEnd||type==GroovyLexer.IntegerLiteral||type==GroovyLexer.FloatingPointLiteral||type==GroovyLexer.BooleanLiteral||type==GroovyLexer.NullLiteral||type==GroovyLexer.RPAREN||type==GroovyLexer.RBRACK||type==GroovyLexer.RBRACE;
+    }
+    private static boolean canStartStatement(int type) {
+        return type==GroovyLexer.Identifier||type==GroovyLexer.CapitalizedIdentifier||type==GroovyLexer.DEF||type==GroovyLexer.FINAL||type==GroovyLexer.RETURN||type==GroovyLexer.IF||type==GroovyLexer.FOR||type==GroovyLexer.WHILE||type==GroovyLexer.TRY||type==GroovyLexer.THROW||type==GroovyLexer.StringLiteral||type==GroovyLexer.IntegerLiteral||type==GroovyLexer.FloatingPointLiteral||type==GroovyLexer.BooleanLiteral||type==GroovyLexer.NullLiteral;
     }
     private static void addGap(List<LexToken> out,SourceText source,int start,int end) {
         String text=source.text().substring(start,end);Channel channel=text.chars().allMatch(c->Character.isWhitespace(c)||c=='\uFEFF')?Channel.WHITESPACE:Channel.OPAQUE;

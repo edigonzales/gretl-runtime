@@ -21,6 +21,10 @@ final class SafeGroovySyntaxReader {
             String parserText=source.hasBom()?" "+source.text().substring(1):source.text();
             unit=new SourceUnit(source.stamp().documentId().toString(),parserText,configuration,loader,new ErrorCollector(configuration));
             unit.parse();unit.completePhase();unit.nextPhase();unit.convert();module=unit.getAST();
+        } catch(StackOverflowError exceeded) {
+            // Groovy's own parser/convert may recurse before a converted AST is available.
+            // A specific exhaustion diagnostic preserves the source; it is never a successful empty parse.
+            module=null;problems.add(new SyntaxProblem("PARSE_LIMIT",new TextSpan(0,source.text().length()),"Groovy syntax recursion budget exhausted"));
         } catch(java.io.IOException | RuntimeException | org.apache.groovy.parser.antlr4.GroovySyntaxError e) {
             if(unit!=null&&unit.getErrorCollector().getErrors()!=null)for(Object item:unit.getErrorCollector().getErrors())if(item instanceof SyntaxErrorMessage error){
                 var cause=error.getCause();int start=coordinates.parserOffset(cause.getStartLine(),cause.getStartColumn());

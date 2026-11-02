@@ -29,6 +29,26 @@ class ParseBoundsAndCoordinatesTest {
         var interpolated=parser.parse(SourceText.job(g));assertTrue(interpolated.problems().stream().anyMatch(p->p.code().equals("PARSE_LIMIT")));
         assertTrue(interpolated.problems().stream().noneMatch(p->p.code().equals("LEXICAL_ERROR")),interpolated.problems().toString());
     }
+    @Test void unparenthesizedRecursiveChainsAreBoundedBeforeExtraction(){
+        var parser=new GretlDocumentParser();
+        for(String expression:new String[]{"a"+".x".repeat(12000), "a"+"\n.x".repeat(12000), "!".repeat(12000)+"true", "a=".repeat(12000)+"1", "true?".repeat(3000)+"1"+":0".repeat(3000)}){
+            var source=SourceText.job("task('t', Echo) { input="+expression+" }\naction('safe') {}");
+            var doc=assertTimeout(Duration.ofSeconds(10),()->parser.parse(source));
+            assertTrue(doc.problems().stream().anyMatch(p->p.code().equals("PARSE_LIMIT")),doc.problems().toString());
+            assertEquals(source.text(),doc.source().text());assertEquals(source.text(),doc.tokens().all().stream().map(TokenIndex.LexToken::text).collect(java.util.stream.Collectors.joining()));
+            assertEquals(Completeness.PARTIAL,doc.coverage().syntax());assertFalse(doc.opaque().isEmpty());
+        }
+    }
+    @Test void convertedAstGuardAlsoBoundsChainsBelowTheLexicalStatementLimit(){
+        var doc=new GretlDocumentParser().parse(SourceText.job("task('t', Echo) { input=a"+".x".repeat(200)+" }"));
+        assertFalse(doc.tokens().budgetExceeded());
+        assertTrue(doc.problems().stream().anyMatch(p->p.code().equals("PARSE_LIMIT")&&p.message().contains("Converted syntax")),doc.problems().toString());
+    }
+    @Test void depthGuardCoversEveryPinnedGroovyVisitorEntryPoint() throws Exception {
+        for(var method:org.codehaus.groovy.ast.GroovyCodeVisitor.class.getMethods()){
+            if(method.getName().startsWith("visit"))assertNotNull(SyntaxDepthGuard.class.getDeclaredMethod(method.getName(),method.getParameterTypes()),method.toString());
+        }
+    }
     @Test void cancellationIsNotTurnedIntoAnEmptySuccessfulDocument(){
         var parser=new GretlDocumentParser();assertThrows(java.util.concurrent.CancellationException.class,()->parser.parse(SourceText.job("action('a') {}"),DocumentKind.JOB,ParseOptions.DEFAULT,()->true));
         var count=new AtomicInteger();assertThrows(java.util.concurrent.CancellationException.class,()->parser.parse(SourceText.job("action('a') {} ".repeat(100)),DocumentKind.JOB,ParseOptions.DEFAULT,()->count.incrementAndGet()>8));

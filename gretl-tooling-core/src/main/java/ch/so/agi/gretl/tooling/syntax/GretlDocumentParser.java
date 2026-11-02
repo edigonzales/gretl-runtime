@@ -20,7 +20,15 @@ public final class GretlDocumentParser {
         if(tokens.budgetExceeded())return new ParsedDocument(source,kind,tokens,List.of(),List.of(new OpaqueStatement(new TextSpan(0,source.text().length()),"TOKEN_OR_NESTING_LIMIT",true)),tokens.problems(),Coverage.partial());
         var reader=new SafeGroovySyntaxReader();var parsed=reader.readModule(source,cancellation);
         var problems=merger.problems(tokens.problems(),parsed.problems());
+        if(parsed.problems().stream().anyMatch(p->p.code().equals("PARSE_LIMIT")))return limited(source,kind,tokens,problems);
         if(parsed.module()!=null){
+            try { new SyntaxDepthGuard(options.maxNesting(),cancellation).check(parsed.module()); }
+            catch(SyntaxDepthGuard.Limit exceeded) {
+                var mapper=new ParserCoordinateMapper(source);var node=exceeded.node;
+                var span=mapper.parserSpan(node.getLineNumber(),node.getColumnNumber(),node.getLastLineNumber(),node.getLastColumnNumber());
+                var bounded=new ArrayList<>(problems);bounded.add(new SyntaxProblem("PARSE_LIMIT",span,"Converted syntax exceeds depth budget"));
+                return limited(source,kind,tokens,bounded);
+            }
             var extracted=new GretlAstExtractor(source,tokens,cancellation).extract(parsed.module());
             var coverage=problems.isEmpty()?extracted.coverage():new Coverage(extracted.coverage().declarations(),extracted.coverage().references(),extracted.coverage().fieldAssignments(),Completeness.PARTIAL);
             return new ParsedDocument(source,kind,tokens,extracted.declarations(),extracted.opaque(),problems,coverage);
@@ -33,11 +41,15 @@ public final class GretlDocumentParser {
             if(declaration.span().length()==0)continue;
             var island=new SourceText(source.stamp().documentId(),source.slice(declaration.statementSpan()),source.stamp().bufferVersion(),"RECOVERY_ISLAND",false);
             var syntax=reader.readModule(island,cancellation);if(syntax.module()==null||!syntax.problems().isEmpty())continue;
+            try { new SyntaxDepthGuard(options.maxNesting(),cancellation).check(syntax.module()); }catch(SyntaxDepthGuard.Limit exceeded){continue;}
             var extracted=new GretlAstExtractor(source,tokens,cancellation,island,declaration.statementSpan().startUtf16()).extract(syntax.module());
             for(var d:extracted.declarations())islands.add(merger.recoveredIsland(d));
         }
         if(attempts>MAX_RECOVERY_ISLANDS){var bounded=new ArrayList<>(problems);bounded.add(new SyntaxProblem("PARSE_LIMIT",new TextSpan(0,source.text().length()),"Recovery island budget exceeded; remaining islands are partial"));problems=List.copyOf(bounded);}
         var combined=merger.declarations(islands,recovery.declarations());
         return new ParsedDocument(source,kind,tokens,combined,recovery.opaque(),problems,Coverage.partial());
+    }
+    private ParsedDocument limited(SourceText source,DocumentKind kind,TokenIndex tokens,List<SyntaxProblem> problems) {
+        return new ParsedDocument(source,kind,tokens,List.of(),List.of(new OpaqueStatement(new TextSpan(0,source.text().length()),"AST_DEPTH_LIMIT",true)),problems,Coverage.partial());
     }
 }
