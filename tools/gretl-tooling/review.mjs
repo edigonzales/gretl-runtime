@@ -57,6 +57,26 @@ export function verifyArtifact(a) {
   assert(isAbsolute(a.path)); assert(statSync(a.path).isFile());
   assert.equal(hash(readFileSync(a.path)),a.sha256,`Artifact changed: ${a.path}`);
 }
+export function verifyCurrentGateManifest(manifest,candidateSha,argv){
+  assert.equal(manifest.sha,candidateSha);assert.equal(manifest.dirty,'');assert.equal(manifest.exit.code,0);assert.equal(manifest.exit.signal,null);
+  assert.deepEqual(manifest.argv,argv);
+  const start=Date.parse(manifest.startedAt),end=Date.parse(manifest.endedAt);
+  assert(Number.isFinite(start)&&Number.isFinite(end)&&end>=start,'Invalid gate times');
+  const counts={tests:0,failures:0,errors:0,skipped:0};
+  assert(Array.isArray(manifest.captured)&&manifest.captured.length>0,'No current captured evidence');
+  const paths=new Set();
+  for(const artifact of manifest.captured){
+    assert(!paths.has(artifact.path),'Duplicate captured evidence');paths.add(artifact.path);verifyArtifact(artifact);
+    const modified=Date.parse(artifact.sourceModifiedAt);
+    assert(Number.isFinite(modified)&&modified>=start&&modified<=end,'Captured evidence predates or postdates gate');
+    if(/\/(?:surefire|failsafe)-reports\/TEST-[^/]+\.xml$/.test(artifact.path)){
+      const header=readFileSync(artifact.path,'utf8').match(/<testsuite\b[^>]*>/)?.[0];assert(header,'Missing test suite');
+      for(const key of Object.keys(counts))counts[key]+=Number(header.match(new RegExp(`\\b${key}="(\\d+)"`))?.[1]??0);
+    }
+  }
+  assert.deepEqual(manifest.counts,counts,'Manifest counts differ from current raw XML');
+  assert(counts.tests>0,'No fresh tests');for(const key of ['failures','errors','skipped'])assert.equal(counts[key],0,`Gate ${key}`);
+}
 export function verifyModelIdentity(identity) {
   assert.match(identity.openCodeVersion,/^2\.\d+\.\d+/);
   assert.equal(identity.provider,'deepseek'); assert.equal(identity.model,'deepseek-flash');
@@ -158,7 +178,8 @@ export function validateReviewArtifacts(request,verdict,report,completion) {
     const manifests=c.evidence.filter(p=>p.endsWith('/manifest.json')).map(json);
     for(const id of c.checkIds){
       const required=request.requiredChecks.find(g=>g.id===id);assert(required,'Unknown verified check');
-      assert(manifests.some(m=>m.sha===request.candidateSha&&m.dirty===''&&m.exit.code===0&&m.exit.signal===null&&m.counts.tests>0&&m.counts.failures===0&&m.counts.errors===0&&m.counts.skipped===0&&JSON.stringify(m.argv)===JSON.stringify(required.argv)),'Missing current clean-candidate gate manifest');
+      const matching=manifests.find(m=>m.sha===request.candidateSha&&JSON.stringify(m.argv)===JSON.stringify(required.argv));
+      assert(matching,'Missing current clean-candidate gate manifest');verifyCurrentGateManifest(matching,request.candidateSha,required.argv);
     }
     checkIds.push(...c.checkIds);
   }

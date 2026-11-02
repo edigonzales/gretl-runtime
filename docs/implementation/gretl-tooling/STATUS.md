@@ -1,7 +1,7 @@
 # GRETL Tooling – aktueller Auftragsstatus
 
 **Arbeitsstand · 2. November 2026.**
-P0 ist unabhängig abgenommen. Der erste P1-Review ist mit gültigem FAIL beendet; F1–F3 sind lokal korrigiert, neue Kandidatengates und unabhängiger Review stehen aus.
+P0 ist unabhängig abgenommen. Der erste P1-Review ist mit gültigem FAIL beendet; F1–F3 sind lokal korrigiert, neue Kandidatengates und unabhängiger Review stehen aus; die mitgefundene Collector-Frischekorrektur wird mitgeprüft.
 
 `assignmentBase`: `185fc6700b5cb2897f724d457610a57f059b3421`.
 `requirementsDigest`: `cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3`.
