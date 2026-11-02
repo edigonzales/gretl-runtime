@@ -1,16 +1,16 @@
 # GRETL Tooling – aktueller Auftragsstatus
 
 **Arbeitsstand · 2. November 2026.**
-P0 ist in Umsetzung. Keine Phase ist unabhängig abgenommen.
+P0 ist unabhängig abgenommen; der äussere Reviewprozess ist beendet und validiert. P1 beginnt.
 
 `assignmentBase`: `185fc6700b5cb2897f724d457610a57f059b3421`.
-`requirementsDigest`: durch den geprüften Orchestrator aus normativen Dateien ermitteln.
-Primärplattform/Toolchain/Reviewbereitschaft: in P0 tatsächlich nachweisen.
+`requirementsDigest`: `cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3`.
+Primärplattform: macOS 27.0.1 arm64, JDK 25.0.2, OpenCode 2.2.5 mit direktem DeepSeek Flash-1017. Tatsächliche Bereitschafts- und Bildprobe in P0 belegt.
 
 | Phase | Ziel | Status | geprüfter Produkt-SHA | unabhängiger Review |
 |---|---|---|---|---|
-| P0 | Verträge, Katalog, Reviewkette | IN_PROGRESS | — | — |
-| P1 | Sicherer Parser und Recovery | PLANNED | — | — |
+| P0 | Verträge, Katalog, Reviewkette | PASS | `5ff6cffcff1d23d1cec00116a8d0a51948945f33` | [Originalreview](reviews/P0/attempt-1/review.md) |
+| P1 | Sicherer Parser und Recovery | IN_PROGRESS | — | — |
 | P2 | Projekte, Snapshots, Semantik | PLANNED | — | — |
 | P3 | Queries und Editplanung | PLANNED | — | — |
 | P4 | Eigenständiger LSP | PLANNED | — | — |
@@ -21,7 +21,7 @@ Primärplattform/Toolchain/Reviewbereitschaft: in P0 tatsächlich nachweisen.
 
 ## Aktuell erlaubter nächster Schritt
 
-P0 nach CODEX_STARTPROMPT vervollständigen und unabhängig prüfen. Alle späteren Phasen sind bis zum jeweils gültigen Vorphasen-PASS gesperrt.
+P1 nach CODEX_STARTPROMPT implementieren. P2 bleibt bis zum gültigen P1-PASS gesperrt.
 
 ## Fortschreibung
 
