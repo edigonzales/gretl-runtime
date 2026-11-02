@@ -193,7 +193,7 @@ export async function startReviewer(requestFile,binary) {
 }
 export function archiveReview(evidence,destination){assert(!existsSync(destination));mkdirSync(destination,{recursive:true});for(const f of ['review.md','verdict.json','process.json','validation.json'])writeFileSync(resolve(destination,f),readFileSync(resolve(evidence,f)));}
 export function cleanupOwnedResources(worktree,repo=root){assert.equal(command(['git','symbolic-ref','-q','--short','HEAD'],repo).startsWith('codex/'),true);command(['git','worktree','remove',worktree],repo);}
-if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
+async function main() {
   const [action,...args]=process.argv.slice(2);
   if(action==='preflight') {
     assert.deepEqual(args.slice(0,1),['--repo']);assert.equal(resolve(args[1]),root);
@@ -206,3 +206,5 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
   else if(action==='run') {const result=await startReviewer(resolve(args[0]),args[1]);console.log(result);if(result!=='PASS')process.exitCode=1;}
   else throw new Error('Usage: review.mjs preflight --repo <path> | run <request.json> <opencode-binary>');
 }
+
+if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)) main().catch(error=>{console.error(error);process.exitCode=1;});
