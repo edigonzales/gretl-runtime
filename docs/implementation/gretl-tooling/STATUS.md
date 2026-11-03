@@ -13,7 +13,7 @@ Primärplattform: macOS 27.0.1 arm64, JDK 25.0.2, OpenCode 2.2.5 mit direktem De
 | P1 | Sicherer Parser und Recovery | PASS | `412909f954a6059a331754db1bf11d897ffb9b88` | [Originalreview](reviews/P1/attempt-2/review.md); [erster FAIL](reviews/P1/attempt-1/review.md) |
 | P2 | Projekte, Snapshots, Semantik | PASS | `1a8d9f0a4096295c2e5898bab2593bb3eb34789e` | [Originalreview](reviews/P2/attempt-4-resumed-pass/review.md), [validierter Abschluss](reviews/P2/attempt-4-resumed-pass/validation.json); frühere Fehlversuche erhalten |
 | P3 | Queries und Editplanung | PASS | `96688a5b2436c25504dbfbb33ce375a002b3cee0` | [Originalreview](reviews/P3/attempt-2/review.md), [validierter Abschluss](reviews/P3/attempt-2/validation.json); [erster FAIL](reviews/P3/attempt-1/review.md) erhalten |
-| P4 | Eigenständiger LSP | PLANNED | — | — |
+| P4 | Eigenständiger LSP | IN_PROGRESS | — | [Implementierung](implementation/P4.md) |
 | P5 | Installierter Texteditor | PLANNED | — | — |
 | P6 | Interaktiver Graph | PLANNED | — | — |
 | P7 | Schreibender Modeler | PLANNED | — | — |

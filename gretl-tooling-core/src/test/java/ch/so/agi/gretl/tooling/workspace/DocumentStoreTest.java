@@ -7,6 +7,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DocumentStoreTest {
+    @org.junit.jupiter.api.Test void readonlyBufferMetadataSurvivesIncrementalAndFullChanges() {
+        var store=new DocumentStore();var id=java.net.URI.create("file:/readonly/job.groovy");
+        store.open(id,"gretl",1,"action('a') {}",false);
+        store.applyChanges(id,2,java.util.List.of(DocumentStore.TextChange.full("action('b') {}")));
+        org.junit.jupiter.api.Assertions.assertFalse(store.get(id).orElseThrow().source().stamp().editable());
+    }
     private final URI id=URI.create("memory:/job.groovy");
     @Test void allIncrementalChangesUseThePrecedingChangeAndOriginalUtf16Coordinates(){
         var store=new DocumentStore();store.open(id,"gretl",1,"😀a\r\nb");var before=store.capture();

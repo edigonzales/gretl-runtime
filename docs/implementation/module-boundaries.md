@@ -8,6 +8,7 @@ den aktuellen Zuschnitt.
 | gretl-language-contract | Reine Namens-, DSL- und Graphregeln | keine; ausschliesslich JDK |
 | gretl-tooling-core | Sicheres Parsing, Katalogdaten, Workspacecaptures und statische Semantik | Language-Contract |
 | gretl-tooling-catalog | Vertrauenswuerdiger Buildexport; separates reines Katalogdatenartefakt | API, Tooling-Core, aktuelle Taskbibliotheken |
+| gretl-lsp | Eigenstaendiger Java25-stdio-Host fuer Queries, Graph und Editplanung | Tooling-Core, Language-Contract; ausschliesslich der isolierte Datenclassifier des Katalogs |
 | gretl-api | Neutrale Java-SPI, Metadaten und Kontexte | keine; ausschliesslich JDK |
 | gretl-i18n | Meldungskataloge | keine |
 | gretl-runner | Planung, sequenzielle Ausführung, Lebensdauer | API, i18n, Language-Contract |

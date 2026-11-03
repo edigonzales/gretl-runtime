@@ -47,17 +47,23 @@ public final class LanguageQueries {
     }
 
     public List<CodeFixProposal> codeActions(QueryContext context,List<DiagnosticId> ids) {
+        return codeActions(context,ids,ch.so.agi.gretl.tooling.CancellationToken.NONE);
+    }
+
+    public List<CodeFixProposal> codeActions(QueryContext context,List<DiagnosticId> ids,ch.so.agi.gretl.tooling.CancellationToken cancellation) {
         var actions=new ArrayList<CodeFixProposal>();
         var analysis=context.snapshot().analysis();
+        var requested=new java.util.HashSet<>(ids);
         for(var diagnostic:analysis.diagnostics()) {
+            cancellation.check();if(actions.size()>=32)break;
             var id=new DiagnosticId(diagnostic.code(),diagnostic.anchor());
-            if(!ids.contains(id)||!diagnostic.anchor().documentId().equals(context.documentId())||!diagnostic.code().equals("RESULT_DEPENDENCY_REQUIRED"))continue;
+            if(!requested.contains(id)||!diagnostic.anchor().documentId().equals(context.documentId())||!diagnostic.code().equals("RESULT_DEPENDENCY_REQUIRED"))continue;
             for(var reference:analysis.references())if(reference.anchor().documentId().equals(diagnostic.anchor().documentId())
                     &&diagnostic.anchor().span()!=null&&diagnostic.anchor().span().contains(reference.anchor().span())
                     &&(reference.kind()==ReferenceKind.RESULT||reference.kind()==ReferenceKind.RESULT_OPTIONAL)&&reference.target().isPresent()&&reference.owner()!=null) {
                 var intent=new ch.so.agi.gretl.tooling.edit.SemanticEditIntent.AddDependency(reference.target().orElseThrow(),reference.owner(),ch.so.agi.gretl.language.PlanSemantics.EdgeKind.DEPENDS_ON);
                 var result=new ch.so.agi.gretl.tooling.edit.SemanticEditPlanner().plan(context.snapshot(),intent,
-                        ch.so.agi.gretl.tooling.edit.EditStyle.defaults(),ch.so.agi.gretl.tooling.CancellationToken.NONE);
+                        ch.so.agi.gretl.tooling.edit.EditStyle.defaults(),cancellation);
                 if(result.plan().isPresent())actions.add(new CodeFixProposal(analysis.capture().configuration().language().startsWith("de")?"Datenabhängigkeit ergänzen":"Add data dependency",id,intent));
             }
         }
@@ -65,9 +71,13 @@ public final class LanguageQueries {
     }
 
     public ch.so.agi.gretl.tooling.edit.EditPlanningResult applyQuickFix(QueryContext context,CodeFixProposal proposal) {
-        if(!codeActions(context,List.of(proposal.diagnostic())).contains(proposal))throw new IllegalArgumentException("EDIT_STALE_QUICK_FIX");
+        return applyQuickFix(context,proposal,ch.so.agi.gretl.tooling.CancellationToken.NONE);
+    }
+
+    public ch.so.agi.gretl.tooling.edit.EditPlanningResult applyQuickFix(QueryContext context,CodeFixProposal proposal,ch.so.agi.gretl.tooling.CancellationToken cancellation) {
+        if(!codeActions(context,List.of(proposal.diagnostic()),cancellation).contains(proposal))throw new IllegalArgumentException("EDIT_STALE_QUICK_FIX");
         return new ch.so.agi.gretl.tooling.edit.SemanticEditPlanner().plan(context.snapshot(),proposal.intent(),
-                ch.so.agi.gretl.tooling.edit.EditStyle.defaults(),ch.so.agi.gretl.tooling.CancellationToken.NONE);
+                ch.so.agi.gretl.tooling.edit.EditStyle.defaults(),cancellation);
     }
 
     public List<Anchor> definitions(QueryContext context) {

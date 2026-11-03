@@ -29,7 +29,7 @@ public final class JobGraphProjector {
                         job.scope().canonical(),null,null,Map.of(),List.of(),List.of(),List.of()));
             }
         }
-        int next=nodes.size();
+        int next=nodes.size(),innerNext=0;
         for(var entry:analysis.symbols().entrySet())for(var symbol:entry.getValue()) {
             cancellation.check();
             String id=id(snapshot,"node",next++);
@@ -59,7 +59,7 @@ public final class JobGraphProjector {
                 String title=inner.operation() instanceof NameValue name?name.name():"Dynamic invocation";
                 var innerOperation=analysis.capture().catalog().result().catalog().stream().flatMap(c->c.operations().stream()).filter(o->o.symbol().equals(title)).findFirst();
                 // Explanatory children have no orchestrated symbol or independent edit capability.
-                nodes.add(new Node(id(snapshot,"node",next++),null,null,new Anchor(anchor.documentId(),inner.span()),NodeKind.INNER_INVOCATION,title,
+                nodes.add(new Node(id(snapshot,"inner",innerNext++),null,null,new Anchor(anchor.documentId(),inner.span()),NodeKind.INNER_INVOCATION,title,
                         innerOperation.map(o->o.operationId()).orElse(null),id,Map.of(),innerOperation.map(o->o.inputs()).orElse(List.of()),innerOperation.map(o->o.outputs()).orElse(List.of()),List.of()));
             }
         }

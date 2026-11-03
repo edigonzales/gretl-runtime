@@ -26,6 +26,8 @@ class JobGraphProjectorTest {
             var binding=graph.edges().stream().filter(e->e.kind()==EdgeKind.RESULT_BINDING).findFirst().orElseThrow();
             assertEquals("file",binding.outputField());assertEquals("input",binding.inputField());assertTrue(binding.schemaKnown());
             var inner=graph.nodes().stream().filter(n->n.kind()==NodeKind.INNER_INVOCATION).findFirst().orElseThrow();
+            var compact=projector.project(snapshot,new JobGraphProjector.GraphOptions(false,false),CancellationToken.NONE);
+            for(var node:compact.nodes())assertTrue(graph.nodes().stream().anyMatch(expanded->expanded.id().equals(node.id())&&Objects.equals(expanded.symbol(),node.symbol())),"Optional explanatory children must not change navigation IDs");
             assertTrue(inner.editCapabilities().isEmpty());assertNull(inner.symbol());
             assertTrue(graph.nodes().stream().anyMatch(n->n.id().equals(inner.parentId())&&n.kind()==NodeKind.ACTION));
             assertFalse(graph.edges().stream().anyMatch(e->e.source().equals(inner.id())||e.target().equals(inner.id())));

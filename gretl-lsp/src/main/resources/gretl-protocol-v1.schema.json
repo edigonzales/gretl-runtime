@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gretl.ch/schemas/tooling/protocol-v1",
+  "title": "GRETL Runtime custom request parameters v1",
+  "oneOf": [
+    {"$ref":"#/$defs/CatalogRequest"}, {"$ref":"#/$defs/GraphRequest"},
+    {"$ref":"#/$defs/EditRequest"}, {"$ref":"#/$defs/ValidationRequest"},
+    {"$ref":"#/$defs/NavigationRequest"}
+  ],
+  "$defs": {
+    "DocumentId":{"type":"string","minLength":1,"maxLength":8192,"pattern":"^(file:|untitled:|memory:)"},
+    "SnapshotId":{"type":"string","format":"uuid"},
+    "SymbolKey":{
+      "type":"object","additionalProperties":false,"required":["namespace","qualifiedName"],
+      "properties":{"namespace":{"enum":["TASK","PARAMETER","CLEANUP"]},"qualifiedName":{"type":"string","minLength":1,"maxLength":65536}}
+    },
+    "Value":{
+      "type":"object","additionalProperties":false,"required":["kind"],
+      "properties":{
+        "kind":{"enum":["Null","Text","Boolean","Integer","Long","BigInteger","Decimal","List","Map","ParameterRef","ResultFieldRef","JobFileRef","WorkPathRef","SecretAliasRef"]},
+        "scalar":{"type":"string","maxLength":65536},
+        "items":{"type":"array","maxItems":1024,"items":{"$ref":"#/$defs/Value"}},
+        "entries":{"type":"object","maxProperties":1024,"additionalProperties":{"$ref":"#/$defs/Value"}},
+        "symbol":{"$ref":"#/$defs/SymbolKey"},"field":{"type":"string","minLength":1,"maxLength":1024}
+      },
+      "allOf":[
+        {"if":{"properties":{"kind":{"enum":["Text","Boolean","Integer","Long","BigInteger","Decimal","JobFileRef","WorkPathRef","SecretAliasRef"]}}},"then":{"required":["scalar"]}},
+        {"if":{"properties":{"kind":{"const":"Boolean"}}},"then":{"properties":{"scalar":{"enum":["true","false"]}}}},
+        {"if":{"properties":{"kind":{"enum":["Integer","Long","BigInteger"]}}},"then":{"properties":{"scalar":{"pattern":"^-?[0-9]+$","maxLength":4096}}}},
+        {"if":{"properties":{"kind":{"const":"List"}}},"then":{"required":["items"]}},
+        {"if":{"properties":{"kind":{"const":"Map"}}},"then":{"required":["entries"]}},
+        {"if":{"properties":{"kind":{"enum":["ParameterRef","ResultFieldRef"]}}},"then":{"required":["symbol"]}},
+        {"if":{"properties":{"kind":{"const":"ResultFieldRef"}}},"then":{"required":["field"]}}
+      ]
+    },
+    "Fields":{"type":"object","maxProperties":128,"propertyNames":{"maxLength":1024},"additionalProperties":{"$ref":"#/$defs/Value"}},
+    "Parameter":{
+      "type":"object","additionalProperties":false,"required":["name","required"],
+      "properties":{"name":{"type":"string","minLength":1,"maxLength":65536},"description":{"type":"string","maxLength":65536},"type":{"enum":["text","boolean","integer","path"]},"required":{"type":"boolean"},"defaultValue":{"$ref":"#/$defs/Value"}}
+    },
+    "Intent":{
+      "type":"object","additionalProperties":false,"required":["kind"],
+      "properties":{
+        "kind":{"enum":["AddTask","AddAction","AddParameter","SetField","RemoveField","SetTaskOption","AddDependency","RemoveDependency","BindResult","RenameSymbol","DeleteTask","SetDefaults","ConfigureTask"]},
+        "target":{"$ref":"#/$defs/SymbolKey"},"producer":{"$ref":"#/$defs/SymbolKey"},
+        "field":{"type":"string","minLength":1,"maxLength":1024},"outputField":{"type":"string","minLength":1,"maxLength":1024},"edgeKind":{"enum":["DEPENDS_ON","AFTER"]},
+        "name":{"type":"string","minLength":1,"maxLength":65536},"operationId":{"type":"string","minLength":1,"maxLength":1024},"insertionOffset":{"type":"integer","minimum":0,"maximum":1048576},
+        "value":{"$ref":"#/$defs/Value"},"fields":{"$ref":"#/$defs/Fields"},"targets":{"type":"array","maxItems":1024,"items":{"$ref":"#/$defs/SymbolKey"}},
+        "parameter":{"$ref":"#/$defs/Parameter"},"removedFields":{"type":"array","maxItems":128,"uniqueItems":true,"items":{"type":"string","maxLength":1024}},"options":{"$ref":"#/$defs/Fields"}
+      },
+      "allOf":[
+        {"if":{"properties":{"kind":{"enum":["SetField","RemoveField","SetTaskOption","AddDependency","RemoveDependency","BindResult","RenameSymbol","DeleteTask","ConfigureTask"]}}},"then":{"required":["target"]}},
+        {"if":{"properties":{"kind":{"enum":["AddTask","AddAction","AddParameter"]}}},"then":{"required":["insertionOffset"]}},
+        {"if":{"properties":{"kind":{"enum":["AddTask","AddAction","RenameSymbol"]}}},"then":{"required":["name"]}},
+        {"if":{"properties":{"kind":{"const":"AddTask"}}},"then":{"required":["operationId"]}},
+        {"if":{"properties":{"kind":{"const":"AddParameter"}}},"then":{"required":["parameter"]}},
+        {"if":{"properties":{"kind":{"enum":["SetField","RemoveField","SetTaskOption","BindResult"]}}},"then":{"required":["field"]}},
+        {"if":{"properties":{"kind":{"enum":["SetField","SetTaskOption"]}}},"then":{"required":["value"]}},
+        {"if":{"properties":{"kind":{"enum":["AddDependency","RemoveDependency","BindResult"]}}},"then":{"required":["producer"]}},
+        {"if":{"properties":{"kind":{"enum":["AddDependency","RemoveDependency"]}}},"then":{"required":["edgeKind"]}},
+        {"if":{"properties":{"kind":{"const":"BindResult"}}},"then":{"required":["outputField"]}},
+        {"if":{"properties":{"kind":{"const":"SetDefaults"}}},"then":{"required":["targets"]}}
+      ]
+    },
+    "CatalogRequest":{
+      "type":"object","additionalProperties":false,"required":["protocolVersion","catalogSchemaVersion"],
+      "properties":{"protocolVersion":{"const":1},"catalogSchemaVersion":{"const":1}}
+    },
+    "GraphRequest":{
+      "type":"object","additionalProperties":false,"required":["protocolVersion","documentId"],
+      "properties":{"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"includeInnerInvocations":{"type":"boolean"},"requestedSources":{"type":"array","maxItems":32,"uniqueItems":true,"items":{"$ref":"#/$defs/DocumentId"}}}
+    },
+    "EditRequest":{
+      "type":"object","additionalProperties":false,"required":["protocolVersion","documentId","expectedSnapshotId","intent","requireOpenDocuments"],
+      "properties":{"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"intent":{"$ref":"#/$defs/Intent"},"requireOpenDocuments":{"type":"boolean"}}
+    },
+    "ValidationRequest":{
+      "type":"object","additionalProperties":false,"required":["protocolVersion","planId","expectedSnapshotId"],
+      "properties":{"protocolVersion":{"const":1},"planId":{"type":"string","format":"uuid"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"}}
+    },
+    "NavigationRequest":{
+      "type":"object","additionalProperties":false,"required":["protocolVersion","documentId","expectedSnapshotId"],
+      "properties":{"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"elementId":{"type":"string","maxLength":128},"offsetUtf16":{"type":"integer","minimum":0,"maximum":1048576}},
+      "oneOf":[{"required":["elementId"]},{"required":["offsetUtf16"]}]
+    }
+  }
+}

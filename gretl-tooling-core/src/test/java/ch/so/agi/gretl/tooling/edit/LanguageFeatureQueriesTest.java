@@ -137,6 +137,8 @@ class LanguageFeatureQueriesTest {
             var context=at(snapshot,source,"result('p')",8);
             var actions=queries.codeActions(context,List.of(new DiagnosticId(diagnostic.code(),diagnostic.anchor())));
             assertEquals(1,actions.size());
+            assertThrows(java.util.concurrent.CancellationException.class,()->queries.codeActions(context,List.of(new DiagnosticId(diagnostic.code(),diagnostic.anchor())),()->true));
+            assertThrows(java.util.concurrent.CancellationException.class,()->queries.applyQuickFix(context,actions.getFirst(),()->true));
             var fixed=queries.applyQuickFix(context,actions.getFirst()).plan().orElseThrow();
             assertTrue(fixed.postimages().get(JOB).contains("dependsOn: 'p'"));
             assertFalse(fixed.postimage().analysis().diagnostics().stream().anyMatch(d->d.code().equals("RESULT_DEPENDENCY_REQUIRED")));

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-runtime-parent</artifactId><version>6.0.0-SNAPSHOT</version></parent>
+  <artifactId>gretl-lsp</artifactId>
+  <dependencies>
+    <dependency><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-tooling-core</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>org.eclipse.lsp4j</groupId><artifactId>org.eclipse.lsp4j</artifactId><version>${lsp4j.version}</version></dependency>
+    <dependency><groupId>com.google.code.gson</groupId><artifactId>gson</artifactId><version>2.15.0</version></dependency>
+    <dependency><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-tooling-catalog</artifactId><version>${project.version}</version><classifier>catalog</classifier><exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions></dependency>
+    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+  </dependencies>
+  <build><plugins>
+    <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-assembly-plugin</artifactId><executions><execution><id>standalone-server</id><phase>package</phase><goals><goal>single</goal></goals><configuration><descriptorRefs><descriptorRef>jar-with-dependencies</descriptorRef></descriptorRefs><archive><manifest><mainClass>ch.so.agi.gretl.lsp.GretlServerLauncher</mainClass></manifest></archive></configuration></execution></executions></plugin>
+    <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-failsafe-plugin</artifactId><executions><execution><goals><goal>integration-test</goal><goal>verify</goal></goals></execution></executions></plugin>
+    <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><executions><execution><id>server-production-graph</id><phase>verify</phase><goals><goal>tree</goal></goals><configuration><outputType>json</outputType><outputFile>${project.build.directory}/tooling-dependencies.json</outputFile></configuration></execution></executions></plugin>
+    <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-antrun-plugin</artifactId><executions>
+      <execution><id>custom-protocol-schema</id><phase>test</phase><goals><goal>run</goal></goals><configuration><target><exec executable="node" dir="${maven.multiModuleProjectDirectory}" failonerror="true"><arg value="--test"/><arg value="tools/gretl-tooling/protocol.test.mjs"/></exec></target></configuration></execution>
+      <execution><id>server-bundle-boundary</id><phase>verify</phase><goals><goal>run</goal></goals><configuration><target><exec executable="node" dir="${maven.multiModuleProjectDirectory}" failonerror="true"><arg value="tools/gretl-tooling/verify-dependencies.mjs"/><arg value="--mode"/><arg value="server"/></exec></target></configuration></execution>
+    </executions></plugin>
+    <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId><executions><execution><id>server-module-boundary</id><phase>validate</phase><goals><goal>enforce</goal></goals><configuration><rules><bannedDependencies><searchTransitive>true</searchTransitive><excludes><exclude>ch.so.agi.gretl:gretl-api</exclude><exclude>ch.so.agi.gretl:gretl-runner</exclude><exclude>ch.so.agi.gretl:gretl-groovy</exclude><exclude>ch.so.agi.gretl:gretl-cli</exclude><exclude>ch.so.agi.gretl:gretl-*-tasks</exclude><exclude>ch.so.agi.gretl:gretl-ilivalidator</exclude><exclude>org.gradle:*</exclude><exclude>org.geotools:*</exclude></excludes></bannedDependencies></rules></configuration></execution></executions></plugin>
+  </plugins></build>
+</project>

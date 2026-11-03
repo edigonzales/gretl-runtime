@@ -1,0 +1,13 @@
+GRETL Runtime language server
+
+This artifact contains unmodified Eclipse LSP4J 1.0.0 and LSP4J JSON-RPC 1.0.0.
+Upstream source: https://github.com/eclipse-lsp4j/lsp4j/tree/v1.0.0
+Upstream license: META-INF/LICENSE-LSP4J.txt (EPL-2.0 OR BSD-3-Clause / EDL-1.0).
+Original about.html and upstream notices remain in the assembled archive.
+
+The language server and protocol adapters are original GRETL Runtime code.
+No implementation source was adopted from another GRETL stack for this module.
+Other embedded libraries are the resolved, pinned Tooling-Core dependencies
+(Apache Groovy, Jackson) and LSP4J's Gson dependency. Their upstream notices and
+license resources are retained. Resolved versions are recorded by the build's
+gretl-lsp/target/tooling-dependencies.json and the Maven metadata in this archive.

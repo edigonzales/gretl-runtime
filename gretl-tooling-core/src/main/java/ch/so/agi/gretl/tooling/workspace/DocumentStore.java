@@ -29,12 +29,15 @@ public final class DocumentStore {
     }
     void onChange(Consumer<URI> listener){changed=Objects.requireNonNull(listener);}
     public void open(URI id,String languageId,int version,String text){
+        open(id,languageId,version,text,true);
+    }
+    public void open(URI id,String languageId,int version,String text,boolean editable){
         id=identity(id);checkSize(text);
         synchronized(this){
             if(open.containsKey(id))throw new IllegalArgumentException("DOCUMENT_ALREADY_OPEN");
             if(open.size()>=maximumDocuments)throw new IllegalStateException("DOCUMENT_LIMIT");
             if(totalLength()+text.length()>maximumTotalUtf16)throw new IllegalStateException("BUFFER_TOTAL_LIMIT");
-            open.put(id,new OpenDocument(Objects.requireNonNull(languageId),++revision,new SourceText(id,text,version,"BUFFER",true)));
+            open.put(id,new OpenDocument(Objects.requireNonNull(languageId),++revision,new SourceText(id,text,version,"BUFFER",editable)));
         }
         changed.accept(id);
     }
@@ -56,7 +59,7 @@ public final class DocumentStore {
                 checkSize(text);
             }
             if(totalLength()-previous.source().text().length()+text.length()>maximumTotalUtf16)throw new IllegalStateException("BUFFER_TOTAL_LIMIT");
-            var next=new SourceText(id,text,version,"BUFFER",true);open.put(id,new OpenDocument(previous.languageId(),previous.incarnation(),next));revision++;
+            var next=new SourceText(id,text,version,"BUFFER",previous.source().stamp().editable());open.put(id,new OpenDocument(previous.languageId(),previous.incarnation(),next));revision++;
         }
         changed.accept(id);
     }
