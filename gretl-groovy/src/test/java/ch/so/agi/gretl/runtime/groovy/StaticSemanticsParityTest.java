@@ -112,6 +112,7 @@ class StaticSemanticsParityTest {
         var harness=new GroovyHarness(temp);var descriptors=catalog();descriptors.mergeExplicitDescriptors(catalog(TestGroovyOperations.required()).snapshot().result().catalog().orElseThrow().operations());
         for(String text:List.of(
             "action('a') { if(false) { ctx.run(RequiredText) {} } }; defaults 'a'",
+            "action('a') {}; cleanup('end') { if(false) { ctx.run(RequiredText) {} } }; defaults 'a'",
             "action('a') { if(true) { return 'ok' }; ctx.run(RequiredText) {} }; defaults 'a'",
             "action('a') { while(false) { ctx.run(RequiredText) {} } }; defaults 'a'",
             "action('a') { for(def i in []) { ctx.run(RequiredText) {} } }; defaults 'a'",

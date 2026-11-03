@@ -85,7 +85,7 @@ public final class ProjectAnalyzer {
             return ref;
         }
         void validateReferences(Symbol owner,PlanSemantics.DeclaredGraph graph){
-            if(owner.id().namespace()==Namespace.CLEANUP)for(var inner:owner.declaration().invocations())if(effective(owner.declaration()).active(inner.span()))diagnostic("INNER_INVOCATION_SCOPE",Severity.ERROR,new Anchor(owner.anchor().documentId(),inner.span()),List.of());
+            if(owner.id().namespace()==Namespace.CLEANUP)for(var inner:owner.declaration().invocations())if(effective(owner.declaration()).active(inner.span()))diagnostic("INNER_INVOCATION_SCOPE",conditionalBody(owner,inner.span())?Severity.WARNING:Severity.ERROR,new Anchor(owner.anchor().documentId(),inner.span()),List.of());
             for(var call:owner.declaration().references()){
                 cancellation.check();if(call.arguments().isEmpty()||!effective(owner.declaration()).active(call.span()))continue;var anchor=new Anchor(owner.anchor().documentId(),call.arguments().getFirst().span());var error=conditionalBody(owner,call.span())?Severity.WARNING:Severity.ERROR;
                 if(Set.of("file","workPath","path").contains(call.name())){

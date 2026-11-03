@@ -139,6 +139,7 @@ class ProjectAnalyzerTest {
         var analysis=analyze("action('a') { if(false) { parameter('maybe'); ctx.run(Echo) {} }; parameter('definite') }");
         assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_PARAMETER")&&d.severity()==Severity.WARNING));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_PARAMETER")&&d.severity()==Severity.ERROR));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.WARNING));assertFalse(analysis.capabilities().executionComplete());
         var task=analyze("task('a', Echo) { input='x'; if(false) { ctx.run(Echo) {} } }");assertFalse(task.capabilities().fieldAssignmentsComplete());assertFalse(task.capabilities().executionComplete());assertTrue(task.capabilities().referencesComplete());
+        var cleanup=analyze("cleanup('end') { if(false) { ctx.run(Echo) {} } }");assertTrue(cleanup.diagnostics().stream().anyMatch(d->d.code().equals("INNER_INVOCATION_SCOPE")&&d.severity()==Severity.WARNING));
         var registration=analyze("def hidden=[action('hidden') {}]; task('a', Echo) { typo='x' }");assertFalse(registration.capabilities().declarationsComplete());assertTrue(registration.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_INPUT")&&d.severity()==Severity.WARNING));
     }
     @Test void guardedSqlAndUncertainAssignmentsDoNotClaimProvenRuntimeParameterFailures(){
