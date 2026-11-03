@@ -15,13 +15,15 @@ public final class ProjectResolver {
         public ProjectId{workspaceRoot=SourceUris.directoryIdentity(workspaceRoot);anchor=DocumentStore.identity(anchor);}
         public ProjectId(URI root,URI anchor){this(root,anchor,false);}
     }
-    public record ProjectRequest(URI workspaceRoot,URI documentId,boolean singleJob,List<URI> excludedRoots){
-        public ProjectRequest { workspaceRoot=SourceUris.directoryIdentity(workspaceRoot);documentId=DocumentStore.identity(documentId);excludedRoots=excludedRoots.stream().map(SourceUris::directoryIdentity).toList(); }
-        public ProjectRequest(URI root,URI id){this(root,id,false,List.of());}
+    public record ProjectRequest(URI workspaceRoot,URI documentId,boolean singleJob,List<URI> excludedRoots,List<URI> requestedSources){
+        public ProjectRequest { workspaceRoot=SourceUris.directoryIdentity(workspaceRoot);documentId=DocumentStore.identity(documentId);excludedRoots=excludedRoots.stream().map(SourceUris::directoryIdentity).toList();requestedSources=requestedSources.stream().map(DocumentStore::identity).distinct().toList();if(requestedSources.size()>32)throw new IllegalArgumentException("SOURCE_REQUEST_LIMIT"); }
+        public ProjectRequest(URI root,URI id,boolean singleJob,List<URI> excludedRoots){this(root,id,singleJob,excludedRoots,List.of());}
+        public ProjectRequest(URI root,URI id){this(root,id,false,List.of(),List.of());}
     }
     public record JobSource(ProjectNameRules scope,URI documentId) { }
     public record ProjectProblem(String code,URI documentId,TextSpan span,boolean error,List<TextSpan> related){public ProjectProblem{related=List.copyOf(related);}}
-    public record ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete){
+    public record ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete,SettingsDocumentParser.SettingsDocument settings){
+        public ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete){this(id,directory,settingsId,projectMode,jobs,defaultTargets,problems,documents,sources,complete,null);}
         public ResolvedProject { jobs=List.copyOf(jobs);defaultTargets=List.copyOf(defaultTargets);problems=List.copyOf(problems);documents=Map.copyOf(documents); }
     }
     public ResolvedProject resolve(ProjectRequest request,SourceRepository repository,DocumentStore.BufferCapture overlay,CancellationToken cancellation){
@@ -36,14 +38,14 @@ public final class ProjectResolver {
                 if(sameDirectory(dir,request.workspaceRoot()))break;
             }if(settings==null&&depth>=32&&dir!=null&&within(request.workspaceRoot(),dir)){lookupLimited=true;problems.add(new ProjectProblem("PROJECT_DEPTH_LIMIT",request.documentId(),null,false,List.of()));}}
         }
-        var jobs=new ArrayList<JobSource>();var defaults=new ArrayList<SettingsDocumentParser.SettingName>();var documents=new LinkedHashMap<URI,ParsedDocument>();boolean complete=!lookupLimited;
+        var jobs=new ArrayList<JobSource>();var defaults=new ArrayList<SettingsDocumentParser.SettingName>();var documents=new LinkedHashMap<URI,ParsedDocument>();boolean complete=!lookupLimited;SettingsDocumentParser.SettingsDocument settingsDocument=null;
         URI projectDirectory=settings==null?SourceUris.parent(request.documentId()):SourceUris.parent(settings);
         if(projectDirectory==null)projectDirectory=request.workspaceRoot();
         if(settings!=null){
             var read=view.read(settings,cancellation);
             if(read.source().isEmpty()){sourceProblem(settings,read,true,problems);complete=false;}
             else{
-                var parsed=new SettingsDocumentParser().parse(read.source().get(),cancellation);defaults.addAll(parsed.defaults());complete&=parsed.complete();
+                var parsed=new SettingsDocumentParser().parse(read.source().get(),cancellation);settingsDocument=parsed;defaults.addAll(parsed.defaults());complete&=parsed.complete();
                 for(var p:parsed.problems())problems.add(new ProjectProblem(p.code(),settings,p.span(),!p.code().endsWith("LIMIT"),p.related()));
                 URI rootJob=SourceUris.child(projectDirectory,"job.groovy");var rootRead=view.read(rootJob,cancellation);
                 if(rootRead.source().isPresent())jobs.add(new JobSource(ProjectNameRules.root(),rootJob));else if(rootRead.issues().stream().anyMatch(i->!i.code().equals("SOURCE_MISSING"))){sourceProblem(rootJob,rootRead,false,problems);complete=false;}
@@ -73,8 +75,9 @@ public final class ProjectResolver {
             }
 
         }
+        for(var additional:request.requestedSources())view.read(additional,cancellation);
         var snapshot=view.freeze();if(snapshot.limited()){complete=false;problems.add(new ProjectProblem("PROJECT_CAPTURE_LIMIT",request.documentId(),null,false,List.of()));}
-        return new ResolvedProject(new ProjectId(request.workspaceRoot(),settings==null?request.documentId():settings,request.singleJob()),projectDirectory,settings,settings!=null,jobs,defaults,problems,documents,snapshot,complete);
+        return new ResolvedProject(new ProjectId(request.workspaceRoot(),settings==null?request.documentId():settings,request.singleJob()),projectDirectory,settings,settings!=null,jobs,defaults,problems,documents,snapshot,complete,settingsDocument);
     }
     private static void acquireSqlFiles(ValueExpression operation,List<FieldAssignment> fields,URI job,SourceView view,CancellationToken cancellation){
         if(!(operation instanceof NameValue name)||!SqlSourceSyntax.templated(name.name()))return;

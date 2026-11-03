@@ -9,6 +9,9 @@ import ch.so.agi.gretl.tooling.semantic.*;
 import ch.so.agi.gretl.tooling.source.SourceText;
 import ch.so.agi.gretl.tooling.workspace.*;
 import ch.so.agi.gretl.tooling.workspace.WorkspaceManager;
+import ch.so.agi.gretl.tooling.edit.*;
+import ch.so.agi.gretl.tooling.query.*;
+import ch.so.agi.gretl.tooling.graph.*;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
@@ -33,6 +36,49 @@ class StaticSemanticsParityTest {
         try(var manager=new WorkspaceManager(store,descriptors)){manager.addRoot(root,repository);return new ProjectAnalyzer().analyze(manager.capture(new ProjectResolver.ProjectRequest(root,job),CancellationToken.NONE),CancellationToken.NONE);}
     }
     private static List<String> errors(Analysis analysis){return analysis.diagnostics().stream().filter(d->d.severity()==Severity.ERROR).map(Diagnostic::code).toList();}
+
+    @Test void coreGeneratedResultParameterRenameAndDefaultsEditsExecuteWithTheUnchangedRuntime() throws Exception {
+        String text="// retained 😀\r\nparameter('p',description:'P',type:'text',defaultValue:'from parameter')\r\n"
+                +"task('producer', Echo) { text='before' }\r\ntask('consumer', Echo) { text='old' }\r\ndefaults 'consumer'\r\n";
+        var snapshot=AnalysisSnapshot.of(staticAnalysis(text));var planner=new SemanticEditPlanner();
+        var producer=new SymbolId(Namespace.TASK,"producer");var consumer=new SymbolId(Namespace.TASK,"consumer");
+        for(var intent:List.<SemanticEditIntent>of(
+                new SemanticEditIntent.BindResult(producer,"result",consumer,"text"),
+                new SemanticEditIntent.SetField(producer,"text",new EditableValue.ParameterRef(new SymbolId(Namespace.PARAMETER,"p"))),
+                new SemanticEditIntent.RenameSymbol(producer,"source's 😀"),
+                new SemanticEditIntent.SetDefaults(URI.create("memory:/fixture/job.groovy"),List.of(consumer,new SymbolId(Namespace.TASK,"source's 😀"))))) {
+            var result=planner.plan(snapshot,intent,EditStyle.defaults(),CancellationToken.NONE);
+            assertEquals(EditCapability.State.ALLOWED,result.capability().state(),result.capability().reasons().toString());
+            snapshot=result.plan().orElseThrow().postimage();
+        }
+        String generated=snapshot.sources().get(URI.create("memory:/fixture/job.groovy")).text();
+        assertTrue(generated.startsWith("// retained 😀\r\n"));assertTrue(generated.contains("parameter('p')"));
+        var harness=new GroovyHarness(temp);var definition=harness.loadSource("generated-edits.groovy",generated);
+        assertEquals(List.of("consumer","source's 😀"),definition.defaultTargets());
+        var outcome=harness.run(definition,Map.of());assertEquals(RunStatus.SUCCEEDED,outcome.status());
+        var value=(TestGroovyOperations.EchoResult)((ResultSlot.Value)outcome.task("consumer").orElseThrow().slot()).value();
+        assertEquals("from parameter",value.result());
+    }
+
+    @Test void queriesGraphAndPostimageVerificationDoNotExecuteWorkspaceOrBuildersAndPositiveControlsDo() throws Exception {
+        var marker=temp.resolve("must-not-execute.txt");
+        String path=marker.toString().replace("\\","\\\\").replace("'","\\'");
+        String source="new File('"+path+"').text='executed'\n"
+                +"task('a', Echo) { text='before' }; defaults 'a'\n";
+        TestGroovyOperations.reset();
+        var snapshot=AnalysisSnapshot.of(staticAnalysis(source));
+        var context=new QueryContext(snapshot,URI.create("memory:/fixture/job.groovy"),source.indexOf("Echo")+1);
+        var queries=new LanguageQueries();assertFalse(queries.complete(context).isEmpty());assertTrue(queries.hover(context).isPresent());
+        queries.signatureHelp(context);queries.documentSymbols(context);queries.foldingRanges(context);queries.documentLinks(context);
+        new JobGraphProjector().project(snapshot,JobGraphProjector.GraphOptions.defaults(),CancellationToken.NONE);
+        var plan=new SemanticEditPlanner().plan(snapshot,new SemanticEditIntent.SetField(new SymbolId(Namespace.TASK,"a"),"text",new EditableValue.Literal("after")),EditStyle.defaults(),CancellationToken.NONE);
+        assertEquals(EditCapability.State.ALLOWED,plan.capability().state(),plan.capability().reasons().toString());
+        assertFalse(java.nio.file.Files.exists(marker));assertEquals(0,TestGroovyOperations.BUILDER_CREATIONS.get());assertEquals(0,TestGroovyOperations.HANDLER_CALLS.get());
+        // This trusted fixture is deliberately executed only as a positive control after the static assertions.
+        var harness=new GroovyHarness(temp);var definition=harness.loadSource("positive-control.groovy",source);
+        assertTrue(java.nio.file.Files.exists(marker));assertEquals(RunStatus.SUCCEEDED,harness.run(definition,Map.of()).status());
+        assertTrue(TestGroovyOperations.BUILDER_CREATIONS.get()>0);assertTrue(TestGroovyOperations.HANDLER_CALLS.get()>0);
+    }
     @Test void realGroovyRegistrationsAndRunnerSelectionMatchStaticGraph() throws Exception {
         var harness=new GroovyHarness(temp);
         for(String text:List.of(

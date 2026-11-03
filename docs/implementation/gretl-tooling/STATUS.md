@@ -1,7 +1,7 @@
 # GRETL Tooling – aktueller Auftragsstatus
 
 **Arbeitsstand · 3. November 2026.**
-P0 bis P2 sind unabhängig abgenommen; die äusseren Reviewprozesse sind beendet und validiert. P3 darf jetzt beginnen.
+P0 bis P2 sind unabhängig abgenommen; die äusseren Reviewprozesse sind beendet und validiert. P3 ist in Implementierung.
 
 `assignmentBase`: `185fc6700b5cb2897f724d457610a57f059b3421`.
 `requirementsDigest`: `cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3`.
@@ -12,7 +12,7 @@ Primärplattform: macOS 27.0.1 arm64, JDK 25.0.2, OpenCode 2.2.5 mit direktem De
 | P0 | Verträge, Katalog, Reviewkette | PASS | `5ff6cffcff1d23d1cec00116a8d0a51948945f33` | [Originalreview](reviews/P0/attempt-1/review.md) |
 | P1 | Sicherer Parser und Recovery | PASS | `412909f954a6059a331754db1bf11d897ffb9b88` | [Originalreview](reviews/P1/attempt-2/review.md); [erster FAIL](reviews/P1/attempt-1/review.md) |
 | P2 | Projekte, Snapshots, Semantik | PASS | `1a8d9f0a4096295c2e5898bab2593bb3eb34789e` | [Originalreview](reviews/P2/attempt-4-resumed-pass/review.md), [validierter Abschluss](reviews/P2/attempt-4-resumed-pass/validation.json); frühere Fehlversuche erhalten |
-| P3 | Queries und Editplanung | PLANNED | — | — |
+| P3 | Queries und Editplanung | IN_PROGRESS | — | [Implementierung](implementation/P3.md); noch kein Kandidatenreview |
 | P4 | Eigenständiger LSP | PLANNED | — | — |
 | P5 | Installierter Texteditor | PLANNED | — | — |
 | P6 | Interaktiver Graph | PLANNED | — | — |

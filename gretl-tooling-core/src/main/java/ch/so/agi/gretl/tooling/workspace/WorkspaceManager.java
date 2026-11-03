@@ -62,14 +62,14 @@ public final class WorkspaceManager implements AutoCloseable {
     public WorkspaceCapture capture(ProjectRequest original,CancellationToken cancellation){
         RootState root;long rootGeneration,sourceEpoch;Configuration configuration;ReadPolicy policy;CatalogRepository.CatalogSnapshot catalog;
         synchronized(this){checkOpen();root=requireRoot(original.workspaceRoot());rootGeneration=root.configurationGeneration;sourceEpoch=root.sourceEpoch;configuration=root.configuration;policy=policy(root,original.documentId());catalog=catalogs.snapshot();}
-        var request=new ProjectRequest(root.id,original.documentId(),original.singleJob(),policy.excludedRoots());var overlay=documents.capture();
+        var request=new ProjectRequest(root.id,original.documentId(),original.singleJob(),policy.excludedRoots(),original.requestedSources());var overlay=documents.capture();
         var resolved=new ProjectResolver().resolve(request,root.repository,overlay,cancellation);
         if(!sourcesCurrent(resolved.sources(),policy,root.repository,cancellation))throw new java.util.concurrent.CancellationException("STALE_CAPTURE");
         WorkspaceCapture[] captured={null};var evicted=new LinkedHashSet<ProjectId>();
         synchronized(this){
             checkOpen();if(roots.get(root.id)!=root||root.configurationGeneration!=rootGeneration||root.sourceEpoch!=sourceEpoch||catalogs.snapshot().generation()!=catalog.generation())throw new java.util.concurrent.CancellationException("STALE_CAPTURE");
             boolean current=documents.ifUnchanged(resolved.sources().buffers(),id->policy.permits(id)&&resolved.sources().versions().containsKey(id),()->{
-                var canonicalRequest=new ProjectRequest(root.id,resolved.id().anchor(),request.singleJob(),policy.excludedRoots());
+                var canonicalRequest=new ProjectRequest(root.id,resolved.id().anchor(),request.singleJob(),policy.excludedRoots(),request.requestedSources());
                 var state=projects.computeIfAbsent(resolved.id(),id->new ProjectState(id,canonicalRequest,++clock));state.request=canonicalRequest;state.dependencies=Set.copyOf(resolved.sources().versions().keySet());
                 captured[0]=new WorkspaceCapture(serverInstance,state.generation,rootGeneration,digest(configuration,policy),configuration,catalog,resolved,policy);
                 while(projects.size()>64){var oldest=projects.keySet().iterator().next();projects.remove(oldest);evicted.add(oldest);}

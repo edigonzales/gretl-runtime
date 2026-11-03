@@ -17,8 +17,9 @@ public final class SettingsDocumentParser {
     public record SettingsProblem(String code,TextSpan span,String directive,List<TextSpan> related) {
         public SettingsProblem { related=List.copyOf(related); }
     }
-    public record SettingsDocument(SourceText source,List<SettingName> includes,List<SettingName> defaults,List<SettingsProblem> problems,boolean complete) {
-        public SettingsDocument { includes=List.copyOf(includes);defaults=List.copyOf(defaults);problems=List.copyOf(problems); }
+    public record SettingsDocument(SourceText source,List<SettingName> includes,List<SettingName> defaults,List<SettingsProblem> problems,boolean complete,TokenIndex tokens,Map<String,TextSpan> directives) {
+        public SettingsDocument(SourceText source,List<SettingName> includes,List<SettingName> defaults,List<SettingsProblem> problems,boolean complete){this(source,includes,defaults,problems,complete,new TokenIndex(List.of(),List.of(),true),Map.of());}
+        public SettingsDocument { includes=List.copyOf(includes);defaults=List.copyOf(defaults);problems=List.copyOf(problems);directives=Map.copyOf(directives);Objects.requireNonNull(tokens); }
     }
     public SettingsDocument parse(SourceText source,CancellationToken cancellation){
         cancellation.check();var includes=new LinkedHashMap<String,SettingName>();var defaults=new LinkedHashMap<String,SettingName>();var problems=new ArrayList<SettingsProblem>();
@@ -30,13 +31,13 @@ public final class SettingsDocumentParser {
         if(tokens.budgetExceeded())return new SettingsDocument(source,List.of(),List.of(),tokens.problems().stream().map(p->problem("PROJECT_SETTINGS_LIMIT",p.span(),"budget")).toList(),false);
         var parsed=new SafeGroovySyntaxReader().readModule(source,cancellation);var syntax=new ParseResultMerger().problems(tokens.problems(),parsed.problems());
         for(var p:syntax)problems.add(problem(p.code().equals("PARSE_LIMIT")?"PROJECT_SETTINGS_LIMIT":"PROJECT_SETTINGS_INVALID",p.span(),"syntax"));
-        var coordinates=new ParserCoordinateMapper(source);var seen=new HashSet<String>();
+        var coordinates=new ParserCoordinateMapper(source);var seen=new HashSet<String>();var directives=new LinkedHashMap<String,TextSpan>();
         if(parsed.module()==null){
             for(var declaration:new RecoveringDslParser(source,tokens,cancellation).recover().declarations()){
                 String name=declaration.kind()==DeclarationKind.INCLUDE?"include":declaration.kind()==DeclarationKind.DEFAULTS?"defaults":null;
                 if(name==null||declaration.body()!=null||!declaration.options().isEmpty())continue;
                 var values=new ArrayList<LiteralValue>();for(var value:declaration.targets())if(value instanceof LiteralValue literal&&simple(literal.literal()))values.add(literal);
-                accept(name,declaration.span(),values,seen,includes,defaults,problems);
+                directives.putIfAbsent(name,declaration.span());accept(name,declaration.span(),values,seen,includes,defaults,problems);
             }
         }else{
             var module=parsed.module();
@@ -57,11 +58,11 @@ public final class SettingsDocumentParser {
                     if(envelope==null){unsupported(argument,coordinates,problems);supported=false;continue;}
                     values.add(new LiteralValue(text,span(argument,coordinates),envelope));
                 }
-                if(supported)accept(name,span(call,coordinates),values,seen,includes,defaults,problems);
+                if(supported){directives.putIfAbsent(name,span(call,coordinates));accept(name,span(call,coordinates),values,seen,includes,defaults,problems);}
             }
         }
         var distinct=new LinkedHashMap<String,SettingsProblem>();for(var p:problems)distinct.putIfAbsent(p.code()+"|"+p.span(),p);
-        return new SettingsDocument(source,List.copyOf(includes.values()),List.copyOf(defaults.values()),List.copyOf(distinct.values()),problems.isEmpty()&&parsed.module()!=null);
+        return new SettingsDocument(source,List.copyOf(includes.values()),List.copyOf(defaults.values()),List.copyOf(distinct.values()),problems.isEmpty()&&parsed.module()!=null,tokens,directives);
     }
     private static void accept(String directive,TextSpan call,List<LiteralValue> values,Set<String> seen,Map<String,SettingName> includes,Map<String,SettingName> defaults,List<SettingsProblem> problems){
         if(!seen.add(directive)){problems.add(problem("PROJECT_SETTINGS_INVALID",call,directive));return;}
