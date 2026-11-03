@@ -33,6 +33,7 @@ final class LspQueryMapper {
     CompletionItem completion(URI document,CompletionProposal proposal) {
         var item=new CompletionItem(proposal.label());item.setDetail(proposal.detail());
         item.setKind(switch(proposal.kind()){case "CLASS"->CompletionItemKind.Class;case "FIELD"->CompletionItemKind.Field;case "PROPERTY"->CompletionItemKind.Property;case "ENUM"->CompletionItemKind.EnumMember;case "FILE"->CompletionItemKind.File;case "KEYWORD"->CompletionItemKind.Keyword;default->CompletionItemKind.Value;});
+        item.setFilterText(ch.so.agi.gretl.tooling.edit.SourceValueWriter.completionFilter(proposal.label(),snapshot.source(document).orElseThrow().slice(proposal.replacement())));
         item.setInsertTextFormat(InsertTextFormat.PlainText);item.setTextEdit(Either.forLeft(new TextEdit(range(document,proposal.replacement()),proposal.newText())));return item;
     }
     org.eclipse.lsp4j.Hover hover(HoverInfo hover,boolean markdown) {

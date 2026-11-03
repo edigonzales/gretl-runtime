@@ -73,6 +73,19 @@ public final class SourceValueWriter {
     }
 
     /** Replaces a complete token exactly once; interpolation is escaped for double-quoted tokens. */
+    /** Matching text when a completion range includes its original delimiter.
+     * Presentation only; insertion remains the separately verified literal edit. */
+    public static String completionFilter(String value, String original) {
+        if(value.length()>MAXIMUM_VALUE_LENGTH)throw new IllegalArgumentException("EDIT_VALUE_LIMIT");
+        if(original.startsWith("$/"))return "$/"+value.replace("$","$$").replace("/","$/")+"/$";
+        if(original.startsWith("/"))return "/"+value.replace("/","\\/")+"/";
+        if(original.startsWith("\"\"\""))return "\"\""+string(value,QuoteKind.DOUBLE)+"\"\"";
+        if(original.startsWith("'''"))return "''"+string(value,QuoteKind.SINGLE)+"''";
+        if(original.startsWith("\""))return string(value,QuoteKind.DOUBLE);
+        if(original.startsWith("'"))return string(value,QuoteKind.SINGLE);
+        return value;
+    }
+
     public static String string(String value, QuoteKind preferred) {
         if (value.length() > MAXIMUM_VALUE_LENGTH) throw new IllegalArgumentException("EDIT_VALUE_LIMIT");
         char quote = preferred == QuoteKind.DOUBLE || preferred == QuoteKind.TRIPLE_DOUBLE ? '"' : '\'';

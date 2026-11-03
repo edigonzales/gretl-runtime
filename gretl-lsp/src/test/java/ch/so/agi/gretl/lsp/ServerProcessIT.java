@@ -72,6 +72,29 @@ class ServerProcessIT {
     JsonObject graph(Wire wire,String uri)throws Exception{return wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();}
     boolean diagnostic(JsonObject graph,String code){return graph.getAsJsonObject("payload").getAsJsonArray("diagnostics").asList().stream().map(JsonElement::getAsJsonObject).anyMatch(d->code.equals(d.get("code").getAsString()));}
 
+    @Test void quotedCompletionFilteringMatchesTheOriginalDelimiterAndKeepsTheCoreEdit()throws Exception {
+        String uri=temporary.resolve("job.groovy").toUri().toString();Files.writeString(temporary.resolve("job.groovy"),"action('initial') {}\n");
+        try(var wire=new Wire(temporary,"--stdio")) {
+            wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);
+            int version=0;
+            for(String opening:List.of("'","\"","'''","\"\"\"","/","$/")) {
+                String closing=opening.equals("$/")?"/$":opening;
+                String literal=opening+"ZI"+closing;
+                String source="task('extract', Extract) { archive=workPath('a.zip'); compression="+literal+" }\n";
+                if(++version==1)wire.opened(uri,version,source);
+                else wire.send("textDocument/didChange",Map.of("textDocument",Map.of("uri",uri,"version",version),"contentChanges",List.of(Map.of("text",source))),null);
+                int start=source.indexOf(literal);
+                var item=wire.call("textDocument/completion",position(uri,0,start+opening.length()+1)).getAsJsonArray().asList().stream().map(JsonElement::getAsJsonObject)
+                        .filter(value->value.get("label").getAsString().equals("ZIP")).findFirst().orElseThrow();
+                assertEquals(opening+"ZIP"+closing,item.get("filterText").getAsString(),opening);
+                var edit=item.getAsJsonObject("textEdit");assertEquals("'ZIP'",edit.get("newText").getAsString());
+                assertEquals(start,edit.getAsJsonObject("range").getAsJsonObject("start").get("character").getAsInt());
+                assertEquals(start+literal.length(),edit.getAsJsonObject("range").getAsJsonObject("end").get("character").getAsInt());
+            }
+            wire.stop();
+        }
+    }
+
     @Test void standaloneWireLifecycleStandardFeaturesAndCustomEdits()throws Exception {
         Path root=Files.createDirectory(temporary.resolve("workspace ü ; literal"));String uri=root.resolve("job.groovy").toUri().toString();
         String source="parameter('arg',description:'A',defaultValue:'x')\r\n"
