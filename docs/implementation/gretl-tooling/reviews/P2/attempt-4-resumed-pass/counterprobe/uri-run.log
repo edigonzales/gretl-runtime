@@ -1,0 +1,20 @@
+exit=0 signal=null
+STDOUT:
+OK actual supplied catalog loads as AVAILABLE
+OK HttpDownload exists in the actual catalog
+OK HttpDownload.url is Opaque with scheme hints [http, https]
+OK HttpDownload.method is Text with literal enum [GET, POST]
+OK Curl exists in the actual catalog
+OK Curl.serverUrl is Opaque with scheme hints [http, https]
+OK Curl.method is Text with literal enum [GET, POST]
+OK analysis has the actual catalog available
+OK project and field assignments are complete
+OK exactly two INPUT_ENUM diagnostics are produced
+OK invalid text enums are errors
+OK enum diagnostics stay in the job
+OK only the invalid text enum literals are flagged, not the URLs
+OK valid URI values do not produce type/required/unknown diagnostics
+URI COUNTERPROBE PASS
+
+STDERR:
+

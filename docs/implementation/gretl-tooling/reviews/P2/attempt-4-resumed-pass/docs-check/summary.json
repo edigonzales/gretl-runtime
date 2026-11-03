@@ -1,0 +1,17 @@
+{
+  "id": "tooling-docs",
+  "cwd": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product",
+  "argv": [
+    "node",
+    "tools/gretl-tooling/check-docs.mjs"
+  ],
+  "startedAt": "2026-11-03T13:26:18.188Z",
+  "endedAt": "2026-11-03T13:26:18.345Z",
+  "exitCode": 0,
+  "signal": null,
+  "pass": true,
+  "log": {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/docs-check/check-docs.log",
+    "sha256": "b7f70733a4a560e42e453044dc2fef5746f330104c6020f3fe5a659042a619eb"
+  }
+}
