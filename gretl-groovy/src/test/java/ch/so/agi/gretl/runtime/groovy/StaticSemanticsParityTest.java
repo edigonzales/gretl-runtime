@@ -21,14 +21,16 @@ import static org.junit.jupiter.api.Assertions.*;
 /** The runtime loads only trusted fixture strings; the static pass has no runtime dependency. */
 class StaticSemanticsParityTest {
     @TempDir Path temp;
-    private CatalogRepository catalog(){
-        var op=TestGroovyOperations.echo();var inputs=op.inputs().stream().map(f->new InputDescriptor(f.name(),f.description(),f.required(),f.defaultValue().isPresent(),f.defaultValue().map(v->new DataValue("Text",v.toString(),List.of(),Map.of())).orElse(null),f.allowedValues(),f.example(),ValueShape.fromMetadata(f.valueType()),null,false,Map.<String,String>of())).toList();
+    private CatalogRepository catalog(){return catalog(TestGroovyOperations.echo());}
+    private CatalogRepository catalog(ch.so.agi.gretl.runtime.api.OperationType<?,?> op){
+        var inputs=op.inputs().stream().map(f->new InputDescriptor(f.name(),f.description(),f.required(),f.defaultValue().isPresent(),f.defaultValue().map(v->new DataValue("Text",v.toString(),List.of(),Map.of())).orElse(null),f.allowedValues(),f.example(),ValueShape.fromMetadata(f.valueType()),null,false,Map.<String,String>of())).toList();
         var outputs=op.outputs().stream().map(f->new OutputDescriptor(f.name(),f.description(),ValueShape.fromMetadata(f.valueType()),f.nullable())).toList();var codec=new CatalogJsonCodec();var catalog=new CatalogRepository();catalog.loadBundled(codec.encodeCanonical(codec.identify(new OperationCatalog(1,"test","1","",List.of("fixture"),List.of(new OperationDescriptor(op.id(),op.symbol(),op.description(),"fixture",inputs,outputs,op.example(),false)),"COMPLETE"))),null);assertEquals(CatalogJsonCodec.State.AVAILABLE,catalog.snapshot().result().state());return catalog;
     }
-    private Analysis staticAnalysis(String text){
+    private Analysis staticAnalysis(String text){return staticAnalysis(text,catalog());}
+    private Analysis staticAnalysis(String text,CatalogRepository descriptors){
         URI root=URI.create("memory:/fixture"),job=URI.create("memory:/fixture/job.groovy");var store=new DocumentStore();store.open(job,"gretl",1,text);
         SourceRepository repository=new SourceRepository(){public SourceRead read(URI id,ReadPolicy policy,CancellationToken cancellation){return SourceRead.unavailable("SOURCE_MISSING",id);}public SourceListing listProjectEntries(URI id,ScanBudget budget,CancellationToken cancellation){throw new AssertionError("No scan required");}};
-        try(var manager=new WorkspaceManager(store,catalog())){manager.addRoot(root,repository);return new ProjectAnalyzer().analyze(manager.capture(new ProjectResolver.ProjectRequest(root,job),CancellationToken.NONE),CancellationToken.NONE);}
+        try(var manager=new WorkspaceManager(store,descriptors)){manager.addRoot(root,repository);return new ProjectAnalyzer().analyze(manager.capture(new ProjectResolver.ProjectRequest(root,job),CancellationToken.NONE),CancellationToken.NONE);}
     }
     private static List<String> errors(Analysis analysis){return analysis.diagnostics().stream().filter(d->d.severity()==Severity.ERROR).map(Diagnostic::code).toList();}
     @Test void realGroovyRegistrationsAndRunnerSelectionMatchStaticGraph() throws Exception {
@@ -73,4 +75,37 @@ class StaticSemanticsParityTest {
         }
         String wrong="task('producer', Echo) { text='value' }; action('consumer',dependsOn:'producer') { result('producer').missing }; defaults 'consumer'";assertTrue(errors(staticAnalysis(wrong)).contains("UNKNOWN_OUTPUT"));var outcome=harness.run(harness.loadSource("wrong-output.groovy",wrong),Map.of());assertEquals("UNKNOWN_OUTPUT_FIELD",outcome.task("consumer").orElseThrow().failure().orElseThrow().diagnostic().orElseThrow().code());
     }
+    @Test void missingRequiredInputsAreConditionalWhenTheRuntimeSkipsConfiguration() throws Exception {
+        var harness=new GroovyHarness(temp);var descriptors=catalog(TestGroovyOperations.required());
+        for(String condition:List.of("false","parameter('flag')")){
+            String text="parameter('flag',description:'F',type:'boolean',defaultValue:false); task('t', RequiredText, when:{"+condition+"}) {}; defaults 't'";
+            TestGroovyOperations.reset();var outcome=harness.run(harness.loadSource("conditional.groovy",text),Map.of());assertEquals(RunStatus.SUCCEEDED,outcome.status());assertEquals(TaskStatus.SKIPPED,outcome.task("t").orElseThrow().status());assertEquals(0,TestGroovyOperations.BUILDER_CREATIONS.get());assertEquals(0,TestGroovyOperations.HANDLER_CALLS.get());
+            var analysis=staticAnalysis(text,descriptors);assertFalse(errors(analysis).contains("REQUIRED_INPUT"));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.WARNING));
+        }
+        String unconditional="task('t', RequiredText) {}; defaults 't'";assertEquals(RunStatus.FAILED,harness.run(harness.loadSource("unconditional.groovy",unconditional),Map.of()).status());assertTrue(errors(staticAnalysis(unconditional,descriptors)).contains("REQUIRED_INPUT"));
+    }
+    @Test void nullRequiredInputsAreDiagnosedWithoutExecutingOrAssumingAConverter() throws Exception {
+        var harness=new GroovyHarness(temp);String rejected="task('t', RequiredText) { text=null }; defaults 't'";
+        var outcome=harness.run(harness.loadSource("null-input.groovy",rejected),Map.of());assertEquals(RunStatus.FAILED,outcome.status());assertEquals("INVALID_CONFIGURATION_VALUE",outcome.task("t").orElseThrow().failure().orElseThrow().diagnostic().orElseThrow().code());
+        assertTrue(staticAnalysis(rejected,catalog(TestGroovyOperations.required())).diagnostics().stream().anyMatch(d->d.code().equals("REQUIRED_INPUT")||d.code().equals("INPUT_TYPE")));
+        // SPI converters may deliberately normalize null to a valid nonnull value.
+        var input=new ch.so.agi.gretl.runtime.api.InputField<TestGroovyOperations.RequiredRequest,String>("text","text","Text",true,Optional.empty(),List.of(),"text=null",v->v==null?"fallback":v.toString(),(builder,value)->((TestGroovyOperations.RequiredBuilder)builder).setText(value));
+        var type=new ch.so.agi.gretl.runtime.api.OperationType<TestGroovyOperations.RequiredRequest,TestGroovyOperations.EchoResult>("test.null-default","NullDefault","Null default",TestGroovyOperations.RequiredRequest.class,TestGroovyOperations.EchoResult.class,TestGroovyOperations.RequiredBuilder::new,()->(request,context)->new TestGroovyOperations.EchoResult(request.text()),List.of(input),List.of(),"task('t', NullDefault) { text=null }");
+        String normalized="task('t', NullDefault) { text=null }; defaults 't'";assertEquals(RunStatus.SUCCEEDED,runCustom(type,normalized).status());var uncertain=staticAnalysis(normalized,catalog(type));assertEquals(List.of(),errors(uncertain));assertTrue(uncertain.diagnostics().stream().anyMatch(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.WARNING));
+        String coerced="task('t', NullDefault) { text=7 }; defaults 't'";assertEquals(RunStatus.SUCCEEDED,runCustom(type,coerced).status());var converted=staticAnalysis(coerced,catalog(type));assertEquals(List.of(),errors(converted));assertTrue(converted.diagnostics().stream().anyMatch(d->d.code().equals("INPUT_TYPE")&&d.severity()==Severity.WARNING));
+    }
+    public record RawHidden(String hidden) { }
+    @Test void typedTaskRefsReturnRawResultsWhileStringRefsUseTheCatalogView() throws Exception {
+        var output=new ch.so.agi.gretl.runtime.api.OutputField<RawHidden,String>("shown","text","Shown",false,RawHidden::hidden);
+        var type=new ch.so.agi.gretl.runtime.api.OperationType<String,RawHidden>("test.raw","RawProbe","Raw probe",String.class,RawHidden.class,()->()->"request",()->(request,context)->new RawHidden("value"),List.of(),List.of(output),"task('producer', RawProbe) {}");
+        for(String access:List.of("result(producer).hidden","result('producer').shown","resultOptional('producer').present","resultOptional('producer').empty","resultOptional(producer).get().hidden","resultOptional('producer').get().shown","result('producer').hidden")){
+            String text="def producer=task('producer', RawProbe) {}; action('consumer',dependsOn:producer) { "+access+" }; defaults 'consumer'";boolean valid=!access.equals("result('producer').hidden");
+            var outcome=runCustom(type,text);assertEquals(valid?RunStatus.SUCCEEDED:RunStatus.FAILED,outcome.status());assertEquals(valid,List.of().equals(errors(staticAnalysis(text,catalog(type)))),access);
+            if(!valid)assertEquals("UNKNOWN_OUTPUT_FIELD",outcome.task("consumer").orElseThrow().failure().orElseThrow().diagnostic().orElseThrow().code());
+        }
+    }
+    private JobOutcome runCustom(ch.so.agi.gretl.runtime.api.OperationType<?,?> type,String text) throws Exception {
+        ch.so.agi.gretl.runtime.api.OperationProvider provider=()->List.of(type);var registry=OperationRegistry.fromProviders(List.of(provider));var source=temp.resolve("custom.groovy");java.nio.file.Files.writeString(source,text);var definition=new GroovyJobLoader().load(source,DefinitionEnvironment.of(registry,temp));return new SequentialJobRunner().run(definition,new ExecutionPlanner().plan(definition,List.of()),RunInput.builder().jobRoot(temp).startCwd(temp).workRoot(temp.resolve("work-custom")).build());
+    }
+
 }

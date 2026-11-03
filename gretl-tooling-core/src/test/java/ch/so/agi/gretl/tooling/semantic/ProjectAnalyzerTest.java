@@ -115,4 +115,24 @@ class ProjectAnalyzerTest {
         assertEquals(1,Collections.frequency(codes(analysis),"SQL_PARAMETER_MISSING"));assertFalse(codes(analysis).contains("SQL_SOURCE_NOT_INSPECTED"));assertFalse(analysis.capture().project().sources().versions().containsKey(URI.create("file:/work/not-used.sql")));
     }
 
+    @Test void requiredDiagnosticsDistinguishConditionalExecutionAndUnknownNullConversion(){
+        var conditional=analyze("parameter('flag',description:'F',type:'boolean',defaultValue:false); task('a', Echo,when:{false}) {}; task('b', Echo,when:{parameter('flag')}) {}; task('c', Echo) {}");
+        assertEquals(1,conditional.diagnostics().stream().filter(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.ERROR).count());assertEquals(2,conditional.diagnostics().stream().filter(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.WARNING).count());
+        var explicitNull=analyze("task('a', Echo) { input=null }");assertTrue(explicitNull.diagnostics().stream().anyMatch(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.WARNING&&d.message().contains("null")));
+        var raw=analyze("def a=task('a', Echo) { input='x' }; action('b',dependsOn:a) { result(a).rawProperty; resultOptional('a').present; result('a').missing }");assertEquals(1,Collections.frequency(codes(raw),"UNKNOWN_OUTPUT"));assertFalse(codes(raw).contains("RESULT_DEPENDENCY_REQUIRED"));
+    }
+
+    @Test void partialCatalogsLimitFieldCertaintyWithoutSuppressingKnownReservedNames(){
+        var incomplete=catalog();var original=incomplete.snapshot().result().catalog().orElseThrow();var codec=new CatalogJsonCodec();incomplete.loadBundled(codec.encodeCanonical(codec.identify(new OperationCatalog(1,original.runtimeVersion(),original.dslVersion(),"",original.producers(),original.operations(),"PARTIAL"))),null);
+        var analysis=analyze(Map.of(JOB,"task('a', Echo) { typo='x'; owner='bad' }"),JOB,new DocumentStore(),incomplete,"en");
+        assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_INPUT")&&d.severity()==Severity.WARNING));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.WARNING));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("RESERVED_CONFIGURATION_FIELD")&&d.severity()==Severity.ERROR));assertFalse(analysis.capabilities().catalogAvailable());
+    }
+
+    @Test void conditionalBodiesKeepRuntimeWarningsWhileRegistrationAndWhenEvaluationRemainDefinite(){
+        var sql=URI.create("file:/work/query.sql");var analysis=analyze(Map.of(JOB,"task('a', Echo) { input='x' }; task('b', Echo,when:{false}) { typo='x'; input=result('a').missing; parameter('unknown') }; task('sql', DuckDbSqlExecutor,when:{false}) { sqlFiles=[file('query.sql')] }",sql,"select ${missing}"),JOB,new DocumentStore(),catalog(),"en");
+        for(String code:List.of("UNKNOWN_INPUT","RESULT_DEPENDENCY_REQUIRED","UNKNOWN_OUTPUT","UNKNOWN_PARAMETER","SQL_PARAMETER_MISSING"))assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals(code)&&d.severity()==Severity.WARNING),code+analysis.diagnostics());
+        assertFalse(analysis.diagnostics().stream().anyMatch(d->d.severity()==Severity.ERROR));
+        var header=analyze("task('a', Echo,dependsOn:'missing',when:{parameter('unknown')}) { input='x' }");assertTrue(header.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_TASK_REFERENCE")&&d.severity()==Severity.ERROR));assertTrue(header.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_PARAMETER")&&d.severity()==Severity.ERROR));
+    }
+
 }

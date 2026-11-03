@@ -21,10 +21,11 @@ public final class SqlTemplateAnalyzer {
         var found=new ArrayList<Placeholder>();var matcher=PLACEHOLDER.matcher(sql);while(matcher.find()){cancellation.check();if(found.size()>=16000)return new PlaceholderScan(found,false);found.add(new Placeholder(matcher.group(1),matcher.start(),matcher.end()));}return new PlaceholderScan(found,true);
     }
     @FunctionalInterface interface Reporter {void report(String code,Severity severity,Anchor anchor);}
-    static void validate(WorkspaceCapture capture,Symbol symbol,Reporter reporter,CancellationToken cancellation){
-        if(symbol.operation()!=null)validateFields(capture,symbol.anchor(),symbol.operation().symbol(),symbol.declaration().fields(),reporter,cancellation);
-        for(var inner:symbol.declaration().invocations())if(EffectiveOptions.of(symbol.declaration()).active(inner.span())&&inner.operation() instanceof NameValue operation&&capture.catalog().result().catalog().stream().flatMap(c->c.operations().stream()).anyMatch(op->op.symbol().equals(operation.name())))validateFields(capture,new Anchor(symbol.anchor().documentId(),inner.span()),operation.name(),inner.fields(),reporter,cancellation);
+    static void validate(WorkspaceCapture capture,Symbol symbol,Reporter reporter,CancellationToken cancellation,boolean conditional){
+        if(symbol.operation()!=null)validateFields(capture,symbol.anchor(),symbol.operation().symbol(),symbol.declaration().fields(),guarded(reporter,conditional),cancellation);
+        for(var inner:symbol.declaration().invocations())if(EffectiveOptions.of(symbol.declaration()).active(inner.span())&&inner.operation() instanceof NameValue operation&&capture.catalog().result().catalog().stream().flatMap(c->c.operations().stream()).anyMatch(op->op.symbol().equals(operation.name())))validateFields(capture,new Anchor(symbol.anchor().documentId(),inner.span()),operation.name(),inner.fields(),guarded(reporter,conditional&&symbol.declaration().body()!=null&&contains(symbol.declaration().body(),inner.span())),cancellation);
     }
+    private static Reporter guarded(Reporter reporter,boolean conditional){return (code,severity,anchor)->reporter.report(code,conditional&&severity==Severity.ERROR?Severity.WARNING:severity,anchor);}
     private static void validateFields(WorkspaceCapture capture,Anchor owner,String operation,List<FieldAssignment> fields,Reporter reporter,CancellationToken cancellation){
         // SqlExecutor.scripts are plain SQL; its prepared statements use JDBC ?, not named templates.
         if(!SqlSourceSyntax.templated(operation))return;

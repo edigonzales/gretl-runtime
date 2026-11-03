@@ -11,7 +11,7 @@ Primärplattform: macOS 27.0.1 arm64, JDK 25.0.2, OpenCode 2.2.5 mit direktem De
 |---|---|---|---|---|
 | P0 | Verträge, Katalog, Reviewkette | PASS | `5ff6cffcff1d23d1cec00116a8d0a51948945f33` | [Originalreview](reviews/P0/attempt-1/review.md) |
 | P1 | Sicherer Parser und Recovery | PASS | `412909f954a6059a331754db1bf11d897ffb9b88` | [Originalreview](reviews/P1/attempt-2/review.md); [erster FAIL](reviews/P1/attempt-1/review.md) |
-| P2 | Projekte, Snapshots, Semantik | IN_PROGRESS | — | — |
+| P2 | Projekte, Snapshots, Semantik | IN_PROGRESS | `40a0261ba613104430a26a3fc3761ef299ef1737` (FAIL) | [Erster Review: F1/F2](reviews/P2/attempt-1/review.md); Reparatur in Arbeit |
 | P3 | Queries und Editplanung | PLANNED | — | — |
 | P4 | Eigenständiger LSP | PLANNED | — | — |
 | P5 | Installierter Texteditor | PLANNED | — | — |

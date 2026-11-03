@@ -1,0 +1,8 @@
+argv=node /Users/stefan/.cache/gretl-tooling-review/P2-review-1/evidence/verify-copies.mjs
+exit=0
+STDOUT:
+standard: 587 captured, copies verified=587
+services: 772 captured, copies verified=772
+copy verification: checked=1359 bad=0
+
+STDERR:

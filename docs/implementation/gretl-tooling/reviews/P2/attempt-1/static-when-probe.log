@@ -1,0 +1,14 @@
+SOURCE: task('t', RequiredText, when: { false }) { }; defaults 't'
+capabilities=Capabilities[declarationsComplete=true, referencesComplete=true, graphComplete=true, catalogAvailable=true, bounded=true]
+diagnostic REQUIRED_INPUT ERROR span=TextSpan[startUtf16=6, endUtf16=7]
+staticReportsRequiredInput=true
+SOURCE: parameter('flag',description:'F',type:'boolean',defaultValue:false); task('t', RequiredText, when: { parameter('flag') }) { }; defaults 't'
+capabilities=Capabilities[declarationsComplete=true, referencesComplete=true, graphComplete=true, catalogAvailable=true, bounded=true]
+diagnostic REQUIRED_INPUT ERROR span=TextSpan[startUtf16=75, endUtf16=76]
+staticReportsRequiredInput=true
+SOURCE: task('t', RequiredText) { text = null }; defaults 't'
+capabilities=Capabilities[declarationsComplete=true, referencesComplete=true, graphComplete=true, catalogAvailable=true, bounded=true]
+staticReportsRequiredInput=false
+SOURCE: task('t', RequiredText) { text = 'ok' }; defaults 't'
+capabilities=Capabilities[declarationsComplete=true, referencesComplete=true, graphComplete=true, catalogAvailable=true, bounded=true]
+staticReportsRequiredInput=false
