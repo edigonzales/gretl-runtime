@@ -93,6 +93,8 @@ public final class WorkspaceManager implements AutoCloseable {
         return root!=null&&project!=null&&project.generation==capture.generation()&&root.configurationGeneration==capture.rootConfigurationGeneration()&&catalogs.snapshot().generation()==capture.catalog().generation()&&digest(root.configuration,policy(root,project.request.documentId())).equals(capture.configurationDigest())&&documents.ifUnchanged(capture.project().sources().buffers(),id->capture.readPolicy().permits(id)&&capture.project().sources().versions().containsKey(id),()->{});
     }
     public synchronized boolean containsProject(ProjectId id){return !closed&&projects.containsKey(id);}
+    /** Metadata-only validity for host state that must not retain whole captures. */
+    public synchronized boolean isProjectGenerationCurrent(ProjectId id,long generation){var project=projects.get(id);return !closed&&project!=null&&project.generation==generation;}
     public synchronized boolean containsRoot(URI id){return !closed&&roots.containsKey(SourceUris.directoryIdentity(id));}
     private boolean sourcesCurrent(SourceView.SnapshotSources expected,ReadPolicy policy,SourceRepository repository,CancellationToken cancellation){
         var current=new SourceView(repository,policy,documents.capture());

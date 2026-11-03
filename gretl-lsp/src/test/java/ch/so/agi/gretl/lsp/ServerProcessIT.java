@@ -113,6 +113,46 @@ class ServerProcessIT {
         }
     }
 
+    @Test void fixedAndUnreferencedDirtySqlDiagnosticsAreActuallyWithdrawn()throws Exception {
+        Path job=temporary.resolve("job.groovy"),sql=temporary.resolve("query.sql");String uri=job.toUri().toString(),sqlUri=sql.toUri().toString();
+        String source="task('q', DuckDbSqlExecutor) { sqlFiles=[file('query.sql')]; sqlParameters=[ok:'value'] }\n";
+        Files.writeString(job,source);Files.writeString(sql,"select '${ok}';\n");
+        try(var wire=new Wire(temporary,"--stdio")) {
+            wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);graph(wire,uri);
+            wire.send("textDocument/didOpen",Map.of("textDocument",Map.of("uri",sqlUri,"languageId","sql","version",1,"text","select '${missing}';\n")),null);
+            assertTrue(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"));
+            wire.notification("textDocument/publishDiagnostics",params->java.net.URI.create(sqlUri).equals(java.net.URI.create(params.get("uri").getAsString()))&&!params.getAsJsonArray("diagnostics").isEmpty());
+            wire.send("textDocument/didChange",Map.of("textDocument",Map.of("uri",sqlUri,"version",2),"contentChanges",List.of(Map.of("text","select '${ok}';\n"))),null);
+            assertFalse(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"));
+            wire.notification("textDocument/publishDiagnostics",params->java.net.URI.create(sqlUri).equals(java.net.URI.create(params.get("uri").getAsString()))&&params.has("version")&&params.get("version").getAsInt()==2&&params.getAsJsonArray("diagnostics").isEmpty());
+            wire.send("textDocument/didChange",Map.of("textDocument",Map.of("uri",sqlUri,"version",3),"contentChanges",List.of(Map.of("text","select '${missing}';\n"))),null);
+            assertTrue(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"));
+            wire.notification("textDocument/publishDiagnostics",params->java.net.URI.create(sqlUri).equals(java.net.URI.create(params.get("uri").getAsString()))&&params.has("version")&&params.get("version").getAsInt()==3&&!params.getAsJsonArray("diagnostics").isEmpty());
+            wire.send("textDocument/didChange",Map.of("textDocument",Map.of("uri",uri,"version",2),"contentChanges",List.of(Map.of("text","action('replaced') {}\n"))),null);
+            assertFalse(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"));
+            wire.notification("textDocument/publishDiagnostics",params->java.net.URI.create(sqlUri).equals(java.net.URI.create(params.get("uri").getAsString()))&&params.has("version")&&params.get("version").getAsInt()==3&&params.getAsJsonArray("diagnostics").isEmpty());wire.stop();
+        }
+    }
+
+    @Test void explicitlySelectedAlternativeJobUsesItsOwnStandaloneBindingsInsteadOfAdjacentSettings()throws Exception {
+        Path job=temporary.resolve("job.groovy"),custom=temporary.resolve("custom-runtime.groovy");
+        Files.writeString(job,"action('canonical') { file('custom-runtime.groovy') }\n");Files.writeString(temporary.resolve("settings.gretl"),"defaults ':canonical'\n");
+        String source="task('custom', HttpDownload) { url='https://example.invalid/a'; output=workPath('a') }\naction('consumer', dependsOn:'custom') { println result('custom').file }\ndefaults 'consumer'\n";
+        Files.writeString(custom,source);String uri=custom.toUri().toString();
+        try(var wire=new Wire(temporary,"--stdio")) {
+            wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(job.toUri().toString(),1,Files.readString(job));graph(wire,job.toUri().toString());
+            wire.opened(uri,1,source);graph(wire,job.toUri().toString());var current=graph(wire,uri);
+            var titles=current.getAsJsonObject("payload").getAsJsonArray("nodes").asList().stream().map(value->value.getAsJsonObject().get("title").getAsString()).toList();
+            assertTrue(titles.containsAll(List.of("custom","consumer")),titles.toString());assertFalse(titles.contains(":canonical"));
+            var definitions=wire.call("textDocument/definition",position(uri,1,31)).getAsJsonArray();assertEquals(1,definitions.size());
+            assertEquals(java.net.URI.create(uri),java.net.URI.create(definitions.get(0).getAsJsonObject().get("uri").getAsString()));
+            var rename=new HashMap<String,Object>(position(uri,0,8));rename.put("newName","renamedCustom");
+            assertEquals(3,wire.call("textDocument/rename",rename).getAsJsonObject().getAsJsonArray("documentChanges").get(0).getAsJsonObject().getAsJsonArray("edits").size());
+            wire.send("textDocument/didClose",Map.of("textDocument",Map.of("uri",uri)),null);
+            assertTrue(graph(wire,uri).getAsJsonObject("payload").getAsJsonArray("nodes").asList().stream().anyMatch(value->value.getAsJsonObject().get("title").getAsString().equals("custom")));wire.stop();
+        }
+    }
+
     @Test void standaloneWireLifecycleStandardFeaturesAndCustomEdits()throws Exception {
         Path root=Files.createDirectory(temporary.resolve("workspace ü ; literal"));String uri=root.resolve("job.groovy").toUri().toString();
         String source="parameter('arg',description:'A',defaultValue:'x')\r\n"

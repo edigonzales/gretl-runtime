@@ -1,5 +1,5 @@
 {
-  "name": "gretl-runtime",
+  "name": "gretl-runtime-vscode",
   "displayName": "GRETL Runtime",
   "description": "Static language support for GRETL Runtime jobs. Requires Java 25.",
   "version": "0.1.0",
@@ -104,7 +104,7 @@
     "build": "node scripts/build.mjs",
     "check": "tsc --noEmit",
     "test": "node --test test/*.test.mjs",
-    "package": "npm run check && npm run build && vsce package --no-dependencies --out dist/gretl-runtime.vsix"
+    "package": "npm run check && npm run build && vsce package --no-dependencies --out dist/gretl-runtime.vsix && node scripts/inventory.mjs && node --test test/package/*.test.mjs"
   },
   "dependencies": {
     "vscode-languageclient": "11.0.0"

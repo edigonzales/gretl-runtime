@@ -121,12 +121,20 @@ final class ServerWorkspace implements AutoCloseable {
                 cancellation.check();snapshot=null;
                 List<AnalysisSnapshot> cachedSnapshots;synchronized(this){cachedSnapshots=List.copyOf(snapshots.values());}
                 String path=document.getPath();
+                var buffer=documents.get(document);
+                boolean singleJob=(path==null||!path.endsWith("/job.groovy")&&!path.endsWith("/settings.gretl"))
+                        &&(buffer.filter(open->!open.languageId().equals("sql")).isPresent()
+                        ||buffer.isEmpty()&&cachedSnapshots.stream().anyMatch(cached->cached.analysis().capture().project().id().singleJob()
+                            &&cached.analysis().capture().project().id().anchor().equals(document)));
                 if(documents.get(document).isEmpty()&&cachedSnapshots.stream().noneMatch(cached->cached.sources().containsKey(document))
                         &&(path==null||!path.endsWith("/job.groovy")&&!path.endsWith("/settings.gretl")))throw error(ResponseErrorCode.InvalidParams,"SOURCE_NOT_KNOWN");
-                for(var cached:cachedSnapshots)if(cached.sources().containsKey(document)&&extra.isEmpty()&&manager.sameGeneration(cached.analysis().capture())){snapshot=cached;break;}
+                for(var cached:cachedSnapshots)if(cached.sources().containsKey(document)&&extra.isEmpty()
+                        &&cached.analysis().capture().project().id().singleJob()==singleJob
+                        &&(!singleJob||cached.analysis().capture().project().id().anchor().equals(document))
+                        &&manager.sameGeneration(cached.analysis().capture())){snapshot=cached;break;}
                 if(snapshot!=null&&!manager.isCurrent(snapshot.analysis().capture(),cancellation))snapshot=null;
                 if(snapshot==null) {
-                    var capture=manager.capture(new ProjectResolver.ProjectRequest(rootFor(document),document,false,List.of(),extra),cancellation);
+                    var capture=manager.capture(new ProjectResolver.ProjectRequest(rootFor(document),document,singleJob,List.of(),extra),cancellation);
                     snapshot=analyzer.analyze(capture,cancellation);
                     watcher.capture(capture.project().sources().versions().keySet());
                     var analyzed=snapshot;

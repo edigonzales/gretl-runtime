@@ -1,5 +1,7 @@
 # GRETL Runtime for Visual Studio Code
 
+Extension ID: `edigonzales.gretl-runtime-vscode`.
+
 Requires Java 25 and a local filesystem workspace. Install the local VSIX using
 “Extensions: Install from VSIX”. The language server and operation catalogue are
 included; no GRETL checkout, server download or job execution is needed.
@@ -17,7 +19,7 @@ The status bar and **GRETL: Show Language Server Output** display server state.
 this window's owned server. Unsaved documents remain in the editor. Workspace
 trust is required before Java starts. Virtual filesystems are unsupported.
 
-Build from the repository root with JDK 25 and Node 22 or newer using `./mvnw -B
+Build from the repository root with JDK 25, Node 22 or newer, and the local `zip`/`unzip` tools using `./mvnw -B
 clean verify`. This includes the server build, locked npm installation, host
 tests, type checking and local VSIX packaging. The VSIX is written to
 `vscode/gretl-vscode/dist/gretl-runtime.vsix`. During extension development, run
@@ -43,3 +45,9 @@ Provenance and original hashes are included in `syntaxes/PROVENANCE.json`.
 All npm dependencies are locked. `minimatch` is pinned through an override to
 11.0.1 to include the glob amplification fix; client and packaging behaviour are
 checked with this version. Bundled licence texts are included in the VSIX.
+
+The bundle manifest records the commit (and dirty state), Maven/artifact/Java/
+Groovy/extension versions, catalogue and protocol identity, and hashes for every
+shipped payload. The manifest itself and generated VSIX container metadata are
+covered by the external `dist/distribution-inventory.json`. Packaging verifies
+that inventory and tests a deliberately tampered copy of the real VSIX.

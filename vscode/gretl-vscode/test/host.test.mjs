@@ -48,7 +48,7 @@ test('only strict language/trust is forwarded; URI support is filesystem only',(
 });
 test('manifest owns exact filenames and explicit language, never arbitrary Groovy/Gradle',async()=>{
  const pkg=JSON.parse(await readFile('package.json','utf8'));
- assert.equal(pkg.publisher+'.'+pkg.name,'edigonzales.gretl-runtime');
+ assert.equal(pkg.publisher+'.'+pkg.name,'edigonzales.gretl-runtime-vscode');
  assert.deepEqual(pkg.contributes.languages[0].filenames,['job.groovy','settings.gretl']);
  assert.equal(pkg.contributes.languages[0].extensions,undefined);
  assert.deepEqual(pkg.extensionKind,['workspace']);

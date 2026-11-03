@@ -24,6 +24,6 @@ const driver=path.join(destination,'evidence-driver.vsix');
 await run(path.join(root,'node_modules/.bin/vsce'),['package','--no-dependencies','--allow-missing-repository','--out',driver],{cwd:path.join(root,'test/workbench-driver')});
 await run(cli,[...cliArgs,...common,'--install-extension',driver,'--force']);
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-await writeFile(path.join(destination,'identity.json'),JSON.stringify({state:'PREPARED_NOT_ACCEPTED',preparedAt:new Date().toISOString(),platform:process.platform,architecture:process.arch,executable,workspace,profile,extensions,product:{id:'edigonzales.gretl-runtime',vsix,sha256:hash(await readFile(vsix)),bundle:JSON.parse(await readFile(path.join(root,'server/bundle-manifest.json'),'utf8'))},driverSha256:hash(await readFile(driver))},null,2)+'\n');
+await writeFile(path.join(destination,'identity.json'),JSON.stringify({state:'PREPARED_NOT_ACCEPTED',preparedAt:new Date().toISOString(),platform:process.platform,architecture:process.arch,executable,workspace,profile,extensions,product:{id:'edigonzales.gretl-runtime-vscode',vsix,sha256:hash(await readFile(vsix)),bundle:JSON.parse(await readFile(path.join(root,'server/bundle-manifest.json'),'utf8'))},driverSha256:hash(await readFile(driver))},null,2)+'\n');
 const child=spawn(executable,[...common,'--new-window',workspace,path.join(workspace,'job.groovy')],{stdio:'ignore',detached:true});child.unref();
 console.log(JSON.stringify({workspace,executable,identity:path.join(destination,'identity.json')}));

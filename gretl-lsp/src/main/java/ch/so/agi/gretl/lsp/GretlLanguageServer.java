@@ -23,6 +23,7 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
     private volatile boolean ready;
     private volatile GretlLanguageClient client;
     private final ServerWorkspace workspace;
+    private final DiagnosticPublicationState diagnosticState=new DiagnosticPublicationState(64);
     private final GretlTextDocumentService text;
     private final GretlWorkspaceService folders;
     private final CompletableFuture<Integer> exit=new CompletableFuture<>();
@@ -35,6 +36,7 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
     private volatile boolean documentChanges,markdown,related,hierarchicalSymbols,lineFoldingOnly,codeActionLiterals;
     public GretlLanguageServer(CatalogRepository catalog) throws IOException {
         workspace=new ServerWorkspace(catalog,this::publish);text=new GretlTextDocumentService(this);folders=new GretlWorkspaceService(this);
+        workspace.manager.onInvalidation(ids->{synchronized(workspace.manager){emitDiagnostics(diagnosticState.invalidate(ids,workspace.manager::isProjectGenerationCurrent));}});
     }
     public void connect(GretlLanguageClient client){this.client=Objects.requireNonNull(client);}
     public CompletableFuture<Integer> exitSignal(){return exit;}
@@ -125,8 +127,16 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
     private void publish(AnalysisSnapshot snapshot,CancellationToken cancellation) {
         if(!ready||client==null||state!=State.INITIALIZED)return;
         cancellation.check();
-        for(var diagnostics:LspDiagnosticMapper.map(snapshot,related)) {cancellation.check();client.publishDiagnostics(diagnostics);}
+        emitDiagnostics(diagnosticState.replace(snapshot.analysis().capture().project().id(),snapshot.analysis().capture().generation(),LspDiagnosticMapper.map(snapshot,related)));
         client.analysisReady(new AnalysisReady(context(snapshot)));
+    }
+    private void emitDiagnostics(DiagnosticPublicationState.Batch batch) {
+        if(!ready||client==null||state!=State.INITIALIZED)return;
+        for(var diagnostics:batch.changes()) {
+            if(diagnostics.getDiagnostics().isEmpty())workspace.documents.get(URI.create(diagnostics.getUri())).ifPresent(document->diagnostics.setVersion(document.source().stamp().bufferVersion()));
+            client.publishDiagnostics(diagnostics);
+        }
+        if(batch.limited())log("DIAGNOSTIC_PROJECT_LIMIT");
     }
     public CompletableFuture<CatalogResponse> catalog(CatalogRequest request) {
         try{requireActive();version(request.protocolVersion());if(request.catalogSchemaVersion()!=1)throw new IllegalArgumentException("CATALOG_SCHEMA_MISMATCH");var loaded=workspace.catalog.snapshot().result();return CompletableFuture.completedFuture(new CatalogResponse(1,1,workspace.manager.serverInstance().toString(),loaded.state().name(),loaded.catalog().orElse(null),loaded.problems()));}

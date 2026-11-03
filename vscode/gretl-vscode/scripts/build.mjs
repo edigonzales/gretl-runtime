@@ -1,31 +1,41 @@
 import {build} from 'esbuild';
-import {readFile,mkdir,copyFile,writeFile} from 'node:fs/promises';
+import {readFile,mkdir,writeFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const repo=path.resolve(root,'../..');
-await mkdir(path.join(root,'dist'),{recursive:true});
-await mkdir(path.join(root,'server'),{recursive:true});
-await build({entryPoints:[path.join(root,'src/extension.ts')],bundle:true,platform:'node',target:'node22',format:'cjs',external:['vscode'],outfile:path.join(root,'dist/extension.cjs'),metafile:true}).then(async result=>writeFile(path.join(root,'dist/dependencies.json'),JSON.stringify(result.metafile,null,2)+'\n'));
-const files={
- 'gretl-lsp.jar':'gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar',
- 'operations.json':null,
- 'catalog-manifest.json':null,
- 'gretl-protocol-v1.schema.json':null
-};
-const hashes={};
-for(const [name,source] of Object.entries(files)){
- const bytes=source ? await readFile(path.join(repo,source)) : execFileSync('unzip',['-p',path.join(repo,files['gretl-lsp.jar']),name],{maxBuffer:8*1024*1024});
- if(name==='gretl-protocol-v1.schema.json'&&!bytes.equals(await readFile(path.join(repo,'gretl-lsp/src/main/resources/gretl-protocol-v1.schema.json'))))throw Error('Rebuild the server: bundled protocol schema differs from source.');
- hashes[name]=createHash('sha256').update(bytes).digest('hex');
- await writeFile(path.join(root,'server',name),bytes);
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+const jar=path.join(repo,'gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar');
+const archive=name=>execFileSync('unzip',['-p',jar,name],{maxBuffer:32<<20,stdio:['ignore','pipe','pipe']});
+await mkdir(path.join(root,'dist'),{recursive:true});await mkdir(path.join(root,'server'),{recursive:true});
+const output=await build({entryPoints:[path.join(root,'src/extension.ts')],bundle:true,platform:'node',target:'node22',format:'cjs',external:['vscode'],outfile:path.join(root,'dist/extension.cjs'),metafile:true});
+await writeFile(path.join(root,'dist/dependencies.json'),JSON.stringify(output.metafile,null,2)+'\n');
+const files={};
+for(const name of ['gretl-lsp.jar','operations.json','catalog-manifest.json','gretl-protocol-v1.schema.json']){
+ const bytes=name==='gretl-lsp.jar'?await readFile(jar):archive(name);
+ if(name==='gretl-protocol-v1.schema.json'&&!bytes.equals(await readFile(path.join(repo,'gretl-lsp/src/main/resources',name))))throw Error('Rebuild the server: bundled protocol schema differs from source.');
+ files[name]=sha(bytes);await writeFile(path.join(root,'server',name),bytes);
 }
-const pkg=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
-await writeFile(path.join(root,'server/bundle-manifest.json'),JSON.stringify({schemaVersion:1,extensionVersion:pkg.version,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).trim(),files:hashes},null,2)+'\n');
-// Keep all bundled package licences; no dependency install is needed in the VSIX.
-const licenseFiles=execFileSync('rg',['--files','--hidden','--no-ignore','node_modules'],{cwd:root,encoding:'utf8'}).split('\n').filter(name=>/(?:^|\/)(?:licen[cs]e|notice)(?:\.[^/]*)?$/i.test(name));
+// Retain dependency licences; the installed VSIX needs no npm installation.
+const licenceFiles=execFileSync('rg',['--files','--hidden','--no-ignore','node_modules'],{cwd:root,encoding:'utf8'}).split('\n').filter(name=>/(?:^|\/)(?:licen[cs]e|notice)(?:\.[^/]*)?$/i.test(name));
 let notices='Bundled npm dependency licences (exact versions: package-lock.json)\n';
-for(const file of licenseFiles.sort())notices+='\n\n--- '+file+' ---\n'+await readFile(path.join(root,file),'utf8');
+for(const file of licenceFiles.sort())notices+='\n\n--- '+file+' ---\n'+await readFile(path.join(root,file),'utf8');
 await writeFile(path.join(root,'server/THIRD-PARTY-NOTICES.txt'),notices);
+const pkg=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
+const maven=execFileSync(path.join(repo,'mvnw'),['-v'],{cwd:repo,encoding:'utf8',stdio:['ignore','pipe','pipe']}).replace(/\x1b\[[0-9;]*m/g,'');
+const mavenVersion=maven.match(/Apache Maven ([^\s]+)/)?.[1],javaVersion=maven.match(/Java version: ([^,\s]+)/)?.[1];
+if(!mavenVersion||!/^25(?:[.-]|$)/.test(javaVersion??''))throw Error('Packaging requires Maven with JDK 25.');
+const mavenArtifactVersion=archive('META-INF/maven/ch.so.agi.gretl/gretl-lsp/pom.properties').toString().match(/^version=(.+)$/m)?.[1];
+const groovyVersion=archive('META-INF/groovy-release-info.properties').toString().match(/^ImplementationVersion=(.+)$/m)?.[1];
+const mainClass=archive('ch/so/agi/gretl/lsp/GretlLanguageServer.class');
+if(mainClass.readUInt16BE(6)!==69||!mavenArtifactVersion||!groovyVersion)throw Error('Server build metadata is missing or is not Java 25.');
+const protocol=JSON.parse(archive('gretl-protocol-v1.schema.json').toString());
+const catalog=JSON.parse(archive('operations.json').toString());
+const paths={'package.json':'package.json','LICENSE.txt':'LICENSE','readme.md':'README.md','language-configuration.json':'language-configuration.json','dist/extension.cjs':'dist/extension.cjs'};
+for(const name of [...Object.keys(files),'THIRD-PARTY-NOTICES.txt'])paths['server/'+name]='server/'+name;
+for(const name of await readdir(path.join(root,'syntaxes')))paths['syntaxes/'+name]='syntaxes/'+name;
+const payloadSha256={};for(const [delivered,source]of Object.entries(paths).sort(([a],[b])=>a.localeCompare(b,'en')))payloadSha256[delivered]=sha(await readFile(path.join(root,source)));
+const manifest={schemaVersion:1,extensionId:pkg.publisher+'.'+pkg.name,extensionVersion:pkg.version,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).trim(),sourceDirty:execFileSync('git',['status','--porcelain'],{cwd:repo,encoding:'utf8'}).trim()!=='',mavenVersion,mavenArtifactVersion,javaVersion,javaRelease:25,groovyVersion,nodeVersion:process.version,wireSchemaVersion:protocol.$defs.GraphRequest.properties.protocolVersion.const,catalogSchemaVersion:catalog.schemaVersion,catalogId:catalog.catalogId,catalogSha256:files['operations.json'],files,payloadSha256,inventoryExcludes:['server/bundle-manifest.json'],containerInventory:'dist/distribution-inventory.json (outside the VSIX; includes the manifest and generated container metadata)'};
+await writeFile(path.join(root,'server/bundle-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
