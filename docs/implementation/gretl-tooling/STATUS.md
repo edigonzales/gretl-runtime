@@ -11,7 +11,7 @@ Primärplattform: macOS 27.0.1 arm64, JDK 25.0.2, OpenCode 2.2.5 mit direktem De
 |---|---|---|---|---|
 | P0 | Verträge, Katalog, Reviewkette | PASS | `5ff6cffcff1d23d1cec00116a8d0a51948945f33` | [Originalreview](reviews/P0/attempt-1/review.md) |
 | P1 | Sicherer Parser und Recovery | PASS | `412909f954a6059a331754db1bf11d897ffb9b88` | [Originalreview](reviews/P1/attempt-2/review.md); [erster FAIL](reviews/P1/attempt-1/review.md) |
-| P2 | Projekte, Snapshots, Semantik | IN_PROGRESS | `d64adb4959869608e6d3ef6f2b3bd86a4491f261` (FAIL) | [F1/F2](reviews/P2/attempt-1/review.md) geschlossen; [zweiter Review: F3](reviews/P2/attempt-2/review.md), Reparatur in Arbeit |
+| P2 | Projekte, Snapshots, Semantik | IN_PROGRESS | `566bb3446456523e9a1bd47ccbec7cfc54df02f4` (keine Freigabe) | [F1/F2](reviews/P2/attempt-1/review.md) und [F3](reviews/P2/attempt-2/review.md) repariert; [neuer URI-Befund](reviews/P2/attempt-3-transport-retry-1/review.md), [äusserer Lauf ungültig](reviews/P2/attempt-3-transport-retry-1/outer-validation.json) |
 | P3 | Queries und Editplanung | PLANNED | — | — |
 | P4 | Eigenständiger LSP | PLANNED | — | — |
 | P5 | Installierter Texteditor | PLANNED | — | — |

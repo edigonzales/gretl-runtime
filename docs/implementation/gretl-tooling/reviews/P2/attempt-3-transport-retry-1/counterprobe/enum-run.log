@@ -1,0 +1,10 @@
+OK actual bundled catalog is AVAILABLE: []
+HttpDownload.url shape=ValueShape[kind=Opaque, runtimeType=uri, children=[]] allowedValues=[http, https] required=true
+OK url is a URI-shaped input with scheme-like allowed metadata
+OK catalog carries the two URI schemes as allowedValues
+capabilities=Capabilities[declarationsComplete=true, referencesComplete=true, graphComplete=true, catalogAvailable=true, bounded=true, fieldAssignmentsComplete=true, executionComplete=true]
+diagnostic INPUT_ENUM ERROR span=TextSpan[startUtf16=39, endUtf16=73] message=Literal input is outside the allowed values.
+OK the valid https URL is falsely reported as one INPUT_ENUM ERROR
+OK required inputs are otherwise present
+OK no invented unknown input for the real catalog
+COUNTERPROBE CONFIRMED: valid HttpDownload URL yields INPUT_ENUM ERROR

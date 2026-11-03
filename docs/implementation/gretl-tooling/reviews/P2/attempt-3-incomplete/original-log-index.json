@@ -1,0 +1,12 @@
+[
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-3/evidence/opencode.jsonl",
+    "sha256": "d46b0045bccb5b0949cafcd9c7f2cfb3d5b28965ec170fcfb6a2eed9b626eded",
+    "bytes": 2130978
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-3/evidence/opencode.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+]

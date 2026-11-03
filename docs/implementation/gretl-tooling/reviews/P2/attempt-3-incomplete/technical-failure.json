@@ -1,0 +1,19 @@
+{
+  "reviewId": "6860d538-46da-4cc2-86e1-fd8bcf3fdba0",
+  "candidateSha": "566bb3446456523e9a1bd47ccbec7cfc54df02f4",
+  "session": "ses_e5f71ebe8ffeKcbaqx7wsbjCrg",
+  "observedAt": "2026-11-03T09:03:02.195Z",
+  "outerWrapperExitCode": 1,
+  "ownedPids": [
+    46830,
+    46831
+  ],
+  "ownedPidsNoLongerLive": true,
+  "missingOutputs": [
+    "review.md",
+    "verdict.json"
+  ],
+  "validPhaseVerdict": false,
+  "reason": "Native stop event without final report or verdict; wrapper failed ENOENT. No phase release.",
+  "retryCorrection": "Explicit scoped Node/test command guidance and bounded evidence reading; no recursive reads of the live protocol log."
+}

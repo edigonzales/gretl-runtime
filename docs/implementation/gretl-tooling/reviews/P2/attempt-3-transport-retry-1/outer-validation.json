@@ -1,0 +1,8 @@
+{
+  "candidateSha": "566bb3446456523e9a1bd47ccbec7cfc54df02f4",
+  "validPhaseGate": false,
+  "reportedVerdict": "FAIL",
+  "reason": "Actual OpenCode exit 1 with provider.invalid-output: OpenAI Chat stream ended without finish_reason (HTTP 200). Original report contains independently reproduced URI enum finding; no PASS and no phase release.",
+  "trackedUnchanged": true,
+  "childrenFinished": true
+}
