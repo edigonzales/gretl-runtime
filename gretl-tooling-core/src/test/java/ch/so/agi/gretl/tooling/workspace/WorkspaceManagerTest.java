@@ -30,6 +30,22 @@ class WorkspaceManagerTest {
             assertTrue(manager.isCurrent(capture,CancellationToken.NONE));store.applyChanges(sql,3,List.of(DocumentStore.TextChange.full("new SQL")));assertFalse(manager.sameGeneration(capture));assertEquals("dirty SQL",project.sources().texts().get(sql).text());
         }
     }
+    @Test void missingIncludedEntryHasTheRealDirtySettingsAnchorAndKeepsItsSourcePrecondition(){
+        var files=new Files();files.texts.put(JOB,"action('root') {}\n");files.texts.put(SETTINGS,"include 'sub'\n");
+        files.texts.put(URI.create("file:/workspace/sub/job.groovy"),"action('child') {}\n");
+        String dirty="// 😀\r\ninclude 'missing'\r\n";
+        var store=new DocumentStore();store.open(SETTINGS,"gretl-runtime",4,dirty);
+        try(var manager=new WorkspaceManager(store,new CatalogRepository())){
+            manager.addRoot(ROOT,files);var project=manager.capture(new ProjectRequest(ROOT,JOB),CancellationToken.NONE).project();
+            var problem=project.problems().stream().filter(p->p.code().equals("PROJECT_ENTRY_MISSING")).findFirst().orElseThrow();
+            assertTrue(problem.error());assertEquals(SETTINGS,problem.documentId());assertNotNull(problem.span());
+            assertEquals("'missing'",dirty.substring(problem.span().startUtf16(),problem.span().endUtf16()));
+            assertEquals(List.of(JOB),project.jobs().stream().map(JobSource::documentId).toList());
+            assertTrue(project.sources().versions().containsKey(URI.create("file:/workspace/missing/job.groovy")));
+            assertEquals(4,project.sources().texts().get(SETTINGS).stamp().bufferVersion());assertFalse(project.complete());
+        }
+    }
+
     @Test void closeReopenExternalChangesConfigurationAndCatalogInvalidateWithoutTouchingOtherRoots(){
         var files=new Files();files.texts.put(JOB,"action('disk') {}");var otherRoot=URI.create("file:/other");var other=URI.create("file:/other/job.groovy");files.texts.put(other,"action('other') {}");
         var store=new DocumentStore();var catalogs=new CatalogRepository();store.open(JOB,"gretl",1,"action('dirty') {}");

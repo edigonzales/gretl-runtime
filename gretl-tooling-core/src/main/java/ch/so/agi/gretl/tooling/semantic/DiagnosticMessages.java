@@ -12,6 +12,7 @@ final class DiagnosticMessages {
         entry("INVALID_NAME","Invalid declaration or reference name.","Ungueltiger Deklarations- oder Referenzname."),
         entry("UNKNOWN_TASK_REFERENCE","Unknown task or action.","Unbekannter Task oder Action."),
         entry("UNKNOWN_PARAMETER","Unknown parameter.","Unbekannter Parameter."),
+        entry("PROJECT_ENTRY_MISSING","Required project entry is missing.","Ein erforderlicher Projekteintrag fehlt."),
         entry("AMBIGUOUS_REFERENCE","The reference has multiple definitions.","Die Referenz hat mehrere Definitionen."),
         entry("DYNAMIC_REFERENCE","Dynamic reference cannot be resolved statically.","Dynamische Referenz ist statisch nicht aufloesbar."),
         entry("PARTIAL_ANALYSIS","Some declarations or references cannot be analyzed statically.","Einige Deklarationen oder Referenzen sind statisch nicht analysierbar."),

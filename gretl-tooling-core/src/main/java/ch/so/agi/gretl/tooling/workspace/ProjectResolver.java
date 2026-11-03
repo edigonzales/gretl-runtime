@@ -59,7 +59,7 @@ public final class ProjectResolver {
                         if(nested.issues().stream().anyMatch(i->!i.code().equals("SOURCE_MISSING"))){sourceProblem(SourceUris.child(ancestor,"settings.gretl"),nested,false,problems);ambiguous=true;break;}
                     }
                     if(ambiguous){problems.add(new ProjectProblem("PROJECT_OWNERSHIP_AMBIGUOUS",settings,include.literal().token(),false,List.of()));complete=false;continue;}
-                    var entry=view.read(file,cancellation);if(entry.source().isPresent())jobs.add(new JobSource(scope,file));else{sourceProblem(file,entry,true,problems);complete=false;}
+                    var entry=view.read(file,cancellation);if(entry.source().isPresent())jobs.add(new JobSource(scope,file));else{sourceProblem(settings,include.literal().token(),entry,true,problems);complete=false;}
                 }
                 if(jobs.isEmpty()){problems.add(new ProjectProblem("PROJECT_EMPTY",settings,null,complete,List.of()));complete=false;}
             }
@@ -89,5 +89,6 @@ public final class ProjectResolver {
     private static boolean within(URI root,URI directory){return sameDirectory(root,directory)||SourceUris.contains(root,directory);}
     private static boolean sameDirectory(URI a,URI b){String left=a.getPath(),right=b.getPath();return Objects.equals(a.getScheme(),b.getScheme())&&Objects.equals(a.getAuthority(),b.getAuthority())&&left!=null&&right!=null&&strip(left).equals(strip(right));}
     private static String strip(String path){return path.endsWith("/")?path.substring(0,path.length()-1):path;}
-    private static void sourceProblem(URI id,SourceRead read,boolean required,List<ProjectProblem> problems){String code=read.issues().isEmpty()?"SOURCE_UNAVAILABLE":read.issues().getFirst().code();problems.add(new ProjectProblem(required&&code.equals("SOURCE_MISSING")?"PROJECT_ENTRY_MISSING":"PROJECT_SOURCE_NOT_INSPECTED",id,null,required&&code.equals("SOURCE_MISSING"),List.of()));}
+    private static void sourceProblem(URI id,SourceRead read,boolean required,List<ProjectProblem> problems){sourceProblem(id,null,read,required,problems);}
+    private static void sourceProblem(URI id,TextSpan span,SourceRead read,boolean required,List<ProjectProblem> problems){String code=read.issues().isEmpty()?"SOURCE_UNAVAILABLE":read.issues().getFirst().code();problems.add(new ProjectProblem(required&&code.equals("SOURCE_MISSING")?"PROJECT_ENTRY_MISSING":"PROJECT_SOURCE_NOT_INSPECTED",id,span,required&&code.equals("SOURCE_MISSING"),List.of()));}
 }

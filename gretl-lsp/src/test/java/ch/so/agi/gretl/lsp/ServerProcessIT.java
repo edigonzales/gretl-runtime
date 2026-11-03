@@ -95,6 +95,24 @@ class ServerProcessIT {
         }
     }
 
+    @Test void missingDirtySettingsIncludePublishesAnActualSettingsRangeAndVersion()throws Exception {
+        Path job=temporary.resolve("job.groovy"),settings=temporary.resolve("settings.gretl"),sub=Files.createDirectory(temporary.resolve("sub"));
+        Files.writeString(job,"action('root') {}\n");Files.writeString(settings,"include 'sub'\ndefaults ':root'\n");Files.writeString(sub.resolve("job.groovy"),"action('child') {}\n");
+        String jobUri=job.toUri().toString(),settingsUri=settings.toUri().toString();
+        try(var wire=new Wire(temporary,"--stdio")) {
+            wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(jobUri,1,Files.readString(job));
+            wire.opened(settingsUri,4,"// 😀\r\ninclude 'notThere'\r\ndefaults ':root'\r\n");
+            assertTrue(diagnostic(graph(wire,jobUri),"PROJECT_ENTRY_MISSING"));
+            var publication=wire.notification("textDocument/publishDiagnostics",params->java.net.URI.create(settingsUri).equals(java.net.URI.create(params.get("uri").getAsString()))
+                    &&params.has("version")&&params.get("version").getAsInt()==4
+                    &&params.getAsJsonArray("diagnostics").asList().stream().anyMatch(value->value.getAsJsonObject().get("code").getAsString().equals("PROJECT_ENTRY_MISSING")));
+            var error=publication.getAsJsonArray("diagnostics").asList().stream().map(JsonElement::getAsJsonObject).filter(value->value.get("code").getAsString().equals("PROJECT_ENTRY_MISSING")).findFirst().orElseThrow();
+            var range=error.getAsJsonObject("range");assertEquals(1,range.getAsJsonObject("start").get("line").getAsInt());
+            assertEquals(8,range.getAsJsonObject("start").get("character").getAsInt());assertEquals(18,range.getAsJsonObject("end").get("character").getAsInt());
+            assertEquals("Ein erforderlicher Projekteintrag fehlt.",error.get("message").getAsString());wire.stop();
+        }
+    }
+
     @Test void standaloneWireLifecycleStandardFeaturesAndCustomEdits()throws Exception {
         Path root=Files.createDirectory(temporary.resolve("workspace ü ; literal"));String uri=root.resolve("job.groovy").toUri().toString();
         String source="parameter('arg',description:'A',defaultValue:'x')\r\n"
