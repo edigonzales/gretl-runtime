@@ -3,10 +3,11 @@ import {spawn,ChildProcess} from 'node:child_process';
 import {once} from 'node:events';
 import {randomUUID} from 'node:crypto';
 import {endOwnedProcess} from './process';
-import {LanguageClient,CloseAction,ErrorAction,State,RenameRequest,CodeActionRequest,TextDocumentEdit,WorkspaceEdit as ProtocolEdit,CodeAction as ProtocolAction} from 'vscode-languageclient/node';
+import {LanguageClient,CloseAction,ErrorAction,State,RenameRequest,CodeActionRequest,DocumentSymbolRequest,DocumentSymbol as ProtocolSymbol,TextDocumentEdit,WorkspaceEdit as ProtocolEdit,CodeAction as ProtocolAction} from 'vscode-languageclient/node';
 import {checkBundle,checkJava,languageConfiguration,localHost} from './host';
 
 import {Stamp,validateEditSources} from './edit-guard';
+import {currentRead} from './read-query';
 interface Context {protocolVersion:number;schemaVersion:number;serverInstanceId:string;snapshotId:string;sourceStamps:Stamp[]}
 interface Graph {context:Context}
 
@@ -109,6 +110,17 @@ class RuntimeHost implements vscode.Disposable {
                 }
             },
             middleware:{
+                provideDocumentSymbols:async(doc,token)=>{
+                    const version=doc.version;
+                    const current=()=>this.client===client&&client.isRunning()&&!token.isCancellationRequested&&!doc.isClosed&&doc.version===version;
+                    const symbols=await currentRead(()=>client.sendRequest(DocumentSymbolRequest.type,{textDocument:{uri:doc.uri.toString()}},token),current);
+                    if(!symbols?.length)return [];
+                    const converted=ProtocolSymbol.is(symbols[0])
+                        ?await client.protocol2CodeConverter.asDocumentSymbols(symbols as ProtocolSymbol[],token)
+                        :await client.protocol2CodeConverter.asSymbolInformations(symbols as import('vscode-languageclient/node').SymbolInformation[],token);
+                    if(!current())throw new vscode.CancellationError();
+                    return converted;
+                },
                 provideRenameEdits:async(doc,position,newName,token)=>{
                     const capture=await this.capture(client,doc,token);
                     const edit=await client.sendRequest(RenameRequest.type,{textDocument:{uri:doc.uri.toString()},position,newName},token);
