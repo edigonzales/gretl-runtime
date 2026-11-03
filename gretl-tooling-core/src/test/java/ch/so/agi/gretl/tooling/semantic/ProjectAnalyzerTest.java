@@ -48,7 +48,7 @@ class ProjectAnalyzerTest {
         var analysis=analyze("task('a', Echo) { input='x' }; action('b', after:'a') { result('a').file; resultOptional('a') }; defaults 'a','b'");
         assertEquals(2,Collections.frequency(codes(analysis),"RESULT_DEPENDENCY_REQUIRED"));assertFalse(codes(analysis).contains("UNKNOWN_OUTPUT"));
         var action=analyze("action('a') { return [anything:42] }; action('b', dependsOn:'a') { result('a').arbitrary }");assertFalse(codes(action).contains("UNKNOWN_OUTPUT"));
-        var wrong=analyze("task('a', Echo) { input='x' }; action('b', dependsOn:'a') { result('a').missing }; cleanup('last') { result('a') }");assertTrue(codes(wrong).containsAll(List.of("UNKNOWN_OUTPUT","RESULT_SCOPE")));
+        var wrong=analyze("task('a', Echo) { input='x' }; action('b', dependsOn:'a') { result('a').class; result('a').metaClass; result('a').missing }; cleanup('last') { result('a') }");assertTrue(codes(wrong).containsAll(List.of("UNKNOWN_OUTPUT","RESULT_SCOPE")));assertEquals(1,Collections.frequency(codes(wrong),"UNKNOWN_OUTPUT"));
     }
     @Test void duplicatesRemainAmbiguousAndUnknownRegistrationSuppressesCertainMissingReferences(){
         var duplicate=analyze("action('a') {}; task('a', Echo) { input='x' }; action('b', dependsOn:'a') {}");assertEquals(2,Collections.frequency(codes(duplicate),"DUPLICATE_TASK_ID"));assertTrue(codes(duplicate).contains("AMBIGUOUS_REFERENCE"));assertFalse(duplicate.capabilities().graphComplete());assertEquals(2,duplicate.symbols().get(new SymbolId(Namespace.TASK,"a")).size());
