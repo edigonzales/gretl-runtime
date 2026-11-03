@@ -51,6 +51,32 @@ final class ServerWorkspace implements AutoCloseable {
         watcher.capture(List.of(SourceUris.child(id,"settings.gretl")));
     }
     void removeRoot(URI id){id=SourceUris.directoryIdentity(local(id));manager.removeRoot(id);synchronized(this){roots.remove(id);snapshots.clear();plans.clear();epoch++;}schedule();}
+    /** Control-thread transaction: all fallible validation precedes changes to ownership or retained plans. */
+    void updateRoots(List<URI> additions,List<URI> removals) throws IOException {
+        if(additions.size()>16||removals.size()>16)throw new IllegalArgumentException("WORKSPACE_ROOT_LIMIT");
+        var addIds=additions.stream().map(ServerWorkspace::local).map(SourceUris::directoryIdentity).toList();
+        var removeIds=removals.stream().map(ServerWorkspace::local).map(SourceUris::directoryIdentity).toList();
+        if(new HashSet<>(addIds).size()!=addIds.size()||new HashSet<>(removeIds).size()!=removeIds.size())throw new IllegalArgumentException("WORKSPACE_ROOT_DUPLICATE");
+        Set<URI> previous;synchronized(this){if(closed)throw new IllegalStateException("WORKSPACE_CLOSED");previous=Set.copyOf(roots);}
+        var next=new LinkedHashSet<>(previous);next.removeAll(removeIds);next.addAll(addIds);
+        if(next.size()>16)throw new IllegalArgumentException("WORKSPACE_ROOT_LIMIT");
+        var prepared=new LinkedHashMap<URI,LspHostSourceRepository>();
+        for(var id:addIds)prepared.put(id,new LspHostSourceRepository(id));
+        if(next.equals(previous)&&Collections.disjoint(removeIds,addIds))return;
+        // New acquisitions cannot observe intermediate root ownership. Existing requests become obsolete first.
+        synchronized(acquisition) {
+            synchronized(this){if(closed)throw new IllegalStateException("WORKSPACE_CLOSED");if(!roots.equals(previous))throw new IllegalStateException("WORKSPACE_STATE_CHANGED");epoch++;}
+            for(var id:removeIds)manager.removeRoot(id);
+            var remaining=new HashSet<>(previous);remaining.removeAll(removeIds);
+            for(var entry:prepared.entrySet())if(remaining.add(entry.getKey())) {
+                manager.addRoot(entry.getKey(),entry.getValue());
+                manager.updateConfiguration(entry.getKey(),new WorkspaceManager.Configuration(configuration.language(),Map.of()));
+            }
+            synchronized(this){roots.clear();roots.addAll(next);snapshots.clear();plans.clear();epoch++;}
+            watcher.capture(addIds.stream().map(id->SourceUris.child(id,"settings.gretl")).toList());
+        }
+        schedule();
+    }
     void configure(ServerConfiguration next) {
         List<URI> currentRoots;
         synchronized(this){configuration=next;epoch++;currentRoots=List.copyOf(roots);snapshots.clear();plans.clear();}

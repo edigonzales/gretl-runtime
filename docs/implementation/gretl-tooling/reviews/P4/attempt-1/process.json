@@ -1,0 +1,449 @@
+{
+  "argv": [
+    "/Users/stefan/.cache/gretl-tooling-review/opencode/node_modules/@opencode/cli/bin/opencode.exe",
+    "run",
+    "--standalone",
+    "--agent",
+    "gretl-independent-review",
+    "--model",
+    "deepseek/deepseek-flash",
+    "--format",
+    "json",
+    "--file",
+    "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/docs/implementation/gretl-tooling/OPENCODE_REVIEW_PROMPT.md",
+    "--file",
+    "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/request.json",
+    "--file",
+    "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/infrastructure.md",
+    "Prüfe P4 vollständig und unabhängig. Lies zuerst die Infrastrukturhinweise und den README. Alle fälligen Musskriterien gelten. Vorhandene frische Rootgates dieses Kandidaten anhand Rohbelegen validieren, niemals wiederholen. Führe betroffene Tests und eigene neue Gegenproben aus. Original review.md und verdict.json ausschliesslich in /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence. Berichte konkrete fachliche Findings oder objektive Blocker. Beende alle eigenen Kinder und die Session vollständig. Keine Produktänderungen oder Publikation."
+  ],
+  "cwd": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product",
+  "pid": 58002,
+  "ownedProcesses": [
+    {
+      "pid": 58003,
+      "command": "/Users/stefan/.cache/gretl-tooling-review/opencode/node_modules/@opencode/cli/bin/opencode.exe serve --stdio --port 0"
+    },
+    {
+      "pid": 58983,
+      "command": "(git)"
+    },
+    {
+      "pid": 59969,
+      "command": "/bin/sh ./mvnw -B -pl gretl-language-contract,gretl-tooling-core,gretl-lsp verify"
+    },
+    {
+      "pid": 60157,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire/surefirebooter-20261103195840926_3.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire' '2026-11-03T19-58-40_893-jvmRun1' 'surefire-20261103195840926_1tmp' 'surefire_0-20261103195840926_2tmp'"
+    },
+    {
+      "pid": 60158,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire/surefirebooter-20261103195840926_3.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire 2026-11-03T19-58-40_893-jvmRun1 surefire-20261103195840926_1tmp surefire_0-20261103195840926_2tmp"
+    },
+    {
+      "pid": 60200,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire/surefirebooter-20261103195842575_6.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire' '2026-11-03T19-58-40_893-jvmRun1' 'surefire-20261103195842575_4tmp' 'surefire_1-20261103195842575_5tmp'"
+    },
+    {
+      "pid": 60201,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire/surefirebooter-20261103195842575_6.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire 2026-11-03T19-58-40_893-jvmRun1 surefire-20261103195842575_4tmp surefire_1-20261103195842575_5tmp"
+    },
+    {
+      "pid": 60254,
+      "command": "npm ci"
+    },
+    {
+      "pid": 60272,
+      "command": "node tools/gretl-tooling/check-docs.mjs"
+    },
+    {
+      "pid": 60300,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103195845801_9.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire' '2026-11-03T19-58-40_893-jvmRun1' 'surefire-20261103195845801_7tmp' 'surefire_2-20261103195845801_8tmp'"
+    },
+    {
+      "pid": 60301,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103195845801_9.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire 2026-11-03T19-58-40_893-jvmRun1 surefire-20261103195845801_7tmp surefire_2-20261103195845801_8tmp"
+    },
+    {
+      "pid": 60347,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103195847744_3.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire' '2026-11-03T19-58-47_730-jvmRun1' 'surefire-20261103195847744_1tmp' 'surefire_0-20261103195847744_2tmp'"
+    },
+    {
+      "pid": 60348,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103195847744_3.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire 2026-11-03T19-58-47_730-jvmRun1 surefire-20261103195847744_1tmp surefire_0-20261103195847744_2tmp"
+    },
+    {
+      "pid": 60362,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-6749295998782441485/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 60376,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-6672488018853826708/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 60390,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-2155924289468229784/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 60404,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-12860594526972065023/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 60418,
+      "command": "(java)"
+    },
+    {
+      "pid": 60434,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-10045676693580199370/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 60448,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-10045676693580199370/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 60462,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-855055659280143052/workspace ü ; literal/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 60478,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-2933075832766603752/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 60532,
+      "command": "node tools/gretl-tooling/verify-dependencies.mjs --mode server"
+    },
+    {
+      "pid": 62541,
+      "command": "(git)"
+    },
+    {
+      "pid": 62721,
+      "command": "(git)"
+    },
+    {
+      "pid": 63454,
+      "command": "(git)"
+    },
+    {
+      "pid": 63598,
+      "command": "(git)"
+    },
+    {
+      "pid": 63599,
+      "command": "(git)"
+    },
+    {
+      "pid": 63644,
+      "command": "(git)"
+    },
+    {
+      "pid": 63787,
+      "command": "(git)"
+    },
+    {
+      "pid": 63788,
+      "command": "(git)"
+    },
+    {
+      "pid": 63975,
+      "command": "(git)"
+    },
+    {
+      "pid": 64656,
+      "command": "(rg)"
+    },
+    {
+      "pid": 65145,
+      "command": "(rg)"
+    },
+    {
+      "pid": 65146,
+      "command": "(rg)"
+    },
+    {
+      "pid": 65264,
+      "command": "(git)"
+    },
+    {
+      "pid": 67714,
+      "command": "node /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/counterprobe-workspace-folders.mjs"
+    },
+    {
+      "pid": 67716,
+      "command": "/Users/stefan/.sdkman/candidates/java/current/bin/java -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar --stdio"
+    },
+    {
+      "pid": 68322,
+      "command": "/Users/stefan/.sdkman/candidates/java/current/bin/java --enable-native-access=ALL-UNNAMED -classpath /Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d/boot/plexus-classworlds-2.12.1.jar -Dclassworlds.conf=/Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d/bin/m2.conf -Dmaven.home=/Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d -Dlibrary.jline.path=/Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d/lib/jline-native -Dorg.jline.terminal.exec.redirectPipeCreationMode=native,reflection -Dmaven.multiModuleProjectDirectory=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product org.codehaus.plexus.classworlds.launcher.Launcher -B -pl gretl-language-contract,gretl-tooling-core,gretl-lsp verify"
+    },
+    {
+      "pid": 68519,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire/surefirebooter-20261103200334642_6.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire' '2026-11-03T20-03-33_904-jvmRun1' 'surefire-20261103200334642_4tmp' 'surefire_1-20261103200334642_5tmp'"
+    },
+    {
+      "pid": 68520,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire/surefirebooter-20261103200334642_6.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire 2026-11-03T20-03-33_904-jvmRun1 surefire-20261103200334642_4tmp surefire_1-20261103200334642_5tmp"
+    },
+    {
+      "pid": 68576,
+      "command": "npm ci"
+    },
+    {
+      "pid": 68608,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200337512_9.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire' '2026-11-03T20-03-33_904-jvmRun1' 'surefire-20261103200337512_7tmp' 'surefire_2-20261103200337512_8tmp'"
+    },
+    {
+      "pid": 68609,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200337512_9.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire 2026-11-03T20-03-33_904-jvmRun1 surefire-20261103200337512_7tmp surefire_2-20261103200337512_8tmp"
+    },
+    {
+      "pid": 68623,
+      "command": "node --test tools/gretl-tooling/protocol.test.mjs"
+    },
+    {
+      "pid": 68664,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200339463_3.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire' '2026-11-03T20-03-39_449-jvmRun1' 'surefire-20261103200339463_1tmp' 'surefire_0-20261103200339463_2tmp'"
+    },
+    {
+      "pid": 68665,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200339463_3.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire 2026-11-03T20-03-39_449-jvmRun1 surefire-20261103200339463_1tmp surefire_0-20261103200339463_2tmp"
+    },
+    {
+      "pid": 68666,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-5754558370958229341/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 68680,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-12816038715113804909/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 68696,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-1050994726114790442/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 68711,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-15466598382951832330/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 68726,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-452862450159379087/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 68740,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-16132786060631389840/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 68755,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-16132786060631389840/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 68769,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-15961289978919625894/workspace ü ; literal/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 68785,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-2232330977772617423/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 70621,
+      "command": "node /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/run-targeted.mjs"
+    },
+    {
+      "pid": 70622,
+      "command": "/Users/stefan/.sdkman/candidates/java/current/bin/java --enable-native-access=ALL-UNNAMED -classpath /Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d/boot/plexus-classworlds-2.12.1.jar -Dclassworlds.conf=/Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d/bin/m2.conf -Dmaven.home=/Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d -Dlibrary.jline.path=/Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d/lib/jline-native -Dorg.jline.terminal.exec.redirectPipeCreationMode=native,reflection -Dmaven.multiModuleProjectDirectory=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product org.codehaus.plexus.classworlds.launcher.Launcher -B -pl gretl-language-contract,gretl-tooling-core,gretl-lsp verify"
+    },
+    {
+      "pid": 70796,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire/surefirebooter-20261103200429670_3.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire' '2026-11-03T20-04-29_640-jvmRun1' 'surefire-20261103200429670_1tmp' 'surefire_0-20261103200429670_2tmp'"
+    },
+    {
+      "pid": 70797,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire/surefirebooter-20261103200429670_3.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire 2026-11-03T20-04-29_640-jvmRun1 surefire-20261103200429670_1tmp surefire_0-20261103200429670_2tmp"
+    },
+    {
+      "pid": 70813,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire/surefirebooter-20261103200430385_6.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire' '2026-11-03T20-04-29_640-jvmRun1' 'surefire-20261103200430385_4tmp' 'surefire_1-20261103200430385_5tmp'"
+    },
+    {
+      "pid": 70814,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire/surefirebooter-20261103200430385_6.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire 2026-11-03T20-04-29_640-jvmRun1 surefire-20261103200430385_4tmp surefire_1-20261103200430385_5tmp"
+    },
+    {
+      "pid": 70896,
+      "command": "node --test tools/gretl-tooling/review.test.mjs"
+    },
+    {
+      "pid": 70897,
+      "command": "/Users/stefan/Library/Application Support/fnm/node-versions/v22.23.1/installation/bin/node tools/gretl-tooling/review.test.mjs"
+    },
+    {
+      "pid": 70927,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200433583_9.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire' '2026-11-03T20-04-29_640-jvmRun1' 'surefire-20261103200433583_7tmp' 'surefire_2-20261103200433583_8tmp'"
+    },
+    {
+      "pid": 70928,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200433583_9.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire 2026-11-03T20-04-29_640-jvmRun1 surefire-20261103200433583_7tmp surefire_2-20261103200433583_8tmp"
+    },
+    {
+      "pid": 70983,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200435715_3.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire' '2026-11-03T20-04-35_696-jvmRun1' 'surefire-20261103200435715_1tmp' 'surefire_0-20261103200435715_2tmp'"
+    },
+    {
+      "pid": 70985,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200435715_3.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire 2026-11-03T20-04-35_696-jvmRun1 surefire-20261103200435715_1tmp surefire_0-20261103200435715_2tmp"
+    },
+    {
+      "pid": 70999,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-17988236084208320363/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71015,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-1682342983653548385/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71031,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-12916630901986677244/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71045,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-6072822459301895321/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71059,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-9381795093814534571/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71073,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-11517675361365546461/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71087,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-11517675361365546461/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71102,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-4223441156186338347/workspace ü ; literal/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71116,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-10073030313958333082/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71185,
+      "command": "(java)"
+    },
+    {
+      "pid": 71386,
+      "command": "node /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/run-targeted.mjs"
+    },
+    {
+      "pid": 71387,
+      "command": "/Users/stefan/.sdkman/candidates/java/current/bin/java --enable-native-access=ALL-UNNAMED -classpath /Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d/boot/plexus-classworlds-2.12.1.jar -Dclassworlds.conf=/Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d/bin/m2.conf -Dmaven.home=/Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d -Dlibrary.jline.path=/Users/stefan/.m2/wrapper/dists/apache-maven-3.10.0/dae9a06d/lib/jline-native -Dorg.jline.terminal.exec.redirectPipeCreationMode=native,reflection -Dmaven.multiModuleProjectDirectory=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product org.codehaus.plexus.classworlds.launcher.Launcher -B -pl gretl-language-contract,gretl-tooling-core,gretl-lsp verify"
+    },
+    {
+      "pid": 71551,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire/surefirebooter-20261103200450410_3.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire' '2026-11-03T20-04-50_383-jvmRun1' 'surefire-20261103200450410_1tmp' 'surefire_0-20261103200450410_2tmp'"
+    },
+    {
+      "pid": 71552,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire/surefirebooter-20261103200450410_3.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-language-contract/target/surefire 2026-11-03T20-04-50_383-jvmRun1 surefire-20261103200450410_1tmp surefire_0-20261103200450410_2tmp"
+    },
+    {
+      "pid": 71582,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire/surefirebooter-20261103200451284_6.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire' '2026-11-03T20-04-50_383-jvmRun1' 'surefire-20261103200451284_4tmp' 'surefire_1-20261103200451284_5tmp'"
+    },
+    {
+      "pid": 71583,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire/surefirebooter-20261103200451284_6.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-tooling-core/target/surefire 2026-11-03T20-04-50_383-jvmRun1 surefire-20261103200451284_4tmp surefire_1-20261103200451284_5tmp"
+    },
+    {
+      "pid": 71659,
+      "command": "node --test tools/gretl-tooling/review.test.mjs"
+    },
+    {
+      "pid": 71690,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200454577_9.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire' '2026-11-03T20-04-50_383-jvmRun1' 'surefire-20261103200454577_7tmp' 'surefire_2-20261103200454577_8tmp'"
+    },
+    {
+      "pid": 71691,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200454577_9.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire 2026-11-03T20-04-50_383-jvmRun1 surefire-20261103200454577_7tmp surefire_2-20261103200454577_8tmp"
+    },
+    {
+      "pid": 71749,
+      "command": "/bin/sh -c cd '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp' && '/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java' '-javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true' '-jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200456722_3.jar' '/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire' '2026-11-03T20-04-56_704-jvmRun1' 'surefire-20261103200456722_1tmp' 'surefire_0-20261103200456722_2tmp'"
+    },
+    {
+      "pid": 71750,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/jacoco.exec,append=true -jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire/surefirebooter-20261103200456722_3.jar /Users/stefan/.cache/gretl-tooling-review/P4-review-1/product/gretl-lsp/target/surefire 2026-11-03T20-04-56_704-jvmRun1 surefire-20261103200456722_1tmp surefire_0-20261103200456722_2tmp"
+    },
+    {
+      "pid": 71767,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-15040107823157400959/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71781,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-1552322399687444155/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71795,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-187028475965676075/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71809,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-279462241076192310/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71825,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-6388686104803417817/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71839,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-9322782686699905355/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71853,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-9322782686699905355/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71870,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-9322782686699905355/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71884,
+      "command": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/java -jar /var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-7064828310578130058/workspace ü ; literal/installed server ü.jar --stdio"
+    },
+    {
+      "pid": 71899,
+      "command": "(java)"
+    },
+    {
+      "pid": 71982,
+      "command": "(git)"
+    },
+    {
+      "pid": 72890,
+      "command": "(git)"
+    },
+    {
+      "pid": 72891,
+      "command": "(git)"
+    },
+    {
+      "pid": 75359,
+      "command": "node /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/validate-verdict.mjs"
+    }
+  ],
+  "startedAt": "2026-11-03T18:57:29.631Z",
+  "endedAt": "2026-11-03T19:07:38.767Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "signal": null,
+  "finished": true,
+  "childrenFinished": true,
+  "unchanged": true,
+  "fresh": true,
+  "reportDigests": {
+    "review.md": "370da1d2a142333d49324c77ff77b246f8c75555c8c49c3c4d1d9b9d5390bd80",
+    "verdict.json": "0fa343c5a508365719b3bcde769171463f943dd883e2e11e23a180a9dfd65825"
+  }
+}

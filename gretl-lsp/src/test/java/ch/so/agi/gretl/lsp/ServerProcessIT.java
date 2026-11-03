@@ -281,4 +281,35 @@ class ServerProcessIT {
             assertEquals(2,change.getAsJsonArray("edits").size());assertEquals(source,Files.readString(job));wire.stop();
         }
     }
+
+    @Test void invalidCombinedFolderUpdatesPreserveRootsSnapshotAndRetainedPlans()throws Exception {
+        Path root=Files.createDirectory(temporary.resolve("root"));Path job=root.resolve("job.groovy");String source="action('a') {}\n";Files.writeString(job,source);
+        Path invalid=temporary.resolve("not-a-directory");Files.writeString(invalid,"file");String uri=job.toUri().toString();
+        try(var wire=new Wire(temporary,"--stdio")) {
+            wire.initialize(root,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
+            String snapshot=graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString();
+            var plan=wire.call("gretl/planEdit",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",snapshot,"requireOpenDocuments",true,"intent",Map.of("kind","RenameSymbol","target",Map.of("namespace","TASK","qualifiedName","a"),"name","renamed"))).getAsJsonObject();
+            var rootFolder=Map.of("uri",root.toUri().toString(),"name","root");
+            wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(rootFolder),"added",List.of(Map.of("uri",invalid.toUri().toString(),"name","invalid")))),null);
+            wire.notification("window/logMessage",params->params.get("message").getAsString().equals("WORKSPACE_ROOT_UNSAFE"));
+            assertEquals(snapshot,graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString());
+            assertTrue(wire.call("gretl/validateEdit",Map.of("protocolVersion",1,"planId",plan.get("planId").getAsString(),"expectedSnapshotId",snapshot)).getAsJsonObject().get("current").getAsBoolean());
+            Path extra=Files.createDirectory(temporary.resolve("extra"));var extraFolder=Map.of("uri",extra.toUri().toString(),"name","extra");
+            wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(rootFolder),"added",List.of(extraFolder,extraFolder))),null);
+            assertEquals(snapshot,graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString(),"Duplicate additions must not mutate ownership");
+            var excessive=new ArrayList<Map<String,String>>();for(int i=0;i<17;i++){Path directory=Files.createDirectory(temporary.resolve("many"+i));excessive.add(Map.of("uri",directory.toUri().toString(),"name","many"+i));}
+            wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(),"added",excessive)),null);
+            assertEquals(snapshot,graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString(),"Root limit must be checked before registering any addition");
+            wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(rootFolder),"added",List.of(Map.of("uri","https://example.invalid/workspace","name","remote")))),null);
+            assertEquals(snapshot,graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString(),"Nonlocal roots must be rejected before removal");
+            Path link=temporary.resolve("linked-root");Files.createSymbolicLink(link,extra);
+            wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(rootFolder),"added",List.of(Map.of("uri",link.toUri().toString(),"name","link")))),null);
+            assertEquals(snapshot,graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString(),"Symlink roots must be rejected before removal");
+            Files.writeString(extra.resolve("job.groovy"),"action('replacement') {}\n");
+            wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(rootFolder),"added",List.of(extraFolder))),null);
+            assertEquals("replacement",graph(wire,extra.resolve("job.groovy").toUri().toString()).getAsJsonObject("payload").getAsJsonArray("nodes").get(0).getAsJsonObject().get("title").getAsString());
+            assertTrue(wire.response("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).has("error"));
+            assertEquals(source,Files.readString(job));wire.stop();
+        }
+    }
 }

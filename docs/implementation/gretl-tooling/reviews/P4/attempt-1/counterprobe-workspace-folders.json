@@ -1,0 +1,10 @@
+{
+  "probe": "workspace-folder update atomicity",
+  "candidateJar": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+  "expected": "An invalid added workspace folder must leave the previously valid root intact (atomic rejection).",
+  "observed": "graph error -32602: SOURCE_OUTSIDE_WORKSPACE",
+  "pass": false,
+  "log": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/counterprobe-workspace-folders.log",
+  "serverStderr": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/cp-workspace-folders-aQSz3t/server-stderr.log",
+  "exitCode": 0
+}

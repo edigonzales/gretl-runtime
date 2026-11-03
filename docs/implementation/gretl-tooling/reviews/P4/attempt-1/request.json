@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "1d0dac08-f18b-4b1f-9efd-1f387d8752e4",
+  "phase": "P4",
+  "assignmentBase": "185fc6700b5cb2897f724d457610a57f059b3421",
+  "phaseBase": "392b6d8ff0191db9b3619c1c5b34fc2e2ee98886",
+  "candidateSha": "621255a972888b9fe1e629687ad9400424e19e1f",
+  "worktree": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product",
+  "evidenceDirectory": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence",
+  "requirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+  "repositoryRulesDigest": "4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b",
+  "plan": "docs/implementation/gretl-tooling/EXECUTION_PLAN.md",
+  "architecture": "docs/implementation/gretl-tooling/ARCHITECTURE.md",
+  "testMatrix": "docs/implementation/gretl-tooling/TEST_MATRIX.md",
+  "implementationReport": "docs/implementation/gretl-tooling/implementation/P4.md",
+  "criteria": [
+    "P4-01",
+    "P4-02",
+    "P4-03",
+    "P4-04",
+    "P4-05",
+    "P4-06",
+    "P4-07",
+    "P4-08",
+    "P4-09"
+  ],
+  "requiredChecks": [
+    {
+      "id": "root-standard",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "clean",
+        "verify"
+      ],
+      "reason": "Validate fresh supplied full raw standard gate; no repeat execution"
+    },
+    {
+      "id": "root-services",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-Pgeotools-probe,backing-services",
+        "clean",
+        "verify"
+      ],
+      "reason": "Validate fresh supplied full raw service gate; no repeat execution"
+    },
+    {
+      "id": "tooling-targeted",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-language-contract,gretl-tooling-core,gretl-lsp",
+        "verify"
+      ],
+      "reason": "Affected core/host/schema and actual independent packaged stdio process/archive tests; exact candidate data classifier supplied"
+    },
+    {
+      "id": "tooling-docs",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/product",
+      "argv": [
+        "node",
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "reason": "Exact criteria and local tooling links"
+    }
+  ],
+  "requiredGuiCases": [],
+  "notRequiredAdditionalChecks": [
+    {
+      "id": "repeat-root-standard",
+      "reason": "Benutzerpräzisierung: vorhandenen frischen Standardlauf dieses Kandidaten anhand aller Rohbelege validieren; keinen zusätzlichen vollständigen Lauf starten."
+    },
+    {
+      "id": "repeat-root-services",
+      "reason": "Benutzerpräzisierung: vorhandenen frischen GeoTools-/Dienstlauf dieses Kandidaten anhand aller Rohbelege validieren; keinen zusätzlichen vollständigen Lauf starten."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+      "sha256": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+      "kind": "tooling-core"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+      "sha256": "f156e3712cedc0106f2a04239ebde5e5022ef85f643149c4b80d6fff5703860f",
+      "kind": "tooling-core"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-language-contract/target/tooling-dependencies.json",
+      "sha256": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f",
+      "kind": "dependency-graph-or-catalog-data"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-core/target/tooling-dependencies.json",
+      "sha256": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7",
+      "kind": "dependency-graph-or-catalog-data"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+      "sha256": "94384f845fc41f74ddd1aa8e4b3daa39275be33eac282d8478b97d2b8bb29ff3",
+      "kind": "catalog-data"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+      "sha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+      "kind": "dependency-graph-or-catalog-data"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.schema.json",
+      "sha256": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005",
+      "kind": "dependency-graph-or-catalog-data"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+      "sha256": "7ae40b1f60e66274afbd67ff7a8cda23e3e1ba628b6051dd935f4ac07f534eea",
+      "kind": "dependency-graph-or-catalog-data"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+      "sha256": "b810405cbacb5127f4dc12c38f31c6324e24db012303b4ec06ec60d6844a0805",
+      "kind": "lsp-server-or-protocol"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-lsp/target/tooling-dependencies.json",
+      "sha256": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+      "kind": "lsp-server-or-protocol"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-lsp/target/classes/gretl-protocol-v1.schema.json",
+      "sha256": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6",
+      "kind": "lsp-server-or-protocol"
+    }
+  ],
+  "modelIdentityEvidence": "/Users/stefan/.cache/gretl-tooling-review/p2-resume-readiness/identity.json"
+}

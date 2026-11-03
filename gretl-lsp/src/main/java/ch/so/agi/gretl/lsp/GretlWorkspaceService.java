@@ -20,8 +20,9 @@ final class GretlWorkspaceService implements WorkspaceService {
         server.workspace().sourcesChanged(params.getChanges().stream().map(event->server.workspace().document(event.getUri())).collect(Collectors.toSet()));
     });}
     public void didChangeWorkspaceFolders(DidChangeWorkspaceFoldersParams params){server.notification(()-> {
-        for(var folder:params.getEvent().getRemoved())server.workspace().removeRoot(URI.create(folder.getUri()));
-        for(var folder:params.getEvent().getAdded())try{server.workspace().addRoot(URI.create(folder.getUri()));}catch(IOException invalid){throw new IllegalArgumentException("WORKSPACE_ROOT_UNSAFE");}
-        server.workspace().schedule();
+        try {
+            server.workspace().updateRoots(params.getEvent().getAdded().stream().map(folder->URI.create(folder.getUri())).toList(),
+                    params.getEvent().getRemoved().stream().map(folder->URI.create(folder.getUri())).toList());
+        }catch(IOException invalid){throw new IllegalArgumentException("WORKSPACE_ROOT_UNSAFE");}
     });}
 }
