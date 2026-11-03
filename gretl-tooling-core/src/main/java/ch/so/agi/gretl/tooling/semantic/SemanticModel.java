@@ -27,7 +27,9 @@ public final class SemanticModel {
     public record Diagnostic(String code,Severity severity,String message,Anchor anchor,List<Anchor> related) {
         public Diagnostic { related=List.copyOf(related); }
     }
-    public record Capabilities(boolean declarationsComplete,boolean referencesComplete,boolean graphComplete,boolean catalogAvailable,boolean bounded) { }
+    public record Capabilities(boolean declarationsComplete,boolean referencesComplete,boolean graphComplete,boolean catalogAvailable,boolean bounded,boolean fieldAssignmentsComplete,boolean executionComplete) {
+        public Capabilities(boolean declarationsComplete,boolean referencesComplete,boolean graphComplete,boolean catalogAvailable,boolean bounded){this(declarationsComplete,referencesComplete,graphComplete,catalogAvailable,bounded,false,false);}
+    }
     public record Analysis(WorkspaceCapture capture,Map<SymbolId,List<Symbol>> symbols,List<Reference> references,List<PathReference> paths,List<Diagnostic> diagnostics,PlanSemantics.DeclaredGraph graph,List<String> defaultTargets,Capabilities capabilities) {
         public Analysis {var copy=new LinkedHashMap<SymbolId,List<Symbol>>();symbols.forEach((k,v)->copy.put(k,List.copyOf(v)));symbols=Collections.unmodifiableMap(copy);references=List.copyOf(references);paths=List.copyOf(paths);diagnostics=List.copyOf(diagnostics);defaultTargets=List.copyOf(defaultTargets);}
         public Optional<Symbol> unique(SymbolId id){var found=symbols.getOrDefault(id,List.of());return found.size()==1?Optional.of(found.getFirst()):Optional.empty();}

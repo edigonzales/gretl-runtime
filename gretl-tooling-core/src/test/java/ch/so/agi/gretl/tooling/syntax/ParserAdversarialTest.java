@@ -102,4 +102,16 @@ class ParserAdversarialTest {
         }
         assertTrue(count>=11,"Missing current repository fixtures (baseline 11 Groovy sources): "+count);
     }
+    @Test void controlFlowRegionsUseOriginalSpansAndKeepConditionsAndFollowingCodeOutsideGuards(){
+        var doc=parser.parse(SourceText.job("// 😀\r\naction('a') { parameter('always'); if(parameter('flag')) { parameter('branch') } else { parameter('otherwise') }; for(ctx in []) { ctx.parameter('fake') }; ctx.parameter('after') }"));
+        assertTrue(doc.problems().isEmpty(),doc.problems().toString());var declaration=doc.declarations().getFirst();
+        for(var reference:declaration.references())if(reference.name().equals("parameter")){
+            String name=(String)((LiteralValue)reference.arguments().getFirst()).value();assertNotEquals("fake",name);assertEquals(Set.of("branch","otherwise").contains(name),ExecutionRegions.contains(declaration.guardedExecution(),reference.span()),name);
+        }
+        assertEquals(List.of("always","flag","branch","otherwise","after"),declaration.references().stream().filter(r->r.name().equals("parameter")).map(r->(String)((LiteralValue)r.arguments().getFirst()).value()).toList());
+        assertThrows(UnsupportedOperationException.class,()->declaration.guardedExecution().clear());
+        for(String expression:List.of("[action('hidden') {}]","[key:action('hidden') {}]")){var nested=parser.parse(SourceText.job("def values="+expression+"; action('known') {}"));assertEquals(Completeness.PARTIAL,nested.coverage().declarations());assertTrue(nested.opaque().stream().anyMatch(OpaqueStatement::mayRegisterDeclarations));}
+        assertEquals(Completeness.COMPLETE,parser.parse(SourceText.job("def values=[1,[2,3],[key:true]]; action('known') {}" )).coverage().declarations());
+    }
+
 }

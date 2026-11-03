@@ -135,4 +135,19 @@ class ProjectAnalyzerTest {
         var header=analyze("task('a', Echo,dependsOn:'missing',when:{parameter('unknown')}) { input='x' }");assertTrue(header.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_TASK_REFERENCE")&&d.severity()==Severity.ERROR));assertTrue(header.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_PARAMETER")&&d.severity()==Severity.ERROR));
     }
 
+    @Test void guardedReferencesAndInnerConfigurationsAreUncertainWithoutWeakeningFollowingCode(){
+        var analysis=analyze("action('a') { if(false) { parameter('maybe'); ctx.run(Echo) {} }; parameter('definite') }");
+        assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_PARAMETER")&&d.severity()==Severity.WARNING));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_PARAMETER")&&d.severity()==Severity.ERROR));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.WARNING));assertFalse(analysis.capabilities().executionComplete());
+        var task=analyze("task('a', Echo) { input='x'; if(false) { ctx.run(Echo) {} } }");assertFalse(task.capabilities().fieldAssignmentsComplete());assertFalse(task.capabilities().executionComplete());assertTrue(task.capabilities().referencesComplete());
+        var registration=analyze("def hidden=[action('hidden') {}]; task('a', Echo) { typo='x' }");assertFalse(registration.capabilities().declarationsComplete());assertTrue(registration.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_INPUT")&&d.severity()==Severity.WARNING));
+    }
+    @Test void guardedSqlAndUncertainAssignmentsDoNotClaimProvenRuntimeParameterFailures(){
+        var sql=URI.create("file:/work/query.sql");
+        for(String text:List.of("action('a') { if(false) { ctx.run(DuckDbSqlExecutor) { sqlFiles=[file('query.sql')] } } }","task('a', DuckDbSqlExecutor) { sqlFiles=[file('query.sql')]; sqlParameters=[name:'value']; return; sqlParameters=[:] }")){
+            var analysis=analyze(Map.of(JOB,text,sql,"select ${name}"),JOB,new DocumentStore(),catalog(),"en");assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("SQL_PARAMETER_MISSING")&&d.severity()==Severity.WARNING),analysis.diagnostics().toString());assertFalse(analysis.diagnostics().stream().anyMatch(d->d.severity()==Severity.ERROR));assertFalse(analysis.capabilities().executionComplete());
+        }
+        var incomplete=catalog();var original=incomplete.snapshot().result().catalog().orElseThrow();var codec=new CatalogJsonCodec();incomplete.loadBundled(codec.encodeCanonical(codec.identify(new OperationCatalog(1,original.runtimeVersion(),original.dslVersion(),"",original.producers(),original.operations(),"PARTIAL"))),null);
+        var partial=analyze(Map.of(JOB,"task('p', Echo) { input='x' }; action('a',dependsOn:'p') { result('p').unknown }"),JOB,new DocumentStore(),incomplete,"en");assertTrue(partial.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_OUTPUT")&&d.severity()==Severity.WARNING));
+    }
+
 }

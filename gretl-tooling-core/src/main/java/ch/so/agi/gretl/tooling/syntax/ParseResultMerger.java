@@ -22,5 +22,5 @@ final class ParseResultMerger {
         }
         result.sort(Comparator.comparingInt(p->p.span().startUtf16()));return List.copyOf(result);
     }
-    Declaration recoveredIsland(Declaration d){return new Declaration(d.kind(),d.name(),d.nameLiteral(),d.bindingName(),d.bindingSpan(),d.operation(),d.options(),d.targets(),d.statementSpan(),d.span(),d.header(),d.body(),d.fields(),d.locals(),d.invocations(),d.references(),d.properties(),d.coverage(),true);}
+    Declaration recoveredIsland(Declaration d){return new Declaration(d.kind(),d.name(),d.nameLiteral(),d.bindingName(),d.bindingSpan(),d.operation(),d.options(),d.targets(),d.statementSpan(),d.span(),d.header(),d.body(),d.fields(),d.locals(),d.invocations(),d.references(),d.properties(),d.coverage(),true).withGuardedExecution(d.guardedExecution());}
 }

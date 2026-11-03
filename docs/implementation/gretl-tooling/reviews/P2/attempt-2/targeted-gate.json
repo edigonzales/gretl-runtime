@@ -1,0 +1,152 @@
+{
+  "candidateSha": "d64adb4959869608e6d3ef6f2b3bd86a4491f261",
+  "targetedGate": {
+    "argv": [
+      "./mvnw",
+      "-B",
+      "-pl",
+      "gretl-language-contract,gretl-tooling-core,gretl-groovy,gretl-database-tasks",
+      "-am",
+      "verify"
+    ],
+    "cwd": "/Users/stefan/.cache/gretl-tooling-review/P2-review-2/product",
+    "logSha256": "353e8616cfa3129b5f2f4f4e6b75b532bcbb227ceb08681a1f7f228c2de3beeb",
+    "buildSuccess": true,
+    "buildFailure": false,
+    "reactorSuccesses": 8,
+    "expectedReactorSuccesses": 8,
+    "skipFlag": false,
+    "nonZeroTestRunLines": [],
+    "tests": {
+      "tests": 425,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "perModule": {
+      "gretl-language-contract": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suites": 2
+      },
+      "gretl-tooling-core": {
+        "tests": 78,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suites": 10
+      },
+      "gretl-api": {
+        "tests": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suites": 3
+      },
+      "gretl-i18n": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suites": 2
+      },
+      "gretl-runner": {
+        "tests": 191,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suites": 26
+      },
+      "gretl-database-tasks": {
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suites": 5
+      },
+      "gretl-groovy": {
+        "tests": 104,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suites": 17
+      }
+    },
+    "suites": [
+      "gretl-language-contract:ch.so.agi.gretl.language.PlanSemanticsTest",
+      "gretl-language-contract:ch.so.agi.gretl.language.ProjectNameRulesTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.semantic.ProjectAnalyzerTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.syntax.GretlDocumentParserTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.syntax.ParseBoundsAndCoordinatesTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.syntax.ParserAdversarialTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.syntax.RecoveryAndLiteralContractTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.workspace.AnalysisSchedulerTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.workspace.DocumentStoreTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.workspace.FileSourceRepositoryTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.workspace.SourceViewTest",
+      "gretl-tooling-core:ch.so.agi.gretl.tooling.workspace.WorkspaceManagerTest",
+      "gretl-api:ch.so.agi.gretl.runtime.api.ApiIsolationTest",
+      "gretl-api:ch.so.agi.gretl.runtime.api.ApiMetadataTest",
+      "gretl-api:ch.so.agi.gretl.runtime.api.ApiRuntimeTypesTest",
+      "gretl-i18n:ch.so.agi.gretl.i18n.LocaleSelectionTest",
+      "gretl-i18n:ch.so.agi.gretl.i18n.MessagesTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.BudgetPrecedenceTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.CloseStackTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.ContextAccessTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.ExecutionPlannerTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.FailureArbiterTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.FailureInfoTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.JobDefinitionBuilderTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.LocalBudgetRegressionTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.LoggingScopeTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.OperationInvocationRunnerTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.OperationRegistryTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.ParameterResolverTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.ProjectParameterNamesTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.ResultStoreTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.RunControlTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.RunnerSourceMappingTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.ScopedControlTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.SequentialJobRunnerTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.SetupFailureTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.SourceLocatedFailureTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.StartBoundaryTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.WorkPathOwnershipTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.WorkspaceOwnershipTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.WorkspacePlatformTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.WorkspacePreparationTest",
+      "gretl-runner:ch.so.agi.gretl.runtime.runner.WorkspaceRetentionTest",
+      "gretl-database-tasks:ch.so.agi.gretl.tasks.database.DatabaseTaskProviderTest",
+      "gretl-database-tasks:ch.so.agi.gretl.tasks.database.Db2DbOperationTest",
+      "gretl-database-tasks:ch.so.agi.gretl.tasks.database.DuckDbSqlExecutorOperationTest",
+      "gretl-database-tasks:ch.so.agi.gretl.tasks.database.SqlExecutorOperationTest",
+      "gretl-database-tasks:ch.so.agi.gretl.tasks.database.StaticSqlTemplateParityTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.CompiledProjectLoaderTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.GroovyIsolationTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.GroovyLoaderTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.GroovyProjectLoaderTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.GroovyResultAndInvocationTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.GroovySmokeTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.GroovyTaskConfigurationTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.LanguageContractParityTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.ProjectScopeTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.ProjectSourceFrameTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.ProjectSourceLocationTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.StaticParsingSecurityTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.StaticSemanticsParityTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.project.GretlProjectParserTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.project.ProjectPathTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.project.ProjectSourceNamesTest",
+      "gretl-groovy:ch.so.agi.gretl.runtime.groovy.project.StaticSettingsParityTest"
+    ],
+    "suiteCount": 65,
+    "distinctSuites": 65
+  },
+  "documentationCheck": {
+    "exitCode": 0,
+    "stdout": "Validated 81 exact criteria\nTooling documentation links and requirement inputs valid",
+    "stderr": ""
+  }
+}

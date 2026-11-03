@@ -42,8 +42,12 @@ public final class SyntaxModel {
     public enum DeclarationKind { TASK, ACTION, PARAMETER, DEFAULTS, CLEANUP, INCLUDE }
     public record Declaration(DeclarationKind kind,String name,StringLiteralSpan nameLiteral,String bindingName,TextSpan bindingSpan,ValueExpression operation,
             List<MapEntry> options,List<ValueExpression> targets,TextSpan statementSpan,TextSpan span,TextSpan header,TextSpan body,List<FieldAssignment> fields,
-            List<LocalVariable> locals,List<InnerInvocation> invocations,List<CallValue> references,List<PropertyValue> properties,Coverage coverage,boolean recovered) {
-        public Declaration { options=List.copyOf(options);targets=List.copyOf(targets);fields=List.copyOf(fields);locals=List.copyOf(locals);invocations=List.copyOf(invocations);references=List.copyOf(references);properties=List.copyOf(properties); }
+            List<LocalVariable> locals,List<InnerInvocation> invocations,List<CallValue> references,List<PropertyValue> properties,Coverage coverage,boolean recovered,List<TextSpan> guardedExecution) {
+        public Declaration(DeclarationKind kind,String name,StringLiteralSpan nameLiteral,String bindingName,TextSpan bindingSpan,ValueExpression operation,
+            List<MapEntry> options,List<ValueExpression> targets,TextSpan statementSpan,TextSpan span,TextSpan header,TextSpan body,List<FieldAssignment> fields,
+            List<LocalVariable> locals,List<InnerInvocation> invocations,List<CallValue> references,List<PropertyValue> properties,Coverage coverage,boolean recovered) { this(kind,name,nameLiteral,bindingName,bindingSpan,operation,options,targets,statementSpan,span,header,body,fields,locals,invocations,references,properties,coverage,recovered,List.of()); }
+        public Declaration withGuardedExecution(List<TextSpan> regions){return new Declaration(kind,name,nameLiteral,bindingName,bindingSpan,operation,options,targets,statementSpan,span,header,body,fields,locals,invocations,references,properties,coverage,recovered,regions);}
+        public Declaration { options=List.copyOf(options);targets=List.copyOf(targets);fields=List.copyOf(fields);locals=List.copyOf(locals);invocations=List.copyOf(invocations);references=List.copyOf(references);properties=List.copyOf(properties);guardedExecution=ExecutionRegions.normalize(guardedExecution); }
     }
     public record OpaqueStatement(TextSpan span,String reason,boolean mayRegisterDeclarations) { }
     public enum DocumentKind { JOB, SETTINGS, GROOVY_SOURCE, SQL }

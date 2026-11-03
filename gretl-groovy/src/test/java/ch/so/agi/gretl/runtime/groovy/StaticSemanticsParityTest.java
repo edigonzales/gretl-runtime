@@ -108,4 +108,35 @@ class StaticSemanticsParityTest {
         ch.so.agi.gretl.runtime.api.OperationProvider provider=()->List.of(type);var registry=OperationRegistry.fromProviders(List.of(provider));var source=temp.resolve("custom.groovy");java.nio.file.Files.writeString(source,text);var definition=new GroovyJobLoader().load(source,DefinitionEnvironment.of(registry,temp));return new SequentialJobRunner().run(definition,new ExecutionPlanner().plan(definition,List.of()),RunInput.builder().jobRoot(temp).startCwd(temp).workRoot(temp.resolve("work-custom")).build());
     }
 
+    @Test void guardedInvocationsAndReferencesMatchActualControlFlowWithoutExecutingConditions() throws Exception {
+        var harness=new GroovyHarness(temp);var descriptors=catalog();descriptors.mergeExplicitDescriptors(catalog(TestGroovyOperations.required()).snapshot().result().catalog().orElseThrow().operations());
+        for(String text:List.of(
+            "action('a') { if(false) { ctx.run(RequiredText) {} } }; defaults 'a'",
+            "action('a') { if(true) { return 'ok' }; ctx.run(RequiredText) {} }; defaults 'a'",
+            "action('a') { while(false) { ctx.run(RequiredText) {} } }; defaults 'a'",
+            "action('a') { for(def i in []) { ctx.run(RequiredText) {} } }; defaults 'a'",
+            "action('a') { switch(0) { case 1: ctx.run(RequiredText) {}; break; default: break } }; defaults 'a'",
+            "action('a') { try { println('ok') } catch(Exception e) { parameter('unknown') } }; defaults 'a'",
+            "task('t', Echo) { text='x'; if(false) { ctx.run(RequiredText) {} } }; defaults 't'",
+            "task('p', Echo) { text='x' }; action('a') { if(false) { result('p').missing } }; defaults 'a'",
+            "action('a') { if(false) { parameter('unknown') } }; defaults 'a'",
+            "parameter('flag',description:'F',type:'boolean',defaultValue:false); action('a') { if(parameter('flag')) { ctx.run(RequiredText) {} } }; defaults 'a'",
+            "action('a') { def unused={ ctx.run(RequiredText) {}; parameter('unknown') }; return 'ok' }; defaults 'a'",
+            "action('a') { def value=false?parameter('unknown'):'ok'; return value }; defaults 'a'",
+            "action('a') { def first=false&&parameter('unknown'); def second=true||parameter('unknown'); return first }; defaults 'a'")){
+            var outcome=harness.run(harness.loadSource("guarded-flow.groovy",text),Map.of());assertEquals(RunStatus.SUCCEEDED,outcome.status(),text);assertEquals(List.of(),errors(staticAnalysis(text,descriptors)),text);
+        }
+        for(String body:List.of("ctx.run(RequiredText) {}","if(false) { println('skip') }; ctx.run(RequiredText) {}")){
+            String text="action('a') { "+body+" }; defaults 'a'";assertEquals(RunStatus.FAILED,harness.run(harness.loadSource("unguarded-flow.groovy",text),Map.of()).status());assertTrue(errors(staticAnalysis(text,descriptors)).contains("REQUIRED_INPUT"));
+        }
+    }
+    @Test void registrationsInsideEvaluatedContainersRemainPartialInsteadOfInventingMissingTasks() throws Exception {
+        var harness=new GroovyHarness(temp);
+        for(String expression:List.of("[action('hidden') {}]","[key:action('hidden') {}]","[[key:[action('hidden') {}]]]")){
+            String text="def values="+expression+"; action('main',dependsOn:'hidden') {}; defaults 'main'";var definition=harness.loadSource("container.groovy",text);assertEquals(Set.of("hidden","main"),definition.taskIds());assertEquals(RunStatus.SUCCEEDED,harness.run(definition,Map.of()).status());
+            var analysis=staticAnalysis(text);assertEquals(List.of(),errors(analysis));assertFalse(analysis.capabilities().declarationsComplete());assertFalse(analysis.capabilities().graphComplete());
+        }
+        var literal=staticAnalysis("def values=[1,[2,3],[flag:true]]; action('main') {}; defaults 'main'");assertTrue(literal.capabilities().declarationsComplete());assertTrue(literal.capabilities().graphComplete());
+    }
+
 }
