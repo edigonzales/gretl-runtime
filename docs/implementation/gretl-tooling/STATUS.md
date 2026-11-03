@@ -1,7 +1,7 @@
 # GRETL Tooling – aktueller Auftragsstatus
 
-**Arbeitsstand · 2. November 2026.**
-P0 und P1 sind unabhängig abgenommen; beide äusseren Reviewprozesse sind beendet und validiert. P2 beginnt.
+**Arbeitsstand · 3. November 2026.**
+P0 und P1 sind unabhängig abgenommen; beide äusseren Reviewprozesse sind beendet und validiert. P2 ist in Implementierung und gezielter Pruefung.
 
 `assignmentBase`: `185fc6700b5cb2897f724d457610a57f059b3421`.
 `requirementsDigest`: `cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3`.

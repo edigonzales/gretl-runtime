@@ -14,7 +14,7 @@ final class RecoveringDslParser {
     private final CancellationToken cancellation;
     private final int[] mate;
     private static final Set<String> DSL=Set.of("task","action","parameter","defaults","cleanup","include");
-    private static final Set<String> HELPERS=Set.of("parameter","result","resultOptional","file","path","workPath","taskConfig","config","secret","sensitive");
+    private static final Set<String> HELPERS=Set.of("parameter","result","resultOptional","file","path","workPath","config","secret","sensitive");
     RecoveringDslParser(SourceText source,TokenIndex index,CancellationToken cancellation){
         this.source=source;this.tokens=index.significant();this.cancellation=cancellation;mate=new int[tokens.size()];Arrays.fill(mate,-1);
         var stack=new ArrayDeque<Integer>();

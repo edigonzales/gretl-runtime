@@ -106,7 +106,10 @@ export function buildRequest(phase, assignmentBase, phaseBase, candidateSha, wor
     ...Object.fromEntries(Object.entries(captureRequirements()).filter(([k])=>k.endsWith('Digest'))),
     plan:`${spec}/EXECUTION_PLAN.md`,architecture:`${spec}/ARCHITECTURE.md`,testMatrix:`${spec}/TEST_MATRIX.md`,implementationReport:`${spec}/implementation/${phase}.md`,
     criteria:phaseCriteria(phase),requiredChecks,requiredGuiCases:phase==='P8'?Array.from({length:30},(_,i)=>`G${String(i+1).padStart(2,'0')}`):json(resolve(root,spec,'ACCEPTANCE_CRITERIA.json')).phases.find(p=>p.id===phase).guiCases,
-    notRequiredAdditionalChecks:[],artifacts,modelIdentityEvidence,...(phase==='P8'?{cumulative:true}:{})};
+    notRequiredAdditionalChecks:[
+      {id:'repeat-root-standard',reason:'Benutzerpräzisierung: vorhandenen frischen Standardlauf dieses Kandidaten anhand aller Rohbelege validieren; keinen zusätzlichen vollständigen Lauf starten.'},
+      {id:'repeat-root-services',reason:'Benutzerpräzisierung: vorhandenen frischen GeoTools-/Dienstlauf dieses Kandidaten anhand aller Rohbelege validieren; keinen zusätzlichen vollständigen Lauf starten.'}
+    ],artifacts,modelIdentityEvidence,...(phase==='P8'?{cumulative:true}:{})};
 }
 export function createReviewWorktree(candidateSha, path, repo=root) {
   assert(!existsSync(path),'Refusing existing review worktree');
@@ -119,11 +122,11 @@ export function scopedProfile(worktree,evidence,checks=[]) {
     {action:'read',resource:'*',effect:'allow'},{action:'glob',resource:'*',effect:'allow'},{action:'grep',resource:'*',effect:'allow'},
     {action:'external_directory',resource:evidence+'/*',effect:'allow'},
     {action:'edit',resource:evidence+'/*',effect:'allow'},
-    ...['git status *','git diff *','git rev-parse *','git show *','rg *','ls *','cat *',...checks.map(c=>c.argv.join(' ')),`node ${evidence}/*.mjs`,`node --test ${evidence}/*.mjs`].map(resource=>({action:'shell',resource,effect:'allow'})),
+    ...['git status *','git diff *','git rev-parse *','git show *','rg *','ls *','cat *',...checks.filter(c=>!['root-standard','root-services'].includes(c.id)).map(c=>c.argv.join(' ')),`node ${evidence}/*.mjs`,`node --test ${evidence}/*.mjs`].map(resource=>({action:'shell',resource,effect:'allow'})),
     {action:'shell',resource:'git push *',effect:'deny'}, {action:'shell',resource:'git commit *',effect:'deny'},
     {action:'read',resource:'*.env',effect:'deny'}, {action:'read',resource:'*/auth.json',effect:'deny'}];
   return {model:'deepseek/deepseek-flash',providers:{deepseek:{settings:{baseURL:'https://api.deepseek.com'}}},
-    agents:{'gretl-independent-review':{description:'Independent GRETL phase reviewer',mode:'primary',permissions,system:'Read-only product review. Only evidence files may be written. No product fixes, publication, credential access or external jobs.'}}};
+    agents:{'gretl-independent-review':{description:'Independent GRETL phase reviewer',mode:'primary',permissions,system:'Read-only product review. Only evidence files may be written. No product fixes, publication, credential access or external jobs. User directs focused testing: validate supplied current root gate evidence; never repeat the complete root standard or service builds, including through evidence scripts. Execute only affected risky tests and new counterprobes. Missing or contradictory root evidence is a concrete review finding, not permission for a blanket rebuild.'}}};
 }
 export function writeScopedProfile(worktree, evidence, checks=[]) {
   const profile=scopedProfile(worktree,evidence,checks);
@@ -197,7 +200,7 @@ export async function startReviewer(requestFile,binary) {
   const before={product:trackedState(root),review:trackedState(request.worktree)};
   writeScopedProfile(request.worktree,request.evidenceDirectory,request.requiredChecks);
   const argv=['run','--standalone','--agent','gretl-independent-review','--model','deepseek/deepseek-flash','--format','json','--file',resolve(request.worktree,spec,'OPENCODE_REVIEW_PROMPT.md'),'--file',resolve(requestFile),
-    `Prüfe ${request.phase} unabhängig und vollständig. Lies alle Anforderungen, Code, Tests und den gesamten Phasendiff. Führe eigene risikotragende Tests und neue Gegenproben durch. Schreibe Original review.md und verdict.json ausschliesslich in ${request.evidenceDirectory}. Keine Produktdateien ändern. Alle Evidenceverweise sind absolute lokale Dateipfade. Vorhandene vollständige Rootgates desselben Kandidaten unabhängig validieren. Beende eigene Testprozesse und danach die Session vollständig.`];
+    `Prüfe ${request.phase} unabhängig und vollständig. Lies alle Anforderungen, Code, Tests und den gesamten Phasendiff. Führe eigene betroffene risikotragende Tests und neue Gegenproben durch. Schreibe Original review.md und verdict.json ausschliesslich in ${request.evidenceDirectory}. Keine Produktdateien ändern. Alle Evidenceverweise sind absolute lokale Dateipfade. Benutzerpräzisierung: Vorhandene vollständige Rootgates desselben Kandidaten anhand der frischen Rohbelege unabhängig validieren, nicht erneut ausführen (auch nicht über Hilfsskripte). Die Rootbefehle im Request bezeichnen zu validierende Gates, keine zusätzlichen Reviewläufe. Beende eigene Testprozesse und danach die Session vollständig.`];
   const completion=await waitForReviewer(cli.path,argv,request.worktree,request.evidenceDirectory);
   const events=readFileSync(resolve(request.evidenceDirectory,'opencode.jsonl'),'utf8').trim().split('\n').map(s=>JSON.parse(s));
   completion.finished=events.at(-1)?.type==='step_finish'&&events.at(-1)?.part?.reason==='stop'&&!events.some(e=>e.type==='error');

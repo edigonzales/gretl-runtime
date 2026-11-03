@@ -22,6 +22,7 @@ final class GretlAstExtractor {
     private final CancellationToken cancellation;
     private final int sourceOffset;
     private final Set<String> shadowed=new HashSet<>();
+    private final Set<String> taskBindings=new HashSet<>();
     GretlAstExtractor(SourceText source,TokenIndex tokens,CancellationToken cancellation) {
         this(source,tokens,cancellation,source,0);
     }
@@ -35,7 +36,10 @@ final class GretlAstExtractor {
         module.getImports().forEach(i->{if(i.getAlias()!=null&&(dsl(i.getAlias())||helper(i.getAlias())))shadowed.add(i.getAlias());});
         module.getMethods().forEach(m->{shadowed.add(m.getName());opaque.add(new OpaqueStatement(span(m),"METHOD_DECLARATION",true));});
         for(var statement:module.getStatementBlock().getStatements())if(statement instanceof ExpressionStatement es&&es.getExpression() instanceof DeclarationExpression d)
-            collectNames(d.getLeftExpression(),shadowed);
+            {
+                collectNames(d.getLeftExpression(),shadowed);
+                if(d.getLeftExpression() instanceof VariableExpression v&&d.getRightExpression() instanceof MethodCallExpression c&&c.getMethodAsString()!=null&&Set.of("task","action").contains(c.getMethodAsString())&&implicit(c))taskBindings.add(v.getName());
+            }
         for(var type:module.getClasses()) {
             if(!type.isScript())opaque.add(new OpaqueStatement(span(type),"CLASS_DECLARATION",true));
             for(var annotation:type.getAnnotations())opaque.add(new OpaqueStatement(span(annotation),"ANNOTATION",true));
@@ -67,7 +71,7 @@ final class GretlAstExtractor {
         StringLiteralSpan literal=nameValue instanceof LiteralValue l?l.literal():null;
         var targets=new ArrayList<ValueExpression>();
         if(kind==DeclarationKind.DEFAULTS||kind==DeclarationKind.INCLUDE){positional.forEach(p->targets.add(value(p)));name=null;literal=null;}
-        ValueExpression operation=kind==DeclarationKind.TASK&&positional.size()>1?value(positional.get(1)):null;
+        ValueExpression operation=kind==DeclarationKind.TASK&&positional.size()>1?operationValue(positional.get(1),Set.of()):null;
         var body=closure==null?null:span(closure);var full=span(call);var header=new TextSpan(full.startUtf16(),body==null?full.endUtf16():body.startUtf16());
         BodyInfo info=closure==null?BodyInfo.empty():body(closure,kind==DeclarationKind.TASK);
         var refs=new ArrayList<>(info.references());var properties=new ArrayList<>(info.properties());
@@ -148,10 +152,10 @@ final class GretlAstExtractor {
             @Override public void visitMethodCallExpression(MethodCallExpression call){
                 cancellation.check();Set<String> hiddenNames=hiddenNow();String method=call.getMethodAsString();String receiver=receiver(call);
                 boolean trusted=(implicit(call)&&!shadowed.contains(method)&&!hiddenNames.contains(method))||(receiver!=null&&receiversNow().contains(receiver));
-                if(helper(method)&&trusted){refs.add(new CallValue(method,receiver,arguments(call).stream().map(a->value(a,receiversNow(),hiddenNames)).toList(),span(call)));if(Set.of("parameter","result","resultOptional").contains(method)&&(arguments(call).isEmpty()||!(arguments(call).getFirst() instanceof ConstantExpression)))unknown[0]=true;}
+                if(helper(method)&&trusted){refs.add(new CallValue(method,receiver,arguments(call).stream().map(a->value(a,receiversNow(),hiddenNames)).toList(),span(call)));if(Set.of("parameter","result","resultOptional").contains(method)&&(arguments(call).isEmpty()||!(arguments(call).getFirst() instanceof ConstantExpression)&&!(Set.of("result","resultOptional").contains(method)&&arguments(call).getFirst() instanceof VariableExpression v&&taskBindings.contains(v.getName()))))unknown[0]=true;}
                 if("run".equals(method)&&receiver!=null&&receiversNow().contains(receiver)){
                     List<Expression> args=arguments(call);ClosureExpression inner=args.stream().filter(ClosureExpression.class::isInstance).map(ClosureExpression.class::cast).findFirst().orElse(null);
-                    if(inner!=null&&!args.isEmpty()) {var parsed=body(inner,true,hiddenNames);invocations.add(new InnerInvocation(value(args.getFirst()),span(call),span(inner),parsed.fields(),
+                    if(inner!=null&&!args.isEmpty()) {var parsed=body(inner,true,hiddenNames);invocations.add(new InnerInvocation(operationValue(args.getFirst(),hiddenNames),span(call),span(inner),parsed.fields(),
                             new Coverage(Completeness.COMPLETE,parsed.unknownReferences()?Completeness.PARTIAL:Completeness.COMPLETE,parsed.dynamicFields()?Completeness.PARTIAL:Completeness.COMPLETE,Completeness.COMPLETE)));refs.addAll(parsed.references());properties.addAll(parsed.properties());invocations.addAll(parsed.invocations());if(parsed.unknownReferences())unknown[0]=true;for(var argument:args)if(!(argument instanceof ClosureExpression))argument.visit(this);return;}
                 }
                 if((dsl(method)||helper(method))&&!trusted)unknown[0]=true;
@@ -160,6 +164,9 @@ final class GretlAstExtractor {
             }
         });
         return new ReferenceInfo(List.copyOf(invocations),List.copyOf(refs),List.copyOf(properties),unknown[0]);
+    }
+    private ValueExpression operationValue(Expression expression,Set<String> hidden){
+        var parsed=value(expression);return parsed instanceof NameValue n&&(shadowed.contains(n.name())||hidden.contains(n.name()))?new OpaqueExpression(parsed.span(),"SHADOWED_OPERATION"):parsed;
     }
     ValueExpression value(Expression expression) { return value(expression,Set.of(),shadowed); }
     private ValueExpression value(Expression expression,Set<String> aliases,Set<String> hidden) {
@@ -172,7 +179,13 @@ final class GretlAstExtractor {
         if(expression instanceof UnaryMinusExpression negative){
             var inner=value(negative.getExpression(),aliases,hidden);
             if(inner instanceof LiteralValue l&&l.value() instanceof Number n){
-                Object result=n instanceof java.math.BigDecimal d?d.negate():n instanceof Float||n instanceof Double?-n.doubleValue():new java.math.BigInteger(n.toString()).negate();
+                Object result;
+                if(n instanceof java.math.BigDecimal d)result=d.negate();
+                else if(n instanceof java.math.BigInteger i)result=i.negate();
+                else if(n instanceof Double)result=-n.doubleValue();
+                else if(n instanceof Float)result=-n.floatValue();
+                else if(n instanceof Long)result=-n.longValue();
+                else result=-n.intValue();
                 return new LiteralValue(result,span,null);
             }
         }
