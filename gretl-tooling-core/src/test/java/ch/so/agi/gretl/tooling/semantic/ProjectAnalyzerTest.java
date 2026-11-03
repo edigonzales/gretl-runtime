@@ -20,6 +20,7 @@ class ProjectAnalyzerTest {
     static CatalogRepository catalog(){var repository=new CatalogRepository();var codec=new CatalogJsonCodec();var operations=List.of(
         new OperationDescriptor("test.echo","Echo","Test","fixture",List.of(input("input","text",true,List.of()),input("mode","text",false,List.of("COPY","MOVE"))),List.of(new OutputDescriptor("file","File",ValueShape.fromMetadata("path"),false)),"example",false),
         new OperationDescriptor("test.duckdb","DuckDbSqlExecutor","Test","fixture",List.of(input("sqlFiles","list",true,List.of()),input("sqlParameters","map",false,List.of()),input("sqlParameterSets","list",false,List.of())),List.of(),"example",true),
+        new OperationDescriptor("test.db2db","Db2Db","Test","fixture",List.of(input("transfers","list",true,List.of()),input("sqlParameters","map",false,List.of()),input("sqlParameterSets","list",false,List.of())),List.of(),"example",true),
         new OperationDescriptor("test.sql","SqlExecutor","Test","fixture",List.of(input("scripts","list",false,List.of())),List.of(),"example",true));
         var load=repository.loadBundled(codec.encodeCanonical(codec.identify(new OperationCatalog(1,"test","test","",List.of("fixture"),operations,"COMPLETE"))),null);assertEquals(CatalogJsonCodec.State.AVAILABLE,load.result().state());return repository;}
     static Analysis analyze(String text){return analyze(Map.of(JOB,text),JOB,new DocumentStore(),catalog(),"en");}
@@ -100,6 +101,18 @@ class ProjectAnalyzerTest {
     @Test void parameterSetsCheckEveryExecutionAndTheUnchangedBufferSnapshotSurvivesAnalysis(){
         var sql=URI.create("file:/work/sql/query-without-extension");var analysis=analyze(Map.of(JOB,"task('sql', DuckDbSqlExecutor) { sqlFiles=[file('sql/query-without-extension')]; sqlParameterSets=[[name:'yes'],[name:null]] }",sql,"select ${name}"),JOB,new DocumentStore(),catalog(),"en");assertEquals(1,Collections.frequency(codes(analysis),"SQL_PARAMETER_MISSING"));
         assertThrows(java.util.concurrent.CancellationException.class,()->new ProjectAnalyzer().analyze(analysis.capture(),()->true));
+    }
+
+    @Test void explicitOptionMapsUseOnlyWinningClosuresWhileDynamicKeysStayPartial(){
+        var explicit=analyze("action('a') {}; action([dependsOn:'missing', dependsOn:'a',when:{parameter('missing')},when:{true}], 'b') {}; defaults 'b'");assertEquals(List.of(),codes(explicit));assertEquals(1,explicit.graph().edges().size());assertEquals("a",explicit.graph().edges().getFirst().fromId());
+        var dynamic=analyze("def key(){ 'description' }; parameter([(key()):'P'], 'p')");assertFalse(codes(dynamic).contains("PARAMETER_DESCRIPTION"));assertFalse(dynamic.capabilities().declarationsComplete());
+        var evaluated=analyze("parameter('p',description:'P'); action([description:parameter('p'), description:'last'], 'a') {}");assertTrue(codes(evaluated).contains("TOPLEVEL_PARAMETER_READ"));
+        var inlineWhen=analyze("parameter('p',description:'P'); action('a',when:parameter('p')) {}");assertTrue(codes(inlineWhen).contains("TOPLEVEL_PARAMETER_READ"));
+        var nested=analyze("parameter('p',description:'P', defaultValue:parameter('other'))");assertTrue(codes(nested).contains("TOPLEVEL_PARAMETER_READ"));
+    }
+    @Test void db2dbTransferSqlUsesTheSameRuntimeParametersAndOnlyTheLastSourceAssignment(){
+        var sql=URI.create("file:/work/sql/query");var analysis=analyze(Map.of(JOB,"task('copy', Db2Db) { transfers=[[sqlFile:file('not-used.sql'),targetTable:'t']]; transfers=[[sqlFile:file('sql/query'),targetTable:'t']]; sqlParameters=[known:'yes'] }",sql,"select ${known}, ${missing}"),JOB,new DocumentStore(),catalog(),"en");
+        assertEquals(1,Collections.frequency(codes(analysis),"SQL_PARAMETER_MISSING"));assertFalse(codes(analysis).contains("SQL_SOURCE_NOT_INSPECTED"));assertFalse(analysis.capture().project().sources().versions().containsKey(URI.create("file:/work/not-used.sql")));
     }
 
 }

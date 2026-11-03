@@ -69,24 +69,20 @@ public final class ProjectResolver {
             // Only explicitly named SQL resources are acquired; no broad SQL or data-directory scan.
             for(var declaration:parsed.declarations()){
                 acquireSqlFiles(declaration.operation(),declaration.fields(),job.documentId(),view,cancellation);
-                for(var inner:declaration.invocations())acquireSqlFiles(inner.operation(),inner.fields(),job.documentId(),view,cancellation);
+                for(var inner:declaration.invocations())if(EffectiveOptions.of(declaration).active(inner.span()))acquireSqlFiles(inner.operation(),inner.fields(),job.documentId(),view,cancellation);
             }
-            for(var declaration:parsed.declarations())for(var call:declaration.references())if(call.name().equals("file")&&!call.arguments().isEmpty()&&call.arguments().getFirst() instanceof LiteralValue value&&value.value() instanceof String name&&name.toLowerCase(Locale.ROOT).endsWith(".sql")){
-                try{URI resource=SourceUris.jobResource(job.documentId(),name);if(resource!=null)view.read(resource,cancellation);}catch(IllegalArgumentException invalidPath){/* Semantic path analysis reports unsupported literals; never perform guessed IO. */}
-            }
+
         }
         var snapshot=view.freeze();if(snapshot.limited()){complete=false;problems.add(new ProjectProblem("PROJECT_CAPTURE_LIMIT",request.documentId(),null,false,List.of()));}
         return new ResolvedProject(new ProjectId(request.workspaceRoot(),settings==null?request.documentId():settings,request.singleJob()),projectDirectory,settings,settings!=null,jobs,defaults,problems,documents,snapshot,complete);
     }
     private static void acquireSqlFiles(ValueExpression operation,List<FieldAssignment> fields,URI job,SourceView view,CancellationToken cancellation){
-        if(!(operation instanceof NameValue name)||!name.name().equals("DuckDbSqlExecutor"))return;
-        for(var field:fields)if(field.name().equals("sqlFiles")){
-            var values=field.value() instanceof ListValue list?list.items():List.of(field.value());
-            for(var value:values)if(value instanceof CallValue call&&call.name().equals("file")&&call.arguments().size()==1&&call.arguments().getFirst() instanceof LiteralValue literal&&literal.value() instanceof String relative){
-                try{URI resource=SourceUris.jobResource(job,relative);if(resource!=null)view.read(resource,cancellation);}catch(IllegalArgumentException invalid){/* semantic path diagnostic */}
-            }
+        if(!(operation instanceof NameValue name)||!SqlSourceSyntax.templated(name.name()))return;
+        for(var value:SqlSourceSyntax.files(name.name(),fields))if(value instanceof CallValue call&&call.name().equals("file")&&call.arguments().size()==1&&call.arguments().getFirst() instanceof LiteralValue literal&&literal.value() instanceof String relative){
+            try{URI resource=SourceUris.jobResource(job,relative);if(resource!=null)view.read(resource,cancellation);}catch(IllegalArgumentException invalid){/* semantic path diagnostic */}
         }
     }
+
     private static boolean within(URI root,URI directory){return sameDirectory(root,directory)||SourceUris.contains(root,directory);}
     private static boolean sameDirectory(URI a,URI b){String left=a.getPath(),right=b.getPath();return Objects.equals(a.getScheme(),b.getScheme())&&Objects.equals(a.getAuthority(),b.getAuthority())&&left!=null&&right!=null&&strip(left).equals(strip(right));}
     private static String strip(String path){return path.endsWith("/")?path.substring(0,path.length()-1):path;}

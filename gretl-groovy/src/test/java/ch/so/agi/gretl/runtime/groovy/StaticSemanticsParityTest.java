@@ -36,6 +36,7 @@ class StaticSemanticsParityTest {
         for(String text:List.of(
             "def first=action('a') {}; action('b',dependsOn:first) {}; action('c',after:'a') {}; defaults 'b'; defaults 'c'",
             "action('a') {}; action('b',dependsOn:'a') {}; action('c',dependsOn:'b',after:'a') {}; defaults 'c'",
+            "action('a') {}; action([dependsOn:'missing',dependsOn:'a',when:{parameter('notRead')},when:{true}],'b') {}; defaults 'b'",
             "action('outsideA',after:'outsideB') {}; action('outsideB',after:'outsideA') {}; action('selected') {}; defaults 'selected'")){
             var definition=harness.loadSource("fixture.groovy",text);var staticModel=staticAnalysis(text);assertEquals(List.of(),errors(staticModel));assertEquals(definition.taskIds(),staticModel.symbols().keySet().stream().filter(k->k.namespace()==Namespace.TASK).map(SymbolId::qualifiedName).collect(java.util.stream.Collectors.toSet()));assertEquals(definition.defaultTargets(),staticModel.defaultTargets());
             var runtime=new ExecutionPlanner().plan(definition,List.of());var pure=new PlanSemantics().plan(staticModel.graph(),List.of(),staticModel.defaultTargets());assertEquals(runtime.selectedTasks().stream().map(TaskDefinition::id).toList(),pure.orderedIds());assertEquals(runtime.dataPredecessors(),pure.dataPredecessors());
@@ -57,6 +58,8 @@ class StaticSemanticsParityTest {
         for(String expression:List.of("type:'integer',defaultValue:5G","type:'boolean',required:true,defaultValue:true","type:'boolean',defaultValue:'TRUE'")){
             String text="parameter('p',description:'P',"+expression+"); action('a') {}; defaults 'a'";assertThrows(RuntimeException.class,()->harness.loadSource("invalid-parameter.groovy",text));assertFalse(errors(staticAnalysis(text)).isEmpty(),text);
         }
+        String dynamic="def key(){ 'description' }; parameter([(key()):'P'], 'p')";assertEquals(1,harness.loadSource("dynamic-parameter.groovy",dynamic).parameters().size());assertEquals(List.of(),errors(staticAnalysis(dynamic)));
+        String inlineWhen="parameter('p',description:'P'); action('a',when:parameter('p')) {}";assertEquals("TOPLEVEL_PARAMETER_READ",assertThrows(GroovyDslException.class,()->harness.loadSource("inline-when.groovy",inlineWhen)).code());assertTrue(errors(staticAnalysis(inlineWhen)).contains("TOPLEVEL_PARAMETER_READ"));
         String read="parameter('p')";assertEquals("TOPLEVEL_PARAMETER_READ",assertThrows(GroovyDslException.class,()->harness.loadSource("read.groovy",read)).code());assertTrue(errors(staticAnalysis(read)).contains("TOPLEVEL_PARAMETER_READ"));
     }
     @Test void runtimeResultsConfirmDataRightsOutputMetadataAndActionFreedom() throws Exception {

@@ -2,6 +2,8 @@ package ch.so.agi.gretl.tooling.semantic;
 
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
+import ch.so.agi.gretl.tooling.syntax.EffectiveOptions;
+import ch.so.agi.gretl.tooling.syntax.SqlSourceSyntax;
 import ch.so.agi.gretl.tooling.workspace.*;
 import ch.so.agi.gretl.tooling.workspace.WorkspaceManager.WorkspaceCapture;
 import java.util.*;
@@ -21,13 +23,12 @@ public final class SqlTemplateAnalyzer {
     @FunctionalInterface interface Reporter {void report(String code,Severity severity,Anchor anchor);}
     static void validate(WorkspaceCapture capture,Symbol symbol,Reporter reporter,CancellationToken cancellation){
         if(symbol.operation()!=null)validateFields(capture,symbol.anchor(),symbol.operation().symbol(),symbol.declaration().fields(),reporter,cancellation);
-        for(var inner:symbol.declaration().invocations())if(inner.operation() instanceof NameValue operation&&capture.catalog().result().catalog().stream().flatMap(c->c.operations().stream()).anyMatch(op->op.symbol().equals(operation.name())))validateFields(capture,new Anchor(symbol.anchor().documentId(),inner.span()),operation.name(),inner.fields(),reporter,cancellation);
+        for(var inner:symbol.declaration().invocations())if(EffectiveOptions.of(symbol.declaration()).active(inner.span())&&inner.operation() instanceof NameValue operation&&capture.catalog().result().catalog().stream().flatMap(c->c.operations().stream()).anyMatch(op->op.symbol().equals(operation.name())))validateFields(capture,new Anchor(symbol.anchor().documentId(),inner.span()),operation.name(),inner.fields(),reporter,cancellation);
     }
     private static void validateFields(WorkspaceCapture capture,Anchor owner,String operation,List<FieldAssignment> fields,Reporter reporter,CancellationToken cancellation){
         // SqlExecutor.scripts are plain SQL; its prepared statements use JDBC ?, not named templates.
-        if(!operation.equals("DuckDbSqlExecutor"))return;
-        var assignments=new LinkedHashMap<String,ValueExpression>();for(var field:fields)assignments.put(field.name(),field.value());
-        ValueExpression files=assignments.get("sqlFiles");if(files==null)return;var values=files instanceof ListValue list?list.items():List.of(files);
+        if(!SqlSourceSyntax.templated(operation))return;
+        var assignments=SqlSourceSyntax.assignments(fields);var values=SqlSourceSyntax.files(operation,fields);
         var sets=parameterSets(assignments);int inspected=0;
         for(var file:values){cancellation.check();if(++inspected>512){reporter.report("SEMANTIC_LIMIT",Severity.INFORMATION,owner);return;}
             if(!(file instanceof CallValue call&&call.name().equals("file")&&call.arguments().size()==1&&text(call.arguments().getFirst())!=null)){
@@ -45,12 +46,13 @@ public final class SqlTemplateAnalyzer {
     /** null map means dynamic structure; null value means a known key with unknown nullness. */
     private static List<Map<String,Boolean>> parameterSets(Map<String,ValueExpression> fields){
         var sets=fields.get("sqlParameterSets");var base=fields.get("sqlParameters");
-        if(sets==null)return base==null?List.of(Map.of()):oneMap(base);
+        if(sets==null||sets instanceof LiteralValue l&&l.value()==null)return base==null?List.of(Map.of()):oneMap(base);
         if(!(sets instanceof ListValue list))return null;
         if(list.items().isEmpty())return base==null?List.of(Map.of()):oneMap(base);
         var result=new ArrayList<Map<String,Boolean>>();for(var value:list.items()){var single=oneMap(value);if(single==null)return null;result.add(single.getFirst());}return result;
     }
     private static List<Map<String,Boolean>> oneMap(ValueExpression expression){
+        if(expression instanceof LiteralValue l&&l.value()==null)return List.of(Map.of());
         if(!(expression instanceof MapValue map))return null;var result=new LinkedHashMap<String,Boolean>();
         for(var entry:map.entries()){String key=text(entry.key());if(key==null)return null;result.put(key,entry.value() instanceof LiteralValue literal?literal.value()!=null:null);}return List.of(result);
     }
