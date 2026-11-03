@@ -11,6 +11,12 @@ final class FieldSourceEdits {
     void set(EditTransaction transaction, SymbolId target, String field, EditableValue value) {
         var symbol = transaction.symbol(target);
         var declaration = symbol.declaration();
+        if(symbol.operation()==null)throw new IllegalArgumentException("EDIT_UNKNOWN_SCHEMA");
+        var input=symbol.operation().inputs().stream().filter(descriptor->descriptor.name().equals(field)).findFirst()
+                .orElseThrow(()->new IllegalArgumentException("EDIT_UNKNOWN_FIELD"));
+        // All value-writing paths share the same recursive port guard, including semantic no-ops.
+        // Dependencies remain explicit here; BindResult alone adds a missing header edge atomically.
+        new PortCompatibility().dependencies(transaction.before,value,input.shape());
         var matches = declaration.fields().stream().filter(f -> f.name().equals(field)).toList();
         if (matches.size() > 1) throw new IllegalArgumentException("EDIT_MULTIPLE_ASSIGNMENTS");
         if (matches.size() == 1 && same(matches.getFirst().value(), value, transaction, symbol.scope())) {

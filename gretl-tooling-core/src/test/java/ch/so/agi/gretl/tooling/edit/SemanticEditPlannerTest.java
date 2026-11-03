@@ -13,6 +13,34 @@ import static org.junit.jupiter.api.Assertions.*;
 class SemanticEditPlannerTest {
     SymbolId id(String name) { return new SymbolId(Namespace.TASK,name); }
 
+    @Test void allFieldAndFormPathsEnforceResultPortCompatibilityIncludingNestedValues() {
+        for(String kind:List.of("Text","Opaque","Path","NullablePath","ListPath"))try(var fixture=new Fixture()) {
+            new DependencySourceEditsTest().catalog(fixture);
+            var shape=new ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape(kind.equals("Text")?"Text":kind.equals("Opaque")?"Opaque":"Path",kind.equals("Text")?"text":kind.equals("Opaque")?"unknown":"path",List.of());
+            var inputShape=kind.equals("ListPath")?new ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape("ListOf","list",List.of(shape)):shape;
+            var input=new ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor("input","Input",true,false,null,List.of(),"input",inputShape,null,false,Map.of());
+            var output=new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OutputDescriptor("file","File",shape,kind.equals("NullablePath"));
+            fixture.catalog.mergeExplicitDescriptors(List.of(
+                    new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor("test.other","Other","Other","fixture",List.of(input),List.of(),"example",true),
+                    new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor("test.nullable","Maybe","Maybe","fixture",List.of(),List.of(output),"example",false)));
+            fixture.manager.onCatalogChanged();
+            String producer=kind.equals("NullablePath")||kind.equals("Opaque")?"Maybe":"Source";
+            String old=kind.equals("ListPath")?"[workPath('old')]":kind.equals("Text")?"'old'":"workPath('old')";
+            fixture.files.put(JOB,"task('p', "+producer+") {}; task('c', Other, dependsOn:'p') { input="+old+" }");
+            var snapshot=fixture.capture();var planner=new SemanticEditPlanner();
+            EditableValue value=new EditableValue.ResultFieldRef(id("p"),"file");
+            if(kind.equals("ListPath"))value=new EditableValue.Sequence(List.of(value));
+            boolean compatible=kind.equals("Path")||kind.equals("ListPath");
+            var direct=planner.plan(snapshot,new SemanticEditIntent.SetField(id("c"),"input",value),EditStyle.defaults(),CancellationToken.NONE);
+            var form=planner.planConfiguration(snapshot,id("c"),Map.of("input",value),java.util.Set.of(),Map.of(),EditStyle.defaults(),CancellationToken.NONE);
+            for(var result:List.of(direct,form)) {
+                assertEquals(compatible?EditCapability.State.ALLOWED:EditCapability.State.REJECTED,result.capability().state(),kind+": "+result.capability());
+                if(compatible)assertTrue(result.plan().orElseThrow().postimages().get(JOB).contains("result('p').file"));
+                else {assertTrue(result.plan().isEmpty());assertEquals("EDIT_PORT_COMPATIBILITY",result.capability().reasons().getFirst().code());}
+            }
+        }
+    }
+
     @Test void aFormMayChangeAResultAndItsDependencyTogetherButCannotPublishAnInvalidIntermediateState() {
         try(var fixture=new Fixture()) {
             new DependencySourceEditsTest().catalog(fixture);
