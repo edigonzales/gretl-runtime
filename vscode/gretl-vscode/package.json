@@ -1,0 +1,123 @@
+{
+  "name": "gretl-runtime",
+  "displayName": "GRETL Runtime",
+  "description": "Static language support for GRETL Runtime jobs. Requires Java 25.",
+  "version": "0.1.0",
+  "publisher": "edigonzales",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edigonzales/gretl-runtime"
+  },
+  "engines": {
+    "vscode": "^1.144.0"
+  },
+  "extensionKind": [
+    "workspace"
+  ],
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./dist/extension.cjs",
+  "activationEvents": [
+    "onLanguage:gretl-runtime"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Syntax and templates are available; the Java language server requires workspace trust."
+    },
+    "virtualWorkspaces": false
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "gretl-runtime",
+        "aliases": [
+          "GRETL Runtime"
+        ],
+        "filenames": [
+          "job.groovy",
+          "settings.gretl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "gretlRuntime.restartServer",
+        "title": "GRETL: Restart Language Server"
+      },
+      {
+        "command": "gretlRuntime.stopServer",
+        "title": "GRETL: Stop Language Server"
+      },
+      {
+        "command": "gretlRuntime.showOutput",
+        "title": "GRETL: Show Language Server Output"
+      },
+      {
+        "command": "gretlRuntime.newJob",
+        "title": "GRETL: New Job"
+      },
+      {
+        "command": "gretlRuntime.useActiveFile",
+        "title": "GRETL: Use Active File as Runtime Job"
+      }
+    ],
+    "configuration": {
+      "title": "GRETL Runtime",
+      "properties": {
+        "gretlRuntime.javaPath": {
+          "type": "string",
+          "default": "java",
+          "scope": "machine",
+          "description": "Java 25 executable. No shell expansion or automatic download."
+        },
+        "gretlRuntime.serverJarPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "description": "Optional location of an identical bundled server JAR. Its digest must match the bundle."
+        },
+        "gretlRuntime.language": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "en",
+            "de"
+          ],
+          "default": "auto",
+          "description": "Language of server diagnostics."
+        }
+      }
+    },
+    "grammars": [
+      {
+        "language": "gretl-runtime",
+        "scopeName": "source.groovy.gretl-runtime",
+        "path": "./syntaxes/groovy.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "tsc --noEmit",
+    "test": "node --test test/*.test.mjs",
+    "package": "npm run check && npm run build && vsce package --no-dependencies --out dist/gretl-runtime.vsix"
+  },
+  "dependencies": {
+    "vscode-languageclient": "11.0.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "1.144.0",
+    "@types/node": "22.19.0",
+    "@vscode/vsce": "4.1.0",
+    "@vscode/test-electron": "3.1.0",
+    "esbuild": "0.28.2",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "minimatch": "11.0.1"
+  }
+}

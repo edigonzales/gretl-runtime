@@ -1,0 +1,3 @@
+action('child') {
+    println 'child'
+}

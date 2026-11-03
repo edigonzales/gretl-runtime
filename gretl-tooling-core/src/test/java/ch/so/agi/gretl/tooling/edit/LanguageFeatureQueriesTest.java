@@ -15,6 +15,21 @@ class LanguageFeatureQueriesTest {
     CompletionProposal proposal(QueryContext context,String label) {return queries.complete(context).stream().filter(p->p.label().equals(label)).findFirst().orElseThrow(()->new AssertionError("Missing "+label+": "+queries.complete(context)));}
     String apply(String source,CompletionProposal proposal) {return source.substring(0,proposal.replacement().startUtf16())+proposal.newText()+source.substring(proposal.replacement().endUtf16());}
 
+    @Test void resultOutputHoverUsesBoundSpiDescriptorAndExactPropertyAnchor() {
+        try(var fixture=new Fixture()) {
+            var shape=ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape.fromMetadata("path");
+            var output=new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OutputDescriptor("file","Downloaded archive",shape,false);
+            fixture.catalog.mergeExplicitDescriptors(List.of(new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor("test.producer","Producer","Producer","fixture",List.of(),List.of(output),"example",false)));
+            fixture.manager.onCatalogChanged();
+            String source="def producer=task('p', Producer) {}\naction('consumer', dependsOn:'p') { result('p').file; result('p').unknown; resultOptional('p').file; result(producer).file }\n";
+            fixture.files.put(JOB,source);var snapshot=fixture.capture();
+            var hover=queries.hover(at(snapshot,source,"result('p').file",14)).orElseThrow();
+            assertEquals("file : path",hover.title());assertEquals("Downloaded archive",hover.documentation());
+            assertEquals("file",source.substring(hover.anchor().span().startUtf16(),hover.anchor().span().endUtf16()));
+            for(String marker:List.of("result('p').unknown","resultOptional('p').file","result(producer).file"))assertTrue(queries.hover(at(snapshot,source,marker,marker.length()-2)).isEmpty(),marker);
+        }
+    }
+
     @Test void booleanValuesAndTextEnumsAreDistinctFromUriSchemesAndApplyWithoutNewErrors() {
         try(var fixture=new Fixture()) {
             var fields=List.of(

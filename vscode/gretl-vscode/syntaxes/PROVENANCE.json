@@ -1,0 +1,12 @@
+{
+  "upstream": "https://github.com/microsoft/vscode",
+  "tag": "1.144.0",
+  "path": "extensions/groovy/syntaxes/groovy.tmLanguage.json",
+  "originalSha256": "7e61dc6646a8e931d838d0fc62fc3408749f21aeeb989431b87d49c51b559b5f",
+  "changes": "scopeName changed to source.groovy.gretl-runtime; JSON formatting only",
+  "license": "TextMate Bundle License (grammar); MIT (VS Code conversion)",
+  "commit": "2c33b50b16c472efe58357d1d2a8a5414bc23fbf",
+  "upstreamGrammarCommit": "85d8f7c97ae473ccb9473f6c8d27e4ec957f4be1",
+  "grammarLicenseSource": "https://github.com/microsoft/vscode/blob/2c33b50b16c472efe58357d1d2a8a5414bc23fbf/ThirdPartyNotices.txt",
+  "thirdPartyNoticesSha256": "4cb210d0c8f8fa304b37a31d44436ebf86dff59466a4033fbcd0c401d63c6568"
+}

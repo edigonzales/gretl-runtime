@@ -10,6 +10,7 @@ Diese Seiten beschreiben den implementierten Stand von GRETL Runtime:
 - [Subprojekte und gemeinsamer Taskgraph](implementation/project-subprojects/README.md)
 - [SCRIPT-, JAR- und reale IMAGE-Fachtests](implementation/job-artifact-tests.md)
 - [Generisches Runtime-Image und OpenShift](../gretl-dist/src/main/docker/README.md)
+- [Installierbarer GRETL-Texteditor für VS Code](../vscode/gretl-vscode/README.md)
 - [Lokalisierung](architecture/runtime-contracts.md#lokalisierung) und [Plangraphen](architecture/runtime-contracts.md#plangraphen)
 - [Validatorfunktionen](implementation/job-packaging.md#validatorfunktionen)
 - [Taskreferenz](reference/reference.adoc) und [deren Generierung](reference/README.md)

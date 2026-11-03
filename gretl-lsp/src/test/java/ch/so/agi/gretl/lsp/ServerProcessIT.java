@@ -84,6 +84,10 @@ class ServerProcessIT {
             wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             var completion=wire.call("textDocument/completion",position(uri,1,12)).getAsJsonArray();assertTrue(completion.asList().stream().anyMatch(x->x.getAsJsonObject().get("label").getAsString().equals("HttpDownload")));
             assertFalse(wire.call("textDocument/hover",position(uri,1,12)).isJsonNull());assertFalse(wire.call("textDocument/signatureHelp",position(uri,1,12)).isJsonNull());
+            int outputColumn=source.split("\r\n")[2].indexOf(".file")+1;
+            var outputHover=wire.call("textDocument/hover",position(uri,2,outputColumn+1)).getAsJsonObject();
+            assertTrue(outputHover.getAsJsonObject("contents").get("value").getAsString().contains("file : path"));
+            assertEquals(outputColumn,outputHover.getAsJsonObject("range").getAsJsonObject("start").get("character").getAsInt());
             assertEquals(3,wire.call("textDocument/documentSymbol",Map.of("textDocument",Map.of("uri",uri))).getAsJsonArray().size());
             var definition=wire.call("textDocument/definition",position(uri,2,30)).getAsJsonArray();
             assertEquals(1,definition.size());assertEquals(Path.of(java.net.URI.create(uri)),Path.of(java.net.URI.create(definition.get(0).getAsJsonObject().get("uri").getAsString())));

@@ -1,0 +1,39 @@
+{
+  "name": "gretl-workbench-evidence",
+  "publisher": "gretl-test",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.144.0"
+  },
+  "main": "./extension.cjs",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "gretlEvidence.capture",
+        "title": "GRETL Evidence: Capture Workbench Assertions"
+      },
+      {
+        "command": "gretlEvidence.verifyProviders",
+        "title": "GRETL Evidence: Verify Installed Providers"
+      },
+      {
+        "command": "gretlEvidence.verifyStaleQuickFix",
+        "title": "GRETL Evidence: Verify Stale Offered Quick Fix"
+      }
+    ]
+  },
+  "license": "MIT",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "files": [
+    "extension.cjs",
+    "README.md",
+    "LICENSE"
+  ]
+}

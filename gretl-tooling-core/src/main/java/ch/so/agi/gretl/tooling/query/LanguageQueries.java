@@ -145,6 +145,21 @@ public final class LanguageQueries {
 
     public Optional<HoverInfo> hover(QueryContext context) {
         var analysis = context.snapshot().analysis();
+        var document=context.document().orElse(null);
+        if(document!=null)for(var declaration:document.declarations())for(var property:declaration.properties()) {
+            if(!property.propertySpan().contains(context.offsetUtf16())
+                    ||!(property.receiver() instanceof CallValue call)||!call.name().equals("result")
+                    ||call.arguments().size()!=1||!(call.arguments().getFirst() instanceof LiteralValue literal)
+                    ||!(literal.value() instanceof String))continue;
+            var references=analysis.references().stream().filter(reference->reference.kind()==ReferenceKind.RESULT
+                    &&reference.anchor().documentId().equals(context.documentId())
+                    &&call.span().contains(reference.anchor().span())).toList();
+            if(references.size()!=1)return Optional.empty();
+            return references.getFirst().target().flatMap(analysis::unique).filter(producer->producer.operation()!=null)
+                    .flatMap(producer->producer.operation().outputs().stream().filter(output->output.name().equals(property.property())).findFirst())
+                    .map(output->new HoverInfo(new Anchor(context.documentId(),property.propertySpan()),
+                            output.name()+" : "+output.shape().runtimeType()+(output.nullable()?"?":""),output.description()));
+        }
         var targets = context.snapshot().references().targetsAt(context.documentId(), context.offsetUtf16());
         if (targets.size() == 1) {
             var symbol = analysis.unique(targets.iterator().next());

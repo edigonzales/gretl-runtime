@@ -21,6 +21,7 @@
     <module>gretl-tooling-core</module>
     <module>gretl-tooling-catalog</module>
     <module>gretl-lsp</module>
+    <module>vscode/gretl-vscode</module>
     <module>gretl-api</module>
     <module>gretl-runner</module>
     <module>gretl-groovy</module>

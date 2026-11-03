@@ -1,6 +1,22 @@
 {
   "schemaVersion": 1,
-  "externalAdoptions": [],
+  "externalAdoptions": [
+    {
+      "repository": "https://github.com/microsoft/vscode",
+      "commit": "2c33b50b16c472efe58357d1d2a8a5414bc23fbf",
+      "originalPath": "extensions/groovy/syntaxes/groovy.tmLanguage.json",
+      "originalSha256": "7e61dc6646a8e931d838d0fc62fc3408749f21aeeb989431b87d49c51b559b5f",
+      "newPath": "vscode/gretl-vscode/syntaxes/groovy.tmLanguage.json",
+      "license": "TextMate Bundle License (grammar); MIT (VS Code conversion)",
+      "copyright": "Copyright (c) textmate-groovy.tmbundle project authors; Microsoft Corporation (conversion)",
+      "licensePath": "vscode/gretl-vscode/syntaxes/LICENSE-VSCODE.txt",
+      "changes": "scopeName changed to source.groovy.gretl-runtime; JSON formatting only",
+      "licensePaths": [
+        "vscode/gretl-vscode/syntaxes/LICENSE-TEXTMATE.txt",
+        "vscode/gretl-vscode/syntaxes/LICENSE-VSCODE.txt"
+      ]
+    }
+  ],
   "internalExtractions": [
     {
       "repository": "https://github.com/edigonzales/gretl-runtime",
