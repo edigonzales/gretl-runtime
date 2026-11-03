@@ -1,0 +1,223 @@
+{
+  "gates": [
+    {
+      "label": "p4-standard",
+      "sha": "666e812df8394a1f533d534c9c6d134b132898ab",
+      "dirty": "",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "clean",
+        "verify"
+      ],
+      "cwd": "/Users/stefan/sources/gretl-runtime",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "startedAt": "2026-11-03T19:12:48.468Z",
+      "endedAt": "2026-11-03T19:19:29.432Z",
+      "manifestCounts": {
+        "tests": 899,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "reportsCounts": {
+        "tests": 899,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "capturedEntries": 632,
+      "reportsEntries": 632,
+      "files": [],
+      "xml": {
+        "files": 175,
+        "tests": 899,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "mismatch": [],
+        "malformed": []
+      },
+      "hashMismatchOriginal": [],
+      "hashMismatchCopy": [],
+      "missingOriginal": [],
+      "missingCopy": [],
+      "timestampsOutsideRun": [],
+      "log": {
+        "size": 149465,
+        "buildSuccess": true,
+        "buildFailure": false,
+        "totalTimeLine": "Total time:  06:40 min",
+        "finishedAtLine": "Finished at: 2026-11-03T20:19:29+01:00",
+        "hasWarningsSkip": false,
+        "lastLines": [
+          "[INFO] GRETL Job Packager ................................. SUCCESS [  3.787 s]",
+          "[INFO] GRETL Packaged Job Runtime ......................... SUCCESS [  1.302 s]",
+          "[INFO] GRETL Runtime CLI .................................. SUCCESS [  4.363 s]",
+          "[INFO] GRETL FileSize example extension ................... SUCCESS [  0.034 s]",
+          "[INFO] GRETL Runtime Script Distribution .................. SUCCESS [01:20 min]",
+          "[INFO] GRETL Runtime Backing-Service Integration Tests .... SUCCESS [04:25 min]",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  06:40 min",
+          "[INFO] Finished at: 2026-11-03T20:19:29+01:00",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    },
+    {
+      "label": "p4-services",
+      "sha": "666e812df8394a1f533d534c9c6d134b132898ab",
+      "dirty": "",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-Pgeotools-probe,backing-services",
+        "clean",
+        "verify"
+      ],
+      "cwd": "/Users/stefan/sources/gretl-runtime",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "startedAt": "2026-11-03T19:19:32.107Z",
+      "endedAt": "2026-11-03T19:29:23.079Z",
+      "manifestCounts": {
+        "tests": 955,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "reportsCounts": {
+        "tests": 955,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "capturedEntries": 817,
+      "reportsEntries": 817,
+      "files": [],
+      "xml": {
+        "files": 189,
+        "tests": 955,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "mismatch": [],
+        "malformed": []
+      },
+      "hashMismatchOriginal": [],
+      "hashMismatchCopy": [],
+      "missingOriginal": [],
+      "missingCopy": [],
+      "timestampsOutsideRun": [],
+      "log": {
+        "size": 177042,
+        "buildSuccess": true,
+        "buildFailure": false,
+        "totalTimeLine": "Total time:  09:50 min",
+        "finishedAtLine": "Finished at: 2026-11-03T20:29:22+01:00",
+        "hasWarningsSkip": false,
+        "lastLines": [
+          "[INFO] GRETL Packaged Job Runtime ......................... SUCCESS [  1.414 s]",
+          "[INFO] GRETL Runtime CLI .................................. SUCCESS [  4.998 s]",
+          "[INFO] GRETL FileSize example extension ................... SUCCESS [  0.029 s]",
+          "[INFO] GRETL Runtime Script Distribution .................. SUCCESS [01:23 min]",
+          "[INFO] GRETL Runtime Backing-Service Integration Tests .... SUCCESS [07:18 min]",
+          "[INFO] GRETL GeoTools compatibility probe ................. SUCCESS [  2.584 s]",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  09:50 min",
+          "[INFO] Finished at: 2026-11-03T20:29:22+01:00",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+      "expected": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+      "exists": true,
+      "actual": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+      "expected": "f156e3712cedc0106f2a04239ebde5e5022ef85f643149c4b80d6fff5703860f",
+      "exists": true,
+      "actual": "f156e3712cedc0106f2a04239ebde5e5022ef85f643149c4b80d6fff5703860f",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-language-contract/target/tooling-dependencies.json",
+      "expected": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f",
+      "exists": true,
+      "actual": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-core/target/tooling-dependencies.json",
+      "expected": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7",
+      "exists": true,
+      "actual": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+      "expected": "f1b6148e5f472c73ce51a59445cb0cb8b7719705ce94a1544aaec91c89499a9e",
+      "exists": true,
+      "actual": "f1b6148e5f472c73ce51a59445cb0cb8b7719705ce94a1544aaec91c89499a9e",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+      "expected": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+      "exists": true,
+      "actual": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.schema.json",
+      "expected": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005",
+      "exists": true,
+      "actual": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+      "expected": "4c952fc2f6ad293ffeff895afcfa542b28592fd365385ae749b8f0daa76d069a",
+      "exists": true,
+      "actual": "4c952fc2f6ad293ffeff895afcfa542b28592fd365385ae749b8f0daa76d069a",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+      "expected": "fb923c874ca3441df6a8ed92241c3ade7226aba65cbb13c410bd1360bbbdff0c",
+      "exists": true,
+      "actual": "fb923c874ca3441df6a8ed92241c3ade7226aba65cbb13c410bd1360bbbdff0c",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-lsp/target/tooling-dependencies.json",
+      "expected": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+      "exists": true,
+      "actual": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-lsp/target/classes/gretl-protocol-v1.schema.json",
+      "expected": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6",
+      "exists": true,
+      "actual": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6",
+      "match": true
+    }
+  ],
+  "artifactAllMatch": true
+}

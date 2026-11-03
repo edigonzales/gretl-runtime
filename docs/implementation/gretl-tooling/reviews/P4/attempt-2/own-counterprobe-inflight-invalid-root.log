@@ -1,0 +1,9 @@
+fixture {"rootUri":"file:///Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/cp-inflight-invalid-root-GRitu7/workspace","jobBytes":5839,"actions":300}
+java openjdk version "25.0.2" 2026-01-20 LTS
+initialize utf-16
+initial-snapshot d08bb02b-5bff-421a-b842-94463a39c5de
+retained-plan 5845527b-c57d-4eee-9fb9-b46e7631a875
+rejection WORKSPACE_ROOT_UNSAFE
+in-flight-graph rejected -32801: CONTROL_STATE_CHANGED
+post-rejection same snapshot and plan retained
+exit {"code":0,"signal":null}

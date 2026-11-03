@@ -1,0 +1,14 @@
+{
+  "probe": "in-flight query across an atomically rejected mixed workspace-folder update",
+  "candidateJar": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+  "expected": "The invalid added folder must be rejected before the valid root is removed; a concurrent graph response must not replace the retained plan/snapshot, and shutdown/exit must end the process with stdin still open.",
+  "observed": "Invalid mixed folder update was rejected before mutation; concurrent graph did not replace the retained snapshot/plan; shutdown/exit completed with stdin open.",
+  "pass": true,
+  "exitCode": {
+    "code": 0,
+    "signal": null
+  },
+  "serverStderr": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/cp-inflight-invalid-root-GRitu7/server-stderr.log",
+  "logPath": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.log",
+  "resultPath": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.json"
+}

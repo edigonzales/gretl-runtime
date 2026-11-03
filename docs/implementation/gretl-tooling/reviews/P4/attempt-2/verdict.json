@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "97b03940-be6f-4968-b66e-8d9a835943e4",
+  "phase": "P4",
+  "assignmentBase": "185fc6700b5cb2897f724d457610a57f059b3421",
+  "phaseBase": "392b6d8ff0191db9b3619c1c5b34fc2e2ee98886",
+  "candidateSha": "666e812df8394a1f533d534c9c6d134b132898ab",
+  "requirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+  "verdict": "PASS",
+  "reviewer": {
+    "openCodeVersion": "2.2.5",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "apiHost": "api.deepseek.com",
+    "modelMappingEvidence": "/Users/stefan/.cache/gretl-tooling-review/p2-resume-readiness/identity.json (checkedAt 2026-11-03T13:16:05.719Z; actualProvider=deepseek; actualModel=deepseek-flash; effectiveBaseUrl=https://api.deepseek.com; modelVersion=DeepSeek-V4.1-Flash-1017; mappingUrl=https://api-docs.deepseek.com/quick_start/pricing/)"
+  },
+  "criteria": [
+    {
+      "id": "P4-01",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/pom.xml",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/BundledCatalog.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/validate-evidence-result.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-tooling-targeted.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.json"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P4-02",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlServerLauncher.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlLanguageServer.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.json"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P4-03",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlTextDocumentService.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/ServerWorkspace.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/DocumentStore.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-tooling-targeted.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P4-04",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlTextDocumentService.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/LspQueryMapper.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-tooling-targeted.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P4-05",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/LspDiagnosticMapper.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/LspQueryMapper.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-tooling-targeted.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P4-06",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/ServerWorkspace.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlWorkspaceService.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.mjs",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-tooling-targeted.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P4-07",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlLanguageServerApi.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlLanguageServer.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlProtocol.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/resources/gretl-protocol-v1.schema.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/validate-evidence-result.json"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P4-08",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/ServerConfiguration.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/LspHostSourceRepository.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/HostFileWatcher.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.json"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P4-09",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-tooling-targeted.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-affected-checks.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/p4-standard/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/p4-standard/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/p4-services/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/p4-services/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/validate-evidence-result.json"
+      ],
+      "findingIds": []
+    }
+  ],
+  "executedChecks": [
+    {
+      "id": "tooling-targeted",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-language-contract,gretl-tooling-core,gretl-lsp",
+        "verify"
+      ],
+      "exitCode": 0,
+      "testCount": 208,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-tooling-targeted.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-affected-checks.json"
+      ]
+    },
+    {
+      "id": "tooling-docs",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product",
+      "argv": [
+        "node",
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": null,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-tooling-docs.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-affected-checks.json"
+      ]
+    },
+    {
+      "id": "p4-inflight-invalid-root",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence",
+      "argv": [
+        "node",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": 1,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.mjs",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.json"
+      ]
+    }
+  ],
+  "verifiedCurrentEvidence": [
+    {
+      "checkIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "candidateSha": "666e812df8394a1f533d534c9c6d134b132898ab",
+      "artifacts": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+          "sha256": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+          "kind": "tooling-core"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+          "sha256": "f156e3712cedc0106f2a04239ebde5e5022ef85f643149c4b80d6fff5703860f",
+          "kind": "tooling-core"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-language-contract/target/tooling-dependencies.json",
+          "sha256": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-core/target/tooling-dependencies.json",
+          "sha256": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+          "sha256": "f1b6148e5f472c73ce51a59445cb0cb8b7719705ce94a1544aaec91c89499a9e",
+          "kind": "catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+          "sha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.schema.json",
+          "sha256": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+          "sha256": "4c952fc2f6ad293ffeff895afcfa542b28592fd365385ae749b8f0daa76d069a",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+          "sha256": "fb923c874ca3441df6a8ed92241c3ade7226aba65cbb13c410bd1360bbbdff0c",
+          "kind": "lsp-server-or-protocol"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-lsp/target/tooling-dependencies.json",
+          "sha256": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+          "kind": "lsp-server-or-protocol"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/artifacts/gretl-lsp/target/classes/gretl-protocol-v1.schema.json",
+          "sha256": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6",
+          "kind": "lsp-server-or-protocol"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/p4-standard/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/p4-standard/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/p4-services/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/p4-services/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/validate-evidence-result.json"
+      ],
+      "verification": "Beide gelieferten Rootgates wurden nicht wiederholt. Standard: SHA=666e812df8394a1f533d534c9c6d134b132898ab, dirty leer, Exit 0, 19:12:48.468Z bis 19:19:29.432Z; 632/632 Kopien vorhanden und hashgleich; 175 XML-Suiten summieren exakt 899 Tests mit 0 Failures/Errors/Skips; Log endet BUILD SUCCESS ohne Skips. Services: derselbe SHA, dirty leer, Exit 0, 19:19:32.107Z bis 19:29:23.079Z; 817/817 Kopien vorhanden und hashgleich; 189 XML-Suiten summieren exakt 955 Tests mit 0/0/0 inklusive LSP-Failsafe; Log endet BUILD SUCCESS ohne Skips. Alle Zeitstempel liegen in den Laufzeitfenstern. Alle 11 Request-Artefakte wurden gegen ihre SHA-256 nachgerechnet und stimmen. Das catalog-manifest des Standardlaufs unterscheidet sich nur in der JSON-Schlüsselreihenfolge (Hash 80baadb7... statt 4c952fc2...); schemaSha256, operationsSha256, catalogId und Versionen sind identisch, operations.json und operations.schema.json bytegleich."
+    }
+  ],
+  "guiEvidence": [],
+  "counterprobes": [
+    {
+      "id": "p4-inflight-invalid-root",
+      "hypothesis": "Ein gemischtes workspace/didChangeWorkspaceFolders-Ereignis mit gültiger Entfernung und ungültiger Addition wird vor jeder Mutation atomar abgelehnt; eine bereits laufende Graphanfrage publiziert danach keine Antwort gegen den entfernten Root oder eine neue Snapshotgeneration, Snapshot und retained Plan bleiben erhalten, und Shutdown/Exit beendet den echten Prozess bei offenem stdin mit Code 0.",
+      "novelty": "Der gelieferte Regressionstest prüft das Ereignis sequenziell. Diese unabhängige Probe startet das gepackte Kandidaten-JAR in einem fremden Arbeitsverzeichnis, verwendet eine CRLF-Quelle mit 300 Aktionen, sendet eine gretl/graph-Anfrage und unmittelbar danach das gemischte ungültige Ereignis und beobachtet die tatsächliche Reihenfolge und die in-flight-Antwort auf der Leitung.",
+      "actions": "node /Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.mjs: initialize mit gültigem rootUri, initialized, didOpen job.groovy, Graph- und Plananfrage, gleichzeitige weitere Graphanfrage plus workspace/didChangeWorkspaceFolders mit removed=[gültiger Root] und added=[reguläre Datei], danach erneuter Graph, gretl/validateEdit für den retained Plan, shutdown und exit bei offenem stdin.",
+      "expected": "WORKSPACE_ROOT_UNSAFE wird vor der Mutation protokolliert; die in-flight-Anfrage wird mit CONTROL_STATE_CHANGED abgelehnt oder liefert höchstens den alten Snapshot; Snapshot und retained Plan bleiben unverändert; Exit 0.",
+      "observed": "WORKSPACE_ROOT_UNSAFE wurde protokolliert; die in-flight-Graphanfrage wurde mit -32801: CONTROL_STATE_CHANGED abgelehnt; der erneute Graph sah dieselbe Snapshot-ID und gretl/validateEdit meldete current=true; shutdown/exit beendeten den Prozess bei offenem stdin mit Code 0. Server-stderr blieb leer.",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.mjs",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/evidence/own-counterprobe-inflight-invalid-root.json"
+      ]
+    }
+  ],
+  "openMandatoryFindings": [],
+  "missingRequiredChecks": [],
+  "report": "review.md",
+  "summary": "PASS: P4-01 bis P4-09 sind durch Code, echte stdio-Prozess-/Archivtests, eine neue unabhängige in-flight-Gegenprobe und die vollständig validierten frischen Rootgates belegt. Standard und Services bestehen mit 899 bzw. 955 Tests, jeweils 0 Failures/Errors/Skips, 632/632 bzw. 817/817 hashgleichen Rohkopien und BUILD SUCCESS; der gezielte Lauf bestand mit 174 Java- und 34 Node-Tests, die Docs-Prüfung mit 81 Kriterien. Die frühere P4-F1-Lücke ist durch Vorvalidierung vor jeder Mutation, den echten Regressionstest und die neue Gegenprobe behoben. P4-06 ist erfüllt; es gibt kein offenes Mussfinding. Das Urteil ist ein P4-Urteil, kein P0–P8-Gesamturteil."
+}
