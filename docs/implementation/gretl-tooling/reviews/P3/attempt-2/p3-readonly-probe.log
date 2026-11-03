@@ -1,0 +1,4 @@
+PASS readonly-setfield-refused :: capturedReadonly=true state=REJECTED plan=false reason=EDIT_READONLY
+PASS readonly-rename-refused :: prepared=true prepareReason=EDIT_READONLY renameState=REJECTED renameReason=EDIT_READONLY
+PASS readonly-verifier-defence :: verifierReason=EDIT_READONLY sourceUnchanged=true
+SUMMARY passed=3 failed=0

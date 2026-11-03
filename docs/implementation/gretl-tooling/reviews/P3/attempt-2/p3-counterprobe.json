@@ -1,0 +1,19 @@
+{
+  "id": "p3-counterprobe",
+  "compiledAgainst": {
+    "javaHome": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem",
+    "javac": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/javac",
+    "classpathSource": "gretl-tooling-core/target/surefire-reports/TEST-...SemanticEditPlannerTest.xml",
+    "targetClasses": true,
+    "targetTestClasses": true
+  },
+  "compile": {
+    "status": 0
+  },
+  "run": {
+    "status": 0,
+    "signal": null,
+    "stdout": "PASS map-noop-compatible :: state=ALLOWED plan=true noOp=true\nPASS map-noop-incompatible :: state=REJECTED reason=EDIT_PORT_COMPATIBILITY\nPASS setfield-missing-data-edge :: state=REJECTED reason=EDIT_NEW_ERROR\nPASS delete-default-referenced :: state=REJECTED reason=EDIT_REFERENCED_TARGET textUnchanged=true\nPASS form-remove-replace-header :: state=ALLOWED reason=<none> ranges=3 post=task('a', Wide, description: 'Desc') {\r\n  input='new' // keep\r\n  \r\n}\r\n\nPASS form-idempotent-postimage :: state=ALLOWED noOp=true\nPASS plan-current-before-stale-after :: currentBefore=true currentAfterNewCapture=false\nPASS source-untouched :: inMemorySourceUnchanged\nPASS form-partial-refused :: state=REJECTED reason=EDIT_PORT_COMPATIBILITY plan=false\nPASS multiple-assignment-refused :: state=REJECTED reason=EDIT_MULTIPLE_ASSIGNMENTS plan=false sourceUnchanged=true\nPASS completion-crlf-comment :: proposal=SLOW exact=true applied=true quiet=true\nSUMMARY passed=11 failed=0\n",
+    "stderr": ""
+  }
+}
