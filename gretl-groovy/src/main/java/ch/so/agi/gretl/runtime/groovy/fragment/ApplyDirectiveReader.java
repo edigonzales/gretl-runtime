@@ -35,22 +35,25 @@ public final class ApplyDirectiveReader {
         public String siteId() { return sourceId + "@" + start; }
     }
     public record Problem(String code, String sourceId, int line, int column) { }
-    public record Result(List<Directive> directives, List<Problem> problems) {
+    public record Result(List<Directive> directives, List<Problem> problems, boolean applySeen) {
+        public Result(List<Directive> directives,List<Problem> problems){this(directives,problems,!directives.isEmpty());}
         public Result { directives = List.copyOf(directives); problems = List.copyOf(problems); }
-        public List<Directive> requireValid() {
+        public List<Directive> requireValid() {return requireValid(ch.so.agi.gretl.i18n.Messages.sourceLocale());}
+        public List<Directive> requireValid(Locale locale) {
             if (!problems.isEmpty()) {
                 var p = problems.getFirst();
-                throw new GroovyDslException(p.code(), ch.so.agi.gretl.i18n.Messages.format(ch.so.agi.gretl.i18n.Messages.sourceLocale(), "apply." + p.code(), p.sourceId()), null, null,
+                throw new GroovyDslException(p.code(), ch.so.agi.gretl.i18n.Messages.format(locale, "apply." + p.code(), p.sourceId()), null, null,
                         new SourceLocation(p.sourceId(), p.line(), p.column()), List.of(), null);
             }
             return directives;
         }
     }
-    public Result read(String sourceId, String text) {
+    public Result read(String sourceId,String text){return read(sourceId,text,false);}
+    public Result read(String sourceId, String text, boolean fragment) {
         Objects.requireNonNull(sourceId); Objects.requireNonNull(text);
         var config = CompilerSettings.create(); config.setScriptBaseClass(null);
         var directives = new ArrayList<Directive>(); var problems = new ArrayList<Problem>();
-        SourceUnit unit=null;
+        SourceUnit unit=null;boolean[] applySeen={false};
         try (var loader = new GroovyClassLoader(getClass().getClassLoader(), config)) {
             unit = new SourceUnit(ScriptSourceNames.virtualGroovyName(sourceId), text, config, loader, new ErrorCollector(config));
             unit.parse(); unit.completePhase(); unit.nextPhase(); unit.convert();
@@ -79,7 +82,9 @@ public final class ApplyDirectiveReader {
                     boolean named=namedOptions(call);
                     boolean ordinaryOwnedCall=scriptContext[0] ? scriptOwnApply && !named
                             : ownsHelperApply(helperType[0],call,module,named);
+                    if(fragment && self && scriptContext[0] && "defaults".equals(call.getMethodAsString())) problem("APPLY_DEFAULTS_NOT_ALLOWED",call);
                     if (self && !ordinaryOwnedCall && "apply".equals(call.getMethodAsString())) {
+                        applySeen[0]=true;
                         if (!top.contains(call) || !call.isImplicitThis() || call.isSafe() || call.isSpreadSafe() || call.isUsingGenerics()) {
                             problem("APPLY_CONTEXT",call);
                         } else {
@@ -132,7 +137,7 @@ public final class ApplyDirectiveReader {
         } catch (StackOverflowError failure) {
             problems.add(new Problem("APPLY_LIMIT",sourceId,0,0));
         } catch (IOException failure) { throw new IllegalStateException(failure); }
-        return new Result(directives,problems);
+        return new Result(directives,problems,applySeen[0]);
     }
     private static boolean ownsHelperApply(ClassNode owner,MethodCallExpression call,ModuleNode module,boolean mapOptions) {
         int count=call.getArguments() instanceof TupleExpression tuple?tuple.getExpressions().size():1;

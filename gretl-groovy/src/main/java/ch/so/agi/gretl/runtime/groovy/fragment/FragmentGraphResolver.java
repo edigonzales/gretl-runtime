@@ -40,7 +40,7 @@ public final class FragmentGraphResolver {
     private static String canonicalId(FragmentSourceAccess access,String sourceId) {
         try{return access.canonicalId(sourceId);}
         catch(IOException failure){throw new GroovyDslException("APPLY_NOT_FOUND",
-                ch.so.agi.gretl.i18n.Messages.format(ch.so.agi.gretl.i18n.Messages.sourceLocale(),"apply.APPLY_NOT_FOUND",sourceId),failure);}
+                ch.so.agi.gretl.i18n.Messages.format(access.locale(),"apply.APPLY_NOT_FOUND",sourceId),failure);}
     }
     private static final class State {
         final List<Entry> entries; final boolean project;final String settings;final FragmentSourceAccess access;
@@ -67,7 +67,7 @@ public final class FragmentGraphResolver {
             if(previous!=null)throw error("APPLY_DUPLICATE",id,List.of(String.join(" -> ",previous),String.join(" -> ",chain)),null);
             if(stack.size()>=MAX_DEPTH)throw error("APPLY_LIMIT",id,chain,null);
             var source=read(id,!stack.isEmpty());
-            var directives=parsed.computeIfAbsent(id,k->new ApplyDirectiveReader().read(id,source.text()).requireValid());
+            var directives=parsed.computeIfAbsent(id,k->new ApplyDirectiveReader().read(id,source.text(),!stack.isEmpty()).requireValid(access.locale()));
             active.put(id,true);
             for(var directive:directives) {
                 try {
@@ -75,7 +75,7 @@ public final class FragmentGraphResolver {
                     if(!active.containsKey(target) && entries.stream().anyMatch(e->e.sourceId().equals(target)))throw error("APPLY_CONTEXT",target,chain,null);
                     edges.add(new Edge(scope,id,directive,target));visit(scope,target,chain,active);
                 }catch(IOException failure) {
-                    throw new GroovyDslException("APPLY_NOT_FOUND",ch.so.agi.gretl.i18n.Messages.format(ch.so.agi.gretl.i18n.Messages.sourceLocale(),"apply.APPLY_NOT_FOUND",id),null,null,
+                    throw new GroovyDslException("APPLY_NOT_FOUND",ch.so.agi.gretl.i18n.Messages.format(access.locale(),"apply.APPLY_NOT_FOUND",id),null,null,
                             new SourceLocation(id,directive.line(),directive.column()),chain,failure);
                 }catch(GroovyDslException failure) {
                     if(failure.source()!=null)throw failure;
@@ -109,10 +109,11 @@ public final class FragmentGraphResolver {
             }catch(NoSuchAlgorithmException impossible){throw new IllegalStateException(impossible);}
         }
         void hashSource(MessageDigest digest,String id){frame(digest,id);frame(digest,sources.get(id).bytes());}
+        private GroovyDslException error(String code,String id,List<String> chain,Throwable cause){return FragmentGraphResolver.error(code,id,chain,cause,access.locale());}
     }
     private static void frame(MessageDigest digest,String value){frame(digest,value.getBytes(StandardCharsets.UTF_8));}
     private static void frame(MessageDigest digest,byte[] bytes){digest.update(ByteBuffer.allocate(Long.BYTES).putLong(bytes.length).array());digest.update(bytes);}
-    private static GroovyDslException error(String code,String id,List<String> chain,Throwable cause){
-        return new GroovyDslException(code,ch.so.agi.gretl.i18n.Messages.format(ch.so.agi.gretl.i18n.Messages.sourceLocale(),"apply."+code,id)+(chain.isEmpty()?"":" ["+String.join("; ",chain)+"]"),null,null,null,chain,cause);
+    private static GroovyDslException error(String code,String id,List<String> chain,Throwable cause,Locale locale){
+        return new GroovyDslException(code,ch.so.agi.gretl.i18n.Messages.format(locale,"apply."+code,id)+(chain.isEmpty()?"":" ["+String.join("; ",chain)+"]"),null,null,null,chain,cause);
     }
 }

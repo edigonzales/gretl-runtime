@@ -8,7 +8,10 @@ import java.io.IOException;
 public final class ContainedFragmentSources implements FragmentSourceAccess {
     public static final int MAX_FRAGMENT_BYTES=8*1024*1024;
     private final Path root;
-    public ContainedFragmentSources(Path root) { this.root=root.toAbsolutePath().normalize(); }
+    private final java.util.Locale locale;
+    public ContainedFragmentSources(Path root) {this(root,ch.so.agi.gretl.i18n.Messages.sourceLocale());}
+    public ContainedFragmentSources(Path root,java.util.Locale locale){this.root=root.toAbsolutePath().normalize();this.locale=java.util.Objects.requireNonNull(locale);}
+    @Override public java.util.Locale locale(){return locale;}
     @Override public String canonicalId(String sourceId) throws IOException {
         String canonical=FragmentSourceAccess.super.canonicalId(sourceId);
         validate(sourceId); // Inspect original components before discarding internal '..'.
@@ -39,8 +42,8 @@ public final class ContainedFragmentSources implements FragmentSourceAccess {
             byte[] bytes=fragment?stream.readNBytes(MAX_FRAGMENT_BYTES+1):stream.readAllBytes();
             if(fragment && bytes.length>MAX_FRAGMENT_BYTES)throw error("APPLY_LIMIT",sourceId);
             try { return new FragmentSource(sourceId,bytes); }
-            catch(IllegalArgumentException invalid){throw new GroovyDslException("APPLY_SYNTAX",ch.so.agi.gretl.i18n.Messages.format(ch.so.agi.gretl.i18n.Messages.sourceLocale(),"apply.APPLY_SYNTAX",sourceId),invalid);}
+            catch(IllegalArgumentException invalid){throw new GroovyDslException("APPLY_SYNTAX",ch.so.agi.gretl.i18n.Messages.format(locale,"apply.APPLY_SYNTAX",sourceId),invalid);}
         }
     }
-    private static GroovyDslException error(String code,String source) {return new GroovyDslException(code,ch.so.agi.gretl.i18n.Messages.format(ch.so.agi.gretl.i18n.Messages.sourceLocale(),"apply."+code,source));}
+    private GroovyDslException error(String code,String source) {return new GroovyDslException(code,ch.so.agi.gretl.i18n.Messages.format(locale,"apply."+code,source));}
 }

@@ -11,8 +11,8 @@
 | Phase | Status | Offene Arbeit |
 | --- | --- | --- |
 | P0 | REVIEWED_ACCEPTED | `e9098ec093cd0ed89065aee57aed461a5daf3c47`; unabhängiger Review und maschinelle Validierung PASS. |
-| P1 | REVIEW_PENDING | Reader, Snapshot, Includegraph und Hash implementiert; unabhängiger Review ausstehend. |
-| P2 | PLANNED | SCRIPT-Loader und gemeinsame Definition. |
+| P1 | REVIEWED_ACCEPTED | `00315884b00071989c2c8623fc5f0a5a7e7db39d`; Versuch 8 und externe Validierung PASS. |
+| P2 | REVIEW_PENDING | SCRIPT-Loader, gemeinsame Definition und CLI-Prozesse getestet; unabhängiges Review folgt. |
 | P3 | PLANNED | Kompilation, Metadaten, quellenfreie JAR-Prozesse. |
 | P4 | PLANNED | C01–C08, installierte GUI, Dokumentation, kumulative Abnahme. |
 
@@ -54,3 +54,13 @@ Sechste Korrektur: Typvariablen aus lokalen Klassen-/Methodendeklarationen werde
 Aktuelle Ergänzungen: Einstieg-/Settings-IDs werden vor Read/Hash kanonisiert. Der Filesystemadapter prüft zuerst die ursprünglichen Pfadkomponenten, damit eine Normalisierung keinen Symlink vor `..` verdeckt. Absolut-/Rootausbruch-IDs werden abgewiesen. Äquivalente Schreibweisen erzeugen gleiche Sourcekeys, Entries, Edges und Hashes. Eine eigene Reproduktion ergänzte JDK-25-SequencedMap: die feste Liste zulässiger Map-Supertypen ist durch reine Metadaten der tatsächlichen JDK-LinkedHashMap-Hierarchie ersetzt (keine Jobklassen). Beide Ergänzungen sind Red/Green belegt, Rohbelege `P1-root-ids-*`/`P1-jdk-map-*`, aktueller vollständiger gezielter Lauf `evidence/P1-final/`. Bericht 7 bleibt unverändert am ursprünglichen SHA; keine gültige neue P1-Abnahme behauptet.
 
 Zusätzliche Namensregression: `Map.groovy` durfte nicht als synthetische Scriptklasse den JDK-Map-Parametertyp verdecken. Die rote Probe `P1-source-name-red.log` reproduziert dies; Reader-Konvertierung und Bundle verwenden jetzt gemeinsam die bereits festgelegte virtuelle Namensfunktion (`ScriptSourceNames`). Probleme/Directives behalten die logische Quell-ID und Originalpositionen. Aktueller Lauf: 104 Fälle, null Fehler/Skips. Diese Produktänderung ist noch unabhängig zu prüfen.
+
+## P1-Abschluss und P2-Kandidat
+
+P1 ist am SHA `00315884b00071989c2c8623fc5f0a5a7e7db39d` unabhängig akzeptiert: Session `ses_e581d923affeIbG27T5ggQB8sO`, 104 eigene JUnit-Fälle und 25 eigene Gegenprobenchecks, null Fehler/Skips. Originalbericht und maschinelles PASS: `/Users/stefan/.cache/gretl-script-includes/review/P1-attempt-8/evidence/`. Frühere Zwischenstände oben bleiben historische, abgewiesene Versuche.
+
+P2-Phasebase ist dieser P1-SHA. Captured Sourcebytes werden gemeinsam vor der Registrierung kompiliert; je Quelle/Scope entstehen eigene Instanz und Binding, gemeinsam bleiben Builder und GRETL-Referenzen. Registrierungsende friert einmal ein. Fragment-defaults werden vor Scriptbodies abgewiesen. Settingsparser liefert für den Bundlehash die bereits geparsten Settingsbytes. Legacyjobs ohne Includes behalten Loader-/Hashpfad. Kompilierte Snapshotklassen haben Vorrang vor gleichnamigen Filesystemhelpern. Leere und reine Klassendateien erhalten einen leeren Scriptbody durch den Compiler-AST, ohne Textverkettung oder Klasseninitialisierung.
+
+Gezielte Tests: 158 Fälle im Groovy-/Jobruntime-Reactor, zusätzlich acht CLI-Fälle. Der neue CLI-Test startet vier reale Java-Prozesse aus fremdem CWD: check, plan, run --help und run. Er prüft Top-Level-Marker, ausbleibende Konfigurations-/Action-/Cleanupwirkung bei Definitionskommandos und nach run den exakt dekomprimierten Gzipinhalt. Keine Dienst-/Vollmatrix ausgeführt. Fehlerquellenproben umfassen Compile, Registrierung, Konfiguration, Bedingung, Action und Cleanup. Eine rote Klassendecoyprobe und rote Quellenproben führten zu Korrekturen; Resultrechte bleiben dependsOn-gebunden.
+
+Logs: `/Users/stefan/.cache/gretl-script-includes/evidence/P2-tests.log` und `P2-cli.log`; Reviewrequest nennt die reproduzierbaren Befehle. P2 ist noch nicht unabhängig abgenommen, P3/P4 bleiben offen. Keine Veröffentlichung.

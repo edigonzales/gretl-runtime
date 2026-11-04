@@ -19,6 +19,7 @@ public final class ProjectJobSource implements JobSource {
     private final Path directory;
     private final Locale locale;
     private GretlProject parsed;
+    private ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.Snapshot loadedSnapshot;
 
     public ProjectJobSource(Path directory, Locale locale) {
         this.directory = java.util.Objects.requireNonNull(directory).toAbsolutePath().normalize();
@@ -38,15 +39,23 @@ public final class ProjectJobSource implements JobSource {
 
     @Override public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink) {
         GretlProject project = parse();
-        return new GroovyJobLoader().loadProject(project,
-                new DefinitionEnvironment(registry, project.root(), startCwd, sink, locale));
+        try {
+            var snapshot=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.project(project,locale);
+            var loader=new GroovyJobLoader();var environment=new DefinitionEnvironment(registry,project.root(),startCwd,sink,locale);
+            var definition=snapshot==null?loader.loadProject(project,environment):loader.loadBundle(snapshot,environment,project.defaultTargets(),project.defaultTargetSources());
+            loadedSnapshot=snapshot;return definition;
+        }catch(IOException failure){throw new ch.so.agi.gretl.runtime.groovy.GroovyDslException("JOB_LOAD_FAILED",failure.getMessage(),failure);}
     }
 
     @Override public boolean projectMode() { return true; }
 
     @Override public String sha256() {
+        if(loadedSnapshot!=null)return loadedSnapshot.bundle().sha256();
         GretlProject project = parse();
-        try { return ch.so.agi.gretl.runtime.groovy.project.ProjectSourceHash.sha256(project); }
+        try {
+            var snapshot=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.project(project,locale);
+            return snapshot==null?ch.so.agi.gretl.runtime.groovy.project.ProjectSourceHash.sha256(project):snapshot.bundle().sha256();
+        }
         catch (IOException failure) {
             Path failed = failure instanceof java.nio.file.FileSystemException fs && fs.getFile() != null
                     ? Path.of(fs.getFile()) : project.settingsFile();

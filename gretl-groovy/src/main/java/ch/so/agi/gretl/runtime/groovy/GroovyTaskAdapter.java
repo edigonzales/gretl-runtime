@@ -105,7 +105,7 @@ public final class GroovyTaskAdapter {
                     List.of(), exception), model);
         } catch (Exception | Error failure) {
             model.remap(failure);
-            if (model.projectMode() && failure instanceof ch.so.agi.gretl.runtime.runner.ResultAccessException access) {
+            if (model.mappedSources() && failure instanceof ch.so.agi.gretl.runtime.runner.ResultAccessException access) {
                 throw new GroovyDslException(access.code(), access.getMessage(), taskId, null,
                         model.failureSource(access), List.of(), access);
             }

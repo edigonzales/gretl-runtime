@@ -75,7 +75,7 @@ public final class GretlProjectParser {
         if (entries.isEmpty()) {
             throw error("PROJECT_EMPTY", location(settings), null, "project.empty", root);
         }
-        return new GretlProject(root, settings, entries, parsed.defaultTargets(), parsed.defaultSources());
+        return new GretlProject(root, settings, entries, parsed.defaultTargets(), parsed.defaultSources(),text);
     }
 
     ProjectSettings parseSettings(Path settingsFile, String source) {

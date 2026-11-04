@@ -89,6 +89,8 @@ public final class GroovyJobLoader {
                         Messages.format(environment.locale(), "error.groovy.jobNotFound", script),
                         null, null, SourceLocations.fallback(script), List.of(), null);
             }
+            var snapshot=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.single(script,environment.locale());
+            if(snapshot!=null)return loadBundle(snapshot,environment,List.of(),Map.of());
             JobDslModel model = new JobDslModel(environment,
                     new JobDefinitionBuilder(environment.jobRoot()), script);
             var configuration = CompilerSettings.create();
@@ -128,6 +130,10 @@ public final class GroovyJobLoader {
                                      DefinitionEnvironment environment) {
         java.util.Objects.requireNonNull(project, "project");
         java.util.Objects.requireNonNull(environment, "environment");
+        try {
+            var snapshot=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.project(project,environment.locale());
+            if(snapshot!=null)return loadBundle(snapshot,new DefinitionEnvironment(environment.registry(),project.root(),environment.startCwd(),environment.userMessages(),environment.locale()),project.defaultTargets(),project.defaultTargetSources());
+        }catch(IOException failure){throw new GroovyDslException("JOB_LOAD_FAILED",failure.getMessage(),failure);}
         List<CompiledProjectScript> scripts = project.entries().stream().map(entry -> new CompiledProjectScript(
                 entry.projectPath(), ProjectSourceNames.entryClassName(entry.projectPath()),
                 project.root().relativize(entry.scriptFile()).toString().replace('\\', '/'),
@@ -214,6 +220,55 @@ public final class GroovyJobLoader {
         JobDefinition definition = builder.freeze();
         models.forEach(model -> model.attachDefinition(definition));
         return definition;
+    }
+
+    /** Consume exactly these captured bytes; no filesystem source lookup during registration. */
+    public JobDefinition loadBundle(ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.Snapshot snapshot,
+                                    DefinitionEnvironment environment,List<String> defaults,Map<String,SourceLocation> defaultSources){
+        var bundle=snapshot.bundle();var config=CompilerSettings.create();
+        var compilerLoader=new GroovyClassLoader(GroovyJobLoader.class.getClassLoader(),config);
+        compilerLoader.addClasspath(snapshot.root().toString());
+        var unit=new org.codehaus.groovy.control.CompilationUnit(config,null,compilerLoader);
+        Map<String,String> names=new LinkedHashMap<>();
+        for(var source:bundle.sources().values())if(!source.sourceId().equals(bundle.settingsId())) {
+            String name=bundle.virtualName(source.sourceId());names.put(name,source.sourceId());unit.addSource(name,source.text());
+        }
+        ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleCompilation.prepare(unit,names.keySet());
+        try {unit.compile(org.codehaus.groovy.control.Phases.CLASS_GENERATION);}
+        catch(org.codehaus.groovy.control.CompilationFailedException failure){
+            SourceLocation position=new SourceLocation(snapshot.root().resolve(bundle.entries().getFirst().sourceId()).toString(),0,0);
+            if(unit.getErrorCollector().getErrors()!=null)for(Object item:unit.getErrorCollector().getErrors())
+                if(item instanceof org.codehaus.groovy.control.messages.SyntaxErrorMessage syntax){
+                    String id=names.getOrDefault(syntax.getCause().getSourceLocator(),bundle.entries().getFirst().sourceId());
+                    position=new SourceLocation(snapshot.root().resolve(id).toString(),Math.max(0,syntax.getCause().getStartLine()),Math.max(0,syntax.getCause().getStartColumn()));break;
+                }
+            String message=failure.getMessage();for(var e:names.entrySet())message=message.replace(e.getKey(),e.getValue());
+            throw new GroovyDslException("JOB_LOAD_FAILED",message,null,null,position,List.of(),failure);
+        }
+        Map<String,byte[]> bytes=new LinkedHashMap<>();for(var compiled:unit.getClasses())bytes.put(compiled.getName(),compiled.getBytes());
+        ClassLoader loader=new ClassLoader(compilerLoader){
+            @Override protected Class<?> loadClass(String name,boolean resolve)throws ClassNotFoundException{
+                if(!bytes.containsKey(name))return super.loadClass(name,resolve);
+                synchronized(getClassLoadingLock(name)){
+                    Class<?> type=findLoadedClass(name);if(type==null)type=findClass(name);if(resolve)resolveClass(type);return type;
+                }
+            }
+            @Override protected Class<?> findClass(String name)throws ClassNotFoundException{
+                byte[] data=bytes.get(name);if(data==null)throw new ClassNotFoundException(name);return defineClass(name,data,0,data.length);
+            }
+        };
+        Map<String,Class<? extends GretlScript>> scripts=new LinkedHashMap<>();
+        try {
+            for(var module:unit.getAST().getModules())for(var type:module.getClasses())if(type.isScript()) {
+                String id=names.get(module.getContext().getName());
+                if(id==null)throw new GroovyDslException("APPLY_CONTEXT","Unexpected script source: "+module.getContext().getName());
+                Class<?> compiled=Class.forName(type.getName(),false,loader);
+                if(!GretlScript.class.isAssignableFrom(compiled))throw new GroovyDslException("INVALID_SCRIPT_BASE",Messages.get(environment.locale(),"error.groovy.invalidScriptBase"));
+                scripts.put(id,compiled.asSubclass(GretlScript.class));
+            }
+        }catch(ClassNotFoundException failure){throw new GroovyDslException("JOB_LOAD_FAILED",failure.getMessage(),failure);}
+        if(scripts.size()!=names.size())throw new GroovyDslException("INVALID_SCRIPT_BASE",Messages.get(environment.locale(),"error.groovy.invalidScriptBase"));
+        return new FragmentLoadSession(bundle,snapshot.root(),environment,scripts).load(defaults,defaultSources);
     }
 
     void registerScript(Script script, JobDslModel model) {

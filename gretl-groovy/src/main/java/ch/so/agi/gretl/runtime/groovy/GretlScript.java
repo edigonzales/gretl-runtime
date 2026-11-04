@@ -130,8 +130,11 @@ public abstract class GretlScript extends Script {
         return ref;
     }
 
+    public void apply(Map<String,?> options){model().apply(options);}
+
     public void defaults(Object... taskNamesOrRefs) {
         JobDslModel model = model();
+        model.checkDefaults();
         List<String> names = new ArrayList<>();
         for (Object value : taskNamesOrRefs) {
             if (value instanceof TaskRef<?> ref) {
