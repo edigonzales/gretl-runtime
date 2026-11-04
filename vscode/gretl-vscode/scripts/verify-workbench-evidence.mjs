@@ -4,6 +4,8 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 
 const digest=text=>createHash('sha256').update(text,'utf8').digest('hex');
+// SourceText hashes original UTF-16 code units in big-endian order, including lone surrogates.
+const snapshotDigest=text=>{const bytes=Buffer.alloc(text.length*2);for(let i=0;i<text.length;i++)bytes.writeUInt16BE(text.charCodeAt(i),i*2);return createHash('sha256').update(bytes).digest('hex');};
 const identity=uri=>new URL(uri).href;
 function document(capture,uri){
  const matches=capture.documents.filter(d=>identity(d.uri)===identity(uri));
@@ -22,7 +24,7 @@ export function verifyWorkbenchEvidence(after,{uri,nodeCount,status=nodeCount===
  assert.equal(panel.version,doc.version,'EVIDENCE_PANEL_VERSION');
  const stamp=panel.context.sourceStamps.find(s=>identity(s.documentId)===identity(uri));
  assert(stamp&&stamp.version===doc.version,'EVIDENCE_STALE_SNAPSHOT');
- if(stamp.sha256)assert.equal(stamp.sha256,digest(doc.text),'EVIDENCE_SNAPSHOT_SOURCE');
+ if(stamp.sha256)assert.equal(stamp.sha256,snapshotDigest(doc.text),'EVIDENCE_SNAPSHOT_SOURCE');
  const nodes=panel.view.nodes.filter(n=>!n.hidden),ids=new Set(nodes.map(n=>n.id));
  assert.equal(ids.size,nodes.length,'EVIDENCE_DUPLICATE_NODE');
  assert.equal(nodes.length,nodeCount,'EVIDENCE_EXPECTED_NODE');

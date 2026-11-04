@@ -30,3 +30,12 @@ test('canary: foreign panels, invisible cards and a forged source digest are rej
  const stale=capture('after',2);stale.modelers[0].context.sourceStamps[0].version=1;
  assert.throws(()=>verifyWorkbenchEvidence(stale,{uri,nodeCount:2}),/EVIDENCE_STALE_SNAPSHOT/);
 });
+
+test('wire source stamps preserve UTF-16 code units independently of driver UTF-8 file hashes',()=>{
+ const observed=capture('A😀\uD800\r\n',1);
+ // Independently specified bytes: 0041 d83d de00 d800 000d 000a; no Unicode replacement.
+ observed.modelers[0].context.sourceStamps[0].sha256='9f141bc79d283b768c69dff22348e70dc40b24ae2407daf09309d0efeb069b37';
+ assert.equal(verifyWorkbenchEvidence(observed,{uri,nodeCount:2}).passed,true);
+ observed.modelers[0].context.sourceStamps[0].sha256='0'.repeat(64);
+ assert.throws(()=>verifyWorkbenchEvidence(observed,{uri,nodeCount:2}),/EVIDENCE_SNAPSHOT_SOURCE/);
+});
