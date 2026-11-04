@@ -1,0 +1,15 @@
+import {copyFile, mkdir, stat} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {readFile} from 'node:fs/promises';
+import {writeFile} from 'node:fs/promises';
+const source='/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json';
+const target='/Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/vscode/gretl-vscode/server/operations.json';
+const hash=value=>createHash('sha256').update(value).digest('hex');
+const sourceBytes=await readFile(source);
+await mkdir(target.slice(0,target.lastIndexOf('/')),{recursive:true});
+await copyFile(source,target);
+const targetBytes=await readFile(target);
+const report={source,target,sourceSha256:hash(sourceBytes),targetSha256:hash(targetBytes),identical:sourceBytes.equals(targetBytes),sourceSize:(await stat(source)).size,targetSize:(await stat(target)).size,generatedAt:new Date().toISOString()};
+await writeFile('/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/vscode-catalog-copy-result.json',JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report,null,2));
+if(!report.identical)process.exitCode=1;

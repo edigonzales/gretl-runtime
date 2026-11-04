@@ -1,0 +1,280 @@
+TAP version 13
+# Subtest: current version and buffer identity permit a native edit
+ok 1 - current version and buffer identity permit a native edit
+  ---
+  duration_ms: 1.459875
+  type: 'test'
+  ...
+# Subtest: version changes, closed/reopened same-version buffers and read-only edits fail
+ok 2 - version changes, closed/reopened same-version buffers and read-only edits fail
+  ---
+  duration_ms: 0.480083
+  type: 'test'
+  ...
+# Subtest: closed/missing sources are checked, including dependent source hashes
+ok 3 - closed/missing sources are checked, including dependent source hashes
+  ---
+  duration_ms: 0.225916
+  type: 'test'
+  ...
+# Subtest: a source opening while disk validation awaits is rejected
+ok 4 - a source opening while disk validation awaits is rejected
+  ---
+  duration_ms: 0.124709
+  type: 'test'
+  ...
+# Subtest: buffer mutation while another source is hashed is rejected
+ok 5 - buffer mutation while another source is hashed is rejected
+  ---
+  duration_ms: 0.184208
+  type: 'test'
+  ...
+# Subtest: disk guard preserves BOM/hash format, rejects symlinks and over-limit files
+ok 6 - disk guard preserves BOM/hash format, rejects symlinks and over-limit files
+  ---
+  duration_ms: 6.420542
+  type: 'test'
+  ...
+# Subtest: a vertical result port labels the free inter-card gap instead of covering the producer card
+ok 7 - a vertical result port labels the free inter-card gap instead of covering the producer card
+  ---
+  duration_ms: 0.333
+  type: 'test'
+  ...
+# Subtest: a side-by-side result routes and labels above both card rectangles, also after a drag
+ok 8 - a side-by-side result routes and labels above both card rectangles, also after a drag
+  ---
+  duration_ms: 0.104708
+  type: 'test'
+  ...
+# Subtest: late requests cannot replace a newer graph or silently follow the active editor
+ok 9 - late requests cannot replace a newer graph or silently follow the active editor
+  ---
+  duration_ms: 3.465959
+  type: 'test'
+  ...
+# Subtest: disposed panels ignore late graph responses and unregister all source/selection listeners
+ok 10 - disposed panels ignore late graph responses and unregister all source/selection listeners
+  ---
+  duration_ms: 0.571625
+  type: 'test'
+  ...
+# Subtest: two panels keep independent pinned identities and reject state or navigation from another snapshot
+ok 11 - two panels keep independent pinned identities and reject state or navigation from another snapshot
+  ---
+  duration_ms: 2.536958
+  type: 'test'
+  ...
+# Subtest: server invalidation blocks old navigation and discards a response from before restart
+ok 12 - server invalidation blocks old navigation and discards a response from before restart
+  ---
+  duration_ms: 126.891042
+  type: 'test'
+  ...
+# Subtest: workspace labels cannot escape bootstrap JSON, and another panel cannot start an analysis
+ok 13 - workspace labels cannot escape bootstrap JSON, and another panel cannot start an analysis
+  ---
+  duration_ms: 0.939875
+  type: 'test'
+  ...
+# Subtest: a revealed source range maps from its start rather than its exclusive end
+ok 14 - a revealed source range maps from its start rather than its exclusive end
+  ---
+  duration_ms: 1.504875
+  type: 'test'
+  ...
+ok 15 - read-only inspection accepts only its outstanding nonce and current snapshot, and disposal resolves it
+# Subtest: read-only inspection accepts only its outstanding nonce and current snapshot, and disposal resolves it
+  ---
+  duration_ms: 1.003708
+  type: 'test'
+  ...
+# Subtest: restored non-job custom editors share the current GRETL document incarnation before querying
+ok 16 - restored non-job custom editors share the current GRETL document incarnation before querying
+  ---
+  duration_ms: 0.699042
+  type: 'test'
+  ...
+# Subtest: two panels of the same source keep separate persisted view slots
+ok 17 - two panels of the same source keep separate persisted view slots
+  ---
+  duration_ms: 0.935208
+  type: 'test'
+  ...
+# Subtest: closing a panel cancels outstanding source navigation and cannot open a late location
+ok 18 - closing a panel cancels outstanding source navigation and cannot open a late location
+  ---
+  duration_ms: 0.796958
+  type: 'test'
+  ...
+# Subtest: a cancelled older navigation cannot mark the current graph stale
+ok 19 - a cancelled older navigation cannot mark the current graph stale
+  ---
+  duration_ms: 0.663
+  type: 'test'
+  ...
+# Subtest: semantic messages are pinned, snapshot guarded and serialize confirmations without optimistic graph changes
+ok 20 - semantic messages are pinned, snapshot guarded and serialize confirmations without optimistic graph changes
+  ---
+  duration_ms: 1.398458
+  type: 'test'
+  ...
+# Subtest: panel disposal and source invalidation cancel pending semantic edits, with no late UI resurrection
+ok 21 - panel disposal and source invalidation cancel pending semantic edits, with no late UI resurrection
+  ---
+  duration_ms: 0.717792
+  type: 'test'
+  ...
+# Subtest: a superseded catalogue request cannot repopulate a newer graph or disposed panel
+ok 22 - a superseded catalogue request cannot repopulate a newer graph or disposed panel
+  ---
+  duration_ms: 0.62225
+  type: 'test'
+  ...
+# Subtest: opening required sources consumes only a host-issued request nonce and captured workspace URIs
+ok 23 - opening required sources consumes only a host-issued request nonce and captured workspace URIs
+  ---
+  duration_ms: 0.7215
+  type: 'test'
+  ...
+# Subtest: native text undo/redo and save are scoped to the pinned document, without accepting arbitrary commands
+ok 24 - native text undo/redo and save are scoped to the pinned document, without accepting arbitrary commands
+  ---
+  duration_ms: 0.574917
+  type: 'test'
+  ...
+# Subtest: one semantic confirmation applies the entire multi-file Core plan as one native edit
+ok 25 - one semantic confirmation applies the entire multi-file Core plan as one native edit
+  ---
+  duration_ms: 1.143083
+  type: 'test'
+  ...
+# Subtest: obsolete session/snapshot and Core rejection never reach conversion or native apply
+ok 26 - obsolete session/snapshot and Core rejection never reach conversion or native apply
+  ---
+  duration_ms: 0.278
+  type: 'test'
+  ...
+# Subtest: stale server validation and cancellation after conversion preserve every source
+ok 27 - stale server validation and cancellation after conversion preserve every source
+  ---
+  duration_ms: 0.325042
+  type: 'test'
+  ...
+# Subtest: a dirty or reopened source detected after async conversion prevents the whole edit
+ok 28 - a dirty or reopened source detected after async conversion prevents the whole edit
+  ---
+  duration_ms: 0.202334
+  type: 'test'
+  ...
+# Subtest: conversion failure and rejected native apply are visible failures, never success
+ok 29 - conversion failure and rejected native apply are visible failures, never success
+  ---
+  duration_ms: 0.155041
+  type: 'test'
+  ...
+# Subtest: typed scalar/list/map/reference values preserve integers beyond Number precision
+ok 30 - typed scalar/list/map/reference values preserve integers beyond Number precision
+  ---
+  duration_ms: 0.480875
+  type: 'test'
+  ...
+# Subtest: intent envelope accepts all named Core operations and refuses source edits, extra commands and oversized structures
+ok 31 - intent envelope accepts all named Core operations and refuses source edits, extra commands and oversized structures
+  ---
+  duration_ms: 0.578542
+  type: 'test'
+  ...
+# Subtest: catalogue defaults normalize to precision-preserving protocol values
+ok 32 - catalogue defaults normalize to precision-preserving protocol values
+  ---
+  duration_ms: 0.849708
+  type: 'test'
+  ...
+# Subtest: the actual bundled catalogue supplies every operation, bounded descriptors and explicit runtime shapes
+ok 33 - the actual bundled catalogue supplies every operation, bounded descriptors and explicit runtime shapes
+  ---
+  duration_ms: 8.81425
+  type: 'test'
+  ...
+# Subtest: Core form values tolerate unused null record components but reject foreign sources, nodes and value injection
+ok 34 - Core form values tolerate unused null record components but reject foreign sources, nodes and value injection
+  ---
+  duration_ms: 0.391166
+  type: 'test'
+  ...
+# Subtest: unfinished reference selectors cannot be confirmed, and Core refusal reasons remain visible data
+ok 35 - unfinished reference selectors cannot be confirmed, and Core refusal reasons remain visible data
+  ---
+  duration_ms: 0.090458
+  type: 'test'
+  ...
+# Subtest: graph boundaries preserve labels as data, permit unanchored diagnostics and reject cycles/missing endpoints
+ok 36 - graph boundaries preserve labels as data, permit unanchored diagnostics and reject cycles/missing endpoints
+  ---
+  duration_ms: 0.653625
+  type: 'test'
+  ...
+# Subtest: positions survive only unique identities in the same project/document and hierarchy
+ok 37 - positions survive only unique identities in the same project/document and hierarchy
+  ---
+  duration_ms: 0.586792
+  type: 'test'
+  ...
+# Subtest: view state rejects nonfinite positions and invalid zoom; reads never share mutable state
+ok 38 - view state rejects nonfinite positions and invalid zoom; reads never share mutable state
+  ---
+  duration_ms: 0.229959
+  type: 'test'
+  ...
+# Subtest: message channel rejects another panel, URI/command injection and extra fields
+ok 39 - message channel rejects another panel, URI/command injection and extra fields
+  ---
+  duration_ms: 0.189125
+  type: 'test'
+  ...
+# Subtest: older request/layout results and disposed panels cannot be accepted
+ok 40 - older request/layout results and disposed panels cannot be accepted
+  ---
+  duration_ms: 0.060834
+  type: 'test'
+  ...
+# Subtest: one completed drag has one view entry even when two stop callbacks persist the same state
+ok 41 - one completed drag has one view entry even when two stop callbacks persist the same state
+  ---
+  duration_ms: 0.896917
+  type: 'test'
+  ...
+# Subtest: view undo/redo copies data and never exposes stored history to a mutable draft
+ok 42 - view undo/redo copies data and never exposes stored history to a mutable draft
+  ---
+  duration_ms: 0.142625
+  type: 'test'
+  ...
+# Subtest: project identity resets history, a new gesture discards redo, and history remains bounded
+ok 43 - project identity resets history, a new gesture discards redo, and history remains bounded
+  ---
+  duration_ms: 0.38625
+  type: 'test'
+  ...
+# Subtest: gesture persistence observes final React Flow state after stop callbacks and coalesces duplicate stops
+ok 44 - gesture persistence observes final React Flow state after stop callbacks and coalesces duplicate stops
+  ---
+  duration_ms: 0.19975
+  type: 'test'
+  ...
+# Subtest: a stale snapshot or disposed view cancels a scheduled gesture commit
+ok 45 - a stale snapshot or disposed view cancels a scheduled gesture commit
+  ---
+  duration_ms: 0.107917
+  type: 'test'
+  ...
+1..45
+# tests 45
+# suites 0
+# pass 45
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 286.437083

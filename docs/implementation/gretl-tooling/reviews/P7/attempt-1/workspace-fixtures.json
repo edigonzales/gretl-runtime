@@ -1,0 +1,59 @@
+{
+  "root": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space",
+  "files": [
+    {
+      "name": "transitive job/job.groovy",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/transitive job/job.groovy",
+      "size": 355,
+      "text": "task('producer', HttpDownload) {\n    url = 'https://example.invalid/a.zip'\n    output = workPath('archive.zip')\n}\naction('bridge', dependsOn: 'producer') { println 'not executed' }\ntask('consumer', Extract, dependsOn: [ 'bridge']) {\n    archive = result('producer').file\n    compression = 'ZIP'\n    outputDirectory = workPath('out')\n}\ndefaults 'consumer'\n"
+    },
+    {
+      "name": "preservation project/job.groovy",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/preservation project/job.groovy",
+      "size": 596,
+      "text": "// Keep literal download in this comment. 😀\r\nparameter('sourceUrl', description:'Archive URL', defaultValue:'https://example.invalid/a.zip')\r\ntask('download', HttpDownload) {\r\n    url=parameter('sourceUrl')\r\n    output=workPath('archive.zip')\r\n    overwrite=true // keep this field comment\r\n}\r\naction('opaque', dependsOn:'download') {\r\n    def untouched = \"preserve ${parameter('sourceUrl')} 😀\"\r\n    new File('/Users/stefan/.cache/gretl-tooling-review/P7-editor-development/must-not-execute-opaque').text = untouched\r\n    println \"nested ${[1,2].collect { it * 2 }}\"\r\n}\r\ndefaults 'opaque'\r\n"
+    },
+    {
+      "name": "preservation project/dynamic.groovy",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/preservation project/dynamic.groovy",
+      "size": 178,
+      "text": "// Static analysis only: never execute this fixture.\ndef chosen=System.getProperty('gretl.dynamic.name')\naction(chosen) { println 'dynamic' }\naction('known') { println 'known' }\n"
+    },
+    {
+      "name": "preservation project/empty.groovy",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/preservation project/empty.groovy",
+      "size": 25,
+      "text": "// No task declarations.\n"
+    },
+    {
+      "name": "preservation project/foreign.groovy",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/preservation project/foreign.groovy",
+      "size": 51,
+      "text": "class OrdinaryGroovy { String greeting = 'hello' }\n"
+    },
+    {
+      "name": "preservation project/sub/job.groovy",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/preservation project/sub/job.groovy",
+      "size": 123,
+      "text": "action('child') { ctx ->\n    ctx.run(HttpDownload) { url='https://example.invalid/child'; output=workPath('child.txt') }\n}\n"
+    },
+    {
+      "name": "generated job/job.groovy",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/generated job/job.groovy",
+      "size": 468,
+      "text": "// Created in the GRETL Modeler. 😀\nparameter('sourceUrl', description: 'Archive URL', type: 'text', required: false, defaultValue: 'https://example.invalid/archive.zip')\ntask('download', HttpDownload) {\n    url = parameter('sourceUrl')\n    output = workPath('archive.zip')\n}\ntask('extract', Extract, after: 'download', dependsOn: 'download') {\n    archive = result('download').file\n    compression = 'ZIP'\n    outputDirectory = workPath('out')\n}\ndefaults 'extract'\n"
+    },
+    {
+      "name": "generated job/native empty/job.groovy",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/generated job/native empty/job.groovy",
+      "size": 0,
+      "text": ""
+    },
+    {
+      "name": "gretl-modeler.code-workspace",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/gretl-modeler.code-workspace",
+      "size": 277,
+      "text": "{\n  \"folders\": [\n    {\n      \"name\": \"generated job\",\n      \"path\": \"generated job\"\n    },\n    {\n      \"name\": \"preservation project\",\n      \"path\": \"preservation project\"\n    },\n    {\n      \"name\": \"transitive job\",\n      \"path\": \"transitive job\"\n    }\n  ],\n  \"settings\": {}\n}"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "sourceCommit": "230e6ccb977414d6fcb5eff5798a16bb9cd6da81",
+  "sourceDirty": true,
+  "vsixSha256": "dd5bb47e8966ba22ad13a7ff9beafd6db9d2929d571b7ca4966caf0c285ccc6a",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "time": "2026-11-04T09:26:30.216Z",
+  "axSha256": "6ab000fa59a22d50a9916c45a6df6364d71de008e3256de7d75f1c17e1ea1001",
+  "screenshot": "result-port-pointer-draft.jpg",
+  "screenshotSha256": "386645d4d98fe0e35274a170a11ff8390caee9eeff4efa4d3368c25dca324b1e"
+}

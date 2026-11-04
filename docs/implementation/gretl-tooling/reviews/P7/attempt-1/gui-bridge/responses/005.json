@@ -1,0 +1,12 @@
+{
+  "id": "005",
+  "purpose": "Choose the producer output file and consumer input archive in the binding form, still without applying.",
+  "time": "2026-11-04T10:53:15.235Z",
+  "transportOnly": true,
+  "requestSha256": "b412bf8340049b285482c2210831d0b820ff8041d8d8500e8e680619a327b237",
+  "error": null,
+  "axFile": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui-bridge/responses/005.ax.txt",
+  "axSha256": "00dcd09417d47e580a32821cd6fa5106430127ad9f75f8cc0ae9a1eaa5b289ce",
+  "imageFile": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui-bridge/responses/005.jpg",
+  "imageSha256": "ea51e7aab64ec8e3f1c0476ad82dbb53924dcd21c8bc22c45eafa3d51c20c00e"
+}

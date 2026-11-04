@@ -1,0 +1,120 @@
+[INFO] Scanning for projects...
+[INFO] Loaded 24360 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] 
+[INFO] ---------------------< ch.so.agi.gretl:gretl-lsp >----------------------
+[INFO] Building gretl-lsp 6.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-lsp ---
+[INFO] 
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-lsp ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] --- enforcer:3.6.3:enforce (server-module-boundary) @ gretl-lsp ---
+[INFO] 
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-lsp ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-lsp/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-lsp ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-lsp ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 18 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-lsp ---
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-lsp ---
+[INFO] 
+[INFO] skip non existing resourceDirectory /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-lsp/src/test/resources
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [debug release 25] to target/test-classes
+[WARNING] /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java:[36,17] explicit call to close() on an auto-closeable resource
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-lsp ---
+[INFO] 
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.lsp.DiagnosticPublicationStateTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 s -- in ch.so.agi.gretl.lsp.DiagnosticPublicationStateTest
+[INFO] Running ch.so.agi.gretl.lsp.HostSchedulingTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.386 s -- in ch.so.agi.gretl.lsp.HostSchedulingTest
+[INFO] Running ch.so.agi.gretl.lsp.HostBoundaryTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in ch.so.agi.gretl.lsp.HostBoundaryTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- antrun:3.1.0:run (custom-protocol-schema) @ gretl-lsp ---
+[INFO] Executing tasks
+[INFO]      [exec] TAP version 13
+[INFO]      [exec] ok 2 - schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests
+[INFO]      [exec] # Subtest: schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: versioned custom requests accept typed data and exact 64-bit scalar strings
+[INFO]      [exec] ok 1 - versioned custom requests accept typed data and exact 64-bit scalar strings
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1.672667
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.28825
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] 1..2
+[INFO]      [exec] # tests 2
+[INFO]      [exec] # pass 2
+[INFO]      [exec] # suites 0
+[INFO]      [exec] # skipped 0
+[INFO]      [exec] # cancelled 0
+[INFO]      [exec] # fail 0
+[INFO]      [exec] # duration_ms 74.776209
+[INFO]      [exec] # todo 0
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-lsp ---
+[INFO] Building jar: /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- assembly:3.7.1:single (standalone-server) @ gretl-lsp ---
+[INFO] Building jar: /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar
+[INFO] 
+[INFO] --- failsafe:3.6.0:integration-test (default) @ gretl-lsp ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.lsp.ServerProcessIT
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.377 s -- in ch.so.agi.gretl.lsp.ServerProcessIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-lsp ---
+[INFO] Loading execution data file /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-lsp/target/jacoco.exec
+[INFO] Analyzed bundle 'gretl-lsp' with 40 classes
+[INFO] 
+[INFO] --- failsafe:3.6.0:verify (default) @ gretl-lsp ---
+[INFO] 
+[INFO] --- dependency:3.11.0:tree (server-production-graph) @ gretl-lsp ---
+[INFO] Wrote dependency tree to: /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-lsp/target/tooling-dependencies.json
+[INFO] 
+[INFO] --- antrun:3.1.0:run (server-bundle-boundary) @ gretl-lsp ---
+[INFO] Executing tasks
+[INFO]      [exec] Independent server production graph and executable data bundle verified
+[INFO] Executed tasks
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  11.647 s
+[INFO] Finished at: 2026-11-04T11:44:39+01:00
+[INFO] ------------------------------------------------------------------------

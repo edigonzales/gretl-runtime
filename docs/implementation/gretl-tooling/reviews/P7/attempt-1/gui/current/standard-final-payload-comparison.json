@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "candidateSha": "53f7f3daaf92d002fd75978c25471321fd99a310",
+  "standardVsixSha256": "c270ea15209811f3bc84b5ea4c5b329bf1bde7cad49af2d60a2ce11bd10f7075",
+  "finalVsixSha256": "33998c625a87e8f9e32f9c3d8a82cee0b897666be11f2902fb13a4c7cd7af257",
+  "allPayloadDigestsIdentical": false,
+  "allClientPayloadDigestsIdentical": true,
+  "changedPayloads": [
+    "server/catalog-manifest.json",
+    "server/gretl-lsp.jar"
+  ],
+  "serverEffectiveContentComparison": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/standard-final-server-content-comparison.json",
+  "serverSha256": "f6acda578e81d806da9a016bdfdad00c67ee35a2640bfee21daa4845f63d0465",
+  "bundleManifestIdentical": false
+}

@@ -1,0 +1,12 @@
+{
+  "id": "001",
+  "purpose": "Open the new transitive counterprobe fixture in the installed final candidate and open its GRETL Modeler without editing source.",
+  "time": "2026-11-04T10:47:13.894Z",
+  "transportOnly": true,
+  "requestSha256": "59f12a9b3c8c1a5da8f0c47f8680fd2dec647dd98f6a40affa8f431b0d3b806b",
+  "error": null,
+  "axFile": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui-bridge/responses/001.ax.txt",
+  "axSha256": "f431b862951acd4dbc700ce8f7f0ed8f2127d8da1915cb6f5c7fe8c15b7b2783",
+  "imageFile": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui-bridge/responses/001.jpg",
+  "imageSha256": "3ab6d9309f3ed61cf0c6762df384e616128f676b36cd00a560b0564cdb0b7f4a"
+}

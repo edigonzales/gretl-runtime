@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-11-04T10:56:51.628Z",
+  "file": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/transitive job/counterprobe.groovy",
+  "sha256": "18f103d10a606a5a144e5f7f3741021c161af717c0a87a60d21e36b07a2dadb2",
+  "size": 374,
+  "text": "task('producer', HttpDownload) {\n    url = 'https://example.invalid/a.zip'\n    output = workPath('archive.zip')\n}\naction('bridge', dependsOn: 'producer') { println 'not executed' }\ntask('consumer', Extract, after: 'producer', dependsOn: [ 'bridge']) {\n    archive = result('producer').file\n    compression = 'ZIP'\n    outputDirectory = workPath('out')\n}\ndefaults 'consumer'\n",
+  "header": "task('consumer', Extract, after: 'producer', dependsOn: [ 'bridge']) {",
+  "checks": {
+    "resultReference": true,
+    "placeholderRemoved": true,
+    "afterPreserved": true,
+    "transitiveDependencyPreserved": true,
+    "noDirectProducerDependency": true,
+    "noDuplicateResultReference": true,
+    "opaqueActionPreserved": true,
+    "defaultTargetPreserved": true
+  },
+  "passed": true
+}

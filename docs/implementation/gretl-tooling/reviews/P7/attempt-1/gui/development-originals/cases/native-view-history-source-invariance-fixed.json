@@ -1,0 +1,14 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "installedArtifact": "0c9062ae757bc2473ee4cd6169a7e3574182c30b123f7339ac07a4e801cdf745",
+  "passed": true,
+  "captures": [
+    "buffers-1793784996772.json",
+    "buffers-1793785021495.json",
+    "buffers-1793785024867.json",
+    "buffers-1793785028285.json"
+  ],
+  "sourceInvariant": true,
+  "undoRestoresAllPositionsAndViewport": true,
+  "redoRestoresDraggedPositionsAndViewport": true
+}

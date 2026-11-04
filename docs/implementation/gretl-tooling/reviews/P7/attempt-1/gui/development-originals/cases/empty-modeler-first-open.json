@@ -1,0 +1,11 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "sourceCommit": "230e6ccb977414d6fcb5eff5798a16bb9cd6da81",
+  "sourceDirty": true,
+  "vsixSha256": "dd5bb47e8966ba22ad13a7ff9beafd6db9d2929d571b7ca4966caf0c285ccc6a",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "time": "2026-11-04T09:23:03.476Z",
+  "axSha256": "002e383a69ff15b896426ce4164496366768c11af5c90874c472b1e08df340cf",
+  "screenshot": "empty-modeler-first-open.jpg",
+  "screenshotSha256": "02673d34dcff55c8a17a70c5b5397ea9e30c20c830a177d15714ce139f424ef6"
+}

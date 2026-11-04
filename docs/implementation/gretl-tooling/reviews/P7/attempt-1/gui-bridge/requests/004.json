@@ -1,0 +1,23 @@
+{
+  "id": "004",
+  "purpose": "Resolve the producer menu item unambiguously and select the consumer, still without source changes.",
+  "actions": [
+    {
+      "kind": "click",
+      "label": "producer",
+      "occurrence": 0
+    },
+    {
+      "kind": "click",
+      "label": "pop up button Description: Consumer"
+    },
+    {
+      "kind": "click",
+      "label": "consumer",
+      "occurrence": 0
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

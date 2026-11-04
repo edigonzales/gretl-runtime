@@ -1,0 +1,2707 @@
+[INFO] Scanning for projects...
+[INFO] Loaded 24360 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] GRETL Runtime Parent                                               [pom]
+[INFO] gretl-language-contract                                            [jar]
+[INFO] gretl-tooling-core                                                 [jar]
+[INFO] GRETL Runtime API                                                  [jar]
+[INFO] GRETL Runtime Localization                                         [jar]
+[INFO] GRETL Runtime Runner                                               [jar]
+[INFO] GRETL IO Tasks                                                     [jar]
+[INFO] GRETL Database Tasks                                               [jar]
+[INFO] GRETL INTERLIS format tasks                                        [jar]
+[INFO] GRETL IliValidator Task                                            [jar]
+[INFO] gretl-tooling-catalog                                              [jar]
+[INFO] gretl-lsp                                                          [jar]
+[INFO] gretl-vscode                                                       [pom]
+[INFO] GRETL Runtime Groovy Adapter                                       [jar]
+[INFO] GRETL Runtime Logging                                              [jar]
+[INFO] GRETL Job Packager                                                 [jar]
+[INFO] GRETL Packaged Job Runtime                                         [jar]
+[INFO] GRETL Runtime CLI                                                  [jar]
+[INFO] GRETL FileSize example extension                                   [jar]
+[INFO] GRETL Runtime Script Distribution                                  [jar]
+[INFO] GRETL Runtime Backing-Service Integration Tests                    [jar]
+[INFO] 
+[INFO] ----------------< ch.so.agi.gretl:gretl-runtime-parent >----------------
+[INFO] Building GRETL Runtime Parent 6.0.0-SNAPSHOT                      [1/21]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-runtime-parent ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-runtime-parent ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-runtime-parent ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-runtime-parent ---
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-runtime-parent ---
+[INFO] Skipping JaCoCo execution due to missing execution data file.
+[INFO] 
+[INFO] --------------< ch.so.agi.gretl:gretl-language-contract >---------------
+[INFO] Building gretl-language-contract 6.0.0-SNAPSHOT                   [2/21]
+[INFO]   from gretl-language-contract/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-language-contract ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-language-contract/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-language-contract ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-language-contract ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-language-contract ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-language-contract ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-language-contract/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-language-contract ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-language-contract/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-language-contract ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 3 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-language-contract ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-language-contract/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-language-contract ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-language-contract ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.language.ProjectNameRulesTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in ch.so.agi.gretl.language.ProjectNameRulesTest
+[INFO] Running ch.so.agi.gretl.language.PlanSemanticsTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.079 s -- in ch.so.agi.gretl.language.PlanSemanticsTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-language-contract ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-language-contract ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-language-contract/target/jacoco.exec
+[INFO] Analyzed bundle 'gretl-language-contract' with 13 classes
+[INFO] 
+[INFO] --- dependency:3.11.0:tree (tooling-production-graph) @ gretl-language-contract ---
+[INFO] Wrote dependency tree to: /Users/stefan/sources/gretl-runtime/gretl-language-contract/target/tooling-dependencies.json
+[INFO] 
+[INFO] -----------------< ch.so.agi.gretl:gretl-tooling-core >-----------------
+[INFO] Building gretl-tooling-core 6.0.0-SNAPSHOT                        [3/21]
+[INFO]   from gretl-tooling-core/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-tooling-core ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-tooling-core/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-tooling-core ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-tooling-core ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-tooling-core ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-tooling-core ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-tooling-core/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-tooling-core ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-tooling-core ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 73 source files with javac [debug release 25] to target/classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/catalog/CatalogJsonCodec.java:[19,13] disable(com.fasterxml.jackson.databind.MapperFeature...) in com.fasterxml.jackson.databind.ObjectMapper has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/SourceValueWriter.java:[75,5] documentation comment is not attached to any declaration
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/GretlAstExtractor.java:[167,51] getVariable() in org.codehaus.groovy.ast.stmt.ForStatement has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/GretlAstExtractor.java:[167,79] FOR_LOOP_DUMMY in org.codehaus.groovy.ast.stmt.ForStatement has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/GretlAstExtractor.java:[167,199] getVariable() in org.codehaus.groovy.ast.stmt.ForStatement has been deprecated
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-tooling-core ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-tooling-core/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-tooling-core ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 28 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-tooling-core ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.tooling.workspace.AnalysisSchedulerTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.409 s -- in ch.so.agi.gretl.tooling.workspace.AnalysisSchedulerTest
+[INFO] Running ch.so.agi.gretl.tooling.workspace.WorkspaceManagerTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in ch.so.agi.gretl.tooling.workspace.WorkspaceManagerTest
+[INFO] Running ch.so.agi.gretl.tooling.workspace.FileSourceRepositoryTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in ch.so.agi.gretl.tooling.workspace.FileSourceRepositoryTest
+[INFO] Running ch.so.agi.gretl.tooling.workspace.SourceViewTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in ch.so.agi.gretl.tooling.workspace.SourceViewTest
+[INFO] Running ch.so.agi.gretl.tooling.workspace.DocumentStoreTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in ch.so.agi.gretl.tooling.workspace.DocumentStoreTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.SourceValueWriterTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in ch.so.agi.gretl.tooling.edit.SourceValueWriterTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.TokenNavigationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in ch.so.agi.gretl.tooling.edit.TokenNavigationTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.FieldSourceEditsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.147 s -- in ch.so.agi.gretl.tooling.edit.FieldSourceEditsTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.DeclarationSourceEditsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in ch.so.agi.gretl.tooling.edit.DeclarationSourceEditsTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.HeaderSourceEditsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.055 s -- in ch.so.agi.gretl.tooling.edit.HeaderSourceEditsTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.SemanticEditPlannerTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.097 s -- in ch.so.agi.gretl.tooling.edit.SemanticEditPlannerTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.EditVerifierTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in ch.so.agi.gretl.tooling.edit.EditVerifierTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.TargetPreviewProjectorTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in ch.so.agi.gretl.tooling.edit.TargetPreviewProjectorTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.EditabilityAnalyzerTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in ch.so.agi.gretl.tooling.edit.EditabilityAnalyzerTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.SourceEditBuilderTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in ch.so.agi.gretl.tooling.edit.SourceEditBuilderTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.GraphFormProjectorTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in ch.so.agi.gretl.tooling.edit.GraphFormProjectorTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.SupplementalSourcesTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in ch.so.agi.gretl.tooling.edit.SupplementalSourcesTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.SnapshotNavigationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in ch.so.agi.gretl.tooling.edit.SnapshotNavigationTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.LanguageFeatureQueriesTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in ch.so.agi.gretl.tooling.edit.LanguageFeatureQueriesTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.JobGraphProjectorTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in ch.so.agi.gretl.tooling.edit.JobGraphProjectorTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.DefaultsSourceEditsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in ch.so.agi.gretl.tooling.edit.DefaultsSourceEditsTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.DependencySourceEditsTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.068 s -- in ch.so.agi.gretl.tooling.edit.DependencySourceEditsTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.ReferenceSourceEditsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.039 s -- in ch.so.agi.gretl.tooling.edit.ReferenceSourceEditsTest
+[INFO] Running ch.so.agi.gretl.tooling.semantic.ProjectAnalyzerTest
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.152 s -- in ch.so.agi.gretl.tooling.semantic.ProjectAnalyzerTest
+[INFO] Running ch.so.agi.gretl.tooling.syntax.ParseBoundsAndCoordinatesTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.064 s -- in ch.so.agi.gretl.tooling.syntax.ParseBoundsAndCoordinatesTest
+[INFO] Running ch.so.agi.gretl.tooling.syntax.ParserAdversarialTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.074 s -- in ch.so.agi.gretl.tooling.syntax.ParserAdversarialTest
+[INFO] Running ch.so.agi.gretl.tooling.syntax.RecoveryAndLiteralContractTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.038 s -- in ch.so.agi.gretl.tooling.syntax.RecoveryAndLiteralContractTest
+[INFO] Running ch.so.agi.gretl.tooling.syntax.GretlDocumentParserTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in ch.so.agi.gretl.tooling.syntax.GretlDocumentParserTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 157, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- antrun:3.1.0:run (tooling-review-contracts) @ gretl-tooling-core ---
+[INFO] Executing tasks
+[INFO]      [exec] 
+[INFO]      [exec] added 5 packages in 282ms
+[INFO]      [exec] TAP version 13
+[INFO]      [exec] # Subtest: synthetic structural fixture is accepted only after all external conditions
+[INFO]      [exec] ok 1 - synthetic structural fixture is accepted only after all external conditions
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.681292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects sha
+[INFO]      [exec] ok 2 - gate rejects sha
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.574333
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects phase
+[INFO]      [exec] ok 3 - gate rejects phase
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.186291
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects criteria
+[INFO]      [exec] ok 4 - gate rejects criteria
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1.169792
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects duplicate
+[INFO]      [exec] ok 5 - gate rejects duplicate
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.153
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects digest
+[INFO]      [exec] ok 6 - gate rejects digest
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.587917
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects running
+[INFO]      [exec] ok 7 - gate rejects running
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.165583
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects children
+[INFO]      [exec] ok 8 - gate rejects children
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.140417
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects modified
+[INFO]      [exec] ok 9 - gate rejects modified
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.286375
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects prefilled
+[INFO]      [exec] ok 10 - gate rejects prefilled
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.351708
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects exit
+[INFO]      [exec] ok 11 - gate rejects exit
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.178167
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects timeout
+[INFO]      [exec] ok 12 - gate rejects timeout
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.106917
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects provider
+[INFO]      [exec] ok 13 - gate rejects provider
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.100292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects counterprobe
+[INFO]      [exec] ok 14 - gate rejects counterprobe
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.091042
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects missing
+[INFO]      [exec] ok 15 - gate rejects missing
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.092167
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects evidence
+[INFO]      [exec] ok 16 - gate rejects evidence
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.149292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects skipped
+[INFO]      [exec] ok 17 - gate rejects skipped
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.185917
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects zeroTests
+[INFO]      [exec] ok 18 - gate rejects zeroTests
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1.725208
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects report
+[INFO]      [exec] ok 19 - gate rejects report
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.110416
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects unverified
+[INFO]      [exec] ok 20 - gate rejects unverified
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.094542
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects finding
+[INFO]      [exec] ok 21 - gate rejects finding
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.091
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects extra
+[INFO]      [exec] ok 22 - gate rejects extra
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.093
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: later phase cannot omit actual GUI or cumulative counterprobes
+[INFO]      [exec] ok 23 - later phase cannot omit actual GUI or cumulative counterprobes
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.201875
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: model identity forbids fallback, stale mapping and endpoint changes
+[INFO]      [exec] ok 24 - model identity forbids fallback, stale mapping and endpoint changes
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.281291
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: resolved dependency guard detects production leaks while permitting test parity
+[INFO]      [exec] ok 25 - resolved dependency guard detects production leaks while permitting test parity
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.153
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: registry compares all 81 exact requirements and captures stable digest
+[INFO]      [exec] ok 26 - registry compares all 81 exact requirements and captures stable digest
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.24525
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: review profile is scoped and does not grant general shell or product edits
+[INFO]      [exec] ok 27 - review profile is scoped and does not grant general shell or product edits
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.1045
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: wait drains both streams and detects actual timeout
+[INFO]      [exec] ok 28 - wait drains both streams and detects actual timeout
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 126.584667
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: inactive profile reports are preserved separately and cannot inflate fresh counts
+[INFO]      [exec] ok 29 - inactive profile reports are preserved separately and cannot inflate fresh counts
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 3.639042
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: pre-clean archival snapshots deliberately preserve every existing report
+[INFO]      [exec] ok 30 - pre-clean archival snapshots deliberately preserve every existing report
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.238916
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate validation rejects inflated counts, stale metadata and changed raw XML
+[INFO]      [exec] ok 31 - gate validation rejects inflated counts, stale metadata and changed raw XML
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 3.210042
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: only old reports cannot qualify a new successful gate
+[INFO]      [exec] ok 32 - only old reports cannot qualify a new successful gate
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.16375
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] 1..32
+[INFO]      [exec] # tests 32
+[INFO]      [exec] # suites 0
+[INFO]      [exec] # pass 32
+[INFO]      [exec] # fail 0
+[INFO]      [exec] # cancelled 0
+[INFO]      [exec] # skipped 0
+[INFO]      [exec] # todo 0
+[INFO]      [exec] # duration_ms 237.233875
+[INFO]      [exec] Validated 81 exact criteria
+[INFO]      [exec] Tooling documentation links and requirement inputs valid
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-tooling-core ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-tooling-core ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-tooling-core/target/jacoco.exec
+[INFO] Analyzed bundle 'gretl-tooling-core' with 204 classes
+[INFO] 
+[INFO] --- dependency:3.11.0:tree (tooling-production-graph) @ gretl-tooling-core ---
+[INFO] Wrote dependency tree to: /Users/stefan/sources/gretl-runtime/gretl-tooling-core/target/tooling-dependencies.json
+[INFO] 
+[INFO] ---------------------< ch.so.agi.gretl:gretl-api >----------------------
+[INFO] Building GRETL Runtime API 6.0.0-SNAPSHOT                         [4/21]
+[INFO]   from gretl-api/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-api ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-api/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-api ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-api ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-api ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-api ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-api/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-api ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-api/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-api ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 29 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-api ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-api/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-api ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 3 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-api ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.runtime.api.ApiIsolationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in ch.so.agi.gretl.runtime.api.ApiIsolationTest
+[INFO] Running ch.so.agi.gretl.runtime.api.ApiRuntimeTypesTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in ch.so.agi.gretl.runtime.api.ApiRuntimeTypesTest
+[INFO] Running ch.so.agi.gretl.runtime.api.ApiMetadataTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in ch.so.agi.gretl.runtime.api.ApiMetadataTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-api ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-api/target/gretl-api-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-api ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-api/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Runtime API' with 18 classes
+[INFO] 
+[INFO] ---------------------< ch.so.agi.gretl:gretl-i18n >---------------------
+[INFO] Building GRETL Runtime Localization 6.0.0-SNAPSHOT                [5/21]
+[INFO]   from gretl-i18n/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-i18n ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-i18n/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-i18n ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-i18n ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-i18n ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-i18n/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-i18n ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-i18n ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 2 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-i18n ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-i18n/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-i18n ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-i18n ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.i18n.LocaleSelectionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in ch.so.agi.gretl.i18n.LocaleSelectionTest
+[INFO] Running ch.so.agi.gretl.i18n.MessagesTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in ch.so.agi.gretl.i18n.MessagesTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-i18n ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-i18n/target/gretl-i18n-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-i18n ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-i18n/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Runtime Localization' with 2 classes
+[INFO] 
+[INFO] --------------------< ch.so.agi.gretl:gretl-runner >--------------------
+[INFO] Building GRETL Runtime Runner 6.0.0-SNAPSHOT                      [6/21]
+[INFO]   from gretl-runner/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-runner ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-runner/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-runner ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-runner ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-runner ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-runner ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-runner/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-runner ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-runner/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-runner ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 67 source files with javac [debug release 25] to target/classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-runner/src/main/java/ch/so/agi/gretl/runtime/runner/FailureArbiter.java:[95,32] java.lang.ThreadDeath in java.lang has been deprecated and marked for removal
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-runner/src/main/java/ch/so/agi/gretl/runtime/runner/OperationInvoker.java:[44,18] auto-closeable resource invocationScope is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-runner/src/main/java/ch/so/agi/gretl/runtime/runner/SequentialJobRunner.java:[66,18] auto-closeable resource runScope is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-runner/src/main/java/ch/so/agi/gretl/runtime/runner/SequentialJobRunner.java:[219,18] auto-closeable resource taskScope is never referenced in body of corresponding try statement
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-runner ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-runner ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 32 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-runner ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.runtime.runner.WorkspacePlatformTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.066 s -- in ch.so.agi.gretl.runtime.runner.WorkspacePlatformTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.JobDefinitionBuilderTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in ch.so.agi.gretl.runtime.runner.JobDefinitionBuilderTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.LoggingScopeTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in ch.so.agi.gretl.runtime.runner.LoggingScopeTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.ContextAccessTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in ch.so.agi.gretl.runtime.runner.ContextAccessTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.WorkspaceOwnershipTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in ch.so.agi.gretl.runtime.runner.WorkspaceOwnershipTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.ExecutionPlannerTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in ch.so.agi.gretl.runtime.runner.ExecutionPlannerTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.FailureArbiterTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in ch.so.agi.gretl.runtime.runner.FailureArbiterTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.RunnerSourceMappingTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in ch.so.agi.gretl.runtime.runner.RunnerSourceMappingTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.CloseStackTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in ch.so.agi.gretl.runtime.runner.CloseStackTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.ParameterResolverTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in ch.so.agi.gretl.runtime.runner.ParameterResolverTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.OperationRegistryTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in ch.so.agi.gretl.runtime.runner.OperationRegistryTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.FailureInfoTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in ch.so.agi.gretl.runtime.runner.FailureInfoTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.WorkspacePreparationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.039 s -- in ch.so.agi.gretl.runtime.runner.WorkspacePreparationTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.ResultStoreTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in ch.so.agi.gretl.runtime.runner.ResultStoreTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.SourceLocatedFailureTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in ch.so.agi.gretl.runtime.runner.SourceLocatedFailureTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.ScopedControlTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in ch.so.agi.gretl.runtime.runner.ScopedControlTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.WorkPathOwnershipTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in ch.so.agi.gretl.runtime.runner.WorkPathOwnershipTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.SetupFailureTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in ch.so.agi.gretl.runtime.runner.SetupFailureTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.OperationInvocationRunnerTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in ch.so.agi.gretl.runtime.runner.OperationInvocationRunnerTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.StartBoundaryTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in ch.so.agi.gretl.runtime.runner.StartBoundaryTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.WorkspaceRetentionTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in ch.so.agi.gretl.runtime.runner.WorkspaceRetentionTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.ProjectParameterNamesTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in ch.so.agi.gretl.runtime.runner.ProjectParameterNamesTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.BudgetPrecedenceTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in ch.so.agi.gretl.runtime.runner.BudgetPrecedenceTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.SequentialJobRunnerTest
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in ch.so.agi.gretl.runtime.runner.SequentialJobRunnerTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.RunControlTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in ch.so.agi.gretl.runtime.runner.RunControlTest
+[INFO] Running ch.so.agi.gretl.runtime.runner.LocalBudgetRegressionTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in ch.so.agi.gretl.runtime.runner.LocalBudgetRegressionTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 191, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-runner ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-runner/target/gretl-runner-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-runner ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-runner/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Runtime Runner' with 84 classes
+[INFO] 
+[INFO] -------------------< ch.so.agi.gretl:gretl-io-tasks >-------------------
+[INFO] Building GRETL IO Tasks 6.0.0-SNAPSHOT                            [7/21]
+[INFO]   from gretl-io-tasks/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-io-tasks ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-io-tasks/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-io-tasks ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-io-tasks ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-io-tasks ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-io-tasks ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-io-tasks/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-io-tasks ---
+[INFO] Copying 4 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-io-tasks ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 29 source files with javac [debug release 25] to target/classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-io-tasks/src/main/java/ch/so/agi/gretl/tasks/io/archive/GzipTaskException.java:[4,14] serializable class ch.so.agi.gretl.tasks.io.archive.GzipTaskException has no definition of serialVersionUID
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-io-tasks/src/main/java/ch/so/agi/gretl/tasks/io/ftp/FtpTaskException.java:[4,14] serializable class ch.so.agi.gretl.tasks.io.ftp.FtpTaskException has no definition of serialVersionUID
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-io-tasks/src/main/java/ch/so/agi/gretl/tasks/io/http/CurlTaskException.java:[4,14] serializable class ch.so.agi.gretl.tasks.io.http.CurlTaskException has no definition of serialVersionUID
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-io-tasks/src/main/java/ch/so/agi/gretl/tasks/io/s3/S3TaskException.java:[4,14] serializable class ch.so.agi.gretl.tasks.io.s3.S3TaskException has no definition of serialVersionUID
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-io-tasks/src/main/java/ch/so/agi/gretl/tasks/io/xslt/XslTransformerOperation.java:[327,21] setURIResolver(javax.xml.transform.URIResolver) in net.sf.saxon.s9api.XsltCompiler has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-io-tasks/src/main/java/ch/so/agi/gretl/tasks/io/xslt/XsltTaskException.java:[4,14] serializable class ch.so.agi.gretl.tasks.io.xslt.XsltTaskException has no definition of serialVersionUID
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-io-tasks ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-io-tasks ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 12 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-io-tasks ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.tasks.io.ftp.FtpOperationTest
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.394 s -- in ch.so.agi.gretl.tasks.io.ftp.FtpOperationTest
+[INFO] Running ch.so.agi.gretl.tasks.io.s3.S3OperationTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in ch.so.agi.gretl.tasks.io.s3.S3OperationTest
+[INFO] Running ch.so.agi.gretl.tasks.io.archive.ExtractOperationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.060 s -- in ch.so.agi.gretl.tasks.io.archive.ExtractOperationTest
+[INFO] Running ch.so.agi.gretl.tasks.io.archive.GzipOperationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in ch.so.agi.gretl.tasks.io.archive.GzipOperationTest
+[INFO] Running ch.so.agi.gretl.tasks.io.IoTaskProviderTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.050 s -- in ch.so.agi.gretl.tasks.io.IoTaskProviderTest
+[INFO] Running ch.so.agi.gretl.tasks.io.IoTransferCatalogTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in ch.so.agi.gretl.tasks.io.IoTransferCatalogTest
+[INFO] Running ch.so.agi.gretl.tasks.io.http.CurlOperationTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.148 s -- in ch.so.agi.gretl.tasks.io.http.CurlOperationTest
+[INFO] Running ch.so.agi.gretl.tasks.io.http.HttpDownloadOperationTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in ch.so.agi.gretl.tasks.io.http.HttpDownloadOperationTest
+[INFO] Running ch.so.agi.gretl.tasks.io.xslt.XslTransformerOperationTest
+Error on line 1 column 7 of invalid.xml:
+  SXXP0003   Error reported by XML parser: XML document structures must start and end within
+  the same entity.: XML document structures must start and end within the same entity.
+Error on line 2 column 10 of xxe.xml:
+  SXXP0003   Error reported by XML parser: DOCTYPE is disallowed when the feature
+  "http://apache.org/xml/features/disallow-doctype-decl" set to true.: DOCTYPE is disallowed
+  when the feature "http://apache.org/xml/features/disallow-doctype-decl" set to true.
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.457 s -- in ch.so.agi.gretl.tasks.io.xslt.XslTransformerOperationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 54, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-io-tasks ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-io-tasks/target/gretl-io-tasks-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-io-tasks ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-io-tasks/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL IO Tasks' with 88 classes
+[INFO] 
+[INFO] ----------------< ch.so.agi.gretl:gretl-database-tasks >----------------
+[INFO] Building GRETL Database Tasks 6.0.0-SNAPSHOT                      [8/21]
+[INFO]   from gretl-database-tasks/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-database-tasks ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-database-tasks/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-database-tasks ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-database-tasks ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-database-tasks ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-database-tasks ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-database-tasks/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-database-tasks ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-database-tasks ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 12 source files with javac [debug release 25] to target/classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-database-tasks/src/main/java/ch/so/agi/gretl/tasks/database/Db2DbTaskException.java:[4,14] serializable class ch.so.agi.gretl.tasks.database.Db2DbTaskException has no definition of serialVersionUID
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-database-tasks/src/main/java/ch/so/agi/gretl/tasks/database/DuckDbTaskException.java:[4,14] serializable class ch.so.agi.gretl.tasks.database.DuckDbTaskException has no definition of serialVersionUID
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-database-tasks ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-database-tasks/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-database-tasks ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 6 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-database-tasks ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.tasks.database.DuckDbSqlExecutorOperationTest
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.duckdb.DuckDBNative in an unnamed module (file:/Users/stefan/.m2/repository/org/duckdb/duckdb_jdbc/1.5.2.0/duckdb_jdbc-1.5.2.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.466 s -- in ch.so.agi.gretl.tasks.database.DuckDbSqlExecutorOperationTest
+[INFO] Running ch.so.agi.gretl.tasks.database.SqlExecutorOperationTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.525 s -- in ch.so.agi.gretl.tasks.database.SqlExecutorOperationTest
+[INFO] Running ch.so.agi.gretl.tasks.database.StaticSqlTemplateParityTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.255 s -- in ch.so.agi.gretl.tasks.database.StaticSqlTemplateParityTest
+[INFO] Running ch.so.agi.gretl.tasks.database.DatabaseTaskProviderTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in ch.so.agi.gretl.tasks.database.DatabaseTaskProviderTest
+[INFO] Running ch.so.agi.gretl.tasks.database.Db2DbOperationTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in ch.so.agi.gretl.tasks.database.Db2DbOperationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-database-tasks ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-database-tasks/target/gretl-database-tasks-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-database-tasks ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-database-tasks/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Database Tasks' with 34 classes
+[INFO] 
+[INFO] ----------------< ch.so.agi.gretl:gretl-interlis-tasks >----------------
+[INFO] Building GRETL INTERLIS format tasks 6.0.0-SNAPSHOT               [9/21]
+[INFO]   from gretl-interlis-tasks/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] Could not transfer metadata /.meta/prefixes.txt from/to jvnet-nexus-releases (https://maven.java.net/content/repositories/releases/): (certificate_expired) PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-interlis-tasks ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-interlis-tasks ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-interlis-tasks ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-interlis-tasks ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-interlis-tasks ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-interlis-tasks ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-interlis-tasks ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 71 source files with javac [debug release 25] to target/classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/InterlisTaskException.java:[7,14] serializable class ch.so.agi.gretl.internal.InterlisTaskException has no definition of serialVersionUID
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/InterlisTaskException.java:[10,34] non-transient instance field of a serializable class declared with a non-serializable type
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/av/Av2geobauEngine.java:[82,52] ch.interlis.ili2c.gui.UserSettings in ch.interlis.ili2c.gui has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/av/Av2geobauEngine.java:[85,52] ch.interlis.ili2c.gui.UserSettings in ch.interlis.ili2c.gui has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ili2db/Ili2DbExecutionSupport.java:[130,85] setStrokeArcs(java.lang.String) in ch.ehi.ili2db.gui.Config has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ili2db/Ili2DbExecutionSupport.java:[137,44] ch.interlis.ili2c.gui.UserSettings in ch.interlis.ili2c.gui has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ili2db/Ili2DbExecutionSupport.java:[138,48] ch.interlis.ili2c.gui.UserSettings in ch.interlis.ili2c.gui has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ili2db/Ili2DbExecutionSupport.java:[181,73] setCreateEnumColAsItfCode(java.lang.String) in ch.ehi.ili2db.gui.Config has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ili2db/Ili2DbFlavor.java:[27,19] setStrokeArcs(java.lang.String) in ch.ehi.ili2db.gui.Config has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/ioxwkf/Csv2ExcelEngine.java:[148,56] runCompiler(ch.interlis.ili2c.config.Configuration) in ch.interlis.ili2c.Ili2c has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/shapefile/ShapefileMappingException.java:[15,8] serializable class ch.so.agi.gretl.internal.shapefile.ShapefileMappingException has no definition of serialVersionUID
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/validation/InterlisValidationSupport.java:[122,52] ch.interlis.ili2c.gui.UserSettings in ch.interlis.ili2c.gui has been deprecated
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/src/main/java/ch/so/agi/gretl/internal/validation/InterlisValidationSupport.java:[126,52] ch.interlis.ili2c.gui.UserSettings in ch.interlis.ili2c.gui has been deprecated
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-interlis-tasks ---
+[INFO] Copying 28 resources from src/test/resources to target/test-classes
+[INFO] Copying 1 resource from src/standard-functions/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-interlis-tasks ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 12 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-interlis-tasks ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.tasks.interlis.AvOperationsTest
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:/Users/stefan/.m2/repository/org/xerial/sqlite-jdbc/3.53.2.0/sqlite-jdbc-3.53.2.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Info: av2geobau-1.4.2-a787bbeacd141b3888936c473dc04bdd395a3e72
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: maxMemory 6291456 KB
+Info: itfFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf>
+Info: dxfFile </var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-909139079612620116/dxf/empty.dxf>
+Info: ilidirs <%ITF_DIR;http://models.interlis.ch/;%JAR_DIR/ilimodels>
+Info: lookup model <DM01AVCH24LV95D> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/>
+Info: lookup model <DM01AVCH24LV95D> in repository <http://models.interlis.ch/>
+Info: lookup model <DM01AVCH24LV95D> in repository <http://models.geo.admin.ch/>
+Info: ilifile </Users/stefan/.ilicache/models.geo.admin.ch/V_D/DM.01-AV-CH_LV95_24d_ili1.ili>
+Info: convert data...
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Bezirksgrenzen BID=itf11
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Bodenbedeckung BID=itf3
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Einzelobjekte BID=itf4
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.FixpunkteKategorie1 BID=itf0
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.FixpunkteKategorie2 BID=itf1
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.FixpunkteKategorie3 BID=itf2
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Gebaeudeadressen BID=itf18
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Gemeindegrenzen BID=itf10
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Hoehen BID=itf5
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Kantonsgrenzen BID=itf12
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Landesgrenzen BID=itf13
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Liegenschaften BID=itf7
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Nomenklatur BID=itf6
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Nummerierungsbereiche BID=itf9
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.PLZOrtschaft BID=itf17
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Planeinteilungen BID=itf14
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Planrahmen BID=itf19
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Rohrleitungen BID=itf8
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.Rutschgebiete BID=itf16
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/av/empty.itf: DM01AVCH24LV95D.TSEinteilung BID=itf15
+Info: ...conversion done
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.518 s -- in ch.so.agi.gretl.tasks.interlis.AvOperationsTest
+[INFO] Running ch.so.agi.gretl.tasks.interlis.InterlisValidatorTest
+Info: ilivalidator-1.15.0-27cd81fb0d0ef2103e7afd673a7d00dd2053763f
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: User <stefan>
+Info: Start date 2026-11-04 11:17
+Info: maxMemory 6291456 KB
+Info: dataFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidator/data.shp>
+Info: modeldir </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidator>
+Info: modelNames <ShpModel>
+Info: failed to get version from data file; ch.interlis.iox.IoxException: no reader found; ignored
+Info: lookup model <ShpModel> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidator/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidator/ShpModel.ili>
+Info: validate data...
+Info: assume unknown external objects
+Info: first validation pass...
+Info: second validation pass...
+Info: object count 2 (structured elements 0)
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidator/data.shp: ShpModel.Topic12 BID=b1 fileVersion=026d20b7e95e4feeb80b067ac62d68ac
+Info:       2 objects in CLASS ShpModel.Topic12.Class1
+Info: ...validation done
+Info: End date 2026-11-04 11:17 validation took 00h:00m:00s.0048ms
+Info: ilivalidator-1.15.0-27cd81fb0d0ef2103e7afd673a7d00dd2053763f
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: User <stefan>
+Info: Start date 2026-11-04 11:17
+Info: maxMemory 6291456 KB
+Info: dataFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidatorFail/data.shp>
+Info: modeldir </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidatorFail>
+Info: modelNames <ShpModel>
+Info: failed to get version from data file; ch.interlis.iox.IoxException: no reader found; ignored
+Info: lookup model <ShpModel> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidatorFail/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidatorFail/ShpModel.ili>
+Info: validate data...
+Info: assume unknown external objects
+Info: first validation pass...
+value rot is not a member of the enumeration in attribute aenum
+Attribute aint requires a value
+Attribute adec requires a value
+Attribute atext requires a value
+Attribute aenum requires a value
+Attribute adate requires a value
+Attribute the_geom requires a value
+Info: second validation pass...
+Info: object count 2 (structured elements 0)
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/ShpValidatorFail/data.shp: ShpModel.Topic12 BID=b1 fileVersion=026d20b7e95e4feeb80b067ac62d68ac
+Info:       2 objects in CLASS ShpModel.Topic12.Class1
+Info: ...validation failed
+Info: End date 2026-11-04 11:17 validation took 00h:00m:00s.0006ms
+Info: ilivalidator-1.15.0-27cd81fb0d0ef2103e7afd673a7d00dd2053763f
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: User <stefan>
+Info: Start date 2026-11-04 11:17
+Info: maxMemory 6291456 KB
+Info: dataFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidatorFail/dataFail.csv>
+Info: modeldir </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidatorFail>
+Info: modelNames <CsvModel>
+Info: lookup model <CsvModel> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidatorFail/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidatorFail/CsvModel.ili>
+Info: validate data...
+Info: assume unknown external objects
+Info: first validation pass...
+attributes of headerrecord: [a1, x, gruen] not found in iliModel: CsvModel
+Info: ...validation failed
+Info: End date 2026-11-04 11:17 validation took 00h:00m:00s.0000ms
+Info: ilivalidator-1.15.0-27cd81fb0d0ef2103e7afd673a7d00dd2053763f
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: User <stefan>
+Info: Start date 2026-11-04 11:17
+Info: maxMemory 6291456 KB
+Info: dataFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidator/data1.csv>
+Info: modeldir </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidator>
+Info: modelNames <CsvModel>
+Info: lookup model <CsvModel> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidator/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidator/CsvModel.ili>
+Info: validate data...
+Info: assume unknown external objects
+Info: first validation pass...
+Info: second validation pass...
+Info: object count 2 (structured elements 0)
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidator/data1.csv: CsvModel.Topic12 BID=b1 fileVersion=8f234936f74ee6cf5c5909ff02d6753d
+Info:       2 objects in CLASS CsvModel.Topic12.Class1
+Info: ...validation done
+Info: End date 2026-11-04 11:17 validation took 00h:00m:00s.0003ms
+Info: ilivalidator-1.15.0-27cd81fb0d0ef2103e7afd673a7d00dd2053763f
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: User <stefan>
+Info: Start date 2026-11-04 11:17
+Info: maxMemory 6291456 KB
+Info: dataFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidatorFail/dataFail.csv>
+Info: modeldir </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidatorFail>
+Info: modelNames <CsvModel>
+Info: lookup model <CsvModel> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidatorFail/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidatorFail/CsvModel.ili>
+Info: validate data...
+Info: assume unknown external objects
+Info: first validation pass...
+value <x> is not a number in attribute attr2
+value gruen is not a member of the enumeration in attribute attr3
+Info: second validation pass...
+Info: object count 1 (structured elements 0)
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/CsvValidatorFail/dataFail.csv: CsvModel.Topic12 BID=b1 fileVersion=af29f338e13a5e3942410b721b74d3a1
+Info:       1 objects in CLASS CsvModel.Topic12.Class1
+Info: ...validation failed
+Info: End date 2026-11-04 11:17 validation took 00h:00m:00s.0003ms
+Info: ilivalidator-1.15.0-27cd81fb0d0ef2103e7afd673a7d00dd2053763f
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: User <stefan>
+Info: Start date 2026-11-04 11:17
+Info: maxMemory 6291456 KB
+Info: dataFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidator/attributes.gpkg>
+Info: modeldir </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidator>
+Info: modelNames <GpkgModel>
+Info: failed to get version from data file; ch.interlis.iox.IoxException: no reader found; ignored
+Info: lookup model <GpkgModel> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidator/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidator/GpkgModelAttrs.ili>
+Info: validate data...
+Info: assume unknown external objects
+Info: validate simple boundaries
+Info: first validation pass...
+Info: second validation pass...
+Info: object count 1 (structured elements 0)
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidator/attributes.gpkg: GpkgModel.Topic1 BID=b1 fileVersion=40e2f8888753af7fc25d371213ad8c31
+Info:       1 objects in CLASS GpkgModel.Topic1.Attributes
+Info: ...validation done
+Info: End date 2026-11-04 11:17 validation took 00h:00m:00s.0030ms
+Info: ilivalidator-1.15.0-27cd81fb0d0ef2103e7afd673a7d00dd2053763f
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: User <stefan>
+Info: Start date 2026-11-04 11:17
+Info: maxMemory 6291456 KB
+Info: dataFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidatorFail/attributes.gpkg>
+Info: modeldir </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidatorFail>
+Info: modelNames <GpkgModel>
+Info: failed to get version from data file; ch.interlis.iox.IoxException: no reader found; ignored
+Info: lookup model <GpkgModel> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidatorFail/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidatorFail/GpkgModelAttrs.ili>
+Info: validate data...
+Info: assume unknown external objects
+Info: validate simple boundaries
+Info: first validation pass...
+value 0 is out of range in attribute art
+value <true> is not a number in attribute aboolean
+Info: second validation pass...
+Info: object count 1 (structured elements 0)
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/GpkgValidatorFail/attributes.gpkg: GpkgModel.Topic1 BID=b1 fileVersion=40e2f8888753af7fc25d371213ad8c31
+Info:       1 objects in CLASS GpkgModel.Topic1.Attributes
+Info: ...validation failed
+Info: End date 2026-11-04 11:17 validation took 00h:00m:00s.0005ms
+Info: ilivalidator-1.15.0-27cd81fb0d0ef2103e7afd673a7d00dd2053763f
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: User <stefan>
+Info: Start date 2026-11-04 11:17
+Info: maxMemory 6291456 KB
+Info: dataFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorOk/structAttrList.json>
+Info: modeldir </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorOk>
+Info: modelNames <Test2>
+Info: failed to get version from data file; ch.interlis.iox.IoxException: no reader found; ignored
+Info: lookup model <Test2> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorOk/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorOk/Test2.ili>
+Info: validate data...
+Info: assume unknown external objects
+Info: validate simple boundaries
+Info: first validation pass...
+Info: second validation pass...
+Info: object count 1 (structured elements 3)
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorOk/structAttrList.json: Test2.Topic2 BID=b1 fileVersion=9b14af1c1557bb12776a7ac10b390623
+Info:       1 objects in CLASS Test2.Topic2.ClassA
+Info: ...validation done
+Info: End date 2026-11-04 11:17 validation took 00h:00m:00s.0099ms
+Info: ilivalidator-1.15.0-27cd81fb0d0ef2103e7afd673a7d00dd2053763f
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: User <stefan>
+Info: Start date 2026-11-04 11:17
+Info: maxMemory 6291456 KB
+Info: dataFile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorFail/structAttrList.json>
+Info: modeldir </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorFail>
+Info: modelNames <Test2>
+Info: failed to get version from data file; ch.interlis.iox.IoxException: no reader found; ignored
+Info: lookup model <Test2> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorFail/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorFail/Test2.ili>
+Info: validate data...
+Info: assume unknown external objects
+Info: validate simple boundaries
+Info: first validation pass...
+Attribute attrStruct[0]/attrText is length restricted to 3
+Attribute attrBag[1]/attrText is length restricted to 3
+Attribute attrTextList[0] is length restricted to 5
+Attribute attrStruct[0]/attrText is length restricted to 3
+Attribute attrBag[1]/attrText is length restricted to 3
+Attribute attrTextList[0] is length restricted to 5
+Info: second validation pass...
+Info: validate AREA Test2.Topic2.ClassA.attrSurface...
+Overlay coord1 (2460000.500, 1045000.000), coord2 (2460001.000, 1045000.000), tids o1, o2
+Intersection coord1 (2460000.500, 1045000.000), tids o1, o2
+Intersection coord1 (2460001.000, 1045000.000), tids o1, o2
+failed to validate AREA Test2.Topic2.ClassA.attrSurface
+Info: object count 2 (structured elements 6)
+Info: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/iox-wkf/JsonValidatorFail/structAttrList.json: Test2.Topic2 BID=b1 fileVersion=fe87331c4dcdce2b96d3f711f6340981
+Info:       2 objects in CLASS Test2.Topic2.ClassA
+Info: ...validation failed
+Info: End date 2026-11-04 11:17 validation took 00h:00m:00s.0023ms
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.265 s -- in ch.so.agi.gretl.tasks.interlis.InterlisValidatorTest
+[INFO] Running ch.so.agi.gretl.tasks.interlis.Ili2DbFileTest
+Info: dburl <jdbc:duckdb:/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-14873965511102367909/test.duckdb>
+Info: dbusr <>
+Info: ili2duckdb-5.5.1-2ee4413c5be30411a59b684e351729d2e5d8dffd
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: user.name <stefan>
+Info: maxMemory 6291456 KB
+Info: currentTime 2026-11-04 11:17:26
+Info: dburl <jdbc:duckdb:/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-14873965511102367909/test.duckdb>
+Info: dbusr <>
+Info: databaseProduct <DuckDB>
+Info: databaseVersion <v1.5.2>
+Info: driverName <DuckDBJ>
+Info: driverVersion <1.0>
+Info: max active DB statements <0>
+Info: compile models...
+Info: lookup model <Beispiel2> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/interlis/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/interlis/Beispiel2.ili>
+Info: create table structure, if not existing...
+Info: ...done
+Info: dburl <jdbc:duckdb:/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-14873965511102367909/test.duckdb>
+Info: dbusr <>
+Info: ili2duckdb-5.5.1-2ee4413c5be30411a59b684e351729d2e5d8dffd
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: user.name <stefan>
+Info: maxMemory 6291456 KB
+Info: currentTime 2026-11-04 11:17:26
+Info: dburl <jdbc:duckdb:/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-14873965511102367909/test.duckdb>
+Info: dbusr <>
+Info: databaseProduct <DuckDB>
+Info: databaseVersion <v1.5.2>
+Info: driverName <DuckDBJ>
+Info: driverVersion <1.0>
+Info: max active DB statements <0>
+Info: compile models...
+Info: lookup model <Beispiel2> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/interlis/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/interlis/Beispiel2.ili>
+Info: process data file...
+Info: assume unknown external objects
+Info: data </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/interlis/Beispiel2a.xtf>
+Info: first validation pass...
+Info: Basket Beispiel2.Bodenbedeckung(oid b1)...
+Info: object count 5
+Info: second validation pass...
+Info: validate multiplicity of role Beispiel2.Bodenbedeckung.GebaeudeArt2.Gebaeude...
+Info: validate multiplicity of role Beispiel2.Bodenbedeckung.GebaeudeFlaeche.Gebaeude...
+Info: Beispiel2a.xtf: Beispiel2.Bodenbedeckung BID=b1
+Info:       2 objects in CLASS Beispiel2.Bodenbedeckung.BoFlaechen
+Info:       3 objects in CLASS Beispiel2.Bodenbedeckung.GebaeudeArt
+Info: ...import done
+Info: dburl <jdbc:duckdb:/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-14873965511102367909/test.duckdb>
+Info: dbusr <>
+Info: ili2duckdb-5.5.1-2ee4413c5be30411a59b684e351729d2e5d8dffd
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: user.name <stefan>
+Info: maxMemory 6291456 KB
+Info: currentTime 2026-11-04 11:17:26
+Info: dburl <jdbc:duckdb:/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-14873965511102367909/test.duckdb>
+Info: dbusr <>
+Info: databaseProduct <DuckDB>
+Info: databaseVersion <v1.5.2>
+Info: driverName <DuckDBJ>
+Info: driverVersion <1.0>
+Info: max active DB statements <0>
+Info: compile models...
+Info: lookup model <Beispiel2> in repository <jdbc:duckdb:/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-14873965511102367909/test.duckdb/>
+Info: ilifile </Users/stefan/.ilicache/jdbc&003aduckdb&003a/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-14873965511102367909/test.duckdb/Beispiel2.ili>
+Info: process data...
+Info: data </var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-14873965511102367909/out.xtf>
+Info: assume unknown external objects
+Info: first validation pass...
+Info: Beispiel2.Bodenbedeckung BID <2>...
+Info: Beispiel2.Bodenbedeckung.GebaeudeArt...
+Info: Beispiel2.Bodenbedeckung.BoFlaechen...
+Info: Beispiel2.Bodenbedeckung.Gebaeude...
+Info: second validation pass...
+Info: validate multiplicity of role Beispiel2.Bodenbedeckung.GebaeudeArt2.Gebaeude...
+Info: validate multiplicity of role Beispiel2.Bodenbedeckung.GebaeudeFlaeche.Gebaeude...
+Info: out.xtf: Beispiel2.Bodenbedeckung BID=2
+Info:       2 objects in CLASS Beispiel2.Bodenbedeckung.BoFlaechen
+Info:       3 objects in CLASS Beispiel2.Bodenbedeckung.GebaeudeArt
+Info: ...export done
+Info: dburl <jdbc:sqlite:/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-17430117011055976929/test.gpkg>
+Info: dbusr <>
+Info: ili2gpkg-5.5.1-2ee4413c5be30411a59b684e351729d2e5d8dffd
+Info: ili2c-5.6.8-e6f7ab6dd5cdba29afc9b24866ecb98c057d82b2
+Info: iox-ili-1.24.4-8e966a086a72e7e2990a312b1229ee5878fd5994
+Info: java.version 25.0.2
+Info: user.name <stefan>
+Info: maxMemory 6291456 KB
+Info: currentTime 2026-11-04 11:17:27
+Info: dburl <jdbc:sqlite:/var/folders/0z/1lwhf37x0h9858xcm889mbz80000gn/T/junit-17430117011055976929/test.gpkg>
+Info: dbusr <>
+Info: databaseProduct <SQLite>
+Info: databaseVersion <3.53.2>
+Info: driverName <SQLite JDBC>
+Info: driverVersion <3.53.2.0>
+Info: max active DB statements <0>
+Info: compile models...
+Info: lookup model <Beispiel2> in repository </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/interlis/>
+Info: ilifile </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/interlis/Beispiel2.ili>
+Info: create table structure, if not existing...
+Info: process data file...
+Info: assume unknown external objects
+Info: data </Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/test-classes/fixtures/interlis/Beispiel2a.xtf>
+Info: first validation pass...
+Info: Basket Beispiel2.Bodenbedeckung(oid b1)...
+Info: object count 5
+Info: second validation pass...
+Info: validate multiplicity of role Beispiel2.Bodenbedeckung.GebaeudeArt2.Gebaeude...
+Info: validate multiplicity of role Beispiel2.Bodenbedeckung.GebaeudeFlaeche.Gebaeude...
+Info: Beispiel2a.xtf: Beispiel2.Bodenbedeckung BID=b1
+Info:       2 objects in CLASS Beispiel2.Bodenbedeckung.BoFlaechen
+Info:       3 objects in CLASS Beispiel2.Bodenbedeckung.GebaeudeArt
+Info: ...import done
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.495 s -- in ch.so.agi.gretl.tasks.interlis.Ili2DbFileTest
+[INFO] Running ch.so.agi.gretl.tasks.interlis.InterlisTaskProviderTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in ch.so.agi.gretl.tasks.interlis.InterlisTaskProviderTest
+[INFO] Running ch.so.agi.gretl.tasks.interlis.ModelSearchPathTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in ch.so.agi.gretl.tasks.interlis.ModelSearchPathTest
+[INFO] Running ch.so.agi.gretl.internal.shapefile.NativeShapefileTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in ch.so.agi.gretl.internal.shapefile.NativeShapefileTest
+[INFO] Running ch.so.agi.gretl.internal.ili2db.Ili2DbDatasetNamesTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in ch.so.agi.gretl.internal.ili2db.Ili2DbDatasetNamesTest
+[INFO] Running ch.so.agi.gretl.internal.ioxwkf.Csv2ExcelEngineTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.277 s -- in ch.so.agi.gretl.internal.ioxwkf.Csv2ExcelEngineTest
+[INFO] Running ch.so.agi.gretl.internal.ioxwkf.Gpkg2ShpEngineTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.083 s -- in ch.so.agi.gretl.internal.ioxwkf.Gpkg2ShpEngineTest
+[INFO] Running ch.so.agi.gretl.internal.ioxwkf.CsvReaderProbeTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in ch.so.agi.gretl.internal.ioxwkf.CsvReaderProbeTest
+[INFO] Running ch.so.agi.gretl.internal.validation.ValidationFunctionsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in ch.so.agi.gretl.internal.validation.ValidationFunctionsTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.11.0:build-classpath (independent-validator-runtime-classpath) @ gretl-interlis-tasks ---
+[INFO] Wrote classpath file '/Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/runtime-classpath.txt'.
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-interlis-tasks ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/gretl-interlis-tasks-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jar:3.5.1:jar (standard-validation-function-selection) @ gretl-interlis-tasks ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/gretl-interlis-tasks-6.0.0-SNAPSHOT-standard-functions.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-interlis-tasks ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL INTERLIS format tasks' with 146 classes
+[INFO] 
+[INFO] -----------------< ch.so.agi.gretl:gretl-ilivalidator >-----------------
+[INFO] Building GRETL IliValidator Task 6.0.0-SNAPSHOT                  [10/21]
+[INFO]   from gretl-ilivalidator/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-ilivalidator ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-ilivalidator/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-ilivalidator ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-ilivalidator ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-ilivalidator ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-ilivalidator ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-ilivalidator/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-ilivalidator ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-ilivalidator ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 4 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-ilivalidator ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-ilivalidator/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-ilivalidator ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-ilivalidator ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.tasks.ilivalidator.IliValidatorOperationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.203 s -- in ch.so.agi.gretl.tasks.ilivalidator.IliValidatorOperationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-ilivalidator ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-ilivalidator/target/gretl-ilivalidator-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-ilivalidator ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-ilivalidator/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL IliValidator Task' with 9 classes
+[INFO] 
+[INFO] ---------------< ch.so.agi.gretl:gretl-tooling-catalog >----------------
+[INFO] Building gretl-tooling-catalog 6.0.0-SNAPSHOT                    [11/21]
+[INFO]   from gretl-tooling-catalog/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-tooling-catalog ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-tooling-catalog/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-tooling-catalog ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-tooling-catalog ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-tooling-catalog ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-tooling-catalog/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-tooling-catalog ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-tooling-catalog/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-tooling-catalog ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 3 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- antrun:3.1.0:run (export-operation-catalog) @ gretl-tooling-catalog ---
+[INFO] Executing tasks
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-tooling-catalog ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-tooling-catalog/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-tooling-catalog ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-tooling-catalog ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.tooling.catalog.OperationCatalogExporterTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.556 s -- in ch.so.agi.gretl.tooling.catalog.OperationCatalogExporterTest
+[INFO] Running ch.so.agi.gretl.tooling.catalog.CatalogSemanticParityTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.431 s -- in ch.so.agi.gretl.tooling.catalog.CatalogSemanticParityTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-tooling-catalog ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jar:3.5.1:jar (data-only-catalog) @ gretl-tooling-catalog ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-tooling-catalog ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-tooling-catalog/target/jacoco.exec
+[INFO] Analyzed bundle 'gretl-tooling-catalog' with 5 classes
+[INFO] 
+[INFO] --- antrun:3.1.0:run (verify-tooling-artifacts) @ gretl-tooling-catalog ---
+[INFO] Executing tasks
+[INFO]      [exec] Resolved tooling production graphs and actual archives verified
+[INFO] Executed tasks
+[INFO] 
+[INFO] ---------------------< ch.so.agi.gretl:gretl-lsp >----------------------
+[INFO] Building gretl-lsp 6.0.0-SNAPSHOT                                [12/21]
+[INFO]   from gretl-lsp/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-lsp ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-lsp/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-lsp ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-lsp ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (server-module-boundary) @ gretl-lsp ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-lsp ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-lsp/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-lsp ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-lsp ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 18 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-lsp ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-lsp/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-lsp ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [debug release 25] to target/test-classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java:[36,17] explicit call to close() on an auto-closeable resource
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-lsp ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.lsp.DiagnosticPublicationStateTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.039 s -- in ch.so.agi.gretl.lsp.DiagnosticPublicationStateTest
+[INFO] Running ch.so.agi.gretl.lsp.HostSchedulingTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.450 s -- in ch.so.agi.gretl.lsp.HostSchedulingTest
+[INFO] Running ch.so.agi.gretl.lsp.HostBoundaryTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in ch.so.agi.gretl.lsp.HostBoundaryTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- antrun:3.1.0:run (custom-protocol-schema) @ gretl-lsp ---
+[INFO] Executing tasks
+[INFO]      [exec] TAP version 13
+[INFO]      [exec] # Subtest: versioned custom requests accept typed data and exact 64-bit scalar strings
+[INFO]      [exec] ok 1 - versioned custom requests accept typed data and exact 64-bit scalar strings
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1.775792
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests
+[INFO]      [exec] ok 2 - schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.31425
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] 1..2
+[INFO]      [exec] # tests 2
+[INFO]      [exec] # suites 0
+[INFO]      [exec] # pass 2
+[INFO]      [exec] # fail 0
+[INFO]      [exec] # cancelled 0
+[INFO]      [exec] # skipped 0
+[INFO]      [exec] # todo 0
+[INFO]      [exec] # duration_ms 88.283666
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-lsp ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- assembly:3.7.1:single (standalone-server) @ gretl-lsp ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar
+[INFO] 
+[INFO] --- failsafe:3.6.0:integration-test (default) @ gretl-lsp ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.lsp.ServerProcessIT
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.228 s -- in ch.so.agi.gretl.lsp.ServerProcessIT
+[INFO] Running ch.so.agi.gretl.lsp.ServerArchiveIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.936 s -- in ch.so.agi.gretl.lsp.ServerArchiveIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-lsp ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-lsp/target/jacoco.exec
+[INFO] Analyzed bundle 'gretl-lsp' with 40 classes
+[INFO] 
+[INFO] --- failsafe:3.6.0:verify (default) @ gretl-lsp ---
+[INFO] 
+[INFO] --- dependency:3.11.0:tree (server-production-graph) @ gretl-lsp ---
+[INFO] Wrote dependency tree to: /Users/stefan/sources/gretl-runtime/gretl-lsp/target/tooling-dependencies.json
+[INFO] 
+[INFO] --- antrun:3.1.0:run (server-bundle-boundary) @ gretl-lsp ---
+[INFO] Executing tasks
+[INFO]      [exec] Independent server production graph and executable data bundle verified
+[INFO] Executed tasks
+[INFO] 
+[INFO] --------------------< ch.so.agi.gretl:gretl-vscode >--------------------
+[INFO] Building gretl-vscode 6.0.0-SNAPSHOT                             [13/21]
+[INFO]   from vscode/gretl-vscode/pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-vscode ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/vscode/gretl-vscode/target
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/vscode/gretl-vscode/dist
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/vscode/gretl-vscode/server
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-vscode ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-vscode ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-vscode ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/vscode/gretl-vscode/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- antrun:3.1.0:run (extension-locked-dependencies) @ gretl-vscode ---
+[INFO] Executing tasks
+[INFO]      [exec] 
+[INFO]      [exec] added 188 packages, and audited 189 packages in 2s
+[INFO]      [exec] 
+[INFO]      [exec] 52 packages are looking for funding
+[INFO]      [exec]   run `npm fund` for details
+[INFO]      [exec] 
+[INFO]      [exec] found 0 vulnerabilities
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- antrun:3.1.0:run (extension-host-tests) @ gretl-vscode ---
+[INFO] Executing tasks
+[INFO]      [exec] 
+[INFO]      [exec] > gretl-runtime-vscode@0.1.0 test
+[INFO]      [exec] > node --test test/*.test.mjs
+[INFO]      [exec] 
+[INFO]      [exec] TAP version 13
+[INFO]      [exec] # Subtest: current version and buffer identity permit a native edit
+[INFO]      [exec] ok 1 - current version and buffer identity permit a native edit
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1.450958
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: version changes, closed/reopened same-version buffers and read-only edits fail
+[INFO]      [exec] ok 2 - version changes, closed/reopened same-version buffers and read-only edits fail
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.552292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: closed/missing sources are checked, including dependent source hashes
+[INFO]      [exec] ok 3 - closed/missing sources are checked, including dependent source hashes
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.23375
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: a source opening while disk validation awaits is rejected
+[INFO]      [exec] ok 4 - a source opening while disk validation awaits is rejected
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.331292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: buffer mutation while another source is hashed is rejected
+[INFO]      [exec] ok 5 - buffer mutation while another source is hashed is rejected
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.245792
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: disk guard preserves BOM/hash format, rejects symlinks and over-limit files
+[INFO]      [exec] ok 6 - disk guard preserves BOM/hash format, rejects symlinks and over-limit files
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 10.564167
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: Java output supports actual vendor formats and rejects adjacent major versions
+[INFO]      [exec] ok 7 - Java output supports actual vendor formats and rejects adjacent major versions
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.468417
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: Java preflight executes the current real Java25 and fails clearly without shell execution
+[INFO]      [exec] ok 8 - Java preflight executes the current real Java25 and fails clearly without shell execution
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 62.445041
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: source hashes preserve Java UTF16BE, BOM and unpaired surrogates
+[INFO]      [exec] ok 9 - source hashes preserve Java UTF16BE, BOM and unpaired surrogates
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.666625
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: bundle checks every resource, rejects escaping names and mismatching overrides
+[INFO]      [exec] ok 10 - bundle checks every resource, rejects escaping names and mismatching overrides
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 15.433625
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: only strict language/trust is forwarded; URI support is filesystem only
+[INFO]      [exec] ok 11 - only strict language/trust is forwarded; URI support is filesystem only
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.563833
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: manifest owns exact filenames and explicit language, never arbitrary Groovy/Gradle
+[INFO]      [exec] ok 12 - manifest owns exact filenames and explicit language, never arbitrary Groovy/Gradle
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1.64325
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: a vertical result port labels the free inter-card gap instead of covering the producer card
+[INFO]      [exec] ok 13 - a vertical result port labels the free inter-card gap instead of covering the producer card
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.709292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: a side-by-side result routes and labels above both card rectangles, also after a drag
+[INFO]      [exec] ok 14 - a side-by-side result routes and labels above both card rectangles, also after a drag
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.50325
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: late requests cannot replace a newer graph or silently follow the active editor
+[INFO]      [exec] ok 15 - late requests cannot replace a newer graph or silently follow the active editor
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 5.283583
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: disposed panels ignore late graph responses and unregister all source/selection listeners
+[INFO]      [exec] ok 16 - disposed panels ignore late graph responses and unregister all source/selection listeners
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.771334
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: two panels keep independent pinned identities and reject state or navigation from another snapshot
+[INFO]      [exec] ok 17 - two panels keep independent pinned identities and reject state or navigation from another snapshot
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1.720042
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: server invalidation blocks old navigation and discards a response from before restart
+[INFO]      [exec] ok 18 - server invalidation blocks old navigation and discards a response from before restart
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 122.912333
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: workspace labels cannot escape bootstrap JSON, and another panel cannot start an analysis
+[INFO]      [exec] ok 19 - workspace labels cannot escape bootstrap JSON, and another panel cannot start an analysis
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.506083
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: a revealed source range maps from its start rather than its exclusive end
+[INFO]      [exec] ok 20 - a revealed source range maps from its start rather than its exclusive end
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.670458
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: read-only inspection accepts only its outstanding nonce and current snapshot, and disposal resolves it
+[INFO]      [exec] ok 21 - read-only inspection accepts only its outstanding nonce and current snapshot, and disposal resolves it
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.457583
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: restored non-job custom editors share the current GRETL document incarnation before querying
+[INFO]      [exec] ok 22 - restored non-job custom editors share the current GRETL document incarnation before querying
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.453834
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: two panels of the same source keep separate persisted view slots
+[INFO]      [exec] ok 23 - two panels of the same source keep separate persisted view slots
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.876959
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: closing a panel cancels outstanding source navigation and cannot open a late location
+[INFO]      [exec] ok 24 - closing a panel cancels outstanding source navigation and cannot open a late location
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.615042
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: a cancelled older navigation cannot mark the current graph stale
+[INFO]      [exec] ok 25 - a cancelled older navigation cannot mark the current graph stale
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.492542
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: semantic messages are pinned, snapshot guarded and serialize confirmations without optimistic graph changes
+[INFO]      [exec] ok 26 - semantic messages are pinned, snapshot guarded and serialize confirmations without optimistic graph changes
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.968792
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: panel disposal and source invalidation cancel pending semantic edits, with no late UI resurrection
+[INFO]      [exec] ok 27 - panel disposal and source invalidation cancel pending semantic edits, with no late UI resurrection
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.485916
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: a superseded catalogue request cannot repopulate a newer graph or disposed panel
+[INFO]      [exec] ok 28 - a superseded catalogue request cannot repopulate a newer graph or disposed panel
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.497833
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: opening required sources consumes only a host-issued request nonce and captured workspace URIs
+[INFO]      [exec] ok 29 - opening required sources consumes only a host-issued request nonce and captured workspace URIs
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.6565
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: native text undo/redo and save are scoped to the pinned document, without accepting arbitrary commands
+[INFO]      [exec] ok 30 - native text undo/redo and save are scoped to the pinned document, without accepting arbitrary commands
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.473458
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: one semantic confirmation applies the entire multi-file Core plan as one native edit
+[INFO]      [exec] ok 31 - one semantic confirmation applies the entire multi-file Core plan as one native edit
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1.884792
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: obsolete session/snapshot and Core rejection never reach conversion or native apply
+[INFO]      [exec] ok 32 - obsolete session/snapshot and Core rejection never reach conversion or native apply
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.274458
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: stale server validation and cancellation after conversion preserve every source
+[INFO]      [exec] ok 33 - stale server validation and cancellation after conversion preserve every source
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.123709
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: a dirty or reopened source detected after async conversion prevents the whole edit
+[INFO]      [exec] ok 34 - a dirty or reopened source detected after async conversion prevents the whole edit
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.128292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: conversion failure and rejected native apply are visible failures, never success
+[INFO]      [exec] ok 35 - conversion failure and rejected native apply are visible failures, never success
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.144542
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: typed scalar/list/map/reference values preserve integers beyond Number precision
+[INFO]      [exec] ok 36 - typed scalar/list/map/reference values preserve integers beyond Number precision
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.925917
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: intent envelope accepts all named Core operations and refuses source edits, extra commands and oversized structures
+[INFO]      [exec] ok 37 - intent envelope accepts all named Core operations and refuses source edits, extra commands and oversized structures
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.480625
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: catalogue defaults normalize to precision-preserving protocol values
+[INFO]      [exec] ok 38 - catalogue defaults normalize to precision-preserving protocol values
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.764333
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: the actual bundled catalogue supplies every operation, bounded descriptors and explicit runtime shapes
+[INFO]      [exec] ok 39 - the actual bundled catalogue supplies every operation, bounded descriptors and explicit runtime shapes
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 11.407333
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: Core form values tolerate unused null record components but reject foreign sources, nodes and value injection
+[INFO]      [exec] ok 40 - Core form values tolerate unused null record components but reject foreign sources, nodes and value injection
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.351625
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: unfinished reference selectors cannot be confirmed, and Core refusal reasons remain visible data
+[INFO]      [exec] ok 41 - unfinished reference selectors cannot be confirmed, and Core refusal reasons remain visible data
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.102291
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: actual ELK in a separate worker lays out nested project nodes and preserves view-only positions
+[INFO]      [exec] ok 42 - actual ELK in a separate worker lays out nested project nodes and preserves view-only positions
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 212.64225
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: new layouts cancel the actual old worker; disposal rejects late calls instead of resurrecting workers
+[INFO]      [exec] ok 43 - new layouts cancel the actual old worker; disposal rejects late calls instead of resurrecting workers
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 74.358709
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: actual nested multi-edge job geometry keeps sibling cards separate
+[INFO]      [exec] ok 44 - actual nested multi-edge job geometry keeps sibling cards separate
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 84.556458
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: bundled worker source becomes an exact Blob resource and its object URL is revoked
+[INFO]      [exec] ok 45 - bundled worker source becomes an exact Blob resource and its object URL is revoked
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 13.378833
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: resource errors, byte limits and aborts fail closed before worker construction
+[INFO]      [exec] ok 46 - resource errors, byte limits and aborts fail closed before worker construction
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 13.887917
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: a source resource completing after panel disposal is released and cannot start a worker
+[INFO]      [exec] ok 47 - a source resource completing after panel disposal is released and cannot start a worker
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.393666
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: graph boundaries preserve labels as data, permit unanchored diagnostics and reject cycles/missing endpoints
+[INFO]      [exec] ok 48 - graph boundaries preserve labels as data, permit unanchored diagnostics and reject cycles/missing endpoints
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.629292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: positions survive only unique identities in the same project/document and hierarchy
+[INFO]      [exec] ok 49 - positions survive only unique identities in the same project/document and hierarchy
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.354833
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: view state rejects nonfinite positions and invalid zoom; reads never share mutable state
+[INFO]      [exec] ok 50 - view state rejects nonfinite positions and invalid zoom; reads never share mutable state
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.123041
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: message channel rejects another panel, URI/command injection and extra fields
+[INFO]      [exec] ok 51 - message channel rejects another panel, URI/command injection and extra fields
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.588125
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: older request/layout results and disposed panels cannot be accepted
+[INFO]      [exec] ok 52 - older request/layout results and disposed panels cannot be accepted
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.14825
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: concurrent panel saves retain separate records, remain detached and keep at most sixteen identities
+[INFO]      [exec] ok 53 - concurrent panel saves retain separate records, remain detached and keep at most sixteen identities
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 4.921375
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: corrupt stored envelopes are ignored; write failures are reported and do not poison the save queue
+[INFO]      [exec] ok 54 - corrupt stored envelopes are ignored; write failures are reported and do not poison the save queue
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.273375
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: one completed drag has one view entry even when two stop callbacks persist the same state
+[INFO]      [exec] ok 55 - one completed drag has one view entry even when two stop callbacks persist the same state
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.550584
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: view undo/redo copies data and never exposes stored history to a mutable draft
+[INFO]      [exec] ok 56 - view undo/redo copies data and never exposes stored history to a mutable draft
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.152208
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: project identity resets history, a new gesture discards redo, and history remains bounded
+[INFO]      [exec] ok 57 - project identity resets history, a new gesture discards redo, and history remains bounded
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.144833
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gesture persistence observes final React Flow state after stop callbacks and coalesces duplicate stops
+[INFO]      [exec] ok 58 - gesture persistence observes final React Flow state after stop callbacks and coalesces duplicate stops
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.103333
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: a stale snapshot or disposed view cancels a scheduled gesture commit
+[INFO]      [exec] ok 59 - a stale snapshot or disposed view cancels a scheduled gesture commit
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.056292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: owned termination ends the chosen child, preserves another process and is idempotent
+[INFO]      [exec] ok 60 - owned termination ends the chosen child, preserves another process and is idempotent
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 8.264875
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: an owned process ignoring graceful stop receives bounded forced termination
+[INFO]      [exec] ok 61 - an owned process ignoring graceful stop receives bounded forced termination
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1031.744833
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: transient content modifications are retried without caching an empty outline
+[INFO]      [exec] ok 62 - transient content modifications are retried without caching an empty outline
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.360459
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: read retries are bounded and other errors are preserved
+[INFO]      [exec] ok 63 - read retries are bounded and other errors are preserved
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.264834
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: cancelled or replaced documents and sessions cannot return stale symbols
+[INFO]      [exec] ok 64 - cancelled or replaced documents and sessions cannot return stale symbols
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.145458
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] 1..64
+[INFO]      [exec] # tests 64
+[INFO]      [exec] # suites 0
+[INFO]      [exec] # pass 64
+[INFO]      [exec] # fail 0
+[INFO]      [exec] # cancelled 0
+[INFO]      [exec] # skipped 0
+[INFO]      [exec] # todo 0
+[INFO]      [exec] # duration_ms 1309.110125
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- antrun:3.1.0:run (installed-extension-package) @ gretl-vscode ---
+[INFO] Executing tasks
+[INFO]      [exec] 
+[INFO]      [exec] > gretl-runtime-vscode@0.1.0 package
+[INFO]      [exec] > npm run check && npm run build && vsce package --no-dependencies --out dist/gretl-runtime.vsix && node scripts/inventory.mjs && node --test test/package/*.test.mjs
+[INFO]      [exec] 
+[INFO]      [exec] 
+[INFO]      [exec] > gretl-runtime-vscode@0.1.0 check
+[INFO]      [exec] > tsc --noEmit
+[INFO]      [exec] 
+[INFO]      [exec] 
+[INFO]      [exec] > gretl-runtime-vscode@0.1.0 build
+[INFO]      [exec] > node scripts/build.mjs
+[INFO]      [exec] 
+[INFO]      [exec] Built local React Flow view and actual ELK worker.
+[INFO]      [exec]  INFO  Files included in the VSIX:
+[INFO]      [exec] gretl-runtime.vsix
+[INFO]      [exec] ├─ [Content_Types].xml 
+[INFO]      [exec] ├─ extension.vsixmanifest 
+[INFO]      [exec] └─ extension/
+[INFO]      [exec]    ├─ LICENSE.txt [1.05 KB]
+[INFO]      [exec]    ├─ language-configuration.json [0.24 KB]
+[INFO]      [exec]    ├─ package.json [4.18 KB]
+[INFO]      [exec]    ├─ readme.md [6 KB]
+[INFO]      [exec]    ├─ dist/
+[INFO]      [exec]    │  ├─ extension.cjs [1012.75 KB]
+[INFO]      [exec]    │  └─ modeler/
+[INFO]      [exec]    │     ├─ elk-worker.min.js [1.56 MB]
+[INFO]      [exec]    │     ├─ view.css [23.68 KB]
+[INFO]      [exec]    │     └─ view.js [458.71 KB]
+[INFO]      [exec]    ├─ server/
+[INFO]      [exec]    │  ├─ THIRD-PARTY-NOTICES.txt [325.79 KB]
+[INFO]      [exec]    │  ├─ bundle-manifest.json [2.84 KB]
+[INFO]      [exec]    │  ├─ catalog-manifest.json [0.29 KB]
+[INFO]      [exec]    │  ├─ gretl-lsp.jar [12.66 MB]
+[INFO]      [exec]    │  ├─ gretl-protocol-v1.schema.json [7.08 KB]
+[INFO]      [exec]    │  └─ operations.json [260.12 KB]
+[INFO]      [exec]    └─ syntaxes/
+[INFO]      [exec]       ├─ LICENSE-TEXTMATE.txt [0.78 KB]
+[INFO]      [exec]       ├─ LICENSE-VSCODE.txt [1.06 KB]
+[INFO]      [exec]       ├─ PROVENANCE.json [0.73 KB]
+[INFO]      [exec]       └─ groovy.tmLanguage.json [34.98 KB]
+[INFO]      [exec] 
+[INFO]      [exec]  DONE  Packaged: dist/gretl-runtime.vsix (20 files, 12.21 MB)
+[INFO]      [exec] Verified 20 delivered VSIX entries and complete payload hashes.
+[INFO]      [exec] TAP version 13
+[INFO]      [exec] # Subtest: actual VSIX inventory binds identity, versions, catalogue, protocol and every delivered component
+[INFO]      [exec] ok 1 - actual VSIX inventory binds identity, versions, catalogue, protocol and every delivered component
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 19.467584
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: tampering with a real packaged payload fails inventory verification and emits no success inventory
+[INFO]      [exec] ok 2 - tampering with a real packaged payload fails inventory verification and emits no success inventory
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 70.300292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] 1..2
+[INFO]      [exec] # tests 2
+[INFO]      [exec] # suites 0
+[INFO]      [exec] # pass 2
+[INFO]      [exec] # fail 0
+[INFO]      [exec] # cancelled 0
+[INFO]      [exec] # skipped 0
+[INFO]      [exec] # todo 0
+[INFO]      [exec] # duration_ms 122.660584
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-vscode ---
+[INFO] Skipping JaCoCo execution due to missing execution data file.
+[INFO] 
+[INFO] --------------------< ch.so.agi.gretl:gretl-groovy >--------------------
+[INFO] Building GRETL Runtime Groovy Adapter 6.0.0-SNAPSHOT             [14/21]
+[INFO]   from gretl-groovy/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-groovy ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-groovy/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-groovy ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-groovy ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-groovy ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-groovy/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-groovy ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-groovy/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-groovy ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 25 source files with javac [debug release 25] to target/classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-groovy/src/main/java/ch/so/agi/gretl/runtime/groovy/SourceLocations.java:[72,74] java.lang.ThreadDeath in java.lang has been deprecated and marked for removal
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-groovy/src/main/java/ch/so/agi/gretl/runtime/groovy/SourceLocations.java:[77,107] java.lang.ThreadDeath in java.lang has been deprecated and marked for removal
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-groovy ---
+[INFO] Copying 32 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-groovy ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 19 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-groovy ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.runtime.groovy.GroovyLoaderTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.889 s -- in ch.so.agi.gretl.runtime.groovy.GroovyLoaderTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.StaticParsingSecurityTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.415 s -- in ch.so.agi.gretl.runtime.groovy.StaticParsingSecurityTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.GroovyResultAndInvocationTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.274 s -- in ch.so.agi.gretl.runtime.groovy.GroovyResultAndInvocationTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.ProjectSourceLocationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.104 s -- in ch.so.agi.gretl.runtime.groovy.ProjectSourceLocationTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.project.GretlProjectParserTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.208 s -- in ch.so.agi.gretl.runtime.groovy.project.GretlProjectParserTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.project.ProjectSourceNamesTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in ch.so.agi.gretl.runtime.groovy.project.ProjectSourceNamesTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.project.StaticSettingsParityTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in ch.so.agi.gretl.runtime.groovy.project.StaticSettingsParityTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.project.ProjectPathTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in ch.so.agi.gretl.runtime.groovy.project.ProjectPathTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.GroovyProjectLoaderTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.074 s -- in ch.so.agi.gretl.runtime.groovy.GroovyProjectLoaderTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.GroovyTaskConfigurationTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.131 s -- in ch.so.agi.gretl.runtime.groovy.GroovyTaskConfigurationTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.ProjectScopeTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.219 s -- in ch.so.agi.gretl.runtime.groovy.ProjectScopeTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.GroovySmokeTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in ch.so.agi.gretl.runtime.groovy.GroovySmokeTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.CompiledProjectLoaderTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in ch.so.agi.gretl.runtime.groovy.CompiledProjectLoaderTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.LanguageContractParityTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in ch.so.agi.gretl.runtime.groovy.LanguageContractParityTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.StaticSemanticsParityTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.744 s -- in ch.so.agi.gretl.runtime.groovy.StaticSemanticsParityTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.ProjectSourceFrameTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in ch.so.agi.gretl.runtime.groovy.ProjectSourceFrameTest
+[INFO] Running ch.so.agi.gretl.runtime.groovy.GroovyIsolationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in ch.so.agi.gretl.runtime.groovy.GroovyIsolationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 108, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-groovy ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-groovy/target/gretl-groovy-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-groovy ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-groovy/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Runtime Groovy Adapter' with 27 classes
+[INFO] 
+[INFO] -------------------< ch.so.agi.gretl:gretl-logging >--------------------
+[INFO] Building GRETL Runtime Logging 6.0.0-SNAPSHOT                    [15/21]
+[INFO]   from gretl-logging/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-logging ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-logging/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-logging ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-logging ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-logging ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-logging/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-logging ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-logging/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-logging ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 19 source files with javac [debug release 25] to target/classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/main/java/ch/so/agi/gretl/runtime/logging/LogbackBridge.java:[67,26] auto-closeable resource scope is never referenced in body of corresponding try statement
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-logging ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-logging ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 12 source files with javac [debug release 25] to target/test-classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/DiagnosticFilePermissionsTest.java:[26,28] auto-closeable resource ignored is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibraryScopeTest.java:[44,18] auto-closeable resource bridge is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibraryScopeTest.java:[88,18] auto-closeable resource bridge is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibraryScopeTest.java:[122,22] auto-closeable resource bridge is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[30,30] auto-closeable resource invocation is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[29,26] auto-closeable resource task is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[27,22] auto-closeable resource run is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[50,22] auto-closeable resource a is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[55,22] auto-closeable resource b is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[77,22] auto-closeable resource b is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[103,22] auto-closeable resource a is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[107,22] auto-closeable resource b is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[121,22] auto-closeable resource a is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[126,26] auto-closeable resource b is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[141,22] auto-closeable resource invocation is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[151,26] auto-closeable resource b is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[139,41] auto-closeable resource parent is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[164,22] auto-closeable resource scope is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[180,22] auto-closeable resource scope is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-logging/src/test/java/ch/so/agi/gretl/runtime/logging/LibrarySnapshotTest.java:[202,22] auto-closeable resource later is never referenced in body of corresponding try statement
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-logging ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.runtime.logging.LoggingLimitsAndBridgeTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.169 s -- in ch.so.agi.gretl.runtime.logging.LoggingLimitsAndBridgeTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.TextFormatterTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in ch.so.agi.gretl.runtime.logging.TextFormatterTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.DiagnosticFilePermissionsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in ch.so.agi.gretl.runtime.logging.DiagnosticFilePermissionsTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.RunReportWriterTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in ch.so.agi.gretl.runtime.logging.RunReportWriterTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.JsonTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in ch.so.agi.gretl.runtime.logging.JsonTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.LibraryScopeTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in ch.so.agi.gretl.runtime.logging.LibraryScopeTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.LoggingPipelineTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in ch.so.agi.gretl.runtime.logging.LoggingPipelineTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.EventJsonDiagnosticTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in ch.so.agi.gretl.runtime.logging.EventJsonDiagnosticTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.LibrarySnapshotTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in ch.so.agi.gretl.runtime.logging.LibrarySnapshotTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.RedactorTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in ch.so.agi.gretl.runtime.logging.RedactorTest
+[INFO] Running ch.so.agi.gretl.runtime.logging.CancelCauseReportTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in ch.so.agi.gretl.runtime.logging.CancelCauseReportTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-logging ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-logging/target/gretl-logging-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-logging ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-logging/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Runtime Logging' with 25 classes
+[INFO] 
+[INFO] -------------------< ch.so.agi.gretl:gretl-packager >-------------------
+[INFO] Building GRETL Job Packager 6.0.0-SNAPSHOT                       [16/21]
+[INFO]   from gretl-packager/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-packager ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-packager/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-packager ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-packager ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-packager ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-packager/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-packager ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-packager/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-packager ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 11 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-packager ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-packager/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-packager ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 8 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-packager ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.packager.PackageDescriptorTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.135 s -- in ch.so.agi.gretl.packager.PackageDescriptorTest
+[INFO] Running ch.so.agi.gretl.packager.JobPackagerResolutionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.041 s -- in ch.so.agi.gretl.packager.JobPackagerResolutionTest
+[INFO] Running ch.so.agi.gretl.packager.JobPackageBuilderTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in ch.so.agi.gretl.packager.JobPackageBuilderTest
+[INFO] Running ch.so.agi.gretl.packager.MavenArtifactResolverTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.253 s -- in ch.so.agi.gretl.packager.MavenArtifactResolverTest
+[INFO] Running ch.so.agi.gretl.packager.ProjectCompilerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.543 s -- in ch.so.agi.gretl.packager.ProjectCompilerTest
+[INFO] Running ch.so.agi.gretl.packager.JobCompilerTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.372 s -- in ch.so.agi.gretl.packager.JobCompilerTest
+[INFO] Running ch.so.agi.gretl.packager.ProjectPackageDescriptorTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in ch.so.agi.gretl.packager.ProjectPackageDescriptorTest
+[INFO] Running ch.so.agi.gretl.packager.ProjectPackageIsolationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.588 s -- in ch.so.agi.gretl.packager.ProjectPackageIsolationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-packager ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-packager/target/gretl-packager-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-packager ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-packager/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Job Packager' with 20 classes
+[INFO] 
+[INFO] -----------------< ch.so.agi.gretl:gretl-job-runtime >------------------
+[INFO] Building GRETL Packaged Job Runtime 6.0.0-SNAPSHOT               [17/21]
+[INFO]   from gretl-job-runtime/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-job-runtime ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-job-runtime/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-job-runtime ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-job-runtime ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-job-runtime ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-job-runtime ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-job-runtime/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-job-runtime ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-job-runtime/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-job-runtime ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 15 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-job-runtime ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-job-runtime/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-job-runtime ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 7 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-job-runtime ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.job.runtime.SetupCompletionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.132 s -- in ch.so.agi.gretl.job.runtime.SetupCompletionTest
+[INFO] Running ch.so.agi.gretl.job.runtime.RuntimeConfigTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in ch.so.agi.gretl.job.runtime.RuntimeConfigTest
+[INFO] Running ch.so.agi.gretl.job.runtime.ParameterFileTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in ch.so.agi.gretl.job.runtime.ParameterFileTest
+[INFO] Running ch.so.agi.gretl.job.runtime.ProjectHashTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.240 s -- in ch.so.agi.gretl.job.runtime.ProjectHashTest
+[INFO] Running ch.so.agi.gretl.job.runtime.PlanGraphRendererTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in ch.so.agi.gretl.job.runtime.PlanGraphRendererTest
+[INFO] Running ch.so.agi.gretl.job.JobResourcePreparationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in ch.so.agi.gretl.job.JobResourcePreparationTest
+[INFO] Running ch.so.agi.gretl.job.ProjectMetadataTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in ch.so.agi.gretl.job.ProjectMetadataTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 28, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-job-runtime ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-job-runtime/target/gretl-job-runtime-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-job-runtime ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-job-runtime/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Packaged Job Runtime' with 23 classes
+[INFO] 
+[INFO] ---------------------< ch.so.agi.gretl:gretl-cli >----------------------
+[INFO] Building GRETL Runtime CLI 6.0.0-SNAPSHOT                        [18/21]
+[INFO]   from gretl-cli/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-cli ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-cli/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-cli ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-cli ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-cli ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-cli/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-cli ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-cli/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-cli ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 7 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-cli ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-cli/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-cli ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 13 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-cli ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.cli.CliRunIntegrationTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.517 s -- in ch.so.agi.gretl.cli.CliRunIntegrationTest
+[INFO] Running ch.so.agi.gretl.cli.CliDuckDbIntegrationTest
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.duckdb.DuckDBNative in an unnamed module (file:/Users/stefan/.m2/repository/org/duckdb/duckdb_jdbc/1.5.2.0/duckdb_jdbc-1.5.2.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.099 s -- in ch.so.agi.gretl.cli.CliDuckDbIntegrationTest
+[INFO] Running ch.so.agi.gretl.cli.CliOptionsTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in ch.so.agi.gretl.cli.CliOptionsTest
+[INFO] Running ch.so.agi.gretl.cli.CliDefaultsAndParamsTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.068 s -- in ch.so.agi.gretl.cli.CliDefaultsAndParamsTest
+[INFO] Running ch.so.agi.gretl.cli.AsciiDocTaskRendererTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in ch.so.agi.gretl.cli.AsciiDocTaskRendererTest
+[INFO] Running ch.so.agi.gretl.cli.CliTokenCatalogTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.118 s -- in ch.so.agi.gretl.cli.CliTokenCatalogTest
+[INFO] Running ch.so.agi.gretl.cli.CliPathBasesTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in ch.so.agi.gretl.cli.CliPathBasesTest
+[INFO] Running ch.so.agi.gretl.cli.CliFailureModesTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.101 s -- in ch.so.agi.gretl.cli.CliFailureModesTest
+[INFO] Running ch.so.agi.gretl.cli.CliSqlIntegrationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.148 s -- in ch.so.agi.gretl.cli.CliSqlIntegrationTest
+[INFO] Running ch.so.agi.gretl.cli.CliProjectRunTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.255 s -- in ch.so.agi.gretl.cli.CliProjectRunTest
+[INFO] Running ch.so.agi.gretl.cli.CorrelationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in ch.so.agi.gretl.cli.CorrelationTest
+[INFO] Running ch.so.agi.gretl.cli.CliDiagnosticFormattingTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.049 s -- in ch.so.agi.gretl.cli.CliDiagnosticFormattingTest
+[INFO] Running ch.so.agi.gretl.cli.CliHelpAndDefinitionTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in ch.so.agi.gretl.cli.CliHelpAndDefinitionTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 59, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-cli ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-cli/target/gretl-cli-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-cli ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-cli/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Runtime CLI' with 8 classes
+[INFO] 
+[INFO] ------------< ch.so.agi.gretl.examples:file-size-extension >------------
+[INFO] Building GRETL FileSize example extension 6.0.0-SNAPSHOT         [19/21]
+[INFO]   from examples/file-size-extension/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ file-size-extension ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/examples/file-size-extension/target
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ file-size-extension ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ file-size-extension ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ file-size-extension ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/examples/file-size-extension/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ file-size-extension ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ file-size-extension ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ file-size-extension ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/examples/file-size-extension/target/file-size-extension-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------------------< ch.so.agi.gretl:gretl-dist >---------------------
+[INFO] Building GRETL Runtime Script Distribution 6.0.0-SNAPSHOT        [20/21]
+[INFO]   from gretl-dist/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-dist ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-dist/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-dist ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-dist ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-dist ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-dist/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-dist ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-dist/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-dist ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug release 25] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-dist ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-dist/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-dist ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-dist ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.dist.ChecksumManifestTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.060 s -- in ch.so.agi.gretl.dist.ChecksumManifestTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- dependency:3.11.0:tree (resolved-package-identities) @ gretl-dist ---
+[INFO] Wrote dependency tree to: /Users/stefan/sources/gretl-runtime/gretl-dist/target/package-resolved.json
+[INFO] 
+[INFO] --- dependency:3.11.0:tree (resolved-package-edges) @ gretl-dist ---
+[INFO] Wrote dependency tree to: /Users/stefan/sources/gretl-runtime/gretl-dist/target/package-edges.json
+[INFO] 
+[INFO] --- dependency:3.11.0:copy-dependencies (copy-runtime-dependencies) @ gretl-dist ---
+[INFO] 
+[INFO] --- dependency:3.11.0:copy (copy-task-jars) @ gretl-dist ---
+[INFO] 
+[INFO] --- resources:3.5.0:copy-resources (copy-static-distribution) @ gretl-dist ---
+[INFO] Copying 31 resources from src/main/dist to target/dist
+[INFO] 
+[INFO] --- resources:3.5.0:copy-resources (copy-filtered-inventory) @ gretl-dist ---
+[INFO] Copying 1 resource from src/main/dist to target/dist
+[INFO] 
+[INFO] --- antrun:3.1.0:run (checksums-and-launcher-mode) @ gretl-dist ---
+[INFO] Executing tasks
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-dist ---
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-dist/target/gretl-dist-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- assembly:3.7.1:single (make-distribution) @ gretl-dist ---
+[INFO] Reading assembly descriptor: src/main/assembly/dist.xml
+[INFO] Building zip: /Users/stefan/sources/gretl-runtime/gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip
+[INFO] Building tar: /Users/stefan/sources/gretl-runtime/gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz
+[WARNING] Entry: gretl-runtime-6.0.0-SNAPSHOT/lib/extensions/gretl-interlis-tasks-6.0.0-SNAPSHOT-standard-functions.jar longer than 100 characters.
+[WARNING] Resulting tar file can only be processed successfully by GNU compatible tar commands
+[INFO] 
+[INFO] --- failsafe:3.6.0:integration-test (default) @ gretl-dist ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.dist.DistributionIT
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 76.61 s -- in ch.so.agi.gretl.dist.DistributionIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-dist ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-dist/target/jacoco.exec
+[INFO] Analyzed bundle 'GRETL Runtime Script Distribution' with 2 classes
+[INFO] 
+[INFO] --- build-helper:3.6.1:attach-artifact (attach-distribution) @ gretl-dist ---
+[INFO] 
+[INFO] --- failsafe:3.6.0:verify (default) @ gretl-dist ---
+[INFO] 
+[INFO] --------------< ch.so.agi.gretl:gretl-integration-tests >---------------
+[INFO] Building GRETL Runtime Backing-Service Integration Tests 6.0.0-SNAPSHOT [21/21]
+[INFO]   from gretl-integration-tests/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gretl-integration-tests ---
+[INFO] Deleting /Users/stefan/sources/gretl-runtime/gretl-integration-tests/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-integration-tests ---
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-integration-tests ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-integration-tests ---
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/sources/gretl-runtime/gretl-integration-tests/target/jacoco.exec,append=true
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-integration-tests ---
+[INFO] skip non existing resourceDirectory /Users/stefan/sources/gretl-runtime/gretl-integration-tests/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-integration-tests ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-integration-tests ---
+[INFO] Copying 263 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-integration-tests ---
+[WARNING] I/O error reading dependency state: /Users/stefan/sources/gretl-runtime/gretl-integration-tests/target/classes: /Users/stefan/sources/gretl-runtime/gretl-integration-tests/target/classes
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 54 source files with javac [debug release 25] to target/test-classes
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/InterlisArtifactIT.java:[19,83] auto-closeable resource statement is never referenced in body of corresponding try statement
+[WARNING] /Users/stefan/sources/gretl-runtime/gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/ProjectProcessLocalJobIT.java:[105,73] unchecked cast
+  required: java.util.Map<java.lang.String,java.lang.Object>
+  found:    java.lang.Object
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-integration-tests ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.it.OperationMetadataTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.262 s -- in ch.so.agi.gretl.it.OperationMetadataTest
+[INFO] Running ch.so.agi.gretl.it.ReferenceExamplesTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.606 s -- in ch.so.agi.gretl.it.ReferenceExamplesTest
+[INFO] Running ch.so.agi.gretl.it.ExampleConsistencyTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in ch.so.agi.gretl.it.ExampleConsistencyTest
+[INFO] Running ch.so.agi.gretl.it.ArtifactJobRunnerTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 35.11 s -- in ch.so.agi.gretl.it.ArtifactJobRunnerTest
+[INFO] Running ch.so.agi.gretl.it.ImageExecutionAdapterTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.073 s -- in ch.so.agi.gretl.it.ImageExecutionAdapterTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-integration-tests ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] Building jar: /Users/stefan/sources/gretl-runtime/gretl-integration-tests/target/gretl-integration-tests-6.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- failsafe:3.6.0:integration-test (default) @ gretl-integration-tests ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.it.ProjectScriptLocalJobIT
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.318 s -- in ch.so.agi.gretl.it.ProjectScriptLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.ValidatorLocalJobIT
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:/Users/stefan/.m2/repository/org/xerial/sqlite-jdbc/3.53.2.0/sqlite-jdbc-3.53.2.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.31 s -- in ch.so.agi.gretl.it.ValidatorLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.InterlisLocalJobIT
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.231 s -- in ch.so.agi.gretl.it.InterlisLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.ProjectProcessLocalJobIT
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.07 s -- in ch.so.agi.gretl.it.ProjectProcessLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.ScriptProcessLocalJobIT
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.65 s -- in ch.so.agi.gretl.it.ScriptProcessLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.GraphicalModelerScriptJobIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.103 s -- in ch.so.agi.gretl.it.GraphicalModelerScriptJobIT
+[INFO] Running ch.so.agi.gretl.it.LibraryScopeLocalJobIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.941 s -- in ch.so.agi.gretl.it.LibraryScopeLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.CancellationLocalJobIT
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.520 s -- in ch.so.agi.gretl.it.CancellationLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.PlaintextSecretLocalJobIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.901 s -- in ch.so.agi.gretl.it.PlaintextSecretLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.JobProcessLifecycleLocalJobIT
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.657 s -- in ch.so.agi.gretl.it.JobProcessLifecycleLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.ProjectArtifactLocalJobIT
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 59.34 s -- in ch.so.agi.gretl.it.ProjectArtifactLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.IoLocalJobIT
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.89 s -- in ch.so.agi.gretl.it.IoLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.ValidatorClasspathLocalJobIT
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.567 s -- in ch.so.agi.gretl.it.ValidatorClasspathLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.SelectedPackageLocalJobIT
+ERROR StatusLogger Log4j2 could not find a logging implementation. Please add log4j-core to the classpath. Using SimpleLogger to log to the console...
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 40.01 s -- in ch.so.agi.gretl.it.SelectedPackageLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.DuckDbLocalJobIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.019 s -- in ch.so.agi.gretl.it.DuckDbLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.FunctionLocalJobIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.144 s -- in ch.so.agi.gretl.it.FunctionLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.FormatLocalJobIT
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.11 s -- in ch.so.agi.gretl.it.FormatLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.ReferencePathLocalJobIT
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.132 s -- in ch.so.agi.gretl.it.ReferencePathLocalJobIT
+[INFO] Running ch.so.agi.gretl.it.RuntimeSafetyLocalJobIT
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.616 s -- in ch.so.agi.gretl.it.RuntimeSafetyLocalJobIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 104, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-integration-tests ---
+[INFO] Skipping JaCoCo execution due to missing classes directory.
+[INFO] 
+[INFO] --- jacoco:0.8.14:report-aggregate (coverage-aggregate) @ gretl-integration-tests ---
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-integration-tests/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-api/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-runner/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-groovy/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-i18n/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-logging/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-packager/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-job-runtime/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-dist/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-cli/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-database-tasks/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-io-tasks/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-ilivalidator/target/jacoco.exec
+[INFO] Loading execution data file /Users/stefan/sources/gretl-runtime/gretl-interlis-tasks/target/jacoco.exec
+[INFO] Analyzed bundle 'gretl-api' with 18 classes
+[INFO] Analyzed bundle 'gretl-runner' with 84 classes
+[INFO] Analyzed bundle 'gretl-groovy' with 27 classes
+[INFO] Analyzed bundle 'gretl-i18n' with 2 classes
+[INFO] Analyzed bundle 'gretl-logging' with 25 classes
+[INFO] Analyzed bundle 'gretl-packager' with 20 classes
+[INFO] Analyzed bundle 'gretl-job-runtime' with 23 classes
+[INFO] Analyzed bundle 'gretl-dist' with 2 classes
+[INFO] Analyzed bundle 'gretl-cli' with 8 classes
+[INFO] Analyzed bundle 'gretl-database-tasks' with 34 classes
+[INFO] Analyzed bundle 'gretl-io-tasks' with 88 classes
+[INFO] Analyzed bundle 'gretl-ilivalidator' with 9 classes
+[INFO] Analyzed bundle 'gretl-interlis-tasks' with 146 classes
+[INFO] 
+[INFO] --- failsafe:3.6.0:verify (default) @ gretl-integration-tests ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for GRETL Runtime Parent 6.0.0-SNAPSHOT:
+[INFO] 
+[INFO] GRETL Runtime Parent ............................... SUCCESS [  0.453 s]
+[INFO] gretl-language-contract ............................ SUCCESS [  1.215 s]
+[INFO] gretl-tooling-core ................................. SUCCESS [  3.982 s]
+[INFO] GRETL Runtime API .................................. SUCCESS [  0.567 s]
+[INFO] GRETL Runtime Localization ......................... SUCCESS [  0.460 s]
+[INFO] GRETL Runtime Runner ............................... SUCCESS [  1.430 s]
+[INFO] GRETL IO Tasks ..................................... SUCCESS [  3.176 s]
+[INFO] GRETL Database Tasks ............................... SUCCESS [  3.924 s]
+[INFO] GRETL INTERLIS format tasks ........................ SUCCESS [  4.728 s]
+[INFO] GRETL IliValidator Task ............................ SUCCESS [  0.699 s]
+[INFO] gretl-tooling-catalog .............................. SUCCESS [  2.285 s]
+[INFO] gretl-lsp .......................................... SUCCESS [ 12.037 s]
+[INFO] gretl-vscode ....................................... SUCCESS [  6.106 s]
+[INFO] GRETL Runtime Groovy Adapter ....................... SUCCESS [  4.019 s]
+[INFO] GRETL Runtime Logging .............................. SUCCESS [  1.016 s]
+[INFO] GRETL Job Packager ................................. SUCCESS [  3.592 s]
+[INFO] GRETL Packaged Job Runtime ......................... SUCCESS [  1.085 s]
+[INFO] GRETL Runtime CLI .................................. SUCCESS [  4.531 s]
+[INFO] GRETL FileSize example extension ................... SUCCESS [  0.027 s]
+[INFO] GRETL Runtime Script Distribution .................. SUCCESS [01:22 min]
+[INFO] GRETL Runtime Backing-Service Integration Tests .... SUCCESS [04:21 min]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  06:39 min
+[INFO] Finished at: 2026-11-04T11:23:47+01:00
+[INFO] ------------------------------------------------------------------------

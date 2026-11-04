@@ -1,0 +1,1312 @@
+[
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/captures/buffers-1793787620766.json",
+    "size": 4876,
+    "sha256": "46f0c68c0f353c80545a1db46b6ba9a30a08f6b4028db8011eed4585e6176d69"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/captures/buffers-1793787734271.json",
+    "size": 5284,
+    "sha256": "7d6bbe59c6ef91db9b99f7f44359803c06e1dcdced84490c4fcc4e608165e668"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/captures/buffers-1793788159777.json",
+    "size": 3841,
+    "sha256": "1e8fcddfc1d23cc55ef21d09d7c8d7e59f7e8dc316b6bc18d516dd4149876c6d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/captures/buffers-1793788514033.json",
+    "size": 5121,
+    "sha256": "3caa363e896bbbb778d70eee74c956362d736b3ccad0e1189d4bf2b72ab65987"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-bound-parameter-workpath-form.ax.txt",
+    "size": 17304,
+    "sha256": "f0b9cff27e44d20179760be5b87f1d91d77be8956049948e236b69c6b89096cc"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-bound-parameter-workpath-form.jpg",
+    "size": 362766,
+    "sha256": "69680be0158836eff4323f3ea4dc551ca4b808aa98cd5866cc154562e157999e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-bound-parameter-workpath-form.json",
+    "size": 590,
+    "sha256": "88a7d1d6613946c078c1a4a30e4f55aea29155b0eac1a7bf4bc9dfd15402cd95"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-catalogue-categories.ax.txt",
+    "size": 21802,
+    "sha256": "fb1644d2ec4daee405eb7c1c7ac4148aa1d6a57fa8519dfc6e51e93ac017f4c2"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-catalogue-categories.jpg",
+    "size": 363507,
+    "sha256": "2ebdc11a26407d342f8e7f005b18321c6beac5bc9009a4078ddabda983e1a233"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-catalogue-categories.json",
+    "size": 581,
+    "sha256": "82786429f8a4ce9b00256e671480ca513cfcb672f8d5df1131581e26b23720d3"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-fit-ports-and-edge-labels.ax.txt",
+    "size": 13862,
+    "sha256": "e0953431025c97125857a9b88d3f853f75acf0529312e12f062add4b92bc977f"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-fit-ports-and-edge-labels.jpg",
+    "size": 419268,
+    "sha256": "016d3ef42c8efc5d2be59282370e12e89fb01b48f8b4611eec1db807f906625e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-fit-ports-and-edge-labels.json",
+    "size": 586,
+    "sha256": "f8b687a698965671c411c28f7b3de6a06286b3cf84e4e4c893ca57dde88cf829"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-full-width-graph.ax.txt",
+    "size": 15487,
+    "sha256": "d108d72b9ceea9be5e28dc18ec31916d256c89a8d8478fe93d54f62d889d1546"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-full-width-graph.jpg",
+    "size": 467271,
+    "sha256": "744fb0a01af541395bbe73a179dbb33e9199ad1156e60239d3d4cd71a9ea30d5"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-full-width-graph.json",
+    "size": 577,
+    "sha256": "a6f3f191449a53f39c609a6dfebd76f5ffeac6d65a6bbc5802dba10105e86472"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-io-category-filter.ax.txt",
+    "size": 16312,
+    "sha256": "16525f41e505cec03a1c6d722ed3c00e0c1c428087366821787799898960b8fd"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-io-category-filter.jpg",
+    "size": 345406,
+    "sha256": "07a21c872f2eefa0a694aac5433fa681556a528d47aa0e87f57dd1317a73a4e1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-io-category-filter.json",
+    "size": 579,
+    "sha256": "422b4599f6fb233c7e90f6fdfbbe0ff1a0710a956206388f13c185ecaf2ae47f"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-referenced-delete-core-explanation.ax.txt",
+    "size": 14824,
+    "sha256": "7e2ef27bb4c3a72d730bb9bd887ed6c7e2c4dceeae5bb29b40a8bb408345d56c"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-referenced-delete-core-explanation.jpg",
+    "size": 454724,
+    "sha256": "8a985e9a4219bb9aa45d88dacec4b428e4bf9619a102be00d80e328cf975ffab"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-referenced-delete-core-explanation.json",
+    "size": 595,
+    "sha256": "29348ca8816ea2a337f6caffe23c010ab6230b5033e9da74bec1168e81397dbc"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-hover-native-chord.ax.txt",
+    "size": 18888,
+    "sha256": "4dca8c63f3f7b3c5a24ccf560d3cc4f163ae4cf29adae0317da673d2d2d18839"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-hover-native-chord.jpg",
+    "size": 495185,
+    "sha256": "8381559a175415cd9d4aa2cb97d5550cf2374c352b69a9623244546ca5ef5030"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-hover-native-chord.json",
+    "size": 591,
+    "sha256": "1cb8aabca0d214990a2853780406105fe6fca5d9543c06210f83a8eb3602ccd5"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-navigation-smoke.ax.txt",
+    "size": 18792,
+    "sha256": "b6a5915890aee0a09848da9c433556284648aff262ddf41c2b19baa851d295d1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-navigation-smoke.jpg",
+    "size": 493223,
+    "sha256": "0d0fb99e5cac381cecd61476cdf224fb69869d94de91a3aa7cb1fbd7f1df2bc1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-navigation-smoke.json",
+    "size": 589,
+    "sha256": "478bc3d0dd9b2bd58fe4110941a848c29f850f2cf062545ad9a23bd599105896"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-operation-hover-confirmed.ax.txt",
+    "size": 18927,
+    "sha256": "9a57a5591c91cb2cb4bec81f3ac8202752851b493241e8a65f3d1b349e0da799"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-operation-hover-confirmed.jpg",
+    "size": 490379,
+    "sha256": "6822a406f760c42c66cad0295f3c859ea0541660f08e4f472cf031764eecaf90"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-operation-hover-confirmed.json",
+    "size": 598,
+    "sha256": "582953f307e7e7fce94c71339af1881ae70c0aa9ade8401e2d4d908e693225b0"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-operation-hover.ax.txt",
+    "size": 18666,
+    "sha256": "7070f2cdda246c52030f6deb2d65eda0d7cd30049aae654807f941852f3f2a50"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-operation-hover.jpg",
+    "size": 486694,
+    "sha256": "28117c22afec29e3285fcb1d3800fee3c8540fedef8167859a142021c8f41f87"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/candidate-text-editor-operation-hover.json",
+    "size": 588,
+    "sha256": "cc9ecea0d3ce1a015d73ee74c5ac2d8886f8d7ffbd62365780586a2113da897f"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-candidate-modeler-cold-start.ax.txt",
+    "size": 10836,
+    "sha256": "7b3ad2aed030d312fc40fd51cf5afb7643953cb44318390d524fcd3dea8ae148"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-candidate-modeler-cold-start.jpg",
+    "size": 311961,
+    "sha256": "863a7e23e14d132597976d66599da10cb201f90031dd601cf6e52aa99f7927e3"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-candidate-modeler-cold-start.json",
+    "size": 585,
+    "sha256": "ac31b1b3808189bb9ea530fb014e9c5b6948b7ea8c2cde30921c2fb3dd71794a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-candidate-modeler-ready-confirmed.ax.txt",
+    "size": 14250,
+    "sha256": "a37ea1e48d325ea11615515b6c9b0105cb45bc9cf7f33987c247feeddbdcc75c"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-candidate-modeler-ready-confirmed.jpg",
+    "size": 403363,
+    "sha256": "1036a683fa8f576f2b5b9639654b1fd685a27945f12d17e3c675257d5293169d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-candidate-modeler-ready-confirmed.json",
+    "size": 590,
+    "sha256": "9a6cc8e5b99be352e9de3d9c8c72e57120951d25e393d2b23702caf6c4103f82"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-candidate-modeler-ready.ax.txt",
+    "size": 10910,
+    "sha256": "fe286f0115924fe27197221dcb9ab72913232cb1f2883ee30e5bb644fb14fefe"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-candidate-modeler-ready.jpg",
+    "size": 315613,
+    "sha256": "0d76f779b4870fde2f5208c56eb5a9479545a2b6188f274b8f3f13b5abe6cd87"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-candidate-modeler-ready.json",
+    "size": 580,
+    "sha256": "d6715d42561aa5ab7af7e2e080655ac7eadd6e25140202424ad6dab91740c06b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-profile-trust-required.ax.txt",
+    "size": 11411,
+    "sha256": "cabd2ddd9fa15c427082149711b2956cb5881040915901ea3458ddb3c98ce555"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-profile-trust-required.jpg",
+    "size": 352484,
+    "sha256": "5de56ee9053eaca9b92735b9d9e511f1c3b3ec46a7b0f4f3c54cbc0d2b6487fc"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/clean-profile-trust-required.json",
+    "size": 579,
+    "sha256": "8b6ebe108bfee84f652fdfcac7840e0d2086cc1aca6d49e3a63d59cf89b8efe2"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/current-source-and-fixture-invariance.json",
+    "size": 280,
+    "sha256": "32cb91170941d26ddffda18aa86587b335de1112c698eb263cdd1bc8c80b5f96"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/final-service-vsix-cold-start-fresh.ax.txt",
+    "size": 15232,
+    "sha256": "0db97ba341226dc2ca8d57e655d66b4024b4b15a27e5f0f7d3a25c3610f1c8da"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/final-service-vsix-cold-start-fresh.jpg",
+    "size": 415431,
+    "sha256": "ab9e921a8adffb1fcfcbfda2b4bab962f86ce6446de4938b6c95e61b360e5b33"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/final-service-vsix-cold-start-fresh.json",
+    "size": 573,
+    "sha256": "3ca820112400e3d05132433104cf10e12ec9a957bc0f9849e845e862c11b80b4"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/incomplete-parameter-reference-cannot-confirm.ax.txt",
+    "size": 16217,
+    "sha256": "0026e449a8d4862036f3a733c57ce55bfa92791d841be1b7d2a7e3cc8618e5c7"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/incomplete-parameter-reference-cannot-confirm.jpg",
+    "size": 375594,
+    "sha256": "6eb3f4811e87294aef815c2cf4de06034c8bfc460265544457108d37f1962211"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/incomplete-parameter-reference-cannot-confirm.json",
+    "size": 596,
+    "sha256": "94158d7df22ae362890c5fb065cfff1bb86b5f9d03abe7c5d05afa40ca8a1b09"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/incomplete-reference-cancel-source-invariance.json",
+    "size": 187,
+    "sha256": "e6ab4276e2257787a2911fc9a7a4ebfcdf6becdf8aaba792fc4d4f0509bf89aa"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/native-empty-file-origin.json",
+    "size": 381,
+    "sha256": "93fec158344f5dcfcb8a4377c9a79235263f0ed8921ee160365212509c747aee"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/native-empty-job-created-and-saved.ax.txt",
+    "size": 11155,
+    "sha256": "6816fc42dd89adda4738608a3c5b95d70ee98cb99048b5deef6d51c0f4911bbe"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/native-empty-job-created-and-saved.jpg",
+    "size": 246826,
+    "sha256": "5e9cdf0a5378dbff7ebb2570c13b64037a4fd2450cbc2de29652a9daf04535fb"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/native-empty-job-created-and-saved.json",
+    "size": 585,
+    "sha256": "74666bf4fc2b128b9dcb7d870a96ebb8a6bb9e67868d357600321e4eefb15ce6"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/native-zero-byte-job-empty-modeler.ax.txt",
+    "size": 14126,
+    "sha256": "3e82410f7f96f36a51bc80d51cec0126cefbda0fbf876e6c9c8d2b9694da5227"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/native-zero-byte-job-empty-modeler.jpg",
+    "size": 389967,
+    "sha256": "83e22b9bfa9c3aa5d0528fa2d59cbf8c06dbbb10600873482ea0df8146f948ba"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/native-zero-byte-job-empty-modeler.json",
+    "size": 585,
+    "sha256": "e8e58dde937143f9ac3b404e1522fb9520732878b8c5ce5268449620bab34d54"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/only-unfinished-reference-blocks-confirmation.ax.txt",
+    "size": 16456,
+    "sha256": "44ba7d7d09acaaa8562952589c27ea02ace2db5a5efbf392adca82db0bc5ce12"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/only-unfinished-reference-blocks-confirmation.jpg",
+    "size": 373233,
+    "sha256": "78fbb9cb94e9dbf8f01cbc14b38791f5e531cb05ac7d304fcd65bb27f6b566d9"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/cases/only-unfinished-reference-blocks-confirmation.json",
+    "size": 596,
+    "sha256": "f20eed3e290f580768735554d0bc74e4e59e33907cc830096abb264709dea11e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/client-payload-reuse-comparison.json",
+    "size": 1189,
+    "sha256": "fa62876b0bc62e8c5e4fa3bf64c1fd492865f703632690203d193085a734277d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/identity.json",
+    "size": 919,
+    "sha256": "7ee6f6890b4999a28611af44439bffd6fe0f727a4294a2ba269150509908dd71"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/qualification.json",
+    "size": 3749,
+    "sha256": "d87bc20ccd76bfdcefece08ff65322db794e4da09ec2f658219badbce3194ae8"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/server-effective-content-comparison.json",
+    "size": 438,
+    "sha256": "8485d3ce2ae1b16bb127c0f53967c710a29de6fb811502d77692174fbb289431"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/standard-artifact-identity.json",
+    "size": 895,
+    "sha256": "a30836dcb494fe8f5f98752812edf0927ec76e21aaa9d224e156f33a77061ffb"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/standard-final-payload-comparison.json",
+    "size": 707,
+    "sha256": "3c8b9ee0c57dc8370fdd81bc03379e90d2cdbace8f69bc1ef838a462fe11b9ad"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/current/standard-final-server-content-comparison.json",
+    "size": 716,
+    "sha256": "1edbba00fa53f2fee60425117c97a2e4cc16843ee225a7f32e32a4aea9a28cd9"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784246746.json",
+    "size": 2929,
+    "sha256": "851b61224fbe2239ec317ced2ad551c846a23a68b98e4045f13563ad88d8c68f"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784292084.json",
+    "size": 3846,
+    "sha256": "ac9e27b58122fc267f1228ace18704600f09105bd1ccb779b1b4ad17ab99816b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784356918.json",
+    "size": 5078,
+    "sha256": "5f9693c8fab8e41c934ac0a3384627a1da1e28cc21064a1173f981ff243b7384"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784402381.json",
+    "size": 5105,
+    "sha256": "83707d6a0d9c0ae75dd2ebdc2973402552e390fb53bbb241d254c394c941ef7b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784417416.json",
+    "size": 4891,
+    "sha256": "b70a65ca3160dfafc1ab95818998a1c5e2d9faff46d4955aa6d059f215ecafb3"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784590121.json",
+    "size": 4891,
+    "sha256": "d60b2bf0425e9b2b2d6359acf966977268673315f5b5058f9e21c30528b6afca"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784593569.json",
+    "size": 5276,
+    "sha256": "5680a2b89148c79fa1360138713b33f09305bf4ef9c21e53eb515e029d667f54"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784597212.json",
+    "size": 5249,
+    "sha256": "883849021c63c3b32d1f72d720aa3f5c6f97286608cea91cf45386ee07bf8ec5"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784600860.json",
+    "size": 5279,
+    "sha256": "85e7b8d22e8a3c92c4618dba68c7380787f896188a4516123a5a2882581373c2"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784604294.json",
+    "size": 5301,
+    "sha256": "b6caf689344e3fc273ec74225ed6633d4af280ecdafdfb23ecbe8e2224b2e68d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784662050.json",
+    "size": 5142,
+    "sha256": "d6f6daeb47832f882a8ecafe292cee1fc80ab7c173b760a80f95db917ca41dd1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784679946.json",
+    "size": 5187,
+    "sha256": "db42112daa8bba4f8067f0e5a49a2820fddeb93402028aaa8a4035ab8a40b5c4"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784683550.json",
+    "size": 4897,
+    "sha256": "717697e1af18d62fe1da481977ba6f693f371c2e69a679878772dca4a1541542"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784687150.json",
+    "size": 5145,
+    "sha256": "4850417f89ecd8860ed6d3e1c305a192ef0b6573e52e11bc6f6e36d87fc4e3a6"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793784996772.json",
+    "size": 5138,
+    "sha256": "dcb3f51841cafe4ca0b4657ca2b07f288bdb8960f70ad6db3ec6034c8ef1c6f3"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785021495.json",
+    "size": 5183,
+    "sha256": "6f651aa42524ee42580c37d3bcb38ac720623a290570c41811e971e24a3f7ef9"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785024867.json",
+    "size": 5141,
+    "sha256": "ce8156937a22ea5f7a3c6f5af1c61049accb90c1d2ca6f9ee9b365e8fe3b9051"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785028285.json",
+    "size": 5183,
+    "sha256": "a5e59413a604570a5c952fe23950ff6f95944d9dffe8feecfadba5adaf9c26d6"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785132537.json",
+    "size": 5183,
+    "sha256": "ed4beeb1ce1b7b1de5837e2e021f92efb96d6dbcac7bf7e3cf71a0c8c6f90a6b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785135964.json",
+    "size": 5183,
+    "sha256": "47028eab32dc0c9fbd7aa58a5089919ab9bc54db8178dc297a93115b7662b17c"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785190216.json",
+    "size": 5303,
+    "sha256": "699709e217bc376616359e6149d69f8032cb9ed49a73147fb68489c7d89e1901"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785193865.json",
+    "size": 5587,
+    "sha256": "e69879be2f43a5b995c241fb3874b19ca85aad4f2960c991551f5aad957a4779"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785493983.json",
+    "size": 6243,
+    "sha256": "597e7d51d16384a030dd0f8017af587ed018bc89b4170dc60d9c2af02054baf0"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785517512.json",
+    "size": 5181,
+    "sha256": "5400346025f50c60adf2742b7248f2ed195db5f4f55a2458249b93499c8f706c"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785572417.json",
+    "size": 5587,
+    "sha256": "3b3417db9167d4faa0f0ccf8624c1f33edb7541bf46ad572fbd60ac84b877e31"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793785580514.json",
+    "size": 5137,
+    "sha256": "7797a1215b483da2e4c24fae70868a3052d08994f3da1198c1b1351b1fcb6b43"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793786147773.json",
+    "size": 7701,
+    "sha256": "f684ee66cae14d61eb86756ca979589e418915a3f1b3c2b1a32ef0b18fde9eaa"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793786224870.json",
+    "size": 7753,
+    "sha256": "ac3d8fa27557750bc01f814a9220a25dfc61d879eb2a427c79e1ac1444b251dc"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793786339333.json",
+    "size": 7753,
+    "sha256": "7277c515c5eb120baf61dde4520fcc08ececfb064f76b6f51712883b2c71aa42"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/captures/buffers-1793786399482.json",
+    "size": 8109,
+    "sha256": "4e32dff0920b0663450abb0cd1c57c08f5651460edb083b72deb842d2aa50e7e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/after-only-connection-created.ax.txt",
+    "size": 13623,
+    "sha256": "d47a58c637da575dc9a7aecb9cc8b747b014a39d9b7eeb464f471ab3af08ef71"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/after-only-connection-created.jpg",
+    "size": 388452,
+    "sha256": "93e5f118c181f2221287e0630043866188493bd2127252d8070fffd2e2d96f7b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/after-only-connection-created.json",
+    "size": 567,
+    "sha256": "90315682e8d3d43056c9282e9b4dd8064172064de4ac5ee593b999d366207dde"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/catalog-palette-all-operations.ax.txt",
+    "size": 19658,
+    "sha256": "a8cd074ee232c1dbcc005a7c3d2920b175675f3f1f2cc7d791105aab0b28ac04"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/catalog-palette-all-operations.jpg",
+    "size": 349429,
+    "sha256": "8dc234f5ca276d78191cbb6870593ea979d7f1acc11262f0b41b9ca4a875b997"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/catalog-palette-all-operations.json",
+    "size": 568,
+    "sha256": "66593989ed1ca8f99301baa7499e89339fd0730ef4bcf644122c08d6bcfdfc47"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/concurrent-text-change-disables-stale-draft.ax.txt",
+    "size": 23267,
+    "sha256": "27ffaad2707e893e31e9348b4f4ccf29f583eb325b7e673c5ab692f03af1bf73"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/concurrent-text-change-disables-stale-draft.jpg",
+    "size": 462278,
+    "sha256": "57be40eb16478fb65b0bafc16f3f123de6ba9d9932d70349ef3dffdac0e930c1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/concurrent-text-change-disables-stale-draft.json",
+    "size": 581,
+    "sha256": "2d0aa4674ad33c96b842c06169f67337092041e0b25de994aa2692106bcca40a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/dependency-cycle-rejected-source-unchanged.ax.txt",
+    "size": 21057,
+    "sha256": "b6139546c88b0f074bda36b1b902676eb0e8695bbc8b377d08f6feccc371ab40"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/dependency-cycle-rejected-source-unchanged.jpg",
+    "size": 379061,
+    "sha256": "98d8ee436dc06aa96be1e7fc139350eae2075e6181b82684500269e57ea71eb0"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/dependency-cycle-rejected-source-unchanged.json",
+    "size": 580,
+    "sha256": "2750d4939f027c4fb5437c4cb6641451244c89b3e7dad156643c99a71ecfbd7f"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/dependency-pointer-draft.ax.txt",
+    "size": 13873,
+    "sha256": "d6e405284aea2d6cff9779f70eddabbd6b3b4fe74af1a6adc7c614873042f145"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/dependency-pointer-draft.jpg",
+    "size": 278334,
+    "sha256": "c42b1d0112c69a5a6c534280f0518565dbaa3ee5801dbf37ea3ab97caa9723eb"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/dependency-pointer-draft.json",
+    "size": 562,
+    "sha256": "e38a937e22ca3fae5e950edf80989f943215371f7ece24161c7b134f3be7e286"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/disconnect-direct-edge-transitive-chain-remains.ax.txt",
+    "size": 18998,
+    "sha256": "bd8bb674844b81fedbe508e78b5f9af09756b56b3cdb5948db658f3c155c6118"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/disconnect-direct-edge-transitive-chain-remains.jpg",
+    "size": 461726,
+    "sha256": "8c0aff63b882913958adf8793af576a4019092a1425cc4f1ae883f6b39de662b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/disconnect-direct-edge-transitive-chain-remains.json",
+    "size": 585,
+    "sha256": "7ab9c534e1ba84b7460b2da6bff613b636afaaa55e0f55f0474d0b61d7d44141"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/disconnect-last-transitive-chain-rejected.ax.txt",
+    "size": 19543,
+    "sha256": "09a93d908dbb6fe99fabcfa5a9029e1aefe4a2fb672acc33dddbbcd20301db90"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/disconnect-last-transitive-chain-rejected.jpg",
+    "size": 469206,
+    "sha256": "dd5e2125b6eba1aa6d3938f8b4f53105921574399bccc39fe02c650b6723f6e9"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/disconnect-last-transitive-chain-rejected.json",
+    "size": 579,
+    "sha256": "ee9dac515c62a45a81eae7cbd976acee7aeff838b17b6a81f134e779e68e0a43"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/disconnect-required-data-edge-rejected.ax.txt",
+    "size": 21414,
+    "sha256": "90cd8e42c9861c34c3a2d594f8a2ccb0107646d6c22f1035ff0b5bbad5dad75b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/disconnect-required-data-edge-rejected.jpg",
+    "size": 540341,
+    "sha256": "862361b3d24ded815d2ea35210b0cbd572cec1128ddeb34ef4bfe758bb5cd4bc"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/disconnect-required-data-edge-rejected.json",
+    "size": 576,
+    "sha256": "e632a9de2c5ee974062eeac0f8fb6ccadff7c548c4f5b6e5751991def2eaf7f8"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/download-created.ax.txt",
+    "size": 12730,
+    "sha256": "8a4a679914bb261fe8e6192a718bd4240de297cbd40761e5ad4027b9c9a9ab8b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/download-created.jpg",
+    "size": 361162,
+    "sha256": "ebc450fdc3ef9ff2ea55227c5e58cf482c81bb4e9aafec16c222276b8f021f8a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/download-created.json",
+    "size": 554,
+    "sha256": "779b01c362849791e4511fd4e29414bf85d3a162e17b9961fcba0fd56338c6ec"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/download-parameter-workpath-draft.ax.txt",
+    "size": 14453,
+    "sha256": "9ba6000a52ac156f186af53d33125e5244110a87845ff2559dc74a1d2db6b38e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/download-parameter-workpath-draft.jpg",
+    "size": 358401,
+    "sha256": "13a6272a49e7be4cd66370420b2b77bffb2cf9dc42e798077bc1664b3211b93c"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/download-parameter-workpath-draft.json",
+    "size": 571,
+    "sha256": "1e3e934280841b50222be7c2626cf5f006f022973f848ee60ba19e5b6b93884e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/empty-modeler-first-open.ax.txt",
+    "size": 12285,
+    "sha256": "002e383a69ff15b896426ce4164496366768c11af5c90874c472b1e08df340cf"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/empty-modeler-first-open.jpg",
+    "size": 378575,
+    "sha256": "02673d34dcff55c8a17a70c5b5397ea9e30c20c830a177d15714ce139f424ef6"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/empty-modeler-first-open.json",
+    "size": 562,
+    "sha256": "ed1afbf3a97b2319519e26932940fc6c8a5d3b812aca1f175fafb63f896d62f4"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/exact-integer-boolean-enum-map-draft.ax.txt",
+    "size": 18475,
+    "sha256": "c7e08d7442fd6038d8db09b2c0cb4b4668b324214056029b01ffd4ea0b908b05"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/exact-integer-boolean-enum-map-draft.jpg",
+    "size": 371403,
+    "sha256": "241adf451635799b1a0b365da84f6a5cc924e70f7c9e9b1fef0e52a47f0bab5e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/exact-integer-boolean-enum-map-draft.json",
+    "size": 574,
+    "sha256": "10426a2184c9d1bd379718e8cc5f5c25b449eba119d1c85a7aac3b8bed55b933"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/extract-create-draft.ax.txt",
+    "size": 15332,
+    "sha256": "da6d9d879b90b5a3ccf51777ac2a350e5c1ddfd55fb86588e65129e302e2cb67"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/extract-create-draft.jpg",
+    "size": 367260,
+    "sha256": "1e8d28843db26dce668196e800f14d99385df120d088701ffafe9d21eb97a6c6"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/extract-create-draft.json",
+    "size": 558,
+    "sha256": "2602912d2b50d5ff5e7ac6e461e3643ebd02a59c8793c8dfd4093b668817f982"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/extract-created-before-binding.ax.txt",
+    "size": 13458,
+    "sha256": "abb065f9e24a695cf14092a57c78dd693e6cbb24ecb1be0ac4ed6757905fe9e4"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/extract-created-before-binding.jpg",
+    "size": 379107,
+    "sha256": "cebcc9fa531f6f2ae185ddd123087f5a74dd529047776d2c0470b46ddbefa0a2"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/extract-created-before-binding.json",
+    "size": 568,
+    "sha256": "8394549b52502b58b106b47069b704d0746ec8a214a5592e25af215928a3b69e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/generated-job-defaults-saved.ax.txt",
+    "size": 13827,
+    "sha256": "5388bbe90d0b45470c0856309e492a198c63703223d3eed7249c7feb64c5c3d9"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/generated-job-defaults-saved.jpg",
+    "size": 397838,
+    "sha256": "c15de4396448901429108da5e2185dd6590a5b6d82eebc19694096470dd73f01"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/generated-job-defaults-saved.json",
+    "size": 566,
+    "sha256": "43f5c9f5d8cc8d64284cb90819eb0e975aa251a18bbe65445c7b284dbaa1385f"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/http-download-create-form.ax.txt",
+    "size": 14565,
+    "sha256": "c1a8c1bbc30df642a54d5d9e80d51b24d1f0f8038749bbcce1f44540a9243ed0"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/http-download-create-form.jpg",
+    "size": 370705,
+    "sha256": "3d5d52103501ba6f7447b1b16247aa06be8522ff96f4f5bfa4cf60c02788fd9f"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/http-download-create-form.json",
+    "size": 563,
+    "sha256": "0ae356c472bd1a92a004e2a3aba70c9bf835f553fabb7beb146cb5c9a3d8fa29"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-binding-undo-redo-invariance.json",
+    "size": 401,
+    "sha256": "6ade60aaaddbb02f0b9a3fbbb81e8cf9a0a58b098b1ab85ab8532e3242766d29"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-redo-binding-and-defaults.ax.txt",
+    "size": 16396,
+    "sha256": "d26f4c0b28e959201f291511d73128df4ea5c37b075df93ce2182ff6ff157c50"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-redo-binding-and-defaults.jpg",
+    "size": 449819,
+    "sha256": "80f7485f98261645e04a3226297a5d15ab9cc1a57fc4d0051f6caa53772c155e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-redo-binding-and-defaults.json",
+    "size": 570,
+    "sha256": "b6b9261b46b16469d8e76475765a6785123e470757288d789d3d445a3dbe2e2a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-undo-binding-atomic.ax.txt",
+    "size": 16043,
+    "sha256": "d2bc8a9d394ccfc56e87bfa6b483183137ffc6096a5c1a3ff67e0b1dbffc65fd"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-undo-binding-atomic.jpg",
+    "size": 438850,
+    "sha256": "c0c88702ea7517a84a6ee2e82dce7025ff842460e0f3130aea1becde5e44a772"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-undo-binding-atomic.json",
+    "size": 564,
+    "sha256": "a853f3df772dfc024c4cca643adaed3005a96ef1c14d0fc3eee4cb8566df1467"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-undo-defaults.ax.txt",
+    "size": 16464,
+    "sha256": "84d710878b97033c5b825e4be62d6b70d6c07798d0cec05752fdd2f7689e0469"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-undo-defaults.jpg",
+    "size": 445849,
+    "sha256": "aef8f139987054c8432dac2fab668831c6ea0c9f5fc0d600ac68578df9dfde62"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-undo-defaults.json",
+    "size": 558,
+    "sha256": "7740c107447597f8934eb4d44f164abc52312145e92d3f5e1026b7ffceb0a7d9"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/native-view-history-source-invariance-fixed.json",
+    "size": 439,
+    "sha256": "6c95c580206ef66adee34418422575485a857fea2bf602465fb4606338c5fbd3"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/nested-list-map-committed.ax.txt",
+    "size": 14256,
+    "sha256": "ba72bf97e053f40a0a29502ed74d991e0443367f1cbf360477b07f41ec896248"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/nested-list-map-committed.jpg",
+    "size": 409309,
+    "sha256": "2e23c4f91a59350a3213f38d06eba15116dd4e01fe9f8fb85d7049b857ef9f3e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/nested-list-map-committed.json",
+    "size": 563,
+    "sha256": "3a2a5b113a509742cc23376d1703ab9f33fc77f89865f6745bb68e76b888271a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/nested-list-map-integer-draft.ax.txt",
+    "size": 17378,
+    "sha256": "5412952f7c6afc0bca34e0dd0dc643d273383cd0d220cdea5a44a1fad459ca94"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/nested-list-map-integer-draft.jpg",
+    "size": 389080,
+    "sha256": "42303cb43dd09a3a8c820403761c7014ae803d1dcefb93aaa20ccb42a7822801"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/nested-list-map-integer-draft.json",
+    "size": 567,
+    "sha256": "5a175cff712ddc7bec96dbf0c9d9674890b810db903dcb78c8b81ff2fc62eaa7"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/nested-values-and-safe-delete.json",
+    "size": 294,
+    "sha256": "c87fb35ab97df0beeeee1a99908fe055a2b02c71e7b8af8e62ca07b1485491d4"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-action-selected-source-fallback.ax.txt",
+    "size": 21470,
+    "sha256": "a1c900c958a2f41ac3406a6b3ed1ad2fb53ec190a061b852f3d9748b55bc3f02"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-action-selected-source-fallback.jpg",
+    "size": 582812,
+    "sha256": "599df93d2b15018397269b215041c87c61d0e18bdf90e4b72a2c91d1bdd9242d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-action-selected-source-fallback.json",
+    "size": 576,
+    "sha256": "897030ee9948410acd42953c1e91d25891b4ee458259d80ca38327a9949c6d4a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-action-source-fallback-visible.ax.txt",
+    "size": 21093,
+    "sha256": "f62edacdd52f23a520f692a58de48e09a8043550b234d930c89a1504ebe7357d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-action-source-fallback-visible.jpg",
+    "size": 551017,
+    "sha256": "910713f72201c5a70f242de9dffb5aa2c39973945f492dbf13cb5eda0297caaf"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-action-source-fallback-visible.json",
+    "size": 575,
+    "sha256": "a1f97a2d04d6f40c82bfc8590627e57a94caeafb1d8f33630171059876c95207"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-crlf-byte-preservation.json",
+    "size": 246,
+    "sha256": "bf66e4a1b8841ae226862885f2f8b501c1a76c1e633a07cd49c89b1471ec2f54"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-crlf-single-field-preserved.ax.txt",
+    "size": 20710,
+    "sha256": "081dd73ee39e7a5229ce59b777428cdc224aa5b5499e9a8ce9d240e4aba3eedf"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-crlf-single-field-preserved.jpg",
+    "size": 523597,
+    "sha256": "d292c0ec586b221fe75473ac634e21aae443c3927169a3a25bff82e599578aac"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/opaque-crlf-single-field-preserved.json",
+    "size": 572,
+    "sha256": "5ec93c390231e8816908f23018be67af5d311fd236917d96c35ecb0111213c51"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/parameter-confirm-result.ax.txt",
+    "size": 12414,
+    "sha256": "bc0656f3db019b3d094777a07cd657b0dda83a1e3dfe58aa51a9e69c568f12c9"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/parameter-confirm-result.jpg",
+    "size": 379625,
+    "sha256": "528a4ed91ddb8e75ff02f8512802dc95eb7973452ca7b89efdc128c8a66daa00"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/parameter-confirm-result.json",
+    "size": 562,
+    "sha256": "7e81ba4f823656e4eabfe5facdb9d387421e8704fe8087fb13445edbd41c8546"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/parameter-draft-before-confirm.ax.txt",
+    "size": 13065,
+    "sha256": "5626e41668a50e41a4663273d5ffeddd5444d53a4e68ea14fe51d681d61e9ddd"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/parameter-draft-before-confirm.jpg",
+    "size": 299379,
+    "sha256": "27d795ae36cb27ec60d99e3ce981e5e599afee830cb2a3ab3d043fb8e6c6e826"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/parameter-draft-before-confirm.json",
+    "size": 568,
+    "sha256": "b66a928c3881ca3915edf583dae89c5755c28d6316cf7ba99b341ae9d472be74"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-delete-core-reason-visible.ax.txt",
+    "size": 20166,
+    "sha256": "be2703c248491fb22016915c40ace1e9821b658ec658ed39c9355caa1525cbd1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-delete-core-reason-visible.jpg",
+    "size": 544903,
+    "sha256": "52b2a8c644ef66818f25314e0e1ce5d3530f93491b335adbcca4ee6ba6a36390"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-delete-core-reason-visible.json",
+    "size": 575,
+    "sha256": "7fe36557511430744ea1ebc20d417cc5b78a9b9cacecd501c1a18c92636ee1a3"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-delete-currently-disabled.ax.txt",
+    "size": 14638,
+    "sha256": "ee25acaef1bd73840384a5efe610317713ee7622f54028416e7b82018aeb54de"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-delete-currently-disabled.jpg",
+    "size": 475290,
+    "sha256": "70deb9ac828503b0a06c29e5eb79d6c1c905b20d8ff126ab20d6bf1fee843280"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-delete-currently-disabled.json",
+    "size": 574,
+    "sha256": "f62ee435ef6a73651d5dca978d8ade273576c60f105a5032df673f45d721a4e1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-rename-four-literals.json",
+    "size": 200,
+    "sha256": "97ef454bdd468a7535013bb4760da8191d35680db7dd656bbc49582e98962022"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-task-rename-draft.ax.txt",
+    "size": 14991,
+    "sha256": "8d62844deae2fd0d1189aee7652b7bd7b3991079e1cd3c680a87435ff3a2de2c"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-task-rename-draft.jpg",
+    "size": 265266,
+    "sha256": "62742feb508e2601c11edf438b784be27910c8b01ff1cbcb7daec30611e216dc"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-task-rename-draft.json",
+    "size": 566,
+    "sha256": "d35bf1257f3c85fe12156bc6fae2bf78c6cb1ac5e65aae443a5d7579afc00b9e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-task-renamed.ax.txt",
+    "size": 14656,
+    "sha256": "6a1d5539435fd1f792d7df5e7392b1c866070b6dad06346dc755ef67cd920e03"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-task-renamed.jpg",
+    "size": 428273,
+    "sha256": "601475335f0d77c010f8c10f953967c5a503983741f1e1f90549700e1ccb6e86"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/referenced-task-renamed.json",
+    "size": 561,
+    "sha256": "b6ed28e48e8b91661c99aedb0e1ee11483398c475eb934ced6adf7ca2bf1f45d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/result-binding-and-data-edge-applied.ax.txt",
+    "size": 13954,
+    "sha256": "0b99202a4450b8d75eaa4e1051e0ed0fc5db201cdc44e4791e14b5190d5bc848"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/result-binding-and-data-edge-applied.jpg",
+    "size": 394598,
+    "sha256": "0c970c707084dea8230a6767316a3a45af27ec67cbd4dcc372f09e13886ffbb5"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/result-binding-and-data-edge-applied.json",
+    "size": 574,
+    "sha256": "7bfdf1e2fd79f4778d970d7f67a283df1280ad133f4cb791dafce86b0444b119"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/result-port-pointer-draft.ax.txt",
+    "size": 14336,
+    "sha256": "6ab000fa59a22d50a9916c45a6df6364d71de008e3256de7d75f1c17e1ea1001"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/result-port-pointer-draft.jpg",
+    "size": 306713,
+    "sha256": "386645d4d98fe0e35274a170a11ff8390caee9eeff4efa4d3368c25dca324b1e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/result-port-pointer-draft.json",
+    "size": 563,
+    "sha256": "6d0bec6288e3b028514ea9e11909d348f3da5e728cbb6daa285425053ef847b6"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/saved-job-close-text-and-modeler-reopen.ax.txt",
+    "size": 16647,
+    "sha256": "6dd8200ada0ae6c16127ffca0b8784772fb79611b21e9d123cdf1f06992832cf"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/saved-job-close-text-and-modeler-reopen.jpg",
+    "size": 450748,
+    "sha256": "76f5c6bdaad3f91f791f3bffd732e75d5f82850e0b03bd2a0173707349a7d6c3"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/saved-job-close-text-and-modeler-reopen.json",
+    "size": 577,
+    "sha256": "4e31927295d8d8fb15a5bd4d34b7d451cba1d7d4aa97790fc5b0c23f0959f97b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/saved-reopened-runtime-input-identity.json",
+    "size": 138,
+    "sha256": "e8689921307b47c09daa350828eba371dc2e434f584790ee9d0e2319f22a24a7"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/secret-alias-map-draft-before-cancel.ax.txt",
+    "size": 19679,
+    "sha256": "a4619da488964811062dc79bdf4f85afbbb8fd02eecb6421e4c252af24ca6297"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/secret-alias-map-draft-before-cancel.jpg",
+    "size": 393168,
+    "sha256": "d28406a74d73e898298d7d7165b29f4e0a4fcf291d6a2eb9555ccf2ec28b87fd"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/secret-alias-map-draft-before-cancel.json",
+    "size": 574,
+    "sha256": "203e20b3b5df38426f9a69fbb7cb8844d439d0362620cee8bab75b0ec2b6367e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/settled-view-native-undo-redo.ax.txt",
+    "size": 13777,
+    "sha256": "34bd8dce218e9c6374009480701dc36bee31dd85c35f1744efd9ca004e58b008"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/settled-view-native-undo-redo.jpg",
+    "size": 418299,
+    "sha256": "5104ef6aab85681208d0147da5ddfedac0d25eb842668f3e9935003bcfe85cf0"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/settled-view-native-undo-redo.json",
+    "size": 567,
+    "sha256": "cec0acaa44af425c35bdb4cfe469bc36deba086b8ece707babe09ff9d7af2fab"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/settled-view-reloaded-before-gesture.ax.txt",
+    "size": 13473,
+    "sha256": "db3cc9d5ce522f8d73e80354fec4f21fdb686eaa26f418414b22ddee805d8dca"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/settled-view-reloaded-before-gesture.jpg",
+    "size": 398718,
+    "sha256": "90cd7d9de2f20084f2f0236f97ec440ef4fb546906c731af401709b0058f9817"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/settled-view-reloaded-before-gesture.json",
+    "size": 574,
+    "sha256": "9dd7941cbc6aabe6db9311bc40c16cd16d57342e431560f8fff06ff11c0157eb"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/stale-draft-cycle-source-invariance.json",
+    "size": 209,
+    "sha256": "a4bba84fa762596d1ad49d0a66127704995ff8c2bca4394e8516eb7d9ff7e8c8"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/transitive-disconnect-source.json",
+    "size": 645,
+    "sha256": "19df74417aea5bd5d4c346cbb762021519ee8128b848d5be26e8c41ae64a175d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/trust-required-before-start.ax.txt",
+    "size": 9690,
+    "sha256": "2f453afe1b10e1f0243d31373ea2bdae361d458b8c8985aabd609fed86b4360e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/trust-required-before-start.jpg",
+    "size": 264871,
+    "sha256": "6c5f132ddafb394feb4a44274590dcfd83b51e176fb1703762f1ccc2edf79ed1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/trust-required-before-start.json",
+    "size": 565,
+    "sha256": "f1c70f3a300c12e25a2735c2e867df5ecc1d0d342e08d34aa4ed62941cbb13b4"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-draft-cancelled.ax.txt",
+    "size": 14844,
+    "sha256": "02c2035b672268e8107e7322ddbaaf4c01c2ac57d5e43ae342884217ae9a96f2"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-draft-cancelled.jpg",
+    "size": 464709,
+    "sha256": "342621fc40827d5c1c03a0a104b3da1916b11342035f96a4b1ac9569ae6f6f18"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-draft-cancelled.json",
+    "size": 559,
+    "sha256": "455713a341ed4098faf4e8e6f646eb9c2830265e403479b654b69154ae6daea0"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-fields-committed-atomically.ax.txt",
+    "size": 14656,
+    "sha256": "809b36d3e233397f560c749c5c84a3e4b54b9349d22a9add2660a4813b689089"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-fields-committed-atomically.jpg",
+    "size": 432449,
+    "sha256": "b50ee051423cccf2d56e7f7b0877c9d28b363964f678fcfe6d9774664b287b7a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-fields-committed-atomically.json",
+    "size": 571,
+    "sha256": "29ca6bcffcb9a8f73375522a32f45ce48fae5d6019cfb45a16558b39fc3b2d5a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-fields-native-undo.ax.txt",
+    "size": 17109,
+    "sha256": "955aa294e9b449f6026462b344a6c1ea81d4c0da523aa956a835b2b884dc86f1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-fields-native-undo.jpg",
+    "size": 455469,
+    "sha256": "557a66e320c995831f25bf50d0180baaa203bf914939800ce80bc2b6bd8bd7d8"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-fields-native-undo.json",
+    "size": 562,
+    "sha256": "1b98ddf8b87ebbaef43efee096ffbb199089a208966ed510f1d0cd1fc1e1660b"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/typed-form-values-cancel-and-undo.json",
+    "size": 403,
+    "sha256": "2451fb75d78370959b5ebdc082962adc1f22614de9f263e839d6c22664f18f44"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/unreferenced-task-delete-available.ax.txt",
+    "size": 14882,
+    "sha256": "4ff01e66fd7483bfc0db25d5dc0302440e6b64216cd9a2351f94fbe580aa51c8"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/unreferenced-task-delete-available.jpg",
+    "size": 455086,
+    "sha256": "2673182f09c25a4a46b552eb34d98b5a52503713de1009cccada37ace78955a7"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/unreferenced-task-delete-available.json",
+    "size": 572,
+    "sha256": "84972d0b0073d7843089d02312660a1abdbccca7b3155c30bb8b825924699c74"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/unreferenced-task-delete-draft.ax.txt",
+    "size": 15322,
+    "sha256": "b74596e9a4bffcc8fa26744ebfc3025b6d4943a22848683c09090d58811ea780"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/unreferenced-task-delete-draft.jpg",
+    "size": 279665,
+    "sha256": "aad48d9361e720ef8fd0168ec1ae665fe9d5209f4c4d394e60a6c2952f6a5fce"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/unreferenced-task-delete-draft.json",
+    "size": 568,
+    "sha256": "9903e517163f348e06bf1a3349a1add2f88cfb2e2b268288bde97a5a896e9752"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/unreferenced-task-deleted.ax.txt",
+    "size": 14656,
+    "sha256": "fdfbc59d38e47b9da490dc61a855b1760fceb5a613afbde3443f2018d2a451e2"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/unreferenced-task-deleted.jpg",
+    "size": 432139,
+    "sha256": "b24d2486f20cdd81f0e48453791837406f0f000ff345fc3e1e20e30a8edd0672"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/unreferenced-task-deleted.json",
+    "size": 563,
+    "sha256": "7781da24f3b080c217ef2f795a991be9a6aefe08e9b5026b4f5340678c8bf72d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-drag-after-text-redo.ax.txt",
+    "size": 13789,
+    "sha256": "2637faee9087cc948720f0336fd59bf55e2e2123f56a15674e87bce57eb55fa8"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-drag-after-text-redo.jpg",
+    "size": 413101,
+    "sha256": "78637dc58b9fddd7e0d5c2a0277c125b963d55eed1df6e11cf9050930c00940f"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-drag-after-text-redo.json",
+    "size": 563,
+    "sha256": "4959d587fb4dd12f806300dfce4b18290e7a4a872c0cadb5343ce54d81dad4d2"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-history-first-probe-failed.json",
+    "size": 649,
+    "sha256": "3dd36a4ddf1035cc7d28769dbe673f3075dbc8b1f3cfaeb5816fca26a24ee82e"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-redo-separate-from-text.ax.txt",
+    "size": 13789,
+    "sha256": "21a1c4aa5996e28ce6dddc58bfd9089bf5ca93194666d45040bb6683fb7ca52a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-redo-separate-from-text.jpg",
+    "size": 407409,
+    "sha256": "78588ee1ca562473759c3ffd9696bfff36208ecb21750b51c13859126e47ddf4"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-redo-separate-from-text.json",
+    "size": 566,
+    "sha256": "325a2080e5509a1596019908e14323493b221cf24cf2fadf132ba24912c345d0"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-undo-separate-from-text.ax.txt",
+    "size": 13789,
+    "sha256": "0de6b9da36c3bdf83bd96e919ee22da7e4fafdb34e3901406513f9c08a4e14f5"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-undo-separate-from-text.jpg",
+    "size": 397730,
+    "sha256": "0c24503dff9b0659cc613913f04abea591f7dbe8c38aa114aa3778c64ddeeaf9"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/cases/view-undo-separate-from-text.json",
+    "size": 566,
+    "sha256": "645afebac60c7c100b87eb5433b35883c4488aa730ef9111519107d69e5578c1"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/generated-original/job.groovy",
+    "size": 468,
+    "sha256": "7a551b46f463b2c483c1936b18fbd7f4a5d9c530e481e1f2834842c9be3b7782"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/generated-original/provenance.json",
+    "size": 710,
+    "sha256": "4a79dc5fa81cd6b8f78a9b50f3a101fbd21e859dc724b51afd3ab4a73227cd18"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/identity.json",
+    "size": 952,
+    "sha256": "986fe20d32a234d6ad5e5fbe9b3173630e7874ed882b0a363b1af66ca3a3eb88"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/initial-package-identity.json",
+    "size": 810,
+    "sha256": "afd601919339e27a2aa44bd53f180c5f2190f3ab7a4742a6430bb4129c4edad8"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/packages/form-completeness-package/dist/gretl-runtime.vsix",
+    "size": 12801742,
+    "sha256": "a165ee127eab782af7420142c8f2bef37cd433e4434467040799c582bcabd9cb"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/packages/form-completeness-package/server/bundle-manifest.json",
+    "size": 2906,
+    "sha256": "ac3d850a43f6badfe673b87536fc96fecee22e04ea7df38590009699f54648e7"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/packages/initial-package/dist/gretl-runtime.vsix",
+    "size": 12800778,
+    "sha256": "dd5bb47e8966ba22ad13a7ff9beafd6db9d2929d571b7ca4966caf0c285ccc6a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/packages/initial-package/server/bundle-manifest.json",
+    "size": 2906,
+    "sha256": "00641c33dca005e0dcdd2661a23fd7a6d5da7a26975bfa0109b6719ccb5cdccf"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/packages/settled-view-package/dist/gretl-runtime.vsix",
+    "size": 12801300,
+    "sha256": "0c9062ae757bc2473ee4cd6169a7e3574182c30b123f7339ac07a4e801cdf745"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/packages/settled-view-package/server/bundle-manifest.json",
+    "size": 2906,
+    "sha256": "666ec4ae782f146c2d83260202d780ef51f8f4719614f3fa894e1e7796067c54"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/preservation-original.groovy",
+    "size": 597,
+    "sha256": "78264714f8f19621c585421e859d67e3fee7a4d2bd03e7593f7c76ac1dbc117a"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/development-originals/transitive-original.groovy",
+    "size": 366,
+    "sha256": "c37eb3279bb72c5180f5296669b528dcd0fdfd2bbc653f0499f969dac20bb51d"
+  },
+  {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui/index.json",
+    "size": 2384,
+    "sha256": "9c5dbee7fb3f98c734013cf81133e88c6845d679bebea694e843195c05b3a6bd"
+  }
+]

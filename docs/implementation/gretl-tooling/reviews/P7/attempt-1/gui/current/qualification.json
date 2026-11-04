@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "kind": "IMPLEMENTER_GUI_QUALIFICATION_NOT_INDEPENDENT_PHASE_ACCEPTANCE",
+  "candidateSha": "53f7f3daaf92d002fd75978c25471321fd99a310",
+  "finalVsixSha256": "33998c625a87e8f9e32f9c3d8a82cee0b897666be11f2902fb13a4c7cd7af257",
+  "finalServerSha256": "f6acda578e81d806da9a016bdfdad00c67ee35a2640bfee21daa4845f63d0465",
+  "platform": "macOS 27 arm64, official VS Code 1.144.0, Temurin JDK 25.0.2",
+  "completedAt": "2026-11-04T10:36:27.002Z",
+  "currentCases": [
+    "final-service-vsix-cold-start-fresh",
+    "candidate-catalogue-categories",
+    "candidate-io-category-filter",
+    "candidate-referenced-delete-core-explanation",
+    "candidate-bound-parameter-workpath-form",
+    "candidate-text-editor-operation-hover-confirmed",
+    "candidate-fit-ports-and-edge-labels",
+    "native-empty-job-created-and-saved",
+    "native-zero-byte-job-empty-modeler",
+    "native-empty-file-origin",
+    "only-unfinished-reference-blocks-confirmation",
+    "incomplete-reference-cancel-source-invariance",
+    "current-source-and-fixture-invariance"
+  ],
+  "finalBufferCapture": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/captures/buffers-1793788514033.json",
+  "mainSourceSha256": "7a551b46f463b2c483c1936b18fbd7f4a5d9c530e481e1f2834842c9be3b7782",
+  "matchesTrackedRuntimeInput": true,
+  "emptyNativeSourceBytes": 0,
+  "rootGateCounts": {
+    "standard": 918,
+    "services": 974
+  },
+  "checks": "Fresh committed full root gates plus fixed qualification-catalog audit, docs link/render and dependency checks are supplied; no additional blanket suite runs.",
+  "developmentReuse": {
+    "originalRoot": "/Users/stefan/.cache/gretl-tooling-review/P7-editor-development",
+    "originalSourceCommit": "230e6ccb977414d6fcb5eff5798a16bb9cd6da81",
+    "sourceDirty": true,
+    "neverRelabelled": true,
+    "creation": "Original native Parameter/HttpDownload/Extract forms, pointer after and result gestures, Defaults and Save produced the exact Runtime input. Comment-only initial empty fixture was prepared externally; true native zero-byte New File/Save As entry point is separately proven on the clean committed candidate.",
+    "focusedCorrections": "Original failed view-history probe retained and superseded by the passing all-node/viewport invariance case. Later changes add conservative draft completeness, Core refusal text, category filter and HTML edge labels; each has targeted current native proof. No binding/Core/host rewrite between those GUI cases.",
+    "clientProof": "client-payload-reuse-comparison.json",
+    "serverProof": "server-effective-content-comparison.json",
+    "finalArtifactProof": [
+      "standard-final-payload-comparison.json",
+      "standard-final-server-content-comparison.json"
+    ],
+    "serverNote": "Every Java class and all non-manifest resources are byte-identical. Catalogue manifest JSON member order differs but its parsed data are identical; raw JAR/VSIX identities stay separate."
+  },
+  "notAcceptanceCases": [
+    "candidate-text-editor-navigation-smoke: F12 on catalogue operation has no source definition; accepted editor smoke is the confirmed native operation hover.",
+    "Early initial-toolbar-click captures still show text before the actual command opened the Modeler; accepted cold start is the named confirmed final-service case."
+  ],
+  "initialReviewerState": "Main generated job Modeler visible in editor group1, FRESH, download/extract plus after/dependsOn/result labels. Additional native-empty Modeler and source tabs may be in background; generated job/native empty/job.groovy is a clean zero-byte file. Main source clean and exact Runtime fixture. Preservation and transitive roots are available as controlled fixtures. Use observe before acting."
+}

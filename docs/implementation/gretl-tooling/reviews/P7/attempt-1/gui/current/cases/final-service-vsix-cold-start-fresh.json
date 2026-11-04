@@ -1,0 +1,11 @@
+{
+  "kind": "CLEAN_COMMITTED_FINAL_CANDIDATE",
+  "candidateSha": "53f7f3daaf92d002fd75978c25471321fd99a310",
+  "sourceDirty": false,
+  "vsixSha256": "33998c625a87e8f9e32f9c3d8a82cee0b897666be11f2902fb13a4c7cd7af257",
+  "serverSha256": "f6acda578e81d806da9a016bdfdad00c67ee35a2640bfee21daa4845f63d0465",
+  "time": "2026-11-04T10:35:12.084Z",
+  "axSha256": "0db97ba341226dc2ca8d57e655d66b4024b4b15a27e5f0f7d3a25c3610f1c8da",
+  "screenshot": "final-service-vsix-cold-start-fresh.jpg",
+  "screenshotSha256": "ab9e921a8adffb1fcfcbfda2b4bab962f86ce6446de4938b6c95e61b360e5b33"
+}

@@ -1,0 +1,11 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "sourceCommit": "230e6ccb977414d6fcb5eff5798a16bb9cd6da81",
+  "sourceDirty": true,
+  "vsixSha256": "0c9062ae757bc2473ee4cd6169a7e3574182c30b123f7339ac07a4e801cdf745",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "time": "2026-11-04T09:45:15.023Z",
+  "axSha256": "b74596e9a4bffcc8fa26744ebfc3025b6d4943a22848683c09090d58811ea780",
+  "screenshot": "unreferenced-task-delete-draft.jpg",
+  "screenshotSha256": "aad48d9361e720ef8fd0168ec1ae665fe9d5209f4c4d394e60a6c2952f6a5fce"
+}
