@@ -1,0 +1,15 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "passed": true,
+  "captures": [
+    "buffers-1793785132537.json",
+    "buffers-1793785135964.json",
+    "buffers-1793785190216.json",
+    "buffers-1793785193865.json"
+  ],
+  "secretDraftCancelPreservesSource": true,
+  "exactIntegerDigits": true,
+  "booleanEnumMapApplied": true,
+  "oneNativeEditVersion": true,
+  "nativeUndoRestoresSavedSource": true
+}

@@ -1,0 +1,13 @@
+{
+  "id": "010",
+  "purpose": "G30 reopen preparation: close only the active Modeler after restart and observe which editor remains active, without resolving any dirty prompt.",
+  "actions": [
+    {
+      "kind": "command",
+      "title": "View: Close Editor"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

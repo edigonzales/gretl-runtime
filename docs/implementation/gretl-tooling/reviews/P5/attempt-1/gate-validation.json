@@ -1,0 +1,213 @@
+{
+  "requestDigests": {
+    "computedRequirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+    "requestRequirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+    "requirementsMatch": true,
+    "computedRepositoryRulesDigest": "4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b",
+    "requestRepositoryRulesDigest": "4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b",
+    "rulesMatch": true,
+    "manifest": [
+      {
+        "path": "docs/implementation/gretl-tooling/ACCEPTANCE_CRITERIA.json",
+        "sha256": "c4929fb59739fdb85f91f754f9887da6dddd1c23ce5e338c0a0c760ace18c865"
+      },
+      {
+        "path": "docs/implementation/gretl-tooling/ARCHITECTURE.md",
+        "sha256": "38ec3155664430158a9a1d41d21e9adc88ba7dc0b49b3af8c3322991f0f40fa3"
+      },
+      {
+        "path": "docs/implementation/gretl-tooling/EXECUTION_PLAN.md",
+        "sha256": "3864034f573090332fb16a6e285534b8804594f99be350b24884cb3765153b64"
+      },
+      {
+        "path": "docs/implementation/gretl-tooling/OPENCODE_REVIEW_PROMPT.md",
+        "sha256": "b77378a760fc63d8145f903be6fe4067ab5abe3d4cca48ea0e988c8e5bfe5ab5"
+      },
+      {
+        "path": "docs/implementation/gretl-tooling/TEST_MATRIX.md",
+        "sha256": "cf3e6f8edd453b71a931ebc7f13c277a80bf6dc27c46266e2e0d82a9eaf262b1"
+      },
+      {
+        "path": "docs/implementation/gretl-tooling/schemas/review-request.schema.json",
+        "sha256": "ae5cb6bfad18399b02f01f3a5804fffbf0e674e9709cd528eacd1c53b909015a"
+      },
+      {
+        "path": "docs/implementation/gretl-tooling/schemas/review-verdict.schema.json",
+        "sha256": "bb52e48f302bdcf09d974f88c8bad01eeb9888e3529067f4a389d96e3c7f58d1"
+      }
+    ],
+    "rules": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "cc8eb4af4337b17b2c3244396a5d5f72db61431acaba99356da8938f312b7df5"
+      },
+      {
+        "path": "docs/implementation/gretl-tooling/AGENTS.md",
+        "sha256": "42bc9c45101d5dec356b3d9da3f3124eaada17ef1a1befddfcbd8048196b8512"
+      }
+    ]
+  },
+  "artifactChecks": [
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+      "sha256": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+      "sha256": "d6e6325b78f80a1a7ad182fbfe1e0da91a9d2006fdd20e7d88c9f31bfa0efad4",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+      "sha256": "89295663d87d448920c867ed7dca3b7ee34d7a86f635188719b120ef0f6d61fd",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+      "sha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+      "sha256": "fc69eeed1c4616c8c5e0310e3adec30f4d0a754d3d2da1dee4f32af128a10cab",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+      "sha256": "ea2af71ed56d005e1dbe606113427be7d34d7e53c6f69a65c51128e30692462d",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-lsp/target/tooling-dependencies.json",
+      "sha256": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-lsp/target/classes/gretl-protocol-v1.schema.json",
+      "sha256": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/vscode/gretl-vscode/dist/gretl-runtime.vsix",
+      "sha256": "0ded06d6be2eefdd8ab40f8b93f06bbe0cc0873ba0304e59f1f5fa248cdb1dae",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/vscode/gretl-vscode/dist/distribution-inventory.json",
+      "sha256": "3d91be94d80da1802b16490f91deb0b20f5f1b6caf4e09fac38823ec27dabde8",
+      "exists": true,
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/vscode/gretl-vscode/server/bundle-manifest.json",
+      "sha256": "0082b30fac45247ccf9933d910a86aebd808aaadfbaf36d5cb857085d41b6af3",
+      "exists": true,
+      "match": true
+    }
+  ],
+  "gateChecks": {
+    "root-standard": {
+      "manifest": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-standard/manifest.json",
+      "manifestSha256": "e05cb5e8d77f4ffb0151e4f4be64bfb33207c7235a12e3d741ce6d7f8c9b76d9",
+      "sha": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "dirty": "",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "clean",
+        "verify"
+      ],
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "startedAt": "2026-11-03T22:19:24.934Z",
+      "endedAt": "2026-11-03T22:25:58.903Z",
+      "counts": {
+        "tests": 910,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "capturedCount": 634,
+      "validated": true
+    },
+    "root-services": {
+      "manifest": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-services/manifest.json",
+      "manifestSha256": "5d64d9e1a5dc8604880e21b24a8d0c50b4f35fd8109470fe95b37366028ca425",
+      "sha": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "dirty": "",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-Pgeotools-probe,backing-services",
+        "clean",
+        "verify"
+      ],
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "startedAt": "2026-11-03T22:25:59.172Z",
+      "endedAt": "2026-11-03T22:35:28.415Z",
+      "counts": {
+        "tests": 966,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "capturedCount": 819,
+      "validated": true
+    }
+  },
+  "guiInventory": {
+    "declaredFiles": 295,
+    "verified": 295,
+    "bad": [],
+    "badCount": 0
+  },
+  "modelIdentity": {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/p2-resume-readiness/identity.json",
+    "sha256": "5b5f5180de93622c14265dcd7cd0368f2aa468c48366fa842f6bec08b21f6fce",
+    "openCodeVersion": "2.2.5",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "apiHost": "api.deepseek.com",
+    "modelVersion": "DeepSeek-V4.1-Flash-1017",
+    "actualProvider": "deepseek",
+    "actualModel": "deepseek-flash",
+    "effectiveBaseUrl": "https://api.deepseek.com",
+    "checkedAt": "2026-11-03T13:16:05.719Z",
+    "mappingUrl": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "validated": true
+  },
+  "productRepo": {
+    "repo": "/Users/stefan/sources/gretl-runtime",
+    "head": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+    "headMatchesCandidate": true,
+    "trackedStatus": "",
+    "clean": true
+  },
+  "errors": [],
+  "finalArtifact": {
+    "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+    "passed": true,
+    "sourceDirty": false,
+    "vsixSha256": "0ded06d6be2eefdd8ab40f8b93f06bbe0cc0873ba0304e59f1f5fa248cdb1dae",
+    "vsixMatchesRequest": true,
+    "serverJarPayload": "ea2af71ed56d005e1dbe606113427be7d34d7e53c6f69a65c51128e30692462d",
+    "operationsPayload": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+    "catalogManifestPayload": "fc69eeed1c4616c8c5e0310e3adec30f4d0a754d3d2da1dee4f32af128a10cab"
+  },
+  "ok": true
+}

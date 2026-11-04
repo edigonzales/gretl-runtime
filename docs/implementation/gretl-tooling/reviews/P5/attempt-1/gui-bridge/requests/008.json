@@ -1,0 +1,17 @@
+{
+  "id": "008",
+  "purpose": "Independent cross-subproject counterprobe, step 5: native Redo in the main job after the observed undo, verifying that the qualified reference and the subproject declaration are restored together.",
+  "actions": [
+    {
+      "kind": "openFile",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/job.groovy"
+    },
+    {
+      "kind": "command",
+      "title": "Redo"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

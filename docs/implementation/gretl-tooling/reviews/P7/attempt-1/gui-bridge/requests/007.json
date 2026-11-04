@@ -1,0 +1,13 @@
+{
+  "id": "007",
+  "purpose": "Save the native binding edit to the new counterprobe source and verify the saved graph remains fresh.",
+  "actions": [
+    {
+      "kind": "click",
+      "label": "button Save source"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

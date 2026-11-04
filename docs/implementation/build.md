@@ -111,6 +111,38 @@ Bei Änderungen an Quickstarts müssen deren Befehle laufen und Ausgabedateien,
 Inhalt, Exitstatus und Reports geprüft werden. Ein statischer Linkcheck genügt
 für diese Ausführungsnachweise nicht.
 
+## Tooling-Distributionsqualifikation
+
+Nach dem vollstaendigen Build prueft
+`node tools/gretl-tooling/qualify-server.mjs --jar vscode/gretl-vscode/server/gretl-lsp.jar --evidence /tmp/gretl-server-qualification`
+den echten ausgelieferten Java25-LSP ueber stdio: Katalog und Hover,
+kleine/mittlere/grosse/kaputte Quellen, Quellbudget, schnelle Edits, Close und
+Rootwechsel, Nichtausfuehrung sowie echtes Shutdown/Exit. Das Evidenceverzeichnis
+muss neu sein. Die JSON-Ausgabe bindet JAR-Digest und Buildidentitaet und misst
+Laufzeiten sowie Prozessspeicher; sie behauptet keine allgemeine Latenzgarantie.
+
+Mit einem vorher lokal bereitgestellten offiziellen Java25-Image kann derselbe
+Befehl um `--docker-image eclipse-temurin:25-jre` ergaenzt werden. Die Vorbereitung
+`docker pull eclipse-temurin:25-jre` benoetigt eine Registryverbindung. Der
+eigentliche Test laeuft mit dem erfassten Image-Digest ohne Netzwerk, mit
+schreibgeschuetzten JAR-/Quellmounts, 256 MiB Javaheap und 768 MiB Containerlimit.
+`--candidate` verlangt zusaetzlich den exakten sauberen Kandidaten-SHA.
+
+`node tools/gretl-tooling/qualify-runtime-canary.mjs --evidence /tmp/gretl-runtime-oracle-canary`
+prueft nach den Rootgates die unveraenderte Oracle des GUI-SCRIPT-Fixtures gegen
+einen Kontrolllauf und ein absichtlich falsches Ergebnis. Nur private Kopien des
+Tests und des lokalen ZIP-Inputs werden veraendert; der echte Groovyinput und
+saemtliche Assertions bleiben erhalten. Die Prozessbelege unterscheiden den
+erfolgreichen Runtimeprozess vom erwarteten Assertionfehler der negativen Probe.
+
+Die Workbench-Oracle `vscode/gretl-vscode/scripts/verify-workbench-evidence.mjs`
+wertet die begrenzten Leseaufnahmen des separaten Testdrivers gegen explizite
+Fixtureerwartungen aus. Ihre Canaries unterschlagen einen erwarteten Node oder
+eine Textaenderung und muessen scheitern. Sie ersetzt keine nativen Aktionen und
+keine Bildpruefung. Falsche Serverbytes werden separat an einer Scratch-VSIX
+durch das wirkliche Inventargate abgewiesen. Alle Belege bleiben vom normalen
+Benutzerprofil getrennt.
+
 ## Runtimekonfiguration, Pfade und Secrets
 
 Die optionale Ausgabesprache kann per `--lang`, `GRETL_LANGUAGE`, `language`

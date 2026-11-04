@@ -1,0 +1,11 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "sourceCommit": "230e6ccb977414d6fcb5eff5798a16bb9cd6da81",
+  "sourceDirty": true,
+  "vsixSha256": "dd5bb47e8966ba22ad13a7ff9beafd6db9d2929d571b7ca4966caf0c285ccc6a",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "time": "2026-11-04T09:31:28.219Z",
+  "axSha256": "21a1c4aa5996e28ce6dddc58bfd9089bf5ca93194666d45040bb6683fb7ca52a",
+  "screenshot": "view-redo-separate-from-text.jpg",
+  "screenshotSha256": "78588ee1ca562473759c3ffd9696bfff36208ecb21750b51c13859126e47ddf4"
+}

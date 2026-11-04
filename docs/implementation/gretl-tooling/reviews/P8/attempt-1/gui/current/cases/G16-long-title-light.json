@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-04T14:38:26.943Z",
+  "artifactIdentity": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/corrected-standard-identity.json",
+  "artifactSourceCommit": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "vsixSha256": "cdec076b970c1d890a9d1b45e6166ee9da721509d3e31af804c38b095197d6c8",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "dfa283603614b33283c1bffc0c4829f4cee1998db450401a3973afa17b4cb16a",
+  "imageSha256": "ded5a50cc364d00c394f78ddbf9ac57763a2896cfba1fe1bbed9af9bc6ba4aa8",
+  "image": "G16-long-title-light.jpg"
+}

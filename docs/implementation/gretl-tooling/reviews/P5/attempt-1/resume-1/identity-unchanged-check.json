@@ -1,0 +1,396 @@
+{
+  "checkedAt": "2026-11-04T06:22:20.329Z",
+  "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+  "reviewWorktree": {
+    "repo": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product",
+    "head": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+    "headTree": "709c20b78ef95d1de644520e7606d020180572b3",
+    "statusPorcelain": "?? .opencode/agents/gretl-independent-review.md\n?? opencode.json",
+    "trackedDiffNames": "",
+    "stagedDiffNames": "",
+    "headMatchesCandidate": true,
+    "trackedClean": true
+  },
+  "advertisedProductRepo": {
+    "repo": "/Users/stefan/sources/gretl-runtime",
+    "head": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+    "trackedStatus": "",
+    "headMatchesCandidate": true,
+    "trackedClean": true
+  },
+  "requestDigests": {
+    "computedRequirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+    "requestRequirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+    "requirementsMatch": true,
+    "computedRepositoryRulesDigest": "4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b",
+    "requestRepositoryRulesDigest": "4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b",
+    "rulesMatch": true
+  },
+  "modelIdentity": {
+    "path": "/Users/stefan/.cache/gretl-tooling-review/p2-resume-readiness/identity.json",
+    "recordedSha256": "5b5f5180de93622c14265dcd7cd0368f2aa468c48366fa842f6bec08b21f6fce",
+    "actualSha256": "5b5f5180de93622c14265dcd7cd0368f2aa468c48366fa842f6bec08b21f6fce",
+    "hashStable": true,
+    "recordedValidated": true,
+    "recordedProvider": "deepseek",
+    "recordedModel": "deepseek-flash",
+    "recordedApiHost": "api.deepseek.com"
+  },
+  "requestArtifacts": [
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+      "expected": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+      "actual": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+      "expected": "d6e6325b78f80a1a7ad182fbfe1e0da91a9d2006fdd20e7d88c9f31bfa0efad4",
+      "actual": "d6e6325b78f80a1a7ad182fbfe1e0da91a9d2006fdd20e7d88c9f31bfa0efad4",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+      "expected": "89295663d87d448920c867ed7dca3b7ee34d7a86f635188719b120ef0f6d61fd",
+      "actual": "89295663d87d448920c867ed7dca3b7ee34d7a86f635188719b120ef0f6d61fd",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+      "expected": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+      "actual": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+      "expected": "fc69eeed1c4616c8c5e0310e3adec30f4d0a754d3d2da1dee4f32af128a10cab",
+      "actual": "fc69eeed1c4616c8c5e0310e3adec30f4d0a754d3d2da1dee4f32af128a10cab",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+      "expected": "ea2af71ed56d005e1dbe606113427be7d34d7e53c6f69a65c51128e30692462d",
+      "actual": "ea2af71ed56d005e1dbe606113427be7d34d7e53c6f69a65c51128e30692462d",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-lsp/target/tooling-dependencies.json",
+      "expected": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+      "actual": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-lsp/target/classes/gretl-protocol-v1.schema.json",
+      "expected": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6",
+      "actual": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/vscode/gretl-vscode/dist/gretl-runtime.vsix",
+      "expected": "0ded06d6be2eefdd8ab40f8b93f06bbe0cc0873ba0304e59f1f5fa248cdb1dae",
+      "actual": "0ded06d6be2eefdd8ab40f8b93f06bbe0cc0873ba0304e59f1f5fa248cdb1dae",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/vscode/gretl-vscode/dist/distribution-inventory.json",
+      "expected": "3d91be94d80da1802b16490f91deb0b20f5f1b6caf4e09fac38823ec27dabde8",
+      "actual": "3d91be94d80da1802b16490f91deb0b20f5f1b6caf4e09fac38823ec27dabde8",
+      "match": true
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/vscode/gretl-vscode/server/bundle-manifest.json",
+      "expected": "0082b30fac45247ccf9933d910a86aebd808aaadfbaf36d5cb857085d41b6af3",
+      "actual": "0082b30fac45247ccf9933d910a86aebd808aaadfbaf36d5cb857085d41b6af3",
+      "match": true
+    }
+  ],
+  "originalEvidenceFiles": [
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/request.json",
+      "sha256": "72ebfc66b941213e5732e4d3189d492cd86db38f9c6b4ba4263ac81a2c59222b",
+      "size": 6227,
+      "mtime": "2026-11-03T22:35:50.546Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/review.md",
+      "sha256": "9c1614461c0601ccd0cf17992ecd71e6f209229819b681e425bd9f0dc285f963",
+      "size": 15366,
+      "mtime": "2026-11-03T23:00:44.292Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/verdict.json",
+      "sha256": "caed463dac1a2b5f12e0c4c3821e0e6cedad5a36877d3fe24cec8db633d9a707",
+      "size": 35824,
+      "mtime": "2026-11-03T23:00:26.775Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/validation.json",
+      "sha256": "82d671216a01c8f5609d9d9570b91c640bc0650b020def6893d6c9596cdbc082",
+      "size": 141,
+      "mtime": "2026-11-03T23:01:33.844Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/process.json",
+      "sha256": "c3f4fc708aad527f38961269859aaaa70dfc2c70d1ef8beefa54e8b8455fd850",
+      "size": 15865,
+      "mtime": "2026-11-03T23:01:33.632Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gate-validation.json",
+      "sha256": "22c89ab90fcec038b24f8ab54a6c0c03708729bd65f078c688a9f4593a57e682",
+      "size": 8305,
+      "mtime": "2026-11-03T22:37:19.188Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-standard/manifest.json",
+      "sha256": "e05cb5e8d77f4ffb0151e4f4be64bfb33207c7235a12e3d741ce6d7f8c9b76d9",
+      "size": 215681,
+      "mtime": "2026-11-03T22:35:49.233Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-standard/command.log",
+      "sha256": "5300fad190216583b676957b7e4de947853bb7e6ab801b844923c2127937aac1",
+      "size": 161202,
+      "mtime": "2026-11-03T22:35:49.232Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-services/manifest.json",
+      "sha256": "5d64d9e1a5dc8604880e21b24a8d0c50b4f35fd8109470fe95b37366028ca425",
+      "size": 278648,
+      "mtime": "2026-11-03T22:35:49.434Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-services/command.log",
+      "sha256": "9d4c60e602f45327692475f4e93f3a04ba7b52e6c019fc3865387d895e3e2660",
+      "size": 188803,
+      "mtime": "2026-11-03T22:35:49.434Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/index.json",
+      "sha256": "a51e37d810f49fba9371b80d710ef0918633131f8a499f770eed0942c30eb0d7",
+      "size": 6200,
+      "mtime": "2026-11-03T22:29:42.046Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/files.json",
+      "sha256": "239fac0f084a09b8d8a38236a66f1856a82b6a693dd6a6d6c7260f3ad6e2070a",
+      "size": 71878,
+      "mtime": "2026-11-03T22:35:50.246Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/counterprobe-host.json",
+      "sha256": "cb4d0999a58f26c9b30c48bdc9756416da895853fe80b476f2055f330dabc51e",
+      "size": 768,
+      "mtime": "2026-11-03T22:56:13.266Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/counterprobe-host.mjs",
+      "sha256": "a1cfa8fdb57e7d5f61590ef5a4b54efdb8a338fc9ed5756b0ba9a4a8af755860",
+      "size": 4424,
+      "mtime": "2026-11-03T22:56:11.507Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/extension-runs.json",
+      "sha256": "439bf47c7dd2531346b80285fcce9d609ce38cf28b9566304c2385dab35138a4",
+      "size": 3009,
+      "mtime": "2026-11-03T22:39:21.662Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-tooling-targeted-summary.json",
+      "sha256": "4bd39e4a58f1bc0f47a24ad827fbf27813bf90d4aac7cf197a38b306cd82de60",
+      "size": 13115,
+      "mtime": "2026-11-03T22:56:56.135Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-review-contract.log",
+      "sha256": "beff37ad2f6ee2d0adad545782d3b3c714e80e720ca797abb046c7a70aa174be",
+      "size": 4779,
+      "mtime": "2026-11-03T22:57:14.716Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-tooling-docs.log",
+      "sha256": "01c98e6b1017159c1749ee3fc8b577a5d69639bc3610562de07c0bc91d265ce4",
+      "size": 85,
+      "mtime": "2026-11-03T22:57:14.794Z"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/completed-session-identity.json",
+      "sha256": "b0811e3a36512d8b0c824c7ac6a215945eff8dbabe45e48d0f106e4a6239d281",
+      "size": 14800,
+      "mtime": "2026-11-03T23:01:33.840Z"
+    }
+  ],
+  "guiInventory": {
+    "declaredFiles": 295,
+    "verified": 295,
+    "badCount": 0,
+    "bad": []
+  },
+  "bridgeRequests": [
+    {
+      "id": "003",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/003.json",
+      "sha256": "ba7c4180faed67638e4834cdeb20edf025fc1e883089a1be1c8d26803c3aa4d1",
+      "purpose": "Independent counterprobe baseline: open the subproject job in the isolated installed editor and capture its current native content before a cross-project rename test."
+    },
+    {
+      "id": "004",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/004.json",
+      "sha256": "a5f1ea9aafe68611b2ec5e9bb03540afc24308096e0672ac31bba7bf3f771754",
+      "purpose": "Independent cross-subproject counterprobe, step 1: select the action name child at its declaration in sub/job.groovy and rename it natively to renamedChild; the main job reference :sub:child must follow."
+    },
+    {
+      "id": "005",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/005.json",
+      "sha256": "6873405f9fdfd633602ad74ad7fcd7ebf3a53110d9d6fb25ff2695e92e4a8f22",
+      "purpose": "Independent cross-subproject counterprobe, step 2: open the main job and verify that the qualified reference now reads :sub:renamedChild."
+    },
+    {
+      "id": "006",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/006.json",
+      "sha256": "c20932d1310944e016ef4bbde2c522ef4b4d43913c3e6144768bfd85678bebf2",
+      "purpose": "Independent cross-subproject counterprobe, step 3: native Undo in the main job and verify the qualified reference reverts to :sub:child while the subproject declaration remains independent."
+    },
+    {
+      "id": "007",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/007.json",
+      "sha256": "d0b78dfbc3c8b85c2ebee401bd904176231da2a9a2b55190a9870630f1d0ecee",
+      "purpose": "Independent cross-subproject counterprobe, step 4: inspect the subproject job after the main-job Undo to determine whether its declaration still shows renamedChild."
+    },
+    {
+      "id": "008",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/008.json",
+      "sha256": "c011b814f545f7aa84d259314e6fd018f24cff7b53e42cd87de4d40ad81c54de",
+      "purpose": "Independent cross-subproject counterprobe, step 5: native Redo in the main job after the observed undo, verifying that the qualified reference and the subproject declaration are restored together."
+    },
+    {
+      "id": "009",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/009.json",
+      "sha256": "a314c2bae814a351e6a138b5a6e9ea68971a375e6549b562870e34fcb498a08a",
+      "purpose": "Independent cross-subproject counterprobe, step 6: inspect the subproject declaration after the native Redo to confirm it was restored to renamedChild together with the main-job reference."
+    }
+  ],
+  "bridgeResponses": [
+    {
+      "id": "003",
+      "jsonPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.json",
+      "jsonSha256": "559ebafbc4086b0d59517a731e43e64023b8bb5f651a34ef9e0b583ca1c27aa7",
+      "at": "2026-11-04T06:12:38.593Z",
+      "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "transportOnly": true,
+      "failure": null,
+      "pngPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.png",
+      "pngSha256": "fac63f7e681fa62e06aad62bb6b0e0fb76e652bd27940794cd1f6b4be8e610c1",
+      "pngDeclaredSha256": "fac63f7e681fa62e06aad62bb6b0e0fb76e652bd27940794cd1f6b4be8e610c1",
+      "pngHashMatches": true,
+      "axPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.ax.txt",
+      "axSha256": "44afae047657910ab0823c8ddd006deae6104392eb8a20efef8ee0b0ec5b8531",
+      "axDeclaredSha256": "44afae047657910ab0823c8ddd006deae6104392eb8a20efef8ee0b0ec5b8531",
+      "axHashMatches": true
+    },
+    {
+      "id": "004",
+      "jsonPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.json",
+      "jsonSha256": "e4a5502864abc726dab7cccf57eb2517664360ed098a02c94e5c4e55632ff9dd",
+      "at": "2026-11-04T06:14:16.226Z",
+      "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "transportOnly": true,
+      "failure": null,
+      "pngPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.png",
+      "pngSha256": "b96cee494182bba685a38b463af2a6bf586f64f7685356b4e40165d42b97d387",
+      "pngDeclaredSha256": "b96cee494182bba685a38b463af2a6bf586f64f7685356b4e40165d42b97d387",
+      "pngHashMatches": true,
+      "axPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.ax.txt",
+      "axSha256": "66f74007452be683b8717ca0cbc2cf5cce13c14c3d07ef6061c38c3a109e6018",
+      "axDeclaredSha256": "66f74007452be683b8717ca0cbc2cf5cce13c14c3d07ef6061c38c3a109e6018",
+      "axHashMatches": true
+    },
+    {
+      "id": "005",
+      "jsonPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.json",
+      "jsonSha256": "e70033c7e380f3388be7e667079103e604938100eb1073aab70cfeb86965fdd1",
+      "at": "2026-11-04T06:14:53.667Z",
+      "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "transportOnly": true,
+      "failure": null,
+      "pngPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.png",
+      "pngSha256": "022354d2b6e36b27f7debbc2de54d537360d2a15e455dda604688dc6528fcaac",
+      "pngDeclaredSha256": "022354d2b6e36b27f7debbc2de54d537360d2a15e455dda604688dc6528fcaac",
+      "pngHashMatches": true,
+      "axPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.ax.txt",
+      "axSha256": "6aedbcd1586c7e5ca62f0824234a33249ebdce1a184f1d0ecaa015295d4481fc",
+      "axDeclaredSha256": "6aedbcd1586c7e5ca62f0824234a33249ebdce1a184f1d0ecaa015295d4481fc",
+      "axHashMatches": true
+    },
+    {
+      "id": "006",
+      "jsonPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.json",
+      "jsonSha256": "2607ade173a19af43255eacd9209ff48ce2ddf4d9a0d823cb4a0473880b9ae81",
+      "at": "2026-11-04T06:15:06.137Z",
+      "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "transportOnly": true,
+      "failure": null,
+      "pngPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.png",
+      "pngSha256": "3f471c293f6ae843c1d99a2d74f1f922db50e9a4f90b786f60dc86c82b776b09",
+      "pngDeclaredSha256": "3f471c293f6ae843c1d99a2d74f1f922db50e9a4f90b786f60dc86c82b776b09",
+      "pngHashMatches": true,
+      "axPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.ax.txt",
+      "axSha256": "534bf140a21dabdc56ee2f2347bf49def9fdae063fa30e9733759fdb093979f3",
+      "axDeclaredSha256": "534bf140a21dabdc56ee2f2347bf49def9fdae063fa30e9733759fdb093979f3",
+      "axHashMatches": true
+    },
+    {
+      "id": "007",
+      "jsonPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.json",
+      "jsonSha256": "ab19fc14011bfe0d5a3df749cc740cefedb81a01be98ac9fab1e4211d632083a",
+      "at": "2026-11-04T06:15:41.260Z",
+      "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "transportOnly": true,
+      "failure": null,
+      "pngPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.png",
+      "pngSha256": "982a57b99d2182fd030f25b66a3c43bcc2f7a960f0b6f09fc728d40a4b36bce1",
+      "pngDeclaredSha256": "982a57b99d2182fd030f25b66a3c43bcc2f7a960f0b6f09fc728d40a4b36bce1",
+      "pngHashMatches": true,
+      "axPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.ax.txt",
+      "axSha256": "b5bdb7f7b94b57493b1d2dbedec4ce46bc64119debc175c442d36fe49001bb41",
+      "axDeclaredSha256": "b5bdb7f7b94b57493b1d2dbedec4ce46bc64119debc175c442d36fe49001bb41",
+      "axHashMatches": true
+    },
+    {
+      "id": "008",
+      "jsonPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.json",
+      "jsonSha256": "5adcf962d0eebcebde1fbee18d865be1e8c76139d0d49aad661e401d88584348",
+      "at": "2026-11-04T06:17:26.899Z",
+      "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "transportOnly": true,
+      "failure": null,
+      "pngPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.png",
+      "pngSha256": "24bd9c17863f118fc5c72709402f70eef30969e054a1a0fb7a5cf01d9432d6a9",
+      "pngDeclaredSha256": "24bd9c17863f118fc5c72709402f70eef30969e054a1a0fb7a5cf01d9432d6a9",
+      "pngHashMatches": true,
+      "axPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.ax.txt",
+      "axSha256": "2ded9f54c32f0b925447dbc6b2ce41c8b9afdb712a920f976543ef74f66f2da2",
+      "axDeclaredSha256": "2ded9f54c32f0b925447dbc6b2ce41c8b9afdb712a920f976543ef74f66f2da2",
+      "axHashMatches": true
+    },
+    {
+      "id": "009",
+      "jsonPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.json",
+      "jsonSha256": "bdfa719c5bd30cca6328a30c91ce10e67270d398fb76436530e8aeeb3051e4fa",
+      "at": "2026-11-04T06:18:11.802Z",
+      "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "transportOnly": true,
+      "failure": null,
+      "pngPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.png",
+      "pngSha256": "bf07f1a8870008973d36905950f1577dd339555ca14dda8b23cd9ecd8cefce97",
+      "pngDeclaredSha256": "bf07f1a8870008973d36905950f1577dd339555ca14dda8b23cd9ecd8cefce97",
+      "pngHashMatches": true,
+      "axPath": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.ax.txt",
+      "axSha256": "014295dd221722ce943ad97d037dfa79a35a949e67f9e128e2ac02681a88408d",
+      "axDeclaredSha256": "014295dd221722ce943ad97d037dfa79a35a949e67f9e128e2ac02681a88408d",
+      "axHashMatches": true
+    }
+  ],
+  "errors": [],
+  "ok": true
+}

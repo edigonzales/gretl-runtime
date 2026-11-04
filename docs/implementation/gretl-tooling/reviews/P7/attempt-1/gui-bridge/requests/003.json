@@ -1,0 +1,25 @@
+{
+  "id": "003",
+  "purpose": "Select producer and consumer in the result-binding form without source changes.",
+  "actions": [
+    {
+      "kind": "click",
+      "label": "pop up button Description: Producer"
+    },
+    {
+      "kind": "click",
+      "label": "producer"
+    },
+    {
+      "kind": "click",
+      "label": "pop up button Description: Consumer"
+    },
+    {
+      "kind": "click",
+      "label": "consumer"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

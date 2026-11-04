@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T13:59:53.138Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "cf0f38527c16b050b89841d0fa76f3be9a453af8e1fd7f2ae37a42f91645a208",
+  "imageSha256": "4463d1fc2dabb9a5b1c4a157ac4f2ca2ca04d1d87b20cd3e8ed74ffe575ace8d",
+  "image": "G08-dirty-settings-problems.jpg"
+}

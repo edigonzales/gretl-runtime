@@ -1,0 +1,63 @@
+{
+  "kind": "CLI_COMPLETED_IMAGE_READ_WITNESSES",
+  "originalStream": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/opencode.jsonl",
+  "originalStreamSha256": "9aeb3ba2f36cddf723b0635cdbde50594fe4d54b8e734615cbb0a609c439711a",
+  "note": "Actual image reads include the typed binding form, applied result, Undo, layout, restart, native save prompt, explicit discard and reopened source. The empty-form intermediate frame 004 was superseded by the personally read typed frame 005.",
+  "reads": [
+    {
+      "eventNumber": 300,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/001.jpg",
+      "sha256": "a8b5f4f13b46beff804ed512648c23a5f12ea053dade0266414ab8decb1d893e"
+    },
+    {
+      "eventNumber": 345,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/002.jpg",
+      "sha256": "f258f1dab93e36c224f8de584ed9445687c1a82388bfc6c931080fdf6b746ab0"
+    },
+    {
+      "eventNumber": 365,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/003.jpg",
+      "sha256": "2ec79d21f933f8923483d916735f0786f67399e44375d1600ff4f03d4a2be56b"
+    },
+    {
+      "eventNumber": 402,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/005.jpg",
+      "sha256": "affebed5d970fe383a641ef0a881d3a137aad89748fceda27facfc048d71af99"
+    },
+    {
+      "eventNumber": 428,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/006.jpg",
+      "sha256": "ba8542bf8f640a045a4c8309110b38c6394e1f99e970ef1fac5ef0cf999904ce"
+    },
+    {
+      "eventNumber": 446,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/007.jpg",
+      "sha256": "85b33d6de22fdb77d9556995bb4eedd63c291214cde60d6233d424a48816d93a"
+    },
+    {
+      "eventNumber": 463,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/008.jpg",
+      "sha256": "32554ecd15c5ebf48778fb114fa926393fce4576e2af94bddd027e2860efbbfe"
+    },
+    {
+      "eventNumber": 480,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/009.jpg",
+      "sha256": "30251ee588830850a6cb1b70e47f5dae92626cd3db92366d7db3ebb3ca244d31"
+    },
+    {
+      "eventNumber": 511,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/010.jpg",
+      "sha256": "e494c7b9ac39a540468cff48049193b798f542577daef0243c9b18f1e89a34b6"
+    },
+    {
+      "eventNumber": 525,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/011.jpg",
+      "sha256": "eca8db88302d945f019b41d9e9e87b080c483b3e166c51ee12a5138bfe6c4eeb"
+    },
+    {
+      "eventNumber": 544,
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/012.jpg",
+      "sha256": "fc7a74868ae5ab0464f465720c3d8c5d727d298273d499b31a0c1bd9a4e84c02"
+    }
+  ]
+}

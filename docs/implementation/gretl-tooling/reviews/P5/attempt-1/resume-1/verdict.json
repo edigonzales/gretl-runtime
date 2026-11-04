@@ -1,0 +1,802 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "00135986-ec7f-4bdb-859c-40b7d3a053bc",
+  "phase": "P5",
+  "assignmentBase": "185fc6700b5cb2897f724d457610a57f059b3421",
+  "phaseBase": "0212c2feb567abd4a3a9aa77015f18b3e04be398",
+  "candidateSha": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+  "requirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+  "verdict": "PASS",
+  "reviewer": {
+    "openCodeVersion": "2.2.5",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "apiHost": "api.deepseek.com",
+    "modelMappingEvidence": "/Users/stefan/.cache/gretl-tooling-review/p2-resume-readiness/identity.json"
+  },
+  "criteria": [
+    {
+      "id": "P5-01",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-final-artifact-gui/qualification.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-final-artifact-gui/distribution-inventory.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-final-artifact-gui/bundle-manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-final-artifact-gui/lifecycle.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G01-installed-identity.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G01-installed-identity.png"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P5-02",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/package.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/src/host.ts",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G05-subproject-definition.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G02-explicit-job-current.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G02-explicit-job-current.json"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P5-03",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G02-enum-suggest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G03-result-hover.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G03-signature.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G04-problems-en.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G05-task-references.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G09-final-native.json"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P5-04",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G06-rename-applied.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G06-rename-undo.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G06-rename-redo.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G07-applied.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G07-stale-offer-host.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/src/edit-guard.ts",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/src/extension.ts",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/extension-npm-test.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/README.md",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/status.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.png"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P5-05",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G01-template-saved.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G01-template-saved.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G09-final-native.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G10-missing-java.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/README.md",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/package.json"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P5-06",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G09-final-native.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G09-final-native.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/crash-recovery.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/crash-recovery.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/crash-1.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/crash-2.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/crash-3.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/server-lifecycle-with-crashes.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/src/process.ts"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P5-07",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/package.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/src/extension.ts",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode/src/host.ts",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G10-untrusted.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G10-untrusted.png"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P5-08",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/index.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/files.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gate-validation.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-final-artifact-gui/qualification.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-final-artifact-gui/provider-tests-1793744933014.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/status.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/003.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/005.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/007.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/009.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/resume-1/identity-unchanged-check.json"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P5-09",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gate-validation.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-standard/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-standard/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-services/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-services/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-tooling-targeted-summary.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-review-contract.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-tooling-docs.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/extension-runs.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/counterprobe-host.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/005.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/007.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/009.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/resume-1/identity-unchanged-check.json"
+      ],
+      "findingIds": []
+    }
+  ],
+  "executedChecks": [
+    {
+      "id": "tooling-targeted",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-language-contract,gretl-tooling-core,gretl-lsp",
+        "verify"
+      ],
+      "exitCode": 0,
+      "testCount": 185,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-tooling-targeted-summary.json"
+      ]
+    },
+    {
+      "id": "review-contract",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product",
+      "argv": [
+        "node",
+        "--test",
+        "tools/gretl-tooling/review.test.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": 32,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-review-contract.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-node-affected.json"
+      ]
+    },
+    {
+      "id": "tooling-docs",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product",
+      "argv": [
+        "node",
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": null,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-tooling-docs.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-node-affected.json"
+      ]
+    },
+    {
+      "id": "extension-tests",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode",
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "testCount": 17,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/extension-runs.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/extension-npm-test.log"
+      ]
+    },
+    {
+      "id": "extension-package",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product/vscode/gretl-vscode",
+      "argv": [
+        "npm",
+        "run",
+        "package"
+      ],
+      "exitCode": 0,
+      "testCount": 2,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/extension-runs.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/extension-npm-package.log"
+      ]
+    },
+    {
+      "id": "counterprobe-host",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence",
+      "argv": [
+        "node",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/counterprobe-host.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": 5,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/counterprobe-host.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/counterprobe-host.mjs"
+      ]
+    }
+  ],
+  "verifiedCurrentEvidence": [
+    {
+      "checkIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "candidateSha": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+      "artifacts": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+          "sha256": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+          "kind": "tooling-distribution"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+          "sha256": "d6e6325b78f80a1a7ad182fbfe1e0da91a9d2006fdd20e7d88c9f31bfa0efad4",
+          "kind": "tooling-distribution"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+          "sha256": "89295663d87d448920c867ed7dca3b7ee34d7a86f635188719b120ef0f6d61fd",
+          "kind": "tooling-distribution"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+          "sha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+          "kind": "tooling-distribution"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+          "sha256": "fc69eeed1c4616c8c5e0310e3adec30f4d0a754d3d2da1dee4f32af128a10cab",
+          "kind": "tooling-distribution"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+          "sha256": "ea2af71ed56d005e1dbe606113427be7d34d7e53c6f69a65c51128e30692462d",
+          "kind": "lsp-server-or-protocol"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-lsp/target/tooling-dependencies.json",
+          "sha256": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+          "kind": "lsp-server-or-protocol"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/gretl-lsp/target/classes/gretl-protocol-v1.schema.json",
+          "sha256": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6",
+          "kind": "lsp-server-or-protocol"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/vscode/gretl-vscode/dist/gretl-runtime.vsix",
+          "sha256": "0ded06d6be2eefdd8ab40f8b93f06bbe0cc0873ba0304e59f1f5fa248cdb1dae",
+          "kind": "installed-editor"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/vscode/gretl-vscode/dist/distribution-inventory.json",
+          "sha256": "3d91be94d80da1802b16490f91deb0b20f5f1b6caf4e09fac38823ec27dabde8",
+          "kind": "tooling-distribution"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/artifacts/vscode/gretl-vscode/server/bundle-manifest.json",
+          "sha256": "0082b30fac45247ccf9933d910a86aebd808aaadfbaf36d5cb857085d41b6af3",
+          "kind": "tooling-distribution"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gate-validation.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-standard/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-standard/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-services/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/root-services/command.log"
+      ],
+      "verification": "Supplied fresh raw gates were validated without rerunning them: both manifests name candidate 4520ee6960d8b0857fad828f972a44950c5aeb09 with dirty=\"\" and exit 0; every captured Surefire/Failsafe XML was rehashed, timestamp-checked and summed to root-standard 910/0/0/0 over 634 files and root-services 966/0/0/0 over 819 files; both command logs end in BUILD SUCCESS. All eleven request artifacts were rehashed and match. The 295-file GUI inventory matches its declared SHA-256 values. In der fortgesetzten Prüfung wurden dieselben Manifesthashes (e05cb5e8…, 5d64d9e1…), alle elf Artefakt-Hashes und alle 295 GUI-Inventarhashes ohne Abweichung erneut geprüft; die Rootgates wurden dabei nicht erneut ausgeführt."
+    }
+  ],
+  "guiEvidence": [
+    {
+      "caseIds": [
+        "G01"
+      ],
+      "kind": "verified-current",
+      "actions": "Installierter VSIX in einer echten VS-Code-Instanz geöffnet; Extension-Karte und Jobtemplate-Datei über die native Oberfläche betrachtet.",
+      "observations": "Eigene Extension-ID edigonzales.gretl-runtime-vscode, Version 0.1.0 und installierte VSIX-Karte sichtbar; gültige Vorlage new-template.groovy ohne Jobausführung gespeichert.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G01-installed-identity.png",
+          "sha256": "46a3db4e5a227428dc889394d46db1d577d33fdc1d99d12a92db026c5fcc703e",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G01-template-saved.png",
+          "sha256": "73626280b06f51e7304aa060980e43a85bb0c385689a07026887db3d715723c2",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G01-installed-identity.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G01-template-saved.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-final-artifact-gui/qualification.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/index.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G02"
+      ],
+      "kind": "verified-current",
+      "actions": "In einem echten Editor Completion für Enum, Feld, Parameter und Operation ausgelöst und Vorschläge per Tastatur angenommen.",
+      "observations": "Sichtbare, quellgenaue Vorschläge; angenommener Enum-Text ZIP steht im aktuellen Buffer; expliziter Alternativjob new-template.groovy wird als gretl-Sprache erkannt.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G02-enum-suggest.png",
+          "sha256": "c414bfcfbb0d1ad0e3b2ff7f6388ad3ce57bb679312661730f545fa39826e85e",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G02-enum-accepted.png",
+          "sha256": "a0a3c45030e4f03448a41a1cd01561923427e38f2f1cbc0ba7f16eab3b1ba1fe",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G02-enum-suggest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G02-enum-accepted.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G02-explicit-job-current.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/index.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G03"
+      ],
+      "kind": "verified-current",
+      "actions": "Hover über Operation, Feld und Result-Ausgabe sowie Signaturhilfe in einem echten Editor aufgerufen.",
+      "observations": "Echte DSL-Dokumentation und Signaturhilfe sichtbar; Hovertexte stimmen mit den Quellpositionen überein.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G03-result-hover.png",
+          "sha256": "8ffd82b0a9b825697b1298bed762b2af171f4ed585679a064d92ba76a71649a9",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G03-signature.png",
+          "sha256": "638490fb154d6a5606507fc36aa725803e54239c21a4a6d46c37ed1f3a6faf03",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G03-result-hover.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G03-signature.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G03-operation-hover.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G03-field-hover.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G04"
+      ],
+      "kind": "verified-current",
+      "actions": "Ungültige Source in einem echten Workspace geöffnet und die Problems-Ansicht ohne und mit Taskstruktur sowie in deutscher Anzeige geprüft.",
+      "observations": "RESULT_DEPENDENCY_REQUIRED erscheint an korrekter URI/Range; die Diagnose bleibt ohne Taskstruktur erhalten; deutsche Anzeige geprüft.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G04-problems-en.png",
+          "sha256": "401fe7dc066334c00b880845d70d52fcccc18facccbfce0968cd92d4ab2a6483",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G04-german-diagnostic.png",
+          "sha256": "bdc14dc2c5c26a32559b9f02636f094427b193230ddbcff5235af631b11bfb2a",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G04-problems-en.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G04-german-diagnostic.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G04-taskless-syntax.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G05"
+      ],
+      "kind": "verified-current",
+      "actions": "Definition und References für Dependency, Result, Parameter, qualifiziertes Subprojektziel und drei Taskreferenzen über die native Navigation aufgerufen.",
+      "observations": "Alle Ziele werden quellgenau aufgelöst; drei Taskreferenzen sichtbar; keine Auflösung in ein fremdes Workspaceprojekt.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G05-task-references.png",
+          "sha256": "7520bda1460ee2e09d3ba8ad94cf5accd2ca564462d74a287bc7a70d958748ea",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G05-task-references.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G05-subproject-definition.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G05-dependency-definition.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G05-result-definition.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G05-parameter-definition.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G06"
+      ],
+      "kind": "verified-current",
+      "actions": "Nativer F2-Rename auf einer Taskdeklaration, danach natives Undo und Redo.",
+      "observations": "Deklaration und beide Literalreferenzen wurden gemeinsam geändert; Kommentar und Emoji blieben erhalten; Undo stellte alle drei Stellen wieder her, Redo wandte sie erneut an; Buffer blieb dirty.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G06-rename-applied.png",
+          "sha256": "a5d121f6ead94091929e302c2857dbd30b153e84819d3c2af21a0805aaca394f",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G06-rename-undo.png",
+          "sha256": "047456ce897f690865854adb577b7c786dc2f24a0a25eba8d8cb635224f34eba",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G06-rename-redo.png",
+          "sha256": "4a0aa777c83f5fb1b6a5cc51e2359d35d499e8a2d1ae8dd16e4c689e21ff2aa5",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G06-rename-applied.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G06-rename-undo.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G06-rename-redo.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G07"
+      ],
+      "kind": "verified-current",
+      "actions": "Dependency-Diagnose mit QuickFix-Angebot recovert, Fix angewendet und einen veralteten Host-Fix angeboten.",
+      "observations": "Angewendeter Fix setzte genau eine korrekt gequotete Dependency und leerte die Problems-Liste; der veraltete Host-Fix wurde bei geänderter Version ohne Textänderung abgelehnt.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G07-before.png",
+          "sha256": "759bc18d7e485d47096e402d51140b8e56dd10c93b4db6ecb56bf89106888e31",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G07-applied.png",
+          "sha256": "d30846833c6bb5b350a23cfd034f6dac10f49ca37bd442255557b030a591a1d4",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G07-before.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G07-applied.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G07-stale-offer-host.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G08"
+      ],
+      "kind": "verified-current",
+      "actions": "Ungespeicherte Settings-Include-Diagnose und Dirty-SQL-Diagnose im echten Editor erzeugt und korrigiert, ohne zu speichern oder neu zu starten.",
+      "observations": "PROJECT_ENTRY_MISSING am vorhandenen Literal, nach Korrektur zurückgezogen; Dirty-SQL zeigte SQL_PARAMETER_MISSING und war nach der Korrektur sofort leer.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G08-settings-missing-current.png",
+          "sha256": "29b60c7babd547eb009ec4022cc9a1f3d8310c26d92d618c121026a0807a9840",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G08-settings-restored-current.png",
+          "sha256": "5af4eb6a429672092e574a55e0694b9706fecf96d4468db22735f7a2f7f69841",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G08-sql-bad-current.png",
+          "sha256": "b9df453695ba9ef8400b736f77436e94d1710131b515ad6ff59effa492687cfc",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G08-sql-cleared-current.png",
+          "sha256": "cd883296e3b1e05f79c54f56b61062ef3e5829e255b7a15fe3e4e01d19c841e5",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G08-settings-missing-current.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G08-settings-restored-current.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G08-sql-bad-current.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G08-sql-cleared-current.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G09"
+      ],
+      "kind": "verified-current",
+      "actions": "Begrenzten Crash/Neustart des Servers ausgelöst und den Editorzustand sowie Prozesslebenszyklus beobachtet.",
+      "observations": "Neue Serverinstanz, GRETL: Ready, intakte Dirtybuffer und sichtbare Outline download/query; alter Prozess beendet, kein Dauerprozess.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G09-final-native.png",
+          "sha256": "5f2acc362856da39967dc3660b2f4ba42c48942239266fcdebf26bfc06b8b46e",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/crash-recovery.png",
+          "sha256": "0dd578b04d3318545dc5c442607a8a4a1209b2bb75cf7cc62f97ef026c29b4ee",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/cases/G09-final-native.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/crash-recovery.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/crash-1.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/crash-2.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/crash-3.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-5-gui/server-lifecycle-with-crashes.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G09-server-instances.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G10"
+      ],
+      "kind": "verified-current",
+      "actions": "Untrusted Workspace, fehlenden Java-Pfad, fehlendes Bundle und Erholung mit echtem Java 25 bei Unicode-/Leerzeichen-/Metazeichenpfaden geprüft.",
+      "observations": "GRETL: Workspace trust required und Restricted Mode sichtbar; verständliche Fehler für fehlendes Java/Bundle; Erholung mit echtem Java 25 und identischem JAR funktioniert auch bei schwierigen Pfaden.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G10-untrusted.png",
+          "sha256": "fbe392aa0c34220f2e10762d41172fb6d1b335f0f0c3fb3db99bbb9bff3f6589",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G10-missing-java.png",
+          "sha256": "2d5e0d974c5db79a9d22b896527c875423f04e0c1b9d93f61b4d502abbee5076",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G10-recovery-paths-valid-jdk.png",
+          "sha256": "4cd30517bfd1633a15fc3ed90730c25c68fca7a32a5490daa232d2557ef8cb64",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-2-gui/cases/G10-untrusted.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G10-missing-java.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G10-missing-bundle.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G10-recovery-paths-valid-jdk.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui/P5-candidate-4-gui/cases/G10-profile-restored.json"
+      ]
+    },
+    {
+      "caseIds": [
+        "G06"
+      ],
+      "kind": "own-run",
+      "actions": "Isolierter installierter VS-Code: sub/job.groovy geöffnet, action('child') per nativer Suche/Escape/F2/Eingabe/Return zu renamedChild umbenannt; anschliessend Hauptjob geöffnet und die qualifizierte Referenz geprüft; natives Undo im Hauptjob und natives Redo; jede Stufe mit AX und Screenshot belegt.",
+      "observations": "Request 004: AX-Meldung \"Successfully renamed 'child' to 'renamedChild'. Summary: Made 2 text edits in 2 files\"; 004.png zeigt action('renamedChild') und Outline renamedChild. 005/008.png zeigen in Hauptjobzeile 12 action('done', dependsOn:['extract', ':sub:renamedChild']); 006.png zeigt nach Undo wieder :sub:child; 007.png zeigt im Subjob nach Undo wieder action('child'); 009.png zeigt nach Redo wieder action('renamedChild') und Outline renamedChild. Kommentar/Emoji in Zeile 1 blieben erhalten. Alle sieben Bilder und AX-Texte wurden selbst gesichtet; PNG-/AX-Hashes stimmen. Dirty-Badges und der ausgeblendete Find-Zähler wurden wegen Umgebungsspeicherung/Stale-Widget nicht als Beweis verwendet.",
+      "screenshots": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.png",
+          "sha256": "fac63f7e681fa62e06aad62bb6b0e0fb76e652bd27940794cd1f6b4be8e610c1",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.png",
+          "sha256": "b96cee494182bba685a38b463af2a6bf586f64f7685356b4e40165d42b97d387",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.png",
+          "sha256": "022354d2b6e36b27f7debbc2de54d537360d2a15e455dda604688dc6528fcaac",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.png",
+          "sha256": "3f471c293f6ae843c1d99a2d74f1f922db50e9a4f90b786f60dc86c82b776b09",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.png",
+          "sha256": "982a57b99d2182fd030f25b66a3c43bcc2f7a960f0b6f09fc728d40a4b36bce1",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.png",
+          "sha256": "24bd9c17863f118fc5c72709402f70eef30969e054a1a0fb7a5cf01d9432d6a9",
+          "kind": "native-screenshot"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.png",
+          "sha256": "bf07f1a8870008973d36905950f1577dd339555ca14dda8b23cd9ecd8cefce97",
+          "kind": "native-screenshot"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/README.md",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/status.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/003.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/005.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/007.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/009.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.png"
+      ]
+    }
+  ],
+  "counterprobes": [
+    {
+      "id": "CP-HOST-01",
+      "hypothesis": "Die diskbasierte Edit-Vorbedingung muss die exakte 4-MiB-Grenze akzeptieren, 4 MiB + 1 Byte ablehnen, ungültiges UTF-8 niemals als hashbare Quelle behandeln, einen nach der Capture eingeführten Elternverzeichnis-Symlink nicht verfolgen und einen Lone-Low-Surrogate verlustfrei UTF-16BE hashen.",
+      "novelty": "Der gelieferte Guard-Test deckt 4 MiB + 1 Byte, einen Datei-Symlink und einen Lone-High-Surrogate ab, aber nicht die exakte Grenze, ungültiges UTF-8, einen Eltern-Symlink oder einen Lone-Low-Surrogate.",
+      "actions": "edit-guard.ts und host.ts mit dem Produkt-esbuild gebündelt und fünf isolierte Dateisystem-/Hashfälle in einem temporären Verzeichnis ausgeführt.",
+      "expected": "Alle fünf Fälle bestehen ohne Produktänderung; ungültige Quellen und Eltern-Symlinks werden abgelehnt, gültige Grenzfälle hashbar.",
+      "observed": "Alle fünf Fälle bestanden; counterprobe-host.json meldet passed=true, exit 0, keine Änderung an Produktdateien.",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/counterprobe-host.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/counterprobe-host.mjs"
+      ]
+    },
+    {
+      "id": "CP-GUI-01",
+      "hypothesis": "Ein nativer F2-Rename der Subprojektdeklaration child in sub/job.groovy muss die qualifizierte Hauptjobreferenz :sub:child mitändern; ein natives Undo im Hauptjob muss beide Stellen zurücksetzen und ein natives Redo beide wiederherstellen.",
+      "novelty": "Die gelieferten G06-Belege zeigen einen lokalen Task-Rename mit Undo/Redo im selben Job, G07 einen QuickFix; der neue Fall überschreitet die Subprojektgrenze über eine qualifizierte Literalreferenz und prüft das dateiübergreifend gekoppelte Undo/Redo in der real installierten Oberfläche.",
+      "actions": "Requests 003–009 über die native GUI-Bridge: Baseline öffnen; F2-Rename in sub/job.groovy; Hauptjobreferenz prüfen; natives Undo im Hauptjob; Subjob prüfen; natives Redo im Hauptjob; Subjob prüfen.",
+      "expected": "Deklaration und qualifizierte Referenz werden gemeinsam geändert; Kommentar und Emoji bleiben erhalten; Undo setzt beide zurück; Redo stellt beide wieder her; keine Produktänderung.",
+      "observed": "Genau so beobachtet: AX-Rename-Meldung mit 2 Textedits in 2 Dateien; Hauptjob :sub:renamedChild (005/008), nach Undo :sub:child (006) und Subjob action('child') (007), nach Redo wieder :sub:renamedChild und action('renamedChild') (008/009). Alle sieben PNGs und AX-Texte selbst geprüft, deklarierte Hashes 7/7 verifiziert. Die isolierte Fixture wurde vom Editor um 06:14:15Z auf Platte gespeichert (identische mtimes beider Dateien, vorbestehender SQL-Overlay-Block), daher wurden Dirty-Anzeigen nicht als Nachweis verwendet; Produktdateien blieben unverändert.",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/README.md",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/status.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/001.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/001.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/002.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/003.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/005.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/007.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/requests/009.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.ax.txt",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/003.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/004.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/005.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/006.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/007.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/008.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/gui-bridge/responses/009.png",
+        "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/resume-1/identity-unchanged-check.json"
+      ]
+    }
+  ],
+  "openMandatoryFindings": [],
+  "missingRequiredChecks": [],
+  "report": "review.md",
+  "summary": "Alle neun P5-Kriterien sind durch die gelieferten frischen Rootgates, elf hashgleiche Artefakte, 295 hashgleiche GUI-Dateien und G01–G10 gestützt; die gezielten Java-, Node-, Extension-, Paket- und Doku-Prüfungen sowie die Host-Gegenprobe sind grün. Der ursprüngliche BLOCKED-Grund (Review-Transport) ist behoben: Nach manueller Entsperrung und Rebind wurden 002/003 beantwortet; die eigene native Cross-Subprojekt-Rename-Gegenprobe (Requests 004–009) zeigt Rename samt qualifizierter Hauptjobreferenz, gekoppeltes Undo und Redo in beiden Dateien. Kein offenes Mussfinding, keine Produktänderung, keine Wiederholung der Rootgates, keine Veröffentlichung und kein produktiver Job."
+}

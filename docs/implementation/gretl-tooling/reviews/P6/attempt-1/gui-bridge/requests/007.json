@@ -1,0 +1,8 @@
+{
+  "id": "007",
+  "purpose": "Reviewer independent native probe setup: reveal the exact pinned text source of the focused Main modeler via Show source, keeping the modeler panel available",
+  "actions": [
+    {"kind": "click", "label": "Show source"},
+    {"kind": "observe"}
+  ]
+}

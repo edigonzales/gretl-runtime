@@ -1,0 +1,1 @@
+select '${tableName}' as value;

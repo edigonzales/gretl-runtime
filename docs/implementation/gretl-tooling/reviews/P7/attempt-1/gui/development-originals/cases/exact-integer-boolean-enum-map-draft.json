@@ -1,0 +1,11 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "sourceCommit": "230e6ccb977414d6fcb5eff5798a16bb9cd6da81",
+  "sourceDirty": true,
+  "vsixSha256": "0c9062ae757bc2473ee4cd6169a7e3574182c30b123f7339ac07a4e801cdf745",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "time": "2026-11-04T09:38:27.122Z",
+  "axSha256": "c7e08d7442fd6038d8db09b2c0cb4b4668b324214056029b01ffd4ea0b908b05",
+  "screenshot": "exact-integer-boolean-enum-map-draft.jpg",
+  "screenshotSha256": "241adf451635799b1a0b365da84f6a5cc924e70f7c9e9b1fef0e52a47f0bab5e"
+}

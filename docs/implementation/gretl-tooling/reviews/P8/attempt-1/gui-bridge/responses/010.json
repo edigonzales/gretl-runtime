@@ -1,0 +1,23 @@
+{
+  "id": "010",
+  "purpose": "G30 reopen preparation: close only the active Modeler after restart and observe which editor remains active, without resolving any dirty prompt.",
+  "actions": [
+    {
+      "kind": "command",
+      "completed": true
+    },
+    {
+      "kind": "observe",
+      "completed": true
+    }
+  ],
+  "error": "Buffer capture: Error: No guarded command center",
+  "transportOnly": true,
+  "acceptanceVerdict": null,
+  "image": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/010.jpg",
+  "ax": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/010.ax.txt",
+  "buffers": null,
+  "artifactSourceCommit": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "vsixSha256": "c501014f5b1e7bfd26596e6d8cb5df49ff8d89560dc04dfcbbcc11995719fb6e",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e"
+}

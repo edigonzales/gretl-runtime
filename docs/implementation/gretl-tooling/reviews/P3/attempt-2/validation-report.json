@@ -1,0 +1,135 @@
+{
+  "requirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+  "repositoryRulesDigest": "4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b",
+  "gates": [
+    {
+      "id": "root-standard",
+      "sha": "96688a5b2436c25504dbfbb33ce375a002b3cee0",
+      "dirty": "",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "clean",
+        "verify"
+      ],
+      "startedAt": "2026-11-03T17:40:32.734Z",
+      "endedAt": "2026-11-03T17:46:36.399Z",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "declaredCounts": {
+        "tests": 881,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "captured": 623,
+      "copiedHashOk": 623,
+      "originalHashOk": 623,
+      "copiedMissing": 0,
+      "originalMissing": 0,
+      "mtimeMismatch": 486,
+      "xmlSuites": 168,
+      "xmlCounts": {
+        "tests": 881,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logChecks": {
+        "buildSuccess": true,
+        "buildFailure": false,
+        "endsBuildSuccess": true,
+        "hasTotalTime": true,
+        "totalTime": "06:02 min",
+        "finishedAt": "2026-11-03T18:46:36+01:00",
+        "aggregateLines": 19,
+        "logCounts": {
+          "tests": 881,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "durationDeltaMs": 1665
+      },
+      "reportsCounts": {
+        "tests": 881,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "reportsCaptured": 623,
+      "reportsPriorArtifacts": 2,
+      "reportsBadCaptured": 0
+    },
+    {
+      "id": "root-services",
+      "sha": "96688a5b2436c25504dbfbb33ce375a002b3cee0",
+      "dirty": "",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-Pgeotools-probe,backing-services",
+        "clean",
+        "verify"
+      ],
+      "startedAt": "2026-11-03T17:46:38.347Z",
+      "endedAt": "2026-11-03T17:56:04.280Z",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "declaredCounts": {
+        "tests": 937,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "captured": 808,
+      "copiedHashOk": 808,
+      "originalHashOk": 808,
+      "copiedMissing": 0,
+      "originalMissing": 0,
+      "mtimeMismatch": 649,
+      "xmlSuites": 182,
+      "xmlCounts": {
+        "tests": 937,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logChecks": {
+        "buildSuccess": true,
+        "buildFailure": false,
+        "endsBuildSuccess": true,
+        "hasTotalTime": true,
+        "totalTime": "09:24 min",
+        "finishedAt": "2026-11-03T18:56:03+01:00",
+        "aggregateLines": 20,
+        "logCounts": {
+          "tests": 937,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "durationDeltaMs": 1933
+      },
+      "reportsCounts": {
+        "tests": 937,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "reportsCaptured": 808,
+      "reportsPriorArtifacts": 0,
+      "reportsBadCaptured": 0
+    }
+  ],
+  "problems": [],
+  "notes": [
+    "requirementsDigest=cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3 match=true",
+    "repositoryRulesDigest=4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b match=true",
+    "artifacts checked=8"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T13:48:37.508Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "46feb385c33d5c06794b06f0ef9c34633216081e6f0b610bbbbd75c706f2a9e7",
+  "imageSha256": "596bb411a0cf24fd3f6338306369c98b028eeebbd4ef95124406cb149b406f97",
+  "image": "G06-undo.jpg"
+}

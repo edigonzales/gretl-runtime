@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "b4ac5f5b-55c8-475d-b594-79d757093d4b",
+  "phase": "P2",
+  "assignmentBase": "185fc6700b5cb2897f724d457610a57f059b3421",
+  "phaseBase": "fc5ce83a75b81e405bcffdcc017a1b8311ce37c0",
+  "candidateSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e",
+  "requirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+  "verdict": "PASS",
+  "reviewer": {
+    "openCodeVersion": "2.2.5",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "apiHost": "api.deepseek.com",
+    "modelMappingEvidence": "/Users/stefan/.cache/gretl-tooling-review/p2-resume-readiness/identity.json"
+  },
+  "criteria": [
+    {
+      "id": "P2-01",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/DocumentStore.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/SourceView.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManager.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/AnalysisScheduler.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/SourceViewTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/targeted-run/command.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P2-02",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/ProjectResolver.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/SettingsDocumentParser.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-language-contract/src/main/java/ch/so/agi/gretl/language/ProjectNameRules.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-groovy/src/test/java/ch/so/agi/gretl/runtime/groovy/project/StaticSettingsParityTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P2-03",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzer.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/semantic/SemanticModel.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/run.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P2-04",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-language-contract/src/main/java/ch/so/agi/gretl/language/PlanSemantics.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-runner/src/main/java/ch/so/agi/gretl/runtime/runner/ExecutionPlanner.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-runner/src/test/java/ch/so/agi/gretl/runtime/runner/ExecutionPlannerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-groovy/src/test/java/ch/so/agi/gretl/runtime/groovy/StaticSemanticsParityTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/run.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P2-05",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzer.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-groovy/src/test/java/ch/so/agi/gretl/runtime/groovy/StaticSemanticsParityTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/targeted-run/command.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P2-06",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzer.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/P2UriEnumIndependentCounterprobe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/uri-run.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/uri-summary.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/targeted-run/command.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P2-07",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/semantic/SqlTemplateAnalyzer.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/SqlSourceSyntax.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/ProjectResolver.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-database-tasks/src/test/java/ch/so/agi/gretl/tasks/database/StaticSqlTemplateParityTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P2-08",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/semantic/SemanticModel.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzer.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/AnalysisScheduler.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/SourceViewTest.java"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P2-09",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/final-validation.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/validation.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/p2-uri-standard/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/p2-uri-standard/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/p2-uri-services/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/p2-uri-services/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/targeted-run/summary.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/targeted-run/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/docs-check/summary.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/docs-check/check-docs.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/summary.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/uri-summary.json"
+      ],
+      "findingIds": []
+    }
+  ],
+  "executedChecks": [
+    {
+      "id": "tooling-targeted",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-tooling-catalog,gretl-groovy",
+        "-am",
+        "verify"
+      ],
+      "exitCode": 0,
+      "testCount": 527,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/targeted-run/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/targeted-run/summary.json"
+      ]
+    },
+    {
+      "id": "tooling-docs",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product",
+      "argv": [
+        "node",
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": 1,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/docs-check/check-docs.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/docs-check/summary.json"
+      ]
+    },
+    {
+      "id": "new-duplicate-link-counterprobe",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product",
+      "argv": [
+        "node",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/run-own-counterprobe.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": 19,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/P2DuplicateLinkCounterprobe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/run.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/summary.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/compile.log"
+      ]
+    },
+    {
+      "id": "new-uri-enum-counterprobe",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product",
+      "argv": [
+        "node",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/run-uri-counterprobe-own.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": 14,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/P2UriEnumIndependentCounterprobe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/uri-run.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/uri-summary.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/uri-compile.log"
+      ]
+    },
+    {
+      "id": "root-evidence-validation",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/product",
+      "argv": [
+        "node",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/final-validation-own.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": null,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/final-validation.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/validate-gates-own.mjs",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/validate-all-captures-own.mjs",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/check-source-modified-own.mjs",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/process-check.json"
+      ]
+    }
+  ],
+  "verifiedCurrentEvidence": [
+    {
+      "checkIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "candidateSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e",
+      "artifacts": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+          "sha256": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+          "kind": "tooling-core"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+          "sha256": "87ba3f804d4db792bf013b021866694e992007eccb6865f76a6d066d4fec460b",
+          "kind": "tooling-core"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-language-contract/target/tooling-dependencies.json",
+          "sha256": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-tooling-core/target/tooling-dependencies.json",
+          "sha256": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+          "sha256": "127ca60b845cf47c3cd2a0905bcda7f26b0470fb9af778290fd8a9601b6a9f1a",
+          "kind": "catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+          "sha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.schema.json",
+          "sha256": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+          "sha256": "d1fb6cc89d7bcf79b18878619eb5a4ef3e2ba915c9ce0be0b1c1ddb436ec0bee",
+          "kind": "dependency-graph-or-catalog-data"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/p2-uri-standard/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/p2-uri-standard/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/p2-uri-services/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/p2-uri-services/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/final-validation.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/validate-gates-own.mjs",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/validate-all-captures-own.mjs",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/check-source-modified-own.mjs"
+      ],
+      "verification": "Both raw manifests name candidate 1a8d9f0a4096295c2e5898bab2593bb3eb34789e with dirty=\"\", the exact request argv, exit 0 and no signal. Standard: 591 captured files, 152 TEST XMLs, 811 tests / 0 failures / 0 errors / 0 skips, BUILD SUCCESS, no [ERROR] or skip line, no gretl-geotools-probe. Services: 776 captured files, 166 TEST XMLs, 867 / 0 / 0 / 0, BUILD SUCCESS, no [ERROR] or skip line, includes gretl-geotools-probe. Every captured path exists, every SHA-256 matches, every sourceModifiedAt is inside its gate window (09:45:10.423Z-09:50:54.887Z and 09:50:57.126Z-09:59:07.943Z), no duplicates or zero-byte files. All eight request artifacts were rehashed and match. The gates were not rerun."
+    }
+  ],
+  "guiEvidence": [],
+  "counterprobes": [
+    {
+      "id": "CP-P2-DUPLICATE-LINK",
+      "hypothesis": "In an included subproject, local and root-qualified spellings of the same task must resolve to one SymbolId, produce one edge and one DUPLICATE_TASK_LINK; the same target in dependsOn and after must remain two distinct edge kinds; a default target must select only the dependsOn hull.",
+      "novelty": "No existing P2 test or earlier counterprobe combines local/qualified duplicate identity, a same-target dependsOn+after pair, and target-dependent plan selection in an included subproject.",
+      "actions": "Built a synthetic project with settings include a,b; a:run, a:use with dependsOn ['run', ':a:run'] and after [':b:run', ':b:run'], a:both with dependsOn and after 'run', and b:run. Analyzed it through WorkspaceManager/ProjectAnalyzer and planned the settings default plus target :a:both with PlanSemantics.",
+      "expected": "Exactly two DUPLICATE_TASK_LINK errors anchored in a/job.groovy; four deduplicated edges; one DEPENDS_ON and one AFTER edge each for a:use and a:both; complete graph; default plan [:a:run, :a:use]; after grants no data predecessor.",
+      "observed": "All 19 checks passed: COUNTERPROBE PASS. The default plan excludes b:run, and the cross-kind plan activates both edge kinds without a cycle.",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/P2DuplicateLinkCounterprobe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/run.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/summary.json"
+      ]
+    },
+    {
+      "id": "CP-P2-URI-ENUM",
+      "hypothesis": "The actual catalog's HttpDownload.url and Curl.serverUrl allowedValues are URI scheme hints on Opaque shapes, not complete literal enums; valid URL literals must produce no INPUT_ENUM while Text method enums remain strict.",
+      "novelty": "Independent implementation that loads the supplied operations.json, asserts the descriptor shape kinds directly, and analyzes valid and invalid HttpDownload/Curl tasks in one capture; the product test covers behavior separately.",
+      "actions": "Loaded the supplied operations.json into CatalogRepository, checked HttpDownload.url/Curl.serverUrl and method descriptors, then analyzed a job with valid http/https URLs plus badHttp method DELETE and badCurl method PATCH through WorkspaceManager/ProjectAnalyzer.",
+      "expected": "Catalog AVAILABLE; both URI inputs Opaque with [http,https]; both methods Text with [GET,POST]; exactly two INPUT_ENUM errors at 'DELETE' and 'PATCH'; no INPUT_TYPE/REQUIRED_INPUT/UNKNOWN_INPUT diagnostics for valid URL fields.",
+      "observed": "All 14 checks passed: URI COUNTERPROBE PASS. The valid URL literals are not flagged; only the two invalid text enum literals are.",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/P2UriEnumIndependentCounterprobe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/uri-run.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence/counterprobe/uri-summary.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json"
+      ]
+    }
+  ],
+  "openMandatoryFindings": [],
+  "missingRequiredChecks": [],
+  "report": "review.md",
+  "summary": "PASS: all nine P2 criteria are fulfilled. The prior URI-enum F1 is fixed narrowly (INPUT_ENUM only for Text shapes; the actual catalog has exactly two Opaque URI-scheme hints and five Text enums), the affected 527-test Maven run and docs check pass, and both fresh root gates were validated from raw evidence without rerun (811 and 867 tests, zero failures/errors/skips). Two new own counterprobes passed."
+}

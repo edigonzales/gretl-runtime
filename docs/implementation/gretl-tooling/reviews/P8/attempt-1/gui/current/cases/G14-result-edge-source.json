@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:02:35.699Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "52ba09ba0c15d590b2773914d91757efb750b5f562b9f892cb9a50e06338f827",
+  "imageSha256": "1e81f7b1fd4a5690bba2026b76e8df629d5da36d090323f9c7b866f0149005ea",
+  "image": "G14-result-edge-source.jpg"
+}

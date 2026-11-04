@@ -1,0 +1,10 @@
+{
+  "resumedAt": "2026-11-03T13:20:06.815Z",
+  "reason": "User explicitly requested another attempt after reported DeepSeek API recovery.",
+  "candidateSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e",
+  "phase": "P2",
+  "readiness": "/Users/stefan/.cache/gretl-tooling-review/p2-resume-readiness/identity.json",
+  "review": "/Users/stefan/.cache/gretl-tooling-review/P2-review-4-resume-1/evidence",
+  "session": "ses_e5e71cf7dffeKJiXqbpO18kt1l",
+  "nextPhaseRequiresValidPass": true
+}

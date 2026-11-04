@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "externalAdoptions": [
+    {
+      "repository": "https://github.com/microsoft/vscode",
+      "commit": "2c33b50b16c472efe58357d1d2a8a5414bc23fbf",
+      "originalPath": "extensions/groovy/syntaxes/groovy.tmLanguage.json",
+      "originalSha256": "7e61dc6646a8e931d838d0fc62fc3408749f21aeeb989431b87d49c51b559b5f",
+      "newPath": "vscode/gretl-vscode/syntaxes/groovy.tmLanguage.json",
+      "license": "TextMate Bundle License (grammar); MIT (VS Code conversion)",
+      "copyright": "Copyright (c) textmate-groovy.tmbundle project authors; Microsoft Corporation (conversion)",
+      "licensePath": "vscode/gretl-vscode/syntaxes/LICENSE-VSCODE.txt",
+      "changes": "scopeName changed to source.groovy.gretl-runtime; JSON formatting only",
+      "licensePaths": [
+        "vscode/gretl-vscode/syntaxes/LICENSE-TEXTMATE.txt",
+        "vscode/gretl-vscode/syntaxes/LICENSE-VSCODE.txt"
+      ]
+    }
+  ],
+  "internalExtractions": [
+    {
+      "repository": "https://github.com/edigonzales/gretl-runtime",
+      "commit": "185fc6700b5cb2897f724d457610a57f059b3421",
+      "originalPath": "gretl-groovy/src/main/java/ch/so/agi/gretl/runtime/groovy/project/ProjectPath.java",
+      "originalSha256": "01377b41fb3b31efc684585c6b5f5443a0191e9dd942d788c99bef6561cec49a",
+      "newPath": "gretl-language-contract/src/main/java/ch/so/agi/gretl/language/ProjectNameRules.java",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Stefan Ziegler",
+      "changes": "Pure logical-name implementation extracted; filesystem adapter and public ProjectPath API retained. Added reference rendering and immutable segments accessor."
+    },
+    {
+      "repository": "https://github.com/edigonzales/gretl-runtime",
+      "commit": "fc5ce83a75b81e405bcffdcc017a1b8311ce37c0",
+      "originalPath": "gretl-runner/src/main/java/ch/so/agi/gretl/runtime/runner/ExecutionPlanner.java",
+      "originalSha256": "401e3097bcb2a82776f816824e3976d3e521ada6d881efb8f412a8547ca2bf12",
+      "newPath": "gretl-language-contract/src/main/java/ch/so/agi/gretl/language/PlanSemantics.java",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Stefan Ziegler",
+      "changes": "Extracted pure logical graph and target rules; iterative cycle walk preserves ordering and messages. Runtime UUID ownership checks stay in ExecutionPlanner."
+    },
+    {
+      "repository": "https://github.com/edigonzales/gretl-runtime",
+      "commit": "fc5ce83a75b81e405bcffdcc017a1b8311ce37c0",
+      "originalPath": "gretl-groovy/src/main/java/ch/so/agi/gretl/runtime/groovy/project/GretlProjectParser.java",
+      "originalSha256": "1ecf853f551dd9e2e0e4f3a3bc80a18efc8ff39b95b12d8a373c3ddabfd475f1",
+      "newPath": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/SettingsDocumentParser.java",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Stefan Ziegler",
+      "changes": "Adapted current declarative settings allowlist to the isolated bounded parser, source spans and partial recovery. No runtime classes or execution are retained."
+    },
+    {
+      "repository": "https://github.com/edigonzales/gretl-runtime",
+      "commit": "fc5ce83a75b81e405bcffdcc017a1b8311ce37c0",
+      "originalPath": "gretl-groovy/src/main/java/ch/so/agi/gretl/runtime/groovy/TaskConfigurationScope.java",
+      "originalSha256": "daf0dd82cba1527453cf304aa2dbaeceff21490ec3e602cae5e7e696eeff5cd3",
+      "newPath": "gretl-language-contract/src/main/java/ch/so/agi/gretl/language/DslVocabulary.java",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Stefan Ziegler",
+      "changes": "Extracted the six reserved configuration field names; runtime delegates without changing errors."
+    }
+  ],
+  "newImplementationLicense": "MIT",
+  "otherGretlCheckoutRequired": false
+}

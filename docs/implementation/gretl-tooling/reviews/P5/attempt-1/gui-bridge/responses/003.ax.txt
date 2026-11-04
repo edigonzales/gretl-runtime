@@ -1,0 +1,309 @@
+Window: "job.groovy — GRETL Candidate 2 (Workspace)", App: Code.
+0 standard window job.groovy — GRETL Candidate 2 (Workspace), Secondary Actions: Raise, URL: file:///Users/stefan/.cache/gretl-tooling-review/P5-candidate-2-gui/Main%20a%CC%88%20space/sub/job.groovy
+	1 container job.groovy — GRETL Candidate 2 (Workspace)
+		2 container
+			3 HTML content job.groovy — GRETL Candidate 2 (Workspace), URL: vscode-file://vscode-app/Users/stefan/.cache/gretl-tooling-review/vscode-download/vscode-darwin-arm64-1.144.0/Visual%20Studio%20Code.app/Contents/Resources/app/out/vs/code/electron-browser/workbench/workbench.html
+				4 container
+					5 container
+						6 container
+							7 toolbar
+								8 button Go Back (⌃-)
+									9 text 
+								10 button (disabled) Go Forward (⌃⇧-)
+									11 text 
+								12 button job.groovy — GRETL Candidate 2 (Workspace)
+							13 toolbar Title actions
+								14 button Customize Layout...
+									15 text 
+								16 toggle button Description: Toggle Primary Side Bar (⌘B), Value: 1
+									17 text 
+								18 toggle button Description: Toggle Panel (⌘J), Value: 1
+									19 text 
+								20 toggle button Description: Toggle Secondary Side Bar (⌥⌘B), Value: 1
+									21 text 
+						22 container
+							23 container
+								24 tab group Active View Switcher
+									25 tab (selected) Description: Explorer (⇧⌘E) - 3 unsaved files, Value: 1
+										26 container Explorer (⇧⌘E) - 3 unsaved files
+											27 text 
+										28 container Explorer (⇧⌘E) - 3 unsaved files
+											29 text 3
+									30 tab (settable, integer) Search (⇧⌘F), Value: 0
+										31 container Search (⇧⌘F)
+											32 text 
+									33 tab (settable, integer) Source Control (⌃⇧G), Value: 0
+										34 container Source Control (⌃⇧G)
+											35 text 
+									36 tab (settable, integer) Run and Debug (⇧⌘D), Value: 0
+										37 container Run and Debug (⇧⌘D)
+											38 text 
+									39 tab (settable, integer) Extensions (⇧⌘X), Value: 0
+										40 container Extensions (⇧⌘X)
+											41 text 
+								42 toolbar Manage
+									43 pop up button Accounts
+										44 container Accounts
+											45 text 
+									46 pop up button Manage
+										47 container Manage
+											48 text 
+							49 container
+								50 heading Explorer, Value: 2
+									51 text Explorer
+								52 toolbar Explorer actions
+									53 pop up button Views and More Actions...
+								54 container
+									55 container
+										56 button Explorer Section: GRETL Candidate 2 (Workspace)
+											57 text 
+											58 heading Description: Explorer Section: GRETL Candidate 2 (Workspace), Value: 3
+												59 text GRETL Candidate 2 (Workspace)
+										60 outline Files Explorer
+											61 container
+												62 row GRETL main
+													63 container
+														64 text 
+														65 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space
+															66 text GRETL main
+												67 row sql
+													68 container
+														69 text 
+														70 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sql
+															71 text sql
+												72 row query.sql
+													73 container
+														74 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sql/query.sql
+															75 text 
+															76 text query.sql
+												77 row sub
+													78 container
+														79 text 
+														80 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sub
+															81 text sub
+												82 row (selected) job.groovy
+													83 container
+														84 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sub/job.groovy
+															85 text 
+															86 text job.groovy
+												87 row build.gradle
+													88 container
+														89 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/build.gradle
+															90 text 
+															91 text build.gradle
+												92 row custom-runtime.groovy
+													93 container
+														94 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/custom-runtime.groovy
+															95 text 
+															96 text custom-runtime.groovy
+												97 row foreign.groovy
+													98 container
+														99 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/foreign.groovy
+															100 text 
+															101 text foreign.groovy
+												102 row job.groovy
+													103 container
+														104 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/job.groovy
+															105 text 
+															106 text job.groovy
+												107 row settings.gretl
+													108 container
+														109 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/settings.gretl
+															110 text 
+															111 text settings.gretl
+												112 row Other GRETL
+													113 container
+														114 text 
+														115 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Other project
+															116 text Other GRETL
+												117 row job.groovy
+													118 container
+														119 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Other project/job.groovy
+															120 text 
+															121 text job.groovy
+												122 row new-template.groovy
+													123 container
+														124 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Other project/new-template.groovy
+															125 text 
+															126 text new-template.groovy
+									127 container
+										128 button Outline Section
+											129 text 
+											130 heading Outline, Value: 3
+												131 text Outline
+										132 outline Document Symbols
+											133 row child (function)
+												134 container
+													135 text 
+													136 container child (function)
+														137 text child
+									138 button Timeline Section
+										139 text 
+										140 heading Timeline, Value: 3
+											141 text Timeline
+							142 container
+								143 container
+								144 container
+									145 container
+										146 container
+											147 tab group
+												148 tab (settable, integer) Description: job.groovy, Value: 0
+													149 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/job.groovy
+														150 text 
+														151 text job.groovy GRETL main
+													152 toolbar Tab actions
+														153 button Close (⌘W)
+															154 text 
+												155 tab (selected) Description: job.groovy, Value: 1
+													156 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sub/job.groovy
+														157 text 
+														158 text job.groovy GRETL main • sub
+													159 toolbar Tab actions
+														160 button Close (⌘W)
+															161 text 
+												162 tab (settable, integer) Description: new-template.groovy, Value: 0
+													163 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Other project/new-template.groovy
+														164 text 
+														165 text new-template.groovy
+													166 toolbar Tab actions
+														167 button Close (⌘W)
+															168 text 
+												169 tab (settable, integer) Description: settings.gretl, Value: 0
+													170 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/settings.gretl
+														171 text 
+														172 text settings.gretl
+													173 toolbar Tab actions
+														174 button Close (⌘W)
+															175 text 
+												176 tab (settable, integer) Description: query.sql, Value: 0
+													177 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sql/query.sql
+														178 text 
+														179 text query.sql
+													180 toolbar Tab actions
+														181 button Close (⌘W)
+															182 text 
+												183 tab (settable, integer) Description: custom-runtime.groovy, Value: 0
+													184 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/custom-runtime.groovy
+														185 text 
+														186 text custom-runtime.groovy
+													187 toolbar Tab actions
+														188 button Close (⌘W)
+															189 text 
+											190 toolbar Editor actions
+												191 button Split Editor Right (⌃⇧⌥⌘7) [⌥] Split Editor Down
+													192 text 
+												193 pop up button More Actions...
+													194 text 
+										195 content list
+											196 container
+												197 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space
+													198 text GRETL main
+												199 text 
+											200 container
+												201 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sub
+													202 text sub
+												203 text 
+											204 container
+												205 container ~/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sub/job.groovy
+													206 text 
+													207 text job.groovy
+												208 text 
+											209 container
+												210 text 
+												211 container child (function)
+													212 text child
+										213 container job.groovy
+											214 container
+												215 editor (settable) Description: job.groovy, Value: action('child') {
+    println 'child'
+}
+
+													216 text action('child') {
+    println 'child'
+}
+
+								217 container
+									218 tab group Active View Switcher
+										219 tab (selected) Problems (⇧⌘M), Value: 1
+											220 container Problems (⇧⌘M)
+												221 text Problems
+										222 tab (settable, integer) Output (⇧⌘U), Value: 0
+											223 container Output (⇧⌘U)
+												224 text Output
+										225 tab (settable, integer) Description: Debug Console (⇧⌘Y), Value: 0
+											226 container Debug Console (⇧⌘Y)
+												227 text Debug Console
+										228 tab (settable, integer) Terminal (⌃⇧^), Value: 0
+											229 container Terminal (⌃⇧^)
+												230 text Terminal
+										231 tab (settable, integer) Ports, Value: 0
+											232 container Ports
+												233 text Ports
+									234 toolbar Problems actions
+										235 container
+											236 text field (settable) Description: Filter Problems, Placeholder: Filter (e.g. text, **/*.ts, !**/node_modules/**, @source:ts)
+											237 toolbar
+												238 pop up button More Filters...
+										239 button Collapse All
+										240 button View as Table
+									241 toolbar
+										242 toggle button Description: Maximize Panel, Value: 0
+											243 text 
+										244 button Hide Panel (⌘J)
+											245 text 
+									246 container
+										247 container
+											248 container No problems have been detected in the workspace.
+											249 container No problems have been detected in the workspace.
+												250 text No problems have been detected in the workspace.
+							251 container
+								252 content list Active View Switcher
+								253 toolbar Chat actions
+								254 toolbar
+									255 toggle button Description: Maximize Secondary Side Bar, Value: 0
+										256 text 
+									257 button Hide Secondary Side Bar (⌥⌘B)
+										258 text 
+						259 container
+							260 container remote
+								261 button remote
+							262 container No Problems
+								263 button No Problems
+									264 text 
+									265 text  0 
+									266 text 
+									267 text  0
+							268 container GRETL: Ready, Ready
+								269 button GRETL: Ready, Ready
+							270 container Notifications
+								271 button Notifications
+							272 container GRETL Runtime
+								273 button GRETL Runtime
+							274 container LF
+								275 button LF
+							276 container UTF-8
+								277 button UTF-8
+							278 container Spaces: 4
+								279 button Spaces: 4
+							280 container Ln 1, Col 9
+								281 button Ln 1, Col 9
+							282 container Screen Reader Optimized
+								283 button Screen Reader Optimized
+	284 close button
+	285 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	286 minimize button
+287 menu bar
+	288 Code
+	289 File
+	290 Edit
+	291 Selection
+	292 View
+	293 Go
+	294 Run
+	295 Terminal
+	296 Window
+	297 Help
+
+The focused UI element is 215 editor (settable) Description: job.groovy, Value: action('child') {
+    println 'child'
+}

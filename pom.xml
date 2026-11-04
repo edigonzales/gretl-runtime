@@ -17,6 +17,11 @@
   </description>
 
   <modules>
+    <module>gretl-language-contract</module>
+    <module>gretl-tooling-core</module>
+    <module>gretl-tooling-catalog</module>
+    <module>gretl-lsp</module>
+    <module>vscode/gretl-vscode</module>
     <module>gretl-api</module>
     <module>gretl-runner</module>
     <module>gretl-groovy</module>
@@ -48,6 +53,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <groovy.version>6.0.0</groovy.version>
+    <lsp4j.version>1.0.0</lsp4j.version>
     <junit.version>5.14.4</junit.version>
     <slf4j.version>2.0.20</slf4j.version>
     <logback.version>1.6.5</logback.version>

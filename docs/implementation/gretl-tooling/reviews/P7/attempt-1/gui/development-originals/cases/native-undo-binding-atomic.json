@@ -1,0 +1,11 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "sourceCommit": "230e6ccb977414d6fcb5eff5798a16bb9cd6da81",
+  "sourceDirty": true,
+  "vsixSha256": "dd5bb47e8966ba22ad13a7ff9beafd6db9d2929d571b7ca4966caf0c285ccc6a",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "time": "2026-11-04T09:29:58.311Z",
+  "axSha256": "d2bc8a9d394ccfc56e87bfa6b483183137ffc6096a5c1a3ff67e0b1dbffc65fd",
+  "screenshot": "native-undo-binding-atomic.jpg",
+  "screenshotSha256": "c0c88702ea7517a84a6ee2e82dce7025ff842460e0f3130aea1becde5e44a772"
+}

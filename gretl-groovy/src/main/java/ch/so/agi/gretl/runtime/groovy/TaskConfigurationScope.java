@@ -19,8 +19,7 @@ import java.util.Set;
  * applied to the fresh builder only after the closure has run.
  */
 final class TaskConfigurationScope<C, R> extends AbstractScope {
-    private static final Set<String> RESERVED = Set.of(
-            "ctx", "delegate", "owner", "thisObject", "metaClass", "class");
+    private static final Set<String> RESERVED = ch.so.agi.gretl.language.DslVocabulary.reservedConfigurationFields();
 
     private final OperationType<C, R> type;
     private final Closure<?> configure;

@@ -1,0 +1,42 @@
+{
+  "targeted": {
+    "argv": [
+      "./mvnw",
+      "-B",
+      "-pl",
+      "gretl-language-contract,gretl-tooling-core,gretl-lsp",
+      "verify"
+    ],
+    "cwd": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/product",
+    "exitCode": 0,
+    "durationMs": 16686,
+    "summaryMatches": 38,
+    "finalSummary": [
+      "15",
+      "0",
+      "0",
+      "0"
+    ],
+    "aggregateSummary": {
+      "tests": 376,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "buildSuccess": true,
+    "stdoutTail": ".so.agi.gretl.lsp.HostSchedulingTest\n[INFO] Running ch.so.agi.gretl.lsp.HostBoundaryTest\n[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in ch.so.agi.gretl.lsp.HostBoundaryTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- antrun:3.1.0:run (custom-protocol-schema) @ gretl-lsp ---\n[INFO] Executing tasks\n[INFO]      [exec] TAP version 13\n[INFO]      [exec] # Subtest: versioned custom requests accept typed data and exact 64-bit scalar strings\n[INFO]      [exec] ok 1 - versioned custom requests accept typed data and exact 64-bit scalar strings\n[INFO]      [exec]   ---\n[INFO]      [exec]   duration_ms: 1.749791\n[INFO]      [exec]   type: 'test'\n[INFO]      [exec]   ...\n[INFO]      [exec] # Subtest: schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests\n[INFO]      [exec] ok 2 - schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests\n[INFO]      [exec]   ---\n[INFO]      [exec]   duration_ms: 0.428666\n[INFO]      [exec]   type: 'test'\n[INFO]      [exec]   ...\n[INFO]      [exec] 1..2\n[INFO]      [exec] # tests 2\n[INFO]      [exec] # suites 0\n[INFO]      [exec] # pass 2\n[INFO]      [exec] # fail 0\n[INFO]      [exec] # cancelled 0\n[INFO]      [exec] # skipped 0\n[INFO]      [exec] # todo 0\n[INFO]      [exec] # duration_ms 80.853833\n[INFO] Executed tasks\n[INFO] \n[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-lsp ---\n[INFO] \n[INFO] --- assembly:3.7.1:single (standalone-server) @ gretl-lsp ---\n[INFO] Building jar: /Users/stefan/.cache/gretl-tooling-review/P6-review-1/product/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar\n[INFO] \n[INFO] --- failsafe:3.6.0:integration-test (default) @ gretl-lsp ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] Running ch.so.agi.gretl.lsp.ServerProcessIT\n[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.928 s -- in ch.so.agi.gretl.lsp.ServerProcessIT\n[INFO] Running ch.so.agi.gretl.lsp.ServerArchiveIT\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.791 s -- in ch.so.agi.gretl.lsp.ServerArchiveIT\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-lsp ---\n[INFO] Loading execution data file /Users/stefan/.cache/gretl-tooling-review/P6-review-1/product/gretl-lsp/target/jacoco.exec\n[INFO] Analyzed bundle 'gretl-lsp' with 40 classes\n[INFO] \n[INFO] --- failsafe:3.6.0:verify (default) @ gretl-lsp ---\n[INFO] \n[INFO] --- dependency:3.11.0:tree (server-production-graph) @ gretl-lsp ---\n[INFO] Wrote dependency tree to: /Users/stefan/.cache/gretl-tooling-review/P6-review-1/product/gretl-lsp/target/tooling-dependencies.json\n[INFO] \n[INFO] --- antrun:3.1.0:run (server-bundle-boundary) @ gretl-lsp ---\n[INFO] Executing tasks\n[INFO]      [exec] Independent server production graph and executable data bundle verified\n[INFO] Executed tasks\n[INFO] ------------------------------------------------------------------------\n[INFO] Reactor Summary for gretl-language-contract 6.0.0-SNAPSHOT:\n[INFO] \n[INFO] gretl-language-contract ............................ SUCCESS [  1.486 s]\n[INFO] gretl-tooling-core ................................. SUCCESS [  3.068 s]\n[INFO] gretl-lsp .......................................... SUCCESS [ 11.461 s]\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  16.112 s\n[INFO] Finished at: 2026-11-04T09:40:19+01:00\n[INFO] ------------------------------------------------------------------------\n",
+    "stderrTail": ""
+  },
+  "docs": {
+    "argv": [
+      "node",
+      "tools/gretl-tooling/check-docs.mjs"
+    ],
+    "cwd": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/product",
+    "exitCode": 0,
+    "durationMs": 78,
+    "stdoutTail": "Validated 81 exact criteria\nTooling documentation links and requirement inputs valid\n",
+    "stderrTail": ""
+  },
+  "candidateSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+}

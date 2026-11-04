@@ -1,0 +1,14 @@
+{
+  "kind": "CLEAN_COMMITTED_CANDIDATE_PENDING_FULL_GATES",
+  "candidateSha": "53f7f3daaf92d002fd75978c25471321fd99a310",
+  "sourceDirty": false,
+  "preparedAt": "2026-11-04T10:18:49.493Z",
+  "vsix": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/candidate-package/dist/gretl-runtime.vsix",
+  "vsixSha256": "c270ea15209811f3bc84b5ea4c5b329bf1bde7cad49af2d60a2ce11bd10f7075",
+  "serverSha256": "028762ee99d8c8efc9336490e2fcbeb9138df970794fdf973957b9bf8e67ecbf",
+  "installedPayloadVerified": true,
+  "workspace": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space",
+  "profile": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/profile",
+  "job": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/generated job/job.groovy",
+  "jobSha256": "7a551b46f463b2c483c1936b18fbd7f4a5d9c530e481e1f2834842c9be3b7782"
+}

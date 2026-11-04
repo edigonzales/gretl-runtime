@@ -1,0 +1,12 @@
+{
+  "id": "006",
+  "purpose": "Apply the single native binding edit for producer.file to consumer.archive and observe the resulting graph.",
+  "time": "2026-11-04T10:54:36.157Z",
+  "transportOnly": true,
+  "requestSha256": "20f323e6fb3079e4af1edb9475a565e5b500fd3013b2e843c92ac49f01386ee9",
+  "error": null,
+  "axFile": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui-bridge/responses/006.ax.txt",
+  "axSha256": "01a3e7e234517b7ee2e47c60a032a5a7e6d08ecb4a379e3dbb663f8923d6d43e",
+  "imageFile": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/gui-bridge/responses/006.jpg",
+  "imageSha256": "5883fdd338d025672c3c6a8a59dd7807b3a19cfd89d15b2ffd25f51c6b2e2a2a"
+}

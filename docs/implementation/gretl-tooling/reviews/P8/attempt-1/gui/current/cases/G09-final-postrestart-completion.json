@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-04T14:58:32.301Z",
+  "artifactIdentity": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/final-identity.json",
+  "artifactSourceCommit": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "vsixSha256": "c501014f5b1e7bfd26596e6d8cb5df49ff8d89560dc04dfcbbcc11995719fb6e",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "axSha256": "916d1b4e7290a7329c86b0ecd0e2bae98d9230f7437d358a8386a177b3d1495c",
+  "imageSha256": "de926a0206f4e5925d919c2e3f77c583aabb87d933e85a805c6e31d4cb1aeb4a",
+  "image": "G09-final-postrestart-completion.jpg"
+}

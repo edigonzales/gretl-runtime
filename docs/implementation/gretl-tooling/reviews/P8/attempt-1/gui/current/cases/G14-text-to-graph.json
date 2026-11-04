@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:01:41.653Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "77b8d8094891f09505b24f9d66680ebc9b80fdb88360837420bb715b1f8707f3",
+  "imageSha256": "7d1035790476a3b120baec0e5e67f2f88b2474f55b606d58fb121744576babc6",
+  "image": "G14-text-to-graph.jpg"
+}

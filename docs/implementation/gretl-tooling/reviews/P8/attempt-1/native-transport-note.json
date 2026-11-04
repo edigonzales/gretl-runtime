@@ -1,0 +1,6 @@
+{
+  "scope": "Native test transport only; no tracked product change",
+  "originalObservation": "Request 003 used the visible button name without its AX role and was rejected before any action. The original error response is unchanged.",
+  "transportCorrection": "Unambiguous visible button names are now resolved against a fresh actual AX tree; explicit occurrence remains required for duplicates. Request 004 opened the actual Bind result form.",
+  "acceptance": "Transport completion is never an acceptance verdict."
+}

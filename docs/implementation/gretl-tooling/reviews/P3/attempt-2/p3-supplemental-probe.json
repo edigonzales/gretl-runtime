@@ -1,0 +1,19 @@
+{
+  "id": "p3-supplemental-probe",
+  "compiledAgainst": {
+    "javaHome": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem",
+    "javac": "/Users/stefan/.sdkman/candidates/java/25.0.2-tem/bin/javac",
+    "classpathSource": "gretl-tooling-core/target/surefire-reports/TEST-...SemanticEditPlannerTest.xml",
+    "targetClasses": true,
+    "targetTestClasses": true
+  },
+  "compile": {
+    "status": 0
+  },
+  "run": {
+    "status": 0,
+    "signal": null,
+    "stdout": "PASS requested-source-postimage-drop :: beforeHasSql=true state=ALLOWED reason=<none> preconditionsHaveSql=true postimageDropsSql=true\nPASS referenced-source-postimage-kept :: beforeHasSql=true state=ALLOWED reason=<none> postimageHasSql=true noError=true\nPASS new-sql-dependency-blocked :: beforeLacksSql=true state=REJECTED plan=false reason=EDIT_SOURCE_NOT_CAPTURED\nSUMMARY passed=3 failed=0\n",
+    "stderr": ""
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "passed": false,
+  "captures": [
+    "buffers-1793784662050.json",
+    "buffers-1793784679946.json",
+    "buffers-1793784683550.json",
+    "buffers-1793784687150.json"
+  ],
+  "finding": "After the node drag, Undo/Redo followed the preceding Fit entry; Redo did not restore the dragged node position. Source text/version/dirty stayed unchanged. The stop callback captured React Flow before the final node state committed.",
+  "correction": "Defer and coalesce stop persistence until two animation frames and reject obsolete snapshot/disposed callbacks. A native targeted recheck remains required."
+}

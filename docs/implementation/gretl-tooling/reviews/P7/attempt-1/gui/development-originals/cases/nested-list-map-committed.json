@@ -1,0 +1,11 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "sourceCommit": "230e6ccb977414d6fcb5eff5798a16bb9cd6da81",
+  "sourceDirty": true,
+  "vsixSha256": "0c9062ae757bc2473ee4cd6169a7e3574182c30b123f7339ac07a4e801cdf745",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "time": "2026-11-04T09:44:55.079Z",
+  "axSha256": "ba72bf97e053f40a0a29502ed74d991e0443367f1cbf360477b07f41ec896248",
+  "screenshot": "nested-list-map-committed.jpg",
+  "screenshotSha256": "2e23c4f91a59350a3213f38d06eba15116dd4e01fe9f8fb85d7049b857ef9f3e"
+}

@@ -1,0 +1,4 @@
+PASS requested-source-postimage-drop :: beforeHasSql=true state=ALLOWED reason=<none> preconditionsHaveSql=true postimageDropsSql=true
+PASS referenced-source-postimage-kept :: beforeHasSql=true state=ALLOWED reason=<none> postimageHasSql=true noError=true
+PASS new-sql-dependency-blocked :: beforeLacksSql=true state=REJECTED plan=false reason=EDIT_SOURCE_NOT_CAPTURED
+SUMMARY passed=3 failed=0

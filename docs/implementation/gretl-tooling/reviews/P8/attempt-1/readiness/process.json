@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/stefan/.cache/gretl-tooling-review/opencode/node_modules/@opencode/cli/bin/opencode.exe",
+    "run",
+    "--standalone",
+    "--agent",
+    "gretl-independent-review",
+    "--model",
+    "deepseek/deepseek-flash",
+    "--format",
+    "json",
+    "Read probe.txt. Run exactly node --test probe.test.mjs with no appended commands. Write /Users/stefan/.cache/gretl-tooling-review/p8-review-readiness/evidence/readiness.md with actual marker and test result. This is an access probe, not acceptance. Do not change other files."
+  ],
+  "cwd": "/Users/stefan/.cache/gretl-tooling-review/p8-review-readiness",
+  "pid": 12192,
+  "ownedProcesses": [
+    {
+      "pid": 12194,
+      "command": "/Users/stefan/.cache/gretl-tooling-review/opencode/node_modules/@opencode/cli/bin/opencode.exe serve --stdio --port 0"
+    },
+    {
+      "pid": 12439,
+      "command": "(git)"
+    },
+    {
+      "pid": 12767,
+      "command": "(git)"
+    },
+    {
+      "pid": 13159,
+      "command": "(git)"
+    },
+    {
+      "pid": 13162,
+      "command": "(git)"
+    }
+  ],
+  "startedAt": "2026-11-04T13:44:53.276Z",
+  "endedAt": "2026-11-04T13:45:11.241Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "signal": null
+}

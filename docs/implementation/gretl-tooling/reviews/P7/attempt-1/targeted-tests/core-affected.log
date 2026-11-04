@@ -1,0 +1,282 @@
+[INFO] Scanning for projects...
+[INFO] Loaded 24360 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] 
+[INFO] -----------------< ch.so.agi.gretl:gretl-tooling-core >-----------------
+[INFO] Building gretl-tooling-core 6.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-product-toolchain) @ gretl-tooling-core ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (ban-geotools) @ gretl-tooling-core ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (production-module-boundary) @ gretl-tooling-core ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-tooling-core ---
+[INFO] 
+[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-tooling-core/target/jacoco.exec,append=true
+[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-tooling-core ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-tooling-core ---
+[INFO] 
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 73 source files with javac [debug release 25] to target/classes
+[WARNING] /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/catalog/CatalogJsonCodec.java:[19,13] disable(com.fasterxml.jackson.databind.MapperFeature...) in com.fasterxml.jackson.databind.ObjectMapper has been deprecated
+[WARNING] /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/SourceValueWriter.java:[75,5] documentation comment is not attached to any declaration
+[WARNING] /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/GretlAstExtractor.java:[167,51] getVariable() in org.codehaus.groovy.ast.stmt.ForStatement has been deprecated
+[WARNING] /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/GretlAstExtractor.java:[167,79] FOR_LOOP_DUMMY in org.codehaus.groovy.ast.stmt.ForStatement has been deprecated
+[WARNING] /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/GretlAstExtractor.java:[167,199] getVariable() in org.codehaus.groovy.ast.stmt.ForStatement has been deprecated
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-tooling-core ---
+[INFO] 
+[INFO] skip non existing resourceDirectory /Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/gretl-tooling-core/src/test/resources
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-tooling-core ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 28 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ gretl-tooling-core ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ch.so.agi.gretl.tooling.edit.SemanticEditPlannerTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.747 s -- in ch.so.agi.gretl.tooling.edit.SemanticEditPlannerTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.EditVerifierTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.059 s -- in ch.so.agi.gretl.tooling.edit.EditVerifierTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.GraphFormProjectorTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in ch.so.agi.gretl.tooling.edit.GraphFormProjectorTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.SnapshotNavigationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in ch.so.agi.gretl.tooling.edit.SnapshotNavigationTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.DefaultsSourceEditsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in ch.so.agi.gretl.tooling.edit.DefaultsSourceEditsTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.DependencySourceEditsTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.054 s -- in ch.so.agi.gretl.tooling.edit.DependencySourceEditsTest
+[INFO] Running ch.so.agi.gretl.tooling.edit.ReferenceSourceEditsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in ch.so.agi.gretl.tooling.edit.ReferenceSourceEditsTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 31, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- antrun:3.1.0:run (tooling-review-contracts) @ gretl-tooling-core ---
+[INFO] Executing tasks
+[INFO]      [exec] 
+[INFO]      [exec] added 5 packages in 291ms
+[INFO]      [exec] TAP version 13
+[INFO]      [exec] # Subtest: synthetic structural fixture is accepted only after all external conditions
+[INFO]      [exec] ok 1 - synthetic structural fixture is accepted only after all external conditions
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.965375
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects sha
+[INFO]      [exec] ok 2 - gate rejects sha
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.595709
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects phase
+[INFO]      [exec] ok 3 - gate rejects phase
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.185417
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects criteria
+[INFO]      [exec] ok 4 - gate rejects criteria
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 1.153
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects duplicate
+[INFO]      [exec] ok 5 - gate rejects duplicate
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.739791
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects digest
+[INFO]      [exec] ok 6 - gate rejects digest
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.191166
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects running
+[INFO]      [exec] ok 7 - gate rejects running
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.194209
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects children
+[INFO]      [exec] ok 8 - gate rejects children
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.149417
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects modified
+[INFO]      [exec] ok 9 - gate rejects modified
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.313208
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects prefilled
+[INFO]      [exec] ok 10 - gate rejects prefilled
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.380292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects exit
+[INFO]      [exec] ok 11 - gate rejects exit
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.182333
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects timeout
+[INFO]      [exec] ok 12 - gate rejects timeout
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.113375
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects provider
+[INFO]      [exec] ok 13 - gate rejects provider
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.104959
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects counterprobe
+[INFO]      [exec] ok 14 - gate rejects counterprobe
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.100291
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects missing
+[INFO]      [exec] ok 15 - gate rejects missing
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.0905
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects evidence
+[INFO]      [exec] ok 16 - gate rejects evidence
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.160333
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects skipped
+[INFO]      [exec] ok 17 - gate rejects skipped
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.201167
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects zeroTests
+[INFO]      [exec] ok 18 - gate rejects zeroTests
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.793625
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects report
+[INFO]      [exec] ok 19 - gate rejects report
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.15425
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects unverified
+[INFO]      [exec] ok 20 - gate rejects unverified
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.111625
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects finding
+[INFO]      [exec] ok 21 - gate rejects finding
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.101542
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate rejects extra
+[INFO]      [exec] ok 22 - gate rejects extra
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.100583
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: later phase cannot omit actual GUI or cumulative counterprobes
+[INFO]      [exec] ok 23 - later phase cannot omit actual GUI or cumulative counterprobes
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.217708
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: model identity forbids fallback, stale mapping and endpoint changes
+[INFO]      [exec] ok 24 - model identity forbids fallback, stale mapping and endpoint changes
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.339541
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: resolved dependency guard detects production leaks while permitting test parity
+[INFO]      [exec] ok 25 - resolved dependency guard detects production leaks while permitting test parity
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.16875
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: registry compares all 81 exact requirements and captures stable digest
+[INFO]      [exec] ok 26 - registry compares all 81 exact requirements and captures stable digest
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.900542
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: review profile is scoped and does not grant general shell or product edits
+[INFO]      [exec] ok 27 - review profile is scoped and does not grant general shell or product edits
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 0.105459
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: wait drains both streams and detects actual timeout
+[INFO]      [exec] ok 28 - wait drains both streams and detects actual timeout
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 126.423292
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: inactive profile reports are preserved separately and cannot inflate fresh counts
+[INFO]      [exec] ok 29 - inactive profile reports are preserved separately and cannot inflate fresh counts
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.812708
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: pre-clean archival snapshots deliberately preserve every existing report
+[INFO]      [exec] ok 30 - pre-clean archival snapshots deliberately preserve every existing report
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.10275
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: gate validation rejects inflated counts, stale metadata and changed raw XML
+[INFO]      [exec] ok 31 - gate validation rejects inflated counts, stale metadata and changed raw XML
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 3.992041
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] # Subtest: only old reports cannot qualify a new successful gate
+[INFO]      [exec] ok 32 - only old reports cannot qualify a new successful gate
+[INFO]      [exec]   ---
+[INFO]      [exec]   duration_ms: 2.121416
+[INFO]      [exec]   type: 'test'
+[INFO]      [exec]   ...
+[INFO]      [exec] 1..32
+[INFO]      [exec] # tests 32
+[INFO]      [exec] # suites 0
+[INFO]      [exec] # pass 32
+[INFO]      [exec] # fail 0
+[INFO]      [exec] # cancelled 0
+[INFO]      [exec] # skipped 0
+[INFO]      [exec] # todo 0
+[INFO]      [exec] # duration_ms 242.782125
+[INFO]      [exec] Validated 81 exact criteria
+[INFO]      [exec] Tooling documentation links and requirement inputs valid
+[INFO] Executed tasks
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.344 s
+[INFO] Finished at: 2026-11-04T11:44:27+01:00
+[INFO] ------------------------------------------------------------------------

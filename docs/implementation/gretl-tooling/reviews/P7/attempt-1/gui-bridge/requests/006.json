@@ -1,0 +1,17 @@
+{
+  "id": "006",
+  "purpose": "Apply the single native binding edit for producer.file to consumer.archive and observe the resulting graph.",
+  "actions": [
+    {
+      "kind": "key",
+      "key": "Escape"
+    },
+    {
+      "kind": "click",
+      "label": "button Confirm source change"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

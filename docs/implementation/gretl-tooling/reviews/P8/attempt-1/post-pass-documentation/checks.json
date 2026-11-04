@@ -1,0 +1,59 @@
+{
+  "kind": "POST_PASS_DOCUMENTATION_ONLY_CHECKS",
+  "acceptedProductCandidate": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "productCodeChanged": false,
+  "fullMavenGatesRepeated": false,
+  "checks": [
+    {
+      "argv": [
+        "node",
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "exitCode": 0,
+      "original": "/Users/stefan/.cache/gretl-tooling-review/p8-acceptance-docs-tooling.log",
+      "archive": "p8-acceptance-docs-tooling.log",
+      "sha256": "634906dc150545ca263fc3c0de47862a7ae0fa0a4887c0452e6fdd2eaef209a0"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/verify_cleanup_docs.py"
+      ],
+      "exitCode": 0,
+      "original": "/Users/stefan/.cache/gretl-tooling-review/p8-acceptance-docs-links.log",
+      "archive": "p8-acceptance-docs-links.log",
+      "sha256": "6a3c01d085a3c67367359a825e8e4e571faaad239d99f4584e773e1c6b03f7d1"
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/cleanup_review",
+        "-v"
+      ],
+      "exitCode": 0,
+      "original": "/Users/stefan/.cache/gretl-tooling-review/p8-acceptance-docs-tests.log",
+      "archive": "p8-acceptance-docs-tests.log",
+      "sha256": "762f87113cac47a24c88dc349f891b9aec603225baaaae94e3365722650248a4"
+    },
+    {
+      "argv": [
+        "quarto",
+        "render",
+        "website/"
+      ],
+      "exitCode": 0,
+      "original": "/Users/stefan/.cache/gretl-tooling-review/p8-acceptance-docs-render-final.log",
+      "archive": "p8-acceptance-docs-render-final.log",
+      "sha256": "dd9d42a28f5c5bc7d87c05a18eae5f5f0c8fb39a24d0e72ad742cac1e2c37e52"
+    }
+  ],
+  "documentationContentHashes": {
+    "docs/implementation/gretl-tooling/STATUS.md": "b95aa14e14806f4ec9c2fe622626251101c26e2d4b9bbf2cf45530b9d98b882e",
+    "docs/implementation/gretl-tooling/implementation/P8.md": "213c6cf39dc667d2c2e8d66dcbb89b662c0affcc6975ddcdde1dda2b75334689",
+    "docs/implementation/gretl-tooling/implementation/P8-acceptance-map.json": "becd2a923fe9c3182f358bd266d3a02f2cc59f005179ff7d9cf63148bcd1a380"
+  }
+}

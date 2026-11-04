@@ -1,0 +1,386 @@
+Window: "job.groovy — gretl-final-acceptance (Workspace)", App: Code.
+0 standard window job.groovy — gretl-final-acceptance (Workspace), Secondary Actions: Raise, URL: file:///Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace%20a%CC%88%20space/project-main/job.groovy
+	1 container job.groovy — gretl-final-acceptance (Workspace)
+		2 container
+			3 HTML content job.groovy — gretl-final-acceptance (Workspace), URL: vscode-file://vscode-app/Users/stefan/.cache/gretl-tooling-review/vscode-download/vscode-darwin-arm64-1.144.0/Visual%20Studio%20Code.app/Contents/Resources/app/out/vs/code/electron-browser/workbench/workbench.html
+				4 container
+					5 container
+						6 container
+							7 toolbar
+								8 button Go Back (⌃-)
+									9 text 
+								10 button (disabled) Go Forward (⌃⇧-)
+									11 text 
+								12 button job.groovy — gretl-final-acceptance (Workspace)
+							13 toolbar Title actions
+								14 button Customize Layout...
+									15 text 
+								16 toggle button Description: Toggle Primary Side Bar (⌘B), Value: 1
+									17 text 
+								18 toggle button Description: Toggle Panel (⌘J), Value: 0
+									19 text 
+								20 toggle button Description: Toggle Secondary Side Bar (⌥⌘B), Value: 0
+									21 text 
+						22 container
+							23 container
+								24 tab group Active View Switcher
+									25 tab (selected) Description: Explorer (⇧⌘E) - 1 unsaved file, Value: 1
+										26 container Explorer (⇧⌘E) - 1 unsaved file
+											27 text 
+										28 container Explorer (⇧⌘E) - 1 unsaved file
+											29 text 1
+									30 tab (settable, integer) Search (⇧⌘F), Value: 0
+										31 container Search (⇧⌘F)
+											32 text 
+									33 tab (settable, integer) Description: Source Control (⌃⇧G), Value: 0
+										34 container Source Control (⌃⇧G)
+											35 text 
+									36 tab (settable, integer) Run and Debug (⇧⌘D), Value: 0
+										37 container Run and Debug (⇧⌘D)
+											38 text 
+									39 tab (settable, integer) Extensions (⇧⌘X), Value: 0
+										40 container Extensions (⇧⌘X)
+											41 text 
+								42 toolbar Manage
+									43 pop up button Accounts
+										44 container Accounts
+											45 text 
+									46 pop up button Manage
+										47 container Manage
+											48 text 
+							49 container
+								50 heading Explorer, Value: 2
+									51 text Explorer
+								52 toolbar Explorer actions
+									53 pop up button Views and More Actions...
+								54 container
+									55 container
+										56 button Explorer Section: gretl-final-acceptance (Workspace)
+											57 text 
+											58 heading Description: Explorer Section: gretl-final-acceptance (Workspace), Value: 3
+												59 text gretl-final-acceptance (Workspace)
+										60 outline Files Explorer
+											61 container
+												62 row GRETL main
+													63 container
+														64 text 
+														65 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main
+															66 text GRETL main
+												67 row sql
+													68 container
+														69 text 
+														70 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/sql
+															71 text sql
+												72 row sub
+													73 container
+														74 text 
+														75 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/sub
+															76 text sub
+												77 row job.groovy
+													78 container
+														79 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/sub/job.groovy
+															80 text 
+															81 text job.groovy
+												82 row build.gradle
+													83 container
+														84 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/build.gradle
+															85 text 
+															86 text build.gradle
+												87 row dynamic.groovy
+													88 container
+														89 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/dynamic.groovy
+															90 text 
+															91 text dynamic.groovy
+												92 row empty.groovy
+													93 container
+														94 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/empty.groovy
+															95 text 
+															96 text empty.groovy
+												97 row foreign.groovy
+													98 container
+														99 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/foreign.groovy
+															100 text 
+															101 text foreign.groovy
+												102 row (selected) job.groovy
+													103 container
+														104 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/job.groovy
+															105 text 
+															106 text job.groovy
+												107 row settings.gretl
+													108 container
+														109 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/settings.gretl
+															110 text 
+															111 text settings.gretl
+												112 row Other GRETL
+													113 container
+														114 text 
+														115 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other
+															116 text Other GRETL
+												117 row sql
+													118 container
+														119 text 
+														120 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/sql
+															121 text sql
+												122 row sub
+													123 container
+														124 text 
+														125 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/sub
+															126 text sub
+												127 row build.gradle
+													128 container
+														129 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/build.gradle
+															130 text 
+															131 text build.gradle
+												132 row dynamic.groovy
+													133 container
+														134 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/dynamic.groovy
+															135 text 
+															136 text dynamic.groovy
+												137 row empty.groovy
+													138 container
+														139 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/empty.groovy
+															140 text 
+															141 text empty.groovy
+												142 row foreign.groovy
+													143 container
+														144 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/foreign.groovy
+															145 text 
+															146 text foreign.groovy
+												147 row job.groovy
+													148 container
+														149 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/job.groovy
+															150 text 
+															151 text job.groovy
+												152 row settings.gretl
+													153 container
+														154 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/settings.gretl
+															155 text 
+															156 text settings.gretl
+												157 row Created GRETL
+													158 container
+														159 text 
+														160 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created
+															161 text Created GRETL
+												162 row complex
+													163 container
+														164 text 
+														165 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/complex
+															166 text complex
+												167 row readonly
+													168 container
+														169 text 
+														170 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/readonly
+															171 text readonly
+												172 row sqlcase
+													173 container
+														174 text 
+														175 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase
+															176 text sqlcase
+												177 row transitive
+													178 container
+														179 text 
+														180 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/transitive
+															181 text transitive
+												182 row inner.groovy
+													183 container
+														184 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/inner.groovy
+															185 text 
+															186 text inner.groovy
+												187 row large.groovy
+													188 container
+														189 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/large.groovy
+															190 text 
+															191 text large.groovy
+												192 row long.groovy
+													193 container
+														194 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/long.groovy
+															195 text 
+															196 text long.groovy
+									197 button Outline Section
+										198 text 
+										199 heading Outline, Value: 3
+											200 text Outline
+									201 button Timeline Section
+										202 text 
+										203 heading Timeline, Value: 3
+											204 text Timeline
+							205 container
+								206 container
+									207 container
+										208 container
+											209 tab group
+												210 tab (settable, integer) Description: job.groovy, Value: 0
+													211 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/job.groovy
+														212 text 
+														213 text job.groovy GRETL main
+													214 toolbar Tab actions
+														215 button Close (⌘W)
+															216 text 
+												217 tab (selected) Description: job.groovy, Value: 1
+													218 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/job.groovy
+														219 text 
+														220 text job.groovy GRETL main
+													221 toolbar Tab actions
+														222 button Close (⌘W)
+															223 text 
+												224 tab (settable, integer) Description: job.groovy, preview, Value: 0
+													225 container job.groovy
+														226 text 
+														227 text job.groovy GRETL main • sub
+													228 toolbar Tab actions
+														229 button Close (⌘W)
+															230 text 
+											231 toolbar Editor actions
+												232 button GRETL: Open Modeler
+												233 button Split Editor Right (⌃⇧⌥⌘7) [⌥] Split Editor Down
+													234 text 
+												235 pop up button More Actions...
+													236 text 
+										237 content list
+											238 container
+												239 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main
+													240 text GRETL main
+												241 text 
+											242 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/job.groovy
+												243 text 
+												244 text job.groovy
+										245 button GRETL Modeler 
+											246 text GRETL Modeler 
+						247 container
+							248 container remote
+								249 button remote
+							250 container No Problems
+								251 button No Problems
+									252 text 
+									253 text  0 
+									254 text 
+									255 text  0
+							256 container GRETL: Ready, Ready
+								257 button GRETL: Ready, Ready
+							258 container GRETL buffer evidence saved: buffers-1793800560003.json
+								259 button GRETL buffer evidence saved: buffers-1793800560003.json
+							260 container Notifications
+								261 button Notifications
+							262 container Screen Reader Optimized
+								263 button Screen Reader Optimized
+					264 text Secondary Side Bar hidden
+					265 text Error
+					266 HTML content vscode-webview://0psv5sb6f1jr2u0da8ufpo1n89j70oi472ks1miut117pho87k0r/index.html?id=ce491586-3e24-4622-bc89-95ebab4c1b04&parentId=1&origin=dc774f09-16d9-4269-8fe5-033553d6d910&swVersion=6&extensionId=edigonzales.gretl-runtime-vscode&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=dbab7817-61cb-4323-bc10-2b3dceaa4807
+						267 container undefined
+							268 HTML content GRETL Modeler, URL: vscode-webview://0psv5sb6f1jr2u0da8ufpo1n89j70oi472ks1miut117pho87k0r/index.html?id=ce491586-3e24-4622-bc89-95ebab4c1b04&parentId=1&origin=dc774f09-16d9-4269-8fe5-033553d6d910&swVersion=6&extensionId=edigonzales.gretl-runtime-vscode&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=dbab7817-61cb-4323-bc10-2b3dceaa4807
+								269 container
+									270 heading GRETL Modeler, Value: 1
+										271 text GRETL Modeler
+									272 text GRETL main/job.groovy
+									273 button Add declaration
+									274 button Show source
+									275 button Refresh
+									276 container Graph view controls
+										277 container
+											278 text View
+											279 pop up button Description: Graph view, Value: All definitions
+												280 (selected) All definitions
+										281 checkbox Task, Value: 1
+										282 checkbox Action, Value: 1
+										283 checkbox Dynamic code, Value: 1
+										284 checkbox Inner invocations, Value: 0
+										285 button Reset layout
+										286 button Undo view
+										287 button (disabled) Redo view
+										288 button Undo text
+										289 button Redo text
+										290 button Save source
+										291 button Add action
+										292 button Defaults
+										293 button Add dependency
+										294 button Bind result
+										295 button Details
+										296 button (disabled) Reveal selection
+									297 text FRESH
+									298 text Static definitions · no runtime execution
+									299 container GRETL static graph
+										300 container
+											301 container
+												302 container DEPENDS_ON e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:3 to e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:4
+												303 container AFTER e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:3 to e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:4
+												304 container DEPENDS_ON e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:4 to e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:5
+												305 container DEPENDS_ON e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:7 to e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:5
+												306 container RESULT_BINDING e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:3 to e38b6e1b-df77-443d-b49b-d5e82ddf53b3:node:4
+												307 text dependsOn
+												308 text after · order only
+												309 text dependsOn
+												310 text dependsOn
+												311 text file → archive
+												312 container Project :
+													313 text PROJECT
+													314 text :
+												315 container Project :sub
+													316 text PROJECT
+													317 text :sub
+												318 container Task :download
+													319 button Input url
+													320 button Input output
+													321 button Input overwrite
+													322 button Input method
+													323 button Input headers
+													324 button Input bodyText
+													325 button Input maxBytes
+													326 button Output file
+													327 button Output finalUri
+													328 button Output status
+													329 button Output bytes
+													330 button Output sha256
+													331 text TASK
+													332 text :download
+													333 text gretl.http-download
+												334 container Task :extract
+													335 button Input archive
+													336 button Input compression
+													337 button Input outputDirectory
+													338 button Input outputFile
+													339 button Input maxExpandedBytes
+													340 button Input maxEntries
+													341 button Output file
+													342 button Output files
+													343 button Output directory
+													344 button Output bytes
+													345 text TASK
+													346 text :extract
+													347 text gretl.extract
+												348 container Action :done
+													349 text ACTION
+													350 text :done
+													351 text Source declaration
+												352 container Action :sub:child
+													353 text ACTION
+													354 text :sub:child
+													355 text Source declaration
+											356 image
+											357 container Control Panel
+												358 button Zoom In
+													359 image
+												360 button Zoom Out
+													361 image
+												362 button Fit View
+													363 image
+											364 image Mini Map
+											365 link Description: React Flow attribution, Value: reactflow.dev/?utm_source=attribution
+										366 container
+											367 text ━━ dependsOn ┄┄ after · order ┈┈ result binding
+									368 text View positions are stored separately. Dragging, filtering and layout never edit the Groovy source.
+	369 close button
+	370 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	371 minimize button
+372 menu bar
+	373 Code
+	374 File
+	375 Edit
+	376 Selection
+	377 View
+	378 Go
+	379 Run
+	380 Terminal
+	381 Window
+	382 Help
+
+The focused UI element is 268 HTML content GRETL Modeler, URL: vscode-webview://0psv5sb6f1jr2u0da8ufpo1n89j70oi472ks1miut117pho87k0r/index.html?id=ce491586-3e24-4622-bc89-95ebab4c1b04&parentId=1&origin=dc774f09-16d9-4269-8fe5-033553d6d910&swVersion=6&extensionId=edigonzales.gretl-runtime-vscode&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=dbab7817-61cb-4323-bc10-2b3dceaa4807

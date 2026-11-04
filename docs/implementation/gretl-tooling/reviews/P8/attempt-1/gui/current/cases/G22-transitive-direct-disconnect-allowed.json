@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:24:40.685Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "5c1af05dc55bb27dc53aef58890540d90409b3f7023d5cefc00593933bd6757e",
+  "imageSha256": "1684a8f9411bb9c3af504a589a0992dd93b77035e96a57eaa6699f9decf65134",
+  "image": "G22-transitive-direct-disconnect-allowed.jpg"
+}

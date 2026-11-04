@@ -1,0 +1,67 @@
+{
+  "state": "UPGRADED_TO_CORRECTED_CANDIDATE_PENDING_FINAL_GATES",
+  "qualification": true,
+  "networkScope": "Private Electron HTTP proxy points to a closed loopback port; no OS-wide network change. Linux process qualification separately uses network=none.",
+  "preparedAt": "2026-11-04T13:45:04.171Z",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "executable": "/Users/stefan/.cache/gretl-tooling-review/vscode-download/vscode-darwin-arm64-1.144.0/Visual Studio Code.app/Contents/MacOS/Code",
+  "workspace": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace \u00e4 space",
+  "openedWorkspace": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace \u00e4 space/gretl-final-acceptance.code-workspace",
+  "job": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace \u00e4 space/project-main/job.groovy",
+  "profile": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/profile",
+  "extensions": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions",
+  "product": {
+    "id": "edigonzales.gretl-runtime-vscode",
+    "vsix": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/catalog-canary/correct/dist/gretl-runtime.vsix",
+    "sha256": "cdec076b970c1d890a9d1b45e6166ee9da721509d3e31af804c38b095197d6c8",
+    "bundle": {
+      "schemaVersion": 1,
+      "extensionId": "edigonzales.gretl-runtime-vscode",
+      "extensionVersion": "0.1.0",
+      "sourceCommit": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+      "sourceDirty": false,
+      "mavenVersion": "3.10.0",
+      "mavenArtifactVersion": "6.0.0-SNAPSHOT",
+      "javaVersion": "25.0.2",
+      "javaRelease": 25,
+      "groovyVersion": "6.0.0",
+      "nodeVersion": "v22.23.1",
+      "wireSchemaVersion": 1,
+      "catalogSchemaVersion": 1,
+      "catalogId": "234434d2426717579d39deb242f40a6323950e9c2d0c0ee6edf77f74aafdcc57",
+      "catalogSha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+      "files": {
+        "gretl-lsp.jar": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+        "operations.json": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+        "catalog-manifest.json": "80baadb727aa0531d0d88386b90262c712c45142a75bea696623fe4719a20931",
+        "gretl-protocol-v1.schema.json": "ec4a18022d9b2583fdf4db1d9d8368826363558bde3a91796f3c1546bf72b328"
+      },
+      "payloadSha256": {
+        "dist/extension.cjs": "d8ec44b3a2c763cca290bc24bb05909b4a564c0055d992b9d032b9ffe020b228",
+        "dist/modeler/elk-worker.min.js": "dca3a19d9ec37f5634bf5876b4ebd2455c3f43f0d32570136c13c13edaba9bfb",
+        "dist/modeler/view.css": "a44a75d325d22412cad5319b2f69070ba1dfe454cc063a5be6005b18bdafe156",
+        "dist/modeler/view.js": "e5559c178eb14bdeee388be2e8d68a6042cc5132848e05369d914ad71b4b922f",
+        "language-configuration.json": "0281e9b1eb16dd97e1ec71923ed44c060c37ed17ea4221175d49b79852f1635e",
+        "LICENSE.txt": "91904e7f7a936e2f873b6c7d893b34ecc43fa9f2beffe96a9d8e24c9ad449798",
+        "package.json": "534085f5c509edf014f6a17e879a018eeee04c15f934f66676a70362f78f99c2",
+        "readme.md": "6dda9ceb3356fd069425fe4949c55981808371e1e3d3483cdb0403eaee85b640",
+        "server/catalog-manifest.json": "80baadb727aa0531d0d88386b90262c712c45142a75bea696623fe4719a20931",
+        "server/gretl-lsp.jar": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+        "server/gretl-protocol-v1.schema.json": "ec4a18022d9b2583fdf4db1d9d8368826363558bde3a91796f3c1546bf72b328",
+        "server/operations.json": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+        "server/THIRD-PARTY-NOTICES.txt": "c986a85805eb236b805cb19df99f0ede708ba78e75b97181a9d4da7d0ff47572",
+        "syntaxes/groovy.tmLanguage.json": "47e72fd7a5d36a4a190dd9a19c956d79f80ca867aad486084d35303d39f05065",
+        "syntaxes/LICENSE-TEXTMATE.txt": "c839e10c674d66aff8a6a653991b9608d381adc553fc94520cf2e56e07fb636e",
+        "syntaxes/LICENSE-VSCODE.txt": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9",
+        "syntaxes/PROVENANCE.json": "29aa5c400b4022284593074d713cb687e112a943f4ec11bc83718bc2d3205365"
+      },
+      "inventoryExcludes": [
+        "server/bundle-manifest.json"
+      ],
+      "containerInventory": "dist/distribution-inventory.json (outside the VSIX; includes the manifest and generated container metadata)"
+    }
+  },
+  "driverSha256": "817c7aa58cdd051da09fede6ee6f88250a613eda7f476ceac3e3a7a31208c886",
+  "previousArtifactIdentity": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/identity.json"
+}

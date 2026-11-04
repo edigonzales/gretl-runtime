@@ -1,0 +1,12 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "passed": true,
+  "captures": [
+    "buffers-1793785493983.json",
+    "buffers-1793785517512.json"
+  ],
+  "integerDigits": "9007199254740993",
+  "nestedMapAndList": true,
+  "unreferencedDelete": true,
+  "exactSavedOriginalAfterDelete": false
+}

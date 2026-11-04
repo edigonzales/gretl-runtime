@@ -1,0 +1,5 @@
+BindResult state=REJECTED code=EDIT_PORT_COMPATIBILITY
+SetField state=ALLOWED code=<none>
+SetField postimage=task('p', Source) {}; task('c', Sink, dependsOn:'p') { input=result('p').file }
+planConfiguration state=ALLOWED code=<none>
+planConfiguration postimage=task('p', Source) {}; task('c', Sink, dependsOn:'p') { input=result('p').file }

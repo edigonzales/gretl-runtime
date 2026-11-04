@@ -1,0 +1,10 @@
+**
+!package.json
+!README.md
+!LICENSE
+!language-configuration.json
+!dist/extension.cjs
+!dist/modeler/*.js
+!dist/modeler/*.css
+!server/**
+!syntaxes/**

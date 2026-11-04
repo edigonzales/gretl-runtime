@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "positive",
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "output": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/operator-supplemental/positive-v3.json"
+    },
+    {
+      "name": "negative",
+      "exitCode": 1,
+      "expectedExitCode": 1,
+      "output": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/operator-supplemental/negative-v3.json"
+    }
+  ]
+}

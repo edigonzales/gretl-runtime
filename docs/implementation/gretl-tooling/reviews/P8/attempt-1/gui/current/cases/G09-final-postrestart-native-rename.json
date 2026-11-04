@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-04T14:58:52.489Z",
+  "artifactIdentity": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/final-identity.json",
+  "artifactSourceCommit": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "vsixSha256": "c501014f5b1e7bfd26596e6d8cb5df49ff8d89560dc04dfcbbcc11995719fb6e",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "axSha256": "dd34c2ba75c7aa6515e2d464227bb01846c000568caed8f986281bb1b8ff3c24",
+  "imageSha256": "20ceb238a580c86faf735a357d21d343b09665e054c8ab4fcbefc268ed37e39c",
+  "image": "G09-final-postrestart-native-rename.jpg"
+}

@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:12:18.281Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "00efe15d7da27d86b27c35df8d5734044bc76121cbd7e2a4ad29ba9cda586df7",
+  "imageSha256": "e4222363a15c9691149eb0a72b1799623fba3f6b1485cba51b0403052b369a56",
+  "image": "G20-binding-draft.jpg"
+}

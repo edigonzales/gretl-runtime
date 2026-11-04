@@ -1,0 +1,11 @@
+{
+  "kind": "DEVELOPMENT_NOT_FINAL_ACCEPTANCE",
+  "sourceCommit": "230e6ccb977414d6fcb5eff5798a16bb9cd6da81",
+  "sourceDirty": true,
+  "vsixSha256": "0c9062ae757bc2473ee4cd6169a7e3574182c30b123f7339ac07a4e801cdf745",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "time": "2026-11-04T09:39:55.001Z",
+  "axSha256": "955aa294e9b449f6026462b344a6c1ea81d4c0da523aa956a835b2b884dc86f1",
+  "screenshot": "typed-fields-native-undo.jpg",
+  "screenshotSha256": "557a66e320c995831f25bf50d0180baaa203bf914939800ce80bc2b6bd8bd7d8"
+}

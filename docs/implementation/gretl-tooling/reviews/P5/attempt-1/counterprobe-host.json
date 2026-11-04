@@ -1,0 +1,29 @@
+{
+  "kind": "NEW_REVIEW_HOST_COUNTERPROBE",
+  "candidate": "4520ee6960d8b0857fad828f972a44950c5aeb09",
+  "completedAt": "2026-11-03T22:56:13.265Z",
+  "scope": "edit-guard disk/source precondition boundary; no GUI claim",
+  "results": [
+    {
+      "name": "exactly 4 MiB regular source is hashable",
+      "passed": true
+    },
+    {
+      "name": "4 MiB + 1 byte is rejected at the byte limit",
+      "passed": true
+    },
+    {
+      "name": "invalid UTF-8 closed source is rejected, not silently hashed",
+      "passed": true
+    },
+    {
+      "name": "parent-directory symlink is rejected by the component walk",
+      "passed": true
+    },
+    {
+      "name": "lone low surrogate has a stable UTF-16BE digest",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

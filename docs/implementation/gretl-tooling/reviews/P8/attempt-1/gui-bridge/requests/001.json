@@ -1,0 +1,22 @@
+{
+  "id": "001",
+  "purpose": "New independent G30 fixture: create controlled compound source, open it, and open its Modeler in the private workspace without touching existing fixtures.",
+  "actions": [
+    {
+      "kind": "createFixture",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/reviewer-compound/job.groovy",
+      "text": "// Reviewer compound G30 fixture. DO NOT SAVE DIRTY MARKER.\nparameter('archiveUrl', description: 'Reviewer archive', type: 'text', required: false, defaultValue: 'https://example.invalid/reviewer.zip')\ntask('fetch', HttpDownload) {\n    url = parameter('archiveUrl')\n    output = workPath('reviewer.zip')\n}\ntask('unpack', Extract, after: 'fetch', dependsOn: 'fetch') {\n    compression = 'ZIP'\n    outputDirectory = workPath('reviewer-out')\n}\ndefaults 'unpack'\n"
+    },
+    {
+      "kind": "openFile",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/reviewer-compound/job.groovy"
+    },
+    {
+      "kind": "command",
+      "title": "GRETL: Open Modeler"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

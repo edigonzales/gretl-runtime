@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "onlyChanged": "overwrite=false -> overwrite=true",
+  "crlfPreserved": true,
+  "opaqueCodeAndCommentsByteExact": true,
+  "markerAbsent": true,
+  "sha256": "8d87c67b56eac30ead7c3705c4405ef2b506524087ca9f59cb42bbb83980169a"
+}

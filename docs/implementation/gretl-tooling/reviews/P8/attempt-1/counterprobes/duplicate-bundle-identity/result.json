@@ -1,0 +1,17 @@
+{
+  "id": "duplicate-bundle-identity",
+  "candidateSha": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "originalVsix": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/vscode/gretl-vscode/dist/gretl-runtime.vsix",
+  "originalSha256": "c501014f5b1e7bfd26596e6d8cb5df49ff8d89560dc04dfcbbcc11995719fb6e",
+  "tamperedVsix": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/counterprobes/duplicate-bundle-identity/gretl-runtime-duplicate-bundle.vsix",
+  "tamperedSha256": "d83dfc6ee93c02cf36e1bc7f8203f81355558bd40072fabfc32191d83efd19bd",
+  "archiveEntryCount": 21,
+  "duplicateNames": [
+    "extension/server/bundle-manifest.json"
+  ],
+  "accepted": false,
+  "exitCode": 1,
+  "outputStatus": "absent",
+  "stderr": "node:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: Duplicate VSIX entries\n\n20 !== 21\n\n    at file:///Users/stefan/.cache/gretl-tooling-review/P8-review-1/product/vscode/gretl-vscode/scripts/inventory.mjs:11:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: 20,\n  expected: 21,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v22.23.1",
+  "assertion": "Rejected before trusting either conflicting server/bundle-manifest.json member; no success inventory emitted."
+}

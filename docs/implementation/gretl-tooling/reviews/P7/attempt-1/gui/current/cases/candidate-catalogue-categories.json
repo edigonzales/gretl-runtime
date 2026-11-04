@@ -1,0 +1,11 @@
+{
+  "kind": "CLEAN_COMMITTED_CANDIDATE_PENDING_FULL_GATES",
+  "candidateSha": "53f7f3daaf92d002fd75978c25471321fd99a310",
+  "sourceDirty": false,
+  "vsixSha256": "c270ea15209811f3bc84b5ea4c5b329bf1bde7cad49af2d60a2ce11bd10f7075",
+  "serverSha256": "028762ee99d8c8efc9336490e2fcbeb9138df970794fdf973957b9bf8e67ecbf",
+  "time": "2026-11-04T10:19:46.464Z",
+  "axSha256": "fb1644d2ec4daee405eb7c1c7ac4148aa1d6a57fa8519dfc6e51e93ac017f4c2",
+  "screenshot": "candidate-catalogue-categories.jpg",
+  "screenshotSha256": "2ebdc11a26407d342f8e7f005b18321c6beac5bc9009a4078ddabda983e1a233"
+}

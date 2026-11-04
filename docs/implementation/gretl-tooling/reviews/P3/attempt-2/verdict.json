@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "3261ced2-5326-4c9e-8dc1-84efde9de6c1",
+  "phase": "P3",
+  "assignmentBase": "185fc6700b5cb2897f724d457610a57f059b3421",
+  "phaseBase": "6b1487fcc4dfef9516b0791182b920a50616337e",
+  "candidateSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0",
+  "requirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+  "verdict": "PASS",
+  "reviewer": {
+    "openCodeVersion": "2.2.5",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "apiHost": "api.deepseek.com",
+    "modelMappingEvidence": "/Users/stefan/.cache/gretl-tooling-review/p2-resume-readiness/identity.json (checkedAt 2026-11-03T13:16:05.719Z; actualProvider deepseek; actualModel deepseek-flash; effectiveBaseUrl https://api.deepseek.com; modelVersion DeepSeek-V4.1-Flash-1017; alias evidence https://api-docs.deepseek.com/quick_start/pricing/)"
+  },
+  "criteria": [
+    {
+      "id": "P3-01",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/query/CompletionQueries.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-targeted.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P3-02",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/query/LanguageQueries.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/query/SignatureQueries.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/graph/JobGraphProjector.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SnapshotNavigationTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P3-03",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEdits.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzer.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/AliasUseGuard.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-readonly-probe.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P3-04",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/SemanticEditPlanner.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SemanticEditPlannerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/HeaderSourceEditsTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P3-05",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/DependencySourceEdits.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/PortCompatibility.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/FieldSourceEdits.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SemanticEditPlannerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P3-06",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEdits.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/DependencySourceEdits.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P3-07",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilder.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/SourceValueWriter.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceValueWriterTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P3-08",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/EditPreconditions.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/EditVerifier.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/SemanticEditPlanner.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SemanticEditPlannerTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SupplementalSourcesTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-supplemental-probe.log"
+      ],
+      "findingIds": []
+    },
+    {
+      "id": "P3-09",
+      "status": "fulfilled",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-targeted.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-targeted.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/validation-report.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-docs.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-docs.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/documentation.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/documentation-tests.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/documentation-links.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/documentation-render.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-dependencies.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/generate-reference.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product/gretl-groovy/src/test/java/ch/so/agi/gretl/runtime/groovy/StaticSemanticsParityTest.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-supplemental-probe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-readonly-probe.log"
+      ],
+      "findingIds": []
+    }
+  ],
+  "executedChecks": [
+    {
+      "id": "tooling-targeted",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-groovy",
+        "-am",
+        "verify"
+      ],
+      "exitCode": 0,
+      "testCount": 508,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-targeted.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-targeted.json"
+      ]
+    },
+    {
+      "id": "tooling-docs",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/product",
+      "argv": [
+        "node",
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": null,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-docs.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/tooling-docs.json"
+      ]
+    },
+    {
+      "id": "p3-counterprobe",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence",
+      "argv": [
+        "node",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/run-counterprobe.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": 11,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/P3CounterProbe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.json"
+      ]
+    },
+    {
+      "id": "p3-supplemental-probe",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence",
+      "argv": [
+        "node",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/run-supplemental-probe.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": 3,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/P3SupplementalSourceProbe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-supplemental-probe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-supplemental-probe.json"
+      ]
+    },
+    {
+      "id": "p3-readonly-probe",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence",
+      "argv": [
+        "node",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/run-readonly-probe.mjs"
+      ],
+      "exitCode": 0,
+      "testCount": 3,
+      "failures": 0,
+      "skips": 0,
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/P3ReadonlyProbe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-readonly-probe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-readonly-probe.json"
+      ]
+    }
+  ],
+  "verifiedCurrentEvidence": [
+    {
+      "checkIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "candidateSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0",
+      "artifacts": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+          "sha256": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+          "kind": "tooling-core"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+          "sha256": "77dd0024e3f4fa17e98ee5ce37d967a75d5a890057367860369978206892f485",
+          "kind": "tooling-core"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/artifacts/gretl-language-contract/target/tooling-dependencies.json",
+          "sha256": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/artifacts/gretl-tooling-core/target/tooling-dependencies.json",
+          "sha256": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+          "sha256": "9b1902ca10030111652177679c8af0d11684b52b23f88e56e682ff9f0e169388",
+          "kind": "catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+          "sha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.schema.json",
+          "sha256": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005",
+          "kind": "dependency-graph-or-catalog-data"
+        },
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+          "sha256": "be99b1587b1b8ee2ea58dae2751fea478bb533b8945e05122d2191ca9ffd9fe4",
+          "kind": "dependency-graph-or-catalog-data"
+        }
+      ],
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/validation-report.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/mtime-inspection.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-standard/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-standard/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-standard/evidence/reports.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-services/manifest.json",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-services/command.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-services/evidence/reports.json"
+      ],
+      "verification": "Beide gelieferten frischen Rootgates wurden nicht wiederholt. Manifest-SHA = Kandidat, dirty leer, Exit 0, Start/Ende gültig; 623/623 bzw. 808/808 Kopie- und Originalhashes stimmen; 168 XML-Suiten ergeben 881 Tests (0/0/0), 182 XML-Suiten ergeben 937 Tests (0/0/0); Log-Modulsummen, BUILD SUCCESS, Total time und reports.json-Counts stimmen exakt. Die mtimeMismatch-Werte (486 bzw. 649) sind Sammlungszeit-Artefakte; alle Inhalts-Hashes und Zählungen sind stimmig. Die 8 Artefakthashes wurden gegen den Request nachgerechnet."
+    }
+  ],
+  "guiEvidence": [],
+  "counterprobes": [
+    {
+      "id": "p3-counterprobe",
+      "hypothesis": "Die reparierte Portprüfung greift auch für Mapping-No-ops; Formkomposition publiziert nur ein final verifiziertes Postimage; Mehrfachzuweisungen, fehlende Datenkanten, referenzierte Defaults und Stale-Pläne werden konkret abgelehnt; Quote-/CRLF-/Emoji-Ranges bleiben exakt.",
+      "novelty": "Eigene Kombination aus MapOf(Text,Path)-No-op in beiden Portrichtungen, Form mit RemoveField + SetField + SetTaskOption in einem CRLF-Dokument, Replay auf dem Postimage, Mehrfachzuweisung, Stale-Validierung und Completion in einem Emoji-Kommentar; keine Kopie eines vorhandenen Tests.",
+      "actions": "node /Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/run-counterprobe.mjs; kompiliert P3CounterProbe.java gegen die Kandidaten-target/classes und -test-classes und führt sie aus.",
+      "expected": "11/11 PASS; keine Quelltextänderung; keine IO-Wiederbeschaffung; Form genau 3 Ranges; Replay No-op; Plan current vor Snapshot und stale nach neuem Capture.",
+      "observed": "11/11 PASS, Exit 0. map-noop-incompatible REJECTED EDIT_PORT_COMPATIBILITY; setfield-missing-data-edge REJECTED EDIT_NEW_ERROR; delete-default-referenced REJECTED EDIT_REFERENCED_TARGET; multiple-assignment-refused REJECTED EDIT_MULTIPLE_ASSIGNMENTS; Form exakt 3 Ranges mit korrektem CRLF/Kommentar/Header; source-untouched true.",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/P3CounterProbe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-counterprobe.json"
+      ]
+    },
+    {
+      "id": "p3-supplemental-source-probe",
+      "hypothesis": "Eine ausdrücklich erfasste, aber nicht referenzierte SQL-Zusatzquelle ist in Precondition und Preimage, fehlt aber im reanalysierten Postimage; sobald der Job sie referenziert, bleibt sie erhalten; eine neue, nicht erfasste SQL-Abhängigkeit blockiert den Plan weiterhin.",
+      "novelty": "Prüft gezielt die requestedSources-/Postimage-Grenze, die in SupplementalSourcesTest nur indirekt über den neuen SQL-Task berührt wird, und kombiniert referenzierte und unreferenzierte Zusatzquelle mit der Negativsperre.",
+      "actions": "node /Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/run-supplemental-probe.mjs; kompiliert P3SupplementalSourceProbe.java gegen die Kandidatenklassen und führt sie aus.",
+      "expected": "requested-source-postimage-drop: beforeHasSql true, preconditionsHaveSql true, postimageDropsSql true, Plan ALLOWED; referenced-source-postimage-kept: postimageHasSql true, keine Fehler; new-sql-dependency-blocked: REJECTED EDIT_SOURCE_NOT_CAPTURED, kein Plan.",
+      "observed": "3/3 PASS, Exit 0. requested-source-postimage-drop PASS (beforeHasSql=true, preconditionsHaveSql=true, postimageDropsSql=true); referenced-source-postimage-kept PASS (postimageHasSql=true, noError=true); new-sql-dependency-blocked PASS (beforeLacksSql=true, REJECTED, EDIT_SOURCE_NOT_CAPTURED, kein Plan). Der Drop ist die optionale Beobachtung O1, kein Kriterienverstoss.",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/P3SupplementalSourceProbe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-supplemental-probe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-supplemental-probe.json"
+      ]
+    },
+    {
+      "id": "p3-readonly-probe",
+      "hypothesis": "Readonly-Ziele werden in prepareRename/rename/SetField über EditabilityAnalyzer und im EditVerifier mit EDIT_READONLY abgelehnt; es entsteht kein Plan und kein Quelltext wird verändert.",
+      "novelty": "Die Produkttests decken readonly nicht mit einer eigenen Fixture ab; diese Probe baut eine echte readonly-SourceRepository-Fixture mit Kandidaten-Catalog und prüft drei Schichten (Editability, Rename-Pipeline, Verifier-Defence).",
+      "actions": "node /Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/run-readonly-probe.mjs; kompiliert P3ReadonlyProbe.java gegen die Kandidatenklassen und führt sie aus.",
+      "expected": "capturedReadonly true; SetField REJECTED EDIT_READONLY; prepareRename mit REJECTED EDIT_READONLY; rename REJECTED EDIT_READONLY; direkter Verifier EDIT_READONLY; Quelle unverändert.",
+      "observed": "3/3 PASS, Exit 0: readonly-setfield-refused, readonly-rename-refused, readonly-verifier-defence; jeweils EDIT_READONLY, kein Plan, Quelle unverändert.",
+      "evidence": [
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/P3ReadonlyProbe.java",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-readonly-probe.log",
+        "/Users/stefan/.cache/gretl-tooling-review/P3-review-2/evidence/p3-readonly-probe.json"
+      ]
+    }
+  ],
+  "openMandatoryFindings": [],
+  "missingRequiredChecks": [],
+  "report": "review.md",
+  "summary": "PASS: P3-01 bis P3-09 sind erfüllt. Beide frischen Rootgates wurden anhand aller Rohbelege validiert (881 bzw. 937 Tests, 0/0/0; 8 Artefakthashes stimmen), nicht wiederholt; verifiedCurrentEvidence führt ausschliesslich diese beiden Request-Check-IDs mit passenden aktuellen Gate-Manifesten. Der fällige gezielte Lauf bestand mit 476 Java- und 32 Node-Tests (0 Fehler/Skips, Exit 0), der Request-Check tooling-docs mit 81 exakten Kriterien. Die zusätzlich gelieferte Doku-Evidenz (73 Tests, 300 Links/0 gebrochen, Render, Dependency-Graph) ist als Kriterienbeleg zu P3-09 geführt und nicht als Request-Gate-ID deklariert. Die P3-F1-Reparatur ist belegt; drei eigene neue Gegenproben mit 11+3+3 Prüfungen sind grün. Keine offenen Pflichtfindings oder fehlenden Checks; O1 (requestedSources im Postimage) und O2 (readonly-Produktregression) sind optionale Verbesserungen ohne Kriterienverstoss."
+}

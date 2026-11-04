@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:32:23.056Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "48c48682f8fea7883112e5b73da24777e66956ffbf6d717741decd1bed76b110",
+  "imageSha256": "52c49242461e5f458b4ef973fd85f4b9c558649618df610984b996b02789dcc6",
+  "image": "G28-before-catalog-canary-stop.jpg"
+}

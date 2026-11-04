@@ -1,0 +1,309 @@
+{
+  "kind": "FINAL_CANDIDATE_SERVER_PROBE",
+  "passed": true,
+  "candidateSha": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "sourceDirty": false,
+  "probeRepositoryHead": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "probeRepositoryDirty": false,
+  "probeScriptSha256": "2074d2262bc9b535c1c0547ca0a5b67ad4778f0573c99369bc589ad32099f6af",
+  "serverJar": "/Users/stefan/sources/gretl-runtime/vscode/gretl-vscode/server/gretl-lsp.jar",
+  "serverJarSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+  "host": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0"
+  },
+  "runtime": {
+    "os": "linux",
+    "architecture": "arm64",
+    "imageId": "sha256:ecdc0adb37bde1a281c4d245a3cd535004b1fc8322d560f5b09463b248c81df0",
+    "repoDigests": [
+      "eclipse-temurin@sha256:ecdc0adb37bde1a281c4d245a3cd535004b1fc8322d560f5b09463b248c81df0"
+    ],
+    "network": "none",
+    "memoryLimitMiB": 768,
+    "cpuLimit": 2
+  },
+  "javaVersion": "openjdk version \"25.0.5\" 2026-10-20 LTS\nOpenJDK Runtime Environment Temurin-25.0.5+8 (build 25.0.5+8-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.5+8 (build 25.0.5+8-LTS, mixed mode, sharing)\n",
+  "heapLimitMiB": 256,
+  "startedAt": "2026-11-04T14:53:04.105Z",
+  "endedAt": "2026-11-04T14:53:07.338Z",
+  "measurements": [
+    {
+      "label": "small",
+      "milliseconds": 285.7214999999999,
+      "nodeCount": 3,
+      "diagnostics": 1,
+      "snapshotId": "47a488e9-6ddd-4e6e-9907-7bed123cbcca"
+    },
+    {
+      "label": "medium",
+      "milliseconds": 101.757292,
+      "nodeCount": 200,
+      "diagnostics": 0,
+      "snapshotId": "d8c4af1a-ef81-4709-95a3-1ee84a179472"
+    },
+    {
+      "label": "large",
+      "milliseconds": 281.74570900000003,
+      "nodeCount": 1200,
+      "diagnostics": 0,
+      "snapshotId": "c1e4903d-5434-4a28-8b90-f8e872300cd4"
+    },
+    {
+      "label": "broken-recovery",
+      "milliseconds": 27.184541999999965,
+      "nodeCount": 3,
+      "diagnostics": 2,
+      "snapshotId": "2ea1959e-01c6-4094-ad9b-0c0b1c1cee3e"
+    },
+    {
+      "label": "source-budget",
+      "milliseconds": 27.604416999999557,
+      "nodeCount": 0,
+      "diagnostics": 2,
+      "snapshotId": "b2f17b0b-cd9f-436b-b94f-bb8d9101bb80"
+    },
+    {
+      "label": "twenty-rapid-edits",
+      "milliseconds": 73.03483300000016,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "06b0eeeb-5522-4530-9ef6-007740f86695"
+    },
+    {
+      "label": "retention-0",
+      "milliseconds": 8.769958999999744,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "3acd6d8c-4240-4c70-980b-09d17140c72c"
+    },
+    {
+      "label": "retention-1",
+      "milliseconds": 9.758792000000085,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "7264289d-9dfc-4484-9217-7c806e991ee2"
+    },
+    {
+      "label": "retention-2",
+      "milliseconds": 7.156082999999853,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "ec3b4b08-8c33-4cf2-9734-ea418cf8964d"
+    },
+    {
+      "label": "retention-3",
+      "milliseconds": 62.29408300000023,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "4bd84016-cfd1-4ffd-902b-ced44039ff74"
+    },
+    {
+      "label": "retention-4",
+      "milliseconds": 8.85654199999999,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "104bb1de-a75c-4d59-bd9f-5add59fde88c"
+    },
+    {
+      "label": "retention-5",
+      "milliseconds": 7.473124999999982,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "2174f85d-894f-4e14-b4d7-dc96422d898c"
+    },
+    {
+      "label": "retention-6",
+      "milliseconds": 59.343875000000025,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "0a2f9536-96e7-492b-91f7-c0065371a18a"
+    },
+    {
+      "label": "retention-7",
+      "milliseconds": 4.918499999999767,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "4ece4e66-f93d-4c62-8a6b-da848faa83cf"
+    },
+    {
+      "label": "retention-8",
+      "milliseconds": 3.530417000000398,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "b24c1d82-9e19-49d3-ac6e-07c00808246b"
+    },
+    {
+      "label": "retention-9",
+      "milliseconds": 57.510499999999865,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "cd9483fd-ce75-49d6-8144-1c5bbfd54645"
+    },
+    {
+      "label": "retention-10",
+      "milliseconds": 5.212167000000136,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "02a6a84f-f110-4f7e-bf0c-7d4e9258ae5e"
+    },
+    {
+      "label": "retention-11",
+      "milliseconds": 65.59162500000002,
+      "nodeCount": 1,
+      "diagnostics": 0,
+      "snapshotId": "9f0a16c4-bbd9-4832-8865-bfda9cfdfe1b"
+    },
+    {
+      "label": "root-readded",
+      "milliseconds": 7.171375000000353,
+      "nodeCount": 3,
+      "diagnostics": 1,
+      "snapshotId": "34a7ff42-dcb9-4bd2-af64-997aed89894e"
+    }
+  ],
+  "memory": [
+    {
+      "time": "2026-11-04T14:53:06.226Z",
+      "dockerStats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"17.10%\",\"Container\":\"gretl-lsp-qualification-46059-1793803983613\",\"ID\":\"2cb5d760d877\",\"MemPerc\":\"19.99%\",\"MemUsage\":\"153.5MiB / 768MiB\",\"Name\":\"gretl-lsp-qualification-46059-1793803983613\",\"NetIO\":\"0B / 0B\",\"PIDs\":\"21\"}"
+    }
+  ],
+  "rpc": [
+    {
+      "method": "initialize",
+      "milliseconds": 921.834375
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 285.4718750000002
+    },
+    {
+      "method": "gretl/catalog",
+      "milliseconds": 15.658749999999827
+    },
+    {
+      "method": "textDocument/hover",
+      "milliseconds": 8.967458000000079
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 101.66108400000007
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 281.5907500000003
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 27.07837500000005
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 27.47395800000004
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 13.512166999999863,
+      "errorCode": -32801,
+      "message": "STALE_OR_CANCELLED_ANALYSIS"
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 8.951917000000321
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 8.682291999999961
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 9.686915999999655
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 7.102624999999989
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 5.241250000000036,
+      "errorCode": -32801,
+      "message": "STALE_OR_CANCELLED_ANALYSIS"
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 6.146040999999968
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 8.78729199999998
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 7.421792000000096
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 4.073542000000089,
+      "errorCode": -32801,
+      "message": "STALE_OR_CANCELLED_ANALYSIS"
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 4.497792000000118
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 4.889708999999584
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 3.4969169999999394
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 2.393833000000086,
+      "errorCode": -32801,
+      "message": "STALE_OR_CANCELLED_ANALYSIS"
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 4.5284999999998945
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 5.168624999999793
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 9.150040999999874,
+      "errorCode": -32801,
+      "message": "STALE_OR_CANCELLED_ANALYSIS"
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 5.0522500000001855
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 3.9368749999998727,
+      "errorCode": -32602,
+      "message": "SOURCE_OUTSIDE_WORKSPACE"
+    },
+    {
+      "method": "gretl/graph",
+      "milliseconds": 7.086207999999715
+    },
+    {
+      "method": "shutdown",
+      "milliseconds": 11.948457999999846
+    }
+  ],
+  "retainedNotifications": 28,
+  "markerAbsent": true,
+  "sourceUnchanged": true,
+  "exit": {
+    "code": 0,
+    "signal": null
+  }
+}

@@ -1,0 +1,7 @@
+javac exit=0
+
+
+java exit=0
+checks=30 failures=0
+P1_COUNTERPROBE_PASS
+

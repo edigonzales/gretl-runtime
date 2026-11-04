@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-04T14:53:27.750Z",
+  "artifactIdentity": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/corrected-standard-identity.json",
+  "artifactSourceCommit": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "vsixSha256": "cdec076b970c1d890a9d1b45e6166ee9da721509d3e31af804c38b095197d6c8",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "8e29500b4e974bab08abdf2b9d7bcfe9554a1b3641465774a8a77190c72f2b77",
+  "imageSha256": "6bf85dd79beb638136269aaad056f048b5e6db8a9cf38597ee007010872dfe5b",
+  "image": "G29-large-500-opened.jpg"
+}

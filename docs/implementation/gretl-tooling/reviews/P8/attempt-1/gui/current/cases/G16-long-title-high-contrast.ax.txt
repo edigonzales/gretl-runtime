@@ -1,0 +1,678 @@
+Window: "long.groovy — gretl-final-acceptance (Workspace)", App: Code.
+0 standard window long.groovy — gretl-final-acceptance (Workspace), Secondary Actions: Raise, URL: file:///Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace%20a%CC%88%20space/project-created/long.groovy
+	1 container long.groovy — gretl-final-acceptance (Workspace)
+		2 container
+			3 HTML content long.groovy — gretl-final-acceptance (Workspace), URL: vscode-file://vscode-app/Users/stefan/.cache/gretl-tooling-review/vscode-download/vscode-darwin-arm64-1.144.0/Visual%20Studio%20Code.app/Contents/Resources/app/out/vs/code/electron-browser/workbench/workbench.html
+				4 container
+					5 container
+						6 container
+							7 toolbar
+								8 button Go Back (⌃-)
+									9 text 
+								10 button (disabled) Go Forward (⌃⇧-)
+									11 text 
+								12 button long.groovy — gretl-final-acceptance (Workspace)
+							13 toolbar Title actions
+								14 button Customize Layout...
+									15 text 
+								16 toggle button Description: Toggle Primary Side Bar (⌘B), Value: 1
+									17 text 
+								18 toggle button Description: Toggle Panel (⌘J), Value: 1
+									19 text 
+								20 toggle button Description: Toggle Secondary Side Bar (⌥⌘B), Value: 0
+									21 text 
+						22 container
+							23 container
+								24 tab group Active View Switcher
+									25 tab (selected) Description: Explorer (⇧⌘E) - 4 unsaved files, Value: 1
+										26 container Explorer (⇧⌘E) - 4 unsaved files
+											27 text 
+										28 container Explorer (⇧⌘E) - 4 unsaved files
+											29 text 4
+									30 tab (settable, integer) Search (⇧⌘F), Value: 0
+										31 container Search (⇧⌘F)
+											32 text 
+									33 tab (settable, integer) Description: Source Control (⌃⇧G), Value: 0
+										34 container Source Control (⌃⇧G)
+											35 text 
+									36 tab (settable, integer) Run and Debug (⇧⌘D), Value: 0
+										37 container Run and Debug (⇧⌘D)
+											38 text 
+									39 tab (settable, integer) Extensions (⇧⌘X), Value: 0
+										40 container Extensions (⇧⌘X)
+											41 text 
+								42 toolbar Manage
+									43 pop up button Accounts
+										44 container Accounts
+											45 text 
+									46 pop up button Manage
+										47 container Manage
+											48 text 
+							49 container
+								50 heading Explorer, Value: 2
+									51 text Explorer
+								52 toolbar Explorer actions
+									53 pop up button Views and More Actions...
+								54 container
+									55 container
+										56 button Explorer Section: gretl-final-acceptance (Workspace)
+											57 text 
+											58 heading Description: Explorer Section: gretl-final-acceptance (Workspace), Value: 3
+												59 text gretl-final-acceptance (Workspace)
+										60 outline Files Explorer
+											61 container
+												62 row job.groovy
+													63 container
+														64 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/sub/job.groovy
+															65 text 
+															66 text job.groovy
+												67 row build.gradle
+													68 container
+														69 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/build.gradle
+															70 text 
+															71 text build.gradle
+												72 row dynamic.groovy
+													73 container
+														74 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/dynamic.groovy
+															75 text 
+															76 text dynamic.groovy
+												77 row empty.groovy
+													78 container
+														79 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/empty.groovy
+															80 text 
+															81 text empty.groovy
+												82 row foreign.groovy
+													83 container
+														84 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/foreign.groovy
+															85 text 
+															86 text foreign.groovy
+												87 row job.groovy
+													88 container
+														89 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/job.groovy
+															90 text 
+															91 text job.groovy
+												92 row settings.gretl
+													93 container
+														94 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/settings.gretl
+															95 text 
+															96 text settings.gretl
+												97 row Created GRETL
+													98 container
+														99 text 
+														100 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created • Contains emphasized items
+															101 text Created GRETL
+															102 text 
+												103 row complex
+													104 container
+														105 text 
+														106 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/complex
+															107 text complex
+												108 row job.groovy
+													109 container
+														110 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/complex/job.groovy
+															111 text 
+															112 text job.groovy
+												113 row readonly
+													114 container
+														115 text 
+														116 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/readonly
+															117 text readonly
+												118 row job.groovy
+													119 container
+														120 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/readonly/job.groovy
+															121 text 
+															122 text job.groovy
+												123 row sqlcase
+													124 container
+														125 text 
+														126 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase • Contains emphasized items
+															127 text sqlcase
+															128 text 
+												129 row sql
+													130 container
+														131 text 
+														132 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/sql
+															133 text sql
+												134 row sub
+													135 container
+														136 text 
+														137 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/sub
+															138 text sub
+												139 row sql
+													140 container
+														141 text 
+														142 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/sub/sql
+															143 text sql
+												144 row query.sql
+													145 container
+														146 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/sub/sql/query.sql
+															147 text 
+															148 text query.sql
+												149 row job.groovy
+													150 container
+														151 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/sub/job.groovy
+															152 text 
+															153 text job.groovy
+												154 row job.groovy
+													155 container
+														156 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/job.groovy
+															157 text 
+															158 text job.groovy
+												159 row settings.gretl
+													160 container
+														161 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/settings.gretl • 1 problem in this file
+															162 text 
+															163 text settings.gretl
+															164 text 1
+												165 row transitive
+													166 container
+														167 text 
+														168 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/transitive
+															169 text transitive
+												170 row job.groovy
+													171 container
+														172 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/transitive/job.groovy
+															173 text 
+															174 text job.groovy
+												175 row inner.groovy
+													176 container
+														177 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/inner.groovy
+															178 text 
+															179 text inner.groovy
+												180 row job.groovy
+													181 container
+														182 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/job.groovy
+															183 text 
+															184 text job.groovy
+												185 row large.groovy
+													186 container
+														187 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/large.groovy
+															188 text 
+															189 text large.groovy
+												190 row (selected) long.groovy
+													191 container
+														192 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/long.groovy
+															193 text 
+															194 text long.groovy
+											195 container
+												196 row Other GRETL
+													197 container
+														198 text 
+														199 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other
+															200 text Other GRETL
+									201 container
+										202 button Outline Section
+											203 text 
+											204 heading Outline, Value: 3
+												205 text Outline
+										206 text The active editor cannot provide outline information.
+									207 button Timeline Section
+										208 text 
+										209 heading Timeline, Value: 3
+											210 text Timeline
+							211 container
+								212 container
+									213 container
+										214 container
+											215 tab group
+												216 tab (settable, integer) Description: job.groovy, Editor Group 1, Value: 0
+													217 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/job.groovy
+														218 text 
+														219 text job.groovy GRETL main
+													220 toolbar Tab actions
+														221 button Close (⌘W)
+															222 text 
+												223 tab (settable, integer) Description: job.groovy, Editor Group 1, Value: 0
+													224 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/job.groovy
+														225 text 
+														226 text job.groovy GRETL main
+													227 toolbar Tab actions
+														228 button Close (⌘W)
+															229 text 
+												230 tab (selected) Description: job.groovy, Editor Group 1, Value: 1
+													231 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/job.groovy
+														232 text 
+														233 text job.groovy Created GRETL
+													234 toolbar Tab actions
+														235 button Close (⌘W)
+															236 text 
+												237 tab (settable, integer) Description: job.groovy, Editor Group 1, Value: 0
+													238 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/job.groovy
+														239 text 
+														240 text job.groovy Created GRETL • sqlcase
+													241 toolbar Tab actions
+														242 button Close (⌘W)
+															243 text 
+												244 tab (settable, integer) Description: settings.gretl, Editor Group 1, Value: 0
+													245 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/settings.gretl • 1 problem in this file
+														246 text 
+														247 text settings.gretl
+														248 text 1
+													249 toolbar Tab actions
+														250 button Close (⌘W)
+															251 text 
+												252 tab (settable, integer) Description: query.sql, Editor Group 1, Value: 0
+													253 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/sqlcase/sub/sql/query.sql
+														254 text 
+														255 text query.sql
+													256 toolbar Tab actions
+														257 button Close (⌘W)
+															258 text 
+											259 toolbar Editor actions
+												260 pop up button More Actions...
+													261 text 
+										262 content list
+											263 container
+												264 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created • Contains emphasized items
+													265 text Created GRETL
+												266 text 
+											267 container
+												268 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/job.groovy
+													269 text 
+													270 text job.groovy
+												271 text 
+											272 text …
+										273 button Text Editor 
+											274 text Text Editor 
+										275 container job.groovy, Editor Group 1
+											276 container
+												277 editor (settable) job.groovy, Editor Group 1
+									278 container
+										279 container
+											280 tab group
+												281 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													282 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/job.groovy
+														283 text 
+														284 text job.groovy GRETL main
+													285 toolbar Tab actions
+														286 button Close (⌘W)
+															287 text 
+												288 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													289 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-main/job.groovy
+														290 text 
+														291 text job.groovy GRETL main
+													292 toolbar Tab actions
+														293 button Close (⌘W)
+															294 text 
+												295 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													296 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/readonly/job.groovy
+														297 text 
+														298 text job.groovy Created GRETL • readonly
+													299 toolbar Tab actions
+														300 button Close (⌘W)
+															301 text 
+												302 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													303 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/readonly/job.groovy
+														304 text 
+														305 text job.groovy Created GRETL • readonly
+													306 toolbar Tab actions
+														307 button Close (⌘W)
+															308 text 
+												309 tab (settable, integer) Description: long.groovy, Editor Group 2, Value: 0
+													310 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/long.groovy
+														311 text 
+														312 text long.groovy
+													313 toolbar Tab actions
+														314 button Close (⌘W)
+															315 text 
+												316 tab (selected) Description: long.groovy, Editor Group 2, Value: 1
+													317 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/long.groovy
+														318 text 
+														319 text long.groovy
+													320 toolbar Tab actions
+														321 button Close (⌘W)
+															322 text 
+												323 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													324 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/job.groovy
+														325 text 
+														326 text job.groovy Created GRETL
+													327 toolbar Tab actions
+														328 button Close (⌘W)
+															329 text 
+												330 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													331 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/job.groovy
+														332 text 
+														333 text job.groovy Created GRETL
+													334 toolbar Tab actions
+														335 button Close (⌘W)
+															336 text 
+												337 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													338 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/transitive/job.groovy
+														339 text 
+														340 text job.groovy Created GRETL • transitive
+													341 toolbar Tab actions
+														342 button Close (⌘W)
+															343 text 
+												344 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													345 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/transitive/job.groovy
+														346 text 
+														347 text job.groovy Created GRETL • transitive
+													348 toolbar Tab actions
+														349 button Close (⌘W)
+															350 text 
+												351 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													352 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/complex/job.groovy
+														353 text 
+														354 text job.groovy Created GRETL • complex
+													355 toolbar Tab actions
+														356 button Close (⌘W)
+															357 text 
+												358 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													359 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/complex/job.groovy
+														360 text 
+														361 text job.groovy Created GRETL • complex
+													362 toolbar Tab actions
+														363 button Close (⌘W)
+															364 text 
+												365 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													366 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/job.groovy
+														367 text 
+														368 text job.groovy Other GRETL
+													369 toolbar Tab actions
+														370 button Close (⌘W)
+															371 text 
+												372 tab (settable, integer) Description: job.groovy, Editor Group 2, Value: 0
+													373 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-other/job.groovy
+														374 text 
+														375 text job.groovy Other GRETL
+													376 toolbar Tab actions
+														377 button Close (⌘W)
+															378 text 
+												379 tab (settable, integer) Description: job.groovy, preview, Editor Group 2, Value: 0
+													380 container job.groovy
+														381 text 
+														382 text job.groovy Other GRETL • sub
+													383 toolbar Tab actions
+														384 button Close (⌘W)
+															385 text 
+											386 toolbar Editor actions
+												387 button GRETL: Open Modeler
+												388 button Split Editor Right (⌃⇧⌥⌘7) [⌥] Split Editor Down
+													389 text 
+												390 pop up button More Actions...
+													391 text 
+										392 content list
+											393 container
+												394 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created • Contains emphasized items
+													395 text Created GRETL
+												396 text 
+											397 container ~/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/long.groovy
+												398 text 
+												399 text long.groovy
+										400 button GRETL Modeler 
+											401 text GRETL Modeler 
+								402 container
+									403 tab group Active View Switcher
+										404 tab (settable, integer) Description: Problems (⇧⌘M) - Total 1 Problems, Value: 0
+											405 container Problems (⇧⌘M) - Total 1 Problems
+												406 text Problems
+											407 container Problems (⇧⌘M) - Total 1 Problems
+												408 text 1
+										409 tab (selected) Output (⇧⌘U), Value: 1
+											410 container Output (⇧⌘U)
+												411 text Output
+										412 tab (settable, integer) Description: Debug Console (⇧⌘Y), Value: 0
+											413 container Debug Console (⇧⌘Y)
+												414 text Debug Console
+										415 tab (settable, integer) Terminal (⌃⇧^), Value: 0
+											416 container Terminal (⌃⇧^)
+												417 text Terminal
+										418 tab (settable, integer) Ports, Value: 0
+											419 container Ports
+												420 text Ports
+									421 toolbar Output actions
+										422 container
+											423 text field (settable) Filter (e.g. text, !excludeText, text1,text2)
+											424 toolbar
+												425 pop up button More Filters...
+										426 pop up button Description: Switch Output, Help: GRETL Runtime
+											427 (selected) GRETL Runtime
+										428 text 
+										429 button Clear Output
+										430 toggle button Description: Turn Auto Scrolling Off, Value: 0
+										431 pop up button Set Log Level...
+										432 pop up button Views and More Actions...
+									433 toolbar
+										434 toggle button Description: Maximize Panel, Value: 0
+											435 text 
+										436 button Hide Panel (⌘J)
+											437 text 
+									438 container
+										439 container GRETL Runtime - Output
+											440 container
+												441 editor (settable) Description: GRETL Runtime - Output, Value: 2026-11-04 14:45:33.693 [info] Starting bundled server; PID 13843; candidate b5bead4c91ee7e393310c3ea440dd12db312291b; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 14:45:35.043 [info] Connected server instance a0c92091-2ed3-437f-9ec0-7b8efd8ab202
+2026-11-04 14:55:05.149 [info] Starting bundled server; PID 20224; candidate b5bead4c91ee7e393310c3ea440dd12db312291b; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 14:55:05.469 [info] Connected server instance 1655e96c-3bff-442e-87cf-0e4058ff1f93
+2026-11-04 14:58:33.573 [warning] STALE_DOCUMENT_VERSION
+2026-11-04 15:03:05.088 [warning] Nov 04, 2026 3:03:05 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 134
+
+2026-11-04 15:24:17.688 [warning] Nov 04, 2026 3:24:17 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 415
+
+2026-11-04 15:29:54.728 [info] Starting bundled server; PID 34688; candidate b5bead4c91ee7e393310c3ea440dd12db312291b; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 15:29:55.232 [info] Connected server instance ee3f73f1-95b9-4d09-9d1a-c38e1dfca35e
+2026-11-04 15:33:03.655 [info] Starting bundled server; PID 36422; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:04.402 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:04.414 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:04.414 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:04.414 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:04.415 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:04.416 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:04.717 [info] Starting bundled server; PID 36440; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:05.089 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:05.100 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:05.100 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:05.101 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:05.101 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:05.101 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:05.193 [info] Starting bundled server; PID 36455; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:05.529 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:05.540 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:05.540 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:05.540 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:05.540 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:05.541 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:05.654 [info] Starting bundled server; PID 36461; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:06.074 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:06.105 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:06.105 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:06.105 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:06.105 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:06.105 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:06.441 [info] Starting bundled server; PID 36466; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:06.789 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:06.808 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:06.808 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:06.808 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:06.808 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:06.809 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed
+2026-11-04 15:34:58.135 [info] Starting bundled server; PID 38799; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 15:34:59.749 [info] Connected server instance b56d81c9-2cd5-4d06-9f41-ef4aaa4830f4
+2026-11-04 15:35:55.885 [error] Java 25 is required. Check GRETL Runtime: Java Path (an executable path, without shell arguments).
+2026-11-04 15:36:27.177 [error] GRETL server bundle is missing or does not match this extension. Reinstall the VSIX or correct Server Jar Path.
+2026-11-04 15:36:52.693 [info] Starting bundled server; PID 39493; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 15:36:53.075 [info] Connected server instance cb1dd265-450d-4400-a348-2f7a20423aab
+
+													442 text 2026-11-04 14:45:33.693 [info] Starting bundled server; PID 13843; candidate b5bead4c91ee7e393310c3ea440dd12db312291b; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 14:45:35.043 [info] Connected server instance a0c92091-2ed3-437f-9ec0-7b8efd8ab202
+2026-11-04 14:55:05.149 [info] Starting bundled server; PID 20224; candidate b5bead4c91ee7e393310c3ea440dd12db312291b; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 14:55:05.469 [info] Conne
+						443 container
+							444 container remote
+								445 button remote
+							446 container Errors: 1
+								447 button Errors: 1
+									448 text 
+									449 text  1 
+									450 text 
+									451 text  0
+							452 container GRETL: Ready, Ready
+								453 button GRETL: Ready, Ready
+							454 container Notifications
+								455 button Notifications
+							456 container Screen Reader Optimized
+								457 button Screen Reader Optimized
+					458 text "gretlRuntime.serverJarPath": "/gretl-controlled-missing-server.jar", 1 of 1 found for '/gretl-controlled-missing-server.jar', at 11:34
+					459 text Line 1, column 1: {
+					460 HTML content vscode-webview://0psv5sb6f1jr2u0da8ufpo1n89j70oi472ks1miut117pho87k0r/index.html?id=0fa1481d-8bdb-4121-80a9-ced40c8afc1a&parentId=1&origin=dc774f09-16d9-4269-8fe5-033553d6d910&swVersion=6&extensionId=edigonzales.gretl-runtime-vscode&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=bb0bc218-b1e3-43ce-bf6d-29313de6c35c
+						461 container undefined
+							462 HTML content GRETL Modeler, URL: vscode-webview://0psv5sb6f1jr2u0da8ufpo1n89j70oi472ks1miut117pho87k0r/index.html?id=0fa1481d-8bdb-4121-80a9-ced40c8afc1a&parentId=1&origin=dc774f09-16d9-4269-8fe5-033553d6d910&swVersion=6&extensionId=edigonzales.gretl-runtime-vscode&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=bb0bc218-b1e3-43ce-bf6d-29313de6c35c
+								463 container
+									464 heading GRETL Modeler, Value: 1
+										465 text GRETL Modeler
+									466 text Created GRETL/long.groovy
+									467 button Add declaration
+									468 button Show source
+									469 button Refresh
+									470 container Graph view controls
+										471 container
+											472 text View
+											473 pop up button Description: Graph view, Value: All definitions
+												474 (selected) All definitions
+										475 checkbox Task, Value: 1
+										476 checkbox Action, Value: 1
+										477 checkbox Dynamic code, Value: 1
+										478 checkbox Inner invocations, Value: 0
+										479 button Reset layout
+										480 button (disabled) Undo view
+										481 button (disabled) Redo view
+										482 button Undo text
+										483 button Redo text
+										484 button Save source
+										485 button Add action
+										486 button Defaults
+										487 button Add dependency
+										488 button Bind result
+										489 button Details
+										490 button Reveal selection
+									491 text FRESH
+									492 text Static definitions · no runtime execution
+									493 container GRETL static graph
+										494 container
+											495 container
+												496 container Action long_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_
+													497 text ACTION
+													498 text long_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptiv…
+													499 text Source declaration
+											500 image
+											501 container Control Panel
+												502 button Zoom In
+													503 image
+												504 button Zoom Out
+													505 image
+												506 button Fit View
+													507 image
+											508 link Description: React Flow attribution, Value: reactflow.dev/?utm_source=attribution
+										509 container
+											510 text ━━ dependsOn ┄┄ after · order ┈┈ result binding
+									511 container Graph details
+										512 button Close details
+										513 container
+											514 heading Selection, Value: 2
+												515 text Selection
+											516 heading Value: 3, long_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_
+												517 text long_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_descriptive_name_
+											518 text Action Action bodies stay in source. Rename and connections use the Core's conservative checks.
+											519 button Reveal source
+											520 button Rename declaration
+										521 container
+											522 heading Parameters, Value: 2
+												523 text Parameters
+											524 text Separate from the task DAG. None statically declared.
+										525 container
+											526 heading Cleanup, Value: 2
+												527 text Cleanup
+											528 text Separate from the task DAG. None statically declared.
+										529 container
+											530 heading Diagnostics 0, Value: 2
+												531 text Diagnostics  0
+											532 button Open Problems
+									533 text View positions are stored separately. Dragging, filtering and layout never edit the Groovy source.
+	534 close button
+	535 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	536 minimize button
+537 menu bar
+	538 Code
+	539 File
+	540 Edit
+	541 Selection
+	542 View
+	543 Go
+	544 Run
+	545 Terminal
+	546 Window
+	547 Help
+
+The focused UI element is 462 HTML content GRETL Modeler, URL: vscode-webview://0psv5sb6f1jr2u0da8ufpo1n89j70oi472ks1miut117pho87k0r/index.html?id=0fa1481d-8bdb-4121-80a9-ced40c8afc1a&parentId=1&origin=dc774f09-16d9-4269-8fe5-033553d6d910&swVersion=6&extensionId=edigonzales.gretl-runtime-vscode&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=bb0bc218-b1e3-43ce-bf6d-29313de6c35c

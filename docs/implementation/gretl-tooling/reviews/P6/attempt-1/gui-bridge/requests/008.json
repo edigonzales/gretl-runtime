@@ -1,0 +1,8 @@
+{
+  "id": "008",
+  "purpose": "Reviewer independent native counterprobe setup: activate the background Main text editor tab in the left group while leaving the Other modeler visible in the right group",
+  "actions": [
+    {"kind": "click", "label": "job.groovy GRETL main", "occurrence": 0},
+    {"kind": "observe"}
+  ]
+}

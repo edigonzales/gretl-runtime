@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:29:18.611Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "e0cb487bbe205d1592833c6ecbed3108e63f40b404220ee134dc9a044a8a0a0f",
+  "imageSha256": "95c1dcd41f55d372f89756fed3b083ddb67c01aea1a75ed1497fa17ea0316dc3",
+  "image": "G27-external-settings-conflict.jpg"
+}

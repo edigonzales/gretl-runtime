@@ -1,0 +1,76 @@
+{
+  "checkedAt": "2026-11-04T08:28:23.199Z",
+  "candidate": "ee3a2e8a40bf965a183bc688157d755e2f2320b2",
+  "notes": {
+    "manifest": {
+      "entries": 230,
+      "valid": 230
+    },
+    "indexCandidate": "ee3a2e8a40bf965a183bc688157d755e2f2320b2",
+    "guiCases": {
+      "G11": [
+        "current/cases/graph-first-open.json",
+        "current/cases/pinned-source-other-editor-focused.json",
+        "current/cases/two-project-panels-final.json"
+      ],
+      "G12": [
+        "current/cases/graph-first-open.json",
+        "current/cases/inner-invocations-details.json",
+        "current/cases/default-target-preview.json",
+        "current/cases/single-target-preview.json"
+      ],
+      "G13": [
+        "current/cases/native-drag-source-invariance.json",
+        "current/cases/task-filter.json",
+        "current/cases/panel-zoom-restart-source-invariance.json"
+      ],
+      "G14": [
+        "current/cases/diagram-to-source.json",
+        "current/cases/source-to-diagram.json",
+        "development-originals/cases/result-binding-navigation.json"
+      ],
+      "G15": [
+        "current/cases/dirty-partial-diagnostics.json",
+        "current/cases/panel-close-reopen-persistence.json",
+        "current/cases/server-stopped-stale-panels.json",
+        "current/cases/restart-fresh-panels.json"
+      ],
+      "G16": [
+        "current/cases/two-project-panels-final.json",
+        "development-originals/cases/light-long-title-fixed.json",
+        "development-originals/cases/high-contrast-controls-fixed.json",
+        "development-originals/cases/dark-empty-partial.json",
+        "development-originals/cases/empty-source-panel.json",
+        "development-originals/cases/same-source-cold-reload-persistence.json",
+        "development-originals/cases/same-source-long-title-cold-start-before-inspection.json",
+        "development-originals/cases/same-source-panel-independence.json"
+      ],
+      "editorSmoke": [
+        "current/cases/editor-native-hover.json",
+        "current/captures/capture-001.json"
+      ]
+    },
+    "cases": {
+      "validated": 18,
+      "screenshots": 15,
+      "imageFormats": {
+        "jpeg": 15
+      }
+    },
+    "reuse": {
+      "clientEntries": 4,
+      "developmentDirty": true,
+      "currentDirty": false
+    },
+    "finalBuffer": {
+      "keys": [
+        "time",
+        "readOnly",
+        "documents",
+        "modelers"
+      ],
+      "serverCount": 1
+    }
+  },
+  "problems": []
+}

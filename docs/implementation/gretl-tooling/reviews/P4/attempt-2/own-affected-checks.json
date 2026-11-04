@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-11-03T19:31:42.613Z",
+  "product": "/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product",
+  "head": "666e812df8394a1f533d534c9c6d134b132898ab",
+  "trackedStatusPorcelain": "?? .opencode/\n?? opencode.json\n",
+  "checks": [
+    {
+      "id": "tooling-targeted",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "gretl-language-contract,gretl-tooling-core,gretl-lsp",
+        "verify"
+      ],
+      "logName": "own-tooling-targeted.log",
+      "startedAt": "2026-11-03T19:31:27.005Z",
+      "endedAt": "2026-11-03T19:31:42.508Z",
+      "exitCode": 0,
+      "signal": null,
+      "sha256": "9f9e201d8ab564412323ca4a48ffa1a6c91b98a07f759ee20a0a84bcfc3deb82",
+      "bytes": 29612,
+      "logTail": "he.maven.enforcer.rules.dependency.BannedDependencies passed\n[INFO] \n[INFO] --- jacoco:0.8.14:prepare-agent (coverage-agent) @ gretl-lsp ---\n[INFO] argLine set to -javaagent:/Users/stefan/.m2/repository/org/jacoco/org.jacoco.agent/0.8.14/org.jacoco.agent-0.8.14-runtime.jar=destfile=/Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/target/jacoco.exec,append=true\n[INFO] \n[INFO] --- resources:3.5.0:resources (default-resources) @ gretl-lsp ---\n[INFO] Copying 3 resources from src/main/resources to target/classes\n[INFO] \n[INFO] --- compiler:3.16.0:compile (default-compile) @ gretl-lsp ---\n[INFO] Recompiling the module because of changed dependency.\n[INFO] Compiling 17 source files with javac [debug release 25] to target/classes\n[INFO] \n[INFO] --- resources:3.5.0:testResources (default-testResources) @ gretl-lsp ---\n[INFO] skip non existing resourceDirectory /Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/resources\n[INFO] \n[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ gretl-lsp ---\n[INFO] Recompiling the module because of changed dependency.\n[INFO] Compiling 4 source files with javac [debug release 25] to target/test-classes\n[WARNING] /Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java:[36,17] explicit call to close() on an auto-closeable resource\n[INFO] \n[INFO] --- surefire:3.6.0:test (default-test) @ gretl-lsp ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] Running ch.so.agi.gretl.lsp.HostSchedulingTest\n[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.416 s -- in ch.so.agi.gretl.lsp.HostSchedulingTest\n[INFO] Running ch.so.agi.gretl.lsp.HostBoundaryTest\n[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in ch.so.agi.gretl.lsp.HostBoundaryTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- antrun:3.1.0:run (custom-protocol-schema) @ gretl-lsp ---\n[INFO] Executing tasks\n[INFO]      [exec] TAP version 13\n[INFO]      [exec] # Subtest: versioned custom requests accept typed data and exact 64-bit scalar strings\n[INFO]      [exec] ok 1 - versioned custom requests accept typed data and exact 64-bit scalar strings\n[INFO]      [exec]   ---\n[INFO]      [exec]   duration_ms: 1.550417\n[INFO]      [exec]   type: 'test'\n[INFO]      [exec]   ...\n[INFO]      [exec] # Subtest: schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests\n[INFO]      [exec] ok 2 - schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests\n[INFO]      [exec]   ---\n[INFO]      [exec]   duration_ms: 0.273791\n[INFO]      [exec]   type: 'test'\n[INFO]      [exec]   ...\n[INFO]      [exec] 1..2\n[INFO]      [exec] # tests 2\n[INFO]      [exec] # suites 0\n[INFO]      [exec] # pass 2\n[INFO]      [exec] # fail 0\n[INFO]      [exec] # cancelled 0\n[INFO]      [exec] # skipped 0\n[INFO]      [exec] # todo 0\n[INFO]      [exec] # duration_ms 75.648792\n[INFO] Executed tasks\n[INFO] \n[INFO] --- jar:3.5.1:jar (default-jar) @ gretl-lsp ---\n[INFO] Building jar: /Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT.jar\n[INFO] \n[INFO] --- assembly:3.7.1:single (standalone-server) @ gretl-lsp ---\n[INFO] Building jar: /Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar\n[INFO] \n[INFO] --- failsafe:3.6.0:integration-test (default) @ gretl-lsp ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] Running ch.so.agi.gretl.lsp.ServerProcessIT\n[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.756 s -- in ch.so.agi.gretl.lsp.ServerProcessIT\n[INFO] Running ch.so.agi.gretl.lsp.ServerArchiveIT\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.903 s -- in ch.so.agi.gretl.lsp.ServerArchiveIT\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jacoco:0.8.14:report (coverage-report) @ gretl-lsp ---\n[INFO] Loading execution data file /Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/target/jacoco.exec\n[INFO] Analyzed bundle 'gretl-lsp' with 37 classes\n[INFO] \n[INFO] --- failsafe:3.6.0:verify (default) @ gretl-lsp ---\n[INFO] \n[INFO] --- dependency:3.11.0:tree (server-production-graph) @ gretl-lsp ---\n[INFO] Wrote dependency tree to: /Users/stefan/.cache/gretl-tooling-review/P4-review-2/product/gretl-lsp/target/tooling-dependencies.json\n[INFO] \n[INFO] --- antrun:3.1.0:run (server-bundle-boundary) @ gretl-lsp ---\n[INFO] Executing tasks\n[INFO]      [exec] Independent server production graph and executable data bundle verified\n[INFO] Executed tasks\n[INFO] ------------------------------------------------------------------------\n[INFO] Reactor Summary for gretl-language-contract 6.0.0-SNAPSHOT:\n[INFO] \n[INFO] gretl-language-contract ............................ SUCCESS [  1.602 s]\n[INFO] gretl-tooling-core ................................. SUCCESS [  3.756 s]\n[INFO] gretl-lsp .......................................... SUCCESS [  9.447 s]\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  14.901 s\n[INFO] Finished at: 2026-11-03T20:31:42+01:00\n[INFO] ------------------------------------------------------------------------\n"
+    },
+    {
+      "id": "tooling-docs",
+      "argv": [
+        "/Users/stefan/Library/Application Support/fnm/node-versions/v22.23.1/installation/bin/node",
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "logName": "own-tooling-docs.log",
+      "startedAt": "2026-11-03T19:31:42.508Z",
+      "endedAt": "2026-11-03T19:31:42.581Z",
+      "exitCode": 0,
+      "signal": null,
+      "sha256": "01c98e6b1017159c1749ee3fc8b577a5d69639bc3610562de07c0bc91d265ce4",
+      "bytes": 85,
+      "logTail": "Validated 81 exact criteria\nTooling documentation links and requirement inputs valid\n"
+    }
+  ],
+  "pass": true
+}

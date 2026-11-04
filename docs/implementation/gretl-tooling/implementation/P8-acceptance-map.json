@@ -1,0 +1,2404 @@
+{
+  "schemaVersion": 1,
+  "assignmentBase": "185fc6700b5cb2897f724d457610a57f059b3421",
+  "phaseBase": "3172c48f712d73f645761b7ec1886eed31f225a5",
+  "criteriaCount": 81,
+  "note": "Individual current code/test mapping. Statuses were updated only after the completed, validated independent P8 PASS and mirror the unchanged original verdict. The original verdict remains authoritative; historical PASS/FAIL reports remain linked by STATUS.md.",
+  "entries": [
+    {
+      "id": "P0-01",
+      "requirement": "Aktueller HEAD, fremde Änderungen, Toolchain, aktive Dokumentation und Änderungen seit dem Recherchepin sind dokumentiert; kein Reset und keine Wiederausführung abgeschlossener Aufträge.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "docs/implementation/gretl-tooling/SOURCE_AUDIT.md",
+      "tests": [
+        "tools/gretl-tooling/review.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [
+        "model-readiness",
+        "completed-session-identity",
+        "dependency-checks"
+      ],
+      "previousPassProductSha": "5ff6cffcff1d23d1cec00116a8d0a51948945f33"
+    },
+    {
+      "id": "P0-02",
+      "requirement": "OpenCode 2.x mit vorhandener Anmeldung, direkter DeepSeek API und belegter Flash-1017-Zuordnung führt einen echten unabhängigen Bereitschaftstest aus; keine erzwungene neue Key-ENV und kein Providerfallback.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "tools/gretl-tooling/review.mjs",
+      "tests": [
+        "tools/gretl-tooling/review.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [
+        "model-readiness",
+        "completed-session-identity",
+        "dependency-checks"
+      ],
+      "previousPassProductSha": "5ff6cffcff1d23d1cec00116a8d0a51948945f33"
+    },
+    {
+      "id": "P0-03",
+      "requirement": "Neue Modul-/Paketgrenzen sind im Build prüfbar; Produktionskern braucht keine andere GRETL-Variante und keine ausführenden Runtime-/Taskmodule; keine leeren späteren LSP-/UIattrappen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "tools/gretl-tooling/verify-dependencies.mjs",
+      "tests": [
+        "tools/gretl-tooling/review.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [
+        "model-readiness",
+        "completed-session-identity",
+        "dependency-checks"
+      ],
+      "previousPassProductSha": "5ff6cffcff1d23d1cec00116a8d0a51948945f33"
+    },
+    {
+      "id": "P0-04",
+      "requirement": "Reine DSL-/Projektnameverträge sind implementiert und gegen die aktuelle Runtime verhaltensgleich geprüft; bestehende öffentliche APIs und Fehlermodi bleiben erhalten.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-language-contract/src/main/java/ch/so/agi/gretl/language/DslVocabulary.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java"
+      ],
+      "sharedCurrentTests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [
+        "model-readiness",
+        "completed-session-identity",
+        "dependency-checks"
+      ],
+      "previousPassProductSha": "5ff6cffcff1d23d1cec00116a8d0a51948945f33"
+    },
+    {
+      "id": "P0-05",
+      "requirement": "Der deterministische Operationskatalog enthält alle aktuell mitgelieferten Operationen, Eingaben, Ausgänge, Defaults und erlaubten Werte aus der SPI; keine handgepflegte zweite Operationsliste.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-language-contract/src/main/java/ch/so/agi/gretl/language/PlanSemantics.java",
+      "tests": [
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java"
+      ],
+      "sharedCurrentTests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [
+        "model-readiness",
+        "completed-session-identity",
+        "dependency-checks"
+      ],
+      "previousPassProductSha": "5ff6cffcff1d23d1cec00116a8d0a51948945f33"
+    },
+    {
+      "id": "P0-06",
+      "requirement": "Katalogschema, Digests, Ergänzungsressourcen und Unavailable-/Incompatible-Zustände sind geprüft; unbekannte IDs, Kollisionen oder Schemafehler werden nicht zu leerem Erfolg.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-catalog/src/main/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporter.java",
+      "tests": [
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java"
+      ],
+      "sharedCurrentTests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [
+        "model-readiness",
+        "completed-session-identity",
+        "dependency-checks"
+      ],
+      "previousPassProductSha": "5ff6cffcff1d23d1cec00116a8d0a51948945f33"
+    },
+    {
+      "id": "P0-07",
+      "requirement": "Der Export liest keine Secrets, führt keine Handler/Builder/Converter aus und erzeugt nur beschreibende Daten; LSP-Datenartefakt kann später ohne Exporterclasspath konsumiert werden.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-catalog/src/main/java/ch/so/agi/gretl/tooling/catalog/MetadataSupplementLoader.java",
+      "tests": [
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "sharedCurrentTests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [
+        "model-readiness",
+        "completed-session-identity",
+        "dependency-checks"
+      ],
+      "previousPassProductSha": "5ff6cffcff1d23d1cec00116a8d0a51948945f33"
+    },
+    {
+      "id": "P0-08",
+      "requirement": "Zugehörige Tests, Lizenz-/Übernahmeinventur, Dependencyprüfung und geltende vollständige Repository-Gates sind frisch belegt; frühe GUIinfrastrukturprobe dokumentiert reale Grenzen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "tools/gretl-tooling/review.mjs",
+      "tests": [
+        "tools/gretl-tooling/review.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [
+        "model-readiness",
+        "completed-session-identity",
+        "dependency-checks"
+      ],
+      "previousPassProductSha": "5ff6cffcff1d23d1cec00116a8d0a51948945f33"
+    },
+    {
+      "id": "P0-09",
+      "requirement": "Der Revieworchestrator besitzt echte Bereitschafts-/Start-/Wait-/Gatefunktionen und negative Tests gegen falsche SHAs, fremde Kriterien, fehlende Belege, laufende Prozesse und vorgefertigtes PASS; keine Selbstfreigabe.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "tools/gretl-tooling/check-docs.mjs",
+      "tests": [
+        "tools/gretl-tooling/review.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/OperationCatalogExporterTest.java",
+        "gretl-tooling-catalog/src/test/java/ch/so/agi/gretl/tooling/catalog/CatalogSemanticParityTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [
+        "model-readiness",
+        "completed-session-identity",
+        "dependency-checks"
+      ],
+      "previousPassProductSha": "5ff6cffcff1d23d1cec00116a8d0a51948945f33"
+    },
+    {
+      "id": "P1-01",
+      "requirement": "Reiner Parse-/Convertpfad führt keinen Toplevel-, Settings-, Grab-, AST-Test-, Provider- oder Jobcode aus; Sideeffect- und Classpathgegenproben sind wirksam.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParser.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "412909f954a6059a331754db1bf11d897ffb9b88"
+    },
+    {
+      "id": "P1-02",
+      "requirement": "Aktuelle task-/action-/parameter-/defaults-/cleanup-Syntax einschliesslich Map-first-Optionen und aller Defaultziele wird korrekt extrahiert.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/SyntaxModel.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "412909f954a6059a331754db1bf11d897ffb9b88"
+    },
+    {
+      "id": "P1-03",
+      "requirement": "Direkte Feldzuweisungen, lokale Variablen, frei programmierte Actions und innere ctx.run-Aufrufe sind getrennt modelliert; keine Gradle-Methodenpflicht oder erfundene DAGtasks.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/SettingsDocumentParser.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "412909f954a6059a331754db1bf11d897ffb9b88"
+    },
+    {
+      "id": "P1-04",
+      "requirement": "Tokenisierung versteht Kommentare, Quotearten, GStrings und Klammern; Tasktext in Kommentaren/Strings erzeugt keine Deklarationen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/GroovyTokenReader.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "412909f954a6059a331754db1bf11d897ffb9b88"
+    },
+    {
+      "id": "P1-05",
+      "requirement": "Unvollständige Köpfe, fehlende Klammern und beschädigte Ausdrücke erhalten sichere Strukturinseln und konkrete Coverage; Recovery ersetzt nicht die ganze Datei durch leere Daten.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/ParseResultMerger.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "412909f954a6059a331754db1bf11d897ffb9b88"
+    },
+    {
+      "id": "P1-06",
+      "requirement": "Syntaxprobleme bleiben auch ohne Tasks erhalten, tragen echte Positionen und werden nicht verdoppelt; Parser-/Scannerzusammenführung besitzt explizite Tests.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/LiteralDecoder.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "412909f954a6059a331754db1bf11d897ffb9b88"
+    },
+    {
+      "id": "P1-07",
+      "requirement": "UTF-16-Spans, Parserkoordinaten, CRLF, BOM, Emoji und getrennte Literal-/Inhaltsspans sind korrekt; keine indexOf-Erstfundstellenheuristik.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/SyntaxDepthGuard.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "412909f954a6059a331754db1bf11d897ffb9b88"
+    },
+    {
+      "id": "P1-08",
+      "requirement": "Dynamische Registrierung, fremde Receiver und verschattete DSLnamen werden konservativ markiert; nicht verstandener Groovytext bleibt original erhalten.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/ParseOptions.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "412909f954a6059a331754db1bf11d897ffb9b88"
+    },
+    {
+      "id": "P1-09",
+      "requirement": "Parser-/Security-/Recoverytests einschliesslich Altbefund-Gegenfällen und geltende Rootgates bestehen; Grössen-/Rekursionsgrenzen verhindern ungebundene Analyse.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParser.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/GretlDocumentParserTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/RecoveryAndLiteralContractTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParserAdversarialTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/syntax/ParseBoundsAndCoordinatesTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "412909f954a6059a331754db1bf11d897ffb9b88"
+    },
+    {
+      "id": "P2-01",
+      "requirement": "Unveränderliche Source-/Workspace-/Katalogsnapshots mit Versionsvektor, Bufferoverlay und Generationen verhindern Mischstände; Close/Reopen/Diskänderung sind korrekt.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/DocumentStore.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e"
+    },
+    {
+      "id": "P2-02",
+      "requirement": "settings.gretl, Includes, Root-/Subprojektjobs, lokale und qualifizierte Namen sowie Projektdefaults entsprechen der tatsächlichen Runtime; Workspacefolder bleiben fachlich getrennt.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManager.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e"
+    },
+    {
+      "id": "P2-03",
+      "requirement": "Tasks, Actions, Parameter und Cleanupnamen/Scopes werden gebunden; doppelte/mehrdeutige/dynamische Referenzen besitzen unterscheidbare Ergebnisse.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/ProjectResolver.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e"
+    },
+    {
+      "id": "P2-04",
+      "requirement": "Gemeinsame PlanSemantics erhält vollständige dependsOn-Zyklusprüfung, reine after-Reihenfolge, targetabhängige Mischzyklen und stabile Reihenfolge; Runtimeparität ist getestet.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzer.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e"
+    },
+    {
+      "id": "P2-05",
+      "requirement": "result/resultOptional verlangen die passende direkte/transitive Datenkette; Ausgabecompletion/-diagnosen beruhen auf dem Producerkatalog, nicht auf erfundenen Actionresultaten.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/semantic/ReferenceIndex.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e"
+    },
+    {
+      "id": "P2-06",
+      "requirement": "Parameterdeklaration/-lesen, Toplevelverbot, Typen und required/default sowie Feld-/Enum-/Pflichtprüfungen sind scopesicher; dynamische Fälle werden nicht als bewiesene Fehler ausgegeben.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-language-contract/src/main/java/ch/so/agi/gretl/language/PlanSemantics.java",
+      "tests": [
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e"
+    },
+    {
+      "id": "P2-07",
+      "requirement": "file/workPath/externe Parameterpfade werden unterschieden; jobrelative SQLanalyse nutzt aktuelle Runtimefelder/-regeln, Dirty-SQL und Dateiänderungen, ohne DB- oder Secretzugriffe.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/syntax/SqlSourceSyntax.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e"
+    },
+    {
+      "id": "P2-08",
+      "requirement": "Partielle Coverage begrenzt Diagnosen/Mutationsrechte; Katalogausfall und unbekannte Fachwerte werden nicht verwechselt; IO/Queue/Projektgrössen sind begrenzt.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/AnalysisScheduler.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e"
+    },
+    {
+      "id": "P2-09",
+      "requirement": "Snapshot-/Projekt-/Semantik-/SQLtests, unabhängige statisch-versus-Runtimeparität und alle fälligen Repositoryregressionen bestehen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepository.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/DocumentStoreTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/WorkspaceManagerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/semantic/ProjectAnalyzerTest.java",
+        "gretl-language-contract/src/test/java/ch/so/agi/gretl/language/PlanSemanticsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/AnalysisSchedulerTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/workspace/FileSourceRepositoryTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e"
+    },
+    {
+      "id": "P3-01",
+      "requirement": "Completion unterstützt Operationen, Optionen, Felder, Werte, Parameter, Resultfelder, Dependencies und sichere Pfade mit korrekten Ersetzungsbereichen und ohne Vorschläge in Kommentaren.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/query/LanguageQueries.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0"
+    },
+    {
+      "id": "P3-02",
+      "requirement": "Hover/SignatureHelp erklären aktuelle DSL und Metadaten; Outline/Folding/Filelinks, Definition/References und die neutrale Graphprojektion verwenden denselben Snapshot.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilder.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0"
+    },
+    {
+      "id": "P3-03",
+      "requirement": "Rename/PrepareRename erfassen alle belegten Referenzarten und Projektformen; dynamische/readonly/unvollständige Ziele führen zu konkreter Ablehnung statt Teilrename.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/SemanticEditPlanner.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0"
+    },
+    {
+      "id": "P3-04",
+      "requirement": "AddTask/AddAction/AddParameter/SetField/RemoveField/SetTaskOption/SetDefaults liefern tatsächlich geprüfte Pläne für den unterstützten statischen Bereich.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/FieldSourceEdits.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0"
+    },
+    {
+      "id": "P3-05",
+      "requirement": "Abhängigkeits- und Ergebnisbindungen erzeugen die richtigen Header-/Feldänderungen zusammen; after und dependsOn bleiben verschieden, transitive Ketten werden respektiert.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/DependencySourceEdits.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0"
+    },
+    {
+      "id": "P3-06",
+      "requirement": "Delete/Disconnect sind referenz- und coveragegesichert; keine versteckte Kaskade, keine Entfernung noch benötigter Ergebnisabhängigkeiten.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEdits.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0"
+    },
+    {
+      "id": "P3-07",
+      "requirement": "Gezielte Token-/Sourceedits erhalten Kommentare, EOL, opake Codebereiche und unberührte Texte; Stringquotes werden nie verdoppelt; keine Whole-file-Neugenerierung.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEdits.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0"
+    },
+    {
+      "id": "P3-08",
+      "requirement": "Jeder Plan hat Source-/Projekt-/Katalogpreconditions, wird in Memory angewendet und erneut geprüft; No-op, stale und fehlerhafte Postimages werden zuverlässig behandelt.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/graph/JobGraphProjector.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0"
+    },
+    {
+      "id": "P3-09",
+      "requirement": "Alle Query-/Editintents und angewendeten QuickFixes sind positiv/negativ getestet; echte Runtimebeispiele bleiben erhalten; aktuelle vollständige Repository-Gates bestehen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/EditVerifier.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/LanguageFeatureQueriesTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/SourceEditBuilderTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DeclarationSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/FieldSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DefaultsSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/JobGraphProjectorTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditVerifierTest.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "96688a5b2436c25504dbfbb33ce375a002b3cee0"
+    },
+    {
+      "id": "P4-01",
+      "requirement": "Startbares unabhängiges Serverartefakt enthält nur erlaubte Dependencies und Katalogdaten, läuft mit Java25 ohne andere GRETL-Checkouts und hält stdout JSON-RPC-rein.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlServerLauncher.java",
+      "tests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "tools/gretl-tooling/protocol.test.mjs",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "666e812df8394a1f533d534c9c6d134b132898ab"
+    },
+    {
+      "id": "P4-02",
+      "requirement": "Initialize/Initialized/Shutdown/Exit und Fehlerzustände sind korrekt; Shutdown+Exit beendet den wirklichen Prozess auch bei offen gehaltenem stdin und räumt eigene Executor auf.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlLanguageServer.java",
+      "tests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "tools/gretl-tooling/protocol.test.mjs",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "666e812df8394a1f533d534c9c6d134b132898ab"
+    },
+    {
+      "id": "P4-03",
+      "requirement": "Full-/Incrementaländerungen, mehrere Events, UTF-16, Close/Reopen und Versionsprüfungen sind geordnet; Cancellation und obsolete-result-drop funktionieren unter Last.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlTextDocumentService.java",
+      "tests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "tools/gretl-tooling/protocol.test.mjs",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "666e812df8394a1f533d534c9c6d134b132898ab"
+    },
+    {
+      "id": "P4-04",
+      "requirement": "Completion/Hover/SignatureHelp/Definition/References/PrepareRename/Rename/Symbols/Links/Folding/CodeActions werden tatsächlich über Standard-LSP geliefert, nicht nur im Unitadapter.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/LspQueryMapper.java",
+      "tests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "tools/gretl-tooling/protocol.test.mjs",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "666e812df8394a1f533d534c9c6d134b132898ab"
+    },
+    {
+      "id": "P4-05",
+      "requirement": "Diagnosen tragen korrekte URI/Version/Range/RelatedInformation und DE/EN-Anzeige; fehlende Positionen/Metadaten werden nicht zu irreführendem Zeile-1-Erfolg.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlProtocol.java",
+      "tests": [
+        "tools/gretl-tooling/protocol.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "tools/gretl-tooling/protocol.test.mjs",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "666e812df8394a1f533d534c9c6d134b132898ab"
+    },
+    {
+      "id": "P4-06",
+      "requirement": "Configuration-, Workspacefolder- und WatchedFilesmeldungen ändern den echten Analysezustand; ungültige Updates werden atomar abgelehnt, SQL/Settingsänderungen invalidieren richtig.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/ServerWorkspace.java",
+      "tests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "tools/gretl-tooling/protocol.test.mjs",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "666e812df8394a1f533d534c9c6d134b132898ab"
+    },
+    {
+      "id": "P4-07",
+      "requirement": "gretl/catalog, graph, planEdit, validateEdit und navigation samt analysisReady sind getypt, versioniert und im tatsächlichen Launcher registriert; keine unimplementierten Capabilities.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/DiagnosticPublicationState.java",
+      "tests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "tools/gretl-tooling/protocol.test.mjs",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "666e812df8394a1f533d534c9c6d134b132898ab"
+    },
+    {
+      "id": "P4-08",
+      "requirement": "Readonly-/Trust-/Pfad-/Message-/Budgetregeln und Clientcapabilities werden respektiert; Server schreibt keine Jobdateien und startet keine Jobs/Plugins.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/BundledCatalog.java",
+      "tests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "tools/gretl-tooling/protocol.test.mjs",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "666e812df8394a1f533d534c9c6d134b132898ab"
+    },
+    {
+      "id": "P4-09",
+      "requirement": "Echte stdio-Vertrags-, Race-, Lebenszyklus-, Archiv-/Dependencytests sowie alle fälligen Rootgates bestehen; kein Modelerfrontend vorgezogen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/GretlLanguageServer.java",
+      "tests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerProcessIT.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostBoundaryTest.java",
+        "tools/gretl-tooling/protocol.test.mjs",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/HostSchedulingTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/DiagnosticPublicationStateTest.java",
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "666e812df8394a1f533d534c9c6d134b132898ab"
+    },
+    {
+      "id": "P5-01",
+      "requirement": "VSIX besitzt eigene Runtime-Identität, tatsächliches Server-/Katalogbundle und dokumentierte Java25-Voraussetzung; isolierte Installation ohne andere GRETL-Repos funktioniert.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/package.json",
+      "tests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/host.test.mjs",
+        "vscode/gretl-vscode/test/edit-guard.test.mjs",
+        "vscode/gretl-vscode/test/read-query.test.mjs",
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "4520ee6960d8b0857fad828f972a44950c5aeb09"
+    },
+    {
+      "id": "P5-02",
+      "requirement": "job.groovy/settings.gretl und ausdrücklich zugewiesene andere Jobdateien werden unterstützt; normale fremde Groovy-/Gradleprojekte werden nicht ungefragt übernommen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/host.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/host.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/host.test.mjs",
+        "vscode/gretl-vscode/test/edit-guard.test.mjs",
+        "vscode/gretl-vscode/test/read-query.test.mjs",
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "4520ee6960d8b0857fad828f972a44950c5aeb09"
+    },
+    {
+      "id": "P5-03",
+      "requirement": "Completion, Hover, Signaturen, Problems, Navigation, References und Outline sind durch echte Tastatur-/Mausaktionen sichtbar und sourcegenau.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/extension.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/host.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/host.test.mjs",
+        "vscode/gretl-vscode/test/edit-guard.test.mjs",
+        "vscode/gretl-vscode/test/read-query.test.mjs",
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "4520ee6960d8b0857fad828f972a44950c5aeb09"
+    },
+    {
+      "id": "P5-04",
+      "requirement": "Rename/QuickFixes arbeiten auf aktuellen Buffern, bewahren native Undo/Redo und Dirtyzustände und lehnen bekannte Konflikte ab; keine fs.writeFile-Abkürzung.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/extension.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/edit-guard.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/host.test.mjs",
+        "vscode/gretl-vscode/test/edit-guard.test.mjs",
+        "vscode/gretl-vscode/test/read-query.test.mjs",
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "4520ee6960d8b0857fad828f972a44950c5aeb09"
+    },
+    {
+      "id": "P5-05",
+      "requirement": "Einfaches gültiges Jobtemplate, Status/Output und verständliche Konfigurations-/Java-/Bundlefehler sind bedienbar; keine eingebauten Geheimnisse.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/extension.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/read-query.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/host.test.mjs",
+        "vscode/gretl-vscode/test/edit-guard.test.mjs",
+        "vscode/gretl-vscode/test/read-query.test.mjs",
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "4520ee6960d8b0857fad828f972a44950c5aeb09"
+    },
+    {
+      "id": "P5-06",
+      "requirement": "Stop/Restart/Crash-Recovery erhält ungespeicherte Texte, entfernt alte Sessions und beendet nur eigene Prozesse ohne Neustartschleife.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/extension.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/host.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/host.test.mjs",
+        "vscode/gretl-vscode/test/edit-guard.test.mjs",
+        "vscode/gretl-vscode/test/read-query.test.mjs",
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "4520ee6960d8b0857fad828f972a44950c5aeb09"
+    },
+    {
+      "id": "P5-07",
+      "requirement": "Workspace Trust, erlaubte Konfiguration und Workspacehost-/Remote-URIgrenzen sind implementiert; keine UI-Felder als Sprachkonfiguration durchgereicht.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/host.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/host.test.mjs",
+        "vscode/gretl-vscode/test/edit-guard.test.mjs",
+        "vscode/gretl-vscode/test/read-query.test.mjs",
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "4520ee6960d8b0857fad828f972a44950c5aeb09"
+    },
+    {
+      "id": "P5-08",
+      "requirement": "G01–G10 laufen mit frisch installiertem VSIX und echtem Server; Screenshots plus Assertions/Artefakthashes liegen vor, nicht nur Extension-APIaufrufe.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/scripts/inventory.mjs",
+      "tests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/host.test.mjs",
+        "vscode/gretl-vscode/test/edit-guard.test.mjs",
+        "vscode/gretl-vscode/test/read-query.test.mjs",
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "4520ee6960d8b0857fad828f972a44950c5aeb09"
+    },
+    {
+      "id": "P5-09",
+      "requirement": "Client-/Host-/Prozess-/GUIprüfungen, Dependencyinventur und fällige Repository-Gates bestehen; weiterhin keine vorgezogene grafische Produktarbeit.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/test/workbench-driver/extension.cjs",
+      "tests": [
+        "vscode/gretl-vscode/test/host.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/host.test.mjs",
+        "vscode/gretl-vscode/test/edit-guard.test.mjs",
+        "vscode/gretl-vscode/test/read-query.test.mjs",
+        "vscode/gretl-vscode/test/process.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "4520ee6960d8b0857fad828f972a44950c5aeb09"
+    },
+    {
+      "id": "P6-01",
+      "requirement": "Der Graph stammt ausschliesslich aus aktuellem Sprachkernsnapshot, enthält alle statisch bekannten Deklarationen und trennt Definitionssicht von targetbezogener Vorschau.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/modeler/provider.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "vscode/gretl-vscode/test/modeler-state.test.mjs",
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+    },
+    {
+      "id": "P6-02",
+      "requirement": "Tasks/Actions/Projektcontainer sowie Parameter-/Cleanup-/dynamische Bereiche haben fachlich richtige Darstellung; keine erfundenen parallel laufenden Tasks.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/webview/layout.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "vscode/gretl-vscode/test/modeler-state.test.mjs",
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+    },
+    {
+      "id": "P6-03",
+      "requirement": "dependsOn/after/Resultbindungen sind getrennt, Producer→Consumer korrekt; Partials, unaufgelöste Referenzen und Diagnosen werden ehrlich dargestellt.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/webview/view.tsx",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-state.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "vscode/gretl-vscode/test/modeler-state.test.mjs",
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+    },
+    {
+      "id": "P6-04",
+      "requirement": "Echter CustomTextEditor mit option-Priorität, lokalen React-Flow-Nodes und ELKworker funktioniert; kein statisches SVG oder zweiter Server als Ersatz.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/modeler/graph-model.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-state.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "vscode/gretl-vscode/test/modeler-state.test.mjs",
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+    },
+    {
+      "id": "P6-05",
+      "requirement": "Node-Drag, Pan/Zoom/Fit, Auswahl und einfache Filter sind tatsächlich bedienbar und verändern weder Source noch Registrierungsreihenfolge/Dirtymarker.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/modeler/provider.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "vscode/gretl-vscode/test/modeler-state.test.mjs",
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+    },
+    {
+      "id": "P6-06",
+      "requirement": "Quelle↔Diagramm-Navigation und Liveupdates verwenden exakte aktuelle Identitäten; schnelle Edits/Restart/Panelwechsel verwerfen alte Antworten.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/modeler/view-state-store.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "vscode/gretl-vscode/test/modeler-state.test.mjs",
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+    },
+    {
+      "id": "P6-07",
+      "requirement": "Viewstate bleibt getrennt von Fachgraph/Source und wird nur bei eindeutiger Identität übernommen; mehrere Panels und Cleanup funktionieren.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/webview/view.css",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "vscode/gretl-vscode/test/modeler-state.test.mjs",
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+    },
+    {
+      "id": "P6-08",
+      "requirement": "CSP, lokale Assets, validierte Nachrichten, sichere Labels sowie Light/Dark/HighContrast und leere/partielle/stale Ansichten sind implementiert und geprüft.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/graph/TargetPreviewProjector.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "vscode/gretl-vscode/test/modeler-state.test.mjs",
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+    },
+    {
+      "id": "P6-09",
+      "requirement": "G11–G16 und Editor-Smoke bestehen mit aktuellen Bildern/Geometrie-/Sourcebelegen; betroffene Kern-/LSP-/UItests und Pflichtrootgates sind grün.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/webview/layout.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "vscode/gretl-vscode/test/modeler-state.test.mjs",
+        "vscode/gretl-vscode/test/modeler-storage.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/TargetPreviewProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-resource.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G11",
+        "G12",
+        "G13",
+        "G14",
+        "G15",
+        "G16"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2"
+    },
+    {
+      "id": "P7-01",
+      "requirement": "Aus leerer Datei lassen sich Parameter, HttpDownload, Extract, Ergebnisbindung und Defaultziel grafisch zu einem vollständigen Job erstellen, speichern und wieder öffnen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/webview/forms.tsx",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "53f7f3daaf92d002fd75978c25471321fd99a310"
+    },
+    {
+      "id": "P7-02",
+      "requirement": "Palette benutzt alle aktuellen Katalogoperationen; Formulare unterstützen die belegten Wertformen/Enums/Listen/Maps und explizite Parameter-/Datei-/WorkPath-/Secretaliasmodi.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/graph/GraphFormProjector.java",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "53f7f3daaf92d002fd75978c25471321fd99a310"
+    },
+    {
+      "id": "P7-03",
+      "requirement": "Dependencygesten ändern korrekt den Consumerkopf; after-Auswahl und targetabhängige Zyklusregeln bleiben erhalten; abgelehnte Aktionen lassen Source unverändert.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/webview/commands.tsx",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "53f7f3daaf92d002fd75978c25471321fd99a310"
+    },
+    {
+      "id": "P7-04",
+      "requirement": "Output→Input-Verbindung setzt Ergebnisreferenz und nur nötige Datenabhängigkeit zusammen; Disconnect berücksichtigt verbleibende transitive Ketten und betroffene Referenzen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/modeler/edit-plan.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "53f7f3daaf92d002fd75978c25471321fd99a310"
+    },
+    {
+      "id": "P7-05",
+      "requirement": "Umbenennen/Löschen/Defaults verwenden Corepläne und vollständige Referenzprüfung; kein unsicheres Teilrename, Cascade-Delete oder Verlust weiterer Defaultziele.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEdits.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "53f7f3daaf92d002fd75978c25471321fd99a310"
+    },
+    {
+      "id": "P7-06",
+      "requirement": "Actions, opake Ausdrücke, dynamische Registrierung und Kommentare bleiben bei umgebenden grafischen Änderungen unverändert; gesperrte Aktionen erklären den Grund und bieten Textnavigation.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-tooling-core/src/main/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzer.java",
+      "tests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "53f7f3daaf92d002fd75978c25471321fd99a310"
+    },
+    {
+      "id": "P7-07",
+      "requirement": "Fachliche Änderungen benutzen native Textedits/Undo/Redo; Layout ist view-only; Stale-/Dirty-/Multifilekonflikte führen zu Neuplanung/Ablehnung, nicht stillem Überschreiben.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/modeler/provider.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "53f7f3daaf92d002fd75978c25471321fd99a310"
+    },
+    {
+      "id": "P7-08",
+      "requirement": "Der grafisch erzeugte echte Groovytext läuft in einem separaten lokalen Runtime-SCRIPT-Fixturetest mit geprüftem Ergebnis; kein Jobstart beim normalen Editieren.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+      "tests": [
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "53f7f3daaf92d002fd75978c25471321fd99a310"
+    },
+    {
+      "id": "P7-09",
+      "requirement": "G17–G25, echte Roundtrip-/Preservation-/Negativtests und geltende vollständige Rootgates bestehen; GUIaktionen und passende Source-/Artefaktzustände sind nachgewiesen.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/scripts/verify-workbench-evidence.mjs",
+      "tests": [
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/GraphFormProjectorTest.java",
+        "vscode/gretl-vscode/test/modeler-intent.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/DependencySourceEditsTest.java",
+        "vscode/gretl-vscode/test/modeler-edit-plan.test.mjs",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/ReferenceSourceEditsTest.java",
+        "gretl-tooling-core/src/test/java/ch/so/agi/gretl/tooling/edit/EditabilityAnalyzerTest.java",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "gretl-integration-tests/src/test/java/ch/so/agi/gretl/it/GraphicalModelerScriptJobIT.java",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G17",
+        "G18",
+        "G19",
+        "G20",
+        "G21",
+        "G22",
+        "G23",
+        "G24",
+        "G25"
+      ],
+      "additionalCurrentEvidence": [],
+      "previousPassProductSha": "53f7f3daaf92d002fd75978c25471321fd99a310"
+    },
+    {
+      "id": "P8-01",
+      "requirement": "Frischer Build und isolierte Installation funktionieren ohne gretl-next/andere GRETL-Varianten; Maven-/npm-Auflösung und tatsächliche Archive enthalten keine versteckten Altdependencies.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "tools/gretl-tooling/verify-dependencies.mjs",
+      "tests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs",
+        "tools/gretl-tooling/qualify-server.mjs",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "tools/gretl-tooling/check-docs.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "additionalCurrentEvidence": [
+        "linux-server",
+        "local-server-resources",
+        "runtime-oracle-canary",
+        "workbench-canaries",
+        "distribution-inventory",
+        "cumulative-gui-index"
+      ],
+      "previousPassProductSha": null
+    },
+    {
+      "id": "P8-02",
+      "requirement": "Ausgelieferte Server-/Katalog-/Schema-/UIartefakte besitzen geprüfte zusammengehörige Digests/Versionen und vollständige Lizenzen; kein Source-Checkout oder Installationsnetzwerk für die Nutzung erforderlich.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/scripts/inventory.mjs",
+      "tests": [
+        "vscode/gretl-vscode/test/package/distribution.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs",
+        "tools/gretl-tooling/qualify-server.mjs",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "tools/gretl-tooling/check-docs.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "additionalCurrentEvidence": [
+        "linux-server",
+        "local-server-resources",
+        "runtime-oracle-canary",
+        "workbench-canaries",
+        "distribution-inventory",
+        "cumulative-gui-index"
+      ],
+      "previousPassProductSha": null
+    },
+    {
+      "id": "P8-03",
+      "requirement": "Gesamte neue Java-/LSP-/Frontend-/Host-/GUI-Suite G01–G30 auf tatsächlicher Primärplattform und alle geltenden Rootgates sind frisch am finalen Kandidaten bestanden.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/scripts/workbench.mjs",
+      "tests": [
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs",
+        "tools/gretl-tooling/qualify-server.mjs",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "tools/gretl-tooling/check-docs.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "additionalCurrentEvidence": [
+        "linux-server",
+        "local-server-resources",
+        "runtime-oracle-canary",
+        "workbench-canaries",
+        "distribution-inventory",
+        "cumulative-gui-index"
+      ],
+      "previousPassProductSha": null
+    },
+    {
+      "id": "P8-04",
+      "requirement": "Echter Linux-Java-LSP-Distributionsstart ist belegt; weitere getestete und ungetestete Betriebssystem-/Remoteumfänge sind ehrlich getrennt, keine Universalbehauptung aus Crossbuild.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "tools/gretl-tooling/qualify-server.mjs",
+      "tests": [
+        "tools/gretl-tooling/qualify-server.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs",
+        "tools/gretl-tooling/qualify-server.mjs",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "tools/gretl-tooling/check-docs.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "additionalCurrentEvidence": [
+        "linux-server",
+        "local-server-resources",
+        "runtime-oracle-canary",
+        "workbench-canaries",
+        "distribution-inventory",
+        "cumulative-gui-index"
+      ],
+      "previousPassProductSha": null
+    },
+    {
+      "id": "P8-05",
+      "requirement": "Schnelle Edits, Katalog-/Schemafehler, Crash/Restart, Multiroot, readonly, Workspace Trust und Offline bleiben ohne Datenverlust kontrolliert; G26–G30 sind belegt.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/src/modeler/provider.ts",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs",
+        "tools/gretl-tooling/qualify-server.mjs",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "tools/gretl-tooling/check-docs.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "additionalCurrentEvidence": [
+        "linux-server",
+        "local-server-resources",
+        "runtime-oracle-canary",
+        "workbench-canaries",
+        "distribution-inventory",
+        "cumulative-gui-index"
+      ],
+      "previousPassProductSha": null
+    },
+    {
+      "id": "P8-06",
+      "requirement": "Ressourcen-/Last-/Parserbudgettests zeigen begrenzte Queues/Snapshots/Worker und stabile Obsoletebehandlung; Performancewerte sind gemessen, nicht erfunden.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "gretl-lsp/src/main/java/ch/so/agi/gretl/lsp/ServerWorkspace.java",
+      "tests": [
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs",
+        "tools/gretl-tooling/qualify-server.mjs",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "tools/gretl-tooling/check-docs.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "additionalCurrentEvidence": [
+        "linux-server",
+        "local-server-resources",
+        "runtime-oracle-canary",
+        "workbench-canaries",
+        "distribution-inventory",
+        "cumulative-gui-index"
+      ],
+      "previousPassProductSha": null
+    },
+    {
+      "id": "P8-07",
+      "requirement": "Benutzer-/Build-/Architektur-/Protokoll-/Testdokumentation erklärt tatsächliche Funktionen, statische Grenzen, Javaanforderung, Jobausführung ausserhalb des Editors und Fehlerbehebung konsistent.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "vscode/gretl-vscode/README.md",
+      "tests": [
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs",
+        "tools/gretl-tooling/qualify-server.mjs",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "tools/gretl-tooling/check-docs.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "additionalCurrentEvidence": [
+        "linux-server",
+        "local-server-resources",
+        "runtime-oracle-canary",
+        "workbench-canaries",
+        "distribution-inventory",
+        "cumulative-gui-index"
+      ],
+      "previousPassProductSha": null
+    },
+    {
+      "id": "P8-08",
+      "requirement": "Alle 81 Kriterien sind einzeln auf aktuelle Code-/Testbelege abgebildet; vorherige PASS-Identitäten, erhaltene FAIL-Berichte und kumulativer Assignmentdiff sind nachvollziehbar.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "docs/implementation/gretl-tooling/implementation/P8-acceptance-map.json",
+      "tests": [
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs",
+        "tools/gretl-tooling/qualify-server.mjs",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "tools/gretl-tooling/check-docs.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "additionalCurrentEvidence": [
+        "linux-server",
+        "local-server-resources",
+        "runtime-oracle-canary",
+        "workbench-canaries",
+        "distribution-inventory",
+        "cumulative-gui-index"
+      ],
+      "previousPassProductSha": null
+    },
+    {
+      "id": "P8-09",
+      "requirement": "Mindestens zwei neue unabhängige übergreifende Gegenfälle und wirksame negative Harness-/Paketproben sind dokumentiert; Kandidat bleibt unverändert, keine Publikation oder produktive Ausführung.",
+      "status": "INDEPENDENTLY_FULFILLED",
+      "primaryCode": "tools/gretl-tooling/review.mjs",
+      "tests": [
+        "tools/gretl-tooling/review.test.mjs",
+        "tools/gretl-tooling/qualify-runtime-canary.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "sharedCurrentTests": [
+        "gretl-lsp/src/test/java/ch/so/agi/gretl/lsp/ServerArchiveIT.java",
+        "vscode/gretl-vscode/test/package/distribution.test.mjs",
+        "vscode/gretl-vscode/test/workbench-evidence.test.mjs",
+        "tools/gretl-tooling/qualify-server.mjs",
+        "vscode/gretl-vscode/test/modeler-controller.test.mjs",
+        "vscode/gretl-vscode/test/modeler-layout.test.mjs",
+        "tools/gretl-tooling/check-docs.mjs",
+        "vscode/gretl-vscode/test/package/server-integrity.test.mjs"
+      ],
+      "rootEvidenceIds": [
+        "root-standard",
+        "root-services"
+      ],
+      "currentGuiCases": [
+        "G26",
+        "G27",
+        "G28",
+        "G29",
+        "G30"
+      ],
+      "additionalCurrentEvidence": [
+        "linux-server",
+        "local-server-resources",
+        "runtime-oracle-canary",
+        "workbench-canaries",
+        "distribution-inventory",
+        "cumulative-gui-index"
+      ],
+      "previousPassProductSha": null
+    }
+  ],
+  "finalAcceptance": {
+    "candidateSha": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+    "reviewId": "860d5238-a848-4082-b196-587c2a270e6c",
+    "verdict": "../reviews/P8/attempt-1/verdict.json",
+    "verdictSha256": "090bf22737ef3e2b5cd1d17f22e117a76334a1a811f26755790113916eb69a3a",
+    "validation": "../reviews/P8/attempt-1/validation.json",
+    "validationSha256": "477f87b42fb811ef4243b08d71a9123875b3ffaf1262f705d9535bf90a5de9fb"
+  }
+}

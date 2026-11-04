@@ -1,0 +1,13 @@
+{
+  "id": "006",
+  "purpose": "Independent cross-subproject counterprobe, step 3: native Undo in the main job and verify the qualified reference reverts to :sub:child while the subproject declaration remains independent.",
+  "actions": [
+    {
+      "kind": "command",
+      "title": "Undo"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

@@ -15,6 +15,12 @@
   <dependencies>
     <dependency>
       <groupId>ch.so.agi.gretl</groupId>
+      <artifactId>gretl-tooling-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.so.agi.gretl</groupId>
       <artifactId>gretl-api</artifactId>
       <version>${project.version}</version>
     </dependency>

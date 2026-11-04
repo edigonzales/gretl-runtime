@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:29:51.870Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "7f018558e6d25be3f85ba0869afb8d3302914fa3aea78cedaa95ce142fefbbdc",
+  "imageSha256": "d104b0709c318b95d9f04c583fa0b62df50e81661a8ff7fbc01d84fa6457eee4",
+  "image": "G28-server-stopped-stale.jpg"
+}

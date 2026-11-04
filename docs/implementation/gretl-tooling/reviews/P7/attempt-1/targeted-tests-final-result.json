@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-11-04T10:45:14.508Z",
+  "candidateSha": "53f7f3daaf92d002fd75978c25471321fd99a310",
+  "passed": true,
+  "checks": [
+    {
+      "label": "core-affected",
+      "passed": true,
+      "code": 0,
+      "signal": null,
+      "timedOut": false,
+      "logPath": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/targeted-tests/core-affected.log",
+      "startedAt": "2026-11-04T10:44:22.212Z",
+      "endedAt": "2026-11-04T10:44:27.316Z",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/product",
+      "args": [
+        "-B",
+        "-pl",
+        "gretl-tooling-core",
+        "-Dtest=GraphFormProjectorTest,SemanticEditPlannerTest,DependencySourceEditsTest,DefaultsSourceEditsTest,ReferenceSourceEditsTest,EditVerifierTest,SnapshotNavigationTest",
+        "test"
+      ]
+    },
+    {
+      "label": "lsp-affected",
+      "passed": true,
+      "code": 0,
+      "signal": null,
+      "timedOut": false,
+      "logPath": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/targeted-tests/lsp-affected.log",
+      "startedAt": "2026-11-04T10:44:27.383Z",
+      "endedAt": "2026-11-04T10:44:39.492Z",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/product",
+      "args": [
+        "-B",
+        "-pl",
+        "gretl-lsp",
+        "-Dtest=HostSchedulingTest,HostBoundaryTest,DiagnosticPublicationStateTest",
+        "-Dit.test=ServerProcessIT",
+        "verify"
+      ]
+    },
+    {
+      "label": "node-modeler-affected",
+      "passed": true,
+      "code": 0,
+      "signal": null,
+      "timedOut": false,
+      "logPath": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/targeted-tests/node-modeler-affected.log",
+      "startedAt": "2026-11-04T10:45:08.882Z",
+      "endedAt": "2026-11-04T10:45:09.203Z",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/vscode/gretl-vscode",
+      "args": [
+        "--test",
+        "test/modeler-edit-plan.test.mjs",
+        "test/edit-guard.test.mjs",
+        "test/modeler-controller.test.mjs",
+        "test/modeler-intent.test.mjs",
+        "test/modeler-connection.test.mjs",
+        "test/modeler-view-history.test.mjs",
+        "test/modeler-state.test.mjs"
+      ]
+    }
+  ]
+}

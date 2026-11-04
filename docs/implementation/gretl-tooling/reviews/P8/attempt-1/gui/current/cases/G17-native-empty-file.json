@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:06:54.202Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "63bcd452c6b6e4ac37d971c634ed00e18a35c4f72e8c113144cc33bfca0d05b0",
+  "imageSha256": "ca4037d691817b9fa31543100832d6639332eb9b3e545993fae59e2783c77ecc",
+  "image": "G17-native-empty-file.jpg"
+}

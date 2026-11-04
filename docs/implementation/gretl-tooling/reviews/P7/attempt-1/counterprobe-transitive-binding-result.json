@@ -1,0 +1,101 @@
+{
+  "kind": "NEW_NON_GUI_COUNTERPROBE",
+  "generatedAt": "2026-11-04T10:44:09.204Z",
+  "candidateSha": "53f7f3daaf92d002fd75978c25471321fd99a310",
+  "serverJar": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+  "serverJarSha256": "f6acda578e81d806da9a016bdfdad00c67ee35a2640bfee21daa4845f63d0465",
+  "sourceSha256Before": "97e197504673fe03dd23c9b013e6c259a431baed2edba9a78f2e206d3ce3876a",
+  "sourceSha256After": "18f103d10a606a5a144e5f7f3741021c161af717c0a87a60d21e36b07a2dadb2",
+  "passed": true,
+  "failures": [],
+  "observations": {
+    "snapshotId": "d3d20f44-6d84-4df7-8cc1-14ab9185dbe0",
+    "initialNodes": [
+      {
+        "title": "producer",
+        "kind": "TASK"
+      },
+      {
+        "title": "bridge",
+        "kind": "ACTION"
+      },
+      {
+        "title": "consumer",
+        "kind": "TASK"
+      }
+    ],
+    "initialEdges": [
+      {
+        "kind": "DEPENDS_ON",
+        "source": "d3d20f44-6d84-4df7-8cc1-14ab9185dbe0:node:0",
+        "target": "d3d20f44-6d84-4df7-8cc1-14ab9185dbe0:node:1"
+      },
+      {
+        "kind": "DEPENDS_ON",
+        "source": "d3d20f44-6d84-4df7-8cc1-14ab9185dbe0:node:1",
+        "target": "d3d20f44-6d84-4df7-8cc1-14ab9185dbe0:node:2"
+      },
+      {
+        "kind": "AFTER",
+        "source": "d3d20f44-6d84-4df7-8cc1-14ab9185dbe0:node:0",
+        "target": "d3d20f44-6d84-4df7-8cc1-14ab9185dbe0:node:2"
+      }
+    ],
+    "capability": {
+      "state": "ALLOWED",
+      "reasons": [],
+      "dependencies": [
+        "file:/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/counterprobes/transitive-binding/job.groovy",
+        "file:/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/counterprobes/transitive-binding/settings.gretl"
+      ],
+      "requiredOpenDocuments": []
+    },
+    "planId": "426977d6-d675-4d00-a924-b036f8119af0",
+    "edits": [
+      {
+        "range": {
+          "start": {
+            "line": 6,
+            "character": 14
+          },
+          "end": {
+            "line": 6,
+            "character": 37
+          }
+        },
+        "newText": "result('producer').file"
+      }
+    ],
+    "applied": "task('producer', HttpDownload) {\n    url = 'https://example.invalid/a.zip'\n    output = workPath('archive.zip')\n}\naction('bridge', dependsOn: 'producer') { println 'not executed' }\ntask('consumer', Extract, after: 'producer', dependsOn: [ 'bridge']) {\n    archive = result('producer').file\n    compression = 'ZIP'\n    outputDirectory = workPath('out')\n}\ndefaults 'consumer'\n",
+    "consumerHeader": "task('consumer', Extract, after: 'producer', dependsOn: [ 'bridge']) {",
+    "postEdges": [
+      {
+        "kind": "DEPENDS_ON",
+        "source": "416ff54c-6eb6-46e1-8103-fe422b8437d2:node:0",
+        "target": "416ff54c-6eb6-46e1-8103-fe422b8437d2:node:1"
+      },
+      {
+        "kind": "DEPENDS_ON",
+        "source": "416ff54c-6eb6-46e1-8103-fe422b8437d2:node:1",
+        "target": "416ff54c-6eb6-46e1-8103-fe422b8437d2:node:2"
+      },
+      {
+        "kind": "AFTER",
+        "source": "416ff54c-6eb6-46e1-8103-fe422b8437d2:node:0",
+        "target": "416ff54c-6eb6-46e1-8103-fe422b8437d2:node:2"
+      },
+      {
+        "kind": "RESULT_BINDING",
+        "source": "416ff54c-6eb6-46e1-8103-fe422b8437d2:node:0",
+        "target": "416ff54c-6eb6-46e1-8103-fe422b8437d2:node:2",
+        "outputField": "file",
+        "inputField": "archive"
+      }
+    ],
+    "resultEdgeCount": 1,
+    "directDependencyCount": 0,
+    "directAfterCount": 1,
+    "exitCode": 0
+  },
+  "stderr": ""
+}

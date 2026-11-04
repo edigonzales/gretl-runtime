@@ -1,0 +1,17 @@
+{
+  "id": "012",
+  "purpose": "G30 explicit reopen: reopen the same fixture from disk after the native close and fresh server restart, then open its Modeler and observe baseline source, diagnostics and graph.",
+  "actions": [
+    {
+      "kind": "openFile",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/workspace ä space/project-created/reviewer-compound/job.groovy"
+    },
+    {
+      "kind": "command",
+      "title": "GRETL: Open Modeler"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

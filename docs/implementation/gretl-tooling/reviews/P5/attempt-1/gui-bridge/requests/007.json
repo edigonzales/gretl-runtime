@@ -1,0 +1,13 @@
+{
+  "id": "007",
+  "purpose": "Independent cross-subproject counterprobe, step 4: inspect the subproject job after the main-job Undo to determine whether its declaration still shows renamedChild.",
+  "actions": [
+    {
+      "kind": "openFile",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sub/job.groovy"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

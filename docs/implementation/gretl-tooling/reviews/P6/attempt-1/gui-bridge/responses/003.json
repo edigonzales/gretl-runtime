@@ -1,0 +1,14 @@
+{
+  "id": "003",
+  "purpose": "Reviewer independent native probe setup: pin the Main modeler beside the existing Other modeler, with Main cursor on a neutral comment so Main has no node selection",
+  "time": "2026-11-04T08:32:51.074Z",
+  "operatorOnly": true,
+  "candidateSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2",
+  "error": "Error: Ambiguous or absent click label: job.groovy GRETL main (0)",
+  "steps": [],
+  "ax": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/evidence/gui-bridge/responses/003.ax.txt",
+  "axSha256": "8f31b5371096db888d8cca12fd15ac5050e283cd989bd714c163f112c5299237",
+  "screenshot": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/evidence/gui-bridge/responses/003.png",
+  "screenshotSha256": "c04b225121cbb10f4bf81bb72371b3a190fe65c4b18ad15817a5dd6e6e0cf780",
+  "captures": "/Users/stefan/.cache/gretl-tooling-review/P6-candidate-1-gui/captures"
+}

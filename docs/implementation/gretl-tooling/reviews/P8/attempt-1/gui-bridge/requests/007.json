@@ -1,0 +1,13 @@
+{
+  "id": "007",
+  "purpose": "G30 native undo: invoke the Modeler Undo text action (VS Code native undo command) once after the result-binding edit and observe exact source, dirty state, graph and diagnostics.",
+  "actions": [
+    {
+      "kind": "click",
+      "label": "Undo text"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

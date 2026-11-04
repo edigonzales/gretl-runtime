@@ -1,0 +1,67 @@
+{
+  "head": "d64adb4959869608e6d3ef6f2b3bd86a4491f261",
+  "requirementsDigest": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+  "repositoryRulesDigest": "4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b",
+  "artifacts": [
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-2/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+      "declared": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+      "actual": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-2/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+      "declared": "6fb5e40b1f3bfa6b2a549c6fb99a7c07a5788483277128feee6703e553ebd26e",
+      "actual": "6fb5e40b1f3bfa6b2a549c6fb99a7c07a5788483277128feee6703e553ebd26e"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-2/evidence/artifacts/gretl-language-contract/target/tooling-dependencies.json",
+      "declared": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f",
+      "actual": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-2/evidence/artifacts/gretl-tooling-core/target/tooling-dependencies.json",
+      "declared": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7",
+      "actual": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-2/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+      "declared": "4200992a6f4579547b98981ca87f23f4e7f73349d7c270d44763942b0a908cf2",
+      "actual": "4200992a6f4579547b98981ca87f23f4e7f73349d7c270d44763942b0a908cf2"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+      "declared": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+      "actual": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.schema.json",
+      "declared": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005",
+      "actual": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P2-review-2/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+      "declared": "65c9ae3625965b106b5a01dfb28ad75e7eb69a3f3cbad7f996259e95051098f6",
+      "actual": "65c9ae3625965b106b5a01dfb28ad75e7eb69a3f3cbad7f996259e95051098f6"
+    }
+  ],
+  "standard": {
+    "tests": {
+      "tests": 804,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "modules": 17
+  },
+  "services": {
+    "tests": {
+      "tests": 860,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "modules": 18
+  },
+  "failureCount": 0,
+  "failures": []
+}

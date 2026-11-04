@@ -5,10 +5,14 @@ den aktuellen Zuschnitt.
 
 | Artefakt (`ch.so.agi.gretl`, Version `6.0.0-SNAPSHOT`) | Verantwortung | Erlaubte interne Produktionsabhängigkeiten |
 | --- | --- | --- |
+| gretl-language-contract | Reine Namens-, DSL- und Graphregeln | keine; ausschliesslich JDK |
+| gretl-tooling-core | Sicheres Parsing, Katalogdaten, Workspacecaptures und statische Semantik | Language-Contract |
+| gretl-tooling-catalog | Vertrauenswuerdiger Buildexport; separates reines Katalogdatenartefakt | API, Tooling-Core, aktuelle Taskbibliotheken |
+| gretl-lsp | Eigenstaendiger Java25-stdio-Host fuer Queries, Graph und Editplanung | Tooling-Core, Language-Contract; ausschliesslich der isolierte Datenclassifier des Katalogs |
 | gretl-api | Neutrale Java-SPI, Metadaten und Kontexte | keine; ausschliesslich JDK |
 | gretl-i18n | Meldungskataloge | keine |
-| gretl-runner | Planung, sequenzielle Ausführung, Lebensdauer | API, i18n |
-| gretl-groovy | Groovy-6-DSL und Kompilierkonfiguration | API, Runner, i18n |
+| gretl-runner | Planung, sequenzielle Ausführung, Lebensdauer | API, i18n, Language-Contract |
+| gretl-groovy | Groovy-6-DSL und Kompilierkonfiguration | API, Runner, i18n, Language-Contract |
 | gretl-logging | Logging, Telemetrie und Report | API, Runner, i18n |
 | gretl-job-runtime | Jobquelle, Parameter, Konfiguration, Ausführung und Abschluss für Skript und JAR | API, Runner, Groovy, Logging, i18n |
 | gretl-packager | Authoring: Descriptor, Kompilierung, Ressourcen und JAR | API, Groovy, Logging, i18n |
@@ -45,3 +49,18 @@ Der [Paketierungsvertrag](job-packaging.md) macht die vier Taskmodule auch als
 Auslieferungsauswahl nutzbar. Die vollständige Standarddistribution bleibt
 erhalten. Die Compilerisolation ist auf den Authoring-Schritt begrenzt; sie
 führt keinen allgemeinen Plugincontainer in die Runtime ein.
+
+Der statische Tooling-Core besitzt keine Produktionsabhaengigkeit auf Runner,
+Groovyadapter, Taskprovider oder Exporter. Die gemeinsame `PlanSemantics` arbeitet
+ausschliesslich mit logischen IDs und Kanten. Der Runner prueft weiterhin die
+UUID-Identitaet seiner Referenzen. Der Buildexporter darf Metadaten lesen; der
+Core bekommt ausschliesslich validierte Katalogdaten. Hosttests in Groovy und
+Database vergleichen statische Aussagen mit der Runtime ueber Testdependencies.
+
+Der Core liest explizit registrierte Quellen ueber eine begrenzte Readpolicy.
+Buffer, Settings, SQLs, Katalog und Konfiguration werden unveraenderlich erfasst;
+Generationen und Quellenvektoren schuetzen die Publikation vor veralteten
+Ergebnissen. Der Dateiadapter verwendet auf der geprueften macOS-Primärplattform
+sichere relative Directoryhandles ohne Symlinkfolgen. Nicht unterstuetzte
+Dateisystemadapter liefern einen sichtbaren Policyzustand. Eine atomare
+Transaktion mit unabhaengigen externen Dateischreibern wird nicht behauptet.

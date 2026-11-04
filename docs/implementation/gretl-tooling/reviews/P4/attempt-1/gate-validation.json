@@ -1,0 +1,451 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "name": "worktree HEAD equals candidateSha",
+      "ok": true,
+      "detail": {
+        "head": "621255a972888b9fe1e629687ad9400424e19e1f",
+        "candidate": "621255a972888b9fe1e629687ad9400424e19e1f"
+      }
+    },
+    {
+      "name": "tracked tree clean",
+      "ok": true,
+      "detail": "## HEAD (no branch)\n?? .opencode/\n?? opencode.json"
+    },
+    {
+      "name": "requirementsDigest matches normative files",
+      "ok": true,
+      "detail": {
+        "computed": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3",
+        "requested": "cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3"
+      }
+    },
+    {
+      "name": "repositoryRulesDigest matches AGENTS files",
+      "ok": true,
+      "detail": {
+        "computed": "4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b",
+        "requested": "4b8713835c73d4a4e9bae8e49984b1696fd54dbf7f3e1b74a0eda479cd46bf2b"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+        "expected": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "f156e3712cedc0106f2a04239ebde5e5022ef85f643149c4b80d6fff5703860f",
+        "expected": "f156e3712cedc0106f2a04239ebde5e5022ef85f643149c4b80d6fff5703860f"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-language-contract/target/tooling-dependencies.json",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f",
+        "expected": "f05b6a8cde9a42c5d79da723ec5628bdac0f91bdf04855c2c0d84f1193e30a1f"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-core/target/tooling-dependencies.json",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7",
+        "expected": "752c8cffcce0afffd428478b3fb6d4c042902b9015b6613da54059fbd0eb6fc7"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "94384f845fc41f74ddd1aa8e4b3daa39275be33eac282d8478b97d2b8bb29ff3",
+        "expected": "94384f845fc41f74ddd1aa8e4b3daa39275be33eac282d8478b97d2b8bb29ff3"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+        "expected": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.schema.json",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005",
+        "expected": "356d7e9a6b4fa0587a539c6a545e95ba278793c4f8e6cb13b305787912669005"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "7ae40b1f60e66274afbd67ff7a8cda23e3e1ba628b6051dd935f4ac07f534eea",
+        "expected": "7ae40b1f60e66274afbd67ff7a8cda23e3e1ba628b6051dd935f4ac07f534eea"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "b810405cbacb5127f4dc12c38f31c6324e24db012303b4ec06ec60d6844a0805",
+        "expected": "b810405cbacb5127f4dc12c38f31c6324e24db012303b4ec06ec60d6844a0805"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-lsp/target/tooling-dependencies.json",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+        "expected": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a"
+      }
+    },
+    {
+      "name": "artifact /Users/stefan/.cache/gretl-tooling-review/P4-review-1/evidence/artifacts/gretl-lsp/target/classes/gretl-protocol-v1.schema.json",
+      "ok": true,
+      "detail": {
+        "exists": true,
+        "hash": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6",
+        "expected": "6f95828c38651f825f0ffdd7b21937f8c4e50332fc0f7618b6e70a2d17bc4bf6"
+      }
+    },
+    {
+      "name": "p4-standard sha",
+      "ok": true,
+      "detail": "621255a972888b9fe1e629687ad9400424e19e1f"
+    },
+    {
+      "name": "p4-standard dirty empty",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "p4-standard exit 0",
+      "ok": true,
+      "detail": {
+        "code": 0,
+        "signal": null
+      }
+    },
+    {
+      "name": "p4-standard argv",
+      "ok": true,
+      "detail": [
+        "./mvnw",
+        "-B",
+        "clean",
+        "verify"
+      ]
+    },
+    {
+      "name": "p4-standard run interval",
+      "ok": true,
+      "detail": {
+        "startedAt": "2026-11-03T18:41:32.157Z",
+        "endedAt": "2026-11-03T18:47:30.250Z",
+        "durationMs": 358093
+      }
+    },
+    {
+      "name": "p4-standard all captured files present",
+      "ok": true,
+      "detail": {
+        "capturedMissing": 0,
+        "total": 632
+      }
+    },
+    {
+      "name": "p4-standard all captured hashes match",
+      "ok": true,
+      "detail": {
+        "capturedChecked": 632,
+        "capturedMismatch": 0
+      }
+    },
+    {
+      "name": "p4-standard captured timestamps inside run",
+      "ok": true,
+      "detail": {
+        "outside": 0
+      }
+    },
+    {
+      "name": "p4-standard report XML count matches manifest",
+      "ok": true,
+      "detail": {
+        "fromXml": {
+          "tests": 898,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "manifest": {
+          "tests": 898,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "reportFiles": 172
+      }
+    },
+    {
+      "name": "p4-standard zero failures/errors/skips",
+      "ok": true,
+      "detail": {
+        "tests": 898,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "p4-standard lsp failsafe executed 9",
+      "ok": true,
+      "detail": {
+        "lspFailsafe": 9
+      }
+    },
+    {
+      "name": "p4-standard command log BUILD SUCCESS",
+      "ok": true,
+      "detail": {
+        "bytes": 149463
+      }
+    },
+    {
+      "name": "p4-standard command log no skips",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "p4-standard command log contains zero-failure totals",
+      "ok": true,
+      "detail": {
+        "matches": 193
+      }
+    },
+    {
+      "name": "p4-services sha",
+      "ok": true,
+      "detail": "621255a972888b9fe1e629687ad9400424e19e1f"
+    },
+    {
+      "name": "p4-services dirty empty",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "p4-services exit 0",
+      "ok": true,
+      "detail": {
+        "code": 0,
+        "signal": null
+      }
+    },
+    {
+      "name": "p4-services argv",
+      "ok": true,
+      "detail": [
+        "./mvnw",
+        "-B",
+        "-Pgeotools-probe,backing-services",
+        "clean",
+        "verify"
+      ]
+    },
+    {
+      "name": "p4-services run interval",
+      "ok": true,
+      "detail": {
+        "startedAt": "2026-11-03T18:47:31.803Z",
+        "endedAt": "2026-11-03T18:57:15.881Z",
+        "durationMs": 584078
+      }
+    },
+    {
+      "name": "p4-services all captured files present",
+      "ok": true,
+      "detail": {
+        "capturedMissing": 0,
+        "total": 817
+      }
+    },
+    {
+      "name": "p4-services all captured hashes match",
+      "ok": true,
+      "detail": {
+        "capturedChecked": 817,
+        "capturedMismatch": 0
+      }
+    },
+    {
+      "name": "p4-services captured timestamps inside run",
+      "ok": true,
+      "detail": {
+        "outside": 0
+      }
+    },
+    {
+      "name": "p4-services report XML count matches manifest",
+      "ok": true,
+      "detail": {
+        "fromXml": {
+          "tests": 954,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "manifest": {
+          "tests": 954,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "reportFiles": 186
+      }
+    },
+    {
+      "name": "p4-services zero failures/errors/skips",
+      "ok": true,
+      "detail": {
+        "tests": 954,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "p4-services lsp failsafe executed 9",
+      "ok": true,
+      "detail": {
+        "lspFailsafe": 9
+      }
+    },
+    {
+      "name": "p4-services command log BUILD SUCCESS",
+      "ok": true,
+      "detail": {
+        "bytes": 177031
+      }
+    },
+    {
+      "name": "p4-services command log no skips",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "p4-services command log contains zero-failure totals",
+      "ok": true,
+      "detail": {
+        "matches": 208
+      }
+    },
+    {
+      "name": "P4 report TEST-ch.so.agi.gretl.lsp.ServerProcessIT.xml",
+      "ok": true,
+      "detail": {
+        "tests": 8,
+        "fail": 0,
+        "err": 0,
+        "skip": 0,
+        "expected": 8
+      }
+    },
+    {
+      "name": "P4 report TEST-ch.so.agi.gretl.lsp.ServerArchiveIT.xml",
+      "ok": true,
+      "detail": {
+        "tests": 1,
+        "fail": 0,
+        "err": 0,
+        "skip": 0,
+        "expected": 1
+      }
+    },
+    {
+      "name": "P4 report TEST-ch.so.agi.gretl.lsp.HostSchedulingTest.xml",
+      "ok": true,
+      "detail": {
+        "tests": 2,
+        "fail": 0,
+        "err": 0,
+        "skip": 0,
+        "expected": 2
+      }
+    },
+    {
+      "name": "P4 report TEST-ch.so.agi.gretl.lsp.HostBoundaryTest.xml",
+      "ok": true,
+      "detail": {
+        "tests": 5,
+        "fail": 0,
+        "err": 0,
+        "skip": 0,
+        "expected": 5
+      }
+    },
+    {
+      "name": "supplied modelIdentityEvidence exists",
+      "ok": true,
+      "detail": "/Users/stefan/.cache/gretl-tooling-review/p2-resume-readiness/identity.json"
+    }
+  ],
+  "problems": [],
+  "p4-standard": {
+    "startedAt": "2026-11-03T18:41:32.157Z",
+    "endedAt": "2026-11-03T18:47:30.250Z",
+    "counts": {
+      "tests": 898,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "mappedCaptured": 632,
+    "reportFiles": 172
+  },
+  "p4-services": {
+    "startedAt": "2026-11-03T18:47:31.803Z",
+    "endedAt": "2026-11-03T18:57:15.881Z",
+    "counts": {
+      "tests": 954,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "mappedCaptured": 817,
+    "reportFiles": 186
+  },
+  "modelIdentity": {
+    "openCodeVersion": "2.2.5",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "apiHost": "api.deepseek.com",
+    "modelVersion": "DeepSeek-V4.1-Flash-1017",
+    "actualProvider": "deepseek",
+    "actualModel": "deepseek-flash",
+    "effectiveBaseUrl": "https://api.deepseek.com",
+    "checkedAt": "2026-11-03T13:16:05.719Z",
+    "mappingUrl": "https://api-docs.deepseek.com/quick_start/pricing/"
+  },
+  "gitStatus": "## HEAD (no branch)\n?? .opencode/\n?? opencode.json"
+}

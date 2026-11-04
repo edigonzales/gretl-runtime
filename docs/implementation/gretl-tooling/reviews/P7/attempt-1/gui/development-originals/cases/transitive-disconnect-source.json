@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "onlyDirectEdgeRemoved": true,
+  "resultReferencePreserved": true,
+  "rejectedLastChainRemovalLeftBufferClean": true,
+  "bufferCapture": "/Users/stefan/.cache/gretl-tooling-review/P7-editor-development/captures/buffers-1793786147773.json",
+  "source": "task('producer', HttpDownload) {\n    url = 'https://example.invalid/a.zip'\n    output = workPath('archive.zip')\n}\naction('bridge', dependsOn: 'producer') { println 'not executed' }\ntask('consumer', Extract, dependsOn: [ 'bridge']) {\n    archive = result('producer').file\n    compression = 'ZIP'\n    outputDirectory = workPath('out')\n}\ndefaults 'consumer'\n"
+}

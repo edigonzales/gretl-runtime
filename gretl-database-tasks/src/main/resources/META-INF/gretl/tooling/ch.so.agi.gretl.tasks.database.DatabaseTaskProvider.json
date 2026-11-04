@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "fields": [
+    {
+      "operationId": "gretl.sql-executor",
+      "field": "scripts",
+      "shape": {
+        "kind": "ListOf",
+        "runtimeType": "list",
+        "children": [
+          {
+            "kind": "Path",
+            "runtimeType": "path",
+            "children": []
+          }
+        ]
+      },
+      "pathRole": "JOB_RESOURCE",
+      "hints": {
+        "sqlMode": "complete-scripts"
+      }
+    },
+    {
+      "operationId": "gretl.duckdb-sql-executor",
+      "field": "sqlFiles",
+      "shape": {
+        "kind": "ListOf",
+        "runtimeType": "list",
+        "children": [
+          {
+            "kind": "Path",
+            "runtimeType": "path",
+            "children": []
+          }
+        ]
+      },
+      "pathRole": "JOB_RESOURCE",
+      "hints": {
+        "sqlMode": "duckdb-templates"
+      }
+    },
+    {
+      "operationId": "gretl.duckdb-sql-executor",
+      "field": "sqlParameters",
+      "shape": {
+        "kind": "MapOf",
+        "runtimeType": "map",
+        "children": [
+          {
+            "kind": "Text",
+            "runtimeType": "text",
+            "children": []
+          },
+          {
+            "kind": "Text",
+            "runtimeType": "text",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "operationId": "gretl.duckdb-sql-executor",
+      "field": "sqlParameterSets",
+      "shape": {
+        "kind": "ListOf",
+        "runtimeType": "list",
+        "children": [
+          {
+            "kind": "MapOf",
+            "runtimeType": "map",
+            "children": [
+              {
+                "kind": "Text",
+                "runtimeType": "text",
+                "children": []
+              },
+              {
+                "kind": "Text",
+                "runtimeType": "text",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

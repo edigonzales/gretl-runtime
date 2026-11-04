@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "name": "GRETL main",
+      "path": "project-main"
+    },
+    {
+      "name": "Other GRETL",
+      "path": "project-other"
+    }
+  ]
+}

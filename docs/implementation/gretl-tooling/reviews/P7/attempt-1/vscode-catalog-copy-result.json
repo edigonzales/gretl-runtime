@@ -1,0 +1,10 @@
+{
+  "source": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+  "target": "/Users/stefan/.cache/gretl-tooling-review/P7-review-1/product/vscode/gretl-vscode/server/operations.json",
+  "sourceSha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+  "targetSha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+  "identical": true,
+  "sourceSize": 266362,
+  "targetSize": 266362,
+  "generatedAt": "2026-11-04T10:45:06.116Z"
+}

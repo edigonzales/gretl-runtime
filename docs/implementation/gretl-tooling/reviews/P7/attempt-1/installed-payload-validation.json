@@ -1,0 +1,236 @@
+{
+  "generatedAt": "2026-11-04T10:57:20.251Z",
+  "candidateSha": "53f7f3daaf92d002fd75978c25471321fd99a310",
+  "profile": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/profile",
+  "extensions": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/extensions",
+  "installed": [
+    {
+      "dir": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0",
+      "found": {
+        "package.json": {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/package.json",
+          "size": 3910,
+          "sha256": "773ef1fb6582bf42ad6df459861250fb58d713335476d3a15d270ff669f653e0",
+          "mtime": "2026-11-04T10:34:55.838Z"
+        },
+        "dist/extension.cjs": {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs",
+          "size": 1037056,
+          "sha256": "d8ec44b3a2c763cca290bc24bb05909b4a564c0055d992b9d032b9ffe020b228",
+          "mtime": "2026-11-04T10:34:55.782Z"
+        },
+        "dist/modeler/view.js": {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/modeler/view.js",
+          "size": 469719,
+          "sha256": "e5559c178eb14bdeee388be2e8d68a6042cc5132848e05369d914ad71b4b922f",
+          "mtime": "2026-11-04T10:34:55.836Z"
+        },
+        "dist/modeler/view.css": {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/modeler/view.css",
+          "size": 24246,
+          "sha256": "a44a75d325d22412cad5319b2f69070ba1dfe454cc063a5be6005b18bdafe156",
+          "mtime": "2026-11-04T10:34:55.835Z"
+        },
+        "dist/modeler/elk-worker.min.js": {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/modeler/elk-worker.min.js",
+          "size": 1631868,
+          "sha256": "dca3a19d9ec37f5634bf5876b4ebd2455c3f43f0d32570136c13c13edaba9bfb",
+          "mtime": "2026-11-04T10:34:55.835Z"
+        },
+        "server/gretl-lsp.jar": {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/server/gretl-lsp.jar",
+          "size": 13272775,
+          "sha256": "f6acda578e81d806da9a016bdfdad00c67ee35a2640bfee21daa4845f63d0465",
+          "mtime": "2026-11-04T10:34:55.829Z"
+        },
+        "server/.gretl-server-sha256": {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/server/.gretl-server-sha256",
+          "error": "ENOENT"
+        }
+      },
+      "package": {
+        "name": "gretl-runtime-vscode",
+        "displayName": "GRETL Runtime",
+        "description": "Static language support for GRETL Runtime jobs. Requires Java 25.",
+        "version": "0.1.0",
+        "publisher": "edigonzales",
+        "license": "MIT",
+        "repository": {
+          "type": "git",
+          "url": "https://github.com/edigonzales/gretl-runtime"
+        },
+        "engines": {
+          "vscode": "^1.144.0"
+        },
+        "extensionKind": [
+          "workspace"
+        ],
+        "categories": [
+          "Programming Languages"
+        ],
+        "main": "./dist/extension.cjs",
+        "activationEvents": [
+          "onLanguage:gretl-runtime",
+          "onCustomEditor:gretlRuntime.modeler"
+        ],
+        "capabilities": {
+          "untrustedWorkspaces": {
+            "supported": "limited",
+            "description": "Syntax and templates are available; the Java language server requires workspace trust."
+          },
+          "virtualWorkspaces": false
+        },
+        "contributes": {
+          "languages": [
+            {
+              "id": "gretl-runtime",
+              "aliases": [
+                "GRETL Runtime"
+              ],
+              "filenames": [
+                "job.groovy",
+                "settings.gretl"
+              ],
+              "configuration": "./language-configuration.json"
+            }
+          ],
+          "commands": [
+            {
+              "command": "gretlRuntime.restartServer",
+              "title": "GRETL: Restart Language Server"
+            },
+            {
+              "command": "gretlRuntime.stopServer",
+              "title": "GRETL: Stop Language Server"
+            },
+            {
+              "command": "gretlRuntime.showOutput",
+              "title": "GRETL: Show Language Server Output"
+            },
+            {
+              "command": "gretlRuntime.newJob",
+              "title": "GRETL: New Job"
+            },
+            {
+              "command": "gretlRuntime.useActiveFile",
+              "title": "GRETL: Use Active File as Runtime Job"
+            },
+            {
+              "command": "gretlRuntime.openModeler",
+              "title": "GRETL: Open Modeler"
+            },
+            {
+              "command": "gretlRuntime.showSelectionInModeler",
+              "title": "GRETL: Show Selection in Modeler"
+            }
+          ],
+          "configuration": {
+            "title": "GRETL Runtime",
+            "properties": {
+              "gretlRuntime.javaPath": {
+                "type": "string",
+                "default": "java",
+                "scope": "machine",
+                "description": "Java 25 executable. No shell expansion or automatic download."
+              },
+              "gretlRuntime.serverJarPath": {
+                "type": "string",
+                "default": "",
+                "scope": "machine",
+                "description": "Optional location of an identical bundled server JAR. Its digest must match the bundle."
+              },
+              "gretlRuntime.language": {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "en",
+                  "de"
+                ],
+                "default": "auto",
+                "description": "Language of server diagnostics."
+              }
+            }
+          },
+          "grammars": [
+            {
+              "language": "gretl-runtime",
+              "scopeName": "source.groovy.gretl-runtime",
+              "path": "./syntaxes/groovy.tmLanguage.json"
+            }
+          ],
+          "customEditors": [
+            {
+              "viewType": "gretlRuntime.modeler",
+              "displayName": "GRETL Modeler",
+              "selector": [
+                {
+                  "filenamePattern": "*.groovy"
+                },
+                {
+                  "filenamePattern": "settings.gretl"
+                }
+              ],
+              "priority": "option"
+            }
+          ],
+          "menus": {
+            "editor/title": [
+              {
+                "command": "gretlRuntime.openModeler",
+                "when": "resourceLangId == gretl-runtime",
+                "group": "navigation"
+              }
+            ]
+          }
+        },
+        "scripts": {
+          "build": "node scripts/build.mjs",
+          "check": "tsc --noEmit",
+          "test": "node --test test/*.test.mjs",
+          "package": "npm run check && npm run build && vsce package --no-dependencies --out dist/gretl-runtime.vsix && node scripts/inventory.mjs && node --test test/package/*.test.mjs"
+        },
+        "dependencies": {
+          "@xyflow/react": "12.12.1",
+          "elkjs": "0.12.1",
+          "react": "19.3.1",
+          "react-dom": "19.3.1",
+          "vscode-languageclient": "11.0.0"
+        },
+        "devDependencies": {
+          "@types/node": "22.19.0",
+          "@types/react": "19.3.0",
+          "@types/react-dom": "19.3.0",
+          "@types/vscode": "1.144.0",
+          "@vscode/test-electron": "3.1.0",
+          "@vscode/vsce": "4.1.0",
+          "esbuild": "0.28.2",
+          "typescript": "5.9.3"
+        },
+        "overrides": {
+          "minimatch": "11.0.1"
+        },
+        "__metadata": {
+          "installedTimestamp": 1793788495836,
+          "targetPlatform": "undefined",
+          "size": 17098873
+        }
+      },
+      "checks": {
+        "server": true,
+        "extensionCjs": true,
+        "viewJs": true,
+        "viewCss": true,
+        "worker": true
+      },
+      "passed": true
+    }
+  ],
+  "expected": {
+    "server": "f6acda578e81d806da9a016bdfdad00c67ee35a2640bfee21daa4845f63d0465",
+    "extensionCjs": "d8ec44b3a2c763cca290bc24bb05909b4a564c0055d992b9d032b9ffe020b228",
+    "viewJs": "e5559c178eb14bdeee388be2e8d68a6042cc5132848e05369d914ad71b4b922f",
+    "viewCss": "a44a75d325d22412cad5319b2f69070ba1dfe454cc063a5be6005b18bdafe156",
+    "worker": "dca3a19d9ec37f5634bf5876b4ebd2455c3f43f0d32570136c13c13edaba9bfb"
+  },
+  "passed": true
+}

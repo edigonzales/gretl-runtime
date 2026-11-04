@@ -1,0 +1,15 @@
+{
+  "kind": "CLEAN_COMMITTED_FINAL_CANDIDATE",
+  "candidateSha": "53f7f3daaf92d002fd75978c25471321fd99a310",
+  "sourceDirty": false,
+  "preparedAt": "2026-11-04T10:34:55.888Z",
+  "vsix": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/final-package/dist/gretl-runtime.vsix",
+  "vsixSha256": "33998c625a87e8f9e32f9c3d8a82cee0b897666be11f2902fb13a4c7cd7af257",
+  "serverSha256": "f6acda578e81d806da9a016bdfdad00c67ee35a2640bfee21daa4845f63d0465",
+  "installedPayloadVerified": true,
+  "workspace": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space",
+  "profile": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/profile",
+  "job": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/generated job/job.groovy",
+  "jobSha256": "7a551b46f463b2c483c1936b18fbd7f4a5d9c530e481e1f2834842c9be3b7782",
+  "finalInstalledPayloadVerified": true
+}

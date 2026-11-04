@@ -1,0 +1,13 @@
+{
+  "id": "003",
+  "purpose": "G30 result binding draft: open the native Business binding form from the dirty current Modeler and observe its actual defaults before choosing ports.",
+  "actions": [
+    {
+      "kind": "click",
+      "label": "Bind result"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

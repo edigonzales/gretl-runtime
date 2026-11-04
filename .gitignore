@@ -17,3 +17,6 @@ __pycache__/
 
 # Private matrix proof sets, retained across Maven clean
 /.gretl-verification/
+
+# Tooling orchestration dependencies; installed from its pinned lockfile
+/tools/gretl-tooling/node_modules/
