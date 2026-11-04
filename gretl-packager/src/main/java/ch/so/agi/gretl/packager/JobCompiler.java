@@ -23,6 +23,14 @@ public final class JobCompiler {
     }
 
     public CompiledJob compile(PackageDescriptor descriptor, List<Path> classpath) throws PackageException {
+        try {
+            var snapshot=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.single(descriptor.entryPath(),ch.so.agi.gretl.i18n.Messages.sourceLocale());
+            if(snapshot!=null){
+                var compiled=BundleCompiler.compile(snapshot,descriptor,classpath);
+                String entry=compiled.bundle().sources().stream().filter(e->e.sourceId().equals(snapshot.bundle().entries().getFirst().sourceId())).findFirst().orElseThrow().className();
+                return new CompiledJob(entry,compiled.classes(),compiled.sources(),compiled.bundle().sha256(),compiled.bundle());
+            }
+        }catch(IOException failure){throw new PackageException("PACKAGE_SOURCE_READ",failure.getMessage(),failure);}
         List<SourceFile> sources = sourceFiles(descriptor);
         if (sources.isEmpty()) {
             throw new PackageException("PACKAGE_NO_SOURCES", PackagerMessages.get("package.noSources"));
@@ -44,6 +52,9 @@ public final class JobCompiler {
     }
 
     static Compilation compileSources(List<SourceFile> sources, Map<Path, String> virtualNames, List<Path> classpath) throws PackageException {
+        return compileSources(sources,virtualNames,classpath,java.util.Set.of());
+    }
+    static Compilation compileSources(List<SourceFile> sources,Map<Path,String> virtualNames,List<Path> classpath,java.util.Set<String> allowedScripts) throws PackageException {
         java.net.URL[] urls = classpath.stream().map(path -> {
             try { return path.toUri().toURL(); }
             catch (java.net.MalformedURLException exception) { throw new IllegalArgumentException(exception); }
@@ -67,6 +78,8 @@ public final class JobCompiler {
                     if (virtual == null) unitType.getMethod("addSource", java.io.File.class).invoke(unit, source.path().toFile());
                     else unitType.getMethod("addSource", String.class, String.class).invoke(unit, virtual, source.text());
                 }
+                if(!allowedScripts.isEmpty())selected.loadClass("ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleCompilation")
+                        .getMethod("prepare",unitType,java.util.Set.class).invoke(null,unit,allowedScripts);
                 try {
                     unitType.getMethod("compile", int.class).invoke(unit, Phases.CLASS_GENERATION);
                 } catch (java.lang.reflect.InvocationTargetException exception) {
@@ -108,7 +121,10 @@ public final class JobCompiler {
     }
 
     List<SourceFile> sourceFiles(PackageDescriptor descriptor, List<Path> entries) throws PackageException {
-        Map<Path, SourceFile> result = new LinkedHashMap<>();
+        return sourceFiles(descriptor,entries,Map.of());
+    }
+    List<SourceFile> sourceFiles(PackageDescriptor descriptor,List<Path> entries,Map<Path,SourceFile> captured)throws PackageException {
+        Map<Path, SourceFile> result = new LinkedHashMap<>(captured);
         for (Path entry : entries) addSource(descriptor, entry, result);
         for (Path sourcePath : descriptor.sourcePaths()) {
             if (Files.isDirectory(sourcePath)) {
@@ -165,7 +181,11 @@ public final class JobCompiler {
 
     public record CompiledJob(
             String entryClass, Map<String, byte[]> classes,
-            List<SourceFile> sources, String scriptSha256) {
+            List<SourceFile> sources, String scriptSha256,
+            ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle bundle) {
+        public CompiledJob(String entryClass,Map<String,byte[]> classes,List<SourceFile> sources,String scriptSha256){
+            this(entryClass,classes,sources,scriptSha256,null);
+        }
         public CompiledJob {
             classes = Map.copyOf(classes);
             sources = List.copyOf(sources);

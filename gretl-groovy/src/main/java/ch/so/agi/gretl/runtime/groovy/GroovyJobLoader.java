@@ -268,7 +268,27 @@ public final class GroovyJobLoader {
             }
         }catch(ClassNotFoundException failure){throw new GroovyDslException("JOB_LOAD_FAILED",failure.getMessage(),failure);}
         if(scripts.size()!=names.size())throw new GroovyDslException("INVALID_SCRIPT_BASE",Messages.get(environment.locale(),"error.groovy.invalidScriptBase"));
-        return new FragmentLoadSession(bundle,snapshot.root(),environment,scripts).load(defaults,defaultSources);
+        var metadata=ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle.from(bundle,
+                scripts.entrySet().stream().collect(java.util.stream.Collectors.toMap(Map.Entry::getKey,e->e.getValue().getName())));
+        return new FragmentLoadSession(metadata,snapshot.root(),environment,scripts).load(defaults,defaultSources);
+    }
+
+    /** Bytecode-only path: validated metadata and classes, without source reads or compilation. */
+    public JobDefinition loadCompiledBundle(ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle bundle,
+            List<String> defaults,DefinitionEnvironment environment,ClassLoader loader) {
+        Map<String,Class<? extends GretlScript>> scripts=new LinkedHashMap<>();
+        try {
+            // Validate every class before invoking any constructor or static initializer.
+            for(var source:bundle.sources()) {
+                Class<?> type=Class.forName(source.className(),false,loader);
+                if(!GretlScript.class.isAssignableFrom(type))throw new GroovyDslException("INVALID_SCRIPT_BASE",Messages.get(environment.locale(),"error.groovy.invalidScriptBase"));
+                if(java.lang.reflect.Modifier.isAbstract(type.getModifiers())||!java.lang.reflect.Modifier.isPublic(type.getModifiers()))
+                    throw new GroovyDslException("INVALID_SCRIPT_BASE",Messages.get(environment.locale(),"error.groovy.invalidScriptBase"));
+                try{type.getConstructor(Binding.class);}catch(NoSuchMethodException missing){type.getConstructor();}
+                scripts.put(source.sourceId(),type.asSubclass(GretlScript.class));
+            }
+        }catch(ReflectiveOperationException failure){throw new GroovyDslException("JOB_LOAD_FAILED",failure.getMessage(),failure);}
+        return new FragmentLoadSession(bundle,environment.jobRoot(),environment,scripts).load(defaults,Map.of());
     }
 
     void registerScript(Script script, JobDslModel model) {

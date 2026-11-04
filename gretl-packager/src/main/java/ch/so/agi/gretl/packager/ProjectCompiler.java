@@ -15,6 +15,16 @@ import java.util.Map;
 public final class ProjectCompiler {
     public CompiledProject compile(GretlProject project, PackageDescriptor descriptor, List<Path> classpath) throws PackageException {
         if (!descriptor.projectPackage()) throw new PackageException("PACKAGE_DESCRIPTOR_SCHEMA", PackagerMessages.get("package.project.compilerSchema"));
+        try {
+            var snapshot=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.project(project,ch.so.agi.gretl.i18n.Messages.sourceLocale());
+            if(snapshot!=null){
+                var compiled=BundleCompiler.compile(snapshot,descriptor,classpath);
+                var entries=compiled.bundle().entries().stream().map(e->new CompiledProject.Entry(
+                        ch.so.agi.gretl.runtime.groovy.project.ProjectPath.parseQualified(e.scopeId()),e.sourceId(),compiled.bundle().virtualName(e.sourceId()),
+                        compiled.bundle().sources().stream().filter(s->s.sourceId().equals(e.sourceId())).findFirst().orElseThrow().className())).toList();
+                return new CompiledProject(entries,compiled.classes(),compiled.sources(),project.defaultTargets(),compiled.bundle().sha256(),compiled.bundle());
+            }
+        }catch(IOException failure){throw new PackageException("PACKAGE_SOURCE_READ",failure.getMessage(),failure);}
         Map<Path, String> names = new LinkedHashMap<>();
         Map<String, CompiledProject.Entry> expected = new LinkedHashMap<>();
         for (var entry : project.entries()) {

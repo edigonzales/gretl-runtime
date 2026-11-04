@@ -142,4 +142,16 @@ class FragmentLoaderTest {
         assertEquals("UNDECLARED_RESULT_DEPENDENCY",outcome.task("consume").orElseThrow().failure().orElseThrow().diagnostic().orElseThrow().code());
     }
 
+    @Test void crossProjectReferencesFromFragmentsKeepDependencyRights()throws Exception{
+        for(String link:List.of("dependsOn","after")){
+            var h=new GroovyHarness(Files.createTempDirectory(temp,"cross-"));
+            write(h,"settings.gretl","include 'a','b'\ndefaults ':a:produce',':b:consume'");
+            write(h,"a/job.groovy","apply from:'tasks.groovy'");write(h,"a/tasks.groovy","action('produce'){'cross-value'}");
+            write(h,"b/job.groovy","apply from:'tasks.groovy'");write(h,"b/tasks.groovy","action('consume',"+link+":':a:produce'){result(':a:produce')}");
+            var outcome=h.run(new GroovyJobLoader().loadProject(new GretlProjectParser().parse(h.jobDir),h.environment),Map.of());
+            if(link.equals("dependsOn")){assertEquals(RunStatus.SUCCEEDED,outcome.status());assertEquals("cross-value",value(outcome,":b:consume"));}
+            else{assertEquals(RunStatus.FAILED,outcome.status());assertEquals("UNDECLARED_RESULT_DEPENDENCY",outcome.task(":b:consume").orElseThrow().failure().orElseThrow().diagnostic().orElseThrow().code());}
+        }
+    }
+
 }

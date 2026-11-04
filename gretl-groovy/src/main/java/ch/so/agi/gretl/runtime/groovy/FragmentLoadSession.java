@@ -1,7 +1,7 @@
 package ch.so.agi.gretl.runtime.groovy;
 
 import ch.so.agi.gretl.i18n.Messages;
-import ch.so.agi.gretl.runtime.groovy.fragment.FragmentGraphResolver;
+import ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle;
 import ch.so.agi.gretl.runtime.groovy.project.ProjectPath;
 import ch.so.agi.gretl.runtime.groovy.project.ProjectTaskIndex;
 import ch.so.agi.gretl.runtime.runner.*;
@@ -12,7 +12,7 @@ import java.util.*;
 /** A single definition registration, with shared GRETL state and separate script instances/bindings. */
 final class FragmentLoadSession {
     private record Context(String scope,String source,boolean fragment) { }
-    private final FragmentGraphResolver.Bundle bundle;
+    private final CompiledScriptBundle bundle;
     private final Path root;
     private final DefinitionEnvironment environment;
     private final Map<String,Class<? extends GretlScript>> classes;
@@ -24,7 +24,7 @@ final class FragmentLoadSession {
     private final Map<String,Path> sourceFiles;
     private boolean registering=true;
 
-    FragmentLoadSession(FragmentGraphResolver.Bundle bundle,Path root,DefinitionEnvironment environment,
+    FragmentLoadSession(CompiledScriptBundle bundle,Path root,DefinitionEnvironment environment,
                         Map<String,Class<? extends GretlScript>> classes){
         this.bundle=bundle;this.root=root;this.environment=environment;this.classes=Map.copyOf(classes);
         builder=new JobDefinitionBuilder(environment.jobRoot(),environment.locale());index=new ProjectTaskIndex(environment.locale());

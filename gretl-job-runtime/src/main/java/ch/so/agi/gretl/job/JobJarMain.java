@@ -68,7 +68,9 @@ public final class JobJarMain {
         }
         // Registration needs a logical root; the runner prepares packaged resources.
         Path definitionRoot = Path.of("").toAbsolutePath().normalize();
-        JobSource source = metadata.schemaVersion() == 2
+        JobSource source = metadata.bundle()!=null
+                ? new PackagedBundleJobSource(metadata,definitionRoot,JobJarMain.class.getClassLoader(),locale)
+                : metadata.schemaVersion() == 2
                 ? new PackagedProjectJobSource(metadata, definitionRoot, JobJarMain.class.getClassLoader(), locale)
                 : new PackagedJobSource(metadata, definitionRoot, JobJarMain.class.getClassLoader(), locale);
         JobRuntime runtime = new JobRuntime(System.out, System.err, System.getenv(),
@@ -96,7 +98,7 @@ public final class JobJarMain {
             Path root = Files.createDirectory(runRoot.resolve("job-resources"), permissions);
             for (String file : metadata.resourceFiles()) {
                 String normalized;
-                if (metadata.schemaVersion() == 2) {
+                if (metadata.schemaVersion() >= 2) {
                     try { JobMetadata.projectRelative(file, locale); }
                     catch (IllegalArgumentException failure) { throw new JobJarException("JOB_RESOURCE_PATH", failure.getMessage(), failure); }
                     normalized = file;
@@ -142,7 +144,13 @@ public final class JobJarMain {
             int javaFeatureVersion, String entryClass, String entryScript,
             String resourceRoot, List<String> resourceFiles,
             List<String> sourceFiles, String scriptSha256,
-            List<CompiledProjectScript> projectEntries, List<String> defaultTargets) {
+            List<CompiledProjectScript> projectEntries, List<String> defaultTargets,
+            ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle bundle) {
+        public JobMetadata(int schemaVersion,String name,String version,String runtimeVersion,int javaFeatureVersion,
+                String entryClass,String entryScript,String resourceRoot,List<String> resourceFiles,List<String> sourceFiles,String hash,
+                List<CompiledProjectScript> entries,List<String> defaults){
+            this(schemaVersion,name,version,runtimeVersion,javaFeatureVersion,entryClass,entryScript,resourceRoot,resourceFiles,sourceFiles,hash,entries,defaults,null);
+        }
 
         public JobMetadata(int schemaVersion, String name, String version, String runtimeVersion,
                            int javaFeatureVersion, String entryClass, String entryScript, String resourceRoot,
@@ -173,6 +181,7 @@ public final class JobJarMain {
                 Map<String, Object> value = new java.util.LinkedHashMap<>();
                 raw.forEach((key, item) -> value.put(String.valueOf(key), item));
                 int schema = integer(value, "schemaVersion", locale);
+                if (schema == 3) return bundleMetadata(value,locale);
                 if (schema == 2) return projectMetadata(value, locale);
                 if (schema != 1) {
                     throw new JobJarException("JOB_METADATA_VERSION",
@@ -192,6 +201,26 @@ public final class JobJarMain {
                 throw new JobJarException("JOB_METADATA_READ",
                         Messages.get(locale, "job.error.metadataRead"), exception);
             }
+        }
+
+        private static JobMetadata bundleMetadata(Map<String,Object> value,Locale locale)throws JobJarException {
+            var fields=java.util.Set.of("schemaVersion","name","version","runtimeVersion","javaFeatureVersion","definitionMode","bundle","defaultTargets","resourceRoot","resourceFiles","sourceFiles","dependencyInventory","packagerVersion");
+            if(!value.keySet().equals(fields)||!(value.get("schemaVersion") instanceof Number n)||n.doubleValue()!=3
+                    ||!(value.get("javaFeatureVersion") instanceof Number j)||j.doubleValue()!=25
+                    ||!RESOURCE_ROOT.equals(text(value,"resourceRoot",locale))
+                    ||!"META-INF/gretl/dependencies.json".equals(text(value,"dependencyInventory",locale)))
+                throw new IllegalArgumentException("Invalid bundle job fields");
+            String mode=text(value,"definitionMode",locale);if(!mode.equals("single")&&!mode.equals("project"))throw new IllegalArgumentException("Invalid definition mode");
+            var bundle=ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle.parse(value.get("bundle"),mode.equals("project"));
+            List<String> resources=uniqueStrings(value,"resourceFiles",locale),sources=uniqueStrings(value,"sourceFiles",locale),defaults=uniqueStrings(value,"defaultTargets",locale);
+            resources.forEach(path->projectRelative(path,locale));sources.forEach(path->projectRelative(path,locale));
+            if(!sources.containsAll(bundle.sources().stream().map(ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle.Source::sourceId).toList())
+                    ||(bundle.projectMode()&&!sources.contains(bundle.settingsId()))||(!bundle.projectMode()&&!defaults.isEmpty()))
+                throw new IllegalArgumentException("Invalid bundle source/default inventory");
+            for(String target:defaults)if(ProjectPath.parseQualified(target).isRoot())throw new IllegalArgumentException("Invalid bundle default target");
+            text(value,"packagerVersion",locale);
+            return new JobMetadata(3,text(value,"name",locale),text(value,"version",locale),text(value,"runtimeVersion",locale),25,null,
+                    bundle.projectMode()?bundle.settingsId():bundle.entries().getFirst().sourceId(),RESOURCE_ROOT,resources,sources,bundle.sha256(),List.of(),defaults,bundle);
         }
 
         private static JobMetadata projectMetadata(Map<String, Object> value, Locale locale) throws JobJarException {
@@ -344,6 +373,15 @@ public final class JobJarMain {
                     registry, jobRoot, startCwd, sink, locale);
             return new GroovyJobLoader().loadCompiled(metadata.entryClass(),
                     displayFile(), environment, classLoader);
+        }
+    }
+
+    static final class PackagedBundleJobSource extends PackagedJobSource {
+        PackagedBundleJobSource(JobMetadata metadata,Path root,ClassLoader loader,Locale locale){super(metadata,root,loader,locale);}
+        @Override public boolean projectMode(){return metadata.bundle().projectMode();}
+        @Override public JobDefinition load(OperationRegistry registry,Path startCwd,UserMessageSink sink){
+            return new GroovyJobLoader().loadCompiledBundle(metadata.bundle(),metadata.defaultTargets(),
+                    new DefinitionEnvironment(registry,jobRoot,startCwd,sink,locale),classLoader);
         }
     }
 

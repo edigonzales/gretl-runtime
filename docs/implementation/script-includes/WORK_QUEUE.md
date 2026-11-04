@@ -12,8 +12,8 @@
 | --- | --- | --- |
 | P0 | REVIEWED_ACCEPTED | `e9098ec093cd0ed89065aee57aed461a5daf3c47`; unabhängiger Review und maschinelle Validierung PASS. |
 | P1 | REVIEWED_ACCEPTED | `00315884b00071989c2c8623fc5f0a5a7e7db39d`; Versuch 8 und externe Validierung PASS. |
-| P2 | REVIEW_PENDING | SCRIPT-Loader, gemeinsame Definition und CLI-Prozesse getestet; unabhängiges Review folgt. |
-| P3 | PLANNED | Kompilation, Metadaten, quellenfreie JAR-Prozesse. |
+| P2 | REVIEWED_ACCEPTED | `ecfc4a7232b3c717fd172a472dc9b00fc77a6267`; unabhängiger Review und externe Validierung PASS. |
+| P3 | REVIEW_PENDING | Bundlekompilation, interne Metadaten 3/Bundle 1 und echte JAR-Prozesse getestet; unabhängiges Review folgt. |
 | P4 | PLANNED | C01–C08, installierte GUI, Dokumentation, kumulative Abnahme. |
 
 P0-Phasebase ist der Main-Ausgangspunkt. Kandidaten-/Review-SHA werden nach Commit im externen Handoff festgehalten, kein selbstreferenzieller SHA.
@@ -64,3 +64,13 @@ P2-Phasebase ist dieser P1-SHA. Captured Sourcebytes werden gemeinsam vor der Re
 Gezielte Tests: 158 Fälle im Groovy-/Jobruntime-Reactor, zusätzlich acht CLI-Fälle. Der neue CLI-Test startet vier reale Java-Prozesse aus fremdem CWD: check, plan, run --help und run. Er prüft Top-Level-Marker, ausbleibende Konfigurations-/Action-/Cleanupwirkung bei Definitionskommandos und nach run den exakt dekomprimierten Gzipinhalt. Keine Dienst-/Vollmatrix ausgeführt. Fehlerquellenproben umfassen Compile, Registrierung, Konfiguration, Bedingung, Action und Cleanup. Eine rote Klassendecoyprobe und rote Quellenproben führten zu Korrekturen; Resultrechte bleiben dependsOn-gebunden.
 
 Logs: `/Users/stefan/.cache/gretl-script-includes/evidence/P2-tests.log` und `P2-cli.log`; Reviewrequest nennt die reproduzierbaren Befehle. P2 ist noch nicht unabhängig abgenommen, P3/P4 bleiben offen. Keine Veröffentlichung.
+
+## P2-Abschluss und P3-Kandidat
+
+P2 ist am SHA `ecfc4a7232b3c717fd172a472dc9b00fc77a6267` unabhängig akzeptiert: Session `ses_e57f8837fffe5Lce0RuVcBwTP6`, 166 eigene JUnit-Fälle und 31 eigene Gegenprobenassertionen, null Fehler/Skips. Originale und maschinelles PASS: `/Users/stefan/.cache/gretl-script-includes/review/P2-attempt-1/evidence/`. Beide MINOR-Hinweise werden in P3 aufgenommen: ProjectScopeTest plus persistente qualifizierte Fragmentresultatprobe (dependsOn erlaubt / after verweigert); P2-Rohlogs zusätzlich im P2-Unterverzeichnis, alte P0-XML ausdrücklich historisch abgelegt. Die früheren P2-Zukunftsaussagen oben beziehen sich auf den damaligen Stand.
+
+P3-Phasebase ist dieser P2-SHA. Interne Jobmetadaten 3 enthalten single/project und ein quellenfreies Bundle 1. Rollen, Klassen, Pfade, virtuelle Namen, Einstieg-/Scopezuordnung, Kanten und Sites werden vor Scriptinstanziierung validiert; alle Klassen werden vor der ersten Konstruktor-/Initializerausführung geprüft. Registrierungssemantik bleibt derselbe gemeinsame Sessionweg wie SCRIPT. Keine Parser-/Compileraufrufe im vorkompilierten Startpfad. Alte interne Jobformate 1/2 und Benutzerschemata 1/2/3 bleiben erhalten; Dependencyinventar und LSP unverändert.
+
+Notwendige kumulative Auswahl: 199 Fälle in 24 Suites, null Fehler/Skips, Befehl im [P3-Request](reviews/P3-request.md). Vier JAR-Testfälle starten Includes unter Einzeljob-Deskriptorschema 1/2 und Projektschema 3 sowie alte interne Einzel-/Projektformate. Jeder Quellbaum wird vor java -jar gelöscht; fremdes leeres CWD, Marker, exakter dekomprimierter Gzipinhalt, geteilte Scopes/Ressourcen/Cleanup, qualifizierte Resultate, echte Fragmentfehlerposition und entfernte Fragmentklasse werden geprüft. Jeder JAR-Prozess läuft unter einem positiv kontrollierten Javaagenten, der Sourcecompilerkonstruktion und -aufrufe scheitern lässt. Blosses Laden von Compilerklassensymbolen durch Groovy 6 FormatHelper ist separat diagnostisch erklärt, nicht als Kompilation gewertet.
+
+Logs: `/Users/stefan/.cache/gretl-script-includes/evidence/P3-final.log`, zusätzliche fokussierte Metadaten-/Fragmentregression `P3-metadata-final.log`. XMLs vor einem weiteren clean extern gesichert. P3 benötigt die frische unabhängige Abnahme des Kandidaten; P4 bleibt offen. IMAGE-Produktcode ist unverändert, keine neue IMAGE-/Releasequalifikation behauptet.
