@@ -58,14 +58,16 @@ public final class EditabilityAnalyzer {
                 if (!entries.isEmpty() && !structured(entries.getFirst().value())) return rejected(snapshot, dependencies, "EDIT_UNSAFE_REGION", symbol.anchor());
             }
         }
-        boolean closedReferences = intent instanceof SemanticEditIntent.RenameSymbol || intent instanceof SemanticEditIntent.DeleteTask
-                || intent instanceof SemanticEditIntent.AddDependency || intent instanceof SemanticEditIntent.RemoveDependency
-                || intent instanceof SemanticEditIntent.BindResult;
+        // Generic setters and form batches must obey the same coverage rule as graph intents.
+        boolean graphChange = intent instanceof SemanticEditIntent.AddDependency || intent instanceof SemanticEditIntent.RemoveDependency
+                || intent instanceof SemanticEditIntent.BindResult || intent instanceof SemanticEditIntent.SetDefaults
+                || intent instanceof SemanticEditIntent.SetTaskOption option && List.of("dependsOn","after").contains(option.option())
+                || intent instanceof SemanticEditIntent.SetField field && references(field.value(),0);
+        boolean closedReferences = graphChange || intent instanceof SemanticEditIntent.RenameSymbol || intent instanceof SemanticEditIntent.DeleteTask;
         if (closedReferences && (!analysis.capabilities().declarationsComplete() || !analysis.capabilities().referencesComplete())) {
             return rejected(snapshot, dependencies, "EDIT_REFERENCE_COVERAGE", null);
         }
-        if ((intent instanceof SemanticEditIntent.AddDependency || intent instanceof SemanticEditIntent.RemoveDependency
-                || intent instanceof SemanticEditIntent.BindResult) && !analysis.capabilities().graphComplete()) {
+        if (graphChange && !analysis.capabilities().graphComplete()) {
             return rejected(snapshot, dependencies, "EDIT_REFERENCE_COVERAGE", null);
         }
         if (intent instanceof SemanticEditIntent.RenameSymbol rename) {
@@ -97,6 +99,18 @@ public final class EditabilityAnalyzer {
         }
         return new EditCapability(open.isEmpty() ? EditCapability.State.ALLOWED : EditCapability.State.NEEDS_OPEN_DOCUMENTS,
                 open.isEmpty() ? List.of() : List.of(reason(snapshot, "EDIT_OPEN_DOCUMENTS", null)), dependencies, open);
+    }
+
+    private boolean references(EditableValue value,int depth) {
+        // Beyond the existing value-depth contract, safety cannot be established either.
+        if(depth>16)return true;
+        return switch(value) {
+            case EditableValue.ResultFieldRef ignored -> true;
+            case EditableValue.ParameterRef ignored -> true;
+            case EditableValue.Sequence sequence -> sequence.items().stream().anyMatch(item->references(item,depth+1));
+            case EditableValue.Mapping mapping -> mapping.entries().values().stream().anyMatch(item->references(item,depth+1));
+            default -> false;
+        };
     }
 
     private SymbolId target(SemanticEditIntent intent) {

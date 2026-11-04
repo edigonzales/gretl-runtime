@@ -1,0 +1,2 @@
+GRETL Scriptfragmente: lokaler UTF-8-Inhalt mit ä, ö und ü.
+Die Prüfung vergleicht jedes Byte nach der Gzip-Dekompression.

@@ -86,10 +86,15 @@ class FragmentJarProcessTest {
     }
     private String process(Path jar,Path cwd,List<String> args)throws Exception{return process(jar,cwd,args,0);}
     private String process(Path jar,Path cwd,List<String> args,int expected)throws Exception{
-        Path agent=compilerGuard();
-        var command=new ArrayList<>(List.of(Path.of(System.getProperty("java.home"),"bin/java").toString(),"-javaagent:"+agent,"-jar",jar.toString()));command.addAll(args);
+        Path agent=compilerGuard();Path processTmp=Files.createDirectory(temp.resolve("process-tmp-"+UUID.randomUUID()));
+        var command=new ArrayList<>(List.of(Path.of(System.getProperty("java.home"),"bin/java").toString(),"-Djava.io.tmpdir="+processTmp,"-javaagent:"+agent,"-jar",jar.toString()));command.addAll(args);
         Path log=temp.resolve("jar-"+UUID.randomUUID()+".log");Process p=new ProcessBuilder(command).directory(cwd.toFile()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         boolean done=p.waitFor(45,TimeUnit.SECONDS);if(!done)p.destroyForcibly();assertTrue(done,"JAR timeout");String output=Files.readString(log);assertEquals(expected,p.exitValue(),command+"\n"+output);
-        assertTrue(output.contains("COMPILER_GUARD_INSTALLED"),output);assertFalse(output.contains("SOURCE_COMPILER_USED"),output);return output;
+        assertTrue(output.contains("COMPILER_GUARD_INSTALLED"),output);assertFalse(output.contains("SOURCE_COMPILER_USED"),output);
+        if(args.contains("--help")||args.contains("--plan")){
+            try(var files=Files.walk(processTmp)){assertFalse(files.anyMatch(path->path.getFileName().toString().startsWith("gretl-work")||path.getFileName().toString().equals("job-resources")),"Introspection must not materialize resources");}
+            assertFalse(Files.exists(cwd.resolve("gretl-work")));
+        }
+        return output;
     }
 }

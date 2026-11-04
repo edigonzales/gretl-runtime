@@ -140,7 +140,7 @@ die älteren SCRIPT-Regressionen bleiben Skriptprüfungen. Details und Rechte-
 
 ## Projektpakete
 
-GRETL-Projekte verwenden ausdrücklich Deskriptorschema 3 mit `settingsFile: "settings.gretl"` statt `entryScript`. Die bestehende Auswahl- und Kollisionslogik bleibt gemeinsam. Der [Subprojektvertrag](project-subprojects/README.md) und das [lokale Beispiel](../../examples/project-pipeline/README.md) zeigen Aufruf, Ressourcen, Parameter und den isolierten JAR-Start. Interne Projekt-Jobmetadaten haben Schema 2; dies nummeriert das Dependencyinventar nicht neu.
+GRETL-Projekte verwenden ausdrücklich Deskriptorschema 3 mit `settingsFile: "settings.gretl"` statt `entryScript`. Die bestehende Auswahl- und Kollisionslogik bleibt gemeinsam. Der [Subprojektvertrag](project-subprojects/README.md) und das [lokale Beispiel](../../examples/project-pipeline/README.md) zeigen Aufruf, Ressourcen, Parameter und den isolierten JAR-Start. Interne Projekt-Jobmetadaten ohne Scriptfragmente haben Schema 2; dies nummeriert das Dependencyinventar nicht neu.
 
 ## Validatorfunktionen
 
@@ -192,3 +192,11 @@ Pfad: `additionalModels` und `allObjectsAccessible` stehen im vorhandenen
 IOX-Abschnitt `PARAMETER`. Das ersetzt die frühere Meta-Konfigurationsindirektion
 und erweitert die IliValidator-DSL nicht. Lokale versionierte Modelle und
 INTERLIS-Objektkennungen im geschützten Bericht erhalten das fachliche Orakel.
+
+
+Include-verwendende Einzel-/Projektjobs verwenden intern Jobmetadatenschema 3
+mit `definitionMode` und Bundleversion 1. Die Deskriptorschemata bleiben dabei
+1/2/3; `sources` bleibt für Helperquellen und `resources` für ausdrücklich
+gewählte Daten. Alte interne Einzel-/Projektmetadaten 1/2 bleiben lesbar.
+[Scriptfragmente](script-includes/README.md) erklären den gemeinsamen
+Source-Snapshot, Bytecodestart und die aktuell partielle IDE-Sicht.

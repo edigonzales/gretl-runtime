@@ -13,8 +13,8 @@
 | P0 | REVIEWED_ACCEPTED | `e9098ec093cd0ed89065aee57aed461a5daf3c47`; unabhängiger Review und maschinelle Validierung PASS. |
 | P1 | REVIEWED_ACCEPTED | `00315884b00071989c2c8623fc5f0a5a7e7db39d`; Versuch 8 und externe Validierung PASS. |
 | P2 | REVIEWED_ACCEPTED | `ecfc4a7232b3c717fd172a472dc9b00fc77a6267`; unabhängiger Review und externe Validierung PASS. |
-| P3 | REVIEW_PENDING | Bundlekompilation, interne Metadaten 3/Bundle 1 und echte JAR-Prozesse getestet; unabhängiges Review folgt. |
-| P4 | PLANNED | C01–C08, installierte GUI, Dokumentation, kumulative Abnahme. |
+| P3 | REVIEWED_ACCEPTED | `9e3ea537fa212c91bd4cbbdebf55463105482a9e`; unabhängiger Review und externe Validierung PASS. |
+| P4 | REVIEW_PENDING | Core/Wire und Anleitung implementiert; abschliessende Artefakt-, Beispiel-, GUI- und Reviewbelege entstehen nach Kandidatencommit extern. |
 
 P0-Phasebase ist der Main-Ausgangspunkt. Kandidaten-/Review-SHA werden nach Commit im externen Handoff festgehalten, kein selbstreferenzieller SHA.
 
@@ -74,3 +74,36 @@ P3-Phasebase ist dieser P2-SHA. Interne Jobmetadaten 3 enthalten single/project 
 Notwendige kumulative Auswahl: 199 Fälle in 24 Suites, null Fehler/Skips, Befehl im [P3-Request](reviews/P3-request.md). Vier JAR-Testfälle starten Includes unter Einzeljob-Deskriptorschema 1/2 und Projektschema 3 sowie alte interne Einzel-/Projektformate. Jeder Quellbaum wird vor java -jar gelöscht; fremdes leeres CWD, Marker, exakter dekomprimierter Gzipinhalt, geteilte Scopes/Ressourcen/Cleanup, qualifizierte Resultate, echte Fragmentfehlerposition und entfernte Fragmentklasse werden geprüft. Jeder JAR-Prozess läuft unter einem positiv kontrollierten Javaagenten, der Sourcecompilerkonstruktion und -aufrufe scheitern lässt. Blosses Laden von Compilerklassensymbolen durch Groovy 6 FormatHelper ist separat diagnostisch erklärt, nicht als Kompilation gewertet.
 
 Logs: `/Users/stefan/.cache/gretl-script-includes/evidence/P3-final.log`, zusätzliche fokussierte Metadaten-/Fragmentregression `P3-metadata-final.log`. XMLs vor einem weiteren clean extern gesichert. P3 benötigt die frische unabhängige Abnahme des Kandidaten; P4 bleibt offen. IMAGE-Produktcode ist unverändert, keine neue IMAGE-/Releasequalifikation behauptet.
+
+## P3-Abschluss und P4-Kandidat
+
+P3 ist am SHA `9e3ea537fa212c91bd4cbbdebf55463105482a9e` unabhängig akzeptiert: Session `ses_e57e06f24ffe1WWNIDuloesvGu`, 199 eigene Tests und 87 eigene Gegenprobenchecks, null Fehler/Skips. Originale und maschinelles PASS unter `/Users/stefan/.cache/gretl-script-includes/review/P3-attempt-1/evidence/`. MINOR zur direkten Prüfung ausbleibender Ressourcenmaterialisierung ist in FragmentJarProcessTest ergänzt: dediziertes java.io.tmpdir, keine gretl-work-/job-resources-Verzeichnisse bei --help/--plan.
+
+P4-Phasebase bleibt dieser P3-SHA; die finale Abnahme ist kumulativ seit der Featurebasis. Neue Red/Green-Tests reproduzierten unsichere generische Optionssetter und Resultfeldsetter sowie Formularbatches bei apply-PARTIAL. Minimaler Fix im vorhandenen EditabilityAnalyzer, keine Includeauflösung oder Frontendneuentwicklung. 36 gezielte Coretests grün; reeller frisch gebauter stdio-Prozess mit graph/planEdit/validateEdit grün, zehn Ablehnungswege und ein lokaler boolescher Edit, Staleplan nach Include-Literaländerung. Produktionsgrenzen über vorhandene Dependency-/Archivprüfung unverändert geprüft. Quellen und fremder Toolingworktree bleiben unangetastet.
+
+Neue Anleitung und synthetisches Beispiel unter examples/script-includes, passende Distributionskopie (README an Distributionspfade angepasst). Früher echter CLI-Beispiellauf prüft bytegenaue Ausgabe und einmaligen Cleanup. Endgültiger Dist-/JAR-Beispiellauf und installierter VSIX-GUI-Ablauf sind an diesem Dokumentstand noch nicht als ausgeführt behauptet: Sie folgen am sauberen Kandidatencommit und werden SHA-/Digest-gebunden ausserhalb des Branches gesichert. Der finale Reviewrequest verlangt diese Belege zwingend; ohne sie kein Abschlusslabel.
+
+Dokumentation: neue Links und Codeblöcke geprüft, HTML via quarto pandoc gerendert. Der bestehende strikte Gesamtlinkchecker meldet genau drei unveränderte abgekürzte Codepfade mit `...` in EXECUTION_PLAN.md (Zeilen 39/724); neue Links sind gültig. Der Auftrag und sein Requirement-Digest werden dafür nicht verändert, der Checker nicht abgeschwächt. Rohbefund und gesonderte Prüfung der exakten unveränderten Platzhalter extern `evidence/P4-links.json`/`P4-doc-validation.json`. Keine Änderung an Website-/Publikationspipelines.
+
+Abschlussziel bleibt `RUNTIME_INCLUDES_WITH_SAFE_PARTIAL_TOOLING`, ausschliesslich nach gültiger finaler Abnahme aller S01–S19/C01–C08. Kein FULL_INCLUDE_AWARE_IDE, keine Root-/IMAGE-/Releasefreigabe und kein Push/Merge.
+
+## Anforderungs-/Nachweiszuordnung für die Schlussprüfung
+
+| Kriterien | Implementierung und notwendiger Nachweis |
+| --- | --- |
+| S01–S03 | ApplyDirectiveReader; Readerregressionen, Graph-/Loaderprobe vor dem ersten Scriptbody. |
+| S04–S08 | FragmentLoadSession/DefinitionScopeState/JobDslModel; FragmentLoaderTest, ProjectScopeTest, Defaults-/Kollisionsfälle. |
+| S09–S12 | FragmentGraphResolver/ContainedFragmentSources; Graphgrenzen, Duplicate/Cycle, Scope-/CWD-/Ressourcenproben, geteilte JAR-Quelle. |
+| S13 | Virtuelle Source-Map und SourceLocations; Compile-/Registrierungs-/Lateclosuretests und echte JAR-Fragmentfehlerzeile. |
+| S14–S15 | ScriptBundleSources, Bundlehash und JobSourceadapter; IncludeSourceHashTest, Snapshot-/Hash-/Pfadparitätsgegenproben. |
+| S16 | CliFragmentProcessTest, Marker und echter Beispielaufruf für Hilfe/Check/Plan/Run. |
+| S17–S18 | BundleCompiler, CompiledScriptBundle, JobJarMain; FragmentJarProcessTest mit Compilertripwire, Altformate, defekte Metadaten, vollständiger Ausgabevertrag. |
+| S19 | Generische IMAGE-Dateien unverändert; keine neue IMAGE-Qualifikation. |
+| C01 | ApplyPartialCoverageTest und ApplyIncludeServerIT: sonst geschlossene Kontrolle, PARTIAL und Codeinsel ohne Ausführung. |
+| C02 | ApplyEditCompatibilityTest und zehn echte Wireablehnungen; Defaults-/Form-/generische Setterregressionen. |
+| C03 | Bytegenauer lokaler Coreedit, echte Wireplanung; finale native VSIX-/Layout-/Save-/Undo-/Redo-Belege extern. |
+| C04 | ApplyIncludeServerIT: echte graph/planEdit/validateEdit-Requests und Staleplan nach Include-Literaländerung. |
+| C05 | Pflicht: isoliert installierter VSIX vom Kandidaten, native Screenshots und aktuelle Buffer-/Byte-/Markerprüfung; vor Ausführung nicht als bestanden behauptet. |
+| C06 | Bestehende Enforcer-, Dependencytree- und Archivprüfungen; unveränderte LSP-/Katalogidentitäten, kein Runtimeimport. |
+| C07 | Verifizierte Main-/Toolingabstammung, Kandidaten-SHA und Artefaktmanifest; keine spätere Schein-Mergeprobe. |
+| C08 | Featureanleitung, Beispiel und TOOLING_HANDOFF: unaufgelöste Closure, Shared-Kontext und Invalidierungsgrenzen. |

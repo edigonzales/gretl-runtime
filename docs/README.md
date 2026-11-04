@@ -7,6 +7,7 @@ Diese Seiten beschreiben den implementierten Stand von GRETL Runtime:
 - [Teststrategie und Backing-Services](implementation/testing.md)
 - [Module und Abhängigkeitsgrenzen](implementation/module-boundaries.md)
 - [Jobpaketierung und Schemas 1/2/3](implementation/job-packaging.md)
+- [Lokale Scriptfragmente und sichere partielle IDE-Sicht](implementation/script-includes/README.md)
 - [Subprojekte und gemeinsamer Taskgraph](implementation/project-subprojects/README.md)
 - [SCRIPT-, JAR- und reale IMAGE-Fachtests](implementation/job-artifact-tests.md)
 - [Generisches Runtime-Image und OpenShift](../gretl-dist/src/main/docker/README.md)
