@@ -1,0 +1,29 @@
+[
+  {
+    "id": "review-contract",
+    "argv": [
+      "node",
+      "--test",
+      "tools/gretl-tooling/review.test.mjs"
+    ],
+    "cwd": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product",
+    "startedAt": "2026-11-03T22:57:14.436Z",
+    "endedAt": "2026-11-03T22:57:14.716Z",
+    "exitCode": 0,
+    "signal": null,
+    "log": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-review-contract.log"
+  },
+  {
+    "id": "tooling-docs",
+    "argv": [
+      "node",
+      "tools/gretl-tooling/check-docs.mjs"
+    ],
+    "cwd": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/product",
+    "startedAt": "2026-11-03T22:57:14.716Z",
+    "endedAt": "2026-11-03T22:57:14.793Z",
+    "exitCode": 0,
+    "signal": null,
+    "log": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/own-tooling-docs.log"
+  }
+]

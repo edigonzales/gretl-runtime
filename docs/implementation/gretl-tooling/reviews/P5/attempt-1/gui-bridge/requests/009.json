@@ -1,0 +1,13 @@
+{
+  "id": "009",
+  "purpose": "Independent cross-subproject counterprobe, step 6: inspect the subproject declaration after the native Redo to confirm it was restored to renamedChild together with the main-job reference.",
+  "actions": [
+    {
+      "kind": "openFile",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/sub/job.groovy"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

@@ -14,14 +14,14 @@ Primärplattform: macOS 27.0.1 arm64, JDK 25.0.2, OpenCode 2.2.5 mit direktem De
 | P2 | Projekte, Snapshots, Semantik | PASS | `1a8d9f0a4096295c2e5898bab2593bb3eb34789e` | [Originalreview](reviews/P2/attempt-4-resumed-pass/review.md), [validierter Abschluss](reviews/P2/attempt-4-resumed-pass/validation.json); frühere Fehlversuche erhalten |
 | P3 | Queries und Editplanung | PASS | `96688a5b2436c25504dbfbb33ce375a002b3cee0` | [Originalreview](reviews/P3/attempt-2/review.md), [validierter Abschluss](reviews/P3/attempt-2/validation.json); [erster FAIL](reviews/P3/attempt-1/review.md) erhalten |
 | P4 | Eigenständiger LSP | PASS | `666e812df8394a1f533d534c9c6d134b132898ab` | [Originalreview](reviews/P4/attempt-2/review.md), [validierter Abschluss](reviews/P4/attempt-2/validation.json); [erster FAIL](reviews/P4/attempt-1/review.md) erhalten |
-| P5 | Installierter Texteditor | IN PROGRESS | — | — |
+| P5 | Installierter Texteditor | PASS | `4520ee6960d8b0857fad828f972a44950c5aeb09` | [Originalreview mit Infrastruktur-BLOCKED](reviews/P5/attempt-1/review.md), [ergänzter Originalreview](reviews/P5/attempt-1/resume-1/review.md), [validierter Abschluss](reviews/P5/attempt-1/resume-1/validation.json) |
 | P6 | Interaktiver Graph | PLANNED | — | — |
 | P7 | Schreibender Modeler | PLANNED | — | — |
 | P8 | Resilienz und Gesamtabnahme | PLANNED | — | — |
 
 ## Aktuell erlaubter nächster Schritt
 
-P5 nach CODEX_STARTPROMPT implementieren: installierbare Texteditor-Erweiterung mit echtem Bundle-Server und G01–G10. P4 ist am unveränderten Kandidaten unabhängig abgenommen. Keine Modelerproduktarbeit vor P6/P7.
+P6 nach CODEX_STARTPROMPT implementieren: interaktiver statischer Jobgraph als optionaler CustomTextEditor mit React Flow und lokalem ELKworker. P5 ist am unveränderten Kandidaten unabhängig abgenommen. Schreibende Modeleraktionen folgen erst in P7.
 
 ## Testauswahl nach Benutzerpräzisierung
 

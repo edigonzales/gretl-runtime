@@ -1,0 +1,52 @@
+{
+  "schemaOk": true,
+  "schemaErrors": [],
+  "missing": [],
+  "mismatched": [],
+  "criterionIds": [
+    "P5-01",
+    "P5-02",
+    "P5-03",
+    "P5-04",
+    "P5-05",
+    "P5-06",
+    "P5-07",
+    "P5-08",
+    "P5-09"
+  ],
+  "guiCases": [
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G06",
+    "G07",
+    "G08",
+    "G09",
+    "G10"
+  ],
+  "guiAll": true,
+  "ownRunCount": 1,
+  "counterprobeIds": [
+    "CP-HOST-01",
+    "CP-GUI-01"
+  ],
+  "verdict": "PASS",
+  "blockerCategory": null,
+  "missingRequiredChecks": [],
+  "openMandatoryFindings": 0,
+  "executedChecksGreen": true,
+  "reportExists": true,
+  "resumedArtifacts": {
+    "review": {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/resume-1/review.md",
+      "sha256": "9a290ff975f0a1c07db8402199d0d7ee80b1c9a663222ab5190aa16035d1f785"
+    },
+    "verdict": {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-review-1/evidence/resume-1/verdict.json",
+      "sha256": "f66592777e3727fae0087619312da902931b3931fcc5cfc56d66c43044e6d239"
+    }
+  },
+  "ok": true
+}

@@ -1,0 +1,21 @@
+{
+  "id": "005",
+  "purpose": "Independent cross-subproject counterprobe, step 2: open the main job and verify that the qualified reference now reads :sub:renamedChild.",
+  "actions": [
+    {
+      "kind": "openFile",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P5-candidate-2-gui/Main ä space/job.groovy"
+    },
+    {
+      "kind": "find",
+      "text": ":sub:renamedChild"
+    },
+    {
+      "kind": "key",
+      "key": "Escape"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

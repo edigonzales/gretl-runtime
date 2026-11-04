@@ -1,0 +1,9 @@
+{
+  "id": "002",
+  "purpose": "Transport liveness check only: capture the current native window state without changing any file.",
+  "actions": [
+    {
+      "kind": "observe"
+    }
+  ]
+}
