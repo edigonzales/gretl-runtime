@@ -1,0 +1,13 @@
+{
+  "id": "006",
+  "purpose": "Reviewer independent native counterprobe: with Main and Other modelers pinned side by side, select the same-named download declaration in the Main source and run GRETL: Show Selection in Modeler; verify only the Main panel selects and the Other panel stays unselected",
+  "actions": [
+    {"kind": "key", "key": "Escape"},
+    {"kind": "command", "title": "View: Focus First Editor Group"},
+    {"kind": "openFile", "path": "/Users/stefan/.cache/gretl-tooling-review/P6-candidate-1-gui/workspace ä space/project-main/job.groovy"},
+    {"kind": "find", "text": "task('download'"},
+    {"kind": "key", "key": "Escape"},
+    {"kind": "command", "title": "GRETL: Show Selection in Modeler"},
+    {"kind": "observe"}
+  ]
+}

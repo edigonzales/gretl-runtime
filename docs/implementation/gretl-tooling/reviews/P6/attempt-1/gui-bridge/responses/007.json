@@ -1,0 +1,14 @@
+{
+  "id": "007",
+  "purpose": "Reviewer independent native probe setup: reveal the exact pinned text source of the focused Main modeler via Show source, keeping the modeler panel available",
+  "time": "2026-11-04T08:40:09.209Z",
+  "operatorOnly": true,
+  "candidateSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2",
+  "error": "Error: Ambiguous or absent click label: Show source (2); specify occurrence for duplicate buttons",
+  "steps": [],
+  "ax": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/evidence/gui-bridge/responses/007.ax.txt",
+  "axSha256": "3bae6ea556f4379e26a5d4ff772c9518c71b9b185fcf80b9762cae115d93c46d",
+  "screenshot": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/evidence/gui-bridge/responses/007.png",
+  "screenshotSha256": "64b74f4e267810e5c6a996c525b1043a86718ce28f23d355643541d847fc5b0e",
+  "captures": "/Users/stefan/.cache/gretl-tooling-review/P6-candidate-1-gui/captures"
+}

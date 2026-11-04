@@ -1,0 +1,14 @@
+{
+  "id": "005",
+  "purpose": "Reviewer independent native counterprobe: with Main and Other modelers pinned side by side, select action('download') in the Other source and run GRETL: Show Selection in Modeler; verify only the Other panel selects and the same-named Main task stays unselected",
+  "time": "2026-11-04T08:35:42.493Z",
+  "operatorOnly": true,
+  "candidateSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2",
+  "error": "Error: Command not selected: View: Focus Second Editor Group",
+  "steps": [],
+  "ax": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/evidence/gui-bridge/responses/005.ax.txt",
+  "axSha256": "9ccfcfdb708a7464b8520902efb32034e91495b6da57a1e86c392cbfcb189c39",
+  "screenshot": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/evidence/gui-bridge/responses/005.png",
+  "screenshotSha256": "18751043e9536a2d0e0a50dce3b57ba94205ad3842203ee39abc6cedfbe67028",
+  "captures": "/Users/stefan/.cache/gretl-tooling-review/P6-candidate-1-gui/captures"
+}

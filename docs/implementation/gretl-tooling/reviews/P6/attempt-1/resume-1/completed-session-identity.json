@@ -1,0 +1,13 @@
+{
+  "session": "ses_e5a59be18ffexfUAJPmfX4xG1l",
+  "candidateSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2",
+  "metadataCount": 329,
+  "identities": [
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash"
+    }
+  ],
+  "allDirectDeepSeekFlash": true,
+  "verifiedAt": "2026-11-04T08:55:03.609Z"
+}

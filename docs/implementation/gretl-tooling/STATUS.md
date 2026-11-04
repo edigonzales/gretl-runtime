@@ -1,7 +1,7 @@
 # GRETL Tooling – aktueller Auftragsstatus
 
-**Arbeitsstand · 3. November 2026.**
-P0 bis P4 sind unabhängig abgenommen; die äusseren Reviewprozesse sind beendet und validiert. P5 ist in Umsetzung.
+**Arbeitsstand · 4. November 2026.**
+P0 bis P6 sind unabhängig abgenommen; die äusseren Reviewprozesse sind beendet und validiert. Als Nächstes folgt P7.
 
 `assignmentBase`: `185fc6700b5cb2897f724d457610a57f059b3421`.
 `requirementsDigest`: `cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3`.
@@ -15,13 +15,13 @@ Primärplattform: macOS 27.0.1 arm64, JDK 25.0.2, OpenCode 2.2.5 mit direktem De
 | P3 | Queries und Editplanung | PASS | `96688a5b2436c25504dbfbb33ce375a002b3cee0` | [Originalreview](reviews/P3/attempt-2/review.md), [validierter Abschluss](reviews/P3/attempt-2/validation.json); [erster FAIL](reviews/P3/attempt-1/review.md) erhalten |
 | P4 | Eigenständiger LSP | PASS | `666e812df8394a1f533d534c9c6d134b132898ab` | [Originalreview](reviews/P4/attempt-2/review.md), [validierter Abschluss](reviews/P4/attempt-2/validation.json); [erster FAIL](reviews/P4/attempt-1/review.md) erhalten |
 | P5 | Installierter Texteditor | PASS | `4520ee6960d8b0857fad828f972a44950c5aeb09` | [Originalreview mit Infrastruktur-BLOCKED](reviews/P5/attempt-1/review.md), [ergänzter Originalreview](reviews/P5/attempt-1/resume-1/review.md), [validierter Abschluss](reviews/P5/attempt-1/resume-1/validation.json) |
-| P6 | Interaktiver Graph | IN PROGRESS | — | — |
+| P6 | Interaktiver Graph | PASS | `ee3a2e8a40bf965a183bc688157d755e2f2320b2` | [Originalreview](reviews/P6/attempt-1/review.md), [ergänzter Originalreview nach Metadatenkorrektur](reviews/P6/attempt-1/resume-1/review.md), [validierter Abschluss](reviews/P6/attempt-1/resume-1/validation.json) |
 | P7 | Schreibender Modeler | PLANNED | — | — |
 | P8 | Resilienz und Gesamtabnahme | PLANNED | — | — |
 
 ## Aktuell erlaubter nächster Schritt
 
-P6 nach CODEX_STARTPROMPT implementieren: interaktiver statischer Jobgraph als optionaler CustomTextEditor mit React Flow und lokalem ELKworker. P5 ist am unveränderten Kandidaten unabhängig abgenommen. Schreibende Modeleraktionen folgen erst in P7.
+P7 nach CODEX_STARTPROMPT implementieren: schreibende Modeleraktionen aus Java-Coreplänen, sichere Textedits und echter Text-Roundtrip. P6 ist am unveränderten Kandidaten unabhängig abgenommen.
 
 Aktuelle Befunde und gezielte Nachprüfungen: [P6-Arbeitsbericht](implementation/P6.md).
 

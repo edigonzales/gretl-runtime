@@ -1,0 +1,16 @@
+{
+  "reviewId": "8ecbf47e-9ca7-4604-8eaa-895643791a97",
+  "candidateSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2",
+  "validator": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/product/tools/gretl-tooling/review.mjs#validateReviewArtifacts",
+  "completionSource": "/Users/stefan/.cache/gretl-tooling-review/P6-review-1/evidence/process.json",
+  "completion": {
+    "exitCode": 0,
+    "timedOut": false,
+    "finished": true,
+    "childrenFinished": true,
+    "unchanged": true,
+    "fresh": true
+  },
+  "result": "PASS",
+  "scope": "Metadata pre-validation only. The original successful process object was used solely to exercise the real validator's schema, identity, evidence path/reachability, artifact and screenshot checks. No test, root gate, GUI case, npm task or package build was rerun or relabelled. The outer wrapper must validate the actual new process completion."
+}
