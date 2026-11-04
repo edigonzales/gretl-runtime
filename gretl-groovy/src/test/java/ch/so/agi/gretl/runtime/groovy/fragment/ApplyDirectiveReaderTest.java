@@ -45,6 +45,24 @@ class ApplyDirectiveReaderTest {
     void scriptOwnedApplyDoesNotHideMalformedGretlMapCalls(String source){
         assertFalse(reader.read("job.groovy",source).problems().isEmpty(),source);
     }
+    @ParameterizedTest @ValueSource(strings={
+        "class Base{void apply(String x){}}; class Helper extends Base{void run(){apply('local')}}; apply from:'real.groovy'",
+        "class Helper{Closure apply={x->x}; void run(){apply('local')}}; apply from:'real.groovy'"})
+    void helperInheritedMethodsAndClosureFieldsRemainOrdinary(String source){
+        var result=reader.read("job.groovy",source);assertTrue(result.problems().isEmpty(),result.toString());assertEquals(1,result.directives().size());
+    }
+    @Test void helperStringOverloadDoesNotHideMapFirstGretlCall(){
+        var result=reader.read("job.groovy","class Helper{void apply(String x){}; void run(){apply from:'hidden.groovy'}}; apply from:'real.groovy'");
+        assertTrue(result.problems().stream().anyMatch(p->p.code().equals("APPLY_CONTEXT")),result.toString());
+    }
+    @ParameterizedTest @ValueSource(strings={
+        "class Base{void apply(Map x){}}; class Helper extends Base{void run(){apply from:'local'}}; apply from:'real.groovy'",
+        "class Helper{void apply(Map x,String label='x'){}; void run(){apply from:'local'}}; apply from:'real.groovy'",
+        "class Helper{void apply(Map... x){}; void run(){apply from:'local'}}; apply from:'real.groovy'",
+        "import java.util.Map as Options; class Helper{void apply(Options x){}; void run(){apply from:'local'}}; apply from:'real.groovy'"})
+    void mapCompatibleHelperCallsKeepTheirOwnReceiver(String source){
+        var result=reader.read("job.groovy",source);assertTrue(result.problems().isEmpty(),result.toString());assertEquals(1,result.directives().size());
+    }
     @Test void positionsUseUtf16AndUnreachableDirectivesRemainStatic(){
         String text="// 😀\r\nreturn\r\napply from: 'ä space.groovy'\r\n";
         var d=reader.read("job.groovy",text).directives().getFirst();

@@ -53,7 +53,7 @@ public final class ApplyDirectiveReader {
                         && shadowsApply(expression.getExpression()));
             var shadow = new ArrayList<ASTNode>();
             boolean[] scriptContext = {true};
-            boolean[] helperOwnApply = {false};
+            ClassNode[] helperType = {null};
             for (var method : module.getMethods()) if (method.getName().equals("apply")) shadow.add(method);
             var visitor = new CodeVisitorSupport() {
                 void problem(String code, ASTNode node) {
@@ -72,8 +72,10 @@ public final class ApplyDirectiveReader {
                 }
                 @Override public void visitMethodCallExpression(MethodCallExpression call) {
                     boolean self = call.isImplicitThis() || call.getObjectExpression() instanceof VariableExpression v && v.isThisExpression();
-                    boolean ordinaryOwnedCall=scriptContext[0] && scriptOwnApply && !namedOptions(call);
-                    if (self && !helperOwnApply[0] && !ordinaryOwnedCall && "apply".equals(call.getMethodAsString())) {
+                    boolean named=namedOptions(call);
+                    boolean ordinaryOwnedCall=scriptContext[0] ? scriptOwnApply && !named
+                            : ownsHelperApply(helperType[0],call,module,named);
+                    if (self && !ordinaryOwnedCall && "apply".equals(call.getMethodAsString())) {
                         if (!top.contains(call) || !call.isImplicitThis() || call.isSafe() || call.isSpreadSafe() || call.isUsingGenerics()) {
                             problem("APPLY_CONTEXT",call);
                         } else {
@@ -106,7 +108,7 @@ public final class ApplyDirectiveReader {
             for (var method : module.getMethods()) if (method.getCode()!=null) method.getCode().visit(visitor);
             scriptContext[0]=false;
             for (var type : module.getClasses()) if (!type.isScript()) {
-                helperOwnApply[0]=type.getMethods().stream().anyMatch(m->m.getName().equals("apply") && m.getDeclaringClass()==type);
+                helperType[0]=type;
                 for (var field : type.getFields()) if (field.getInitialExpression()!=null) field.getInitialExpression().visit(visitor);
                 for (var initializer : type.getObjectInitializerStatements()) initializer.visit(visitor);
                 for (var method : type.getMethods()) if (method.getDeclaringClass()==type && method.getCode()!=null) method.getCode().visit(visitor);
@@ -127,6 +129,35 @@ public final class ApplyDirectiveReader {
             problems.add(new Problem("APPLY_LIMIT",sourceId,0,0));
         } catch (IOException failure) { throw new IllegalStateException(failure); }
         return new Result(directives,problems);
+    }
+    private static boolean ownsHelperApply(ClassNode owner,MethodCallExpression call,ModuleNode module,boolean mapOptions) {
+        int count=call.getArguments() instanceof TupleExpression tuple?tuple.getExpressions().size():1;
+        Set<String> seen=new HashSet<>();
+        while(owner!=null && seen.add(owner.getName())) {
+            for(var field:owner.getFields()) if(field.getName().equals("apply") && (field.getInitialExpression() instanceof ClosureExpression
+                    || field.getType().getName().equals("groovy.lang.Closure") || field.getType().getName().equals("Closure"))) return true;
+            for(var method:owner.getMethods()) if(method.getName().equals("apply") && method.getDeclaringClass()==owner) {
+                var parameters=method.getParameters();
+                int required=parameters.length;
+                while(required>0 && (parameters[required-1].hasInitialExpression()
+                        || required==parameters.length && parameters[required-1].getType().isArray())) required--;
+                boolean varargs=parameters.length>0 && parameters[parameters.length-1].getType().isArray();
+                if(parameters.length>0 && count>=required && (count<=parameters.length || varargs)) {
+                    if(!mapOptions)return true;
+                    var type=parameters[0].getType();if(type.isArray())type=type.getComponentType();
+                    String first=type.getName();
+                    for(var imported:module.getImports())if(imported.getAlias().equals(first))first=imported.getType().getName();
+                    if(parameters[0].isDynamicTyped() || Set.of("java.lang.Object","Object","java.util.Map","Map",
+                            "java.util.AbstractMap","AbstractMap","java.util.HashMap","HashMap","java.util.LinkedHashMap","LinkedHashMap",
+                            "java.io.Serializable","Serializable","java.lang.Cloneable","Cloneable").contains(first)) return true;
+                }
+            }
+            var parent=owner.getUnresolvedSuperClass();
+            String name=parent==null?"":parent.getName();
+            String qualified=owner.getPackageName()==null?name:owner.getPackageName()+"."+name;
+            owner=module.getClasses().stream().filter(t->t.getName().equals(name)||t.getName().equals(qualified)).findFirst().orElse(null);
+        }
+        return false;
     }
     private static boolean namedOptions(MethodCallExpression call) {
         var arguments=call.getArguments();
