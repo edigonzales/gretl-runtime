@@ -10,8 +10,8 @@
 
 | Phase | Status | Offene Arbeit |
 | --- | --- | --- |
-| P0 | REVIEW_PENDING | Autonomen unabhängigen Review am Kandidaten ausführen und validieren. |
-| P1 | PLANNED | Reader, Snapshot, Includegraph, Hash. |
+| P0 | REVIEWED_ACCEPTED | `e9098ec093cd0ed89065aee57aed461a5daf3c47`; unabhängiger Review und maschinelle Validierung PASS. |
+| P1 | REVIEW_PENDING | Reader, Snapshot, Includegraph und Hash implementiert; unabhängiger Review ausstehend. |
 | P2 | PLANNED | SCRIPT-Loader und gemeinsame Definition. |
 | P3 | PLANNED | Kompilation, Metadaten, quellenfreie JAR-Prozesse. |
 | P4 | PLANNED | C01–C08, installierte GUI, Dokumentation, kumulative Abnahme. |
@@ -25,3 +25,7 @@ Befehl: `./mvnw -B -Dmaven.repo.local=/Users/stefan/.cache/gretl-script-includes
 Reviewinfrastruktur: PATH-Version 1.18.22 und alternative 1.15.10 ungeeignet; isoliert installiertes `@opencode/cli@2.2.5` meldet `opencode v2.2.5`. Vorhandene DeepSeek-Anmeldung via `auth list --format json` erkannt, `models` enthält `deepseek/deepseek-flash`. Offizielle Modellzuordnung am 4. November 2026 geprüft. Geplanter Review benutzt direkte V2-CLI und eine nur im detached Reviewworktree liegende Policy, keine Änderung des alten Toolingreviewers.
 
 Für P4 ist der vorhandene Weg `vscode/gretl-vscode/scripts/workbench.mjs` mit separatem Testdriver verfügbar; noch nicht ausgeführt. Internes job.json verwendet aktuell Versionen 1/2; Bundleversion 3 ist frei. Noch keine Runtime-Includes implementiert oder abgenommen.
+
+P0-Abnahme: OpenCode 2.2.5 / `deepseek/deepseek-flash`, frische Session `ses_e58a2b462ffeejncaDOuKcj0ZP`; Prozess Exit 0. Sieben eigene JUnit-Fälle des Reviewers und elf Checks der selbst entwickelten Java-Gegenprobe grün. Modellalias gegen offizielle Tageszuordnung und tatsächlichen Sessionexport geprüft. Originale und `validation.json` (PASS) unter `/Users/stefan/.cache/gretl-script-includes/review/P0-attempt-2/evidence/`. Erster Start scheiterte vor dem Review an Agentdiscovery; explizites `PWD` und Inline-V2-Agentkonfiguration lösen dies. Kein Session-Continue. Zwei nicht blockierende Infrastrukturhygienehinweise werden bei folgenden Aufrufen berücksichtigt.
+
+P1-Phasebase: `e9098ec093cd0ed89065aee57aed461a5daf3c47`. Neue APIs unter `runtime.groovy.fragment`, noch ohne Loaderanbindung. AST-Konvertierung ohne semantische Analyse/Transformationen, getrennte Pfadprüfung und IO, pro Scope DFS mit gemeinsamen immutable Sourcebytes, längengeframter Bundlehash. Legacy-Single-/Projekthashes ohne Includes werden aus denselben Snapshotbytes reproduziert. Limits: 64 Ebenen, 1024 Quellen, 8 MiB pro Fragment, 64 MiB Gesamtbytes bei Includes. Direkte Regression: bestehender Settingsparser; keine geänderte gemeinsame Parser-/Hashfunktion. Kleine P1-Fixtures prüfen keine Tasks/Runtimewirkung.
