@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFileSync,existsSync,readdirSync} from 'node:fs';
+import {readFileSync,existsSync,readdirSync,statSync} from 'node:fs';
 import {resolve,dirname} from 'node:path';
 import {hash,captureRequirements} from './review.mjs';
 const repo=resolve(import.meta.dirname,'../..'),spec=resolve(repo,'docs/implementation/gretl-tooling');
@@ -21,4 +21,15 @@ export function checkLinks(directory=spec){
     }
   }
 }
-if(process.argv[1]===import.meta.filename){console.log(`Validated ${checkRegistry()} exact criteria`);checkLinks();captureRequirements();console.log('Tooling documentation links and requirement inputs valid');}
+export function checkAcceptanceMap(file=resolve(spec,'implementation/P8-acceptance-map.json')){
+  const map=JSON.parse(readFileSync(file)),registry=JSON.parse(readFileSync(resolve(spec,'ACCEPTANCE_CRITERIA.json')));
+  const expected=registry.phases.flatMap(p=>p.criteria.map(c=>({id:c.id,requirement:c.description})));
+  assert.equal(map.criteriaCount,81,'Acceptance map requires 81 exact criteria');
+  assert.deepEqual(map.entries.map(e=>({id:e.id,requirement:e.requirement})),expected,'Acceptance map differs from exact requirements');
+  for(const entry of map.entries){
+    assert(entry.tests.length&&entry.rootEvidenceIds.includes('root-standard')&&entry.rootEvidenceIds.includes('root-services'),'Missing current evidence mapping');
+    for(const source of[entry.primaryCode,...entry.tests,...entry.sharedCurrentTests]){const target=resolve(repo,source);assert(target.startsWith(repo+'/')&&statSync(target).isFile(),'Missing current code/test: '+source);}
+  }
+  return map.entries.length;
+}
+if(process.argv[1]===import.meta.filename){console.log(`Validated ${checkRegistry()} exact criteria`);checkLinks();checkAcceptanceMap();captureRequirements();console.log('Tooling documentation links, acceptance mapping and requirement inputs valid');}

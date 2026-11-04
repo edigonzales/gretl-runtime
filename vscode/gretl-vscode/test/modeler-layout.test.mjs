@@ -1,8 +1,8 @@
 import{test,after}from'node:test';import assert from'node:assert/strict';import{build}from'esbuild';import{mkdtemp,rm}from'node:fs/promises';import os from'node:os';import path from'node:path';import{pathToFileURL}from'node:url';import{Worker as Thread}from'node:worker_threads';
 const temp=await mkdtemp(path.join(os.tmpdir(),'gretl-elk-worker-'));await build({entryPoints:['webview/layout.ts'],bundle:true,platform:'node',format:'esm',outfile:temp+'/layout.mjs'});const{LayoutService}=await import(pathToFileURL(temp+'/layout.mjs'));
-const original=globalThis.Worker,threads=new Set();
+const original=globalThis.Worker,threads=new Set();let createdWorkers=0,peakWorkers=0;
 globalThis.Worker=class BrowserWorkerTransport {
- constructor(uri){this.thread=new Thread("const{parentPort,workerData}=require('node:worker_threads');global.self=global;global.postMessage=value=>parentPort.postMessage(value);require(workerData);parentPort.on('message',data=>global.onmessage({data}));",{eval:true,workerData:uri});threads.add(this.thread);this.thread.on('message',data=>this.onmessage?.({data}));this.thread.on('error',error=>this.onerror?.(error));}
+ constructor(uri){this.thread=new Thread("const{parentPort,workerData}=require('node:worker_threads');global.self=global;global.postMessage=value=>parentPort.postMessage(value);require(workerData);parentPort.on('message',data=>global.onmessage({data}));",{eval:true,workerData:uri});threads.add(this.thread);createdWorkers++;peakWorkers=Math.max(peakWorkers,threads.size);this.thread.on('message',data=>this.onmessage?.({data}));this.thread.on('error',error=>this.onerror?.(error));}
  postMessage(value){this.thread.postMessage(value);}
  terminate(){void this.thread.terminate().finally(()=>threads.delete(this.thread));}
 };
@@ -29,4 +29,21 @@ test('actual nested multi-edge job geometry keeps sibling cards separate',async(
   const result=await layout.layout(nodes,edges,{}),byId=new Map(result.map(g=>[g.id,g]));
   for(const a of nodes)for(const b of nodes){if(a.id>=b.id||a.parentId!==b.parentId)continue;const x=byId.get(a.id),y=byId.get(b.id);assert(x.x+x.width<=y.x||y.x+y.width<=x.x||x.y+x.height<=y.y||y.y+y.height<=x.y,JSON.stringify({a:x,b:y}));}
  }finally{layout.dispose();}
+});
+test('a forty-request burst coalesces before worker creation and leaves no worker after disposal',async()=>{
+ await Promise.all([...threads].map(thread=>thread.terminate()));await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(threads.size,0);createdWorkers=0;peakWorkers=0;
+ const layout=new LayoutService(worker,async url=>({url,dispose(){}})),nodes=Array.from({length:500},(_,i)=>node('load-'+i)),edges=nodes.slice(1).map((n,i)=>edge('load-edge-'+i,'load-'+i,n.id));
+ const before=JSON.stringify({nodes,edges}),started=performance.now();let peakRss=process.memoryUsage().rss;
+ const sample=setInterval(()=>{peakRss=Math.max(peakRss,process.memoryUsage().rss);},10);
+ try{
+  const requests=Array.from({length:40},()=>layout.layout(nodes,edges,{}));
+  const results=await Promise.allSettled(requests);
+  assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+  assert.equal(results.at(-1).status,'fulfilled');assert.equal(results.at(-1).value.length,500);
+  for(const result of results.slice(0,-1))assert.match(String(result.reason),/LAYOUT_CANCELLED/);
+  assert.equal(createdWorkers,1);assert.equal(peakWorkers,1);assert.equal(JSON.stringify({nodes,edges}),before);
+ }finally{clearInterval(sample);layout.dispose();await Promise.all([...threads].map(thread=>thread.terminate()));await new Promise(resolve=>setImmediate(resolve));}
+ assert.equal(threads.size,0);assert(peakRss<512*1024*1024,'Measured layout test process RSS exceeds 512 MiB');
+ console.log(JSON.stringify({measurement:'actual-elk-burst',nodes:500,requests:40,createdWorkers,peakWorkers,workersAfterDispose:threads.size,elapsedMilliseconds:Math.round(performance.now()-started),peakProcessRssBytes:peakRss}));
 });

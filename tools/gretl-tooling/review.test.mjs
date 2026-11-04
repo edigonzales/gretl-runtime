@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {resolve} from 'node:path';
 import {validateReviewArtifacts,phaseCriteria,hash,verifyModelIdentity,captureRequirements,scopedProfile,waitForReviewer,verifyCurrentGateManifest} from './review.mjs';
 import {snapshotReports} from './evidence.mjs';
-import {checkRegistry} from './check-docs.mjs';
+import {checkRegistry,checkAcceptanceMap} from './check-docs.mjs';
 import {verifyTree} from './verify-dependencies.mjs';
 const scratch=mkdtempSync(resolve(tmpdir(),'gretl-review-unit-'));
 const proof=resolve(scratch,'proof.txt');writeFileSync(proof,'Synthetic gate unit-test fixture, never a product review.');
@@ -28,7 +28,9 @@ test('resolved dependency guard detects production leaks while permitting test p
   assert.throws(()=>verifyTree({children:[{groupId:'com.fasterxml.jackson.core',artifactId:'jackson-databind',scope:'compile'}]},'contract'));
   verifyTree({children:[{groupId:'ch.so.agi.gretl',artifactId:'gretl-runner',scope:'test'}]},'core');
 });
-test('registry compares all 81 exact requirements and captures stable digest',()=>{assert.equal(checkRegistry(),81);assert.deepEqual(captureRequirements(),captureRequirements());});
+test('registry compares all 81 exact requirements and captures stable digest',()=>{assert.equal(checkRegistry(),81);assert.equal(checkAcceptanceMap(),81);assert.deepEqual(captureRequirements(),captureRequirements());
+  const source=resolve(import.meta.dirname,'../../docs/implementation/gretl-tooling/implementation/P8-acceptance-map.json'),map=JSON.parse(readFileSync(source)),copy=resolve(scratch,'missing-acceptance-criterion.json');map.entries.pop();writeFileSync(copy,JSON.stringify(map));assert.throws(()=>checkAcceptanceMap(copy),/Acceptance map differs/);
+});
 test('review profile is scoped and does not grant general shell or product edits',()=>{const c=scopedProfile('/product','/evidence',[{id:'root-standard',argv:['./mvnw','-B','clean','verify']},{id:'root-services',argv:['./mvnw','-B','-Pgeotools-probe,backing-services','clean','verify']},{id:'focused',argv:['./mvnw','-B','-pl','gretl-tooling-core','test']}]);const p=c.agents['gretl-independent-review'].permissions;assert(!p.some(r=>r.action==='shell'&&r.effect==='allow'&&r.resource==='./mvnw -B clean verify'));assert(!p.some(r=>r.action==='shell'&&r.effect==='allow'&&r.resource.includes('-Pgeotools-probe,backing-services')));assert(p.some(r=>r.action==='shell'&&r.effect==='allow'&&r.resource==='./mvnw -B -pl gretl-tooling-core test'));assert(c.agents['gretl-independent-review'].system.includes('including through evidence scripts'));assert(p.some(r=>r.action==='*'&&r.effect==='deny'));assert(!p.some(r=>r.action==='shell'&&r.resource==='*'&&r.effect==='allow'));assert(!p.some(r=>r.action==='edit'&&r.resource==='/product/*'&&r.effect==='allow'));});
 test('wait drains both streams and detects actual timeout',async()=>{
   const d=resolve(scratch,'process');(await import('node:fs')).mkdirSync(d);

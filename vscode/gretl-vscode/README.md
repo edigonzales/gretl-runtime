@@ -73,7 +73,10 @@ keyboard/mouse interactions and screenshots; the evidence driver's provider
 captures are supplementary assertions. A prepared environment is not a passed
 test. Workspace trust must be granted explicitly to this disposable fixture.
 Add `--modeler` to prepare the two-root modeler fixture instead of the text-editor
-fixture. **GRETL Evidence: Capture Buffer State Only** also collects bounded,
+fixture. Use `--qualification` for the cumulative three-root fixture, including
+SQL, CRLF, read-only and 500-node inputs. That private Electron process uses a
+closed loopback HTTP proxy; this does not disable networking for the operating
+system or prove offline support of other hosts. **GRETL Evidence: Capture Buffer State Only** also collects bounded,
 read-only geometry diagnostics from visible modeler panels; it never drives
 selection, layout, navigation or source changes.
 
@@ -81,6 +84,20 @@ Native Rename and Quick Fix validate source preconditions before returning edits
 to VS Code. An external filesystem writer can still race after that validation;
 VS Code does not expose an atomic filesystem compare-and-swap transaction. Keep
 multi-file changes in open buffers for the strongest native version protection.
+
+The primary installed-workbench qualification runs on macOS arm64. The same
+bundled server is also exercised as a real Linux arm64 Java 25 process in a
+container with networking disabled. Windows, other CPU architectures and actual
+VS Code Remote hosts have not been qualified. Java 25 is required on the host
+that runs the extension; a cross-platform JAR alone does not establish GUI support
+on every platform.
+
+If the modeler shows STALE after a server failure, keep the source open and use
+**GRETL: Show Language Server Output**, then **GRETL: Restart Language Server**.
+Reopen a draft after the graph becomes fresh. A changed source, missing source
+buffer or read-only file can reject an edit; the Core's reason remains visible.
+An invalid Java path or a mismatching bundle is reported without downloading a
+replacement. Complex Groovy stays available through **Show source**.
 
 Groovy syntax colouring is adapted from VS Code's Groovy TextMate grammar, under
 its retained TextMate Bundle licence; VS Code conversion code is MIT licensed.

@@ -15,6 +15,11 @@ Es enthaelt den Java-Core, LSP4J und den validierten Katalog als Daten, keine
 ausfuehrenden Task-/Runnerbibliotheken. Kopieren dieses JARs genuegt zum Start;
 ein anderer GRETL-Checkout oder ein Katalogdownload ist nicht erforderlich.
 
+Die ausgelieferte Distribution wird auf macOS arm64 und mit einem echten
+Linux-arm64-Java25-Prozess geprueft. Der Linux-Container bekommt nur das gelieferte
+JAR und kontrollierte Quellen, keinen Checkout; sein Netzwerk ist deaktiviert.
+Andere Architekturen, Windows und echte Remotehosts sind damit nicht freigegeben.
+
 ```sh
 java -jar gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar --stdio
 ```
@@ -45,6 +50,15 @@ die Requestparameter. Version ist 1. Snapshotantworten enthalten `context`
 Completeness) sowie ihren typisierten Payload. Fachliche Enums sind Strings;
 Standard-LSP-Enums behalten ihre numerischen Protokollwerte. Integer-/Decimal-
 Editwerte werden verlustfrei als getypte Scalarstrings uebertragen.
+
+Der Graphpayload ergaenzt die neutralen Nodes/Kanten um eine optionale
+`forms`-Projektion desselben Core-Snapshots: gebundene Literal-/Listen-/Mapwerte,
+Parameter-/Resultreferenzen, erlaubte Einfuegepositionen und alle Defaultziele.
+Opake oder mehrfach belegte Felder tragen einen Grund statt erzeugtem Quelltext.
+Der Client sendet nur getypte Coreintents. Eine Bestaetigung plant, prueft und
+wendet einen zusammengehoerigen nativen WorkspaceEdit an; sie ersetzt den Graph
+erst nach dem normalen Textsync durch eine neue Serverprojektion. Ansichts-
+positionen, Filter und deren eigener Undo-Verlauf gehoeren nicht zum Groovytext.
 
 Graphrequests nennen ein bekanntes oder explizit geoeffnetes Dokument und
 optional bis zu 32 zusaetzliche lokale `requestedSources` fuer neue SQLpfade.
