@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /** Executes the exact saved native-Modeler output as SCRIPT, outside normal editor analysis. */
-class GraphicalModelerScriptIT {
+class GraphicalModelerScriptJobIT {
     @Test void actualGuiGeneratedSourceDownloadsAndExtractsALocalArchiveWithoutRewritingItsBytes()throws Exception {
         Path fixture=ArtifactJobRunner.fixture("modeler-created");
         var provenance=(Map<?,?>)Json.parseFile(fixture.resolve("gui-provenance.json"),65536);
