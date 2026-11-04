@@ -16,6 +16,19 @@ import org.codehaus.groovy.control.*;
 
 /** Parse/convert only: no transforms, script instantiation, classpath discovery or evaluation. */
 public final class ApplyDirectiveReader {
+    private static final Set<String> NAMED_MAP_SUPERTYPES=namedMapSupertypes();
+    private static Set<String> namedMapSupertypes() {
+        Set<Class<?>> seen=new HashSet<>();Set<String> names=new HashSet<>();
+        Deque<Class<?>> pending=new ArrayDeque<>();pending.add(LinkedHashMap.class);
+        while(!pending.isEmpty()) {
+            var type=pending.removeFirst();if(!seen.add(type))continue;
+            names.add(type.getName());names.add(type.getSimpleName());
+            if(type.getSuperclass()!=null)pending.add(type.getSuperclass());
+            pending.addAll(Arrays.asList(type.getInterfaces()));
+        }
+        // Only the fixed JDK map implementation is inspected; no source-named class is loaded.
+        return Set.copyOf(names);
+    }
     /** Half-open offsets count UTF-16 code units; source diagnostic lines/columns are one-based. */
     public record Directive(String sourceId, String from, int start, int end,
                             int literalStart, int literalEnd, int line, int column) {
@@ -170,9 +183,7 @@ public final class ApplyDirectiveReader {
         String first=typeName(type,module);
         if(!parameters[0].isDynamicTyped() && module.getClasses().stream()
                 .anyMatch(t->t.getName().equals(first)||t.getNameWithoutPackage().equals(first)))return false;
-        return parameters[0].isDynamicTyped() || Set.of("java.lang.Object","Object","java.util.Map","Map",
-                "java.util.AbstractMap","AbstractMap","java.util.HashMap","HashMap","java.util.LinkedHashMap","LinkedHashMap",
-                "java.io.Serializable","Serializable","java.lang.Cloneable","Cloneable").contains(first);
+        return parameters[0].isDynamicTyped() || NAMED_MAP_SUPERTYPES.contains(first);
     }
     private static Map<String,ClassNode> genericBounds(GenericsType[] parameters) {
         var bounds=new LinkedHashMap<String,ClassNode>();

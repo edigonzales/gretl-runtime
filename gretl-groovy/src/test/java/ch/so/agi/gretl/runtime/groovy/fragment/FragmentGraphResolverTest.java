@@ -60,6 +60,22 @@ class FragmentGraphResolverTest {
         write("job.groovy","apply from:'a/job.groovy'");write("a/job.groovy","// entry");
         var ex=assertThrows(GroovyDslException.class,()->new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry(":","job.groovy"),new FragmentGraphResolver.Entry(":a","a/job.groovy")),true,null,new ContainedFragmentSources(root)));assertEquals("APPLY_CONTEXT",ex.code());
     }
+    @Test void canonicalEntryAndSettingsSpellingsHaveSameIdentity()throws Exception{
+        write("settings.gretl","// settings");write("job.groovy","apply from:'fragment.groovy'");write("fragment.groovy","// fragment");Files.createDirectory(root.resolve("sub"));
+        var resolver=new FragmentGraphResolver();var access=new ContainedFragmentSources(root);
+        var canonical=resolver.resolve(List.of(new FragmentGraphResolver.Entry(":","job.groovy")),true,"settings.gretl",access);
+        var spelled=resolver.resolve(List.of(new FragmentGraphResolver.Entry(":","./sub/../job.groovy")),true,"./settings.gretl",access);
+        assertEquals(canonical.sha256(),spelled.sha256());assertEquals(canonical.sources().keySet(),spelled.sources().keySet());assertEquals(canonical.entries(),spelled.entries());assertEquals(canonical.edges(),spelled.edges());
+    }
+    @Test void canonicalRootIdsRejectAbsoluteEscapeAndHiddenSymlink()throws Exception{
+        write("job.groovy","// entry");write("settings.gretl","// settings");Files.createDirectory(root.resolve("real"));Files.createSymbolicLink(root.resolve("link"),Path.of("real"));
+        for(String id:List.of(root.resolve("job.groovy").toString(),"../job.groovy","link/../job.groovy")){
+            var failure=assertThrows(GroovyDslException.class,()->new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("",id)),false,null,new ContainedFragmentSources(root)));
+            assertEquals("APPLY_PATH_UNSAFE",failure.code(),id);
+        }
+        var failure=assertThrows(GroovyDslException.class,()->new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry(":","job.groovy")),true,root.resolve("settings.gretl").toString(),new ContainedFragmentSources(root)));
+        assertEquals("APPLY_PATH_UNSAFE",failure.code());
+    }
     @Test void boundedReadAndDepthLimitAreEffective()throws Exception{
         write("job.groovy","apply from:'large.groovy'");Files.write(root.resolve("large.groovy"),new byte[ContainedFragmentSources.MAX_FRAGMENT_BYTES+1]);code("APPLY_LIMIT");
         for(int i=0;i<=FragmentGraphResolver.MAX_DEPTH;i++)write(i==0?"job.groovy":("f"+i+".groovy"),"apply from:'f"+(i+1)+".groovy'");write("f65.groovy","// end");code("APPLY_LIMIT");

@@ -30,10 +30,17 @@ public final class FragmentGraphResolver {
     public Bundle resolve(List<Entry> entries, boolean projectMode, String settingsId, FragmentSourceAccess access) {
         Objects.requireNonNull(access);entries=List.copyOf(entries);
         if(entries.isEmpty())throw new IllegalArgumentException("Entry required");
+        entries=entries.stream().map(e->new Entry(e.scopeId(),canonicalId(access,e.sourceId()))).toList();
+        if(settingsId!=null)settingsId=canonicalId(access,settingsId);
         var state=new State(entries,projectMode,settingsId,access);
         if(settingsId!=null)state.read(settingsId,false);
         for(var entry:entries) state.visit(entry.scopeId(),entry.sourceId(),new ArrayList<>(),new LinkedHashMap<>());
         return new Bundle(entries,state.sources,state.edges,projectMode,settingsId,state.hash());
+    }
+    private static String canonicalId(FragmentSourceAccess access,String sourceId) {
+        try{return access.canonicalId(sourceId);}
+        catch(IOException failure){throw new GroovyDslException("APPLY_NOT_FOUND",
+                ch.so.agi.gretl.i18n.Messages.format(ch.so.agi.gretl.i18n.Messages.sourceLocale(),"apply.APPLY_NOT_FOUND",sourceId),failure);}
     }
     private static final class State {
         final List<Entry> entries; final boolean project;final String settings;final FragmentSourceAccess access;

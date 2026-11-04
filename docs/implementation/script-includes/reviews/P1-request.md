@@ -10,7 +10,7 @@ Implementierung: ApplyDirectiveReader (Parse/Convert + AST/Tokenprüfung), Fragm
 Führe unabhängig aus:
 
 ```sh
-./mvnw -B -Dmaven.repo.local=/Users/stefan/.cache/gretl-script-includes/m2 -pl gretl-groovy -am -Dtest='ApplyDirectiveReaderTest,FragmentGraphResolverTest' -Dsurefire.failIfNoSpecifiedTests=false test
+./mvnw -B -Dmaven.repo.local=/Users/stefan/.cache/gretl-script-includes/m2 -pl gretl-groovy -am -Dtest='ApplyDirectiveReaderTest,FragmentGraphResolverTest,GretlProjectParserTest' -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
 Implementerlauf: 62 Fälle, null Fehler/Skips; frische XMLs und Log extern unter `/Users/stefan/.cache/gretl-script-includes/evidence/P1/`. Entwickle eine neue eigene fachliche Gegenprobe für Syntax/Pfad/Graph/Hash und führe sie tatsächlich aus. Keine getrackten Änderungen; eigene Dateien nur im übergebenen externen Probe-/Reportziel. Beurteile die gesamte Phase gegen unveränderte Phasebase, keine Rootvollgates/alten Toolingkriterien.
@@ -42,3 +42,9 @@ Auch `efe3bbcba2651969015648d26c924c4d7a10fa64` wurde verworfen: lokales Default
 ## Sechster Nacharbeitskandidat
 
 Der Review von `b2c7c00a08b55559d5811bb7792f5cc5c237057e` verlangt Erasure/obere Schranken bei generischen Helper-Parametern. Sechs Reproduktionen sind jetzt Tests: generische Methode/Klasse/Varargs/Map-Schranke/Closure und der Helper ohne Includes. Die gemeinsame Parameterprüfung löst lokale Typvariablen anhand der AST-Deklarationen auf; String-Schranken und eine lokale Klasse namens Map bleiben Negativkontrollen. Aktuell 81 fokussierte Fälle (65 Reader + 16 Graph) grün. Originale `review/P1-attempt-6/evidence/`, neue Belege `evidence/P1-fix6/`. Gesamte P1 gegen unveränderte Phasebase prüfen, mit neuer eigener ausgeführter Gegenprobe. Externe/unknown Helper-Typen weiterhin opak, keine neue Klassenauflösung.
+
+## Aktueller Kandidat: JDK-Maptypen und kanonische Root-IDs
+
+Bericht 7 zu `1830bf12b5690d7ffed9e30e3dac3f713fcb4cf1` nennt ABGENOMMEN mit MINOR (IDs), aber die eigene Probe endet Exit 1 mit einer S15-Assertion. Das maschinelle Gate ist deshalb REJECTED. Originale unverändert unter `review/P1-attempt-7/evidence/`. Der neue Kandidat behebt den Fall: Entry- und Settings-IDs werden vor Read/Hash kanonisiert; der Filesystemadapter validiert die Originalkomponenten vor dem Verwerfen von `..`. Neue Tests sichern gleiche Hashes/Sourcekeys bei äquivalenten Schreibweisen sowie absolute IDs, Rootausbruch und Symlinks vor der Normalisierung.
+
+Zusätzlich zeigte eine eigene rote Reproduktion, dass JDK 25 mit SequencedMap einen weiteren zulässigen Supertyp der tatsächlichen Named-Argument-LinkedHashMap besitzt. Die feste Stringliste ist durch deren reine JDK-Typmetadaten ersetzt. Es wird niemals ein vom Quelltext benannter Typ geladen; externe Helper bleiben opak. Direkter und generisch gebundener SequencedMap-Fall sind grün. Aktueller gezielter Lauf: 103 Fälle (67 Reader + 18 Graph + 18 Settingsparser), null Fehler/Skips; Belege `evidence/P1-final/`. Die Settingsparser-Regression wurde wegen der Root-ID-/Pfadänderung erneut ausgeführt. Prüfe den ganzen P1-Stand gegen unveränderte Phasebase und entwickle eine eigene neue tatsächlich ausgeführte Gegenprobe; die zuvor fehlgeschlagene Probe darf nicht als grüner Test umetikettiert werden.

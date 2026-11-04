@@ -9,6 +9,11 @@ public final class ContainedFragmentSources implements FragmentSourceAccess {
     public static final int MAX_FRAGMENT_BYTES=8*1024*1024;
     private final Path root;
     public ContainedFragmentSources(Path root) { this.root=root.toAbsolutePath().normalize(); }
+    @Override public String canonicalId(String sourceId) throws IOException {
+        String canonical=FragmentSourceAccess.super.canonicalId(sourceId);
+        validate(sourceId); // Inspect original components before discarding internal '..'.
+        return canonical;
+    }
     @Override public String resolve(String caller,String from) throws IOException {
         String id=FragmentSourceAccess.super.resolve(caller,from);
         Path parent=Path.of(caller).getParent();
