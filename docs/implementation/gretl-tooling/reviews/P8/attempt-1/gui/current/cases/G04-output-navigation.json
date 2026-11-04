@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T13:53:41.429Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "6ccf8d0f7785e42d8ba5b03d9e61756e5f1d59f0cfc16cebfef5d2b963d948f3",
+  "imageSha256": "dd548d73e14a62d3be0d34cd5b3405a6fd5f98d666d96cb5de7f3390f42c73e7",
+  "image": "G04-output-navigation.jpg"
+}

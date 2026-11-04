@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-04T14:33:23.983Z",
+  "artifactSourceCommit": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "vsixSha256": "c840cff4db97ec7a08c4b2e24f4291bf3dd6789606a8b41ddfd65f38bf3f35d7",
+  "serverSha256": "db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67",
+  "axSha256": "b6557208a38fc2a240f67ff19ee21497a7ff81d01f3a37a6d637025078c70009",
+  "imageSha256": "bd66fefa8a6d6fcee3098f9bea807253ee5841ea74fbaa54919ccd1ef025cfea",
+  "image": "G28-wrong-catalog-blocked.jpg",
+  "artifactKind": "DELIBERATELY_INVALID_CATALOG_GUI_CANARY"
+}

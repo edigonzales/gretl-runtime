@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T13:56:22.326Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "0ae126368b2a60311c7f85728b0437c70e032e11eb0847d35fbfa606504b824a",
+  "imageSha256": "73f93334a5735fa75fc4466ae92bd851f1648843ef0f36592cc0b97221ade2c5",
+  "image": "G13-task-filter.jpg"
+}

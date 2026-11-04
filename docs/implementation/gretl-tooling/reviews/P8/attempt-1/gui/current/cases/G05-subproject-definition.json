@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T13:52:41.550Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "544ee62e8a595e572ef6376bcfdff74b49cd691325fb477bf8b3283ce4a134e1",
+  "imageSha256": "c0316fae65f3b03e52fa4b82a29c38385ea8602583af03adf788653494cc79b5",
+  "image": "G05-subproject-definition.jpg"
+}

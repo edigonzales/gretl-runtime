@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:12:22.632Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "b26fd3e2ed37cff9045c2bf7c79a47671cb6167b30e1eae556810b57d563f59e",
+  "imageSha256": "828bf529ca2a55515ac1f9de45cb16f4b4e1e9a8371b2a0700f0e35414bec523",
+  "image": "G20-result-plus-data-edge.jpg"
+}

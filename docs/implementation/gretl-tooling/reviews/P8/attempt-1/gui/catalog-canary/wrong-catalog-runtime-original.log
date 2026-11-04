@@ -1,0 +1,118 @@
+2026-11-04 14:45:33.693 [info] Starting bundled server; PID 13843; candidate b5bead4c91ee7e393310c3ea440dd12db312291b; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 14:45:35.043 [info] Connected server instance a0c92091-2ed3-437f-9ec0-7b8efd8ab202
+2026-11-04 14:55:05.149 [info] Starting bundled server; PID 20224; candidate b5bead4c91ee7e393310c3ea440dd12db312291b; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 14:55:05.469 [info] Connected server instance 1655e96c-3bff-442e-87cf-0e4058ff1f93
+2026-11-04 14:58:33.573 [warning] STALE_DOCUMENT_VERSION
+2026-11-04 15:03:05.088 [warning] Nov 04, 2026 3:03:05 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 134
+
+2026-11-04 15:24:17.688 [warning] Nov 04, 2026 3:24:17 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 415
+
+2026-11-04 15:29:54.728 [info] Starting bundled server; PID 34688; candidate b5bead4c91ee7e393310c3ea440dd12db312291b; SHA256 40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056
+2026-11-04 15:29:55.232 [info] Connected server instance ee3f73f1-95b9-4d09-9d1a-c38e1dfca35e
+2026-11-04 15:33:03.655 [info] Starting bundled server; PID 36422; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:04.402 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:04.414 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:04.414 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:04.414 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:04.415 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:04.416 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:04.717 [info] Starting bundled server; PID 36440; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:05.089 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:05.100 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:05.100 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:05.101 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:05.101 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:05.101 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:05.193 [info] Starting bundled server; PID 36455; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:05.529 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:05.540 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:05.540 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:05.540 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:05.540 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:05.541 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:05.654 [info] Starting bundled server; PID 36461; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:06.074 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:06.105 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:06.105 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:06.105 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:06.105 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:06.105 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:06.441 [info] Starting bundled server; PID 36466; candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf; SHA256 db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67
+2026-11-04 15:33:06.789 [warning] LSP_START_OR_TRANSPORT_FAILED: CATALOG_BUNDLE_HASH_MISMATCH
+
+2026-11-04 15:33:06.808 [error] Server initialization failed.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:06.808 [error] Connection to server got closed. Server will not be restarted.
+2026-11-04 15:33:06.808 [error] GRETL Runtime client: couldn't create connection to server.
+  Message: Pending response rejected since connection got disposed
+  Code: -32097 
+2026-11-04 15:33:06.808 [error] Stopping server failed
+Error: Client is not running and can't be stopped. It's current state is: starting
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19461:17)
+	at LanguageClient2.shutdown (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:22354:22)
+	at LanguageClient2.stop (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19438:21)
+	at LanguageClient2.stopAfterFailedInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19422:14)
+	at LanguageClient2.doInitialize (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19416:18)
+	at async LanguageClient2.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:19290:11)
+	at async RuntimeHost.start (/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/extensions/edigonzales.gretl-runtime-vscode-0.1.0/dist/extension.cjs:23919:7)
+2026-11-04 15:33:06.809 [error] Pending response rejected since connection got disposed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed
+2026-11-04 15:33:06.809 [error] Client is not running and can't be stopped. It's current state is: startFailed

@@ -1,0 +1,134 @@
+{
+  "candidateSha": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "gates": [
+    {
+      "id": "root-standard",
+      "manifest": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/root-standard/manifest.json",
+      "manifestSha256": "a0b28e1bc909b507172d20e0a34f612453385c8a0668d98acd51fca29069615b",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "clean",
+        "verify"
+      ],
+      "cwd": "/Users/stefan/sources/gretl-runtime",
+      "startedAt": "2026-11-04T14:23:30.926Z",
+      "endedAt": "2026-11-04T14:32:16.866Z",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "counts": {
+        "tests": 918,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "capturedFiles": 642,
+      "rawTestXmlFiles": 176,
+      "editorArtifacts": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/root-standard/editor-artifacts/dist/gretl-runtime.vsix",
+          "sha256": "cdec076b970c1d890a9d1b45e6166ee9da721509d3e31af804c38b095197d6c8"
+        }
+      ],
+      "expectedEditorVsixMatched": "cdec076b970c1d890a9d1b45e6166ee9da721509d3e31af804c38b095197d6c8"
+    },
+    {
+      "id": "root-services",
+      "manifest": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/root-services/manifest.json",
+      "manifestSha256": "527215ffe6fb2f19afa4e2972e5cd4f1f9a0c5056f9951bb7faacbf7d9c9c1b5",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-Pgeotools-probe,backing-services",
+        "clean",
+        "verify"
+      ],
+      "cwd": "/Users/stefan/sources/gretl-runtime",
+      "startedAt": "2026-11-04T14:32:17.183Z",
+      "endedAt": "2026-11-04T14:47:41.099Z",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "counts": {
+        "tests": 974,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "capturedFiles": 827,
+      "rawTestXmlFiles": 190,
+      "editorArtifacts": [
+        {
+          "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/root-services/editor-artifacts/dist/gretl-runtime.vsix",
+          "sha256": "c501014f5b1e7bfd26596e6d8cb5df49ff8d89560dc04dfcbbcc11995719fb6e"
+        }
+      ],
+      "expectedEditorVsixMatched": "c501014f5b1e7bfd26596e6d8cb5df49ff8d89560dc04dfcbbcc11995719fb6e"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/gretl-language-contract/target/gretl-language-contract-6.0.0-SNAPSHOT.jar",
+      "sha256": "48328a9a519e734f59d124c13e2a00592812a09221434ad61c80a9402a16feeb",
+      "kind": "tooling-distribution"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/gretl-tooling-core/target/gretl-tooling-core-6.0.0-SNAPSHOT.jar",
+      "sha256": "bf45f996ff3758c63db5f2af82b05ee6e14b1297b792c23c3728abcac6b50e3c",
+      "kind": "tooling-distribution"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/gretl-tooling-catalog/target/gretl-tooling-catalog-6.0.0-SNAPSHOT-catalog.jar",
+      "sha256": "4200992a6f4579547b98981ca87f23f4e7f73349d7c270d44763942b0a908cf2",
+      "kind": "tooling-distribution"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/operations.json",
+      "sha256": "047a7131e9ce4706c5073a8600f38dbe35818623616d9a0025f405a1ddc0d911",
+      "kind": "tooling-distribution"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/gretl-tooling-catalog/target/catalog/catalog-manifest.json",
+      "sha256": "65c9ae3625965b106b5a01dfb28ad75e7eb69a3f3cbad7f996259e95051098f6",
+      "kind": "tooling-distribution"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar",
+      "sha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e",
+      "kind": "lsp-server-or-protocol"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/gretl-lsp/target/tooling-dependencies.json",
+      "sha256": "d8780361a2135fe759ac5ae3d3c2c08ff7dde12a064eec7b1185b46ae94aeb8a",
+      "kind": "lsp-server-or-protocol"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/gretl-lsp/target/classes/gretl-protocol-v1.schema.json",
+      "sha256": "ec4a18022d9b2583fdf4db1d9d8368826363558bde3a91796f3c1546bf72b328",
+      "kind": "lsp-server-or-protocol"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/vscode/gretl-vscode/dist/gretl-runtime.vsix",
+      "sha256": "c501014f5b1e7bfd26596e6d8cb5df49ff8d89560dc04dfcbbcc11995719fb6e",
+      "kind": "installed-editor"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/vscode/gretl-vscode/dist/distribution-inventory.json",
+      "sha256": "d09ce3a7e79cac8604b342a404135bf6de674550135e1605b4fb8ace035f1258",
+      "kind": "tooling-distribution"
+    },
+    {
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/vscode/gretl-vscode/server/bundle-manifest.json",
+      "sha256": "1f50c6acd3a20e2e12f98654372dd91bfc56d4581329721abd01d6da8c13fe18",
+      "kind": "tooling-distribution"
+    }
+  ],
+  "standardVsFinalDisclosure": {
+    "standardEditorVsix": "cdec076b970c1d890a9d1b45e6166ee9da721509d3e31af804c38b095197d6c8",
+    "finalEditorVsix": "c501014f5b1e7bfd26596e6d8cb5df49ff8d89560dc04dfcbbcc11995719fb6e",
+    "difference": "Both gates ran on candidate 54bb123070fc7bd81aea58b4e1191beecf568cbf. The standard VSIX was produced by that gate before the final package rebuild; the final request artifact is c501014f... and is byte-identical to the services-gate editor artifact. The disclosed effective-content comparison covers identical client payloads and Java classes/resources with only catalogue-manifest member ordering differing inside the JAR."
+  }
+}

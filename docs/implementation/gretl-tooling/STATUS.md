@@ -1,7 +1,7 @@
 # GRETL Tooling – aktueller Auftragsstatus
 
 **Arbeitsstand · 4. November 2026.**
-P0 bis P7 sind unabhängig abgenommen; die äusseren Reviewprozesse sind beendet und validiert. P8 ist in der kumulativen Gesamtabnahme.
+P0 bis P8 sind unabhängig abgenommen; die äusseren Reviewprozesse sind beendet und validiert. Die kumulative Gesamtabnahme umfasst alle 81 Kriterien und G01–G30.
 
 `assignmentBase`: `185fc6700b5cb2897f724d457610a57f059b3421`.
 `requirementsDigest`: `cb2ea98d41987604be60d1a7520c3e9e129d437cbb2b9a4a1d6f5a2e085997d3`.
@@ -17,15 +17,17 @@ Primärplattform: macOS 27.0.1 arm64, JDK 25.0.2, OpenCode 2.2.5 mit direktem De
 | P5 | Installierter Texteditor | PASS | `4520ee6960d8b0857fad828f972a44950c5aeb09` | [Originalreview mit Infrastruktur-BLOCKED](reviews/P5/attempt-1/review.md), [ergänzter Originalreview](reviews/P5/attempt-1/resume-1/review.md), [validierter Abschluss](reviews/P5/attempt-1/resume-1/validation.json) |
 | P6 | Interaktiver Graph | PASS | `ee3a2e8a40bf965a183bc688157d755e2f2320b2` | [Originalreview](reviews/P6/attempt-1/review.md), [ergänzter Originalreview nach Metadatenkorrektur](reviews/P6/attempt-1/resume-1/review.md), [validierter Abschluss](reviews/P6/attempt-1/resume-1/validation.json) |
 | P7 | Schreibender Modeler | PASS | `53f7f3daaf92d002fd75978c25471321fd99a310` | [Originalreview](reviews/P7/attempt-1/review.md), [validierter Abschluss](reviews/P7/attempt-1/validation.json) |
-| P8 | Resilienz und Gesamtabnahme | IN PROGRESS | — | — |
+| P8 | Resilienz und Gesamtabnahme | PASS | `54bb123070fc7bd81aea58b4e1191beecf568cbf` | [Originalreview](reviews/P8/attempt-1/review.md), [validierter Abschluss](reviews/P8/attempt-1/validation.json) |
 
-## Aktuell erlaubter nächster Schritt
+## Abschluss
 
-P8 nach CODEX_STARTPROMPT ausführen: frischer zusammengehöriger Build, kumulativ
-alle 81 Kriterien und G01–G30, Linux-LSP-Prozess sowie Resilienz-/Ressourcenprüfung.
-P7 ist am unveränderten Kandidaten unabhängig abgenommen.
+Der Implementierungsauftrag P0–P8 ist vollständig abgeschlossen. Beide finalen
+JDK25-Rootgates, die installierte macOS-Workbench, der Linux-LSP, das unveränderte
+GUI-SCRIPT-Fixture und die Ressourcen-/Harnessgegenproben sind belegt.
 
-Abgeschlossene Modelerabnahme: [P7-Bericht](implementation/P7.md).
+Zusammengehörige Artefakte, Grenzen und Originalbelege:
+[P8-Abschlussbericht](implementation/P8.md). Die Veröffentlichung ist nicht Teil
+dieser Abnahme und wurde nicht ausgeführt.
 
 ## Testauswahl nach Benutzerpräzisierung
 

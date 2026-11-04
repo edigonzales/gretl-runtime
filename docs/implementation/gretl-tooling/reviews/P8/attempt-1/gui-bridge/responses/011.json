@@ -1,0 +1,23 @@
+{
+  "id": "011",
+  "purpose": "G30 close/reopen: explicitly choose the native Don't Save button for the dirty compound source after observing the real save prompt, then observe the closed state.",
+  "actions": [
+    {
+      "kind": "click",
+      "completed": true
+    },
+    {
+      "kind": "observe",
+      "completed": true
+    }
+  ],
+  "error": null,
+  "transportOnly": true,
+  "acceptanceVerdict": null,
+  "image": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/011.jpg",
+  "ax": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/011.ax.txt",
+  "buffers": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/gui-bridge/responses/011.buffers.json",
+  "artifactSourceCommit": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "vsixSha256": "c501014f5b1e7bfd26596e6d8cb5df49ff8d89560dc04dfcbbcc11995719fb6e",
+  "serverSha256": "36d8bdd4655b0974a4ced93ef9da8350449ac41721baeaef2d5a604640c5ef1e"
+}

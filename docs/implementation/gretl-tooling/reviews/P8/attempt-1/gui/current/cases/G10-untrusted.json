@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-04T13:45:26.155Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "8a789ad9dc701f169654f6ed9ec90c1ba544c866bcc15ce0ffce1e8d16da4bf6",
+  "imageSha256": "7cc396c1aa5b79642b701c5db86fc541c3977cb8b680ef2360ba79b3a0e5b30f",
+  "image": "G10-untrusted.jpg",
+  "observation": "Restricted Mode; GRETL Workspace trust required; server not started."
+}

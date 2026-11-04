@@ -1,0 +1,13 @@
+{
+  "id": "011",
+  "purpose": "G30 close/reopen: explicitly choose the native Don't Save button for the dirty compound source after observing the real save prompt, then observe the closed state.",
+  "actions": [
+    {
+      "kind": "click",
+      "label": "Don't Save"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

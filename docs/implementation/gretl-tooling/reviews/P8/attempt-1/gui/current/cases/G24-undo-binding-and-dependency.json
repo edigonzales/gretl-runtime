@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:13:25.132Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "d22218a87098e86fa7034a7adb53aa57eb73334e07ac6956ddcc081ba5d02704",
+  "imageSha256": "ac24db67148b771bb61eb6dadae934e68046757239a966e9bfc0a578319dd1a0",
+  "image": "G24-undo-binding-and-dependency.jpg"
+}

@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:13:30.397Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "ec98d77d5e8be445f2c06872a5e8e28d787cbd091e2eb883cd8df251cce962ad",
+  "imageSha256": "269e32562168390295af0807d29ab5b5d53a88499989340f468f676647425e01",
+  "image": "G24-redo-both.jpg"
+}

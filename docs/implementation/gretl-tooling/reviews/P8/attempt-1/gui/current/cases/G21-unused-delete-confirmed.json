@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:22:51.262Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "cb011c73fc86a06db19e33010a5761666eb663183913b0e42550d165a5b097a9",
+  "imageSha256": "3ce5f5b783e6b5ee1dc62d9fe1d464e21f90ee2e739c81aef5985bbe6df6a2c9",
+  "image": "G21-unused-delete-confirmed.jpg"
+}

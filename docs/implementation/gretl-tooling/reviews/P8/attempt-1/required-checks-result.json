@@ -1,0 +1,47 @@
+{
+  "candidate": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "checks": [
+    {
+      "id": "npm-ci-tools",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/product/tools/gretl-tooling",
+      "argv": [
+        "npm",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "\nadded 5 packages in 348ms\n",
+      "stderr": ""
+    },
+    {
+      "id": "npm-ci-vscode",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/product/vscode/gretl-vscode",
+      "argv": [
+        "npm",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "\nadded 188 packages in 2s\n",
+      "stderr": ""
+    },
+    {
+      "id": "tooling-docs",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/product",
+      "argv": [
+        "node",
+        "tools/gretl-tooling/check-docs.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "Validated 81 exact criteria\nTooling documentation links, acceptance mapping and requirement inputs valid\n",
+      "stderr": ""
+    }
+  ]
+}

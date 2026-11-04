@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:13:00.001Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "20903bea661c0c2a9c9541d96e3f77bed942e8ade11077461f4b61e222e648ca",
+  "imageSha256": "399ad8a641a4454f86f639a6426297e68616d87dfa0dbee67871bbe8ec2e4876",
+  "image": "G24-undo-defaults.jpg"
+}

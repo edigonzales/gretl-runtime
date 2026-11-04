@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T13:52:24.860Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "c33791839aa125771925e893ed51fda67d26e589d77417a2254378b7aadc8bac",
+  "imageSha256": "a9ebf76f6b8b55dcb7a6da952c3a1a27219a8415c005ed5673da4783fbb01fe8",
+  "image": "G03-signature.jpg"
+}

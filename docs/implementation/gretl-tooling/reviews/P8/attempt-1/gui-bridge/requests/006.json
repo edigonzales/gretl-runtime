@@ -1,0 +1,13 @@
+{
+  "id": "006",
+  "purpose": "G30 confirm result binding: commit the selected fetch/file -> unpack/archive draft through the native Modeler and observe the resulting unsaved source plus graph binding.",
+  "actions": [
+    {
+      "kind": "click",
+      "label": "Confirm source change"
+    },
+    {
+      "kind": "observe"
+    }
+  ]
+}

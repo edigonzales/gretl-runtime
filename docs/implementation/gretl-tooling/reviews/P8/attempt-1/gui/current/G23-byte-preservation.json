@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "oldSha256": "9650b2b8e6ec9ef2fd663ccc767a006815019d9ba0180ab15047426d6a73470a",
+  "newSha256": "3a47a054a6c686531136c768a4ed39c93c2cc2299034b31bf475c0999b3de8fb",
+  "onlyReplacement": [
+    "overwrite=false",
+    "overwrite=true"
+  ],
+  "crlfPreserved": true,
+  "opaqueBytesPreserved": true,
+  "markerAbsent": true
+}

@@ -1,0 +1,202 @@
+TAP version 13
+# Subtest: synthetic structural fixture is accepted only after all external conditions
+ok 1 - synthetic structural fixture is accepted only after all external conditions
+  ---
+  duration_ms: 9.966542
+  type: 'test'
+  ...
+# Subtest: gate rejects sha
+ok 2 - gate rejects sha
+  ---
+  duration_ms: 1.788125
+  type: 'test'
+  ...
+# Subtest: gate rejects phase
+ok 3 - gate rejects phase
+  ---
+  duration_ms: 0.593333
+  type: 'test'
+  ...
+# Subtest: gate rejects criteria
+ok 4 - gate rejects criteria
+  ---
+  duration_ms: 4.324541
+  type: 'test'
+  ...
+# Subtest: gate rejects duplicate
+ok 5 - gate rejects duplicate
+  ---
+  duration_ms: 0.277583
+  type: 'test'
+  ...
+# Subtest: gate rejects digest
+ok 6 - gate rejects digest
+  ---
+  duration_ms: 0.833084
+  type: 'test'
+  ...
+# Subtest: gate rejects running
+ok 7 - gate rejects running
+  ---
+  duration_ms: 0.433417
+  type: 'test'
+  ...
+# Subtest: gate rejects children
+ok 8 - gate rejects children
+  ---
+  duration_ms: 0.575
+  type: 'test'
+  ...
+# Subtest: gate rejects modified
+ok 9 - gate rejects modified
+  ---
+  duration_ms: 0.567
+  type: 'test'
+  ...
+# Subtest: gate rejects prefilled
+ok 10 - gate rejects prefilled
+  ---
+  duration_ms: 1.020083
+  type: 'test'
+  ...
+# Subtest: gate rejects exit
+ok 11 - gate rejects exit
+  ---
+  duration_ms: 2.0795
+  type: 'test'
+  ...
+# Subtest: gate rejects timeout
+ok 12 - gate rejects timeout
+  ---
+  duration_ms: 2.944208
+  type: 'test'
+  ...
+# Subtest: gate rejects provider
+ok 13 - gate rejects provider
+  ---
+  duration_ms: 0.690291
+  type: 'test'
+  ...
+# Subtest: gate rejects counterprobe
+ok 14 - gate rejects counterprobe
+  ---
+  duration_ms: 0.407333
+  type: 'test'
+  ...
+# Subtest: gate rejects missing
+ok 15 - gate rejects missing
+  ---
+  duration_ms: 0.237083
+  type: 'test'
+  ...
+# Subtest: gate rejects evidence
+ok 16 - gate rejects evidence
+  ---
+  duration_ms: 0.597959
+  type: 'test'
+  ...
+# Subtest: gate rejects skipped
+ok 17 - gate rejects skipped
+  ---
+  duration_ms: 0.570375
+  type: 'test'
+  ...
+# Subtest: gate rejects zeroTests
+ok 18 - gate rejects zeroTests
+  ---
+  duration_ms: 4.040209
+  type: 'test'
+  ...
+# Subtest: gate rejects report
+ok 19 - gate rejects report
+  ---
+  duration_ms: 0.489917
+  type: 'test'
+  ...
+# Subtest: gate rejects unverified
+ok 20 - gate rejects unverified
+  ---
+  duration_ms: 0.317041
+  type: 'test'
+  ...
+# Subtest: gate rejects finding
+ok 21 - gate rejects finding
+  ---
+  duration_ms: 0.330167
+  type: 'test'
+  ...
+# Subtest: gate rejects extra
+ok 22 - gate rejects extra
+  ---
+  duration_ms: 0.237542
+  type: 'test'
+  ...
+# Subtest: later phase cannot omit actual GUI or cumulative counterprobes
+ok 23 - later phase cannot omit actual GUI or cumulative counterprobes
+  ---
+  duration_ms: 1.084458
+  type: 'test'
+  ...
+# Subtest: model identity forbids fallback, stale mapping and endpoint changes
+ok 24 - model identity forbids fallback, stale mapping and endpoint changes
+  ---
+  duration_ms: 0.847958
+  type: 'test'
+  ...
+# Subtest: resolved dependency guard detects production leaks while permitting test parity
+ok 25 - resolved dependency guard detects production leaks while permitting test parity
+  ---
+  duration_ms: 0.586708
+  type: 'test'
+  ...
+# Subtest: registry compares all 81 exact requirements and captures stable digest
+ok 26 - registry compares all 81 exact requirements and captures stable digest
+  ---
+  duration_ms: 13.422666
+  type: 'test'
+  ...
+# Subtest: review profile is scoped and does not grant general shell or product edits
+ok 27 - review profile is scoped and does not grant general shell or product edits
+  ---
+  duration_ms: 0.212375
+  type: 'test'
+  ...
+# Subtest: wait drains both streams and detects actual timeout
+ok 28 - wait drains both streams and detects actual timeout
+  ---
+  duration_ms: 140.434667
+  type: 'test'
+  ...
+# Subtest: inactive profile reports are preserved separately and cannot inflate fresh counts
+ok 29 - inactive profile reports are preserved separately and cannot inflate fresh counts
+  ---
+  duration_ms: 3.200875
+  type: 'test'
+  ...
+# Subtest: pre-clean archival snapshots deliberately preserve every existing report
+ok 30 - pre-clean archival snapshots deliberately preserve every existing report
+  ---
+  duration_ms: 1.665541
+  type: 'test'
+  ...
+# Subtest: gate validation rejects inflated counts, stale metadata and changed raw XML
+ok 31 - gate validation rejects inflated counts, stale metadata and changed raw XML
+  ---
+  duration_ms: 3.554375
+  type: 'test'
+  ...
+# Subtest: only old reports cannot qualify a new successful gate
+ok 32 - only old reports cannot qualify a new successful gate
+  ---
+  duration_ms: 1.963458
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 440.302166

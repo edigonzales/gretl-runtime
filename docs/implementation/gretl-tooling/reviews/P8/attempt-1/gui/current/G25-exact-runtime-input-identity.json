@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "actualGuiSource": "/Users/stefan/.cache/gretl-tooling-review/P8-candidate-1-gui/generated-original/job.groovy",
+  "guiSourceSha256": "7a551b46f463b2c483c1936b18fbd7f4a5d9c530e481e1f2834842c9be3b7782",
+  "originalRuntimeFixture": "/Users/stefan/sources/gretl-runtime/gretl-integration-tests/src/test/resources/jobs/modeler-created/job.groovy",
+  "fixtureSha256": "7a551b46f463b2c483c1936b18fbd7f4a5d9c530e481e1f2834842c9be3b7782",
+  "runtimeOracleQualification": "/Users/stefan/.cache/gretl-tooling-review/p8-c2-final-runtime-canary/qualification.json",
+  "actualScriptExecution": "/Users/stefan/.cache/gretl-tooling-review/p8-c2-final-runtime-canary/control/target/job-evidence/modeler-created-script-e311dc76-f7b9-478b-94e8-3d6ed2b5c2c1/execution.json",
+  "runtimeMode": "SCRIPT",
+  "runtimeExitCode": 0,
+  "note": "Actual native P8-created saved bytes equal the unchanged original Runtime fixture bytes. Parameter URL override changes no Groovy input."
+}

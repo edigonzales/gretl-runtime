@@ -1,0 +1,87 @@
+{
+  "candidate": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "rows": [
+    {
+      "id": "tooling-review-tests",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/product",
+      "argv": [
+        "node",
+        "--test",
+        "tools/gretl-tooling/review.test.mjs",
+        "tools/gretl-tooling/protocol.test.mjs"
+      ],
+      "started": "2026-11-04T15:09:55.862Z",
+      "ended": "2026-11-04T15:09:56.164Z",
+      "exitCode": 0,
+      "signal": null,
+      "tests": 34,
+      "failures": 0,
+      "skips": 0,
+      "stdout": "TAP version 13\n# Subtest: versioned custom requests accept typed data and exact 64-bit scalar strings\nok 1 - versioned custom requests accept typed data and exact 64-bit scalar strings\n  ---\n  duration_ms: 2.019167\n  type: 'test'\n  ...\n# Subtest: schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests\nok 2 - schema rejects unknown raw-code values, missing fields, wrong revisions and broad resource requests\n  ---\n  duration_ms: 0.353167\n  type: 'test'\n  ...\n# Subtest: synthetic structural fixture is accepted only after all external conditions\nok 3 - synthetic structural fixture is accepted only after all external conditions\n  ---\n  duration_ms: 2.6675\n  type: 'test'\n  ...\n# Subtest: gate rejects sha\nok 4 - gate rejects sha\n  ---\n  duration_ms: 1.053458\n  type: 'test'\n  ...\n# Subtest: gate rejects phase\nok 5 - gate rejects phase\n  ---\n  duration_ms: 0.266292\n  type: 'test'\n  ...\n# Subtest: gate rejects criteria\nok 6 - gate rejects criteria\n  ---\n  duration_ms: 1.1835\n  type: 'test'\n  ...\n# Subtest: gate rejects duplicate\nok 7 - gate rejects duplicate\n  ---\n  duration_ms: 0.793167\n  type: 'test'\n  ...\n# Subtest: gate rejects digest\nok 8 - gate rejects digest\n  ---\n  duration_ms: 0.145584\n  type: 'test'\n  ...\n# Subtest: gate rejects running\nok 9 - gate rejects running\n  ---\n  duration_ms: 0.173791\n  type: 'test'\n  ...\n# Subtest: gate rejects children\nok 10 - gate rejects children\n  ---\n  duration_ms: 0.14375\n  type: 'test'\n  ...\n# Subtest: gate rejects modified\nok 11 - gate rejects modified\n  ---\n  duration_ms: 0.293417\n  type: 'test'\n  ...\n# Subtest: gate rejects prefilled\nok 12 - gate rejects prefilled\n  ---\n  duration_ms: 0.387125\n  type: 'test'\n  ...\n# Subtest: gate rejects exit\nok 13 - gate rejects exit\n  ---\n  duration_ms: 0.209375\n  type: 'test'\n  ...\n# Subtest: gate rejects timeout\nok 14 - gate rejects timeout\n  ---\n  duration_ms: 0.116292\n  type: 'test'\n  ...\n# Subtest: gate rejects provider\nok 15 - gate rejects provider\n  ---\n  duration_ms: 0.105416\n  type: 'test'\n  ...\n# Subtest: gate rejects counterprobe\nok 16 - gate rejects counterprobe\n  ---\n  duration_ms: 0.1\n  type: 'test'\n  ...\n# Subtest: gate rejects missing\nok 17 - gate rejects missing\n  ---\n  duration_ms: 0.0945\n  type: 'test'\n  ...\n# Subtest: gate rejects evidence\nok 18 - gate rejects evidence\n  ---\n  duration_ms: 0.175791\n  type: 'test'\n  ...\n# Subtest: gate rejects skipped\nok 19 - gate rejects skipped\n  ---\n  duration_ms: 0.199458\n  type: 'test'\n  ...\n# Subtest: gate rejects zeroTests\nok 20 - gate rejects zeroTests\n  ---\n  duration_ms: 3.051\n  type: 'test'\n  ...\n# Subtest: gate rejects report\nok 21 - gate rejects report\n  ---\n  duration_ms: 0.236208\n  type: 'test'\n  ...\n# Subtest: gate rejects unverified\nok 22 - gate rejects unverified\n  ---\n  duration_ms: 0.1305\n  type: 'test'\n  ...\n# Subtest: gate rejects finding\nok 23 - gate rejects finding\n  ---\n  duration_ms: 0.120084\n  type: 'test'\n  ...\n# Subtest: gate rejects extra\nok 24 - gate rejects extra\n  ---\n  duration_ms: 0.112833\n  type: 'test'\n  ...\n# Subtest: later phase cannot omit actual GUI or cumulative counterprobes\nok 25 - later phase cannot omit actual GUI or cumulative counterprobes\n  ---\n  duration_ms: 0.246084\n  type: 'test'\n  ...\n# Subtest: model identity forbids fallback, stale mapping and endpoint changes\nok 26 - model identity forbids fallback, stale mapping and endpoint changes\n  ---\n  duration_ms: 0.405458\n  type: 'test'\n  ...\n# Subtest: resolved dependency guard detects production leaks while permitting test parity\nok 27 - resolved dependency guard detects production leaks while permitting test parity\n  ---\n  duration_ms: 0.160375\n  type: 'test'\n  ...\n# Subtest: registry compares all 81 exact requirements and captures stable digest\nok 28 - registry compares all 81 exact requirements and captures stable digest\n  ---\n  duration_ms: 5.943416\n  type: 'test'\n  ...\n# Subtest: review profile is scoped and does not grant general shell or product edits\nok 29 - review profile is scoped and does not grant general shell or product edits\n  ---\n  duration_ms: 0.112042\n  type: 'test'\n  ...\n# Subtest: wait drains both streams and detects actual timeout\nok 30 - wait drains both streams and detects actual timeout\n  ---\n  duration_ms: 129.794291\n  type: 'test'\n  ...\n# Subtest: inactive profile reports are preserved separately and cannot inflate fresh counts\nok 31 - inactive profile reports are preserved separately and cannot inflate fresh counts\n  ---\n  duration_ms: 3.922833\n  type: 'test'\n  ...\n# Subtest: pre-clean archival snapshots deliberately preserve every existing report\nok 32 - pre-clean archival snapshots deliberately preserve every existing report\n  ---\n  duration_ms: 2.067292\n  type: 'test'\n  ...\n# Subtest: gate validation rejects inflated counts, stale metadata and changed raw XML\nok 33 - gate validation rejects inflated counts, stale metadata and changed raw XML\n  ---\n  duration_ms: 2.832792\n  type: 'test'\n  ...\n# Subtest: only old reports cannot qualify a new successful gate\nok 34 - only old reports cannot qualify a new successful gate\n  ---\n  duration_ms: 2.162542\n  type: 'test'\n  ...\n1..34\n# tests 34\n# suites 0\n# pass 34\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 269.717334\n",
+      "stderr": ""
+    },
+    {
+      "id": "extension-risky-tests",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/product/vscode/gretl-vscode",
+      "argv": [
+        "node",
+        "--test",
+        "test/workbench-evidence.test.mjs",
+        "test/modeler-layout.test.mjs",
+        "test/modeler-controller.test.mjs"
+      ],
+      "started": "2026-11-04T15:09:56.165Z",
+      "ended": "2026-11-04T15:09:57.102Z",
+      "exitCode": 0,
+      "signal": null,
+      "tests": 25,
+      "failures": 0,
+      "skips": 0,
+      "stdout": "TAP version 13\n# Subtest: late requests cannot replace a newer graph or silently follow the active editor\nok 1 - late requests cannot replace a newer graph or silently follow the active editor\n  ---\n  duration_ms: 3.40225\n  type: 'test'\n  ...\n# Subtest: disposed panels ignore late graph responses and unregister all source/selection listeners\nok 2 - disposed panels ignore late graph responses and unregister all source/selection listeners\n  ---\n  duration_ms: 0.399542\n  type: 'test'\n  ...\n# Subtest: two panels keep independent pinned identities and reject state or navigation from another snapshot\nok 3 - two panels keep independent pinned identities and reject state or navigation from another snapshot\n  ---\n  duration_ms: 0.838334\n  type: 'test'\n  ...\n# Subtest: server invalidation blocks old navigation and discards a response from before restart\nok 4 - server invalidation blocks old navigation and discards a response from before restart\n  ---\n  duration_ms: 122.855375\n  type: 'test'\n  ...\n# Subtest: workspace labels cannot escape bootstrap JSON, and another panel cannot start an analysis\nok 5 - workspace labels cannot escape bootstrap JSON, and another panel cannot start an analysis\n  ---\n  duration_ms: 0.591625\n  type: 'test'\n  ...\n# Subtest: a revealed source range maps from its start rather than its exclusive end\nok 6 - a revealed source range maps from its start rather than its exclusive end\n  ---\n  duration_ms: 0.584084\n  type: 'test'\n  ...\n# Subtest: read-only inspection accepts only its outstanding nonce and current snapshot, and disposal resolves it\nok 7 - read-only inspection accepts only its outstanding nonce and current snapshot, and disposal resolves it\n  ---\n  duration_ms: 0.477041\n  type: 'test'\n  ...\n# Subtest: restored non-job custom editors share the current GRETL document incarnation before querying\nok 8 - restored non-job custom editors share the current GRETL document incarnation before querying\n  ---\n  duration_ms: 0.43875\n  type: 'test'\n  ...\n# Subtest: two panels of the same source keep separate persisted view slots\nok 9 - two panels of the same source keep separate persisted view slots\n  ---\n  duration_ms: 0.735292\n  type: 'test'\n  ...\n# Subtest: closing a panel cancels outstanding source navigation and cannot open a late location\nok 10 - closing a panel cancels outstanding source navigation and cannot open a late location\n  ---\n  duration_ms: 0.469583\n  type: 'test'\n  ...\n# Subtest: a cancelled older navigation cannot mark the current graph stale\nok 11 - a cancelled older navigation cannot mark the current graph stale\n  ---\n  duration_ms: 0.430875\n  type: 'test'\n  ...\n# Subtest: semantic messages are pinned, snapshot guarded and serialize confirmations without optimistic graph changes\nok 12 - semantic messages are pinned, snapshot guarded and serialize confirmations without optimistic graph changes\n  ---\n  duration_ms: 0.83625\n  type: 'test'\n  ...\n# Subtest: panel disposal and source invalidation cancel pending semantic edits, with no late UI resurrection\nok 13 - panel disposal and source invalidation cancel pending semantic edits, with no late UI resurrection\n  ---\n  duration_ms: 0.38925\n  type: 'test'\n  ...\n# Subtest: a superseded catalogue request cannot repopulate a newer graph or disposed panel\nok 14 - a superseded catalogue request cannot repopulate a newer graph or disposed panel\n  ---\n  duration_ms: 0.354458\n  type: 'test'\n  ...\n# Subtest: opening required sources consumes only a host-issued request nonce and captured workspace URIs\nok 15 - opening required sources consumes only a host-issued request nonce and captured workspace URIs\n  ---\n  duration_ms: 0.446833\n  type: 'test'\n  ...\n# Subtest: native text undo/redo and save are scoped to the pinned document, without accepting arbitrary commands\nok 16 - native text undo/redo and save are scoped to the pinned document, without accepting arbitrary commands\n  ---\n  duration_ms: 0.382125\n  type: 'test'\n  ...\n# Subtest: actual ELK in a separate worker lays out nested project nodes and preserves view-only positions\nok 17 - actual ELK in a separate worker lays out nested project nodes and preserves view-only positions\n  ---\n  duration_ms: 170.7875\n  type: 'test'\n  ...\n# Subtest: new layouts cancel the actual old worker; disposal rejects late calls instead of resurrecting workers\nok 18 - new layouts cancel the actual old worker; disposal rejects late calls instead of resurrecting workers\n  ---\n  duration_ms: 68.952875\n  type: 'test'\n  ...\n# Subtest: actual nested multi-edge job geometry keeps sibling cards separate\nok 19 - actual nested multi-edge job geometry keeps sibling cards separate\n  ---\n  duration_ms: 78.163083\n  type: 'test'\n  ...\n# {\"measurement\":\"actual-elk-burst\",\"nodes\":500,\"requests\":40,\"createdWorkers\":1,\"peakWorkers\":1,\"workersAfterDispose\":0,\"elapsedMilliseconds\":208,\"peakProcessRssBytes\":153862144}\n# Subtest: a forty-request burst coalesces before worker creation and leaves no worker after disposal\nok 20 - a forty-request burst coalesces before worker creation and leaves no worker after disposal\n  ---\n  duration_ms: 211.893791\n  type: 'test'\n  ...\n# Subtest: controlled native observation can prove an edit and separately prove view-only invariance\nok 21 - controlled native observation can prove an edit and separately prove view-only invariance\n  ---\n  duration_ms: 0.95675\n  type: 'test'\n  ...\n# Subtest: canary: an omitted expected graph node fails the same workbench oracle\nok 22 - canary: an omitted expected graph node fails the same workbench oracle\n  ---\n  duration_ms: 0.812791\n  type: 'test'\n  ...\n# Subtest: canary: suppressing the confirmed text mutation cannot become a passed GUI edit\nok 23 - canary: suppressing the confirmed text mutation cannot become a passed GUI edit\n  ---\n  duration_ms: 0.451292\n  type: 'test'\n  ...\n# Subtest: canary: foreign panels, invisible cards and a forged source digest are rejected\nok 24 - canary: foreign panels, invisible cards and a forged source digest are rejected\n  ---\n  duration_ms: 0.606833\n  type: 'test'\n  ...\n# Subtest: wire source stamps preserve UTF-16 code units independently of driver UTF-8 file hashes\nok 25 - wire source stamps preserve UTF-16 code units independently of driver UTF-8 file hashes\n  ---\n  duration_ms: 0.256583\n  type: 'test'\n  ...\n1..25\n# tests 25\n# suites 0\n# pass 25\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 905.960959\n",
+      "stderr": ""
+    },
+    {
+      "id": "extension-package-tests",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/product/vscode/gretl-vscode",
+      "argv": [
+        "node",
+        "--test",
+        "test/package/distribution.test.mjs",
+        "test/package/server-integrity.test.mjs"
+      ],
+      "started": "2026-11-04T15:09:57.102Z",
+      "ended": "2026-11-04T15:09:57.571Z",
+      "exitCode": 0,
+      "signal": null,
+      "tests": 3,
+      "failures": 0,
+      "skips": 0,
+      "stdout": "TAP version 13\n# Subtest: actual VSIX inventory binds identity, versions, catalogue, protocol and every delivered component\nok 1 - actual VSIX inventory binds identity, versions, catalogue, protocol and every delivered component\n  ---\n  duration_ms: 27.230042\n  type: 'test'\n  ...\n# Subtest: tampering with a real packaged payload fails inventory verification and emits no success inventory\nok 2 - tampering with a real packaged payload fails inventory verification and emits no success inventory\n  ---\n  duration_ms: 65.029958\n  type: 'test'\n  ...\n# Subtest: tampering with the actual server JAR in a scratch VSIX fails the shipped inventory gate\nok 3 - tampering with the actual server JAR in a scratch VSIX fails the shipped inventory gate\n  ---\n  duration_ms: 409.065167\n  type: 'test'\n  ...\n1..3\n# tests 3\n# suites 0\n# pass 3\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 443.744209\n",
+      "stderr": ""
+    },
+    {
+      "id": "own-inventory-final-vsix",
+      "cwd": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/product/vscode/gretl-vscode",
+      "argv": [
+        "node",
+        "scripts/inventory.mjs",
+        "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/artifacts/vscode/gretl-vscode/dist/gretl-runtime.vsix",
+        "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/own-final-vsix-inventory.json"
+      ],
+      "started": "2026-11-04T15:09:57.571Z",
+      "ended": "2026-11-04T15:09:57.733Z",
+      "exitCode": 0,
+      "signal": null,
+      "tests": 0,
+      "failures": 0,
+      "skips": 0,
+      "stdout": "Verified 20 delivered VSIX entries and complete payload hashes.\n",
+      "stderr": ""
+    },
+    {
+      "id": "own-inventory-artifact",
+      "path": "/Users/stefan/.cache/gretl-tooling-review/P8-review-1/evidence/own-final-vsix-inventory.json",
+      "sha256": "c3e47e2b3f798847fe95e49b45c885ca5d82642a845915beeb1f61c75f45dfbf"
+    }
+  ]
+}

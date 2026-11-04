@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-04T14:18:53.310Z",
+  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
+  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
+  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
+  "axSha256": "8231c128143e973d3b5eaadaae7cf36e064f5fa89d7e4dc56e72b06d83c016a1",
+  "imageSha256": "0a9ad4702c31de0e1db92e55907651b907fb7a061e69c4a015c92319d0de1650",
+  "image": "G18-nested-list-map-undo.jpg"
+}

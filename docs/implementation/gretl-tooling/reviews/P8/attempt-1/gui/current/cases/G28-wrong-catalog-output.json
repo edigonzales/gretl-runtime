@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-04T14:33:28.352Z",
+  "artifactSourceCommit": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
+  "vsixSha256": "c840cff4db97ec7a08c4b2e24f4291bf3dd6789606a8b41ddfd65f38bf3f35d7",
+  "serverSha256": "db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67",
+  "axSha256": "0a60fa795f16610e18116d10122181378660366c6591e24ec456f965d7e5e093",
+  "imageSha256": "4d29c82768e617f025443cabd303daec6873c326ac68e4582742abbbc5fe919f",
+  "image": "G28-wrong-catalog-output.jpg",
+  "artifactKind": "DELIBERATELY_INVALID_CATALOG_GUI_CANARY"
+}
