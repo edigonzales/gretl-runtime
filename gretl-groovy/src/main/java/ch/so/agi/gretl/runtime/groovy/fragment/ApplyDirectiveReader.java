@@ -55,20 +55,11 @@ public final class ApplyDirectiveReader {
             boolean[] scriptContext = {true};
             ClassNode[] helperType = {null};
             for (var method : module.getMethods()) if (method.getName().equals("apply")) shadow.add(method);
+            for(var statement:module.getStatementBlock().getStatements())
+                if(statement instanceof ExpressionStatement expression && shadowsApply(expression.getExpression())) shadow.add(expression.getExpression());
             var visitor = new CodeVisitorSupport() {
                 void problem(String code, ASTNode node) {
                     problems.add(new Problem(code, sourceId, Math.max(0,node.getLineNumber()), Math.max(0,node.getColumnNumber())));
-                }
-                @Override public void visitDeclarationExpression(DeclarationExpression node) {
-                    if (scriptContext[0] && !node.isMultipleAssignmentDeclaration() && node.getVariableExpression().getName().equals("apply")) shadow.add(node);
-                    if (scriptContext[0] && node.isMultipleAssignmentDeclaration()) for (var item : node.getTupleExpression().getExpressions())
-                        if (item instanceof VariableExpression v && v.getName().equals("apply")) shadow.add(node);
-                    super.visitDeclarationExpression(node);
-                }
-                @Override public void visitBinaryExpression(BinaryExpression node) {
-                    if (scriptContext[0] && node.getLeftExpression() instanceof VariableExpression v && v.getName().equals("apply")
-                            && node.getOperation().getText().equals("=")) shadow.add(node);
-                    super.visitBinaryExpression(node);
                 }
                 @Override public void visitMethodCallExpression(MethodCallExpression call) {
                     boolean self = call.isImplicitThis() || call.getObjectExpression() instanceof VariableExpression v && v.isThisExpression();
@@ -134,30 +125,37 @@ public final class ApplyDirectiveReader {
         int count=call.getArguments() instanceof TupleExpression tuple?tuple.getExpressions().size():1;
         Set<String> seen=new HashSet<>();
         while(owner!=null && seen.add(owner.getName())) {
-            for(var field:owner.getFields()) if(field.getName().equals("apply") && (field.getInitialExpression() instanceof ClosureExpression
-                    || field.getType().getName().equals("groovy.lang.Closure") || field.getType().getName().equals("Closure"))) return true;
-            for(var method:owner.getMethods()) if(method.getName().equals("apply") && method.getDeclaringClass()==owner) {
-                var parameters=method.getParameters();
-                int required=parameters.length;
-                while(required>0 && (parameters[required-1].hasInitialExpression()
-                        || required==parameters.length && parameters[required-1].getType().isArray())) required--;
-                boolean varargs=parameters.length>0 && parameters[parameters.length-1].getType().isArray();
-                if(parameters.length>0 && count>=required && (count<=parameters.length || varargs)) {
-                    if(!mapOptions)return true;
-                    var type=parameters[0].getType();if(type.isArray())type=type.getComponentType();
-                    String first=type.getName();
-                    for(var imported:module.getImports())if(imported.getAlias().equals(first))first=imported.getType().getName();
-                    if(parameters[0].isDynamicTyped() || Set.of("java.lang.Object","Object","java.util.Map","Map",
-                            "java.util.AbstractMap","AbstractMap","java.util.HashMap","HashMap","java.util.LinkedHashMap","LinkedHashMap",
-                            "java.io.Serializable","Serializable","java.lang.Cloneable","Cloneable").contains(first)) return true;
-                }
+            for(var field:owner.getFields()) if(field.getName().equals("apply")) {
+                if(field.getInitialExpression() instanceof ClosureExpression closure) {
+                    var parameters=closure.getParameters();
+                    // Groovy represents explicit { -> } by null and implicit { it } by an empty array.
+                    if(parameters!=null && parameters.length==0 && count<=1)return true;
+                    if(matchesParameters(parameters==null?Parameter.EMPTY_ARRAY:parameters,count,mapOptions,module))return true;
+                } else if(Set.of("groovy.lang.Closure","Closure").contains(field.getType().getName())) return true;
             }
+            for(var method:owner.getMethods()) if(method.getName().equals("apply") && method.getDeclaringClass()==owner
+                    && matchesParameters(method.getParameters(),count,mapOptions,module)) return true;
             var parent=owner.getUnresolvedSuperClass();
             String name=parent==null?"":parent.getName();
             String qualified=owner.getPackageName()==null?name:owner.getPackageName()+"."+name;
             owner=module.getClasses().stream().filter(t->t.getName().equals(name)||t.getName().equals(qualified)).findFirst().orElse(null);
         }
         return false;
+    }
+    private static boolean matchesParameters(Parameter[] parameters,int count,boolean mapOptions,ModuleNode module) {
+        int required=parameters.length;
+        while(required>0 && (parameters[required-1].hasInitialExpression()
+                || required==parameters.length && parameters[required-1].getType().isArray())) required--;
+        boolean varargs=parameters.length>0 && parameters[parameters.length-1].getType().isArray();
+        if(count<required || count>parameters.length && !varargs)return false;
+        if(!mapOptions)return true;
+        if(parameters.length==0)return false;
+        var type=parameters[0].getType();if(type.isArray())type=type.getComponentType();
+        String first=type.getName();
+        for(var imported:module.getImports())if(imported.getAlias().equals(first))first=imported.getType().getName();
+        return parameters[0].isDynamicTyped() || Set.of("java.lang.Object","Object","java.util.Map","Map",
+                "java.util.AbstractMap","AbstractMap","java.util.HashMap","HashMap","java.util.LinkedHashMap","LinkedHashMap",
+                "java.io.Serializable","Serializable","java.lang.Cloneable","Cloneable").contains(first);
     }
     private static boolean namedOptions(MethodCallExpression call) {
         var arguments=call.getArguments();

@@ -63,6 +63,20 @@ class ApplyDirectiveReaderTest {
     void mapCompatibleHelperCallsKeepTheirOwnReceiver(String source){
         var result=reader.read("job.groovy",source);assertTrue(result.problems().isEmpty(),result.toString());assertEquals(1,result.directives().size());
     }
+    @ParameterizedTest @ValueSource(strings={
+        "class Helper{Closure apply={ -> 'x'}; void run(){apply from:'hidden.groovy'}}; apply from:'real.groovy'",
+        "class Helper{Closure apply={String x -> x}; void run(){apply from:'hidden.groovy'}}; apply from:'real.groovy'"})
+    void incompatibleHelperClosureCannotHideMapFirstCall(String source){
+        assertTrue(reader.read("job.groovy",source).problems().stream().anyMatch(p->p.code().equals("APPLY_CONTEXT")),source);
+    }
+    @ParameterizedTest @ValueSource(strings={
+        "[1].each {def apply=1}; apply from:'real.groovy'",
+        "if(true){def apply=1}; apply from:'real.groovy'",
+        "class Helper{Closure apply={Map x->x}; void run(){apply from:'local'}}; apply from:'real.groovy'",
+        "class Helper{Closure apply={it}; void run(){apply from:'local'}}; apply from:'real.groovy'"})
+    void localNamesAndCompatibleClosureFieldsPreserveIncludes(String source){
+        var result=reader.read("job.groovy",source);assertTrue(result.problems().isEmpty(),result.toString());assertEquals(1,result.directives().size());
+    }
     @Test void positionsUseUtf16AndUnreachableDirectivesRemainStatic(){
         String text="// 😀\r\nreturn\r\napply from: 'ä space.groovy'\r\n";
         var d=reader.read("job.groovy",text).directives().getFirst();
