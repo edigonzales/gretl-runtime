@@ -14,7 +14,7 @@
 | P1 | REVIEWED_ACCEPTED | `00315884b00071989c2c8623fc5f0a5a7e7db39d`; Versuch 8 und externe Validierung PASS. |
 | P2 | REVIEWED_ACCEPTED | `ecfc4a7232b3c717fd172a472dc9b00fc77a6267`; unabhängiger Review und externe Validierung PASS. |
 | P3 | REVIEWED_ACCEPTED | `9e3ea537fa212c91bd4cbbdebf55463105482a9e`; unabhängiger Review und externe Validierung PASS. |
-| P4 | REVIEW_PENDING | Core/Wire und Anleitung implementiert; abschliessende Artefakt-, Beispiel-, GUI- und Reviewbelege entstehen nach Kandidatencommit extern. |
+| P4 | REVIEWED_ACCEPTED | `6f21cc82fe83d675905744b2ece0fff052baa328`; kumulativer unabhängiger Review S01–S19/C01–C08 und externe Validierung PASS. |
 
 P0-Phasebase ist der Main-Ausgangspunkt. Kandidaten-/Review-SHA werden nach Commit im externen Handoff festgehalten, kein selbstreferenzieller SHA.
 
@@ -107,3 +107,51 @@ Abschlussziel bleibt `RUNTIME_INCLUDES_WITH_SAFE_PARTIAL_TOOLING`, ausschliessli
 | C06 | Bestehende Enforcer-, Dependencytree- und Archivprüfungen; unveränderte LSP-/Katalogidentitäten, kein Runtimeimport. |
 | C07 | Verifizierte Main-/Toolingabstammung, Kandidaten-SHA und Artefaktmanifest; keine spätere Schein-Mergeprobe. |
 | C08 | Featureanleitung, Beispiel und TOOLING_HANDOFF: unaufgelöste Closure, Shared-Kontext und Invalidierungsgrenzen. |
+
+## Abgeschlossen: RUNTIME_INCLUDES_WITH_SAFE_PARTIAL_TOOLING
+
+Der geprüfte finale **Produkt-/Doku-Kandidat** ist `6f21cc82fe83d675905744b2ece0fff052baa328`.
+OpenCode 2.2.5 / `deepseek/deepseek-flash` (beobachtete Zuordnung DeepSeek-V4.1-Flash-1017,
+4. November 2026), frische Session `ses_e57b91bc8ffehg4Fcayqf0a6AC`: ABGENOMMEN.
+Prozess regulär Exit 0; externe Identitäts-/Digest-/Nachweisprüfung PASS. Alle
+S01–S19 und C01–C08 geprüft, keine offenen BLOCKER/MAJOR und keine fehlenden
+Pflichtprüfungen. Originale unverändert unter
+`/Users/stefan/.cache/gretl-script-includes/review/P4-attempt-1/evidence/`
+(`review.md`, `verdict.json`, `validation.json`, Sessionexport und Rohlogs).
+
+Am Kandidaten bestehen 237 Javafälle des gezielten Artefaktbuilds und 14 zusätzliche
+direkte Field-/Verifierfälle, zusammen 251; 70 Extension-Host- und drei
+Extension-Pakettests sind grün. Der Reviewer führte selbst 52 Core-/Wire- und
+199 Runtime-/JAR-Fälle aus, null Fehler/Skips, plus eigene echte Wire- und
+mutierte JAR-Gegenproben und drei Pakettests. Seine 473 weiteren Checks prüfen
+Identitäten, Belege, GUI, Beispiele und Dokumentation; sie sind keine zusätzlichen
+473 fachlichen Produkttests.
+
+Installierte native GUI: PARTIAL/Codeinsel, lokaler Booleanedit, sichtbare
+EDIT_REFERENCE_COVERAGE-Ablehnung einer neuen after-Kante ohne Bufferänderung,
+Layoutänderung ohne Text-/Versionsänderung, Save sowie natives Undo/Redo mit
+bytegenauen Original-/Editständen. Aktive Extension und Serverhash entsprechen
+dem Kandidatenmanifest (`sourceDirty: false`). Fragment unverändert, kein
+Ausführungsmarker. Ein eigener zu früher Capture-Tastaturbefehl wurde vollständig
+über natives Undo entfernt; die getrennten finalen Undo-/Redo-Belege sind exakt
+geprüft. Diese Bedienkorrektur ist im Rohbericht offengelegt. Einziger MINOR des
+Reviewers: native Screenshots haben JPEGbytes mit .png-Dateinamen; Inhalt/Hashes
+wurden geprüft, kein Produktfehler und keine Änderung der Originalbelege.
+GUI-Belege: `/Users/stefan/.cache/gretl-script-includes/gui/P4-6f21cc8/`.
+
+Das Beispiel ist mit der finalen Distribution als SCRIPT, als ausgeliefertes
+Distributionsbeispiel und als JAR nach Löschen der Quellkopie aus fremdem CWD
+geprüft. Ausgabehash jeweils `bb8488253002aa0dc3b221f1d0f7b6dd47a0c4fba1ce977e77495f0539b5b5f5`,
+SCRIPT-/JAR-Definitionshash jeweils `284dd6c1a451fd9be5d2620fad8789427f88d0213d43eca430efbfcdef18b120`.
+Cleanup einmal pro Run. Befehle/Logs/Reports:
+`/Users/stefan/.cache/gretl-script-includes/evidence/P4-example-final/`.
+
+Basis bleibt Main `0bfc8f0fccf43989d751d4f5490202311d200628` mit dem enthaltenen
+abgenommenen Toolingprodukt `54bb123070fc7bd81aea58b4e1191beecf568cbf`.
+Dieser nachträgliche Eintrag ist ausschliesslich ein separater Statusnachtrag
+gemäss Plan §10; er gibt sich nicht selbst als geprüfter Produktcommit aus.
+Code, Tests, Featureanleitung, Beispiel und ausgelieferte Artefakte des geprüften
+Kandidaten wurden nach dessen Abnahme nicht geändert. Der ursprüngliche
+Toolingworktree und geschützte Toolingquellen/-reviews bleiben unverändert.
+Kein Push, Merge oder Release. IDE-Includeclosure und Shared-Kontext bleiben
+bewusst partiell; Root-/Releasegates und IMAGE wurden nicht neu qualifiziert.
