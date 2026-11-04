@@ -72,7 +72,8 @@ public final class ApplyDirectiveReader {
                 }
                 @Override public void visitMethodCallExpression(MethodCallExpression call) {
                     boolean self = call.isImplicitThis() || call.getObjectExpression() instanceof VariableExpression v && v.isThisExpression();
-                    if (self && !helperOwnApply[0] && "apply".equals(call.getMethodAsString())) {
+                    boolean ordinaryOwnedCall=scriptContext[0] && scriptOwnApply && !namedOptions(call);
+                    if (self && !helperOwnApply[0] && !ordinaryOwnedCall && "apply".equals(call.getMethodAsString())) {
                         if (!top.contains(call) || !call.isImplicitThis() || call.isSafe() || call.isSpreadSafe() || call.isUsingGenerics()) {
                             problem("APPLY_CONTEXT",call);
                         } else {
@@ -112,9 +113,6 @@ public final class ApplyDirectiveReader {
                 for (var constructor : type.getDeclaredConstructors()) if (constructor.getCode()!=null) constructor.getCode().visit(visitor);
             }
             if (!directives.isEmpty() && !shadow.isEmpty()) visitor.problem("APPLY_CONTEXT",shadow.getFirst());
-            // A job that declares its own apply and has no literal include remains ordinary Groovy.
-            // Syntax parsing errors are handled outside this block and never suppressed.
-            if (directives.isEmpty() && scriptOwnApply) problems.clear();
         } catch (CompilationFailedException failure) {
             int line=0,column=0;
             if(unit!=null && unit.getErrorCollector().getErrors()!=null) {
@@ -129,6 +127,11 @@ public final class ApplyDirectiveReader {
             problems.add(new Problem("APPLY_LIMIT",sourceId,0,0));
         } catch (IOException failure) { throw new IllegalStateException(failure); }
         return new Result(directives,problems);
+    }
+    private static boolean namedOptions(MethodCallExpression call) {
+        var arguments=call.getArguments();
+        return arguments instanceof MapExpression || arguments instanceof TupleExpression tuple
+                && tuple.getExpressions().stream().anyMatch(e->e instanceof MapExpression);
     }
     private static boolean shadowsApply(Expression expression) {
         if(expression instanceof DeclarationExpression declaration && declaration.isMultipleAssignmentDeclaration())

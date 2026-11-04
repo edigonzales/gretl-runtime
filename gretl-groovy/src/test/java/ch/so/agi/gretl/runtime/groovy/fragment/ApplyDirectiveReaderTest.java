@@ -37,6 +37,14 @@ class ApplyDirectiveReaderTest {
     void jobsWithoutIncludesKeepTheirOwnApply(String source){
         var result=reader.read("job.groovy",source);assertTrue(result.problems().isEmpty(),result.toString());assertTrue(result.directives().isEmpty());
     }
+    @ParameterizedTest @ValueSource(strings={
+        "def apply(x){}; apply from:path",
+        "def apply(x){}; if(true){apply from:'a.groovy'}",
+        "def apply(x){}; class Helper {void run(){apply from:'a.groovy'}}",
+        "def apply={x->x}; apply from:path"})
+    void scriptOwnedApplyDoesNotHideMalformedGretlMapCalls(String source){
+        assertFalse(reader.read("job.groovy",source).problems().isEmpty(),source);
+    }
     @Test void positionsUseUtf16AndUnreachableDirectivesRemainStatic(){
         String text="// 😀\r\nreturn\r\napply from: 'ä space.groovy'\r\n";
         var d=reader.read("job.groovy",text).directives().getFirst();
