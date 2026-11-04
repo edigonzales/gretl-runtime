@@ -52,7 +52,7 @@ public final class ApplyDirectiveReader {
         var directives = new ArrayList<Directive>(); var problems = new ArrayList<Problem>();
         SourceUnit unit=null;
         try (var loader = new GroovyClassLoader(getClass().getClassLoader(), config)) {
-            unit = new SourceUnit(sourceId, text, config, loader, new ErrorCollector(config));
+            unit = new SourceUnit(ScriptSourceNames.virtualGroovyName(sourceId), text, config, loader, new ErrorCollector(config));
             unit.parse(); unit.completePhase(); unit.nextPhase(); unit.convert();
             var module = unit.getAST();
             var tokens = new GroovyLangLexer(CharStreams.fromString(text)).getAllTokens();

@@ -24,7 +24,7 @@ public final class FragmentGraphResolver {
         public List<Edge> edgesFrom(String scope,String source){return edges.stream().filter(e->e.scopeId().equals(scope)&&e.sourceId().equals(source)).toList();}
         public String virtualName(String source) {
             // Hex UTF-8 identity is injective, portable and Groovy-class-name safe.
-            return "GretlSource_"+HexFormat.of().formatHex(source.getBytes(StandardCharsets.UTF_8))+".groovy";
+            return ScriptSourceNames.virtualGroovyName(source);
         }
     }
     public Bundle resolve(List<Entry> entries, boolean projectMode, String settingsId, FragmentSourceAccess access) {

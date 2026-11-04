@@ -124,6 +124,10 @@ class ApplyDirectiveReaderTest {
         assertTrue(java.util.SequencedMap.class.isAssignableFrom(java.util.LinkedHashMap.class));
         var result=reader.read("job.groovy",source);assertTrue(result.problems().isEmpty(),result.toString());assertEquals(1,result.directives().size());
     }
+    @Test void syntheticScriptNameCannotShadowTheJdkMapType(){
+        var result=reader.read("Map.groovy","class Helper{void apply(Map x){}; void run(){apply from:'local'}}; apply from:'real.groovy'");
+        assertTrue(result.problems().isEmpty(),result.toString());assertEquals(1,result.directives().size());
+    }
     @Test void positionsUseUtf16AndUnreachableDirectivesRemainStatic(){
         String text="// 😀\r\nreturn\r\napply from: 'ä space.groovy'\r\n";
         var d=reader.read("job.groovy",text).directives().getFirst();
