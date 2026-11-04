@@ -38,3 +38,7 @@ Der Review von `08f54cb0c0810f5274f8510d6b420cb351957333` verlangt Signaturprüf
 ## Fünfter Nacharbeitskandidat
 
 Auch `efe3bbcba2651969015648d26c924c4d7a10fa64` wurde verworfen: lokales Defaultinterface und cast-verpacktes Closure-Literal. Beide Fehler sind durch rote Proben reproduziert und korrigiert. Die lokale AST-Hierarchie umfasst jetzt Interfaces; transparente Casts werden vor der gemeinsamen Signaturprüfung ausgepackt. Zusätzliche Regressionen sichern Closure-Aliase und opake externe Helper-Typen ohne deren Nachladen. Aktuell 73 fokussierte Fälle (57 Reader + 16 Graph) grün. Originale `review/P1-attempt-5/evidence/`, Korrekturbelege `evidence/P1-fix5/`. Vollständige Phase weiter gegen dieselbe Phasebase prüfen, eigene neue Gegenprobe entwickeln; keine Abschwächung der S02-Kontextablehnungen.
+
+## Sechster Nacharbeitskandidat
+
+Der Review von `b2c7c00a08b55559d5811bb7792f5cc5c237057e` verlangt Erasure/obere Schranken bei generischen Helper-Parametern. Sechs Reproduktionen sind jetzt Tests: generische Methode/Klasse/Varargs/Map-Schranke/Closure und der Helper ohne Includes. Die gemeinsame Parameterprüfung löst lokale Typvariablen anhand der AST-Deklarationen auf; String-Schranken und eine lokale Klasse namens Map bleiben Negativkontrollen. Aktuell 81 fokussierte Fälle (65 Reader + 16 Graph) grün. Originale `review/P1-attempt-6/evidence/`, neue Belege `evidence/P1-fix6/`. Gesamte P1 gegen unveränderte Phasebase prüfen, mit neuer eigener ausgeführter Gegenprobe. Externe/unknown Helper-Typen weiterhin opak, keine neue Klassenauflösung.

@@ -127,6 +127,7 @@ public final class ApplyDirectiveReader {
         Deque<ClassNode> pending=new ArrayDeque<>();if(owner!=null)pending.add(owner);
         while(!pending.isEmpty()) {
             owner=pending.removeFirst();if(!seen.add(owner.getName()))continue;
+            var classBounds=genericBounds(owner.getGenericsTypes());
             for(var field:owner.getFields()) if(field.getName().equals("apply")) {
                 Expression initializer=field.getInitialExpression();
                 while(initializer instanceof CastExpression cast && Set.of("Closure","groovy.lang.Closure","Object","java.lang.Object").contains(typeName(cast.getType(),module))) initializer=cast.getExpression();
@@ -134,11 +135,13 @@ public final class ApplyDirectiveReader {
                     var parameters=closure.getParameters();
                     // Groovy represents explicit { -> } by null and implicit { it } by an empty array.
                     if(parameters!=null && parameters.length==0 && count<=1)return true;
-                    if(matchesParameters(parameters==null?Parameter.EMPTY_ARRAY:parameters,count,mapOptions,module))return true;
+                    if(matchesParameters(parameters==null?Parameter.EMPTY_ARRAY:parameters,count,mapOptions,module,classBounds))return true;
                 } else if(Set.of("groovy.lang.Closure","Closure").contains(typeName(field.getType(),module))) return true;
             }
-            for(var method:owner.getMethods()) if(method.getName().equals("apply") && method.getDeclaringClass()==owner
-                    && matchesParameters(method.getParameters(),count,mapOptions,module)) return true;
+            for(var method:owner.getMethods()) if(method.getName().equals("apply") && method.getDeclaringClass()==owner) {
+                var bounds=new LinkedHashMap<>(classBounds);bounds.putAll(genericBounds(method.getGenericsTypes()));
+                if(matchesParameters(method.getParameters(),count,mapOptions,module,bounds))return true;
+            }
             var parents=new ArrayList<ClassNode>(Arrays.asList(owner.getInterfaces()));
             if(owner.getUnresolvedSuperClass()!=null)parents.add(owner.getUnresolvedSuperClass());
             for(var parent:parents) {
@@ -153,7 +156,7 @@ public final class ApplyDirectiveReader {
         // An external helper API may own apply. Never load it to guess method binding.
         return unknownParent;
     }
-    private static boolean matchesParameters(Parameter[] parameters,int count,boolean mapOptions,ModuleNode module) {
+    private static boolean matchesParameters(Parameter[] parameters,int count,boolean mapOptions,ModuleNode module,Map<String,ClassNode> bounds) {
         int required=parameters.length;
         while(required>0 && (parameters[required-1].hasInitialExpression()
                 || required==parameters.length && parameters[required-1].getType().isArray())) required--;
@@ -162,10 +165,22 @@ public final class ApplyDirectiveReader {
         if(!mapOptions)return true;
         if(parameters.length==0)return false;
         var type=parameters[0].getType();if(type.isArray())type=type.getComponentType();
+        Set<String> seen=new HashSet<>();
+        while(bounds.containsKey(type.getName()) && seen.add(type.getName()))type=bounds.get(type.getName());
         String first=typeName(type,module);
+        if(!parameters[0].isDynamicTyped() && module.getClasses().stream()
+                .anyMatch(t->t.getName().equals(first)||t.getNameWithoutPackage().equals(first)))return false;
         return parameters[0].isDynamicTyped() || Set.of("java.lang.Object","Object","java.util.Map","Map",
                 "java.util.AbstractMap","AbstractMap","java.util.HashMap","HashMap","java.util.LinkedHashMap","LinkedHashMap",
                 "java.io.Serializable","Serializable","java.lang.Cloneable","Cloneable").contains(first);
+    }
+    private static Map<String,ClassNode> genericBounds(GenericsType[] parameters) {
+        var bounds=new LinkedHashMap<String,ClassNode>();
+        if(parameters!=null)for(var parameter:parameters) {
+            var upper=parameter.getUpperBounds();
+            bounds.put(parameter.getName(),upper==null || upper.length==0?ClassHelper.OBJECT_TYPE:upper[0]);
+        }
+        return bounds;
     }
     private static String typeName(ClassNode type,ModuleNode module) {
         String name=type.getName();
