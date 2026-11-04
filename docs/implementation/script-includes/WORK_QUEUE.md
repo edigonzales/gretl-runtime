@@ -1,0 +1,27 @@
+# Arbeitsstand Script-Includes
+
+- Auftrag: `script-includes`, Spezifikation 1.3.
+- `assignment_base_sha`: `0bfc8f0fccf43989d751d4f5490202311d200628` (aktualisiertes `origin/main`).
+- `tooling_base_sha`: `54bb123070fc7bd81aea58b4e1191beecf568cbf`.
+- `base_status`: `MAIN_WITH_ACCEPTED_TOOLING`; Abstammung mit `git merge-base --is-ancestor` geprüft, Produktdiff ausserhalb `docs/` leer.
+- Eigener Branch `codex/script-includes`, Worktree `/Users/stefan/sources/gretl-runtime-script-includes`. Ursprünglicher Toolingworktree unverändert.
+- Die vier aktiven Auftragsdateien fehlen auf Main und wurden unverändert aus dem ursprünglichen Checkout übernommen. Kein Toolingmerge.
+- Lokale Phasengates folgen der ausdrücklichen Testausnahme in Plan §1/8. Root-, CI- und Releasegates bleiben unverändert; keine Releasefreigabe.
+
+| Phase | Status | Offene Arbeit |
+| --- | --- | --- |
+| P0 | REVIEW_PENDING | Autonomen unabhängigen Review am Kandidaten ausführen und validieren. |
+| P1 | PLANNED | Reader, Snapshot, Includegraph, Hash. |
+| P2 | PLANNED | SCRIPT-Loader und gemeinsame Definition. |
+| P3 | PLANNED | Kompilation, Metadaten, quellenfreie JAR-Prozesse. |
+| P4 | PLANNED | C01–C08, installierte GUI, Dokumentation, kumulative Abnahme. |
+
+P0-Phasebase ist der Main-Ausgangspunkt. Kandidaten-/Review-SHA werden nach Commit im externen Handoff festgehalten, kein selbstreferenzieller SHA.
+
+P0-Baseline: JDK Temurin 25.0.2, Mavenwrapper. Zwei gezielte `GroovyLoaderTest`-Fälle, vier `GroovyProjectLoaderTest`-Fälle, eine temporäre Loaderprobe und eine Apply-Opaque-/Graphprobe: acht Fälle, null Fehler/Skips. Fehlendes `apply` ergibt erwartetes `JOB_LOAD_FAILED` mit fehlender Methodensignatur. Die temporäre Loaderprobe liegt ausschliesslich im externen Evidenzverzeichnis; der grüne Coveragevertrag bleibt als `ApplyPartialCoverageTest` erhalten.
+
+Befehl: `./mvnw -B -Dmaven.repo.local=/Users/stefan/.cache/gretl-script-includes/m2 -pl gretl-groovy -am -Dtest='GroovyLoaderTest#loadingDoesNotEvaluateConfigurationDefaultsOrHandlers+twoLoadsHaveFreshDefinitionsBindingsAndResultScopes,GroovyProjectLoaderTest,ApplyBaselineProbeTest,ApplyOpaqueBaselineProbeTest' -Dsurefire.failIfNoSpecifiedTests=false test` (temporäre Probenbezeichnungen). Frische XMLs und Log unter `/Users/stefan/.cache/gretl-script-includes/evidence/P0/`. Reactorpfad und eigener Maven-Cache verhindern die Verwendung fremder Projekt-SNAPSHOTs.
+
+Reviewinfrastruktur: PATH-Version 1.18.22 und alternative 1.15.10 ungeeignet; isoliert installiertes `@opencode/cli@2.2.5` meldet `opencode v2.2.5`. Vorhandene DeepSeek-Anmeldung via `auth list --format json` erkannt, `models` enthält `deepseek/deepseek-flash`. Offizielle Modellzuordnung am 4. November 2026 geprüft. Geplanter Review benutzt direkte V2-CLI und eine nur im detached Reviewworktree liegende Policy, keine Änderung des alten Toolingreviewers.
+
+Für P4 ist der vorhandene Weg `vscode/gretl-vscode/scripts/workbench.mjs` mit separatem Testdriver verfügbar; noch nicht ausgeführt. Internes job.json verwendet aktuell Versionen 1/2; Bundleversion 3 ist frei. Noch keine Runtime-Includes implementiert oder abgenommen.
