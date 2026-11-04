@@ -23,8 +23,9 @@ public final class GretlProtocol {
     public record GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources,List<String> previewTargets) {
         public GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources){this(protocolVersion,documentId,expectedSnapshotId,includeInnerInvocations,requestedSources,null);}
     }
-    public record GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics,ch.so.agi.gretl.tooling.graph.TargetPreviewProjector.Preview preview) {
-        public GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics){this(status,nodes,edges,parameters,cleanup,diagnostics,null);}
+    public record GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics,ch.so.agi.gretl.tooling.graph.TargetPreviewProjector.Preview preview,ch.so.agi.gretl.tooling.graph.GraphFormProjector.Projection forms) {
+        public GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics){this(status,nodes,edges,parameters,cleanup,diagnostics,null,null);}
+        public GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics,ch.so.agi.gretl.tooling.graph.TargetPreviewProjector.Preview preview){this(status,nodes,edges,parameters,cleanup,diagnostics,preview,null);}
     }
     public record GraphResponse(Context context,GraphPayload payload) { }
     public record SymbolKey(String namespace,String qualifiedName) {

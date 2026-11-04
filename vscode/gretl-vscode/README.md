@@ -36,6 +36,28 @@ Dirty text changes update the graph; partial analysis and stale server state are
 shown explicitly. Local React Flow assets and a bundled ELK worker render the
 view without a second server or remote frontend resources.
 
+Use **Add declaration** to choose a catalogue operation or declare a parameter.
+Forms keep a local draft until **Confirm source change**. Scalars, nested lists
+and maps, parameter references, result references, job files, work paths and
+secret aliases are explicit choices; aliases never resolve secret contents in
+the editor. **Cancel draft** leaves the source unchanged. Unsupported dynamic
+values remain in source with an explanation.
+
+Select a task and open **Details** to configure, rename or delete it. Drag a
+node's dependency handle to another node, or use **Add dependency**, to choose
+`dependsOn` or ordering-only `after`. Connect an output port to an input port, or
+use **Bind result**, to add a result reference and its required data dependency
+in one source change. **Defaults** edits the Core's complete target list.
+Delete and disconnect refuse changes that would leave unsafe references; they
+never cascade silently. If another source must be open for a safe edit, open the
+requested sources and confirm a newly planned change.
+
+**Undo text** and **Redo text** use the pinned source's native VS Code history.
+**Undo view** and **Redo view** affect only node positions and viewport. Use
+**Save source** to persist the Groovy job; reopening the graph reads that same
+source. Modelling never executes a job. Run saved jobs separately with the
+Runtime's normal execution workflow.
+
 Build from the repository root with JDK 25, Node 22 or newer, and the local `zip`/`unzip` tools using `./mvnw -B
 clean verify`. This includes the server build, locked npm installation, host
 tests, type checking and local VSIX packaging. The VSIX is written to

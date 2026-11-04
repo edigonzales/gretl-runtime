@@ -4,6 +4,7 @@ import {sourceDigest} from '../host';
 import {ModelerBackend,ModelerOptions} from './backend';
 import {GraphResponse,ViewState,ViewStatus,RequestGate,modelerMessage,readViewState,viewKey} from './graph-model';
 import {ViewStateStore} from './view-state-store';
+import {ModelerEditRejected} from './edit-plan';
 
 const VIEW_TYPE='gretlRuntime.modeler';
 const normalize=(uri:string)=>vscode.Uri.parse(uri).toString();
@@ -69,6 +70,8 @@ class ModelerPanelController implements vscode.Disposable {
     private pending?:vscode.CancellationTokenSource;
     private selection?:vscode.CancellationTokenSource;
     private reveal?:vscode.CancellationTokenSource;
+    private edit?:vscode.CancellationTokenSource;
+    private requiredSources?:{requestId:string;uris:string[]};
     private timer?:ReturnType<typeof setTimeout>;
     private graph?:GraphResponse;
     private status:ViewStatus='LOADING';
@@ -107,23 +110,49 @@ class ModelerPanelController implements vscode.Disposable {
     private post(value:Record<string,unknown>):void{if(!this.disposed&&this.ready)void this.panel.webview.postMessage({protocolVersion:1,panelId:this.id,...value});}
     private state(status:ViewStatus,reason:string):void{this.status=status;this.post({kind:'state',status,reason});}
     private invalidate(reason:string,refresh=true):void {
-        this.requests.next();this.pending?.cancel();this.selections.next();this.selection?.cancel();this.reveal?.cancel();
+        this.requests.next();this.pending?.cancel();this.selections.next();this.selection?.cancel();this.reveal?.cancel();this.edit?.cancel();
         this.state(this.graph?'STALE':'LOADING',reason);clearTimeout(this.timer);
         if(refresh&&this.ready&&this.panel.visible)this.timer=setTimeout(()=>this.refresh(reason),120);
     }
     private refresh(reason:string):void {
         if(!this.ready||this.disposed)return;const ticket=this.requests.next();this.pending?.cancel();this.pending?.dispose();
         const cancellation=this.pending=new vscode.CancellationTokenSource();this.state(this.graph?'STALE':'LOADING',reason);
-        void this.backend.graph(this.document,this.options,cancellation.token).then(graph=>{
+        void this.backend.graph(this.document,this.options,cancellation.token).then(async graph=>{
             if(!this.requests.accepts(ticket)||cancellation.token.isCancellationRequested)return;
             const key=viewKey(graph,this.document.uri.toString(),this.viewSlot);this.view=this.view?.key===key?this.view:this.store.load(key);
             this.graph=graph;this.status=graph.payload.nodes.length||graph.payload.parameters.length||graph.payload.cleanup.length?'FRESH':'EMPTY';
             this.post({kind:'graph',graph,status:this.status,key,viewState:this.view,options:this.options});
+            try{const catalog=await this.backend.catalog(graph,cancellation.token);if(this.graph===graph&&!cancellation.token.isCancellationRequested)this.post({kind:'catalog',snapshotId:graph.context.snapshotId,catalog});}
+            catch(error){if(!cancellation.token.isCancellationRequested&&this.graph===graph)this.post({kind:'catalogUnavailable',reason:error instanceof Error?error.message:String(error)});}
         }).catch(error=>{if(this.requests.accepts(ticket)&&!cancellation.token.isCancellationRequested)this.failure(error);});
     }
     private async message(value:unknown):Promise<void>{
         const message=modelerMessage(value,this.id);if(!message||this.disposed)return;
         switch(message.kind){
+            case 'openRequiredSources':{
+                const required=this.requiredSources;if(required?.requestId!==message.requestId||!this.graph)return;this.requiredSources=undefined;
+                for(const uri of required.uris){
+                    if(this.disposed)return;
+                    if(!this.graph.context.sourceStamps.some(s=>normalize(s.documentId)===normalize(uri)))throw Error('The requested source is no longer part of this snapshot.');
+                    const parsed=vscode.Uri.parse(uri);if(parsed.scheme!=='file'||!vscode.workspace.getWorkspaceFolder(parsed))throw Error('Only captured local workspace sources can be opened.');
+                    await vscode.workspace.openTextDocument(parsed);
+                }
+                this.invalidate('Required sources opened. Reopen the draft against the refreshed graph.');return;
+            }
+            case 'undoText':case 'redoText':case 'saveSource':{
+                if(this.edit||this.document.isClosed)return;
+                if(message.kind==='saveSource'){if(!await this.document.save())this.post({kind:'notice',reason:'The source could not be saved.'});return;}
+                await vscode.window.showTextDocument(this.document,{viewColumn:this.sourceColumn(),preserveFocus:false});
+                if(this.disposed||this.document.isClosed||vscode.window.activeTextEditor?.document!==this.document)return;
+                await vscode.commands.executeCommand(message.kind==='undoText'?'undo':'redo');return;
+            }
+            case 'intent':{
+                if(!this.graph||!['FRESH','EMPTY'].includes(this.status)||message.snapshotId!==this.graph.context.snapshotId||this.edit){this.post({kind:'editResult',requestId:message.requestId,applied:false,reasons:['The source changed or another edit is pending. Refresh and confirm again.']});return;}
+                this.requiredSources=undefined;const graph=this.graph,token=this.edit=new vscode.CancellationTokenSource();
+                try{const notices=await this.backend.commit(this.document,graph,message.intent,token.token);this.post({kind:'editResult',requestId:message.requestId,applied:true,notices});if(!this.disposed)this.invalidate('Edit applied');}
+                catch(error){const uris=error instanceof ModelerEditRejected?error.documentsToOpen:[];if(uris.length)this.requiredSources={requestId:message.requestId,uris};this.post({kind:'editResult',requestId:message.requestId,applied:false,reasons:error instanceof ModelerEditRejected?error.reasons:[error instanceof Error?error.message:String(error)],requiredOpenDocuments:uris});}
+                finally{if(this.edit===token)this.edit=undefined;token.dispose();}return;
+            }
             case 'inspection':if(this.inspection?.id===message.requestId&&this.graph?.context.snapshotId===message.snapshotId)this.finishInspection({documentId:this.document.uri.toString(),version:this.document.version,dirty:this.document.isDirty,status:this.status,context:this.graph.context,view:message.view});return;
             case 'ready':this.ready=true;this.refresh('Open');return;
             case 'refresh':this.refresh('Refresh');return;
@@ -161,5 +190,5 @@ class ModelerPanelController implements vscode.Disposable {
         }catch{/* Selection races are retried on the next source selection or graph refresh. */}
     }
     private failure(error:unknown):void{if(!this.disposed)this.state(this.graph?'STALE':'ERROR',error instanceof Error?error.message:String(error));}
-    dispose():void{if(this.disposed)return;this.disposed=true;this.graph=undefined;this.finishInspection({unavailable:'disposed'});clearTimeout(this.timer);this.requests.dispose();this.selections.dispose();this.pending?.cancel();this.pending?.dispose();this.selection?.cancel();this.selection?.dispose();this.reveal?.cancel();this.reveal?.dispose();for(const listener of this.listeners.splice(0))listener.dispose();this.removed();}
+    dispose():void{if(this.disposed)return;this.disposed=true;this.graph=undefined;this.finishInspection({unavailable:'disposed'});clearTimeout(this.timer);this.requests.dispose();this.selections.dispose();this.pending?.cancel();this.pending?.dispose();this.selection?.cancel();this.selection?.dispose();this.reveal?.cancel();this.reveal?.dispose();this.edit?.cancel();this.edit?.dispose();for(const listener of this.listeners.splice(0))listener.dispose();this.removed();}
 }

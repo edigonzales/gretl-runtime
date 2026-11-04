@@ -11,6 +11,8 @@ import {currentRead} from './read-query';
 import {ModelerBackend,ModelerOptions} from './modeler/backend';
 import {GraphContext,GraphResponse,graphResponse} from './modeler/graph-model';
 import {GretlModelerProvider} from './modeler/provider';
+import {CatalogResponse,EditIntent,catalogResponse,editIntent} from './modeler/edit-model';
+import {EditPlan,applyEditPlan} from './modeler/edit-plan';
 interface Context {protocolVersion:number;schemaVersion:number;serverInstanceId:string;snapshotId:string;sourceStamps:Stamp[]}
 interface Graph {context:Context}
 
@@ -27,6 +29,8 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
     private readonly status=vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left,5);
     private readonly actions=new Map<string,{client:LanguageClient;context:Context;edit:ProtocolEdit;expires:number}>();
     private readonly captures=new WeakMap<Context,Map<string,vscode.TextDocument>>();
+    private readonly modelerCaptures=new WeakMap<GraphResponse,Context>();
+    private modelerEditQueue:Promise<unknown>=Promise.resolve();
     private readonly sessionListeners:vscode.Disposable[]=[];
     private readonly listeners:vscode.Disposable[]=[];
     private readonly backendChanges=new vscode.EventEmitter<boolean>();
@@ -74,7 +78,31 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         if(token.isCancellationRequested||this.client!==client||this.instance!==instance||response.context.serverInstanceId!==instance||document.isClosed||document.version!==version)throw new vscode.CancellationError();
         const now=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
         for(const stamp of response.context.sourceStamps){const uri=normalize(stamp.documentId),doc=now.get(uri);if(stamp.version!=null&&(!doc||before.get(uri)!==doc||doc.version!==stamp.version||sourceDigest(doc.getText())!==stamp.sha256)||stamp.version==null&&doc)throw new vscode.CancellationError();}
+        const capture:Context={...response.context,sourceStamps:response.context.sourceStamps.map(stamp=>({...stamp,sha256:stamp.sha256??null,version:stamp.version??null,incarnation:stamp.incarnation??null,unavailableCode:stamp.unavailableCode??null}))};
+        this.captures.set(capture,new Map([...before].filter(([uri])=>capture.sourceStamps.some(s=>normalize(s.documentId)===uri&&s.version!==null))));this.modelerCaptures.set(response,capture);
         return response;
+    }
+    async catalog(graph:GraphResponse,token:vscode.CancellationToken):Promise<CatalogResponse>{
+        const client=this.client,instance=this.instance;
+        if(!client?.isRunning()||!instance||graph.context.serverInstanceId!==instance)throw Error('GRETL catalogue session is stale.');
+        const result=catalogResponse(await client.sendRequest('gretl/catalog',{protocolVersion:1,catalogSchemaVersion:1},token),instance,graph.context.catalogId);
+        if(token.isCancellationRequested||this.client!==client||this.instance!==instance)throw new vscode.CancellationError();return result;
+    }
+    commit(document:vscode.TextDocument,graph:GraphResponse,intent:EditIntent,token:vscode.CancellationToken):Promise<string[]>{
+        const operation=async()=>{
+            const client=this.client,instance=this.instance,capture=this.modelerCaptures.get(graph);
+            if(!vscode.workspace.isTrusted||!client?.isRunning()||!instance||!capture||instance!==graph.context.serverInstanceId||!editIntent(intent))throw Error('GRETL edit context is unavailable or stale. Refresh first.');
+            const cancelled=()=>token.isCancellationRequested||this.client!==client||this.instance!==instance||document.isClosed;
+            return applyEditPlan<ProtocolEdit,vscode.WorkspaceEdit>(graph.context,{
+                cancelled,
+                plan:()=>client.sendRequest<EditPlan<ProtocolEdit>>('gretl/planEdit',{protocolVersion:1,documentId:intent.kind==='SetDefaults'?graph.payload.forms?.defaultsDocument??document.uri.toString():document.uri.toString(),expectedSnapshotId:graph.context.snapshotId,intent,requireOpenDocuments:true},token),
+                guard:edit=>this.current(client,capture,edit),
+                validate:(planId,expectedSnapshotId)=>client.sendRequest('gretl/validateEdit',{protocolVersion:1,planId,expectedSnapshotId},token),
+                convert:async edit=>(await client.protocol2CodeConverter.asWorkspaceEdit(edit,token))??undefined,
+                apply:edit=>Promise.resolve(vscode.workspace.applyEdit(edit))
+            });
+        };
+        const result=this.modelerEditQueue.then(operation,operation);this.modelerEditQueue=result.then(()=>undefined,()=>undefined);return result;
     }
     async navigate(documentId:string,snapshotId:string,elementId:string|undefined,offsetUtf16:number|undefined,token:vscode.CancellationToken){
         const client=this.client,instance=this.instance;

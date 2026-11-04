@@ -1,0 +1,28 @@
+import React,{useState} from 'react';
+import {EditIntent,SymbolKey} from '../src/modeler/edit-model';
+import {GraphNode,GraphResponse} from '../src/modeler/graph-model';
+export type CommandDraft={kind:'rename'|'delete'|'defaults'|'dependency'|'binding'|'action';graph:GraphResponse;node?:GraphNode;producer?:string;consumer?:string;outputField?:string;inputField?:string};
+export function CommandForm({draft,documentId,onConfirm,onCancel,busy,invalidated}:{documentId:string;draft:CommandDraft;onConfirm:(i:EditIntent)=>void;onCancel:()=>void;busy:boolean;invalidated:boolean}){
+ const graph=draft.graph,tasks=graph.payload.nodes.filter(n=>n.symbol?.namespace==='TASK');
+ const[name,setName]=useState(''),[producer,setProducer]=useState(draft.producer??''),[consumer,setConsumer]=useState(draft.consumer??''),[kind,setKind]=useState<'DEPENDS_ON'|'AFTER'>('DEPENDS_ON'),[output,setOutput]=useState(draft.outputField??''),[input,setInput]=useState(draft.inputField??'');
+ const[defaults,setDefaults]=useState<SymbolKey[]>(graph.payload.forms?.defaults??[]);
+ const p=tasks.find(n=>n.id===producer),c=tasks.find(n=>n.id===consumer);
+ const choose=(label:string,value:string,set:(v:string)=>void)=><label>{label}<select aria-label={label} value={value} onChange={e=>set(e.target.value)}><option value="">Choose declaration</option>{tasks.map(n=><option key={n.id} value={n.id}>{n.title}</option>)}</select></label>;
+ const submit=()=>{switch(draft.kind){
+  case 'action':{const insertion=graph.payload.forms?.insertions.find(i=>new URL(i.documentId).href===new URL(documentId).href);if(insertion)onConfirm({kind:'AddAction',name,insertionOffset:insertion.insertionOffset});break;}
+  case 'rename':if(draft.node?.symbol)onConfirm({kind:'RenameSymbol',target:draft.node.symbol as SymbolKey,name});break;
+  case 'delete':if(draft.node?.symbol)onConfirm({kind:'DeleteTask',target:draft.node.symbol as SymbolKey});break;
+  case 'defaults':onConfirm({kind:'SetDefaults',targets:defaults});break;
+  case 'dependency':if(p?.symbol&&c?.symbol)onConfirm({kind:'AddDependency',producer:p.symbol as SymbolKey,target:c.symbol as SymbolKey,edgeKind:kind});break;
+  case 'binding':if(p?.symbol&&c?.symbol)onConfirm({kind:'BindResult',producer:p.symbol as SymbolKey,target:c.symbol as SymbolKey,outputField:output,field:input});break;
+ }};
+ const valid=draft.kind==='rename'||draft.kind==='action'?!!name:draft.kind==='delete'||draft.kind==='defaults'?true:draft.kind==='binding'?!!p&&!!c&&!!output&&!!input:!!p&&!!c;
+ return <form className="form-dialog" role="dialog" aria-label={'Modeler '+draft.kind} onSubmit={e=>{e.preventDefault();submit();}}><h2>{draft.kind==='action'?'Create action':draft.kind==='binding'?'Bind result output to input':draft.kind==='dependency'?'Add dependency':draft.kind==='defaults'?'Set all default targets':draft.kind==='delete'?'Delete '+draft.node?.title:'Rename '+draft.node?.title}</h2>
+ {(draft.kind==='rename'||draft.kind==='action')&&<label>New local name<input aria-label="New local name" value={name} onChange={e=>setName(e.target.value)}/></label>}
+ {draft.kind==='delete'&&<p>Delete only this declaration. The Core rejects remaining references; no cascade or automatic defaults rewrite.</p>}
+ {(draft.kind==='dependency'||draft.kind==='binding')&&<>{choose('Producer',producer,v=>{setProducer(v);setOutput('');})}{choose('Consumer',consumer,v=>{setConsumer(v);setInput('');})}</>}
+ {draft.kind==='dependency'&&<label>Dependency kind<select aria-label="Dependency kind" value={kind} onChange={e=>setKind(e.target.value as typeof kind)}><option value="DEPENDS_ON">dependsOn · data dependency</option><option value="AFTER">after · order only</option></select></label>}
+ {draft.kind==='binding'&&<><label>Output field<select aria-label="Output field" value={output} onChange={e=>setOutput(e.target.value)}><option value="">Choose output</option>{p?.outputs.map(f=><option key={f.name} value={f.name}>{f.name}</option>)}</select></label><label>Input field<select aria-label="Input field" value={input} onChange={e=>setInput(e.target.value)}><option value="">Choose input</option>{c?.inputs.map(f=><option key={f.name} value={f.name}>{f.name}</option>)}</select></label><p>The Core validates port compatibility and adds a data dependency only when no sufficient chain exists. Both changes form one native edit.</p></>}
+ {draft.kind==='defaults'&&<><p>All currently selected defaults are retained until explicitly cleared.</p>{[...tasks.map(n=>n.symbol as SymbolKey),...defaults.filter(s=>!tasks.some(n=>n.symbol?.qualifiedName===s.qualifiedName))].map(s=><label key={s.namespace+':'+s.qualifiedName}><input type="checkbox" checked={defaults.some(d=>d.qualifiedName===s.qualifiedName)} onChange={e=>setDefaults(old=>e.target.checked?[...old,s]:old.filter(d=>d.qualifiedName!==s.qualifiedName))}/>{s.qualifiedName}</label>)}</>}
+ <p className="muted">The Java core decides whether this operation is safe. Rejection never applies a partial edit.</p><button disabled={busy||invalidated||!valid}>Confirm source change</button><button type="button" disabled={busy} onClick={onCancel}>Cancel draft</button></form>;
+}

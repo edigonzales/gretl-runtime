@@ -2,6 +2,7 @@ package ch.so.agi.gretl.lsp;
 
 import com.google.gson.*;
 import java.io.*;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.time.Duration;
@@ -71,6 +72,26 @@ class ServerProcessIT {
     Map<String,Object> position(String uri,int line,int character){return Map.of("textDocument",Map.of("uri",uri),"position",Map.of("line",line,"character",character));}
     JsonObject graph(Wire wire,String uri)throws Exception{return wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();}
     boolean diagnostic(JsonObject graph,String code){return graph.getAsJsonObject("payload").getAsJsonArray("diagnostics").asList().stream().map(JsonElement::getAsJsonObject).anyMatch(d->code.equals(d.get("code").getAsString()));}
+
+    @Test void formsCarryCoreBoundValuesAndExactIntegersWithoutExecutingOpaqueSource()throws Exception {
+        Path job=temporary.resolve("job.groovy"),marker=temporary.resolve("must-not-exist");String uri=job.toUri().toString();
+        String source="parameter('url',description:'Archive URL',defaultValue:'https://example.invalid/archive.zip')\n"
+                +"task('p',HttpDownload) { url=parameter('url'); output=workPath('archive.zip'); maxBytes=9223372036854775807L }\n"
+                +"task('c',Extract,dependsOn:'p') { archive=result('p').file; compression='ZIP'; outputDirectory=\"${new File('"+marker+"').text='EXECUTED'}\" }\ndefaults 'c'\n";
+        Files.writeString(job,source);
+        try(var wire=new Wire(temporary,"--stdio")){
+            wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
+            var payload=graph(wire,uri).getAsJsonObject("payload");var forms=payload.getAsJsonObject("forms");
+            String producer=payload.getAsJsonArray("nodes").asList().stream().map(JsonElement::getAsJsonObject).filter(n->n.get("title").getAsString().equals("p")).findFirst().orElseThrow().get("id").getAsString();
+            String consumer=payload.getAsJsonArray("nodes").asList().stream().map(JsonElement::getAsJsonObject).filter(n->n.get("title").getAsString().equals("c")).findFirst().orElseThrow().get("id").getAsString();
+            var p=forms.getAsJsonObject("nodes").getAsJsonObject(producer).getAsJsonObject("fields");
+            assertEquals("9223372036854775807",p.getAsJsonObject("maxBytes").getAsJsonObject("value").get("scalar").getAsString());assertEquals("Long",p.getAsJsonObject("maxBytes").getAsJsonObject("value").get("kind").getAsString());
+            assertEquals("url",p.getAsJsonObject("url").getAsJsonObject("value").getAsJsonObject("symbol").get("qualifiedName").getAsString());
+            var c=forms.getAsJsonObject("nodes").getAsJsonObject(consumer).getAsJsonObject("fields");assertEquals("ResultFieldRef",c.getAsJsonObject("archive").getAsJsonObject("value").get("kind").getAsString());assertEquals("p",c.getAsJsonObject("archive").getAsJsonObject("value").getAsJsonObject("symbol").get("qualifiedName").getAsString());
+            assertEquals("EDIT_OPAQUE_VALUE",c.getAsJsonObject("outputDirectory").get("reason").getAsString());assertEquals(URI.create(uri),URI.create(forms.get("defaultsDocument").getAsString()));assertEquals("c",forms.getAsJsonArray("defaults").get(0).getAsJsonObject().get("qualifiedName").getAsString());
+            assertEquals(source.length(),forms.getAsJsonArray("insertions").get(0).getAsJsonObject().get("insertionOffset").getAsInt());assertEquals(source,Files.readString(job));assertFalse(Files.exists(marker));wire.stop();
+        }
+    }
 
     @Test void targetPreviewIsOptionalAndUsesTheSharedDataClosureOnTheActualWire()throws Exception {
         String uri=temporary.resolve("job.groovy").toUri().toString();

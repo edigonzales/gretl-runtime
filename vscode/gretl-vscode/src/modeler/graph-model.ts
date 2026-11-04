@@ -1,3 +1,4 @@
+import {EditIntent,FormProjection,editIntent,formProjection} from './edit-model';
 /** Wire data from the Java core. No Groovy parsing, binding or graph-selection rules live here. */
 export type NodeKind='TASK'|'ACTION'|'DYNAMIC_CODE'|'PROJECT'|'INNER_INVOCATION'|'PARAMETER'|'CLEANUP';
 export type EdgeKind='DEPENDS_ON'|'AFTER'|'RESULT_BINDING';
@@ -7,7 +8,7 @@ export interface SourceStamp {documentId:string;sha256?:string|null;version?:num
 export interface GraphContext {protocolVersion:1;schemaVersion:1;serverInstanceId:string;projectId:string;workspaceGeneration:string;snapshotId:string;catalogId?:string;sourceStamps:SourceStamp[];completeness:Record<string,boolean>;notices:string[]}
 export interface GraphNode {id:string;presentationKey?:string|null;symbol?:{namespace:string;qualifiedName:string}|null;anchor:Anchor;kind:NodeKind;title:string;operationId?:string|null;parentId?:string|null;editCapabilities:Record<string,{state:string;reason?:string;[key:string]:unknown}>;inputs:{name:string;[key:string]:unknown}[];outputs:{name:string;[key:string]:unknown}[];diagnostics:Diagnostic[]}
 export interface GraphEdge {id:string;source:string;target:string;kind:EdgeKind;anchor:Anchor;outputField?:string|null;inputField?:string|null;schemaKnown:boolean}
-export interface GraphResponse {context:GraphContext;payload:{status:'COMPLETE'|'PARTIAL'|'INVALID';nodes:GraphNode[];edges:GraphEdge[];parameters:GraphNode[];cleanup:GraphNode[];diagnostics:Diagnostic[];preview?:{available:boolean;reason?:string|null;targets:string[];orderedSymbols:string[]}|null}}
+export interface GraphResponse {context:GraphContext;payload:{status:'COMPLETE'|'PARTIAL'|'INVALID';nodes:GraphNode[];edges:GraphEdge[];parameters:GraphNode[];cleanup:GraphNode[];diagnostics:Diagnostic[];forms?:FormProjection|null;preview?:{available:boolean;reason?:string|null;targets:string[];orderedSymbols:string[]}|null}}
 export interface Position {x:number;y:number;parentKey:string|null}
 export interface ViewState {schemaVersion:1;key:string;positions:Record<string,Position>;viewport:{x:number;y:number;zoom:number}}
 export type ViewStatus='EMPTY'|'LOADING'|'FRESH'|'STALE'|'ERROR';
@@ -41,6 +42,7 @@ export function graphResponse(v:unknown):GraphResponse {
     for(const edge of p.edges as unknown[]){if(!object(edge)||!text(edge.id,128)||ids.has(edge.id)||!ids.has(String(edge.source))||!ids.has(String(edge.target))||!['DEPENDS_ON','AFTER','RESULT_BINDING'].includes(String(edge.kind))||!validAnchor(edge.anchor))throw Error('GRAPH_EDGE_INVALID');ids.add(edge.id);}
     for(const d of p.diagnostics as unknown[])if(!object(d)||!text(d.code,128)||!text(d.message)||!validAnchor(d.anchor)||!['ERROR','WARNING','INFORMATION'].includes(String(d.severity)))throw Error('GRAPH_DIAGNOSTIC_INVALID');
     if(p.preview!=null){const preview=p.preview;if(!object(preview)||typeof preview.available!=='boolean'||!Array.isArray(preview.targets)||!Array.isArray(preview.orderedSymbols)||preview.targets.some(t=>!text(t))||preview.orderedSymbols.some(t=>!text(t)))throw Error('GRAPH_PREVIEW_INVALID');}
+    if(p.forms!=null)p.forms=formProjection(p.forms,new Set(nodes.map(n=>(n as GraphNode).id)),new Set((c.sourceStamps as SourceStamp[]).map(s=>s.documentId)));
     return v as unknown as GraphResponse;
 }
 export function viewKey(graph:GraphResponse,documentId:string,slot=0):string{return JSON.stringify(slot?[1,graph.context.projectId,documentId,slot]:[1,graph.context.projectId,documentId]);}
@@ -67,6 +69,9 @@ export class RequestGate {
     dispose():void{this.disposed=true;++this.sequence;}
 }
 export type ModelerMessage={protocolVersion:1;panelId:string;kind:'ready'|'refresh'|'source'|'problems'}
+    |{protocolVersion:1;panelId:string;kind:'intent';requestId:string;snapshotId:string;intent:EditIntent}
+    |{protocolVersion:1;panelId:string;kind:'openRequiredSources';requestId:string}
+    |{protocolVersion:1;panelId:string;kind:'undoText'|'redoText'|'saveSource'}
     |{protocolVersion:1;panelId:string;kind:'inspection';requestId:string;snapshotId:string;view:Record<string,unknown>}
     |{protocolVersion:1;panelId:string;kind:'reveal';snapshotId:string;elementId:string}
     |{protocolVersion:1;panelId:string;kind:'options';previewTargets:string[]|null;includeInnerInvocations:boolean}
@@ -75,6 +80,9 @@ export function modelerMessage(value:unknown,panelId:string):ModelerMessage|unde
     if(!object(value)||encodedSize(value)>MAX_VIEW_BYTES+16384||value.protocolVersion!==1||value.panelId!==panelId)return;
     const base=['protocolVersion','panelId','kind'];let fields:string[];
     switch(value.kind){
+        case 'openRequiredSources':if(!text(value.requestId,128))return;fields=[...base,'requestId'];break;
+        case 'undoText':case 'redoText':case 'saveSource':fields=base;break;
+        case 'intent':if(!text(value.requestId,128)||!text(value.snapshotId,128)||!editIntent(value.intent))return;fields=[...base,'requestId','snapshotId','intent'];break;
         case 'inspection':if(!text(value.requestId,128)||!text(value.snapshotId,128)||!object(value.view))return;fields=[...base,'requestId','snapshotId','view'];break;
         case 'ready':case 'refresh':case 'source':case 'problems':fields=base;break;
         case 'reveal':if(!text(value.snapshotId,128)||!text(value.elementId,128))return;fields=[...base,'snapshotId','elementId'];break;
