@@ -77,6 +77,25 @@ class ApplyDirectiveReaderTest {
     void localNamesAndCompatibleClosureFieldsPreserveIncludes(String source){
         var result=reader.read("job.groovy",source);assertTrue(result.problems().isEmpty(),result.toString());assertEquals(1,result.directives().size());
     }
+    @Test void helperDefaultInterfaceMethodRetainsItsReceiver(){
+        var result=reader.read("job.groovy","interface Base{default void apply(Map x){}}; class Helper implements Base{void run(){apply from:'local'}}; apply from:'real.groovy'");
+        assertTrue(result.problems().isEmpty(),result.toString());assertEquals(1,result.directives().size());
+    }
+    @Test void castClosureLiteralStillChecksItsArity(){
+        var result=reader.read("job.groovy","class Helper{Closure apply=({ -> 'x'} as Closure); void run(){apply from:'hidden.groovy'}}; apply from:'real.groovy'");
+        assertTrue(result.problems().stream().anyMatch(p->p.code().equals("APPLY_CONTEXT")),result.toString());
+    }
+    @ParameterizedTest @ValueSource(strings={
+        "class Helper extends external.Base{void run(){apply from:'external'}}; apply from:'real.groovy'",
+        "class Helper implements external.Api{void run(){apply from:'external'}}; apply from:'real.groovy'",
+        "import groovy.lang.Closure as Callback; class Helper{Callback apply=({Map x->x} as Callback); void run(){apply from:'local'}}; apply from:'real.groovy'"})
+    void unknownHelperTypesStayOpaqueAndClosureAliasesWork(String source){
+        var result=reader.read("job.groovy",source);assertTrue(result.problems().isEmpty(),result.toString());assertEquals(1,result.directives().size());
+    }
+    @Test void castClosureAliasStillChecksItsArity(){
+        var result=reader.read("job.groovy","import groovy.lang.Closure as Callback; class Helper{Callback apply=({->1} as Callback); void run(){apply from:'hidden.groovy'}}; apply from:'real.groovy'");
+        assertTrue(result.problems().stream().anyMatch(p->p.code().equals("APPLY_CONTEXT")),result.toString());
+    }
     @Test void positionsUseUtf16AndUnreachableDirectivesRemainStatic(){
         String text="// 😀\r\nreturn\r\napply from: 'ä space.groovy'\r\n";
         var d=reader.read("job.groovy",text).directives().getFirst();

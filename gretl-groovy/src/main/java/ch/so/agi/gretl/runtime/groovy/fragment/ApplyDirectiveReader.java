@@ -123,24 +123,35 @@ public final class ApplyDirectiveReader {
     }
     private static boolean ownsHelperApply(ClassNode owner,MethodCallExpression call,ModuleNode module,boolean mapOptions) {
         int count=call.getArguments() instanceof TupleExpression tuple?tuple.getExpressions().size():1;
-        Set<String> seen=new HashSet<>();
-        while(owner!=null && seen.add(owner.getName())) {
+        Set<String> seen=new HashSet<>();boolean unknownParent=false;
+        Deque<ClassNode> pending=new ArrayDeque<>();if(owner!=null)pending.add(owner);
+        while(!pending.isEmpty()) {
+            owner=pending.removeFirst();if(!seen.add(owner.getName()))continue;
             for(var field:owner.getFields()) if(field.getName().equals("apply")) {
-                if(field.getInitialExpression() instanceof ClosureExpression closure) {
+                Expression initializer=field.getInitialExpression();
+                while(initializer instanceof CastExpression cast && Set.of("Closure","groovy.lang.Closure","Object","java.lang.Object").contains(typeName(cast.getType(),module))) initializer=cast.getExpression();
+                if(initializer instanceof ClosureExpression closure) {
                     var parameters=closure.getParameters();
                     // Groovy represents explicit { -> } by null and implicit { it } by an empty array.
                     if(parameters!=null && parameters.length==0 && count<=1)return true;
                     if(matchesParameters(parameters==null?Parameter.EMPTY_ARRAY:parameters,count,mapOptions,module))return true;
-                } else if(Set.of("groovy.lang.Closure","Closure").contains(field.getType().getName())) return true;
+                } else if(Set.of("groovy.lang.Closure","Closure").contains(typeName(field.getType(),module))) return true;
             }
             for(var method:owner.getMethods()) if(method.getName().equals("apply") && method.getDeclaringClass()==owner
                     && matchesParameters(method.getParameters(),count,mapOptions,module)) return true;
-            var parent=owner.getUnresolvedSuperClass();
-            String name=parent==null?"":parent.getName();
-            String qualified=owner.getPackageName()==null?name:owner.getPackageName()+"."+name;
-            owner=module.getClasses().stream().filter(t->t.getName().equals(name)||t.getName().equals(qualified)).findFirst().orElse(null);
+            var parents=new ArrayList<ClassNode>(Arrays.asList(owner.getInterfaces()));
+            if(owner.getUnresolvedSuperClass()!=null)parents.add(owner.getUnresolvedSuperClass());
+            for(var parent:parents) {
+                String name=typeName(parent,module);
+                String qualified=owner.getPackageName()==null?name:owner.getPackageName()+"."+name;
+                var local=module.getClasses().stream().filter(t->t.getName().equals(name)||t.getName().equals(qualified)).findFirst();
+                if(local.isPresent())pending.addLast(local.get());
+                else if(!Set.of("java.lang.Object","Object","groovy.lang.Script","Script",
+                        "ch.so.agi.gretl.runtime.groovy.GretlScript","GretlScript").contains(name))unknownParent=true;
+            }
         }
-        return false;
+        // An external helper API may own apply. Never load it to guess method binding.
+        return unknownParent;
     }
     private static boolean matchesParameters(Parameter[] parameters,int count,boolean mapOptions,ModuleNode module) {
         int required=parameters.length;
@@ -151,11 +162,15 @@ public final class ApplyDirectiveReader {
         if(!mapOptions)return true;
         if(parameters.length==0)return false;
         var type=parameters[0].getType();if(type.isArray())type=type.getComponentType();
-        String first=type.getName();
-        for(var imported:module.getImports())if(imported.getAlias().equals(first))first=imported.getType().getName();
+        String first=typeName(type,module);
         return parameters[0].isDynamicTyped() || Set.of("java.lang.Object","Object","java.util.Map","Map",
                 "java.util.AbstractMap","AbstractMap","java.util.HashMap","HashMap","java.util.LinkedHashMap","LinkedHashMap",
                 "java.io.Serializable","Serializable","java.lang.Cloneable","Cloneable").contains(first);
+    }
+    private static String typeName(ClassNode type,ModuleNode module) {
+        String name=type.getName();
+        for(var imported:module.getImports())if(Objects.equals(imported.getAlias(),name))return imported.getType().getName();
+        return name;
     }
     private static boolean namedOptions(MethodCallExpression call) {
         var arguments=call.getArguments();
