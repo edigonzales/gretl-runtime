@@ -19,6 +19,23 @@ The status bar and **GRETL: Show Language Server Output** display server state.
 this window's owned server. Unsaved documents remain in the editor. Workspace
 trust is required before Java starts. Virtual filesystems are unsupported.
 
+Run **GRETL: Open Modeler** to open the current source in the optional graph
+editor. The text editor remains the default. Each modeler stays pinned to its
+source, including when another workspace root or a same-named job has focus.
+Tasks, actions, projects and explanatory inner invocations come from the language
+server's static snapshot. Parameters and cleanup appear separately in Details.
+Definitions and static target previews are separate views; a preview describes
+the statically known dependency closure and does not execute or validate a job
+against live services.
+
+Drag nodes, pan the canvas, zoom, fit or filter declarations to explore the graph.
+View positions are stored separately from the Groovy source. Select a node or
+edge and choose **Reveal selection**, or double-click it, to navigate to its
+current source. From a text selection use **GRETL: Show Selection in Modeler**.
+Dirty text changes update the graph; partial analysis and stale server state are
+shown explicitly. Local React Flow assets and a bundled ELK worker render the
+view without a second server or remote frontend resources.
+
 Build from the repository root with JDK 25, Node 22 or newer, and the local `zip`/`unzip` tools using `./mvnw -B
 clean verify`. This includes the server build, locked npm installation, host
 tests, type checking and local VSIX packaging. The VSIX is written to
@@ -33,6 +50,10 @@ and fixture workspace. It does not change the normal VS Code profile. Use actual
 keyboard/mouse interactions and screenshots; the evidence driver's provider
 captures are supplementary assertions. A prepared environment is not a passed
 test. Workspace trust must be granted explicitly to this disposable fixture.
+Add `--modeler` to prepare the two-root modeler fixture instead of the text-editor
+fixture. **GRETL Evidence: Capture Buffer State Only** also collects bounded,
+read-only geometry diagnostics from visible modeler panels; it never drives
+selection, layout, navigation or source changes.
 
 Native Rename and Quick Fix validate source preconditions before returning edits
 to VS Code. An external filesystem writer can still race after that validation;

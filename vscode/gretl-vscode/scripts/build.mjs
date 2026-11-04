@@ -10,6 +10,7 @@ const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const jar=path.join(repo,'gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar');
 const archive=name=>execFileSync('unzip',['-p',jar,name],{maxBuffer:32<<20,stdio:['ignore','pipe','pipe']});
 await mkdir(path.join(root,'dist'),{recursive:true});await mkdir(path.join(root,'server'),{recursive:true});
+await import('./build-webview.mjs');
 const output=await build({entryPoints:[path.join(root,'src/extension.ts')],bundle:true,platform:'node',target:'node22',format:'cjs',external:['vscode'],outfile:path.join(root,'dist/extension.cjs'),metafile:true});
 await writeFile(path.join(root,'dist/dependencies.json'),JSON.stringify(output.metafile,null,2)+'\n');
 const files={};
@@ -34,6 +35,7 @@ if(mainClass.readUInt16BE(6)!==69||!mavenArtifactVersion||!groovyVersion)throw E
 const protocol=JSON.parse(archive('gretl-protocol-v1.schema.json').toString());
 const catalog=JSON.parse(archive('operations.json').toString());
 const paths={'package.json':'package.json','LICENSE.txt':'LICENSE','readme.md':'README.md','language-configuration.json':'language-configuration.json','dist/extension.cjs':'dist/extension.cjs'};
+for(const name of ['view.js','view.css','elk-worker.min.js'])paths['dist/modeler/'+name]='dist/modeler/'+name;
 for(const name of [...Object.keys(files),'THIRD-PARTY-NOTICES.txt'])paths['server/'+name]='server/'+name;
 for(const name of await readdir(path.join(root,'syntaxes')))paths['syntaxes/'+name]='syntaxes/'+name;
 const payloadSha256={};for(const [delivered,source]of Object.entries(paths).sort(([a],[b])=>a.localeCompare(b,'en')))payloadSha256[delivered]=sha(await readFile(path.join(root,source)));

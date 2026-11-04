@@ -14,7 +14,7 @@ test('actual VSIX inventory binds identity, versions, catalogue, protocol and ev
  assert.equal(inventory.extensionId,'edigonzales.gretl-runtime-vscode');assert.equal(inventory.candidateSha,execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim());
  assert.equal(inventory.vsixSha256,hash(await readFile(archive)));assert.equal(manifest.javaRelease,25);assert.match(manifest.javaVersion,/^25(?:[.-]|$)/);assert.match(manifest.groovyVersion,/^6\./);assert.ok(manifest.mavenVersion&&manifest.mavenArtifactVersion);
  assert.equal(manifest.wireSchemaVersion,1);assert.match(manifest.catalogId,/^[a-f0-9]{64}$/);assert.match(manifest.catalogSha256,/^[a-f0-9]{64}$/);
- for(const name of ['dist/extension.cjs','language-configuration.json','server/gretl-lsp.jar','server/operations.json','server/gretl-protocol-v1.schema.json','syntaxes/groovy.tmLanguage.json','syntaxes/LICENSE-TEXTMATE.txt'])assert.ok(manifest.payloadSha256[name],name);
+ for(const name of ['dist/extension.cjs','dist/modeler/view.js','dist/modeler/view.css','dist/modeler/elk-worker.min.js','language-configuration.json','server/gretl-lsp.jar','server/operations.json','server/gretl-protocol-v1.schema.json','syntaxes/groovy.tmLanguage.json','syntaxes/LICENSE-TEXTMATE.txt'])assert.ok(manifest.payloadSha256[name],name);
  assert.equal(inventory.entries.length,Object.keys(manifest.payloadSha256).length+3);
 });
 test('tampering with a real packaged payload fails inventory verification and emits no success inventory',async()=>{

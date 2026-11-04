@@ -20,7 +20,8 @@
   ],
   "main": "./dist/extension.cjs",
   "activationEvents": [
-    "onLanguage:gretl-runtime"
+    "onLanguage:gretl-runtime",
+    "onCustomEditor:gretlRuntime.modeler"
   ],
   "capabilities": {
     "untrustedWorkspaces": {
@@ -63,6 +64,14 @@
       {
         "command": "gretlRuntime.useActiveFile",
         "title": "GRETL: Use Active File as Runtime Job"
+      },
+      {
+        "command": "gretlRuntime.openModeler",
+        "title": "GRETL: Open Modeler"
+      },
+      {
+        "command": "gretlRuntime.showSelectionInModeler",
+        "title": "GRETL: Show Selection in Modeler"
       }
     ],
     "configuration": {
@@ -98,7 +107,31 @@
         "scopeName": "source.groovy.gretl-runtime",
         "path": "./syntaxes/groovy.tmLanguage.json"
       }
-    ]
+    ],
+    "customEditors": [
+      {
+        "viewType": "gretlRuntime.modeler",
+        "displayName": "GRETL Modeler",
+        "selector": [
+          {
+            "filenamePattern": "*.groovy"
+          },
+          {
+            "filenamePattern": "settings.gretl"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "gretlRuntime.openModeler",
+          "when": "resourceLangId == gretl-runtime",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -107,13 +140,19 @@
     "package": "npm run check && npm run build && vsce package --no-dependencies --out dist/gretl-runtime.vsix && node scripts/inventory.mjs && node --test test/package/*.test.mjs"
   },
   "dependencies": {
+    "@xyflow/react": "12.12.1",
+    "elkjs": "0.12.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "vscode-languageclient": "11.0.0"
   },
   "devDependencies": {
-    "@types/vscode": "1.144.0",
     "@types/node": "22.19.0",
-    "@vscode/vsce": "4.1.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/vscode": "1.144.0",
     "@vscode/test-electron": "3.1.0",
+    "@vscode/vsce": "4.1.0",
     "esbuild": "0.28.2",
     "typescript": "5.9.3"
   },

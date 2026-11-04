@@ -8,6 +8,15 @@ exports.activate=function(context){
  const directory=process.env.GRETL_GUI_EVIDENCE||vscode.workspace.getConfiguration('gretlEvidence').get('directory');
  if(!directory)throw Error('GRETL_GUI_EVIDENCE must name a private evidence directory');
  let sequence=0;
+ context.subscriptions.push(vscode.commands.registerCommand('gretlEvidence.captureBuffers',async()=>{
+  const {createHash}=require('node:crypto');
+  const result={time:new Date().toISOString(),readOnly:true,documents:vscode.workspace.textDocuments.filter(d=>d.uri.scheme==='file'&&vscode.workspace.getWorkspaceFolder(d.uri)).map(d=>({uri:d.uri.toString(),version:d.version,dirty:d.isDirty,text:d.getText(),sha256:createHash('sha256').update(d.getText(),'utf8').digest('hex')})),activeEditor:vscode.window.activeTextEditor?.document.uri.toString(),selection:vscode.window.activeTextEditor?.selection};
+  await fs.mkdir(directory,{recursive:true});
+  const filename=path.join(directory,`buffers-${Date.now()}.json`);
+  result.modelers=await vscode.commands.executeCommand('gretlRuntime.inspectModeler');
+  await fs.writeFile(filename,JSON.stringify(result,null,2)+'\n');
+  vscode.window.setStatusBarMessage(`GRETL buffer evidence saved: ${path.basename(filename)}`,5000);
+ }));
  context.subscriptions.push(vscode.commands.registerCommand('gretlEvidence.capture',async()=>{
   const editor=vscode.window.activeTextEditor;
   if(!editor)throw Error('No active text editor');

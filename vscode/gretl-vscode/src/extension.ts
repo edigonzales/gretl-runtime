@@ -4,14 +4,17 @@ import {once} from 'node:events';
 import {randomUUID} from 'node:crypto';
 import {endOwnedProcess} from './process';
 import {LanguageClient,CloseAction,ErrorAction,State,RenameRequest,CodeActionRequest,DocumentSymbolRequest,DocumentSymbol as ProtocolSymbol,TextDocumentEdit,WorkspaceEdit as ProtocolEdit,CodeAction as ProtocolAction} from 'vscode-languageclient/node';
-import {checkBundle,checkJava,languageConfiguration,localHost} from './host';
+import {checkBundle,checkJava,languageConfiguration,localHost,sourceDigest} from './host';
 
 import {Stamp,validateEditSources} from './edit-guard';
 import {currentRead} from './read-query';
+import {ModelerBackend,ModelerOptions} from './modeler/backend';
+import {GraphContext,GraphResponse,graphResponse} from './modeler/graph-model';
+import {GretlModelerProvider} from './modeler/provider';
 interface Context {protocolVersion:number;schemaVersion:number;serverInstanceId:string;snapshotId:string;sourceStamps:Stamp[]}
 interface Graph {context:Context}
 
-class RuntimeHost implements vscode.Disposable {
+class RuntimeHost implements vscode.Disposable,ModelerBackend {
     private client?:LanguageClient;
     private child?:ChildProcess;
     private queue:Promise<void>=Promise.resolve();
@@ -26,6 +29,10 @@ class RuntimeHost implements vscode.Disposable {
     private readonly captures=new WeakMap<Context,Map<string,vscode.TextDocument>>();
     private readonly sessionListeners:vscode.Disposable[]=[];
     private readonly listeners:vscode.Disposable[]=[];
+    private readonly backendChanges=new vscode.EventEmitter<boolean>();
+    private readonly analyses=new vscode.EventEmitter<GraphContext>();
+    readonly onDidChange=this.backendChanges.event;
+    readonly onDidAnalyze=this.analyses.event;
     constructor(private readonly extension:vscode.ExtensionContext){
         this.status.command='gretlRuntime.showOutput';this.status.show();this.state('Stopped');
         this.listeners.push(
@@ -57,7 +64,24 @@ class RuntimeHost implements vscode.Disposable {
             })
         );
     }
-    private state(message:string){this.status.text=`GRETL: ${message}`;this.status.tooltip=message;}
+    private state(message:string){this.status.text=`GRETL: ${message}`;this.status.tooltip=message;this.backendChanges.fire(message==='Ready'&&!!this.instance);}
+    async graph(document:vscode.TextDocument,options:ModelerOptions,token:vscode.CancellationToken):Promise<GraphResponse>{
+        const client=this.client,instance=this.instance,version=document.version;
+        if(!client?.isRunning()||!instance||!vscode.workspace.isTrusted)throw Error('GRETL server is not ready.');
+        const normalize=(uri:string)=>vscode.Uri.parse(uri).toString();
+        const before=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
+        const response=graphResponse(await client.sendRequest('gretl/graph',{protocolVersion:1,documentId:document.uri.toString(),includeInnerInvocations:options.includeInnerInvocations,...(options.previewTargets===null?{}:{previewTargets:options.previewTargets})},token));
+        if(token.isCancellationRequested||this.client!==client||this.instance!==instance||response.context.serverInstanceId!==instance||document.isClosed||document.version!==version)throw new vscode.CancellationError();
+        const now=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
+        for(const stamp of response.context.sourceStamps){const uri=normalize(stamp.documentId),doc=now.get(uri);if(stamp.version!=null&&(!doc||before.get(uri)!==doc||doc.version!==stamp.version||sourceDigest(doc.getText())!==stamp.sha256)||stamp.version==null&&doc)throw new vscode.CancellationError();}
+        return response;
+    }
+    async navigate(documentId:string,snapshotId:string,elementId:string|undefined,offsetUtf16:number|undefined,token:vscode.CancellationToken){
+        const client=this.client,instance=this.instance;
+        if(!client?.isRunning()||!instance)throw Error('GRETL server is not ready.');
+        const result=await client.sendRequest<Awaited<ReturnType<ModelerBackend['navigate']>>>('gretl/navigation',{protocolVersion:1,documentId,expectedSnapshotId:snapshotId,...(elementId===undefined?{offsetUtf16}:{elementId})},token);
+        if(token.isCancellationRequested||this.client!==client||this.instance!==instance||result.context.serverInstanceId!==instance||result.context.snapshotId!==snapshotId)throw new vscode.CancellationError();return result;
+    }
     private serial(operation:()=>Promise<void>):Promise<void>{
         this.queue=this.queue.then(operation,operation).catch(error=>{this.state('Error — see Output');this.output.error(String(error instanceof Error?error.message:error));});return this.queue;
     }
@@ -153,6 +177,7 @@ class RuntimeHost implements vscode.Disposable {
             }
         });
         this.client=client;
+        this.sessionListeners.push(client.onNotification('gretl/analysisReady',(message:{context:GraphContext})=>{if(this.client===client&&message.context?.serverInstanceId===this.instance)this.analyses.fire(message.context);}));
         const watcher=(client.clientOptions.synchronize?.fileEvents);
         if(watcher&&!Array.isArray(watcher))this.sessionListeners.push(watcher);
         this.sessionListeners.push(client.onDidChangeState(event=>{if(this.client===client&&event.newState===State.Running)this.state('Ready');}));
@@ -208,8 +233,8 @@ class RuntimeHost implements vscode.Disposable {
         this.state('Stopped');
     }
     async deactivate(){this.disposed=true;await this.serial(()=>this.stop());this.dispose();}
-    dispose(){this.disposed=true;for(const listener of this.listeners.splice(0))listener.dispose();this.status.dispose();this.output.dispose();}
+    dispose(){this.disposed=true;for(const listener of this.listeners.splice(0))listener.dispose();this.backendChanges.dispose();this.analyses.dispose();this.status.dispose();this.output.dispose();}
 }
 let host:RuntimeHost|undefined;
-export async function activate(context:vscode.ExtensionContext){host=new RuntimeHost(context);await host.activate();}
+export async function activate(context:vscode.ExtensionContext){host=new RuntimeHost(context);context.subscriptions.push(new GretlModelerProvider(context,host));await host.activate();}
 export async function deactivate(){await host?.deactivate();host=undefined;}

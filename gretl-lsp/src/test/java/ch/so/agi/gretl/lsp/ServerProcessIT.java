@@ -72,6 +72,24 @@ class ServerProcessIT {
     JsonObject graph(Wire wire,String uri)throws Exception{return wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();}
     boolean diagnostic(JsonObject graph,String code){return graph.getAsJsonObject("payload").getAsJsonArray("diagnostics").asList().stream().map(JsonElement::getAsJsonObject).anyMatch(d->code.equals(d.get("code").getAsString()));}
 
+    @Test void targetPreviewIsOptionalAndUsesTheSharedDataClosureOnTheActualWire()throws Exception {
+        String uri=temporary.resolve("job.groovy").toUri().toString();
+        String source="action('afterOnly') {}\naction('producer') {}\naction('consumer',dependsOn:'producer',after:'afterOnly') {}\naction('unused') {}\ndefaults 'consumer'\n";
+        Files.writeString(temporary.resolve("job.groovy"),source);
+        try(var wire=new Wire(temporary,"--stdio")) {
+            wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
+            var definitions=graph(wire,uri).getAsJsonObject("payload");
+            assertEquals(4,definitions.getAsJsonArray("nodes").size());assertTrue(!definitions.has("preview")||definitions.get("preview").isJsonNull());
+            var selected=wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri,"previewTargets",List.of())).getAsJsonObject().getAsJsonObject("payload");
+            assertEquals(4,selected.getAsJsonArray("nodes").size(),"Definitions remain complete even in preview mode");
+            var preview=selected.getAsJsonObject("preview");assertTrue(preview.get("available").getAsBoolean());
+            assertEquals(List.of("producer","consumer"),preview.getAsJsonArray("orderedSymbols").asList().stream().map(JsonElement::getAsString).toList());
+            var unknown=wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri,"previewTargets",List.of("missing"))).getAsJsonObject().getAsJsonObject("payload").getAsJsonObject("preview");
+            assertFalse(unknown.get("available").getAsBoolean());assertEquals("UNKNOWN_TARGET",unknown.get("reason").getAsString());
+            assertEquals(source,Files.readString(temporary.resolve("job.groovy")));wire.stop();
+        }
+    }
+
     @Test void quotedCompletionFilteringMatchesTheOriginalDelimiterAndKeepsTheCoreEdit()throws Exception {
         String uri=temporary.resolve("job.groovy").toUri().toString();Files.writeString(temporary.resolve("job.groovy"),"action('initial') {}\n");
         try(var wire=new Wire(temporary,"--stdio")) {

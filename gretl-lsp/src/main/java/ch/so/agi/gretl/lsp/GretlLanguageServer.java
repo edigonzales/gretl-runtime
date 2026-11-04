@@ -151,7 +151,8 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
         return workspace.request(document,extra,(snapshot,cancel)-> {
             version(request.protocolVersion());expected(snapshot,request.expectedSnapshotId(),false);
             var graph=new JobGraphProjector().project(snapshot,new JobGraphProjector.GraphOptions(request.includeInnerInvocations(),true),cancel);
-            return new GraphResponse(context(snapshot),new GraphPayload(graph.status(),graph.nodes(),graph.edges(),graph.parameters(),graph.cleanup(),graph.diagnostics()));
+            var preview=request.previewTargets()==null?null:new ch.so.agi.gretl.tooling.graph.TargetPreviewProjector().project(snapshot,request.previewTargets(),cancel);
+            return new GraphResponse(context(snapshot),new GraphPayload(graph.status(),graph.nodes(),graph.edges(),graph.parameters(),graph.cleanup(),graph.diagnostics(),preview));
         });
         });
     }

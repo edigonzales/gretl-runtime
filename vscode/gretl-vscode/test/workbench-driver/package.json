@@ -12,6 +12,10 @@
   "contributes": {
     "commands": [
       {
+        "command": "gretlEvidence.captureBuffers",
+        "title": "GRETL Evidence: Capture Buffer State Only"
+      },
+      {
         "command": "gretlEvidence.capture",
         "title": "GRETL Evidence: Capture Workbench Assertions"
       },

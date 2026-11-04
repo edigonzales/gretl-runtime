@@ -20,8 +20,12 @@ public final class GretlProtocol {
     public record AnalysisReady(Context context) { }
     public record CatalogRequest(int protocolVersion,int catalogSchemaVersion) { }
     public record CatalogResponse(int protocolVersion,int schemaVersion,String serverInstanceId,String state,OperationCatalog catalog,List<String> notices) { }
-    public record GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources) { }
-    public record GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics) { }
+    public record GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources,List<String> previewTargets) {
+        public GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources){this(protocolVersion,documentId,expectedSnapshotId,includeInnerInvocations,requestedSources,null);}
+    }
+    public record GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics,ch.so.agi.gretl.tooling.graph.TargetPreviewProjector.Preview preview) {
+        public GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics){this(status,nodes,edges,parameters,cleanup,diagnostics,null);}
+    }
     public record GraphResponse(Context context,GraphPayload payload) { }
     public record SymbolKey(String namespace,String qualifiedName) {
         SymbolId core(){return new SymbolId(Namespace.valueOf(required(namespace,32)),required(qualifiedName,65_536));}
