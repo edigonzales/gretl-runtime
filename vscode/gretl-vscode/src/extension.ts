@@ -386,7 +386,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
     private async capture(client:LanguageClient,doc:vscode.TextDocument,token:vscode.CancellationToken):Promise<Context>{
         const {value:graph}=await this.synchronizedGraph(client,{protocolVersion:1,documentId:doc.uri.toString()},token);
         const context=graph.context;
-        if(context?.protocolVersion!==1||context.schemaVersion!==1||context.serverInstanceId!==this.instance||!Array.isArray(context.sourceStamps)||context.sourceStamps.length>4096)throw new Error('GRETL source capture is stale or incompatible. Retry.');
+        if(context?.protocolVersion!==1||context.schemaVersion!==2||context.serverInstanceId!==this.instance||!Array.isArray(context.sourceStamps)||context.sourceStamps.length>4096)throw new Error('GRETL source capture is stale or incompatible. Retry.');
         context.sourceStamps=context.sourceStamps.map(stamp=>({...stamp,sha256:stamp.sha256??null,version:stamp.version??null,incarnation:stamp.incarnation??null,unavailableCode:stamp.unavailableCode??null}));
         const ownedBuffers=new Set(context.sourceStamps.filter(stamp=>stamp.version!==null).map(stamp=>vscode.Uri.parse(stamp.documentId).toString()));
         this.captures.set(context,new Map(vscode.workspace.textDocuments.filter(doc=>ownedBuffers.has(doc.uri.toString())).map(doc=>[doc.uri.toString(),doc])));

@@ -270,3 +270,16 @@ sauberen P3-Commit b507e03 im externen P4-baseline-Worktree, Beleg
 Auftrags, keine abgeschwächten Assertions. Das P4-Gate wählt ausdrücklich die
 betroffenen Core-/Query-/Edit-/Wiretests und läuft mit frischem Server/Katalogbau.
 Native VSIX-Belege und unabhängiger Review stehen noch aus; kein P4-PASS.
+
+
+P4-Kandidat 1 `bf4ae2a122f0d8498ebaf9945b8b72ec33c42b6c`: 69 Corefälle,
+27 stdio-Fälle, 83 Clientfälle und drei Paket-/Inventartests erfolgreich.
+Installierte native Belege unter `gui/P4-bf4ae2a` bleiben UNVOLLSTÄNDIG:
+Ownerdetails setzen korrekt nur finalizedBy im Ownerfragment, gezieltes
+Disconnect und Modeler-Undo/Redo funktionieren samt echtem Ownerbuffer/Save.
+Der anschliessende native F2-Rename scheiterte kontrolliert und ohne Mutation,
+weil der separate Texteditor-Captureguard weiterhin Graphschema 1 erwartete.
+Korrektur dieses Guards auf 2, unveränderte Session-/Sourcevectorprüfungen;
+neuer Test führt die tatsächliche Hostcapturemethode aus und prüft alte/fremde/
+überlange Snapshots negativ. Neuer sauberer Kandidat und neue VSIX-Nativebelege
+folgen; der fehlgeschlagene Lauf ist kein P4-PASS.
