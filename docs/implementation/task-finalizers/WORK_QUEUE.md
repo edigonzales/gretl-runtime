@@ -297,7 +297,7 @@ Originalbericht ehrlich dokumentiert; keine getrackten Produktbytes geändert.
 Reviewversuch 1 wurde wegen einer zu engen Compound-Shell-Whitelist ohne Abnahme
 abgebrochen; Versuch 2 gab dieselben npm-Prüfungen einzeln frei. Kandidat gleich.
 
-## P5 — IMPLEMENTED
+## P5 — REVIEWED_ACCEPTED
 
 Feste Phasebase `e572807e6c7c4b0b2bda6a8c8892114028455ed2`.
 Aktuelle Featureanleitung, Referenz-/Runtime-/VSIXtexte und kanonisches
@@ -307,9 +307,10 @@ verify_examples.py führt dokumentierte Beispiele und unveränderte gespeicherte
 GUIquellen separat aus; Jobroot-Inputbereitstellung ist ausdrücklich aufgezeichnet.
 Keine Runtime-/Toolingproduktänderung nach dem P4-PASS.
 
-Entwicklung und endgültige kandidatengleiche Gates werden extern gesichert.
-P5 ist bis zum frischen kumulativen Schlussreview REVIEW_PENDING; noch kein
-TASK_FINALIZERS_WITH_TOOLING_ACCEPTED.
+Entwicklung und endgültige kandidatengleiche Gates sind extern gesichert.
+Der kumulative Schlussreview ist abgeschlossen und maschinell validiert:
+TASK_FINALIZERS_WITH_TOOLING_ACCEPTED. Die nachfolgenden Entwicklungs- und
+Fehlschlagbelege bleiben mit ihrer jeweiligen Identität erhalten.
 
 
 P5-Entwicklungsbelege: `evidence/P5-development-examples2` enthält zwölf echte
@@ -337,3 +338,58 @@ feste Repository-URL vermeidet die Transformation; Hashassertions unverändert.
 Neuer Kandidat qualifiziert Paketierung und aktuelle Artefakte erneut. Die
 266 Javafälle bleiben als Beleg von 5ea8b46 erhalten; Runtime-/LSP-/Hostcode sind
 bytegleich. Der frische Schlussreview testet den neuen SHA selbst kumulativ.
+
+### Kumulativer Abschluss
+
+Geprüfter Produkt-/Dokumentationscommit:
+`9c6b7cc737383b346fe327613ddc700f0ea6a8c1`.
+P5-Phasebase unverändert `e572807e6c7c4b0b2bda6a8c8892114028455ed2`,
+Auftragsbasis `9faf347f739e836976dd566bd31a65fc4ff91ac4`.
+Alle Phasen P0–P5 wurden vor Beginn der Folgephase unabhängig abgenommen;
+F01–F30 sind im kumulativen Schlussreview erfüllt.
+
+P5-Reviewversuch 1 unter dem versteckten Cachepfad endete ehrlich mit
+NICHT_PRUEFBAR: Quarto 1.9.37 fand dort keine Projektinputs und erzeugte trotz
+Exit 0 keine erwarteten Seiten. Identische Minimalinputs unter einem nicht
+versteckten sources-Pfad rendern erfolgreich. Vergleichsbeleg:
+`/Users/stefan/sources/gretl-task-finalizers-review/quarto-location-diagnosis.json`.
+Keine Produktänderung, keine gelockerte Renderassertion. Der vollständige erste
+Review bleibt unter `/Users/stefan/.cache/gretl-task-finalizers/review/P5-attempt-1`.
+
+Frischer Reviewversuch 2 in einem neuen detached Worktree unter sources:
+`/Users/stefan/sources/gretl-task-finalizers-review/P5-attempt-2`.
+Originale `review.md`, `verdict.json`, `session-export.json`, `validated.json`,
+`handoff.json`, `opencode.jsonl` und `process.json` liegen dort. Tatsächliche
+Session `ses_e52ed6d9effeJWrCasm0QVcwAQ`, OpenCode 2.2.5,
+deepseek/deepseek-flash mit bestätigter Zuordnung DeepSeek-V4.1-Flash-1017.
+Urteil ABGENOMMEN, keine Findings, keine fälligen NOT_EXECUTED; der externe
+Adaptervalidator bestätigt Auftrag, Digest, SHA, frische abgeschlossene Session,
+Modell, tatsächlich ausgeführte Befehle und positive frische Reports.
+
+Der Reviewer führte selbst den exakten kumulativen Mavenbefehl aus handoff.json
+aus: 266 Tests in 38 frischen XMLs, null Failures/Errors/Skips, BUILD SUCCESS.
+Alle neun Zusatzbefehle aus dem Handoff erfolgreich: npm ci/check/test/package
+(84 Clienttests, drei Paketprüfungen), vier Adaptertests, 73 Werkzeugtests,
+zwölf echte Beispiel-/GUI-Fixture-Prozesse, 451 strikte Links ohne Defekt und
+der vollständige aktuelle Dokumentationslauf. Letzterer rendert Quarto und
+Thoth, prüft 44 unveränderte generierte Tabellen und bindet alle 18 eigenen
+Unterbefehle an den exakten Produkt-SHA (`docs/result.json`). Die gespeicherten
+GUIquellen blieben bytegleich; Jobroot-Inputbereitstellung ist aufgezeichnet.
+
+Eigene neue Reviewer-Gegenprobe: gezielter Shared-Prerequisite-Drain ohne
+Reaktivierung eines normalen Consumers nach Fail-fast; dependsOn auf einen
+gescheiterten Owner blockiert nur den datenabhängigen Finalizer, after allein
+nicht; azyklische Aktivierungsblockade wird vor Seiteneffekten abgelehnt.
+Drei echte Distributionsprozesse mit erwarteten Exits 10/10/2. Der anfängliche
+Top-Level-Parameterfehler im Probeentwurf und dessen Korrektur sind protokolliert;
+keine Produktänderung durch den Reviewer. Getrackter Reviewbaum blieb sauber.
+
+Verbleibende Grenzen: die zwei vorbestehenden CatalogSemanticParityTest-
+Fixturefehler bleiben separat dokumentiert (P4-Baselinebeleg), kein behauptetes
+PASS für diese Familie. Gemäss lokalem Testvertrag keine Root-/Dienst-/GeoTools-
+Vollgates und keine Releasefreigabe. Keine Veröffentlichung, kein Push/Merge,
+keine produktiven Jobs. Der ursprüngliche main-Worktree bleibt unverändert.
+
+Dieser abschliessende Arbeitsstand ist ein reiner Statusnachtrag zum geprüften
+Produkt-/Dokumentationscommit, kein neuer Produkt-PASS. Befehle und Rohbelege
+aller akzeptierten Phasen bleiben bei ihren jeweiligen Kandidaten erhalten.
