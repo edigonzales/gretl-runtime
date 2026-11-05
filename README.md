@@ -111,3 +111,8 @@ vorkompilierten Job-JAR. Das [lokale Beispiel](examples/script-includes/README.m
 prüft den vollständigen Inhalt nach Gzip-Dekompression. Die IDE-Sicht bleibt
 partiell; vollständige Includeauflösung und dateiübergreifendes Rename sind
 nicht zugesichert.
+
+[Taskgebundene Finalizer](docs/implementation/task-finalizers/README.md) ergänzen
+den normalen Taskgraphen um bedingte Abschlussarbeit. Das lokale
+[ausführbare Beispiel](examples/task-finalizers/README.md) zeigt Erfolg,
+Ownerfehler, gemeinsamen Finalizer und globales Cleanup.

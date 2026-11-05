@@ -19,6 +19,14 @@ Run a single script or a project with declarative `settings.gretl` includes.
 The optional packager compiles a job into an executable JAR with explicitly
 selected task modules and resources. The JAR runs with Java 25.
 
+## Task finalizers
+
+`finalizedBy` selects conditional completion tasks after a reached owner finishes,
+including failure or cooperative cancellation. Shared finalizers run once after
+selected owners settle. Explicit data dependencies still control result access;
+global cleanup follows the finalizer drain. The editor shows a distinct edge and
+safe owner edits without running jobs. See the [documentation](docs.qmd).
+
 ## Diagnostics and extensions
 
 Jobs share parameter resolution, cancellation, time budgets, managed resources,

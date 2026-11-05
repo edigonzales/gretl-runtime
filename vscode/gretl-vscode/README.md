@@ -45,12 +45,20 @@ values remain in source with an explanation.
 
 Select a task and open **Details** to configure, rename or delete it. Drag a
 node's dependency handle to another node, or use **Add dependency**, to choose
-`dependsOn` or ordering-only `after`. Connect an output port to an input port, or
+`dependsOn`, ordering-only `after`, or explicit `finalizedBy` (owner → finalizer). Connect an output port to an input port, or
 use **Bind result**, to add a result reference and its required data dependency
 in one source change. **Defaults** edits the Core's complete target list.
 Delete and disconnect refuse changes that would leave unsafe references; they
 never cascade silently. If another source must be open for a safe edit, open the
 requested sources and confirm a newly planned change.
+
+Owners also offer **Details → Edit owner finalizers**. Finalizer edges have their
+own label/style and no data port. Disconnect edits the owner header; rename
+updates bound finalizer links and delete refuses referenced targets. Static target
+previews show a nominal success plan with conditional candidates: selection alone
+does not activate a finalizer or grant result access. The matching server advertises
+`graphSchemaVersion=2` and `taskFinalizersVersion=1`; base protocol and catalogue
+remain version 1. See the [finalizer guide](../../docs/implementation/task-finalizers/README.md).
 
 **Undo text** and **Redo text** use native VS Code history in an actual target of
 the last modeler edit.

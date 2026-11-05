@@ -242,7 +242,7 @@ Modell, Session, frische XMLs, eigene Gegenprobe und unveränderte getrackte Byt
 sind maschinell validiert: externer Cache `review/P3-attempt-2/validated.json`.
 P4 wurde erst danach begonnen.
 
-## P4 — IMPLEMENTED
+## P4 — REVIEWED_ACCEPTED
 
 Feste Phasebase `b507e03f204c8201119e721518f84a38ea3e7780`.
 Finalizer als eigene Taskreferenz, ownergerichtete Graphkante, ursprüngliche
@@ -283,3 +283,43 @@ Korrektur dieses Guards auf 2, unveränderte Session-/Sourcevectorprüfungen;
 neuer Test führt die tatsächliche Hostcapturemethode aus und prüft alte/fremde/
 überlange Snapshots negativ. Neuer sauberer Kandidat und neue VSIX-Nativebelege
 folgen; der fehlgeschlagene Lauf ist kein P4-PASS.
+
+
+P4-Abschluss: `e572807e6c7c4b0b2bda6a8c8892114028455ed2` ist unabhängig
+ABGENOMMEN und maschinell validiert: externer Cache
+`review/P4-attempt-2/validated.json`, Session
+`ses_e532b9aa6ffeTxaLXfDQsKuQo6`, OpenCode2.2.5 / DeepSeek-V4.1-Flash-1017.
+Reviewer führte 96 frische Java-/stdiofälle, 84 Client- und vier Adaptertests
+selbst aus, dazu eigene Core-/Wire-/native Gegenproben. Keine Findings und
+keine fälligen NOT_EXECUTED. Installierte Artefakt-/JARdigests wurden selbst
+geprüft. Fehlgeschlagene Harnessentwicklungen und deren Korrekturen sind im
+Originalbericht ehrlich dokumentiert; keine getrackten Produktbytes geändert.
+Reviewversuch 1 wurde wegen einer zu engen Compound-Shell-Whitelist ohne Abnahme
+abgebrochen; Versuch 2 gab dieselben npm-Prüfungen einzeln frei. Kandidat gleich.
+
+## P5 — IMPLEMENTED
+
+Feste Phasebase `e572807e6c7c4b0b2bda6a8c8892114028455ed2`.
+Aktuelle Featureanleitung, Referenz-/Runtime-/VSIXtexte und kanonisches
+Erfolg-/Fehler-/JARbeispiel einschliesslich Distributionskopie ergänzt.
+ACCEPTANCE.md ordnet alle F01–F30 zu konkreten Code-/Testbelegen zu.
+verify_examples.py führt dokumentierte Beispiele und unveränderte gespeicherte
+GUIquellen separat aus; Jobroot-Inputbereitstellung ist ausdrücklich aufgezeichnet.
+Keine Runtime-/Toolingproduktänderung nach dem P4-PASS.
+
+Entwicklung und endgültige kandidatengleiche Gates werden extern gesichert.
+P5 ist bis zum frischen kumulativen Schlussreview REVIEW_PENDING; noch kein
+TASK_FINALIZERS_WITH_TOOLING_ACCEPTED.
+
+
+P5-Entwicklungsbelege: `evidence/P5-development-examples2` enthält zwölf echte
+Prozesse mit erfolgreichen dokumentierten Check-/Plan-/SCRIPT-/JARbefehlen,
+beiden erwarteten Fehlerexits 10 und dem separaten gespeicherten GUI-SCRIPT.
+Owner-/Finalizerstatus, FAIL_FAST-NOT_RUN, Aktivierungsrollen, Originalbytes und
+Cleanupreihenfolge per Eventdatei geprüft. Die erste Entwicklungsauswertung
+verwendete für den vorhandenen Grund fälschlich PREVIOUS_TASK_FAILED; korrigiert
+auf den tatsächlichen öffentlichen Grund FAIL_FAST, ohne Produktänderung.
+Root-/Distributionsbeispielquellen sind identisch. 451 strikte Linkziele ohne
+Defekt, 73 Dokumentationswerkzeugtests ohne Fehler/Skips. Der endgültige
+kandidatengleiche Lauf folgt; Entwicklungsartefakte mit sourceDirty=true werden
+nicht als saubere Schlussartefakte ausgegeben.

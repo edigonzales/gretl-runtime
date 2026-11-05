@@ -50,7 +50,9 @@ späte Taskkonfiguration und Ausführung sind unterschiedliche Zeitpunkte.
 Deklarierte Parameter und `taskConfig`-Aliase werden vor beziehungsweise beim
 vorgesehenen Aufruf aufgelöst. Unbekannte Konfigurationsfelder sind Fehler.
 `dependsOn` wählt echte Datenvorgänger; `after` ordnet nur schon ausgewählte
-Tasks. Ergebniszugriff erfordert weiterhin Datenabhängigkeit. Named Tasks,
+Tasks. `finalizedBy` wählt bedingte Abschlusskandidaten und aktiviert sie erst
+nach einem erreichten Ownerabschluss. Siehe [Finalizervertrag](../implementation/task-finalizers/README.md).
+Ergebniszugriff erfordert weiterhin Datenabhängigkeit. Named Tasks,
 Actions und synchrone innere Operationsaufrufe nutzen denselben Invoker.
 
 Hilfe, Check und Planung führen keine Taskkonfiguration, Tasks oder Cleanups aus.
@@ -64,7 +66,9 @@ Namens-/Pfadbasen; siehe [Subprojektvertrag](../implementation/project-subprojec
 
 `SequentialJobRunner` arbeitet sequenziell und fail-fast. Ein Run besitzt seine
 Identität, Workspaces und Ergebnisablage. Nach unbehandeltem Taskfehler laufen
-normale Nachfolger nicht; es gibt keinen automatischen Retry oder Resume.
+normale Nachfolger nicht; aktivierte Finalizer werden unter ihren eigenen
+Daten-/Ownerbarrieren abgearbeitet, danach folgen globale Cleanups.
+Es gibt keinen automatischen Retry oder Resume.
 Ein nicht-`Void`-Operationsergebnis darf nicht null sein und muss den deklarierten
 Typ erfüllen. Actions dürfen ohne Wert normal enden. Optionale Ergebnisabfrage
 ändert nicht die Abhängigkeitsprüfung.
@@ -240,6 +244,7 @@ flowchart TB
 
 - Durchgezogene Kante: `dependsOn`, echte Datenabhängigkeit.
 - Gestrichelte Kante: `after`, nur Reihenfolge.
+- Hervorgehobene Owner-zu-Finalizer-Kante: `finalizedBy`, bedingte Abschlussarbeit.
 - Farbig markiert: angeforderte Ziele.
 
 ### PlantUML
@@ -264,5 +269,5 @@ Mermaid wird nicht über einen Netzwerkdienst gerendert.
 - Die Graphausgabe ist ein Planungsartefakt; Task-Closures werden nicht
   ausgeführt und es entstehen keine Work-/Report-Verzeichnisse. Vertrauenswürdiger
   Groovy-Top-Level-Code kann beim Laden der Definition ausgeführt werden.
-- Die technischen Kantenlabels `dependsOn` und `after` bleiben
+- Die technischen Kantenlabels `dependsOn`, `after` und `finalizedBy` bleiben
   sprachneutral; Titel und Fehlermeldungen folgen der Locale.

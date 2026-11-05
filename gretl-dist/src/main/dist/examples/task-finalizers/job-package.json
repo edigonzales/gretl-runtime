@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 2,
+  "name": "task-finalizers",
+  "version": "1",
+  "runtimeVersion": "6.0.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "sources": [],
+  "resources": ["input.txt"],
+  "taskModules": ["io"],
+  "dependencies": []
+}

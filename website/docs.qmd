@@ -11,6 +11,7 @@ description: "Current source documentation and executable examples."
 - [Task reference source](https://github.com/edigonzales/gretl-runtime/blob/main/docs/reference/reference.adoc)
 - [Generate and render the reference with Thoth Biblios](https://github.com/edigonzales/gretl-runtime/blob/main/docs/reference/README.md)
 - [Job packaging](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/job-packaging.md)
+- [Task finalizers and completion budgets](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/task-finalizers/README.md)
 - [Projects and subprojects](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/project-subprojects/README.md)
 - [Tests and service requirements](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/testing.md)
 

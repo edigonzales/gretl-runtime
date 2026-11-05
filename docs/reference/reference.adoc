@@ -204,6 +204,44 @@ Quellreihenfolge im Script ist nur Lesbarkeit. Sie ersetzt keine
 [.config-key]#`dependsOn`#-Kante. [.config-key]#`after`# ist eine reine Reihenfolge zwischen bereits
 ausgewählten Tasks und erzeugt keinen Ergebniszugriff.
 
+=== Taskgebundene Finalizer
+
+[.config-key]#`finalizedBy`# nennt gewöhnliche benannte Tasks oder Actions für den
+Abschluss eines Owners. Strings, TaskRefs und flache Listen unterstützen dieselben
+Namens- und Subprojektregeln wie andere Tasklinks, auch über lokale Includes.
+Der folgende vollständige lokale Beispieljob wird mit der Distribution geliefert:
+
+[source,groovy]
+----
+include::../../gretl-dist/src/main/dist/examples/task-finalizers/job.groovy[]
+----
+
+Der Includeabschluss und die tatsächlich geprüften Startbefehle stehen unter
+[.path]#`examples/task-finalizers/README.md`# in der Distribution.
+Ein Finalizer wird nach einem erreichten Ownerabschluss aktiviert, auch nach
+SKIPPED, FAILED oder CANCELLED. NOT_RUN vor dem Start löst ihn nicht aus.
+Gemeinsame Finalizer laufen einmal nach allen ausgewählten Ownern; ein direktes
+Finalizerziel benötigt keinen Owner. Eine Liste ordnet ihre Elemente nicht:
+[.config-key]#`after`# ordnet nur bereits ausgewählte Tasks,
+[.config-key]#`dependsOn`# setzt eine echte, erfolgreiche Voraussetzung voraus.
+Nur diese Datenabhängigkeit erteilt auch [.code-fragment]#`result`#-/
+[.code-fragment]#`resultOptional`#-Rechte.
+
+Ownerressourcen sind vor der Finalizeraktivierung geschlossen. Finalizer besitzen
+eigene Scopes und die Ressourcenbasis ihrer eigenen Job-/Subprojektdeklaration.
+Aktivierte unabhängige Finalizer werden auch nach einem normalen Taskfehler
+abgearbeitet; globale Cleanups folgen zuletzt in umgekehrter Registrierung.
+Die erste fachliche Ursache bleibt primär. Nach kooperativem Abbruch oder
+[.code-fragment]#`finishJob`# teilen Abschlussaufgaben und Cleanup ein begrenztes
+Budget von 30 Sekunden; eigener Tasktimeout und neue Abbruchsignale gelten weiter.
+Kein Abschlussversprechen bei SIGKILL, JVM-Absturz oder nicht kooperierendem Code.
+
+Pläne und IDE zeigen bedingte Kandidaten statt eines beobachteten Erfolgs.
+Der Modeler editiert Finalizer am Ownerheader und bietet natives Undo/Redo.
+Sharedquellen bleiben ohne exklusiven Schreibfootprint schreibgeschützt; eine
+Kontextwahl allein berechtigt nicht zum Schreiben. Der gespeicherte Job wird
+separat ausgeführt. Hilfe, Check und Plan führen keine Finalizerbodies aus.
+
 === Parameter
 
 Öffentliche Jobparameter werden einmal im Script deklariert. [.config-key]#`description`# ist
