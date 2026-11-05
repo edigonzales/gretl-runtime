@@ -36,7 +36,21 @@ class ServerProcessIT {
             byte[] bytes=object.toString().getBytes(StandardCharsets.UTF_8);var output=process.getOutputStream();output.write(("Content-Length: "+bytes.length+"\r\n\r\n").getBytes(StandardCharsets.US_ASCII));output.write(bytes);output.flush();
         }
         JsonObject response(String method,Object params)throws Exception {int id=++next;send(method,params,id);return await(id);}
-        JsonElement call(String method,Object params)throws Exception {var response=response(method,params);assertFalse(response.has("error"),response.toString());assertTrue(response.has("result"),response.toString());return response.get("result");}
+        JsonElement call(String method,Object params)throws Exception {return result(response(method,params));}
+        private static JsonElement result(JsonObject response){assertFalse(response.has("error"),response.toString());assertTrue(response.has("result"),response.toString());return response.get("result");}
+        // Use only for read-only requests or edit proposals that can overlap an expected refresh.
+        JsonElement callAfterRefresh(String method,Object params)throws Exception {
+            long deadline=System.nanoTime()+Duration.ofSeconds(10).toNanos();
+            JsonObject response;
+            do {
+                response=response(method,params);
+                if(!response.has("error"))return result(response);
+                var error=response.getAsJsonObject("error");
+                assertEquals(-32801,error.get("code").getAsInt(),response.toString());
+                assertEquals("STALE_OR_CANCELLED_ANALYSIS",error.get("message").getAsString(),response.toString());
+            }while(System.nanoTime()<deadline);
+            throw new AssertionError("Analysis did not settle for "+method+": "+response);
+        }
         JsonObject await(int id)throws Exception {
             var existing=responses.remove(id);if(existing!=null)return existing;
             long deadline=System.nanoTime()+Duration.ofSeconds(20).toNanos();
@@ -82,22 +96,9 @@ class ServerProcessIT {
 
     private JsonObject graphAfterDiskChange(Wire wire,String uri,Path source,String sha256)throws Exception {
         // A native watch event can invalidate a request after the explicit LSP notification.
-        // Only that protocol response is retryable; a successful graph must use the new bytes.
-        long deadline=System.nanoTime()+Duration.ofSeconds(10).toNanos();
-        JsonObject response;
-        do {
-            response=wire.response("gretl/graph",Map.of("protocolVersion",1,"documentId",uri));
-            if(!response.has("error")){
-                assertTrue(response.has("result"),response.toString());
-                var graph=response.getAsJsonObject("result");
-                assertTrue(hasSourceStamp(graph.getAsJsonObject("context"),source.toUri(),sha256),graph.toString());
-                return graph;
-            }
-            var error=response.getAsJsonObject("error");
-            assertEquals(-32801,error.get("code").getAsInt(),response.toString());
-            assertEquals("STALE_OR_CANCELLED_ANALYSIS",error.get("message").getAsString(),response.toString());
-        }while(System.nanoTime()<deadline);
-        throw new AssertionError("SQL analysis did not settle after the file change: "+response);
+        var graph=wire.callAfterRefresh("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();
+        assertTrue(hasSourceStamp(graph.getAsJsonObject("context"),source.toUri(),sha256),graph.toString());
+        return graph;
     }
 
     @Test void formsCarryCoreBoundValuesAndExactIntegersWithoutExecutingOpaqueSource()throws Exception {
@@ -213,7 +214,7 @@ class ServerProcessIT {
             var definitions=wire.call("textDocument/definition",position(uri,1,31)).getAsJsonArray();assertEquals(1,definitions.size());
             assertEquals(java.net.URI.create(uri),java.net.URI.create(definitions.get(0).getAsJsonObject().get("uri").getAsString()));
             var rename=new HashMap<String,Object>(position(uri,0,8));rename.put("newName","renamedCustom");
-            assertEquals(3,wire.call("textDocument/rename",rename).getAsJsonObject().getAsJsonArray("documentChanges").get(0).getAsJsonObject().getAsJsonArray("edits").size());
+            assertEquals(3,wire.callAfterRefresh("textDocument/rename",rename).getAsJsonObject().getAsJsonArray("documentChanges").get(0).getAsJsonObject().getAsJsonArray("edits").size());
             wire.send("textDocument/didClose",Map.of("textDocument",Map.of("uri",uri)),null);
             assertTrue(graph(wire,uri).getAsJsonObject("payload").getAsJsonArray("nodes").asList().stream().anyMatch(value->value.getAsJsonObject().get("title").getAsString().equals("custom")));wire.stop();
         }
