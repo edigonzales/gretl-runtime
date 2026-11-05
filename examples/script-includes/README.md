@@ -1,12 +1,17 @@
 # Lokale Scriptfragmente
 
-Mit Java 25 und der gebauten GRETL-Distribution, vom Repositoryroot:
+Mit Java 25 und der gebauten GRETL-Distribution, vom Repositoryroot oder
+vom entpackten Distributionsroot:
 
 ```sh
-./gretl-dist/target/dist/bin/gretl run examples/script-includes/job.groovy --help
-./gretl-dist/target/dist/bin/gretl check examples/script-includes/job.groovy
-./gretl-dist/target/dist/bin/gretl plan examples/script-includes/job.groovy
-./gretl-dist/target/dist/bin/gretl run examples/script-includes/job.groovy --param output=target/script-includes-output.txt
+GRETL="$(pwd)/bin/gretl"
+if [ ! -x "$GRETL" ]; then
+  GRETL="$(pwd)/gretl-dist/target/dist/bin/gretl"
+fi
+"$GRETL" run examples/script-includes/job.groovy --help
+"$GRETL" check examples/script-includes/job.groovy
+"$GRETL" plan examples/script-includes/job.groovy
+"$GRETL" run examples/script-includes/job.groovy --param output=target/script-includes-output.txt
 cmp examples/script-includes/data/input.txt target/script-includes-output.txt
 ```
 
@@ -26,7 +31,10 @@ Das Paket nimmt den Includeabschluss automatisch als Bytecode auf. Datenressourc
 bleiben ausdrücklich im Deskriptor ausgewählt. Zum isolierten Start ohne Quellbaum:
 
 ```sh
-GRETL="$(pwd)/gretl-dist/target/dist/bin/gretl"
+GRETL="$(pwd)/bin/gretl"
+if [ ! -x "$GRETL" ]; then
+  GRETL="$(pwd)/gretl-dist/target/dist/bin/gretl"
+fi
 INPUT="$(pwd)/examples/script-includes/data/input.txt"
 WORK="$(mktemp -d)"
 cp -R examples/script-includes "$WORK/sources"
@@ -50,5 +58,5 @@ bleibt möglich; Rename, Löschungen, Abhängigkeits- und referenzbildende Ände
 können wegen unbekannter Fragmentinhalte abgelehnt werden. Vollgraph,
 Include-Navigation und Rename über Fragmente sind nicht zugesichert. Ein allein
 geöffnetes Shared-Fragment hat keinen bewiesenen Einbinderkontext; dort den
-Texteditor verwenden. Die [Featureanleitung](../../docs/implementation/script-includes/README.md)
-beschreibt Syntax, Fehler und Subprojekte.
+Texteditor verwenden. Die Featureanleitung im zugehörigen Quellcheckout unter
+`docs/implementation/script-includes/README.md` beschreibt Syntax, Fehler und Subprojekte.

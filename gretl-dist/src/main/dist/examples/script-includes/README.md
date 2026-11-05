@@ -1,12 +1,17 @@
 # Lokale Scriptfragmente
 
-Mit Java 25 und der gebauten GRETL-Distribution, vom entpackten Distributionsroot:
+Mit Java 25 und der gebauten GRETL-Distribution, vom Repositoryroot oder
+vom entpackten Distributionsroot:
 
 ```sh
-./bin/gretl run examples/script-includes/job.groovy --help
-./bin/gretl check examples/script-includes/job.groovy
-./bin/gretl plan examples/script-includes/job.groovy
-./bin/gretl run examples/script-includes/job.groovy --param output=target/script-includes-output.txt
+GRETL="$(pwd)/bin/gretl"
+if [ ! -x "$GRETL" ]; then
+  GRETL="$(pwd)/gretl-dist/target/dist/bin/gretl"
+fi
+"$GRETL" run examples/script-includes/job.groovy --help
+"$GRETL" check examples/script-includes/job.groovy
+"$GRETL" plan examples/script-includes/job.groovy
+"$GRETL" run examples/script-includes/job.groovy --param output=target/script-includes-output.txt
 cmp examples/script-includes/data/input.txt target/script-includes-output.txt
 ```
 
@@ -27,6 +32,9 @@ bleiben ausdrücklich im Deskriptor ausgewählt. Zum isolierten Start ohne Quell
 
 ```sh
 GRETL="$(pwd)/bin/gretl"
+if [ ! -x "$GRETL" ]; then
+  GRETL="$(pwd)/gretl-dist/target/dist/bin/gretl"
+fi
 INPUT="$(pwd)/examples/script-includes/data/input.txt"
 WORK="$(mktemp -d)"
 cp -R examples/script-includes "$WORK/sources"
