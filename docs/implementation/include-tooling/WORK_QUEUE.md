@@ -277,3 +277,18 @@ selbst; der Gateway führt nur die gewählten nativen Aktionen aus und speichert
 unbearbeitete AX-/PNG-Beobachtungen. Keine menschliche Promptübergabe und keine
 Codex-Gegenprobe als Reviewerprobe. Der strikte P4-Validator verlangt reale
 Reviewer-Shellereignisse plus eigene Native-Action-Receipts.
+
+
+P4-Erstkandidat `965bb456f59d8b9f8baa0b8041110b8ca7e04a4c`: gezielte
+Java-/Server-, 60 Client- und VSIX-/Inventargates erfolgreich, Profile/Installationen
+unter `/Users/stefan/.cache/gretl-include-tooling/gui/P4-965bb45/`.
+Native Vorbereitung fand die CUA-Mehrdeutigkeit gleichnamiger Codeinstanzen;
+eine bytegleiche eigene Kopie der offiziellen Code-App macht die Testinstanz
+gezielt adressierbar. Das historische Fenster wurde nicht bearbeitet.
+Der Vorab-Groovybuffer wurde tatsächlich dirty verändert. Der bisherige lesende
+Belegtreiber scheiterte vor Produktaktivierung an inspectModeler; er prüft nun die
+Commandregistrierung und vermerkt productActive, statt GRETL vorzeitig zu starten.
+Dies ist ein Testtreiberfix, keine Produkt-/Runtimeänderung. Der unvollständige
+erste GUI-Lauf ist kein PASS und bleibt erhalten. Neue native Abnahme am neuen
+sauberen Kandidaten; unveränderte Java-Produktbelege des Erstkandidaten bleiben
+als wiederverwendet gekennzeichnet und werden nicht umetikettiert.
