@@ -96,6 +96,12 @@ class TaskScheduleTest {
         // Positive control: independent normal demand for D removes the activation deadlock.
         assertEquals(List.of("d","a","f"),plan(graph(new String[]{"a","d","f"},after("d","a"),fin("a","f"),dep("d","f")),"a","d").orderedIds());
     }
+    @Test void executorCanRejectReadyTaskBeforeStartWithoutTriggeringItsFinalizer() {
+        var s=schedule(graph(new String[]{"a","f"},fin("a","f")),"a");
+        s.preventStart("a","CANCELLED_BEFORE_START");
+        notRun(s,"a","CANCELLED_BEFORE_START");notRun(s,"f","FINALIZER_NOT_TRIGGERED");
+        assertTrue(s.activatingOwners("f").isEmpty());assertEquals(new Done(),s.next());
+    }
     @Test void completionStopTerminalizesWithoutInventedActivation() {
         var s=schedule(graph(new String[]{"a","f","g"},fin("a","f"),fin("f","g")),"a");
         run(s,"a",Terminal.CANCELLED);s.stopNormalWork("CANCELLED_BEFORE_START");s.stopCompletionWork("FINALIZATION_BUDGET_EXHAUSTED");

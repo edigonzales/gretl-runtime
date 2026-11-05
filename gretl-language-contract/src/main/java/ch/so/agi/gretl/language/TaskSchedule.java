@@ -21,6 +21,7 @@ public final class TaskSchedule {
     private final Map<String,Terminal> terminals = new LinkedHashMap<>();
     private final Map<String,Set<String>> triggers = new LinkedHashMap<>();
     private String running;
+    private NotRun preventedStart;
     private String normalStop;
     private String completionStop;
 
@@ -39,6 +40,7 @@ public final class TaskSchedule {
     public Decision next() {
         if (running != null) throw new IllegalStateException("Task still running: " + running);
         if (terminals.size() == plan.orderedIds().size()) return new Done();
+        if (preventedStart != null) return preventedStart;
         if (!hasFinalizers && normalStop != null) return new NotRun(firstPending(),normalStop);
         if (completionStop != null)
             return new NotRun(firstPending(), completionStop);
@@ -61,6 +63,13 @@ public final class TaskSchedule {
                 + "; demand " + demand + "; edges " + plan.activeEdges());
     }
 
+    /** The executor rejected a ready task at the last control boundary, before RUNNING. */
+    public void preventStart(String id,String reason) {
+        Objects.requireNonNull(reason);
+        if (!new Execute(id).equals(next())) throw new IllegalStateException("Task is not ready: " + id);
+        preventedStart=new NotRun(id,reason);
+    }
+
     public void started(String id) {
         if (!new Execute(id).equals(next())) throw new IllegalStateException("Task is not ready: " + id);
         running = id;
@@ -79,6 +88,7 @@ public final class TaskSchedule {
             running = null;
         }
         terminals.put(id,status);
+        if (preventedStart != null && preventedStart.taskId().equals(id)) preventedStart=null;
     }
 
     public void stopNormalWork(String reason) {

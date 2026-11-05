@@ -23,3 +23,15 @@ umbenennen. Eigene Dateien extern ablegen, getrackte Kandidatenbytes erhalten.
 Liefere Originalbericht und JSON gemäss §9.4 mit der vollständigen
 Kriterienmenge, eigenen echten Tests und Gegenprobe sowie Findings oder
 fehlenden Pflichten. Keine Produktfixes oder Veröffentlichung.
+
+
+Korrektur zu Kandidat `1dc9c8f5febf272db4bdee4511511408dc960f71`:
+P2-01 des ersten Reviews verlangt die wirksame Prüfung vor RUNNING und eine
+NOT_RUN-Behandlung ohne Aktivierung. Der neue Kandidat ergänzt diese Grenze
+sowie Regressionen für Cancellation, Finish, neue Interrupts und lokale
+Timeouts vor Start. Der vollständige P2-Umfang und die Phasebase bleiben
+unverändert. Prüfe die Korrektur und die früheren Phasenanforderungen selbst;
+führe zusätzlich eine eigene neue Gegenprobe aus. Frühere Belege bezeichnen
+weiterhin ausschliesslich ihren damaligen SHA. Die im Handoff referenzierte
+erste Reviewablage enthält Originalfinding, eigene Completionprobe und
+Startgrenzenreproduktion des Reviewers, keine Freigabe des neuen Kandidaten.

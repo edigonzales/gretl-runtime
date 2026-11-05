@@ -135,9 +135,23 @@ public final class SequentialJobRunner {
                     if (!schedule.draining() && schedule.normalDemand(id)) role.add("NORMAL");
                     if (!schedule.activatingOwners(id).isEmpty()) role.add("FINALIZER");
                     if (!schedule.demandingFinalizers(id).isEmpty()) role.add("FINALIZER_PREREQUISITE");
-                    schedule.started(id);
-                    TaskOutcome outcome = executeTask(task,environment,workspace,results,invoker,arbiter,execution,
-                            Map.of("task.roles",String.join(",",role),"finalizer.active_owners",String.join(",",schedule.activatingOwners(id))));
+                    TaskOutcome outcome;
+                    try {
+                        outcome = executeTask(task,environment,workspace,results,invoker,arbiter,execution,
+                                Map.of("task.roles",String.join(",",role),"finalizer.active_owners",String.join(",",schedule.activatingOwners(id))),
+                                () -> schedule.started(id));
+                    } catch (FinishSignal beforeStart) {
+                        // The scope opened but RUNNING was never reached. Re-evaluate demand.
+                        continue;
+                    } catch (TaskCancelledException beforeStart) {
+                        if (cancelled || finishRequested) {
+                            if (environment.control().completionBudget().expired())
+                                schedule.stopCompletionWork("FINALIZATION_BUDGET_EXHAUSTED");
+                            else schedule.preventStart(id,beforeStart.reason() == CancelReason.TIMEOUT
+                                    ? "TASK_TIMEOUT_BEFORE_START" : "CANCELLED_BEFORE_START");
+                        }
+                        continue;
+                    }
                     schedule.completed(id,TaskSchedule.Terminal.valueOf(outcome.status().name()));
                     for (var finalizer : task.finalizedBy()) {
                         environment.emit("gretl.finalizer.activated",LogLevel.INFO,environment.identity(id,null),Optional.empty(),
@@ -230,10 +244,14 @@ public final class SequentialJobRunner {
             TaskDefinition<?> task, RunEnvironment environment,
             WorkspaceManager.Workspace workspace, ResultStore results,
             OperationInvoker invoker, FailureArbiter arbiter, TaskExecutionControl execution,
-            Map<String,String> roleAttributes) {
+            Map<String,String> roleAttributes, Runnable acknowledgeStart) {
         TimeBudget budget = execution.budget();
         try (var taskScope = environment.openScope(environment.identity(task.id(), null), Optional.empty())) {
-            results.start(task.ref(), environment.now(), environment.monotonicClock().ticks());
+            Instant taskStart = environment.now();
+            long taskStartTicks = environment.monotonicClock().ticks();
+            execution.checkBeforeWork();
+            results.start(task.ref(), taskStart, taskStartTicks);
+            acknowledgeStart.run();
             environment.emit("gretl.task.started", LogLevel.INFO,
                     environment.identity(task.id(), null),
                     Optional.ofNullable(task.operation() == null ? null : task.operation().id()),

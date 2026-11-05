@@ -128,5 +128,26 @@ positiven Runnerverträge ersetzt. Globale Cleanup-Reihenfolge bleibt umgekehrt.
 Neue Ereignisse erfassen Aktivierungen und ausgeführte Rollen; Serialisierung
 und öffentliche DSL-/Paket-/Planausgabe bleiben P3.
 
-Nächste Arbeit: Kandidatencommit und frischer unabhängiger P2-Review.
-P3 erst nach validiertem ABGENOMMEN; P3–P5: PLANNED.
+Erster Kandidat `1dc9c8f5febf272db4bdee4511511408dc960f71`:
+Review `/Users/stefan/.cache/gretl-task-finalizers/review/P2-attempt-1/`
+fordert NACHARBEIT, MAJOR P2-01 (F04/F10/F12/F22). Eine Cancellation beim
+Öffnen des Taskscopes vor RUNNING aktivierte fälschlich den Finalizer.
+Die eigene Startgrenzen-Red-Probe und die ausführbare Reviewerprobe bestätigen
+diesen Defekt am ersten Kandidaten. Keine Abnahme dieses SHAs behauptet.
+
+Korrektur: letzte wirksame Kontrollprüfung nach Scopeöffnung unmittelbar vor
+ResultStore.start; erst danach Schedulerstart bestätigen. Ein unterdrückter
+Start wird NOT_RUN und aktiviert nichts. Der reine Scheduler erlaubt eine
+gezielte vorstartliche Unterdrückung eines bereits fälligen Finalizers, ohne
+Geschwister zu unterdrücken. Frischer Interrupt und lokaler Timeout vor Start
+lassen auch dessen nachfolgende Kette inaktiv. Finish vor Start separat geprüft.
+
+Nachtest desselben vollständigen kleinen P2-Befehls: Exit 0, 190 JUnitfälle,
+0 Fehler/Skips, 34 Runnerfälle und 14 Schedulerfälle. Frische Originale separat
+unter `/Users/stefan/.cache/gretl-task-finalizers/evidence/P2-revision1/`:
+`start-boundary-red.log`, `start-boundary-final.log`, `summary.json`, Ziel-XMLs.
+Die ursprünglichen Belege des ersten Kandidaten bleiben separat erhalten.
+
+Nächste Arbeit: korrigierter Kandidatencommit und frischer unabhängiger
+P2-Korrekturreview gegen dieselbe Phasebase. P3 erst nach validiertem
+ABGENOMMEN; P3–P5: PLANNED.

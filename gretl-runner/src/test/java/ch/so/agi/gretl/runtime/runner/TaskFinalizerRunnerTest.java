@@ -214,10 +214,49 @@ class TaskFinalizerRunnerTest {
         eventSink=event->{events.emit(event);if(event.eventName().equals("gretl.finalizer.activated")&&event.attributes().get("finalizer.task").equals("f"))Thread.currentThread().interrupt();};
         try {
             var out=run(b->{b.register(task("a").finalizedBy("f","g").body(ctx->{control.requestCancel(CancelReason.REQUESTED);ctx.cancellation().throwIfCancellationRequested();return null;}).build());
-                b.register(task("f").build());b.register(task("g").build());});
-            status(out,"f",TaskStatus.CANCELLED);assertEquals(Optional.of(CancelReason.INTERRUPTED),out.task("f").orElseThrow().cancelReason());status(out,"g",TaskStatus.SUCCEEDED);
+                b.register(task("f").finalizedBy("h").build());b.register(task("g").build());b.register(task("h").build());});
+            status(out,"f",TaskStatus.NOT_RUN);assertEquals("CANCELLED_BEFORE_START",out.task("f").orElseThrow().reason());status(out,"h",TaskStatus.NOT_RUN);assertEquals("FINALIZER_NOT_TRIGGERED",out.task("h").orElseThrow().reason());status(out,"g",TaskStatus.SUCCEEDED);
             assertEquals(Optional.of(CancelReason.REQUESTED),out.cancelReason());assertTrue(Thread.currentThread().isInterrupted());assertEquals(List.of("g","cleanup"),trace);
         }finally{Thread.interrupted();}
+    }
+    @Test void cancellationInTaskScopeSetupBeforeRunningDoesNotReachOwner() {
+        var b=new JobDefinitionBuilder(root);b.register(task("a").timeout(Duration.ofSeconds(1)).finalizedBy("f").build());b.register(task("f").build());b.defaults("a");var d=b.freeze();
+        RunEventSink sink=new RunEventSink(){
+            public void emit(RunEvent event){events.emit(event);}
+            public Scope openScope(ExecutionIdentity identity,Optional<String> operation){
+                if(identity.taskId().orElse("").equals("a"))control.requestCancel(CancelReason.REQUESTED);
+                return ()->{};
+            }
+        };
+        var out=new SequentialJobRunner().run(d,new ExecutionPlanner().plan(d,List.of()),RunnerTestSupport.input(root,clock,sink).runControl(control).build());
+        status(out,"a",TaskStatus.NOT_RUN);status(out,"f",TaskStatus.NOT_RUN);assertEquals(0,events.count("gretl.task.started"));assertTrue(trace.isEmpty());
+    }
+    @Test void finishInTaskScopeSetupBeforeRunningDoesNotReachOwner() {
+        var b=new JobDefinitionBuilder(root);b.register(task("a").finalizedBy("f").build());b.register(task("f").build());b.defaults("a");var d=b.freeze();
+        RunEventSink sink=new RunEventSink(){
+            public void emit(RunEvent event){events.emit(event);}
+            public Scope openScope(ExecutionIdentity identity,Optional<String> operation){
+                if(identity.taskId().orElse("").equals("a"))control.requestFinish("before-start");
+                return ()->{};
+            }
+        };
+        var out=new SequentialJobRunner().run(d,new ExecutionPlanner().plan(d,List.of()),RunnerTestSupport.input(root,clock,sink).runControl(control).build());
+        status(out,"a",TaskStatus.NOT_RUN);status(out,"f",TaskStatus.NOT_RUN);assertEquals(RunStatus.NO_DATA,out.status());assertEquals(Optional.of("before-start"),out.finishReason());assertEquals(0,events.count("gretl.task.started"));
+    }
+    @Test void localTimeoutBeforeFinalizerStartDoesNotActivateChainOrConsumeSiblingWindow() {
+        var b=new JobDefinitionBuilder(root);
+        b.register(task("a").finalizedBy("f","g").body(ctx->{ctx.finishJob("empty");return null;}).build());
+        b.register(task("f").timeout(Duration.ofSeconds(1)).finalizedBy("h").build());b.register(task("g").build());b.register(task("h").build());b.defaults("a");var d=b.freeze();
+        RunEventSink sink=new RunEventSink(){
+            public void emit(RunEvent event){events.emit(event);}
+            public Scope openScope(ExecutionIdentity identity,Optional<String> operation){
+                if(identity.taskId().orElse("").equals("f"))clock.advance(Duration.ofSeconds(1));
+                return ()->{};
+            }
+        };
+        var out=new SequentialJobRunner().run(d,new ExecutionPlanner().plan(d,List.of()),RunnerTestSupport.input(root,clock,sink).runControl(control).build());
+        status(out,"f",TaskStatus.NOT_RUN);assertEquals("TASK_TIMEOUT_BEFORE_START",out.task("f").orElseThrow().reason());status(out,"g",TaskStatus.SUCCEEDED);status(out,"h",TaskStatus.NOT_RUN);
+        assertEquals(RunStatus.CANCELLED,out.status());assertEquals(Optional.of(CancelReason.TIMEOUT),out.cancelReason());assertEquals(List.of("g"),trace);
     }
     @Test void taskSetupFailureAfterStartActivatesFinalizerAndClosesNormally() {
         var out=run(b->{b.register(task("p").body(ctx->{Files.writeString(ctx.workPath("anchor").getParent().getParent().resolve("task-000001"),"blocked");return "p";}).build());
