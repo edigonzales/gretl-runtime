@@ -10,9 +10,18 @@ import java.util.Objects;
 /** Declarative task registration before a JobDefinition is frozen. */
 public record TaskRegistration<R>(
         String id, Class<R> resultType, String description,
-        List<TaskLink> dependsOn, List<TaskLink> after,
+        List<TaskLink> dependsOn, List<TaskLink> after, List<TaskLink> finalizedBy,
         TaskCondition condition, Duration timeout, TaskBody<R> body,
         OperationType<?, R> operation, SourceLocation source) {
+
+    /** Compatibility constructor for definitions without finalizers. */
+    public TaskRegistration(String id, Class<R> resultType, String description,
+            List<TaskLink> dependsOn, List<TaskLink> after,
+            TaskCondition condition, Duration timeout, TaskBody<R> body,
+            OperationType<?, R> operation, SourceLocation source) {
+        this(id, resultType, description, dependsOn, after, List.of(),
+                condition, timeout, body, operation, source);
+    }
 
     public TaskRegistration {
         if (id == null || id.isBlank()) {
@@ -22,6 +31,7 @@ public record TaskRegistration<R>(
         description = description == null || description.isBlank() ? id : description;
         dependsOn = List.copyOf(dependsOn);
         after = List.copyOf(after);
+        finalizedBy = List.copyOf(finalizedBy);
         Objects.requireNonNull(body, "body");
         source = source == null ? SourceLocation.unknown() : source;
         if (timeout != null && (timeout.isZero() || timeout.isNegative())) {
@@ -40,6 +50,7 @@ public record TaskRegistration<R>(
         private String description;
         private final List<TaskLink> dependsOn = new ArrayList<>();
         private final List<TaskLink> after = new ArrayList<>();
+        private final List<TaskLink> finalizedBy = new ArrayList<>();
         private TaskCondition condition;
         private Duration timeout;
         private TaskBody<R> body;
@@ -104,6 +115,30 @@ public record TaskRegistration<R>(
             return this;
         }
 
+        public Builder<R> finalizedBy(String... taskIds) {
+            for (String taskId : taskIds) {
+                finalizedBy.add(TaskLink.named(taskId));
+            }
+            return this;
+        }
+
+        public Builder<R> finalizedBy(TaskRef<?>... refs) {
+            for (TaskRef<?> ref : refs) {
+                finalizedBy.add(TaskLink.of(ref));
+            }
+            return this;
+        }
+
+        public Builder<R> finalizedBy(TaskLink... links) {
+            finalizedBy.addAll(java.util.List.of(links));
+            return this;
+        }
+
+        public Builder<R> finalizedBy(java.util.List<TaskLink> links) {
+            finalizedBy.addAll(links);
+            return this;
+        }
+
         public Builder<R> when(TaskCondition condition) {
             this.condition = condition;
             return this;
@@ -131,7 +166,7 @@ public record TaskRegistration<R>(
 
         public TaskRegistration<R> build() {
             return new TaskRegistration<>(id, resultType, description,
-                    dependsOn, after, condition, timeout, body, operation, source);
+                    dependsOn, after, finalizedBy, condition, timeout, body, operation, source);
         }
     }
 }

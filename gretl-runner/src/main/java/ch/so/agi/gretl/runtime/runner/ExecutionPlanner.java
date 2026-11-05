@@ -16,12 +16,13 @@ public final class ExecutionPlanner {
             nodes.add(new PlanSemantics.Node(task.id(),task.registrationIndex()));
             for(var ref:task.dependsOn())edges.add(new PlanSemantics.Edge(ref.id(),task.id(),PlanSemantics.EdgeKind.DEPENDS_ON));
             for(var ref:task.after())edges.add(new PlanSemantics.Edge(ref.id(),task.id(),PlanSemantics.EdgeKind.AFTER));
+            for(var ref:task.finalizedBy())edges.add(new PlanSemantics.Edge(task.id(),ref.id(),PlanSemantics.EdgeKind.FINALIZED_BY));
         }
         try {
             var selection=new PlanSemantics().plan(new PlanSemantics.DeclaredGraph(nodes,edges),requestedTargets,definition.defaultTargets());
             var ordered=new ArrayList<TaskDefinition<?>>();for(String id:selection.orderedIds())ordered.add(tasks.get(id));
             var selectedEdges=selection.activeEdges().stream().map(e->new PlanEdge(e.fromId(),e.toId(),PlanEdge.EdgeType.valueOf(e.kind().name()))).toList();
-            return new ExecutionPlan(definition.definitionId(),selection.requestedTargets(),ordered,selection.dataPredecessors(),selectedEdges);
+            return new ExecutionPlan(definition.definitionId(),selection.requestedTargets(),ordered,selection.dataPredecessors(),selectedEdges,selection);
         }catch(PlanSemantics.GraphException invalid){throw new PlanException(invalid.code(),invalid.getMessage());}
     }
 
@@ -38,6 +39,12 @@ public final class ExecutionPlanner {
                 if (!tasks.containsKey(after.id()) || !definition.containsRef(after)) {
                     throw new PlanException("UNKNOWN_TASK_REFERENCE",
                             "Task " + task.id() + " has unknown after reference: " + after);
+                }
+            }
+            for (TaskRef<?> finalizer : task.finalizedBy()) {
+                if (!tasks.containsKey(finalizer.id()) || !definition.containsRef(finalizer)) {
+                    throw new PlanException("UNKNOWN_TASK_REFERENCE",
+                            "Task " + task.id() + " has unknown finalizer: " + finalizer);
                 }
             }
         }

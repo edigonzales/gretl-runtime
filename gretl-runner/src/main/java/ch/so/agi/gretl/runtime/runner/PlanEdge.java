@@ -14,5 +14,5 @@ public record PlanEdge(String fromId, String toId, EdgeType type) {
         }
     }
 
-    public enum EdgeType { DEPENDS_ON, AFTER }
+    public enum EdgeType { DEPENDS_ON, AFTER, FINALIZED_BY }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 /** Producer-to-consumer graph intents edit only the consumer header and the requested field. */
 final class DependencySourceEdits {
     void add(EditTransaction transaction, SymbolId producer, SymbolId consumer, EdgeKind kind) {
+        if (kind == EdgeKind.FINALIZED_BY) throw new IllegalArgumentException("EDIT_FINALIZER_NOT_IMPLEMENTED");
         checkTasks(transaction,producer,consumer);
         if (has(transaction.before.analysis().graph(),producer,consumer,kind)) return;
         var symbol=transaction.symbol(consumer);
@@ -31,6 +32,7 @@ final class DependencySourceEdits {
     }
 
     void remove(EditTransaction transaction, SymbolId producer, SymbolId consumer, EdgeKind kind) {
+        if (kind == EdgeKind.FINALIZED_BY) throw new IllegalArgumentException("EDIT_FINALIZER_NOT_IMPLEMENTED");
         checkTasks(transaction,producer,consumer);
         var graph=transaction.before.analysis().graph();
         if(!has(graph,producer,consumer,kind))return;

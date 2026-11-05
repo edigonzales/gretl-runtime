@@ -133,7 +133,18 @@ public final class JobDefinitionBuilder {
         for (Registered<?> pending : registered) {
             List<TaskRef<?>> dependsOn = resolveLinks(pending.registration.dependsOn(), pending.ref.id());
             List<TaskRef<?>> after = resolveLinks(pending.registration.after(), pending.ref.id());
-            tasks.add(createDefinition(pending, dependsOn, after));
+            List<TaskRef<?>> finalizedBy;
+            try {
+                finalizedBy = resolveLinks(pending.registration.finalizedBy(), pending.ref.id());
+            } catch (DefinitionException invalid) {
+                throw new DefinitionException(invalid.code(), invalid.getMessage()
+                        + " (finalizedBy at " + pending.registration.source() + ")", invalid);
+            }
+            if (finalizedBy.stream().anyMatch(ref -> ref.id().equals(pending.ref.id()))) {
+                throw new DefinitionException("SELF_FINALIZER", "Task " + pending.ref.id()
+                        + " cannot finalize itself at " + pending.registration.source());
+            }
+            tasks.add(createDefinition(pending, dependsOn, after, finalizedBy));
         }
         for (String target : defaultTargets) {
             if (!byId.containsKey(target)) {
@@ -150,11 +161,11 @@ public final class JobDefinitionBuilder {
     }
 
     private <R> TaskDefinition<R> createDefinition(
-            Registered<R> pending, List<TaskRef<?>> dependsOn, List<TaskRef<?>> after) {
+            Registered<R> pending, List<TaskRef<?>> dependsOn, List<TaskRef<?>> after, List<TaskRef<?>> finalizedBy) {
         TaskRegistration<R> registration = pending.registration;
         return new TaskDefinition<>(
                 pending.ref, pending.index, registration.description(),
-                dependsOn, after, registration.condition(), registration.timeout(),
+                dependsOn, after, finalizedBy, registration.condition(), registration.timeout(),
                 registration.body(), registration.operation(), registration.source());
     }
 

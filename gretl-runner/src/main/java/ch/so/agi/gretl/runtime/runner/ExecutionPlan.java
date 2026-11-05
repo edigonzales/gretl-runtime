@@ -13,7 +13,18 @@ public record ExecutionPlan(
         UUID definitionId, List<String> requestedTargets,
         List<TaskDefinition<?>> selectedTasks,
         Map<String, Set<String>> dataPredecessors,
-        List<PlanEdge> edges) {
+        List<PlanEdge> edges, ch.so.agi.gretl.language.PlanSemantics.PlanSelection selection) {
+
+    public ExecutionPlan(UUID definitionId, List<String> requestedTargets,
+            List<TaskDefinition<?>> selectedTasks, Map<String, Set<String>> dataPredecessors,
+            List<PlanEdge> edges) {
+        this(definitionId, requestedTargets, selectedTasks, dataPredecessors, edges,
+                new ch.so.agi.gretl.language.PlanSemantics.PlanSelection(requestedTargets,
+                    selectedTasks.stream().map(TaskDefinition::id).toList(),
+                    edges.stream().map(e -> new ch.so.agi.gretl.language.PlanSemantics.Edge(
+                        e.fromId(), e.toId(), ch.so.agi.gretl.language.PlanSemantics.EdgeKind.valueOf(e.type().name()))).toList(),
+                    dataPredecessors));
+    }
 
     public ExecutionPlan {
         java.util.Objects.requireNonNull(definitionId, "definitionId");

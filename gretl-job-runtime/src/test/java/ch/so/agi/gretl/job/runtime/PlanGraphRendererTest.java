@@ -24,6 +24,17 @@ class PlanGraphRendererTest {
     Path tempDir;
 
     @Test
+    void p1NewRelationCannotBeRenderedAsAfter() {
+        var builder=new JobDefinitionBuilder(tempDir);
+        builder.register(TaskRegistration.builder("owner",Object.class).finalizedBy("release").body(ctx->null).build());
+        builder.register(TaskRegistration.builder("release",Object.class).body(ctx->null).build());
+        var plan=new ExecutionPlanner().plan(builder.freeze(),List.of("owner"));
+        for(var format:PlanGraphFormat.values())
+            org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+                    ()->new PlanGraphRenderer().render(plan,format,"probe",Locale.ENGLISH));
+    }
+
+    @Test
     void mermaidShowsSelectedDependenciesTargetsAndEdgeKinds() {
         ExecutionPlan plan = plan();
 

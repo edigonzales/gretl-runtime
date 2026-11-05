@@ -18,7 +18,7 @@ Eigener durch Copy-on-write kopierter Maven-Cache unter
 `/Users/stefan/.cache/gretl-task-finalizers/m2`; Reviews erhalten eigene Kopien.
 Keine Tests übersprungen, keine Assertions abgeschwächt.
 
-## P0 — REVIEW_PENDING
+## P0 — REVIEWED_ACCEPTED
 
 Gelesen: normative Dateien, SOURCE_BASELINE, Rootanleitungen, PlanSemantics,
 ExecutionPlanner, SequentialJobRunner, Kontrollzugriffe in BaseContext und
@@ -51,7 +51,44 @@ Offizielle DeepSeek-Preisseite am 5. November 2026 bestätigt
 DeepSeek-V4.1-Flash-1017 für diesen Alias. Sessionidentität und tatsächliche
 Prüffähigkeit sind erst durch den folgenden Review zu beweisen.
 
-Nächste Arbeit: Kandidatencommit, frischer autonomer P0-Review mit eigener
-Testausführung/Gegenprobe, maschinelle Validierung. P1 bleibt bis ABGENOMMEN gesperrt.
+Geprüfter Kandidat `0ea7d59dc0e1157e411d33e0218430ff40ccc30f`.
+Originalreview und extern validiertes Gate:
+`/Users/stefan/.cache/gretl-task-finalizers/review/P0-attempt-1/`
+(`review.md`, `verdict.json`, `session-export.json`, `validated.json`).
+Session `ses_e53d26e8affecEpZldJikg4jWB`, OpenCode 2.2.5 / DeepSeek Flash;
+eigene Testausführung und eigene Java-/Adaptergegenprobe, keine Findings.
 
-P1–P5: PLANNED; keine Featurelieferung behauptet.
+## P1 — REVIEW_PENDING
+
+Feste Phasebase `0ea7d59dc0e1157e411d33e0218430ff40ccc30f`.
+Neue immutable finalizedBy-Links und kompatible Alt-Konstruktoren, Auflösung
+beim Freeze einschliesslich Eigentums-/Duplikat-/Selbstlinkvalidierung.
+PlanSemantics bildet normale Auswahl und rekursiven Kandidatenabschluss;
+TaskSchedule trennt tatsächlichen und möglichen Abschlussbedarf, hält
+selektierte Ownerbarrieren ein und erkennt Aktivierungsblockaden in der
+nominalen Erfolgsplanung. Datenrechte bleiben dependsOn-gebunden.
+
+Gezielte Tests:
+
+```sh
+./mvnw -B -Dmaven.repo.local=/Users/stefan/.cache/gretl-task-finalizers/m2 -pl gretl-runner,gretl-tooling-core,gretl-job-runtime -am -Dtest=TaskScheduleTest,PlanSemanticsTest,FinalizerDefinitionTest,ExecutionPlannerTest,JobDefinitionBuilderTest,FailureArbiterTest,BudgetPrecedenceTest,ContextAccessTest,CloseStackTest,DependencySourceEditsTest,PlanGraphRendererTest -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+Belege: `/Users/stefan/.cache/gretl-task-finalizers/evidence/P1/`, zusätzlich
+`P1-red.log` (fehlender neuer Vertrag) und Entwicklungslogs im Elternverzeichnis.
+Gateergebnis: 82 JUnitfälle, 0 Fehler/Skips, Exit 0.
+13 Schedulingtests enthalten konkrete Traces und 150 deterministisch generierte
+DAG-/Statusabläufe; vier Java-Definitions-/Alt-API-/Runnerguardtests.
+Die generierten Fälle deckten einen blockierten späteren Finalizer auf, dessen
+nutzlose Voraussetzungen die aktive Arbeit festhalten konnten; korrigiert und
+als eigener konkreter Regressionstest ergänzt. Ein noch normal vorgesehener D
+bleibt im Drain für einen später ausgelösten G verfügbar.
+
+Übergangsgrenzen ausdrücklich: Runner lehnt Finalizerpläne vor Nebenwirkungen
+mit FINALIZER_EXECUTION_NOT_IMPLEMENTED ab (P2 entfernt dies). Renderer und
+Dependency-Editweg lehnen die neue Kante ausdrücklich ab, anstatt sie als AFTER
+zu verarbeiten (P3/P4 ergänzen sie). DSL bleibt bis P3 geschlossen.
+Keine P2-/DSL-/JAR-/GUIlieferung behauptet.
+
+Nächste Arbeit: P1-Kandidatencommit und neuer autonomer unabhängiger Review;
+P2 erst nach maschinell validiertem ABGENOMMEN. P2–P5: PLANNED.

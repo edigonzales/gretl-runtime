@@ -4,7 +4,7 @@ import java.util.*;
 
 /** Pure graph/target rules shared by the runner and static tooling. Never retains executable objects. */
 public final class PlanSemantics {
-    public enum EdgeKind { DEPENDS_ON, AFTER }
+    public enum EdgeKind { DEPENDS_ON, AFTER, FINALIZED_BY }
     public record Node(String id,int registrationIndex) {
         public Node { Objects.requireNonNull(id);if(registrationIndex<0)throw new IllegalArgumentException("Negative registration index"); }
     }
@@ -24,8 +24,12 @@ public final class PlanSemantics {
         public GraphProblem problem(){return problem;}
         public String code(){return problem.code();}
     }
-    public record PlanSelection(List<String> requestedTargets,List<String> orderedIds,List<Edge> activeEdges,Map<String,Set<String>> dataPredecessors) {
+    public record PlanSelection(List<String> requestedTargets,List<String> orderedIds,List<Edge> activeEdges,Map<String,Set<String>> dataPredecessors,Set<String> normalDemand,List<String> registrationOrder) {
+        public PlanSelection(List<String> requestedTargets,List<String> orderedIds,List<Edge> activeEdges,Map<String,Set<String>> dataPredecessors) {
+            this(requestedTargets,orderedIds,activeEdges,dataPredecessors,new LinkedHashSet<>(orderedIds),orderedIds);
+        }
         public PlanSelection {
+            normalDemand=Collections.unmodifiableSet(new LinkedHashSet<>(normalDemand));registrationOrder=List.copyOf(registrationOrder);
             requestedTargets=List.copyOf(requestedTargets);orderedIds=List.copyOf(orderedIds);activeEdges=List.copyOf(activeEdges);
             var copy=new LinkedHashMap<String,Set<String>>();dataPredecessors.forEach((id,ids)->copy.put(id,Collections.unmodifiableSet(new LinkedHashSet<>(ids))));dataPredecessors=Collections.unmodifiableMap(copy);
         }
@@ -46,11 +50,37 @@ public final class PlanSemantics {
             String id=pending.removeFirst();if(!selected.add(id))continue;
             for(var edge:incoming.getOrDefault(id,List.of()))if(edge.kind()==EdgeKind.DEPENDS_ON)pending.addLast(edge.fromId());
         }
+        var normal=new LinkedHashSet<>(selected);
+        boolean changed;
+        do {
+            changed=false;
+            for(var edge:graph.edges()) {
+                if(edge.kind()==EdgeKind.DEPENDS_ON && selected.contains(edge.toId()))changed|=selected.add(edge.fromId());
+                if(edge.kind()==EdgeKind.FINALIZED_BY && selected.contains(edge.fromId()))changed|=selected.add(edge.toId());
+            }
+        } while(changed);
         var active=graph.edges().stream().filter(e->selected.contains(e.fromId())&&selected.contains(e.toId())).toList();
         var cycle=findCycle(selected,active);if(cycle.isPresent())throw new GraphException(new GraphProblem("PLAN_CYCLE","Zyklus im ausgewaehlten Plan: "+renderCycle(cycle.get()),cycle.get().getFirst().fromId(),cycle.get()));
         var ordered=topologicalSort(selected,active,nodes);var predecessors=new LinkedHashMap<String,Set<String>>();
         for(String id:selected)predecessors.put(id,dataPredecessors(incoming,id));
-        return new PlanSelection(targets,ordered,active,predecessors);
+        var registrationOrder=selected.stream().sorted(Comparator.comparingInt(id->nodes.get(id).registrationIndex())).toList();
+        var selection=new PlanSelection(targets,ordered,active,predecessors,normal,registrationOrder);
+        if(active.stream().anyMatch(e->e.kind()==EdgeKind.FINALIZED_BY)) {
+            var schedule=new TaskSchedule(selection);var nominal=new ArrayList<String>();
+            try {
+                while(true) {
+                    var decision=schedule.next();
+                    if(decision instanceof TaskSchedule.Done)break;
+                    if(decision instanceof TaskSchedule.Execute execute) {
+                        nominal.add(execute.taskId());schedule.started(execute.taskId());schedule.completed(execute.taskId(),TaskSchedule.Terminal.SUCCEEDED);
+                    } else throw new IllegalStateException("Nominal task cannot become NOT_RUN: "+decision);
+                }
+            } catch(IllegalStateException blocked) {
+                throw new GraphException(new GraphProblem("FINALIZER_ACTIVATION_DEADLOCK",blocked.getMessage(),null,active));
+            }
+            selection=new PlanSelection(targets,nominal,active,predecessors,normal,registrationOrder);
+        }
+        return selection;
     }
     public Set<String> dataPredecessors(DeclaredGraph graph,String taskId){
         var nodes=index(graph);var problems=unknownLinks(graph,nodes);if(!problems.isEmpty())throw new GraphException(problems.getFirst());
@@ -64,7 +94,14 @@ public final class PlanSemantics {
     }
     private static List<GraphProblem> unknownLinks(DeclaredGraph graph,Map<String,Node> nodes){
         var result=new ArrayList<GraphProblem>();
-        for(var edge:graph.edges())if(!nodes.containsKey(edge.fromId())||!nodes.containsKey(edge.toId()))result.add(new GraphProblem("UNKNOWN_TASK_REFERENCE","Task "+edge.toId()+" has unknown "+(edge.kind()==EdgeKind.DEPENDS_ON?"predecessor: ":"after reference: ")+edge.fromId(),edge.toId(),List.of(edge)));
+        for(var edge:graph.edges())if(!nodes.containsKey(edge.fromId())||!nodes.containsKey(edge.toId())) {
+            String owner=edge.kind()==EdgeKind.FINALIZED_BY?edge.fromId():edge.toId();
+            String target=edge.kind()==EdgeKind.FINALIZED_BY?edge.toId():edge.fromId();
+            String relation=switch(edge.kind()){case DEPENDS_ON->"predecessor: ";case AFTER->"after reference: ";case FINALIZED_BY->"finalizer: ";};
+            result.add(new GraphProblem("UNKNOWN_TASK_REFERENCE","Task "+owner+" has unknown "+relation+target,owner,List.of(edge)));
+        }
+        for(var edge:graph.edges())if(edge.kind()==EdgeKind.FINALIZED_BY&&edge.fromId().equals(edge.toId()))
+            result.add(new GraphProblem("SELF_FINALIZER","Task "+edge.fromId()+" cannot finalize itself",edge.fromId(),List.of(edge)));
         return List.copyOf(result);
     }
     private static List<String> normalizeTargets(List<String> requested,List<String> defaults){

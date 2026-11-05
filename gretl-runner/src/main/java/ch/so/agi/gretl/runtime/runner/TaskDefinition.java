@@ -9,9 +9,18 @@ import java.util.Objects;
 /** Frozen task definition, including resolved links. */
 public record TaskDefinition<R>(
         TaskRef<R> ref, int registrationIndex, String description,
-        List<TaskRef<?>> dependsOn, List<TaskRef<?>> after,
+        List<TaskRef<?>> dependsOn, List<TaskRef<?>> after, List<TaskRef<?>> finalizedBy,
         TaskCondition condition, Duration timeout, TaskBody<R> body,
         OperationType<?, R> operation, SourceLocation source) {
+
+    /** Compatibility constructor for definitions without finalizers. */
+    public TaskDefinition(TaskRef<R> ref, int registrationIndex, String description,
+            List<TaskRef<?>> dependsOn, List<TaskRef<?>> after,
+            TaskCondition condition, Duration timeout, TaskBody<R> body,
+            OperationType<?, R> operation, SourceLocation source) {
+        this(ref, registrationIndex, description, dependsOn, after, List.of(),
+                condition, timeout, body, operation, source);
+    }
 
     public TaskDefinition {
         Objects.requireNonNull(ref, "ref");
@@ -23,6 +32,7 @@ public record TaskDefinition<R>(
         }
         dependsOn = List.copyOf(dependsOn);
         after = List.copyOf(after);
+        finalizedBy = List.copyOf(finalizedBy);
         Objects.requireNonNull(body, "body");
         source = source == null ? SourceLocation.unknown() : source;
         if (timeout != null && (timeout.isZero() || timeout.isNegative())) {

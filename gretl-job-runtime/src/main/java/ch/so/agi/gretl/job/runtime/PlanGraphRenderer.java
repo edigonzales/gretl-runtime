@@ -20,6 +20,9 @@ public final class PlanGraphRenderer {
         java.util.Objects.requireNonNull(plan, "plan");
         java.util.Objects.requireNonNull(format, "format");
         java.util.Objects.requireNonNull(locale, "locale");
+        if (plan.edges().stream().anyMatch(edge -> edge.type() == PlanEdge.EdgeType.FINALIZED_BY)) {
+            throw new IllegalArgumentException("Finalizer rendering requires P3");
+        }
         String source = sourceName == null || sourceName.isBlank() ? "job" : sourceName;
         return switch (format) {
             case MERMAID -> mermaid(plan, source);

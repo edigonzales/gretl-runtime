@@ -29,6 +29,9 @@ public final class SequentialJobRunner {
             throw new IllegalArgumentException("execution plan belongs to another definition");
         }
 
+        if (plan.edges().stream().anyMatch(edge -> edge.type() == PlanEdge.EdgeType.FINALIZED_BY)) {
+            throw new PlanException("FINALIZER_EXECUTION_NOT_IMPLEMENTED", "Finalizer execution requires P2");
+        }
         return FailureInfo.withSourceFiles(definition.sourceFiles(), () -> execute(definition, plan, input));
     }
 
