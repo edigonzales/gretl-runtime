@@ -29,6 +29,22 @@ class ReviewGuards(unittest.TestCase):
             future=(dt.datetime.now(dt.timezone.utc)+dt.timedelta(days=1)).isoformat()
             with self.assertRaisesRegex(AssertionError,'Stale report'):review.validate_reports(root,'./mvnw -Dtest=ProbeTest test',future)
 
+    def test_process_local_infrastructure_exclusion_cannot_hide_product_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);worktree=root/'product';worktree.mkdir();evidence=root/'evidence';evidence.mkdir()
+            subprocess.run(['git','init','--quiet',str(worktree)],check=True)
+            product=worktree/'product.txt';product.write_text('original')
+            subprocess.run(['git','add','product.txt'],cwd=worktree,check=True)
+            product.write_text('changed')
+            config=worktree/'.opencode/opencode.json';config.parent.mkdir();config.write_text('{}')
+            normal=subprocess.check_output(['git','status','--porcelain'],cwd=worktree,text=True)
+            self.assertIn('.opencode/',normal)
+            environment=review.review_environment(evidence,worktree)
+            scoped=subprocess.check_output(['git','status','--porcelain'],cwd=worktree,text=True,env=environment)
+            self.assertEqual('AM product.txt\n',scoped)
+            self.assertEqual('/.opencode/\n',(evidence/'review-infrastructure.ignore').read_text())
+            self.assertEqual(normal,subprocess.check_output(['git','status','--porcelain'],cwd=worktree,text=True))
+
     def test_wrong_identity_fails_before_export(self):
         # The candidate checkout can be the current repository: wrong identity fails before model export.
         root=review.ROOT;sha=review.output(['git','rev-parse','HEAD'])

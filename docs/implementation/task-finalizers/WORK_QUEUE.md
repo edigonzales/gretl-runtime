@@ -198,3 +198,21 @@ Vorabbelege `/Users/stefan/.cache/gretl-task-finalizers/evidence/P3/`
 Nächste Arbeit: sauberer Kandidatencommit, SHA-gebundener vollständiger gezielter
 P3-Lauf, frischer unabhängiger Review. P4 erst nach validiertem ABGENOMMEN.
 P4–P5: PLANNED.
+
+
+P3-Produktgate am sauberen Commit
+`3d1994e69b7cabd7ed4beb139a67dce410af159a`: 122 Tests (inklusive acht ITs),
+21 wirkliche Prozesse, Exit 0, Fehler/Skips 0. Frische Distribution mit exakt
+diesem sourceRevision und sourceDirty=false; XMLs, 21 Prozessablagen, Reports,
+JARs und Katalog-/Manifestidentität extern gesichert unter
+`/Users/stefan/.cache/gretl-task-finalizers/evidence/P3/candidate-3d1994e/`.
+
+Anschliessend ausschliesslich Reviewtransport korrigiert: generierte
+`.opencode/`-Konfiguration über einen prozesslokalen core.excludesFile-Eintrag
+aus Gitstatus für Buildkinder ausnehmen. Keine globale/shared Gitkonfiguration
+verändert, keine Produktbytes ausgeschlossen. Vier Adaptertests inklusive
+echtem Git-Negativtest beweisen, dass getrackte Produktänderungen sichtbar
+bleiben und die normale Umgebung unverändert bleibt. Frühere Produktbelege
+bleiben dem SHA 3d1994e zugeordnet; der frische Review baut und testet den neuen
+Transportkandidaten selbst vollständig. Produkt-/Testcode ausserhalb dieses
+Adapters bleibt gegenüber 3d1994e bytegleich.

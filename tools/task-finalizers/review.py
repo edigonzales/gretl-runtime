@@ -40,6 +40,20 @@ def digest(root):
     return ''.join(hashlib.sha256((root / p).read_bytes()).hexdigest() + '  ' + str(p) + '\n'
                    for p in sorted(SPEC / f for f in ('CODEX_STARTPROMPT.md', 'EXECUTION_PLAN.md', 'OPENCODE_REVIEW_PROMPT.md')))
 
+def review_environment(evidence, worktree):
+    # The generated agent config is infrastructure, like ignored target/ outputs.
+    # Scope this one exact exclusion to the reviewer process and its build children;
+    # never alter the shared Git config/info-exclude or hide tracked product bytes.
+    ignore = evidence / 'review-infrastructure.ignore'
+    ignore.write_text('/.opencode/\n')
+    environment = {**os.environ, 'PWD': str(worktree)}
+    slot = int(environment.get('GIT_CONFIG_COUNT', '0'))
+    environment.update({'GIT_CONFIG_COUNT': str(slot + 1),
+                        f'GIT_CONFIG_KEY_{slot}': 'core.excludesFile',
+                        f'GIT_CONFIG_VALUE_{slot}': str(ignore)})
+    return environment
+
+
 def launch(a):
     sha = output(['git', 'rev-parse', a.candidate + '^{commit}'])
     assert not output(['git', 'status', '--porcelain', '--untracked-files=no']), 'Commit tracked changes first'
@@ -136,9 +150,9 @@ def launch(a):
               + 'Finish the session.')
     argv = [str(a.binary), 'run', '--standalone', '--agent', 'task-finalizers-review', '--model', handoff['provider_model'],
             '--format', 'json', '--file', str(ev / 'handoff.json'), prompt]
-    meta = dict(argv=argv, cwd=str(wt), started_at=dt.datetime.now(dt.timezone.utc).isoformat())
+    meta = dict(argv=argv, cwd=str(wt), git_infrastructure_excludes=str(ev / 'review-infrastructure.ignore'), started_at=dt.datetime.now(dt.timezone.utc).isoformat())
     with (ev / 'opencode.jsonl').open('w') as out, (ev / 'opencode.stderr.log').open('w') as err:
-        proc = sp.Popen(argv, cwd=wt, env={**os.environ, 'PWD': str(wt)}, stdout=out, stderr=err, start_new_session=True)
+        proc = sp.Popen(argv, cwd=wt, env=review_environment(ev, wt), stdout=out, stderr=err, start_new_session=True)
         meta['pid'] = proc.pid
         write(ev / 'process.json', meta)
         try:
@@ -181,6 +195,9 @@ def validate(ev, binary):
     v = json.loads((ev / 'verdict.json').read_text())
     p = json.loads((ev / 'process.json').read_text())
     assert p['exit_code'] == 0 and p.get('ended_at') and not p.get('timed_out') and not p['tracked_status']
+    if p.get('git_infrastructure_excludes'):
+        assert Path(p['git_infrastructure_excludes']) == ev / 'review-infrastructure.ignore'
+        assert (ev / 'review-infrastructure.ignore').read_text() == '/.opencode/\n'
     wt = Path(h['review_worktree'])
     assert output(['git', 'rev-parse', 'HEAD'], wt) == h['head_sha']
     assert not output(['git', 'status', '--porcelain', '--untracked-files=no'], wt)

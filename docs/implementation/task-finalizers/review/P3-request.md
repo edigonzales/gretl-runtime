@@ -30,3 +30,14 @@ aus. Hypothese, Input, Erwartung und Assertion selbst wählen. Getrackte Bytes
 unverändert halten; eigene synthetische Dateien/Reports extern. Vollständiger
 Originalbericht und JSON nach §9.4 mit echten Test- und Gegenprobenbelegen,
 Modell-/Sessionidentität und ehrlichen Findings. Keine Produktfixes/Publikation.
+
+
+Reviewinfrastruktur: Der Launcher erzeugt `.opencode/` im privaten Reviewtree.
+Nur dieser generierte Ordner wird für den Reviewerprozess und dessen
+Buildkinder durch einen externen, prozesslokalen Git-Exclude ausgeblendet.
+Getrackte Produktbytes bleiben streng geprüft; kein gemeinsames Gitprofil wird
+geändert. Prüfe den Adapter und seinen Git-Negativtest selbst. Die vorliegenden
+Produktbelege stammen vom sauberen 3d1994e69b7cabd7ed4beb139a67dce410af159a;
+der spätere Kandidat ändert ausschliesslich Transport und Status/Request.
+Führe das vollständige gezielte Kandidatengate selbst erneut aus und prüfe die
+frische Distribution am aktuellen SHA mit sourceDirty=false.
