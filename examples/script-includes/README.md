@@ -56,7 +56,7 @@ Die IDE unterstützt vollständig erfasste statische Includejobs mit Originalque
 Navigation, vollständigem Graphen und sicheren eindeutigen Mehrdateien-Edits.
 Sharedquellen bleiben lesend kontextsensitiv; automatische Writes mit Shared- oder
 unbekanntem Footprint werden abgelehnt. Die frühere immer-partielle IDEsicht ist
-historisch. Das [typisierte Toolingbeispiel](../include-tooling/README.md) zeigt den
+historisch. Das [typisierte Toolingbeispiel](https://github.com/edigonzales/gretl-runtime/blob/main/examples/include-tooling/README.md) zeigt den
 aktuellen Benutzerweg und die separate Runtimeprüfung. Die
-[Featureanleitung](../../docs/implementation/script-includes/README.md) beschreibt
+[Featureanleitung](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/script-includes/README.md) beschreibt
 Syntax, Fehler, Ressourcenbasen, Kontexte und bewusste Grenzen.

@@ -52,11 +52,11 @@ Beim Paketieren laufen keine Scriptbodies. Hilfe, Check und Plan laden im
 SCRIPT-Betrieb vertrauenswürdigen Top-Level-Code, aber keine Taskkonfiguration,
 Tasks oder Cleanups. Der reine Direktivenleser führt keinen Jobcode aus.
 
-Die aktuelle IDE-Sicht bleibt **partiell**: Der Modeler zeigt bekannte lokale Tasks
-und den Includeaufruf als Codebereich. Eine eindeutig lokale skalare Feldänderung
-bleibt möglich; Rename, Löschungen, Abhängigkeits- und referenzbildende Änderungen
-können wegen unbekannter Fragmentinhalte abgelehnt werden. Vollgraph,
-Include-Navigation und Rename über Fragmente sind nicht zugesichert. Ein allein
-geöffnetes Shared-Fragment hat keinen bewiesenen Einbinderkontext; dort den
-Texteditor verwenden. Die Featureanleitung im zugehörigen Quellcheckout unter
-`docs/implementation/script-includes/README.md` beschreibt Syntax, Fehler und Subprojekte.
+Die IDE unterstützt vollständig erfasste statische Includejobs mit Originalquell-
+Navigation, vollständigem Graphen und sicheren eindeutigen Mehrdateien-Edits.
+Sharedquellen bleiben lesend kontextsensitiv; automatische Writes mit Shared- oder
+unbekanntem Footprint werden abgelehnt. Die frühere immer-partielle IDEsicht ist
+historisch. Das [typisierte Toolingbeispiel](https://github.com/edigonzales/gretl-runtime/blob/main/examples/include-tooling/README.md) zeigt den
+aktuellen Benutzerweg und die separate Runtimeprüfung. Die
+[Featureanleitung](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/script-includes/README.md) beschreibt
+Syntax, Fehler, Ressourcenbasen, Kontexte und bewusste Grenzen.
