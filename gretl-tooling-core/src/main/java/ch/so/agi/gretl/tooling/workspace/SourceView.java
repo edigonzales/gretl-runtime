@@ -59,7 +59,7 @@ public final class SourceView {
         cancellation.check();var key=new ListingKey(root,budget);var cached=listings.get(key);if(cached!=null)return cached;
         if(listings.size()>=32){limited=true;return new SourceListing(List.of(),List.of(new SourceIssue("SOURCE_SCAN_LIMIT",root)),false);}
         var listing=disk.listProjectEntries(root,budget,policy,cancellation);
-        var entries=new TreeSet<URI>();listing.entries().stream().filter(policy::permits).forEach(entries::add);
+        var entries=new TreeSet<URI>();listing.entries().stream().filter(policy::permits).filter(id->id.getPath()!=null&&(id.getPath().endsWith("/job.groovy")||id.getPath().endsWith("/settings.gretl"))).forEach(entries::add);
         buffers.keySet().stream().filter(policy::permits).filter(id->id.getPath()!=null&&(id.getPath().endsWith("/job.groovy")||id.getPath().endsWith("/settings.gretl"))).forEach(entries::add);
         boolean complete=listing.complete()&&entries.size()<=budget.maximumEntries();
         var result=new SourceListing(entries.stream().limit(budget.maximumEntries()).toList(),listing.issues(),complete);listings.put(key,result);return result;

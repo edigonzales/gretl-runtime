@@ -1,6 +1,6 @@
 # Include-tooling: Arbeitsstand
 
-**Stand: P0/P1 REVIEWED_ACCEPTED; P2 IMPLEMENTED, finales Kandidatengate anstehend.**
+**Stand: P0/P1 REVIEWED_ACCEPTED; P2 NACHARBEIT korrigiert, erneuter Review ausstehend.**
 P0-Kandidat `d2dccba942a749a3f270a7dbfbdb11ffe2814a1a` wurde unabhängig
 abgenommen und nach vollständigem Prozess-/Sessionabschluss maschinell validiert.
 P1-Kandidat `fb4664de265d06e3145d2757c1d1aed853d25da1` wurde ohne Findings
@@ -151,4 +151,25 @@ Edit-/Staleassertions bleiben. Hostfixtures liefern nun explizite bounded
 Ownerinventare und verbieten deren Wiederbeschaffung während Semantik/Edits.
 
 P1-Originalreview: `/Users/stefan/.cache/gretl-include-tooling/review/P1-attempt-1/`.
-Nächste Aktion: finales P2-Gate und autonome unabhängige Session am exakten SHA.
+P2-Erstreview am `36caba40ddd49fa6aa7ed34f646e95945dea181f`:
+**NACHARBEIT**, MAJOR P2-F1. Originalbericht und selbst ausgeführte Gegenprobe:
+`/Users/stefan/.cache/gretl-include-tooling/review/P2-attempt-1/`.
+Der neu ausgehandelte Client hatte Settings fälschlich als unowned behandelt.
+Settings besitzen jetzt einen ausdrücklichen ENTRY-Kontext des bestehenden
+Projekts. Ein neuer echter stdio-Test verlangt COMPLETE und identische Projekt-
+Tasks mit/ohne Include-Capability; SourceContexts zeigt den Settingsanker.
+
+Weitere eigene Nachprüfung im selben P2-Umfang: New-Job/Use-File merken ihre
+explizite Entryrolle und registrieren sie nach Start/Restart; bewusste Standalone-
+Registrierung wählt genau diese Rolle. Unbeteiligte Groovyevents entwerten keine
+bestehenden Captures und starten keine erneute Projektanalyse. Ältere Membership-
+generationen werden ignoriert; Startupupdates werden je Root zusammengeführt.
+Der Inventarhost prüft auch die Root der übergebenen Readpolicy.
+
+Korrekturbelege unter `/Users/stefan/.cache/gretl-include-tooling/evidence/P2-fix/`.
+Gezielte Nachtests betreffen Workspace/Owner/Context/Host, Semantik-/Defaults-/
+Postimagekontrollen und reale Settings-/Membership-/Lifecycle-Serverwege. Die
+unveränderten Parser-/Query-/Editfamilienbelege des ersten P2-Laufs bleiben als
+solche kenntlich; keine alte SHA wird als frisch geprüft ausgegeben.
+Nächste Aktion: Korrekturkandidat committen, gezielt prüfen und in frischer
+unabhängiger Session die ganze P2-Phase gegen dieselbe Phasebase bewerten.

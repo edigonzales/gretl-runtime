@@ -84,7 +84,7 @@ public final class FileSourceRepository implements SourceRepository {
     @Override public SourceListing listProjectEntries(URI root,ScanBudget budget,ReadPolicy policy,CancellationToken cancellation){
         var entries=new ArrayList<URI>();var issues=new ArrayList<SourceIssue>();int[] visited={0};boolean[] limited={false};
         try{
-            if(!SourceUris.directoryIdentity(root).equals(rootId))return new SourceListing(List.of(),List.of(new SourceIssue("SOURCE_OUTSIDE_POLICY",root)),false);
+            if(!SourceUris.directoryIdentity(root).equals(rootId)||!SourceUris.directoryIdentity(policy.root()).equals(rootId))return new SourceListing(List.of(),List.of(new SourceIssue("SOURCE_OUTSIDE_POLICY",root)),false);
             try(var directory=openPinnedRoot()){scan(directory,logicalRoot,0,budget,policy,cancellation,entries,issues,visited,limited);}
         }catch(java.util.concurrent.CancellationException cancelled){throw cancelled;}
         catch(IOException|UnsupportedOperationException failure){issues.add(new SourceIssue("SOURCE_SCAN_UNAVAILABLE",root));}

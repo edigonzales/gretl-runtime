@@ -154,7 +154,14 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
         return deferred(()->{
             includeFeature(request.protocolVersion(),request.includeToolingVersion());var document=workspace.document(request.documentId());
             if(request.registerAsEntry()){workspace.manager.registerEntry(workspace.rootFor(document),document,true);workspace.contextChanged();}
-            return workspace.request(document,List.of(),null,true,(snapshot,cancel)->sourceContextsResponse(workspace.sourceContexts.contextsFor(snapshot.analysis().capture(),document)));
+            return workspace.request(document,List.of(),null,true,(snapshot,cancel)->{
+                var capture=snapshot.analysis().capture();var contexts=workspace.sourceContexts.contextsFor(capture,document);
+                if(request.registerAsEntry()){
+                    var standalone=contexts.contexts().stream().filter(c->c.application().id().project().singleJob()&&c.application().id().entryDocument().equals(document)).toList();
+                    if(standalone.size()==1)contexts=workspace.sourceContexts.select(capture,document,standalone.getFirst().token(),contexts.incarnation(),contexts.ownerGeneration());
+                }
+                return sourceContextsResponse(contexts);
+            });
         });
     }
     public CompletableFuture<SourceContextsResponse> selectSourceContext(SelectSourceContextRequest request){

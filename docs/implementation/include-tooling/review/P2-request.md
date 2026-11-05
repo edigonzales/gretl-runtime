@@ -49,3 +49,30 @@ Keine Erwartungslockerung, kein alter Runtimeauftrag und keine P3/P4-Abnahme.
 Originalbericht und JSON nach Plan §9.4, vollständige P2-Kriterienmenge, selbst
 belegte Commands, eigene neue Probe, Findings/required_not_executed. Produktbytes
 nicht ändern. Neue Session am exakten SHA, Ende und Modellidentität extern prüfen.
+
+## Erneuter Kandidat nach P2-F1
+
+Der erste Review von `36caba40ddd49fa6aa7ed34f646e95945dea181f` urteilte
+NACHARBEIT wegen verlorener Settings-Projektkontexte. Lies dessen Originalbericht
+und Gegenprobe im referenzierten Evidenzverzeichnis selbst. Korrektur: Settings
+werden im Owner-/Kontextmodell ausdrücklich als ENTRY des tatsächlichen Projekts
+geführt; keine Syntax-only-Umdeutung und kein Fragment-Pseudoprojekt.
+
+Neue feste Regression verlangt den vollständigen Settingsgraphen mit/ohne neue
+Capability sowie SourceContexts-Anker und stabile Ownershipgeneration. Zusätzlich
+eigene eng verwandte Korrekturen: explizite New-Job/Use-File-Entryrollen nach
+Start/Restart; wirkliche Relevanzfilter für Groovyevents; Abweisung älterer
+Membershipgenerationen und zusammengeführte Startupupdates; korrekte Rootpolicy
+beim Inventarhost. Jede dieser Änderungen ist Teil dieses neuen Kandidaten.
+
+Gleiche Phasebase, gesamte P2-Phase beurteilen. Die im Handoff genannte neue
+Testauswahl ersetzt für die Korrektur den oben dokumentierten initialen Vollsatz.
+Gezielt neu laufen Workspace-/Owner-/Context-/File-/SourceView-, Semantik-/Defaults-
+und Postimagekontrollen, LSP-Hostfamilie, echte Membership-/Apply-/ServerProcessIT
+und die 25 Hosttests/TypeScriptcheck. Nicht betroffene P2-Erstbelege dürfen nach
+Delta-/Identitätsprüfung ausdrücklich wiederverwendet werden. Das ist kein neuer
+Parser-/Query-/JARlauf am neuen SHA. Die ursprüngliche P2-NACHARBEIT bleibt erhalten.
+
+Kriterienstatus bezieht sich auf den in Plan §7.4 bezeichneten P2-Teilvertrag;
+P3-/P4-Endfunktionen bleiben ausstehend und werden nicht als erfüllt behauptet.
+Erfinde und führe eine neue eigene Gegenprobe für diesen Korrekturkandidaten aus.

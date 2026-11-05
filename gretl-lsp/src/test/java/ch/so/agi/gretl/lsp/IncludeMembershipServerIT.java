@@ -79,7 +79,43 @@ class IncludeMembershipServerIT {
             assertEquals("SOURCE_CONTEXT_SELECTION_REQUIRED",w.response("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject("error").get("message").getAsString());
             w.call("gretl/selectSourceContext",Map.of("protocolVersion",1,"includeToolingVersion",1,"documentId",uri,"contextToken",first.get("contextToken").getAsString(),"ownerGeneration",choices.get("ownerGeneration").getAsString()));
             w.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri,"contextToken",second.get("contextToken").getAsString()));
-            assertEquals(first.get("contextToken"),contexts(w,uri).get("selectedToken"));w.stop();
+            assertEquals(first.get("contextToken"),contexts(w,uri).get("selectedToken"));
+            var standalone=w.call("gretl/sourceContexts",Map.of("protocolVersion",1,"includeToolingVersion",1,"documentId",uri,"registerAsEntry",true)).getAsJsonObject();
+            String selected=standalone.get("selectedToken").getAsString();
+            var chosen=standalone.getAsJsonArray("contexts").asList().stream().map(JsonElement::getAsJsonObject).filter(c->c.get("contextToken").getAsString().equals(selected)).findFirst().orElseThrow();
+            assertEquals("ENTRY",chosen.get("role").getAsString());assertEquals(fragment.toUri(),URI.create(chosen.get("entryDocument").getAsString()));w.stop();
+        }
+    }
+
+    @Test void settingsAnchorKeepsItsCompleteProjectWithAndWithoutIncludeCapability()throws Exception{
+        Path settings=write("settings.gretl","include 'north'\ndefaults ':north:north'");
+        write("north/job.groovy","task('north',Gzip){dataFile=file('input');gzipFile=workPath('north.gz')}");
+        for(boolean feature:List.of(false,true))try(var w=new ServerProcessIT.Wire(root,"--stdio")){
+            initialize(w,feature);w.opened(settings.toUri().toString(),1,Files.readString(settings));
+            var graph=graph(w,settings.toUri().toString());assertEquals("COMPLETE",graph.getAsJsonObject("payload").get("status").getAsString());
+            assertTrue(graph.getAsJsonObject("payload").getAsJsonArray("nodes").asList().stream().anyMatch(n->n.getAsJsonObject().get("title").getAsString().equals(":north:north")));
+            if(feature){var contexts=contexts(w,settings.toUri().toString());assertEquals(1,contexts.getAsJsonArray("contexts").size());
+                var context=contexts.getAsJsonArray("contexts").get(0).getAsJsonObject();assertEquals(settings.toUri(),URI.create(context.get("entryDocument").getAsString()));assertEquals("ENTRY",context.get("role").getAsString());}
+            w.stop();
+        }
+    }
+    @Test void unrelatedGroovyFileeventsDoNotInvalidateOrParseTheProjectAgain()throws Exception{
+        Path job=write("job.groovy","task('root',Gzip){dataFile=file('input');gzipFile=workPath('out.gz')}");
+        Path unrelated=write("unrelated.groovy","this is unrelated invalid Groovy {");
+        try(var w=new ServerProcessIT.Wire(root,"--stdio")){
+            initialize(w,true);w.opened(job.toUri().toString(),1,Files.readString(job));var before=graph(w,job.toUri().toString());
+            Files.writeString(unrelated,"changed but still unrelated {");
+            w.send("workspace/didChangeWatchedFiles",Map.of("changes",List.of(Map.of("uri",unrelated.toUri().toString(),"type",2))),null);
+            var after=graph(w,job.toUri().toString());assertEquals(before.getAsJsonObject("context").get("snapshotId"),after.getAsJsonObject("context").get("snapshotId"));w.stop();
+        }
+    }
+
+    @Test void explicitlyCreatedUnsavedJobRetainsItsEntryRole()throws Exception{
+        write("job.groovy","// existing workspace");String uri="untitled:Draft-1";
+        String source="task('draft',Gzip){dataFile=file('input');gzipFile=workPath('draft.gz')}";
+        try(var w=new ServerProcessIT.Wire(root,"--stdio")){
+            initialize(w,true);w.opened(uri,1,source);var registered=w.call("gretl/sourceContexts",Map.of("protocolVersion",1,"includeToolingVersion",1,"documentId",uri,"registerAsEntry",true)).getAsJsonObject();
+            assertEquals(1,registered.getAsJsonArray("contexts").size());assertTrue(graph(w,uri).getAsJsonObject("payload").getAsJsonArray("nodes").asList().stream().anyMatch(n->n.getAsJsonObject().get("title").getAsString().equals("draft")));w.stop();
         }
     }
 

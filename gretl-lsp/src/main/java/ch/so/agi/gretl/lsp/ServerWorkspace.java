@@ -103,7 +103,14 @@ final class ServerWorkspace implements AutoCloseable {
         rootFor(id);return id;
     }
     static URI local(URI id){id=DocumentStore.identity(id);if(!"file".equals(id.getScheme()))throw new IllegalArgumentException("LOCAL_WORKSPACE_REQUIRED");return id;}
-    void sourcesChanged(Set<URI> ids){manager.onSourcesChanged(ids);synchronized(this){epoch++;}schedule();}
+    void sourcesChanged(Set<URI> ids){
+        List<AnalysisSnapshot> captured;synchronized(this){captured=List.copyOf(snapshots.values());}
+        var open=documents.capture().documents().keySet();
+        var relevant=ids.stream().map(DocumentStore::identity).filter(id->open.contains(id)||manager.isRegisteredEntry(id)
+                ||id.getPath()!=null&&(id.getPath().endsWith("/job.groovy")||id.getPath().endsWith("/settings.gretl"))
+                ||captured.stream().anyMatch(snapshot->snapshot.analysis().capture().project().sources().versions().containsKey(id))).collect(java.util.stream.Collectors.toSet());
+        if(relevant.isEmpty())return;manager.onSourcesChanged(relevant);synchronized(this){epoch++;}schedule();
+    }
     void changed(){synchronized(this){epoch++;}schedule();}
     synchronized void schedule() {
         if(closed||!configuration.trusted())return;

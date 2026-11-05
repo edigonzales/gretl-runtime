@@ -35,3 +35,9 @@ test('membership removal supersedes queued transition and obsolete confirmation'
  const f=fixture();await Promise.all([f.coordinator.acceptMembership(update()),f.coordinator.acceptMembership(update([],'2'))]);
  assert.equal(f.docs[0].languageId,'groovy');assert.equal(f.confirms.length,1);assert.equal(f.confirms[0].u.ownerGeneration,'2');await f.coordinator.dispose();
 });
+
+test('older membership cannot re-adopt a source removed by a newer generation',async()=>{
+ const f=fixture();await f.coordinator.acceptMembership(update());await f.coordinator.acceptMembership(update([],'2'));
+ const count=f.changes.length;await f.coordinator.acceptMembership(update([fragment],'1'));
+ assert.equal(f.docs[0].languageId,'groovy');assert.equal(f.changes.length,count);await f.coordinator.dispose();
+});

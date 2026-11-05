@@ -70,14 +70,14 @@ def launch(a):
                    criteria=CRITERIA[a.phase], evidence_directory=str(ev),
                    implementer_evidence=str(a.implementer_evidence.resolve()),
                    opencode_version=version.removeprefix('opencode v'), provider_model='deepseek/deepseek-flash',
-                   model_mapping_evidence=str(ev / 'model-mapping.html'), test_command=a.test_command,extra_test_commands=a.extra_test_command)
+                   model_mapping_evidence=str(ev / 'model-mapping.html'), test_command=a.test_command,extra_test_commands=a.extra_test_command,reference_evidence=[str(p.resolve()) for p in a.reference_evidence])
     write(ev / 'handoff.json', handoff)
     permissions = [dict(action='*', resource='*', effect='deny')]
     def allow(action, resource):
         permissions.append(dict(action=action, resource=resource, effect='allow'))
     for action in ('read', 'glob', 'grep'):
         allow(action, '*')
-    for path in (ev, a.implementer_evidence.resolve(), a.maven_repo.resolve()):
+    for path in (ev, a.implementer_evidence.resolve(), a.maven_repo.resolve(), *(p.resolve() for p in a.reference_evidence)):
         allow('external_directory', str(path) + '/*')
     allow('edit', str(ev) + '/*')
     for cmd in ('pwd', 'git status *', 'git diff *', 'git show *', 'git rev-parse *', 'git log *',
@@ -213,6 +213,7 @@ if __name__ == '__main__':
     parser.add_argument('--implementer-evidence', type=Path)
     parser.add_argument('--test-command')
     parser.add_argument('--extra-test-command', action='append', default=[])
+    parser.add_argument('--reference-evidence', type=Path, action='append', default=[])
     parser.add_argument('--timeout', type=int, default=1200)
     args = parser.parse_args()
     if args.operation == 'run':

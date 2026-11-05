@@ -75,4 +75,13 @@ class WorkspaceManagerTest {
         };
         try(var manager=new WorkspaceManager(new DocumentStore(),new CatalogRepository())){manager.addRoot(ROOT,racing);assertThrows(CancellationException.class,()->manager.capture(new ProjectRequest(ROOT,JOB),CancellationToken.NONE));}
     }
+    @Test void unrelatedGroovyChangesDoNotInvalidateKnownProjectOrOwnership() {
+        var files=new Files();files.texts.put(JOB,"action('a'){}");var unrelated=URI.create("file:/workspace/unrelated.groovy");files.texts.put(unrelated,"not a job");
+        try(var manager=new WorkspaceManager(new DocumentStore(),new CatalogRepository())){
+            manager.addRoot(ROOT,files);var before=manager.capture(new ProjectRequest(ROOT,JOB),CancellationToken.NONE);
+            files.texts.put(unrelated,"still not a job");manager.onSourcesChanged(Set.of(unrelated));
+            assertTrue(manager.sameGeneration(before));assertTrue(manager.isCurrent(before,CancellationToken.NONE));
+        }
+    }
+
 }

@@ -32,4 +32,10 @@ class FileSourceRepositoryTest {
         var limited=repository.listProjectEntries(root.toUri(),new SourceRepository.ScanBudget(1,10,20),CancellationToken.NONE);assertFalse(limited.complete());assertEquals(1,limited.entries().size());assertEquals("SOURCE_SCAN_LIMIT",limited.issues().getFirst().code());
         assertThrows(java.util.concurrent.CancellationException.class,()->repository.listProjectEntries(root.toUri(),SourceRepository.ScanBudget.defaults(),()->true));
     }
+    @Test void inventoryOverloadCannotReadUsingAnotherRootPolicy()throws Exception{
+        Path root=Files.createDirectory(temp.resolve("root")),other=Files.createDirectory(temp.resolve("other"));Files.writeString(root.resolve("job.groovy"),"task('a',Echo){}");
+        var listing=new FileSourceRepository(root.toUri()).listProjectEntries(root.toUri(),SourceRepository.ScanBudget.defaults(),new SourceRepository.ReadPolicy(other.toUri(),1,false),CancellationToken.NONE);
+        assertFalse(listing.complete());assertTrue(listing.entries().isEmpty());assertEquals("SOURCE_OUTSIDE_POLICY",listing.issues().getFirst().code());
+    }
+
 }

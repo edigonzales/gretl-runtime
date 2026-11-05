@@ -59,7 +59,10 @@ export class FragmentDocumentCoordinator {
         const update=membershipUpdate(raw);
         if(this.disposed||update.serverInstanceId!==this.host.instance())return Promise.resolve();
         if(!this.host.owns(update.anchorDocument,update.workspaceRoot)||update.members.some(m=>!this.host.owns(m.documentId,update.workspaceRoot)))return Promise.reject(Error('GRETL membership outside workspace.'));
-        const root=this.host.normalize(update.workspaceRoot);this.latest.set(root,update);
+        const root=this.host.normalize(update.workspaceRoot),previous=this.latest.get(root);
+        if(previous&&(BigInt(update.ownerGeneration)<BigInt(previous.ownerGeneration)
+                ||update.ownerGeneration===previous.ownerGeneration&&update.syncToken!==previous.syncToken))return Promise.resolve();
+        this.latest.set(root,update);
         return this.enqueue(()=>this.apply(root,update));
     }
     private enqueue(operation:()=>Promise<void>):Promise<void>{

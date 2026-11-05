@@ -51,6 +51,10 @@ public final class SourceOwnershipIndex {
         for(var p:projects.values()){
             complete&=p.complete()&&p.includeClosure().sourcesComplete();
             for(var application:p.includeClosure().applications())owners.computeIfAbsent(application.id().sourceDocument(),id->new ArrayList<>()).add(application);
+            if(p.settingsId()!=null){
+                var settings=new SourceApplication(new ApplicationId(p.id(),p.settingsId(),":",p.settingsId()),p.directory(),SourceRole.ENTRY,List.of());
+                owners.computeIfAbsent(p.settingsId(),id->new ArrayList<>()).add(settings);
+            }
         }
         complete&=!view.freeze().limited();
         return new OwnershipSnapshot(owners,projects,listing,generation,complete);

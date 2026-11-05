@@ -19,7 +19,11 @@ class SourceContextServiceTest {
         try(var manager=new WorkspaceManager(store,new CatalogRepository())){
             manager.addRoot(root.toUri(),new FileSourceRepository(root.toUri()));
             var request=new ProjectResolver.ProjectRequest(root.toUri(),root.resolve("settings.gretl").toUri());
-            var capture=manager.capture(request,CancellationToken.NONE);var contexts=service.contextsFor(capture,shared);
+            var capture=manager.capture(request,CancellationToken.NONE);
+            var settings=service.contextsFor(capture,root.resolve("settings.gretl").toUri());assertEquals(1,settings.contexts().size());
+            assertEquals(root.resolve("settings.gretl").toUri(),settings.contexts().getFirst().application().id().entryDocument());
+            assertEquals(capture.ownership().generation(),manager.capture(request,CancellationToken.NONE).ownership().generation());
+            var contexts=service.contextsFor(capture,shared);
             assertEquals(2,contexts.contexts().size());assertTrue(contexts.selectionRequired());assertNull(contexts.selectedToken());
             assertEquals("SOURCE_CONTEXT_SELECTION_REQUIRED",assertThrows(IllegalArgumentException.class,()->service.resolveForQuery(capture,shared,null)).getMessage());
             var north=contexts.contexts().get(0);var south=contexts.contexts().get(1);

@@ -63,12 +63,16 @@ public final class WorkspaceManager implements AutoCloseable {
         }
         invalidated.accept(Set.copyOf(affected));
     }
+    public synchronized boolean isRegisteredEntry(URI source){source=DocumentStore.identity(source);URI id=source;return roots.values().stream().anyMatch(root->root.explicitEntries.stream().anyMatch(entry->entry.documentId().equals(id)));}
     public void onCatalogChanged(){Set<ProjectId> affected;synchronized(this){checkOpen();affected=new LinkedHashSet<>(projects.keySet());for(var p:projects.values())p.generation=++clock;}invalidated.accept(Set.copyOf(affected));}
     public void onSourcesChanged(Set<URI> changed){
         var affected=new LinkedHashSet<ProjectId>();
         synchronized(this){if(closed)return;for(var root:roots.values()){
-            var policy=policy(root,null);var relevant=changed.stream().map(DocumentStore::identity).filter(id->policy.permits(id)||projects.values().stream().anyMatch(p->p.id.workspaceRoot().equals(root.id)&&p.request.documentId().equals(id))).toList();if(relevant.isEmpty())continue;root.sourceEpoch++;root.ownerGeneration=++clock;root.ownerFingerprint=null;
-            for(var project:projects.values())if(project.id.workspaceRoot().equals(root.id)&&(project.dependencies.isEmpty()||relevant.stream().anyMatch(id->id.getPath()!=null&&(id.getPath().endsWith(".groovy")||id.getPath().endsWith("/settings.gretl")))||relevant.stream().anyMatch(id->project.dependencies.contains(id)||project.request.documentId().equals(id)))){project.generation=++clock;affected.add(project.id);}
+            var policy=policy(root,null);var relevant=changed.stream().map(DocumentStore::identity).filter(id->policy.permits(id)||projects.values().stream().anyMatch(p->p.id.workspaceRoot().equals(root.id)&&p.request.documentId().equals(id))).toList();if(relevant.isEmpty())continue;root.sourceEpoch++;
+            boolean inventory=relevant.stream().anyMatch(id->conventionalEntry(id)||root.explicitEntries.stream().anyMatch(e->e.documentId().equals(id)));
+            boolean known=inventory||projects.values().stream().anyMatch(p->p.id.workspaceRoot().equals(root.id)&&(p.dependencies.isEmpty()||relevant.stream().anyMatch(id->p.dependencies.contains(id)||p.request.documentId().equals(id))));
+            if(!known)continue;root.ownerGeneration=++clock;root.ownerFingerprint=null;
+            for(var project:projects.values())if(project.id.workspaceRoot().equals(root.id)&&(inventory||project.dependencies.isEmpty()||relevant.stream().anyMatch(id->project.dependencies.contains(id)||project.request.documentId().equals(id)))){project.generation=++clock;affected.add(project.id);}
         }}
         invalidated.accept(Set.copyOf(affected));
     }

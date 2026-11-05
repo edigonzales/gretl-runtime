@@ -6,7 +6,7 @@ import {endOwnedProcess} from './process';
 import {LanguageClient,CloseAction,ErrorAction,State,RenameRequest,CodeActionRequest,DocumentSymbolRequest,DocumentSymbol as ProtocolSymbol,TextDocumentEdit,WorkspaceEdit as ProtocolEdit,CodeAction as ProtocolAction} from 'vscode-languageclient/node';
 import {checkBundle,checkJava,languageConfiguration,localHost,sourceDigest} from './host';
 
-import {FragmentDocumentCoordinator,FragmentDocument,sourceContexts} from './fragment-documents';
+import {FragmentDocumentCoordinator,FragmentDocument,sourceContexts,membershipUpdate} from './fragment-documents';
 import {Stamp,validateEditSources} from './edit-guard';
 import {currentRead} from './read-query';
 import {ModelerBackend,ModelerOptions} from './modeler/backend';
@@ -27,6 +27,8 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
     private disposed=false;
     private instance?:string;
     private fragments?:FragmentDocumentCoordinator;
+    private readonly standaloneEntries=new Set<string>();
+    private readonly sentEntryRoles=new Set<string>();
     private readonly output=vscode.window.createOutputChannel('GRETL Runtime',{log:true});
     private readonly status=vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left,5);
     private readonly actions=new Map<string,{client:LanguageClient;context:Context;edit:ProtocolEdit;expires:number}>();
@@ -56,13 +58,14 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             vscode.commands.registerCommand('gretlRuntime.restartServer',()=>{this.stopped=false;this.crashes=[];return this.serial(async()=>{await this.stop();await this.start();});}),
             vscode.commands.registerCommand('gretlRuntime.newJob',async()=>{
                 const doc=await vscode.workspace.openTextDocument({language:'gretl-runtime',content:"// GRETL Runtime job\naction('hello') {\n    println 'Hello from GRETL Runtime'\n}\ndefaults 'hello'\n"});
-                await vscode.window.showTextDocument(doc);
+                this.rememberEntry(doc.uri);await vscode.window.showTextDocument(doc);await this.serial(()=>this.start());
+                if(this.client?.isRunning())await this.registerEntries(this.client);
             }),
             vscode.commands.registerCommand('gretlRuntime.useActiveFile',async()=>{
                 const doc=vscode.window.activeTextEditor?.document;
                 if(doc&&(doc.uri.scheme==='file'||doc.uri.scheme==='untitled')){
-                    const selected=await vscode.languages.setTextDocumentLanguage(doc,'gretl-runtime');await this.serial(()=>this.start());
-                    if(this.client?.isRunning())await this.client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId:selected.uri.toString(),registerAsEntry:true});
+                    this.rememberEntry(doc.uri);await vscode.languages.setTextDocumentLanguage(doc,'gretl-runtime');await this.serial(()=>this.start());
+                    if(this.client?.isRunning())await this.registerEntries(this.client);
                 }
             }),
             vscode.commands.registerCommand('gretlRuntime.selectSourceContext',()=>this.selectSourceContext()),
@@ -216,10 +219,14 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             initialize(capabilities){if(capabilities.experimental?.gretlRuntime?.includeToolingVersion!==1)throw Error('GRETL include tooling capability is unavailable.');},
             getState:()=>({kind:'static'}),clear(){}
         });
-        this.client=client;const pendingMembership:unknown[]=[];this.fragments=this.fragmentCoordinator(client);
+        this.client=client;this.sentEntryRoles.clear();const pendingMembership=new Map<string,ReturnType<typeof membershipUpdate>>();this.fragments=this.fragmentCoordinator(client);
         this.sessionListeners.push(client.onNotification('gretl/sourceMembershipChanged',(message:unknown)=>{
             if(this.client!==client)return;
-            if(!this.instance){if(pendingMembership.length<16)pendingMembership.push(message);return;}
+            if(!this.instance){
+                try{const update=membershipUpdate(message),previous=pendingMembership.get(update.workspaceRoot);
+                    if((pendingMembership.size<16||previous)&&(!previous||BigInt(update.ownerGeneration)>=BigInt(previous.ownerGeneration)))pendingMembership.set(update.workspaceRoot,update);
+                }catch(error){this.output.warn(String(error));}return;
+            }
             void this.fragments?.acceptMembership(message).catch(error=>this.output.warn(String(error)));
         }));
         this.sessionListeners.push(client.onNotification('gretl/analysisReady',(message:{context:GraphContext})=>{if(this.client===client&&message.context?.serverInstanceId===this.instance)this.analyses.fire(message.context);}));
@@ -232,12 +239,27 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             if(catalog.protocolVersion!==1||catalog.schemaVersion!==1||catalog.state!=='AVAILABLE'||!catalog.serverInstanceId)throw new Error('Incompatible GRETL catalogue protocol');
             if(this.client!==client)throw new Error('Obsolete GRETL session');
             this.instance=catalog.serverInstanceId;
-            for(const message of pendingMembership.splice(0))await this.fragments?.acceptMembership(message);
+            await this.registerEntries(client);
+            for(const message of pendingMembership.values())await this.fragments?.acceptMembership(message);pendingMembership.clear();
             this.output.info(`Connected server instance ${this.instance}`);
             // SQL buffers feed the same source overlay, without registering GRETL features for ordinary SQL documents.
             await this.synchronizeSql(client);
             this.state('Ready');
         }catch(error){await this.stop();throw error;}
+    }
+    private rememberEntry(uri:vscode.Uri){
+        const id=uri.toString();if(this.standaloneEntries.size>=64&&!this.standaloneEntries.has(id))throw Error('GRETL entry registration limit reached.');
+        this.standaloneEntries.add(id);
+    }
+    private async registerEntries(client:LanguageClient){
+        const instance=this.instance;if(!instance||this.client!==client)return;
+        for(const id of this.standaloneEntries){
+            const uri=vscode.Uri.parse(id);
+            if(uri.scheme==='file'&&!vscode.workspace.getWorkspaceFolder(uri)||uri.scheme==='untitled'&&(vscode.workspace.workspaceFolders?.length!==1||!vscode.workspace.textDocuments.some(doc=>doc.uri.toString()===id&&!doc.isClosed)))continue;
+            const key=instance+'|'+id;if(this.sentEntryRoles.has(key))continue;
+            await client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId:id,registerAsEntry:true});
+            if(this.client!==client||this.instance!==instance)throw new vscode.CancellationError();this.sentEntryRoles.add(key);
+        }
     }
     private fragmentCoordinator(client:LanguageClient):FragmentDocumentCoordinator {
         const views=new WeakMap<vscode.TextDocument,FragmentDocument>(),documents=new WeakMap<FragmentDocument,vscode.TextDocument>();
