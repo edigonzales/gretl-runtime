@@ -216,3 +216,20 @@ bleiben und die normale Umgebung unverändert bleibt. Frühere Produktbelege
 bleiben dem SHA 3d1994e zugeordnet; der frische Review baut und testet den neuen
 Transportkandidaten selbst vollständig. Produkt-/Testcode ausserhalb dieses
 Adapters bleibt gegenüber 3d1994e bytegleich.
+
+
+P3-Review 1 am Transportkandidaten
+`0d48eeb46490b964c1e60897401d1996fe065d2c`: NACHARBEIT,
+MAJOR P3-REVIEW-01. Alle 122 Produktprüfungen und die neue öffentliche
+Reviewerprobe bestanden; der verpflichtende Python-Extratest war unter der
+geerbten Review-Gitkonfiguration rot. Seine ungescopte Positivkontrolle erbte
+selbst schon core.excludesFile und sah `.opencode/` deshalb nicht.
+
+Korrektur ausschliesslich im Test: beide normalen Gitkontrollen erhalten eine
+Umgebung ohne die geerbten GIT_CONFIG_COUNT/KEY_/VALUE_-Overrides. Die gescopte
+Kontrolle und die strenge AM-product.txt-Assertion bleiben unverändert.
+Vier Tests bestehen normal sowie in einer tatsächlich geerbten Reviewumgebung;
+Beleg `evidence/P3/transport-fix/inherited-environment-tests.log` unter dem
+externen Taskcache. Kein Produkt-/Runtime-/JAR-/Reporterbyte gegenüber dem
+geprüften P3-Produkt verändert. Neuer Kandidat und frische unabhängige Prüfung
+gegen dieselbe P3-Phasebase folgen; P4 bleibt gesperrt.

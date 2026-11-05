@@ -41,3 +41,12 @@ Produktbelege stammen vom sauberen 3d1994e69b7cabd7ed4beb139a67dce410af159a;
 der spätere Kandidat ändert ausschliesslich Transport und Status/Request.
 Führe das vollständige gezielte Kandidatengate selbst erneut aus und prüfe die
 frische Distribution am aktuellen SHA mit sourceDirty=false.
+
+
+Korrekturreview zu P3-REVIEW-01 des Kandidaten
+`0d48eeb46490b964c1e60897401d1996fe065d2c`: Die ungescopten Gitkontrollen im
+Adaptertest entfernen nun ausschliesslich geerbte prozesslokale Git-Overrides.
+Die gescopte Produktänderungsassertion bleibt gleich. Prüfe das Finding selbst
+und führe den unveränderten vollständigen P3-Umfang inklusive Python-Extratest
+und einer neuen eigenen öffentlichen Gegenprobe am neuen SHA aus. Produktcode
+bleibt bytegleich; Phasebase und Kriterienmenge bleiben unverändert.

@@ -2,6 +2,7 @@
 import datetime as dt
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -37,13 +38,16 @@ class ReviewGuards(unittest.TestCase):
             subprocess.run(['git','add','product.txt'],cwd=worktree,check=True)
             product.write_text('changed')
             config=worktree/'.opencode/opencode.json';config.parent.mkdir();config.write_text('{}')
-            normal=subprocess.check_output(['git','status','--porcelain'],cwd=worktree,text=True)
+            # The test itself may run inside the reviewer's scoped Git environment.
+            normal_environment={key:value for key,value in os.environ.items()
+                                if key!='GIT_CONFIG_COUNT' and not key.startswith(('GIT_CONFIG_KEY_','GIT_CONFIG_VALUE_'))}
+            normal=subprocess.check_output(['git','status','--porcelain'],cwd=worktree,text=True,env=normal_environment)
             self.assertIn('.opencode/',normal)
             environment=review.review_environment(evidence,worktree)
             scoped=subprocess.check_output(['git','status','--porcelain'],cwd=worktree,text=True,env=environment)
             self.assertEqual('AM product.txt\n',scoped)
             self.assertEqual('/.opencode/\n',(evidence/'review-infrastructure.ignore').read_text())
-            self.assertEqual(normal,subprocess.check_output(['git','status','--porcelain'],cwd=worktree,text=True))
+            self.assertEqual(normal,subprocess.check_output(['git','status','--porcelain'],cwd=worktree,text=True,env=normal_environment))
 
     def test_wrong_identity_fails_before_export(self):
         # The candidate checkout can be the current repository: wrong identity fails before model export.
