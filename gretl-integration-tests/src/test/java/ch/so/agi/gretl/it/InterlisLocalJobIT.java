@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.it;
 
 import static org.junit.jupiter.api.Assertions.*;
+import ch.so.agi.gretl.runtime.logging.Json;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.DriverManager;
@@ -16,7 +17,13 @@ class InterlisLocalJobIT {
     @Test void narrowValidatorOriginalSingleFileAndFileSetAndInvalidData() throws Exception {
         var valid = run(List.of("ili-report", "ili-second"), "single"); assertEquals(0, valid.code(), valid.err());
         String diagnostic = Files.readString(valid.directory().resolve("output/validation.txt")); assertTrue(diagnostic.contains("validation done"), diagnostic);
-        String report = Files.readString(valid.report()); assertTrue(report.contains("\"taskId\":\"ili-second\",\"status\":\"SUCCEEDED\""), report);
+        String report = Files.readString(valid.report());
+        var execution = assertInstanceOf(Map.class, assertInstanceOf(Map.class, Json.parse(report)).get("execution"));
+        List<?> tasks = assertInstanceOf(List.class, execution.get("tasks"));
+        var second = tasks.stream().map(task -> assertInstanceOf(Map.class, task))
+                .filter(task -> "ili-second".equals(task.get("taskId"))).toList();
+        assertEquals(1, second.size(), report);
+        assertEquals("SUCCEEDED", second.getFirst().get("status"), report);
         var invalid = run(List.of("ili"), "fail"); assertEquals(10, invalid.code(), invalid.err());
         report = Files.readString(invalid.report()); assertTrue(report.contains("VALIDATION_FAILED"), report); assertTrue(report.contains("IliValidatorTaskException"), report);
     }
