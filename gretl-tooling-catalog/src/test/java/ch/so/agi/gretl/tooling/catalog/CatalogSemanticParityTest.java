@@ -11,6 +11,7 @@ import ch.so.agi.gretl.tooling.workspace.ProjectResolver.ProjectRequest;
 import ch.so.agi.gretl.tooling.workspace.SourceRepository.*;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,17 +30,28 @@ class CatalogSemanticParityTest {
         var data=new OperationCatalogExporter().export(operations(),"test",new MetadataSupplementLoader().loadFromOwnedResources(loader));
         var catalog=new CatalogRepository();
         assertEquals(CatalogJsonCodec.State.AVAILABLE,catalog.loadBundled(new CatalogJsonCodec().encodeCanonical(data),data.catalogId()).result().state());
+        var acquisitionComplete=new AtomicBoolean();
         SourceRepository sources=new SourceRepository() {
             public SourceRead read(URI id,ReadPolicy policy,CancellationToken cancellation) {
+                assertFalse(acquisitionComplete.get(),"Semantic analysis must use only captured sources");
+                cancellation.check();
                 return id.equals(JOB)?SourceRead.found(new SourceText(id,job,null,"DISK",true,job)):SourceRead.unavailable("SOURCE_MISSING",id);
             }
             public SourceListing listProjectEntries(URI root,ScanBudget budget,CancellationToken cancellation) {
-                throw new AssertionError("No scan is needed for an explicitly selected job");
+                assertFalse(acquisitionComplete.get(),"Semantic analysis must reuse the captured owner inventory");
+                cancellation.check();
+                assertEquals(SourceUris.directoryIdentity(ROOT),SourceUris.directoryIdentity(root));
+                assertTrue(budget.maximumEntries()>=1);
+                return new SourceListing(List.of(JOB),List.of(),true);
             }
         };
         try(var manager=new WorkspaceManager(new DocumentStore(),catalog)) {
             manager.addRoot(ROOT,sources);
-            return new ProjectAnalyzer().analyze(manager.capture(new ProjectRequest(ROOT,JOB),CancellationToken.NONE),CancellationToken.NONE);
+            var captured=manager.capture(new ProjectRequest(ROOT,JOB),CancellationToken.NONE);
+            assertTrue(captured.ownership().complete());
+            assertTrue(captured.ownership().exclusive(JOB));
+            acquisitionComplete.set(true);
+            return new ProjectAnalyzer().analyze(captured,CancellationToken.NONE);
         }
     }
     @Test void actualUriSchemeHintsDoNotRejectCompleteUrls() throws Exception {
