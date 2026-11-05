@@ -14,6 +14,7 @@ public final class TaskSchedule {
     public record Done() implements Decision { }
 
     private final PlanSelection plan;
+    private final boolean hasFinalizers;
     private final Map<String,List<String>> dependencies = new LinkedHashMap<>();
     private final Map<String,List<String>> predecessors = new LinkedHashMap<>();
     private final Map<String,List<String>> finalizers = new LinkedHashMap<>();
@@ -25,6 +26,7 @@ public final class TaskSchedule {
 
     public TaskSchedule(PlanSelection plan) {
         this.plan = Objects.requireNonNull(plan);
+        this.hasFinalizers = plan.activeEdges().stream().anyMatch(e -> e.kind() == EdgeKind.FINALIZED_BY);
         for (var edge : plan.activeEdges()) {
             predecessors.computeIfAbsent(edge.toId(), id -> new ArrayList<>()).add(edge.fromId());
             if (edge.kind() == EdgeKind.DEPENDS_ON)
@@ -37,6 +39,7 @@ public final class TaskSchedule {
     public Decision next() {
         if (running != null) throw new IllegalStateException("Task still running: " + running);
         if (terminals.size() == plan.orderedIds().size()) return new Done();
+        if (!hasFinalizers && normalStop != null) return new NotRun(firstPending(),normalStop);
         if (completionStop != null)
             return new NotRun(firstPending(), completionStop);
         Set<String> demand = demand();
@@ -85,12 +88,18 @@ public final class TaskSchedule {
         if (completionStop == null) completionStop = Objects.requireNonNull(reason);
     }
     public Map<String,Terminal> terminals() { return Collections.unmodifiableMap(new LinkedHashMap<>(terminals)); }
-    public Set<String> activatingOwners(String id) { return Set.copyOf(triggers.getOrDefault(id,Set.of())); }
+    public Set<String> activatingOwners(String id) { return Collections.unmodifiableSet(new LinkedHashSet<>(triggers.getOrDefault(id,Set.of()))); }
+    public Set<String> demandingFinalizers(String id) {
+        var result=new LinkedHashSet<String>();
+        for(String finalizer:triggers.keySet())if(pending(finalizer)
+                &&plan.dataPredecessors().getOrDefault(finalizer,Set.of()).contains(id))result.add(finalizer);
+        return Collections.unmodifiableSet(result);
+    }
     public boolean normalDemand(String id) { return plan.normalDemand().contains(id); }
     public boolean draining() { return normalStop != null; }
 
     private boolean pending(String id) { return plan.dataPredecessors().containsKey(id) && !terminals.containsKey(id); }
-    private String firstPending() { return plan.registrationOrder().stream().filter(this::pending).findFirst().orElseThrow(); }
+    private String firstPending() { return plan.orderedIds().stream().filter(this::pending).findFirst().orElseThrow(); }
     private boolean isFinalizer(String id) {
         return plan.activeEdges().stream().anyMatch(e -> e.kind() == EdgeKind.FINALIZED_BY && e.toId().equals(id));
     }

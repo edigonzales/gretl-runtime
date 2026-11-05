@@ -10,6 +10,7 @@ final class TaskFrame {
     private final int taskIndex;
     private final Path taskDirectory;
     private final CloseStack closeStack;
+    private final TaskExecutionControl control;
     private final ch.so.agi.gretl.runtime.api.TimeBudget budget;
     private final List<InvocationOutcome> invocations = new ArrayList<>();
     // Identity only: a caught child failure creates no obligation. If that same
@@ -19,13 +20,16 @@ final class TaskFrame {
     private TaskContextImpl context;
 
     TaskFrame(TaskDefinition<?> definition, int taskIndex, Path taskDirectory,
-              ch.so.agi.gretl.runtime.api.TimeBudget budget) {
+              TaskExecutionControl control) {
         this.definition = definition;
         this.taskIndex = taskIndex;
         this.taskDirectory = taskDirectory;
-        this.budget = budget;
+        this.control = control;
+        this.budget = control.budget();
         this.closeStack = new CloseStack();
     }
+
+    TaskExecutionControl control() { return control; }
 
     TaskDefinition<?> definition() {
         return definition;

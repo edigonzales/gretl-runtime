@@ -58,7 +58,7 @@ Originalreview und extern validiertes Gate:
 Session `ses_e53d26e8affecEpZldJikg4jWB`, OpenCode 2.2.5 / DeepSeek Flash;
 eigene Testausführung und eigene Java-/Adaptergegenprobe, keine Findings.
 
-## P1 — REVIEW_PENDING
+## P1 — REVIEWED_ACCEPTED
 
 Feste Phasebase `0ea7d59dc0e1157e411d33e0218430ff40ccc30f`.
 Neue immutable finalizedBy-Links und kompatible Alt-Konstruktoren, Auflösung
@@ -90,5 +90,43 @@ Dependency-Editweg lehnen die neue Kante ausdrücklich ab, anstatt sie als AFTER
 zu verarbeiten (P3/P4 ergänzen sie). DSL bleibt bis P3 geschlossen.
 Keine P2-/DSL-/JAR-/GUIlieferung behauptet.
 
-Nächste Arbeit: P1-Kandidatencommit und neuer autonomer unabhängiger Review;
-P2 erst nach maschinell validiertem ABGENOMMEN. P2–P5: PLANNED.
+Geprüfter P1-Kandidat `bbd37bdfb73e902a0a2b073e7a8f929b1cce3fd9`.
+Originale und validiertes Gate unter
+`/Users/stefan/.cache/gretl-task-finalizers/review/P1-attempt-1/`.
+Unabhängiger Reviewer führte die 82 Tests sowie eine eigene Java-Gegenprobe
+mit 63 Assertions aus; ABGENOMMEN ohne Findings. Sessionidentität und
+unveränderte getrackte Bytes durch den Adapter validiert.
+
+## P2 — REVIEW_PENDING
+
+Feste Phasebase `bbd37bdfb73e902a0a2b073e7a8f929b1cce3fd9`.
+Ein Runner konsumiert TaskSchedule; kein zweiter Closure-Ausführungspfad.
+TaskExecutionControl trägt die wirksame Kontrolle durch Frame, Contexts,
+Konfiguration, innere Invocation, ResourceClose und FailureArbiter. Normale
+Arbeit nutzt Run-/Taskfristen; nach beobachteter Cancellation/Finish teilen
+neue Abschluss-Tasks und globale Cleanups das vorhandene einmalige Fenster.
+Lokale Abschluss-Timeouts canceln dieses Budgetobjekt nicht. Runabsicht und
+ursprüngliche Fehler bleiben erhalten. Tasksetup nach RUNNING terminalisiert
+korrekt und aktiviert Finalizer. Nur behandelte Interrupts werden am Taskende
+konsumiert; der äussere finally stellt sie auch bei Fatalfehlern wieder her.
+
+Gezieltes Gate (JDK 25, Exit 0, 186 JUnitfälle, 0 Fehler/Skips):
+
+```sh
+./mvnw -B -Dmaven.repo.local=/Users/stefan/.cache/gretl-task-finalizers/m2 -pl gretl-job-runtime -am -Dtest=TaskScheduleTest,PlanSemanticsTest,FinalizerDefinitionTest,TaskFinalizerRunnerTest,ExecutionPlannerTest,JobDefinitionBuilderTest,FailureArbiterTest,BudgetPrecedenceTest,LocalBudgetRegressionTest,ScopedControlTest,ContextAccessTest,CloseStackTest,SequentialJobRunnerTest,OperationInvocationRunnerTest,SetupFailureTest,ResultStoreTest,RunReportWriterTest,CancelCauseReportTest,LibraryScopeTest -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+Originale `/Users/stefan/.cache/gretl-task-finalizers/evidence/P2/`:
+`gate-final.log`, `summary.json`, gesicherte Ziel-XMLs. Erwartete anfängliche
+Runnerguard-Red-Probe und Entwicklungslogs liegen im Elternverzeichnis.
+31 neue Runnerfälle prüfen unter anderem zwei wirkliche Invocationwege nach
+Cancellation, Finish, Sharedowner, Ketten, spätere normale Voraussetzungen,
+Setup-/Prädikat-/Konfigurations-/Closefehler, Resultrechte, Secrets, geschlossene
+Contexts, lokale und gemeinsame Fristen, Cleanup-Priorität sowie alte/neue
+Interrupts und Fatalweitergabe. Die P1-Nichtunterstützungsprobe wurde durch die
+positiven Runnerverträge ersetzt. Globale Cleanup-Reihenfolge bleibt umgekehrt.
+Neue Ereignisse erfassen Aktivierungen und ausgeführte Rollen; Serialisierung
+und öffentliche DSL-/Paket-/Planausgabe bleiben P3.
+
+Nächste Arbeit: Kandidatencommit und frischer unabhängiger P2-Review.
+P3 erst nach validiertem ABGENOMMEN; P3–P5: PLANNED.

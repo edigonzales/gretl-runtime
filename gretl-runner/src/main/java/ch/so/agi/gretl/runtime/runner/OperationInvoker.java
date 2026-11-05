@@ -44,7 +44,7 @@ public final class OperationInvoker {
         try (var invocationScope = environment.openScope(identity, Optional.of(type.id()))) {
             OperationContextImpl context = new OperationContextImpl(
                     environment, identity, invocationDirectory, closeStack,
-                    parent.budget(), type.id());
+                    parent.budget(), type.id(), parent.control());
             Instant startedAt = environment.now();
             long startTicks = environment.monotonicClock().ticks();
             InvocationFrame frame = new InvocationFrame(invocationId, parent, type,
@@ -104,27 +104,27 @@ public final class OperationInvoker {
                 work = new FailureArbiter.WorkCompletion.Finished(signal.reason());
             } catch (InterruptedException interrupted) {
                 Thread.currentThread().interrupt();
-                environment.control().observeCancel(CancelReason.INTERRUPTED);
+                parent.control().observeCancel(CancelReason.INTERRUPTED);
                 TaskCancelledException cancellation = new TaskCancelledException(CancelReason.INTERRUPTED);
                 cancellation.addSuppressed(interrupted);
                 primary = cancellation;
                 work = new FailureArbiter.WorkCompletion.Cancelled(cancellation);
             } catch (TaskCancelledException cancellation) {
-                environment.control().observeCancel(cancellation.reason());
+                parent.control().observeCancel(cancellation.reason());
                 primary = cancellation;
                 work = new FailureArbiter.WorkCompletion.Cancelled(
                         cancellation.getCause() != null || cancellation.getSuppressed().length > 0 ? cancellation : null);
             } catch (Throwable failure) {
                 FailureArbiter.rethrowFatal(failure);
                 primary = failure;
-                work = environment.control().cancellationObserved()
+                work = parent.control().cancellationObserved()
                         ? new FailureArbiter.WorkCompletion.Cancelled(failure)
                         : new FailureArbiter.WorkCompletion.Failure(failure);
             }
 
             if (primary == null) frame.phase("cleanup");
             List<Throwable> closeErrors = frame.closeResources();
-            TaskCompletion completion = new FailureArbiter().resolve(work, environment.control().snapshot(), closeErrors);
+            TaskCompletion completion = new FailureArbiter().resolve(work, parent.control().snapshot(), closeErrors);
             InvocationStatus status = switch (completion.status()) {
                 case FAILED -> InvocationStatus.FAILED;
                 case CANCELLED -> InvocationStatus.CANCELLED;

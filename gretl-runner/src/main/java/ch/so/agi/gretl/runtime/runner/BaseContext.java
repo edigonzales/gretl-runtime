@@ -30,6 +30,7 @@ abstract class BaseContext implements ContextView {
     private final Path workBase;
     private final CloseStack closeStack;
     private final TimeBudget budget;
+    private final TaskExecutionControl control;
     private volatile ScopeSnapshot snapshot;
     private final TimeBudget scopedBudget = new TimeBudget() {
         @Override public Optional<java.time.Duration> remaining() {
@@ -46,6 +47,14 @@ abstract class BaseContext implements ContextView {
     BaseContext(RunEnvironment environment, ExecutionIdentity identity, Path workBase,
                 CloseStack closeStack, TimeBudget budget, Optional<String> operationId,
                 Map<String, String> baseAttributes) {
+        this(environment,identity,workBase,closeStack,budget,operationId,baseAttributes,
+                TaskExecutionControl.normal(environment.control(),budget));
+    }
+
+    BaseContext(RunEnvironment environment, ExecutionIdentity identity, Path workBase,
+                CloseStack closeStack, TimeBudget budget, Optional<String> operationId,
+                Map<String,String> baseAttributes, TaskExecutionControl control) {
+        this.control = Objects.requireNonNull(control);
         this.environment = Objects.requireNonNull(environment, "environment");
         this.identity = Objects.requireNonNull(identity, "identity");
         this.workBase = Objects.requireNonNull(workBase, "workBase").toAbsolutePath().normalize();
@@ -271,23 +280,23 @@ abstract class BaseContext implements ContextView {
     }
 
     void checkExecution() {
-        environment.control().checkBeforeWork(budget);
+        control.checkBeforeWork();
     }
 
     Optional<CancelReason> currentCancellationReason() {
-        Optional<CancelReason> reason = environment.control().reason();
+        Optional<CancelReason> reason = control.reason();
         return reason.isPresent() ? reason : budget.expired() ? Optional.of(CancelReason.TIMEOUT) : Optional.empty();
     }
 
     void checkCancellation() {
-        environment.control().checkCancellation(budget);
+        control.checkCancellation();
     }
 
     Throwable observeCloseFailure(Throwable failure) {
         if (failure instanceof TaskCancelledException cancellation) {
-            environment.control().observeCancel(cancellation.reason());
+            control.observeCancel(cancellation.reason());
         } else if (failure instanceof InterruptedException) {
-            environment.control().observeCancel(CancelReason.INTERRUPTED);
+            control.observeCancel(CancelReason.INTERRUPTED);
             TaskCancelledException cancellation = new TaskCancelledException(CancelReason.INTERRUPTED);
             cancellation.addSuppressed(failure);
             return cancellation;

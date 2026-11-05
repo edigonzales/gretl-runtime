@@ -11,8 +11,8 @@ final class OperationContextImpl extends BaseContext implements OperationContext
     OperationContextImpl(RunEnvironment environment, ExecutionIdentity identity,
                          Path workBase, CloseStack closeStack,
                          ch.so.agi.gretl.runtime.api.TimeBudget budget,
-                         String operationId) {
+                         String operationId, TaskExecutionControl control) {
         super(environment, identity, workBase, closeStack, budget,
-                Optional.of(operationId), Map.of("operation.id", operationId));
+                Optional.of(operationId), Map.of("operation.id", operationId), control);
     }
 }

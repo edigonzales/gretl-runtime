@@ -48,9 +48,5 @@ class FinalizerDefinitionTest {
         var compatibility=new TaskDefinition<>(ref,0,"A",List.of(),List.of(),null,null,ctx->"a",null,null);
         assertTrue(compatibility.finalizedBy().isEmpty());assertEquals(List.of("a"),new ExecutionPlanner().plan(d,List.of()).selection().normalDemand().stream().toList());
     }
-    @Test void p1RunnerRefusesFinalizerPlanBeforeWorkspaceOrBodyEffects() {
-        var d=RunnerTestSupport.definition(root,b->{b.register(task("a").finalizedBy("f").build());b.register(task("f").build());b.defaults("a");});
-        var error=assertThrows(PlanException.class,()->new SequentialJobRunner().run(d,RunnerTestSupport.plan(d),RunnerTestSupport.input(root,new FakeMonotonicClock(),new RecordingEventSink()).build()));
-        assertEquals("FINALIZER_EXECUTION_NOT_IMPLEMENTED",error.code());
-    }
+
 }

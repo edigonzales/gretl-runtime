@@ -19,7 +19,7 @@ final class TaskContextImpl extends BaseContext implements TaskContext, Operatio
                     ch.so.agi.gretl.runtime.api.TimeBudget budget,
                     ResultStore resultStore, OperationInvoker invoker) {
         super(environment, environment.identity(taskRef.id(), null),
-                workBase, closeStack, budget, Optional.empty(), Map.of());
+                workBase, closeStack, budget, Optional.empty(), Map.of(), frame.control());
         this.taskRef = taskRef;
         this.frame = frame;
         this.resultStore = resultStore;
@@ -75,7 +75,7 @@ final class TaskContextImpl extends BaseContext implements TaskContext, Operatio
             throw new IllegalArgumentException("finish reason must not be blank");
         }
         checkExecution();
-        environment().control().requestFinish(reason);
+        frame.control().requestFinish(reason);
         throw new FinishSignal(reason);
     }
 

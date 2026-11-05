@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.runtime.runner;
 
 import ch.so.agi.gretl.i18n.Messages;
+import ch.so.agi.gretl.language.TaskSchedule;
 import ch.so.agi.gretl.runtime.api.CancelReason;
 import ch.so.agi.gretl.runtime.api.ExecutionIdentity;
 import ch.so.agi.gretl.runtime.api.LogLevel;
@@ -29,9 +30,6 @@ public final class SequentialJobRunner {
             throw new IllegalArgumentException("execution plan belongs to another definition");
         }
 
-        if (plan.edges().stream().anyMatch(edge -> edge.type() == PlanEdge.EdgeType.FINALIZED_BY)) {
-            throw new PlanException("FINALIZER_EXECUTION_NOT_IMPLEMENTED", "Finalizer execution requires P2");
-        }
         return FailureInfo.withSourceFiles(definition.sourceFiles(), () -> execute(definition, plan, input));
     }
 
@@ -82,71 +80,86 @@ public final class SequentialJobRunner {
             boolean finishRequested = false;
             String finishReason = null;
 
-            List<TaskDefinition<?>> selected = plan.selectedTasks();
-            int position = 0;
-            for (; position < selected.size(); position++) {
-                if (failed || cancelled || finishRequested) {
-                    break;
-                }
-                try {
-                    environment.control().checkBeforeWork();
-                } catch (FinishSignal signal) {
-                    finishRequested = true;
-                    finishReason = signal.reason();
-                    break;
-                } catch (TaskCancelledException cancellation) {
-                    cancelled = true;
-                    break;
-                }
-
-                TaskOutcome outcome;
-                try {
-                    outcome = executeTask(selected.get(position), environment, workspace,
-                            results, invoker, arbiter);
-                } catch (IOException | SecurityException exception) {
-                    TaskDefinition<?> task = selected.get(position);
-                    results.complete(task.ref(), new TaskCompletion(TaskStatus.FAILED, ResultSlot.NoValue.INSTANCE, null,
-                                    FailureInfo.from(exception), List.of(), Optional.empty(), "task-setup"),
-                            environment.now(), environment.monotonicClock().ticks());
-                    outcome = results.outcome(task.ref());
-                    emitTaskTerminal(environment, task, outcome);
-                }
-
-                if (outcome.status() == TaskStatus.FAILED) {
-                    failed = true;
-                    runPrimary = outcome.failure().orElseThrow();
-                    runSecondary.addAll(outcome.secondaryFailures());
-                } else if (outcome.status() == TaskStatus.CANCELLED) {
-                    cancelled = true;
-                    runSecondary.addAll(outcome.secondaryFailures());
-                }
-                if (environment.control().isFinishRequested() && !finishRequested) {
-                    finishRequested = true;
-                    finishReason = environment.control().finishReason().orElse("JOB_FINISHED");
-                }
-                if (!failed) {
+            var schedule = new TaskSchedule(plan.selection());
+            boolean hasFinalizers = plan.edges().stream().anyMatch(e -> e.type() == PlanEdge.EdgeType.FINALIZED_BY);
+            var tasks = new java.util.LinkedHashMap<String,TaskDefinition<?>>();
+            plan.selectedTasks().forEach(task -> tasks.put(task.id(),task));
+            boolean restoreInterrupt = false;
+            try {
+                while (true) {
+                    // Observe new run intent, even while draining a business failure.
                     try {
                         environment.control().throwIfCancellationRequested();
                     } catch (TaskCancelledException cancellation) {
                         cancelled = true;
                     }
+                    if (environment.control().isFinishRequested()) {
+                        finishRequested = true;
+                        finishReason = environment.control().finishReason().orElse("JOB_FINISHED");
+                    }
+                    if (failed || cancelled || finishRequested) {
+                        schedule.stopNormalWork(failed ? "FAIL_FAST" : cancelled ? "CANCELLED_BEFORE_START" : "JOB_FINISHED");
+                    }
+                    if (hasFinalizers && (cancelled || finishRequested)) {
+                        if (environment.control().completionBudget().expired()) {
+                            environment.control().observeCancel(CancelReason.TIMEOUT);
+                            cancelled = true;
+                            schedule.stopCompletionWork("FINALIZATION_BUDGET_EXHAUSTED");
+                        }
+                    }
+                    restoreInterrupt |= environment.control().interrupted();
+                    TaskSchedule.Decision decision;
+                    try {
+                        decision = schedule.next();
+                    } catch (IllegalStateException blocked) {
+                        var failure=FailureInfo.from(blocked);
+                        if (!failed && !cancelled) {failed=true;runPrimary=failure;}
+                        else runSecondary.add(failure);
+                        schedule.stopNormalWork("SCHEDULING_BLOCKED");
+                        schedule.stopCompletionWork("SCHEDULING_BLOCKED");
+                        continue;
+                    }
+                    if (decision instanceof TaskSchedule.Done) break;
+                    if (decision instanceof TaskSchedule.NotRun notRun) {
+                        var task = tasks.get(notRun.taskId());
+                        results.complete(task.ref(),TaskCompletion.notRun(notRun.reason()),environment.now(),environment.monotonicClock().ticks());
+                        emitTaskTerminal(environment,task,results.outcome(task.ref()));
+                        schedule.completed(task.id(),TaskSchedule.Terminal.NOT_RUN);
+                        continue;
+                    }
+                    String id = ((TaskSchedule.Execute) decision).taskId();
+                    var task = tasks.get(id);
+                    var execution = TaskExecutionControl.create(environment,task,cancelled || finishRequested);
+                    // Read role before terminalization; the same task can have several causes.
+                    var role = new java.util.ArrayList<String>();
+                    if (!schedule.draining() && schedule.normalDemand(id)) role.add("NORMAL");
+                    if (!schedule.activatingOwners(id).isEmpty()) role.add("FINALIZER");
+                    if (!schedule.demandingFinalizers(id).isEmpty()) role.add("FINALIZER_PREREQUISITE");
+                    schedule.started(id);
+                    TaskOutcome outcome = executeTask(task,environment,workspace,results,invoker,arbiter,execution,
+                            Map.of("task.roles",String.join(",",role),"finalizer.active_owners",String.join(",",schedule.activatingOwners(id))));
+                    schedule.completed(id,TaskSchedule.Terminal.valueOf(outcome.status().name()));
+                    for (var finalizer : task.finalizedBy()) {
+                        environment.emit("gretl.finalizer.activated",LogLevel.INFO,environment.identity(id,null),Optional.empty(),
+                                "task",outcome.status().name(),0,Map.of("finalizer.task",finalizer.id(),"finalizer.owner",id),Optional.empty());
+                    }
+                    if (outcome.status() == TaskStatus.FAILED) {
+                        if (!cancelled && !failed) { failed = true; runPrimary = outcome.failure().orElseThrow(); }
+                        else runSecondary.add(outcome.failure().orElseThrow());
+                    } else if (outcome.status() == TaskStatus.CANCELLED) {
+                        cancelled = true;
+                    }
+                    runSecondary.addAll(outcome.secondaryFailures());
                 }
-            }
 
-            if (failed || cancelled || finishRequested) {
-                String reason = failed ? "FAIL_FAST"
-                        : cancelled ? "CANCELLED_BEFORE_START" : "JOB_FINISHED";
-                for (; position < selected.size(); position++) {
-                    TaskDefinition<?> task = selected.get(position);
-                    results.complete(task.ref(), TaskCompletion.notRun(reason),
-                            environment.now(), environment.monotonicClock().ticks());
-                    emitTaskTerminal(environment, task, results.outcome(task.ref()));
+                if (Thread.currentThread().isInterrupted()) {
+                    environment.control().observeCancel(CancelReason.INTERRUPTED);
+                    cancelled = true;
+                    restoreInterrupt |= Thread.interrupted();
                 }
-            }
-
-            boolean restoreInterrupt = Thread.interrupted() | environment.control().interrupted();
-            try {
-                List<FailureInfo> cleanupFailures = runCleanups(environment, workspace, definition);
+                var cleanupResult = runCleanups(environment, workspace, definition, hasFinalizers && (cancelled || finishRequested));
+                List<FailureInfo> cleanupFailures = cleanupResult.failures();
+                if (cleanupResult.cancellationFirst()) cancelled = true;
 
                 RunStatus status;
                 FailureInfo primaryFailure = null;
@@ -216,18 +229,26 @@ public final class SequentialJobRunner {
     private TaskOutcome executeTask(
             TaskDefinition<?> task, RunEnvironment environment,
             WorkspaceManager.Workspace workspace, ResultStore results,
-            OperationInvoker invoker, FailureArbiter arbiter) throws IOException {
-        TimeBudget budget = task.timeout() == null
-                ? environment.control() : environment.control().childBudget(task.timeout());
+            OperationInvoker invoker, FailureArbiter arbiter, TaskExecutionControl execution,
+            Map<String,String> roleAttributes) {
+        TimeBudget budget = execution.budget();
         try (var taskScope = environment.openScope(environment.identity(task.id(), null), Optional.empty())) {
             results.start(task.ref(), environment.now(), environment.monotonicClock().ticks());
             environment.emit("gretl.task.started", LogLevel.INFO,
                     environment.identity(task.id(), null),
                     Optional.ofNullable(task.operation() == null ? null : task.operation().id()),
                     "task", null, 0,
-                    Map.of("task.description", task.description()), Optional.empty());
-            Path taskDirectory = workspace.taskDirectory(task.registrationIndex());
-            TaskFrame frame = new TaskFrame(task, task.registrationIndex(), taskDirectory, budget);
+                    taskAttributes(task,roleAttributes), Optional.empty());
+            Path taskDirectory;
+            try {
+                taskDirectory = workspace.taskDirectory(task.registrationIndex());
+            } catch (IOException | SecurityException failure) {
+                results.complete(task.ref(),new TaskCompletion(TaskStatus.FAILED,ResultSlot.NoValue.INSTANCE,null,
+                        FailureInfo.from(failure),List.of(),Optional.empty(),"task-setup"),
+                        environment.now(),environment.monotonicClock().ticks());
+                var outcome=results.outcome(task.ref());emitTaskTerminal(environment,task,outcome);return outcome;
+            }
+            TaskFrame frame = new TaskFrame(task, task.registrationIndex(), taskDirectory, execution);
             TaskContextImpl context = new TaskContextImpl(environment, task.ref(), frame,
                     taskDirectory, frame.closeStack(), budget, results, invoker);
             frame.context(context);
@@ -261,17 +282,17 @@ public final class SequentialJobRunner {
             } catch (FinishSignal signal) {
                 work = new FailureArbiter.WorkCompletion.Finished(signal.reason());
             } catch (TaskCancelledException cancellation) {
-                environment.control().observeCancel(cancellation.reason());
+                execution.observeCancel(cancellation.reason());
                 work = new FailureArbiter.WorkCompletion.Cancelled(
                         cancellation.getCause() != null || cancellation.getSuppressed().length > 0
                                 ? cancellation : null);
             } catch (InterruptedException interrupted) {
                 Thread.currentThread().interrupt();
-                environment.control().observeCancel(CancelReason.INTERRUPTED);
+                execution.observeCancel(CancelReason.INTERRUPTED);
                 work = new FailureArbiter.WorkCompletion.Cancelled(interrupted);
             } catch (Throwable failure) {
                 FailureArbiter.rethrowFatal(failure);
-                work = environment.control().cancellationObserved()
+                work = execution.cancellationObserved()
                         && !frame.failureBeforeCancellation(failure)
                         ? new FailureArbiter.WorkCompletion.Cancelled(failure)
                         : new FailureArbiter.WorkCompletion.Failure(failure);
@@ -286,8 +307,11 @@ public final class SequentialJobRunner {
             ResultStore results, FailureArbiter arbiter) {
         List<Throwable> closeErrors = context.closeResources();
         TaskCompletion completion = arbiter.resolve(
-                work, environment.control().snapshot(), closeErrors);
+                work, frame.control().snapshot(), closeErrors);
         context.markClosed(completion.cancelReason());
+        // Consume only the interrupt already handled by this execution scope.
+        // New interrupts delivered by later events remain observable by the next scope.
+        if (frame.control().interrupted()) Thread.interrupted();
         for (InvocationOutcome invocation : frame.invocations()) {
             results.addInvocation(task.ref(), invocation);
         }
@@ -296,6 +320,10 @@ public final class SequentialJobRunner {
         TaskOutcome outcome = results.outcome(task.ref());
         emitTaskTerminal(environment, task, outcome);
         return outcome;
+    }
+
+    private static Map<String,String> taskAttributes(TaskDefinition<?> task,Map<String,String> roles) {
+        var attributes=new java.util.LinkedHashMap<>(roles);attributes.put("task.description",task.description());return attributes;
     }
 
     private static void emitTaskTerminal(
@@ -325,9 +353,12 @@ public final class SequentialJobRunner {
                 outcome.failure());
     }
 
-    private List<FailureInfo> runCleanups(
+    private record CleanupResult(List<FailureInfo> failures, boolean cancellationFirst) { }
+
+    private CleanupResult runCleanups(
             RunEnvironment environment, WorkspaceManager.Workspace workspace,
-            JobDefinition definition) {
+            JobDefinition definition, boolean completionMode) {
+        boolean cancellationFirst = false;
         List<FailureInfo> failures = new ArrayList<>();
         var completionBudget = environment.control().completionBudget();
         List<CleanupDefinition> cleanups = definition.cleanups();
@@ -375,6 +406,10 @@ public final class SequentialJobRunner {
                         Optional.empty(), "cleanup", "SUCCEEDED", 0,
                         Map.of("cleanup.name", cleanup.name()), Optional.empty());
             } else {
+                if (completionMode && primary instanceof TaskCancelledException cancellation) {
+                    environment.control().observeCancel(cancellation.reason());
+                    if (failures.isEmpty()) cancellationFirst = true;
+                }
                 FailureInfo failure = FailureInfo.from(primary);
                 failures.add(failure);
                 for (Throwable closeError : closeErrors) {
@@ -387,7 +422,7 @@ public final class SequentialJobRunner {
                         Map.of("cleanup.name", cleanup.name()), Optional.of(failure));
             }
         }
-        return failures;
+        return new CleanupResult(List.copyOf(failures),cancellationFirst);
     }
 
     static Map<String,String> terminalAttributes(Optional<CancelReason> reason, Map<String,String> attributes) {
