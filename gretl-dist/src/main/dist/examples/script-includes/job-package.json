@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 2,
+  "name": "script-includes",
+  "version": "1",
+  "runtimeVersion": "6.0.0-SNAPSHOT",
+  "entryScript": "job.groovy",
+  "sources": [],
+  "resources": ["data/input.txt"],
+  "dependencies": [],
+  "taskModules": ["io"],
+  "standardFunctions": false
+}

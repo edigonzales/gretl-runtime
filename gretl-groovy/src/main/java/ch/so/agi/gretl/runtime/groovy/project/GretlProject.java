@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /** Immutable parsed project. Default positions survive until later task-name validation. */
 public record GretlProject(Path root, Path settingsFile, List<ProjectEntry> entries,
-                           List<String> defaultTargets, Map<String, SourceLocation> defaultTargetSources) {
+                           List<String> defaultTargets, Map<String, SourceLocation> defaultTargetSources, String settingsSource) {
     public GretlProject {
         root = Objects.requireNonNull(root, "root").toAbsolutePath().normalize();
         settingsFile = Objects.requireNonNull(settingsFile, "settingsFile").toAbsolutePath().normalize();
@@ -17,6 +17,12 @@ public record GretlProject(Path root, Path settingsFile, List<ProjectEntry> entr
         defaultTargetSources = Map.copyOf(defaultTargetSources);
     }
 
+    @Override public String toString(){return "GretlProject[root="+root+", settingsFile="+settingsFile+", entries="+entries
+            +", defaultTargets="+defaultTargets+", defaultTargetSources="+defaultTargetSources+"]";}
+
+    public GretlProject(Path root,Path settingsFile,List<ProjectEntry> entries,List<String> defaultTargets,Map<String,SourceLocation> sources){
+        this(root,settingsFile,entries,defaultTargets,sources,null);
+    }
     public GretlProject(Path root, Path settingsFile, List<ProjectEntry> entries, List<String> defaultTargets) {
         this(root, settingsFile, entries, defaultTargets, Map.of());
     }

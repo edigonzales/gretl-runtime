@@ -103,3 +103,11 @@ keinen Scheduler und keine Control Plane. Ausführbare Groovy-Jobs sind
 vertrauenswürdiger Anwendungscode; Top-Level-Code kann beim Definitionsladen
 für Hilfe, Check und Planung laufen. Plattform- und Releasefreigaben brauchen
 jeweils eigene, an einen Commit gebundene Nachweise.
+
+
+Lokale [Scriptfragmente mit `apply from:`](docs/implementation/script-includes/README.md)
+teilen den bestehenden Job-/Subprojektscope und funktionieren auch im
+vorkompilierten Job-JAR. Das [lokale Beispiel](examples/script-includes/README.md)
+prüft den vollständigen Inhalt nach Gzip-Dekompression. Die IDE-Sicht bleibt
+partiell; vollständige Includeauflösung und dateiübergreifendes Rename sind
+nicht zugesichert.

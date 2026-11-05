@@ -266,12 +266,17 @@ public final class JobPackageBuilder {
     private void addMetadata(PackageDescriptor descriptor, JobCompiler.CompiledJob compiled, CompiledProject project)
             throws PackageException {
         Map<String, Object> job = new LinkedHashMap<>();
-        job.put("schemaVersion", project == null ? 1 : 2);
+        var bundle=project==null?compiled.bundle():project.bundle();
+        job.put("schemaVersion", bundle!=null?3:project == null ? 1 : 2);
         job.put("name", descriptor.name());
         job.put("version", descriptor.version());
         job.put("runtimeVersion", descriptor.runtimeVersion());
         job.put("javaFeatureVersion", 25);
-        if (project == null) {
+        if(bundle!=null){
+            job.put("definitionMode",bundle.projectMode()?"project":"single");
+            job.put("bundle",bundle.toMetadata());
+            job.put("defaultTargets",project==null?List.of():project.defaultTargets());
+        } else if (project == null) {
             job.put("entryClass", compiled.entryClass());
             job.put("entryScript", descriptor.entryScript());
             job.put("scriptSha256", compiled.scriptSha256());
