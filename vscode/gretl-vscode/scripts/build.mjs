@@ -20,7 +20,9 @@ for(const name of ['gretl-lsp.jar','operations.json','catalog-manifest.json','gr
  files[name]=sha(bytes);await writeFile(path.join(root,'server',name),bytes);
 }
 // Retain dependency licences; the installed VSIX needs no npm installation.
-const licenceFiles=execFileSync('rg',['--files','--hidden','--no-ignore','node_modules'],{cwd:root,encoding:'utf8'}).split('\n').filter(name=>/(?:^|\/)(?:licen[cs]e|notice)(?:\.[^/]*)?$/i.test(name));
+const licenceFiles=(await readdir(path.join(root,'node_modules'),{recursive:true,withFileTypes:true}))
+ .filter(entry=>entry.isFile()&&/^(?:licen[cs]e|notice)(?:\.[^/]*)?$/i.test(entry.name))
+ .map(entry=>path.relative(root,path.join(entry.parentPath,entry.name)).split(path.sep).join('/'));
 let notices='Bundled npm dependency licences (exact versions: package-lock.json)\n';
 for(const file of licenceFiles.sort())notices+='\n\n--- '+file+' ---\n'+await readFile(path.join(root,file),'utf8');
 await writeFile(path.join(root,'server/THIRD-PARTY-NOTICES.txt'),notices);
