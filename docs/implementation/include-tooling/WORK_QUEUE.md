@@ -1,6 +1,9 @@
 # Include-tooling: Arbeitsstand
 
-**Stand: P0–P3 REVIEWED_ACCEPTED; P4 implementiert/testet, native Abnahme und kumulativer Review ausstehend.**
+**Stand: P0–P4 REVIEWED_ACCEPTED; STATIC_INCLUDE_AWARE_TOOLING_WITH_GUARDED_SHARED_EDITS.**
+Final unabhängig geprüfter Code-/Dokumentkandidat:
+`f081fdc42d49198baaa77cd321e8c12b9f07a880`. Diese abschliessende
+Statusfortschreibung ist davon getrennt; sie ändert keine Produkt-/Testbytes.
 P0-Kandidat `d2dccba942a749a3f270a7dbfbdb11ffe2814a1a` wurde unabhängig
 abgenommen und nach vollständigem Prozess-/Sessionabschluss maschinell validiert.
 P1-Kandidat `fb4664de265d06e3145d2757c1d1aed853d25da1` wurde ohne Findings
@@ -22,10 +25,10 @@ Andere Worktrees bleiben unverändert.
   Loaderfamilie und kleiner echter SCRIPT/JAR-/Paketnachweis.
 - P2 (abgenommen): Closure, Sourcecapture, Ownerindex, Context-/Membershipvertrag und Client.
   Resolver-/Workspace-/SQLbasis-/Dirty-/Owner-/stdio-/Hosttests.
-- P3: Semantik, originale Navigation, Completion, vollständiger statischer Graph,
+- P3 (abgenommen): Semantik, originale Navigation, Completion, vollständiger statischer Graph,
   Contextwahl. Query-/Alias-/Graph-/Preview-/stdio- und Runtimeplanparität;
   strukturelle Include-Edits bis P4 separat gesperrt.
-- P4: Footprint-/Owner-/Postimageguards, positive Mehrdateien-Edits und Rename,
+- P4 (abgenommen): Footprint-/Owner-/Postimageguards, positive Mehrdateien-Edits und Rename,
   Shared-/Stalefälle, installierter nativer VSIX-Weg, gespeicherte Runtimefixture,
   aktuelle Anleitung, kumulativer Review IT01–IT24.
 
@@ -264,8 +267,8 @@ angewendet: `--keep-work` benötigt `always`; korrigierter Lauf dekomprimiert zw
 und vergleicht alle 97 Originalbytes. Fehlversuch und korrigierter Lauf bleiben
 getrennt erhalten. Historische Runtime-/JARgates bleiben unverändert.
 
-Native installierte VSIX-Abläufe und gespeicherte GUI-Fixture-Runtime sind hier
-noch NOT_EXECUTED. Nächste Aktion: sauberen Produkt-/Dokumentkandidaten bauen,
+Stand vor Erstkandidatenbau: Native installierte VSIX-Abläufe und gespeicherte
+GUI-Fixture-Runtime waren noch NOT_EXECUTED. Damals nächste Aktion: sauberen Produkt-/Dokumentkandidaten bauen,
 getrennte synthetische Testprofile verwenden, beide native Abläufe ausführen und
 belegen; bei einem Fix passenden neuen Kandidaten bauen. Danach frische autonome
 kumulative OpenCode-/DeepSeekprüfung aller IT01–IT24 seit Auftragsbasis.
@@ -292,3 +295,59 @@ Dies ist ein Testtreiberfix, keine Produkt-/Runtimeänderung. Der unvollständig
 erste GUI-Lauf ist kein PASS und bleibt erhalten. Neue native Abnahme am neuen
 sauberen Kandidaten; unveränderte Java-Produktbelege des Erstkandidaten bleiben
 als wiederverwendet gekennzeichnet und werden nicht umetikettiert.
+
+## Abschluss P4
+
+Kandidat `f081fdc42d49198baaa77cd321e8c12b9f07a880`, kumulativer unabhängiger
+OpenCode-2.2.5-/DeepSeek-Flash-1017-Review unter
+`/Users/stefan/.cache/gretl-include-tooling/review/P4-attempt-1/`:
+Session `ses_e543dcaddffecwWb6snUpYHln0`, ABGENOMMEN ohne Findings,
+IT01–IT24 erfüllt, keine fehlenden Pflichtnachweise. Originalbericht, Verdict,
+Sessionexport, Prozessabschluss und `validated.json` bleiben erhalten.
+Session-ID, SHA und Modellbindung sind vom strikten Validator geprüft.
+
+Gezielte JDK25-Gates: 251 Java-/Servertests in 45 Klassen ohne Failures, Errors
+oder Skips; 61 Clienttests, TypeScript, VSIX-Bau und drei Paket-/Inventartests.
+Eigene aktuelle Client-/Paketbelege stehen unter `evidence/P4/candidate-f081fdc`;
+identische Java-Produktbytes verwenden ausdrücklich die gesicherten 251 Belege
+von `candidate-965bb45`. Der Reviewer hat die ganze Auswahl am finalen SHA selbst
+erneut erfolgreich ausgeführt, frische XMLs geprüft und den exakten Mavenbefehl
+auch im Vordergrund mit dokumentiertem Exit0 abgeschlossen. Frühere Belege
+werden nicht als neue Läufe ausgegeben. Die vollständigen Root-/Dienst-/GeoTools-
+Gates wurden gemäss ausdrücklicher Testausnahme dieses Auftrags nicht wiederholt.
+
+Installiertes sauberes VSIX, Identität/Hash, native AX-/PNG-Aktionen und Buffer-
+Versionen unter `/Users/stefan/.cache/gretl-include-tooling/gui/P4-f081fdc/`:
+dirty vorab geöffneter Groovybuffer beim Sprachwechsel unverändert; vollständiger
+statischer Graph; originales Reveal; nativer Rename mit drei Änderungen in zwei
+Fragmenten sowie gemeinsames Workspace-Undo/Redo. Formularbatch, Modeler-Undo/
+Redo und Save behandeln das tatsächlich geänderte Consumerfragment. Shared-
+Editor-Kontextwahl überschreibt kein gepinntes Nordpanel; dirty Sharedtext
+erscheint in beiden Scopes. Natives Rename liefert EDIT_SHARED_SOURCE ohne
+Buffer-/Versionsänderung. Unbeteiligtes Groovy behält seine Sprache.
+
+Der gespeicherte GUI-Fixturetext lief in einem separaten echten Runtimeprozess:
+`compress` und `finish` SUCCEEDED; zweimal dekomprimierte Ausgabe stimmt mit
+allen 97 Originalbytes überein, SHA256
+`41964b0c1830fd2fe20dc4085b39fe99dbe7c66180c38a83961b0867cb3e8c01`.
+Inputbytes vor den anschliessenden unabhängigen GUI-Edits sind unter
+`gui/P4-f081fdc/runtime/saved-fixture` erhalten. Die Runtimeproduktionsbytes
+bleiben gegenüber P1 unverändert; die kleine SCRIPT-/JARqualifikation bleibt
+als früherer P1-Beleg gekennzeichnet.
+
+Der Reviewer entwickelte und führte selbst neue echte stdio-Gegenproben für
+geschlossene Renameziele, Shared-Uses und unabhängige eindeutige Edits aus.
+Seine eigene native Gegenprobe schloss alle sichtbaren Consumer-Tabs, beobachtete
+den echten Rename-Dialog und änderte `compress` zu `pack`: Deklaration und beide
+Referenzen in der neu geöffneten Zieldatei korrekt, fünf Assertions erfolgreich.
+Probe-Eingabefehler und deren native Fixture-Reparatur bleiben getrennt erhalten;
+sie zählen nicht als PASS. Der CUA-Dateigateway lieferte nur gewählte Eingaben
+und rohe Beobachtungen, keine Hypothese oder Bewertung.
+
+Dokumentationsgates am finalen Kandidaten: 73 Prüftests, strikter Linkcheck
+(412 geprüft, keine defekten Links), Website-Render und HTML-Render aller
+geänderten Markdownanleitungen erfolgreich; Logs unter
+`evidence/P4/candidate-f081fdc/docs`. Beispielbefehle und tatsächliche Ausgaben
+sind zusätzlich geprüft. Dynamische/unvollständige Fälle bleiben konservativ;
+Shared-/UNKNOWN-Writes und globale Sharedrefactorings bleiben gesperrt.
+Kein Push, Merge, Release oder produktiver Job.
