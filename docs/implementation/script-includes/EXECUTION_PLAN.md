@@ -36,7 +36,7 @@ Für dieses Dokumentupdate wurden Main-/Merge-/Tree- und Abschlussquellen geprü
 
 | Bereich | Vorhandene Klassen / Dateien | Konsequenz |
 |---|---|---|
-| Runtime-DSL | `gretl-groovy/.../GretlScript.java`, `JobDslModel`, `GroovyJobLoader`, `DefinitionEnvironment`, `CompilerSettings` | `apply` additiv anschliessen; bestehende Taskregistrierung, Bindings und verzögerte Konfiguration erhalten. |
+| Runtime-DSL | `gretl-groovy/src/main/java/ch/so/agi/gretl/runtime/groovy/GretlScript.java`, `JobDslModel`, `GroovyJobLoader`, `DefinitionEnvironment`, `CompilerSettings` | `apply` additiv anschliessen; bestehende Taskregistrierung, Bindings und verzögerte Konfiguration erhalten. |
 | Gemeinsame Regeln | `gretl-language-contract`, `DslVocabulary`, `ProjectNameRules`, `PlanSemantics` | Bereits vorhanden; nicht erneut extrahieren oder durch alte lokale Implementierungen ersetzen. |
 | Projekt / Quellen | `project/GretlProjectParser`, `ProjectPath`, `ProjectTaskIndex`, `CompiledProjectScript`, `ProjectSourceNames`, `ProjectSourceHash`, `SourceLocations` | Fragmente sind keine zusätzlichen Projekte. Source-Identität und besitzenden Scope trennen. |
 | Paket / Jobstart | `JobCompiler`, `ProjectCompiler`, `CompiledProject`, `JobPackageBuilder`, `PackageDescriptor`; `JobJarMain`, `ScriptJobSource`, `ProjectJobSource`, `JobRuntime` | Exakte erlaubte Scriptmenge, kompatible Altformate, gemeinsamer Source-Snapshot und vorkompilierte Fragmente. |
@@ -721,7 +721,7 @@ Für die nachfolgend angegebenen Repositorypfade gilt **Mainpin `0bfc8f0fccf4398
 - **R1:** Rootregeln: `https://github.com/edigonzales/gretl-runtime/blob/0bfc8f0fccf43989d751d4f5490202311d200628/AGENTS.md`.
 - **R2:** Bestehende Subprojekte: `docs/implementation/project-subprojects/README.md` am oben angegebenen Mainpin.
 - **R3:** Runtimeverträge: `docs/architecture/runtime-contracts.md` am selben Mainpin.
-- **R4:** Paketvertrag und Implementierung: `docs/implementation/job-packaging.md`, `gretl-packager/.../JobCompiler.java`, `ProjectCompiler.java`, `gretl-job-runtime/.../JobJarMain.java` am Mainpin. Vor Änderungen die tatsächlichen neueren Dateien erneut prüfen.
+- **R4:** Paketvertrag und Implementierung: `docs/implementation/job-packaging.md`, `gretl-packager/src/main/java/ch/so/agi/gretl/packager/JobCompiler.java`, `ProjectCompiler.java`, `gretl-job-runtime/src/main/java/ch/so/agi/gretl/job/JobJarMain.java` am Mainpin. Vor Änderungen die tatsächlichen neueren Dateien erneut prüfen.
 - **R4a:** Gzip-/Projektpipeline: `examples/project-pipeline/prepare/job.groovy`, `examples/project-pipeline/checks/local/job.groovy`, `docs/reference/generated/task-gzip.adoc` am Mainpin.
 - **R5:** Bestehende Test-/Modusqualifikation: `docs/implementation/testing.md` am Mainpin. Keine automatische Feature-Vollgatepflicht daraus ableiten; Abschnitt 1/8 regelt den aktuellen Nutzerauftrag.
 - **R6:** Ursprünglicher Tooling-Sollentwurf: `docs/implementation/gretl-tooling/ARCHITECTURE.md`. Tatsächliche aktuelle APIs haben nach Prüfung Vorrang vor alten geplanten Namen.
