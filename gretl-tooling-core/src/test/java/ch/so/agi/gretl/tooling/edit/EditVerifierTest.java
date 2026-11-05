@@ -35,7 +35,12 @@ class EditVerifierTest {
                             : SourceRead.found(new SourceText(id, text, null, "DISK", true, text));
                 }
                 public SourceListing listProjectEntries(URI root, ScanBudget budget, CancellationToken cancellation) {
-                    throw new AssertionError("Unexpected scan");
+                    // P2 explicitly captures the owner inventory. Planning/postimages must reuse it without IO.
+                    assertFalse(prohibitReads,"Planning must not reacquire the owner inventory");
+                    assertEquals(SourceUris.directoryIdentity(ROOT),SourceUris.directoryIdentity(root));
+                    var entries=files.keySet().stream().filter(policyId->SourceUris.contains(root,policyId))
+                            .filter(id->id.getPath().endsWith("/job.groovy")||id.getPath().endsWith("/settings.gretl")).sorted().toList();
+                    assertTrue(entries.size()<=budget.maximumEntries());return new SourceListing(entries,List.of(),true);
                 }
             });
         }

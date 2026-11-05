@@ -27,7 +27,13 @@ class ProjectAnalyzerTest {
     static Analysis analyze(Map<URI,String> files,URI document,DocumentStore store,CatalogRepository catalogs,String language){
         var prohibit=new AtomicBoolean();SourceRepository repository=new SourceRepository(){
             public SourceRead read(URI id,ReadPolicy policy,CancellationToken cancellation){assertFalse(prohibit.get(),"Semantic analysis must use only captured sources");var text=files.get(id);return text==null?SourceRead.unavailable("SOURCE_MISSING",id):SourceRead.found(new SourceText(id,text,null,"DISK",true,text));}
-            public SourceListing listProjectEntries(URI root,ScanBudget budget,CancellationToken cancellation){throw new AssertionError("No project scan needed");}
+            public SourceListing listProjectEntries(URI root,ScanBudget budget,CancellationToken cancellation){
+                assertFalse(prohibit.get(),"Semantic analysis must reuse the captured owner inventory");
+                assertEquals(SourceUris.directoryIdentity(ROOT),SourceUris.directoryIdentity(root));
+                var entries=files.keySet().stream().filter(id->SourceUris.contains(root,id))
+                        .filter(id->id.getPath().endsWith("/job.groovy")||id.getPath().endsWith("/settings.gretl")).sorted().toList();
+                assertTrue(entries.size()<=budget.maximumEntries());return new SourceListing(entries,List.of(),true);
+            }
         };
         try(var manager=new WorkspaceManager(store,catalogs)){manager.addRoot(ROOT,repository);manager.updateConfiguration(ROOT,new WorkspaceManager.Configuration(language,Map.of()));var captured=manager.capture(new ProjectRequest(ROOT,document),CancellationToken.NONE);prohibit.set(true);return new ProjectAnalyzer().analyze(captured,CancellationToken.NONE);}
     }

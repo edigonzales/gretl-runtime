@@ -24,3 +24,12 @@ test('schema rejects unknown raw-code values, missing fields, wrong revisions an
   {protocolVersion:1,documentId:'file:///work/job.groovy',launchCommand:'unsafe'}
  ])assert(!validate(request),JSON.stringify(request));
 });
+
+test('include context requests are additive, negotiated and bounded',()=>{
+ const context={protocolVersion:1,includeToolingVersion:1,documentId:'file:///work/parts/tasks.groovy'};
+ for(const value of [context,{...context,registerAsEntry:true},{...context,contextToken:id,ownerGeneration:'42',incarnation:'7'},
+  {...context,ownerGeneration:'42',syncToken:id,buffers:[{documentId:context.documentId,version:7,sha256:'a'.repeat(64)}]},
+  {protocolVersion:1,documentId:context.documentId,contextToken:id}])assert(validate(value),JSON.stringify(validate.errors));
+ for(const value of [{...context,includeToolingVersion:2},{...context,contextToken:'forged',ownerGeneration:'42'},
+  {...context,contextToken:id,ownerGeneration:42},{...context,ownerGeneration:'42',syncToken:id,buffers:Array(513).fill({documentId:context.documentId})}])assert(!validate(value),JSON.stringify(value));
+});

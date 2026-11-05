@@ -24,7 +24,7 @@ public final class ProjectAnalyzer {
         final List<OperationDescriptor> operations;final boolean catalogComplete;boolean declarationsComplete,referencesComplete,graphComplete,bounded=true;
         Pass(WorkspaceCapture capture,CancellationToken cancellation){this.capture=Objects.requireNonNull(capture);this.cancellation=Objects.requireNonNull(cancellation);language=capture.configuration().language();operations=capture.catalog().result().catalog().map(c->c.operations()).orElse(List.of());catalogComplete=capture.catalog().result().state().name().equals("AVAILABLE");declarationsComplete=capture.project().complete();referencesComplete=declarationsComplete;}
         Analysis run(){
-            for(var p:capture.project().problems())diagnostic(p.code(),p.error()?Severity.ERROR:Severity.INFORMATION,new Anchor(p.documentId(),p.span()),p.related().stream().map(s->new Anchor(p.documentId(),s)).toList());
+            for(var p:capture.project().problems())diagnostic(p.code(),p.error()?Severity.ERROR:Severity.INFORMATION,new Anchor(p.documentId(),p.span()),java.util.stream.Stream.concat(p.related().stream().map(s->new Anchor(p.documentId(),s)),p.relatedSources().stream().map(s->new Anchor(s.documentId(),s.span()))).toList());
             if(!catalogComplete)diagnostic("CATALOG_UNAVAILABLE",Severity.WARNING,global(),List.of());
             for(var job:capture.project().jobs()){
                 cancellation.check();var doc=capture.project().documents().get(job.documentId());declarationsComplete&=doc.coverage().declarations()==Completeness.COMPLETE;referencesComplete&=doc.coverage().references()==Completeness.COMPLETE;

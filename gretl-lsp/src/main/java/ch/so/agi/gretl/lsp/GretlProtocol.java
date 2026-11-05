@@ -20,8 +20,20 @@ public final class GretlProtocol {
     public record AnalysisReady(Context context) { }
     public record CatalogRequest(int protocolVersion,int catalogSchemaVersion) { }
     public record CatalogResponse(int protocolVersion,int schemaVersion,String serverInstanceId,String state,OperationCatalog catalog,List<String> notices) { }
-    public record GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources,List<String> previewTargets) {
-        public GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources){this(protocolVersion,documentId,expectedSnapshotId,includeInnerInvocations,requestedSources,null);}
+    public record SourceContextsRequest(int protocolVersion,int includeToolingVersion,String documentId,boolean registerAsEntry) { }
+    public record SelectSourceContextRequest(int protocolVersion,int includeToolingVersion,String documentId,String contextToken,String incarnation,String ownerGeneration) { }
+    public record SourceContextInfo(String contextToken,String projectId,String entryDocument,String ownerScope,String resourceBase,String role) { }
+    public record SourceContextsResponse(int protocolVersion,int includeToolingVersion,String serverInstanceId,String documentId,
+            String ownerGeneration,String contextGeneration,String incarnation,boolean ownersComplete,boolean selectionRequired,String selectedToken,List<SourceContextInfo> contexts) { }
+    public record MemberInfo(String documentId,int contextCount) { }
+    public record SourceMembershipChanged(int protocolVersion,int includeToolingVersion,String serverInstanceId,String workspaceRoot,String anchorDocument,
+            String ownerGeneration,String syncToken,boolean ownersComplete,List<MemberInfo> members) { }
+    public record MemberBuffer(String documentId,Integer version,String sha256) { }
+    public record ConfirmSourceMembershipRequest(int protocolVersion,int includeToolingVersion,String documentId,String ownerGeneration,String syncToken,List<MemberBuffer> buffers) { }
+    public record ConfirmSourceMembershipResponse(int protocolVersion,int includeToolingVersion,boolean current,String ownerGeneration,List<String> reasons) { }
+    public record GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources,List<String> previewTargets,String contextToken) {
+        public GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources){this(protocolVersion,documentId,expectedSnapshotId,includeInnerInvocations,requestedSources,null,null);}
+        public GraphRequest(int protocolVersion,String documentId,String expectedSnapshotId,boolean includeInnerInvocations,List<String> requestedSources,List<String> previewTargets){this(protocolVersion,documentId,expectedSnapshotId,includeInnerInvocations,requestedSources,previewTargets,null);}
     }
     public record GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics,ch.so.agi.gretl.tooling.graph.TargetPreviewProjector.Preview preview,ch.so.agi.gretl.tooling.graph.GraphFormProjector.Projection forms) {
         public GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics){this(status,nodes,edges,parameters,cleanup,diagnostics,null,null);}
@@ -76,11 +88,15 @@ public final class GretlProtocol {
             };
         }
     }
-    public record EditRequest(int protocolVersion,String documentId,String expectedSnapshotId,Intent intent,boolean requireOpenDocuments) { }
+    public record EditRequest(int protocolVersion,String documentId,String expectedSnapshotId,Intent intent,boolean requireOpenDocuments,String contextToken) {
+        public EditRequest(int protocolVersion,String documentId,String expectedSnapshotId,Intent intent,boolean requireOpenDocuments){this(protocolVersion,documentId,expectedSnapshotId,intent,requireOpenDocuments,null);}
+    }
     public record EditResponse(Context context,EditCapability capability,String planId,WorkspaceEdit edit,List<String> notices) { }
     public record ValidationRequest(int protocolVersion,String planId,String expectedSnapshotId) { }
     public record ValidationResponse(int protocolVersion,boolean current,List<String> reasons) { }
-    public record NavigationRequest(int protocolVersion,String documentId,String expectedSnapshotId,String elementId,Integer offsetUtf16) { }
+    public record NavigationRequest(int protocolVersion,String documentId,String expectedSnapshotId,String elementId,Integer offsetUtf16,String contextToken) {
+        public NavigationRequest(int protocolVersion,String documentId,String expectedSnapshotId,String elementId,Integer offsetUtf16){this(protocolVersion,documentId,expectedSnapshotId,elementId,offsetUtf16,null);}
+    }
     public record NavigationResponse(Context context,Location location,List<String> elements) { }
     static Context context(AnalysisSnapshot snapshot) {
         var capture=snapshot.analysis().capture();

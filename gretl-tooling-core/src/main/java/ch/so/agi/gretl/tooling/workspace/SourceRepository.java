@@ -37,7 +37,20 @@ public interface SourceRepository {
     record SourceListing(List<URI> entries,List<SourceIssue> issues,boolean complete) {
         public SourceListing { entries=List.copyOf(entries);issues=List.copyOf(issues); }
     }
+    record IncludeTraversal(URI caller,String literal,URI definitionRoot) {
+        public IncludeTraversal { caller=DocumentStore.identity(caller);definitionRoot=SourceUris.directoryIdentity(definitionRoot);Objects.requireNonNull(literal); }
+    }
+    /** A host must prove raw parent traversals before lexical normalization can erase a symlink. */
+    default List<SourceIssue> checkIncludeTraversal(IncludeTraversal traversal,ReadPolicy policy,CancellationToken cancellation) {
+        cancellation.check();
+        return Arrays.asList(traversal.literal().split("/",-1)).contains("..")
+                ?List.of(new SourceIssue("SOURCE_TRAVERSAL_UNSUPPORTED",traversal.caller())):List.of();
+    }
     SourceRead read(URI id,ReadPolicy policy,CancellationToken cancellation);
     SourceListing listProjectEntries(URI root,ScanBudget budget,CancellationToken cancellation);
+    default SourceListing listProjectEntries(URI root,ScanBudget budget,ReadPolicy policy,CancellationToken cancellation){
+        var listing=listProjectEntries(root,budget,cancellation);
+        return new SourceListing(listing.entries().stream().filter(policy::permits).toList(),listing.issues(),listing.complete());
+    }
     default Optional<SourceText.SourceStamp> currentStamp(URI id,ReadPolicy policy,CancellationToken cancellation){return read(id,policy,cancellation).source().map(SourceText::stamp);}
 }

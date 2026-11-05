@@ -17,6 +17,12 @@ public final class IncludeModel {
     public record IncludeSiteId(URI sourceDocument,int startUtf16) {
         public IncludeSiteId { sourceDocument=DocumentStore.identity(sourceDocument);if(startUtf16<0)throw new IllegalArgumentException("Negative include offset"); }
     }
+    public record IncludeClosure(List<SourceApplication> applications,List<IncludeLink> links,
+                                 List<RegistrationEvent> registrationOrder,boolean sourcesComplete,boolean orderProven) {
+        public IncludeClosure {applications=List.copyOf(applications);links=List.copyOf(links);registrationOrder=List.copyOf(registrationOrder);}
+        public static IncludeClosure empty(){return new IncludeClosure(List.of(),List.of(),List.of(),true,true);}
+        public boolean hasIncludes(){return !links.isEmpty();}
+    }
     public enum IncludeResolution { RESOLVED, UNAVAILABLE, INVALID, CYCLE, DUPLICATE, LIMITED }
     public record IncludeLink(ApplicationId caller,IncludeSiteId site,URI targetDocument,
                               SourceApplication target,IncludeResolution resolution) {
@@ -34,7 +40,7 @@ public final class IncludeModel {
     public record SourceApplication(ApplicationId id,URI resourceBase,SourceRole role,List<IncludeSiteId> includeChain) {
         public SourceApplication {
             Objects.requireNonNull(id);Objects.requireNonNull(role);
-            resourceBase=SourceUris.directoryIdentity(resourceBase);includeChain=List.copyOf(includeChain);
+            resourceBase=resourceBase==null?null:SourceUris.directoryIdentity(resourceBase);includeChain=List.copyOf(includeChain);
         }
     }
 }

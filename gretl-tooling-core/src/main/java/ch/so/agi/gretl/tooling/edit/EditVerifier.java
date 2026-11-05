@@ -81,6 +81,9 @@ public final class EditVerifier {
                 return SourceRead.found(new SourceText(id, postimages.get(id), source.stamp().bufferVersion(),
                         "POSTIMAGE", source.stamp().editable()));
             }
+            @Override public List<SourceIssue> checkIncludeTraversal(IncludeTraversal traversal,ReadPolicy policy,CancellationToken token) {
+                return frozen.checkIncludeTraversal(traversal,policy,token);
+            }
             @Override public SourceListing listProjectEntries(URI root, ScanBudget budget, CancellationToken token) {
                 return frozen.listProjectEntries(root, budget, token);
             }
@@ -88,10 +91,23 @@ public final class EditVerifier {
         var id = original.project().id();
         var request = new ProjectResolver.ProjectRequest(id.workspaceRoot(), id.anchor(), id.singleJob(),
                 original.readPolicy().excludedRoots());
-        var resolved = new ProjectResolver().resolve(request, virtual, new DocumentStore.BufferCapture(0, Map.of()), cancellation);
+        var buffers=new LinkedHashMap<URI,DocumentStore.OpenDocument>(frozen.buffers());
+        for(var entry:postimages.entrySet()){
+            var open=buffers.get(entry.getKey());if(open!=null){
+                var source=open.source();buffers.put(entry.getKey(),new DocumentStore.OpenDocument(open.languageId(),open.incarnation(),
+                        new SourceText(entry.getKey(),entry.getValue(),source.stamp().bufferVersion(),"POSTIMAGE",source.stamp().editable())));
+            }
+        }
+        var view=new ch.so.agi.gretl.tooling.workspace.SourceView(virtual,original.readPolicy(),new DocumentStore.BufferCapture(0,buffers));
+        var resolved = new ProjectResolver().resolve(request,view,cancellation);
+        // Preserve the frozen refactoring domain, inventories, negative reads and incarnations as well as the active closure.
+        for(var source:frozen.versions().keySet())view.read(source,cancellation);
+        for(var listing:frozen.listings().keySet())view.listProjectEntries(listing.root(),listing.budget(),cancellation);
+        for(var traversal:frozen.traversals().keySet())view.checkIncludeTraversal(traversal,cancellation);
+        resolved=resolved.withSources(view.freeze());
         var capture = new WorkspaceCapture(original.serverInstance(), original.generation(),
                 original.rootConfigurationGeneration(), original.configurationDigest(), original.configuration(),
-                original.catalog(), resolved, original.readPolicy());
+                original.catalog(), resolved, original.readPolicy(),original.ownership());
         return AnalysisSnapshot.of(new ProjectAnalyzer().analyze(capture, cancellation));
     }
 

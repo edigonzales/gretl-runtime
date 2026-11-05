@@ -55,27 +55,55 @@ public final class FileSourceRepository implements SourceRepository {
         catch(UnsupportedOperationException unsupported){return SourceRead.unavailable("SOURCE_READ_POLICY_UNSUPPORTED",id);}
         catch(IOException|IllegalArgumentException failure){return SourceRead.unavailable("SOURCE_UNSAFE_OR_UNREADABLE",id);}
     }
+    @Override public List<SourceIssue> checkIncludeTraversal(IncludeTraversal traversal,ReadPolicy policy,CancellationToken cancellation) {
+        var opened=new ArrayList<SecureDirectoryStream<Path>>();
+        try {
+            if(!policy.permits(traversal.caller())||!policy.permits(traversal.definitionRoot())
+                    &&!SourceUris.directoryIdentity(policy.root()).equals(traversal.definitionRoot()))
+                return List.of(new SourceIssue("SOURCE_OUTSIDE_POLICY",traversal.caller()));
+            Path caller=localPath(traversal.caller());
+            Path relative=logicalRoot.relativize(caller.getParent()).resolve(traversal.literal()); // deliberately not normalized
+            opened.add(openPinnedRoot());
+            for(int i=0;i<relative.getNameCount()-1;i++) {
+                cancellation.check();Path segment=relative.getName(i);String name=segment.toString();
+                if(name.equals("."))continue;
+                if(name.equals("..")) {
+                    if(opened.size()==1)throw new IOException("Outside pinned root");
+                    opened.remove(opened.size()-1).close();
+                } else opened.add(opened.getLast().newDirectoryStream(segment,LinkOption.NOFOLLOW_LINKS));
+            }
+            return List.of();
+        } catch(java.util.concurrent.CancellationException cancelled){throw cancelled;}
+        catch(NoSuchFileException missing){return List.of(new SourceIssue("SOURCE_MISSING",traversal.caller()));}
+        catch(IOException|UnsupportedOperationException|IllegalArgumentException unsafe){return List.of(new SourceIssue("SOURCE_UNSAFE_OR_UNREADABLE",traversal.caller()));}
+        finally {for(int i=opened.size()-1;i>=0;i--)try{opened.get(i).close();}catch(IOException ignored){}}
+    }
     @Override public SourceListing listProjectEntries(URI root,ScanBudget budget,CancellationToken cancellation){
+        return listProjectEntries(root,budget,new ReadPolicy(root,1,false),cancellation);
+    }
+    @Override public SourceListing listProjectEntries(URI root,ScanBudget budget,ReadPolicy policy,CancellationToken cancellation){
         var entries=new ArrayList<URI>();var issues=new ArrayList<SourceIssue>();int[] visited={0};boolean[] limited={false};
         try{
             if(!SourceUris.directoryIdentity(root).equals(rootId))return new SourceListing(List.of(),List.of(new SourceIssue("SOURCE_OUTSIDE_POLICY",root)),false);
-            try(var directory=openPinnedRoot()){scan(directory,logicalRoot,0,budget,cancellation,entries,issues,visited,limited);}
+            try(var directory=openPinnedRoot()){scan(directory,logicalRoot,0,budget,policy,cancellation,entries,issues,visited,limited);}
         }catch(java.util.concurrent.CancellationException cancelled){throw cancelled;}
         catch(IOException|UnsupportedOperationException failure){issues.add(new SourceIssue("SOURCE_SCAN_UNAVAILABLE",root));}
         return new SourceListing(entries,issues,!limited[0]&&issues.isEmpty());
     }
-    private void scan(SecureDirectoryStream<Path> directory,Path logical,int depth,ScanBudget budget,CancellationToken cancellation,List<URI> entries,List<SourceIssue> issues,int[] visited,boolean[] limited) throws IOException {
+    private void scan(SecureDirectoryStream<Path> directory,Path logical,int depth,ScanBudget budget,ReadPolicy policy,CancellationToken cancellation,List<URI> entries,List<SourceIssue> issues,int[] visited,boolean[] limited) throws IOException {
         var names=new ArrayList<Path>();for(Path entry:directory){cancellation.check();if(++visited[0]>budget.maximumVisitedEntries()){limit(issues,limited,logical);return;}names.add(entry.getFileName());}
         names.sort(Comparator.comparing(Path::toString));
         for(Path name:names){
             cancellation.check();String text=name.toString();if(text.startsWith(".")||Set.of("target","node_modules","dist").contains(text))continue;
-            var attributes=directory.getFileAttributeView(name,BasicFileAttributeView.class,LinkOption.NOFOLLOW_LINKS).readAttributes();Path child=logical.resolve(name);
+            Path child=logical.resolve(name);URI childId=DocumentStore.fileUri(child);
+            if(policy.excludedRoots().stream().anyMatch(excluded->SourceUris.directoryIdentity(excluded).equals(SourceUris.directoryIdentity(childId))||SourceUris.contains(excluded,childId)))continue;
+            var attributes=directory.getFileAttributeView(name,BasicFileAttributeView.class,LinkOption.NOFOLLOW_LINKS).readAttributes();
             if(attributes.isSymbolicLink()){
                 if(text.equals("job.groovy")||text.equals("settings.gretl"))issues.add(new SourceIssue("SOURCE_UNSAFE_OR_UNREADABLE",DocumentStore.fileUri(child)));continue;
             }
             if(attributes.isDirectory()){
                 if(depth>=budget.maximumDepth()){limit(issues,limited,child);return;}
-                try(var nested=directory.newDirectoryStream(name,LinkOption.NOFOLLOW_LINKS)){scan(nested,child,depth+1,budget,cancellation,entries,issues,visited,limited);}
+                try(var nested=directory.newDirectoryStream(name,LinkOption.NOFOLLOW_LINKS)){scan(nested,child,depth+1,budget,policy,cancellation,entries,issues,visited,limited);}
                 if(limited[0])return;
             }else if(attributes.isRegularFile()&&(text.equals("job.groovy")||text.equals("settings.gretl"))){
                 if(entries.size()>=budget.maximumEntries()){limit(issues,limited,child);return;}entries.add(DocumentStore.fileUri(child));

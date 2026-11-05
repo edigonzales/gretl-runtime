@@ -63,10 +63,10 @@ class ApplyEditCompatibilityTest {
             assertTrue(result.plan().isEmpty());assertEquals(EditCapability.State.REJECTED,result.capability().state());
         }
     }
-    @Test void localScalarEditPreservesEveryOtherByteAndDoesNotCaptureFragments(){
+    @Test void localScalarEditPreservesEveryOtherByteWithCapturedFragments(){
         try(var f=new Fixture()){
             setup(f);String original=f.files.get(JOB);var before=f.capture();
-            assertFalse(before.analysis().capture().project().sources().versions().containsKey(java.net.URI.create("file:/work/tasks/extra.groovy")));
+            assertTrue(before.analysis().capture().project().sources().versions().containsKey(java.net.URI.create("file:/work/tasks/extra.groovy")));
             var result=new SemanticEditPlanner().plan(before,new SemanticEditIntent.SetField(task("a"),"overwrite",new EditableValue.Literal(false)),EditStyle.defaults(),CancellationToken.NONE);
             var plan=result.plan().orElseThrow();assertEquals(original.replace("overwrite = true","overwrite = false"),plan.postimages().get(JOB));assertEquals(Set.of(JOB),plan.changes().keySet());assertEquals(original,f.files.get(JOB));
         }

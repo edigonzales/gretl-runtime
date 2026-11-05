@@ -21,14 +21,26 @@ public final class ProjectResolver {
         public ProjectRequest(URI root,URI id){this(root,id,false,List.of(),List.of());}
     }
     public record JobSource(ProjectNameRules scope,URI documentId) { }
-    public record ProjectProblem(String code,URI documentId,TextSpan span,boolean error,List<TextSpan> related){public ProjectProblem{related=List.copyOf(related);}}
-    public record ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete,SettingsDocumentParser.SettingsDocument settings){
+    public record RelatedSource(URI documentId,TextSpan span) { }
+    public record ProjectProblem(String code,URI documentId,TextSpan span,boolean error,List<TextSpan> related,List<RelatedSource> relatedSources){
+        public ProjectProblem(String code,URI documentId,TextSpan span,boolean error,List<TextSpan> related){this(code,documentId,span,error,related,List.of());}
+        public ProjectProblem{related=List.copyOf(related);relatedSources=List.copyOf(relatedSources);}
+    }
+    public record ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete,SettingsDocumentParser.SettingsDocument settings,IncludeModel.IncludeClosure includeClosure){
+        public ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete,SettingsDocumentParser.SettingsDocument settings){this(id,directory,settingsId,projectMode,jobs,defaultTargets,problems,documents,sources,complete,settings,IncludeModel.IncludeClosure.empty());}
         public ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete){this(id,directory,settingsId,projectMode,jobs,defaultTargets,problems,documents,sources,complete,null);}
+        public ResolvedProject withSources(SourceView.SnapshotSources captured){return new ResolvedProject(id,directory,settingsId,projectMode,jobs,defaultTargets,problems,documents,captured,complete,settings,includeClosure);}
         public ResolvedProject { jobs=List.copyOf(jobs);defaultTargets=List.copyOf(defaultTargets);problems=List.copyOf(problems);documents=Map.copyOf(documents); }
     }
     public ResolvedProject resolve(ProjectRequest request,SourceRepository repository,DocumentStore.BufferCapture overlay,CancellationToken cancellation){
         var explicit=Set.of("untitled","memory").contains(request.documentId().getScheme())?Set.of(request.documentId()):Set.<URI>of();
         var policy=new ReadPolicy(request.workspaceRoot(),1_048_576,true,request.excludedRoots(),explicit);var view=new SourceView(repository,policy,overlay);
+        return resolve(request,view,cancellation);
+    }
+    public ResolvedProject resolve(ProjectRequest request,SourceView view,CancellationToken cancellation){
+        return resolve(request,view,new LinkedHashMap<>(),cancellation);
+    }
+    ResolvedProject resolve(ProjectRequest request,SourceView view,Map<URI,ParsedDocument> documents,CancellationToken cancellation){
         var problems=new ArrayList<ProjectProblem>();URI settings=null,dir=SourceUris.parent(request.documentId());boolean lookupLimited=false;
         if(!request.singleJob()&&request.documentId().getPath()!=null){
             if(request.documentId().getPath().endsWith("/settings.gretl"))settings=request.documentId();
@@ -38,7 +50,7 @@ public final class ProjectResolver {
                 if(sameDirectory(dir,request.workspaceRoot()))break;
             }if(settings==null&&depth>=32&&dir!=null&&within(request.workspaceRoot(),dir)){lookupLimited=true;problems.add(new ProjectProblem("PROJECT_DEPTH_LIMIT",request.documentId(),null,false,List.of()));}}
         }
-        var jobs=new ArrayList<JobSource>();var defaults=new ArrayList<SettingsDocumentParser.SettingName>();var documents=new LinkedHashMap<URI,ParsedDocument>();boolean complete=!lookupLimited;SettingsDocumentParser.SettingsDocument settingsDocument=null;
+        var jobs=new ArrayList<JobSource>();var defaults=new ArrayList<SettingsDocumentParser.SettingName>();boolean complete=!lookupLimited;SettingsDocumentParser.SettingsDocument settingsDocument=null;
         URI projectDirectory=settings==null?SourceUris.parent(request.documentId()):SourceUris.parent(settings);
         if(projectDirectory==null)projectDirectory=request.workspaceRoot();
         if(settings!=null){
@@ -66,18 +78,19 @@ public final class ProjectResolver {
         }else{
             var read=view.read(request.documentId(),cancellation);if(read.source().isPresent())jobs.add(new JobSource(ProjectNameRules.root(),request.documentId()));else{sourceProblem(request.documentId(),read,true,problems);complete=false;}
         }
-        for(var job:jobs){
-            cancellation.check();var source=view.read(job.documentId(),cancellation).source().orElseThrow();var parsed=new GretlDocumentParser().parse(source,DocumentKind.JOB,ParseOptions.DEFAULT,cancellation);documents.put(job.documentId(),parsed);
-            // Only explicitly named SQL resources are acquired; no broad SQL or data-directory scan.
+        var projectId=new ProjectId(request.workspaceRoot(),settings==null?request.documentId():settings,request.singleJob());
+        var closure=new ToolingIncludeResolver(projectId,projectDirectory,jobs,view,documents,problems,cancellation).resolve();
+        complete&=closure.sourcesComplete();
+        for(var application:closure.applications()){
+            var parsed=documents.get(application.id().sourceDocument());if(parsed==null)continue;
             for(var declaration:parsed.declarations()){
-                acquireSqlFiles(declaration.operation(),declaration.fields(),job.documentId(),view,cancellation);
-                for(var inner:declaration.invocations())if(EffectiveOptions.of(declaration).active(inner.span()))acquireSqlFiles(inner.operation(),inner.fields(),job.documentId(),view,cancellation);
+                acquireSqlFiles(declaration.operation(),declaration.fields(),application.id().entryDocument(),view,cancellation);
+                for(var inner:declaration.invocations())if(EffectiveOptions.of(declaration).active(inner.span()))acquireSqlFiles(inner.operation(),inner.fields(),application.id().entryDocument(),view,cancellation);
             }
-
         }
         for(var additional:request.requestedSources())view.read(additional,cancellation);
         var snapshot=view.freeze();if(snapshot.limited()){complete=false;problems.add(new ProjectProblem("PROJECT_CAPTURE_LIMIT",request.documentId(),null,false,List.of()));}
-        return new ResolvedProject(new ProjectId(request.workspaceRoot(),settings==null?request.documentId():settings,request.singleJob()),projectDirectory,settings,settings!=null,jobs,defaults,problems,documents,snapshot,complete,settingsDocument);
+        return new ResolvedProject(projectId,projectDirectory,settings,settings!=null,jobs,defaults,problems,documents,snapshot,complete,settingsDocument,closure);
     }
     private static void acquireSqlFiles(ValueExpression operation,List<FieldAssignment> fields,URI job,SourceView view,CancellationToken cancellation){
         if(!(operation instanceof NameValue name)||!SqlSourceSyntax.templated(name.name()))return;

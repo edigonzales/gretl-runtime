@@ -6,6 +6,7 @@ import {endOwnedProcess} from './process';
 import {LanguageClient,CloseAction,ErrorAction,State,RenameRequest,CodeActionRequest,DocumentSymbolRequest,DocumentSymbol as ProtocolSymbol,TextDocumentEdit,WorkspaceEdit as ProtocolEdit,CodeAction as ProtocolAction} from 'vscode-languageclient/node';
 import {checkBundle,checkJava,languageConfiguration,localHost,sourceDigest} from './host';
 
+import {FragmentDocumentCoordinator,FragmentDocument,sourceContexts} from './fragment-documents';
 import {Stamp,validateEditSources} from './edit-guard';
 import {currentRead} from './read-query';
 import {ModelerBackend,ModelerOptions} from './modeler/backend';
@@ -13,7 +14,7 @@ import {GraphContext,GraphResponse,graphResponse} from './modeler/graph-model';
 import {GretlModelerProvider} from './modeler/provider';
 import {CatalogResponse,EditIntent,catalogResponse,editIntent} from './modeler/edit-model';
 import {EditPlan,applyEditPlan} from './modeler/edit-plan';
-interface Context {protocolVersion:number;schemaVersion:number;serverInstanceId:string;snapshotId:string;sourceStamps:Stamp[]}
+interface Context {protocolVersion:number;schemaVersion:number;serverInstanceId:string;snapshotId:string;sourceStamps:Stamp[];notices?:string[]}
 interface Graph {context:Context}
 
 class RuntimeHost implements vscode.Disposable,ModelerBackend {
@@ -25,6 +26,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
     private stopped=false;
     private disposed=false;
     private instance?:string;
+    private fragments?:FragmentDocumentCoordinator;
     private readonly output=vscode.window.createOutputChannel('GRETL Runtime',{log:true});
     private readonly status=vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left,5);
     private readonly actions=new Map<string,{client:LanguageClient;context:Context;edit:ProtocolEdit;expires:number}>();
@@ -58,8 +60,12 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             }),
             vscode.commands.registerCommand('gretlRuntime.useActiveFile',async()=>{
                 const doc=vscode.window.activeTextEditor?.document;
-                if(doc&&(doc.uri.scheme==='file'||doc.uri.scheme==='untitled'))await vscode.languages.setTextDocumentLanguage(doc,'gretl-runtime');
+                if(doc&&(doc.uri.scheme==='file'||doc.uri.scheme==='untitled')){
+                    const selected=await vscode.languages.setTextDocumentLanguage(doc,'gretl-runtime');await this.serial(()=>this.start());
+                    if(this.client?.isRunning())await this.client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId:selected.uri.toString(),registerAsEntry:true});
+                }
             }),
+            vscode.commands.registerCommand('gretlRuntime.selectSourceContext',()=>this.selectSourceContext()),
             vscode.workspace.onDidGrantWorkspaceTrust(()=>this.serial(()=>this.start())),
             vscode.workspace.onDidChangeWorkspaceFolders(()=>{if(!this.stopped)void this.serial(async()=>{await this.stop();await this.start();});}),
             vscode.workspace.onDidOpenTextDocument(doc=>{if(doc.languageId==='gretl-runtime'&&!this.stopped)void this.serial(()=>this.start());}),
@@ -73,8 +79,8 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         const client=this.client,instance=this.instance,version=document.version;
         if(!client?.isRunning()||!instance||!vscode.workspace.isTrusted)throw Error('GRETL server is not ready.');
         const normalize=(uri:string)=>vscode.Uri.parse(uri).toString();
-        const before=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
-        const response=graphResponse(await client.sendRequest('gretl/graph',{protocolVersion:1,documentId:document.uri.toString(),includeInnerInvocations:options.includeInnerInvocations,...(options.previewTargets===null?{}:{previewTargets:options.previewTargets})},token));
+        const {value,before}=await this.synchronizedGraph(client,{protocolVersion:1,documentId:document.uri.toString(),includeInnerInvocations:options.includeInnerInvocations,...(options.previewTargets===null?{}:{previewTargets:options.previewTargets})},token);
+        const response=graphResponse(value);
         if(token.isCancellationRequested||this.client!==client||this.instance!==instance||response.context.serverInstanceId!==instance||document.isClosed||document.version!==version)throw new vscode.CancellationError();
         const now=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
         for(const stamp of response.context.sourceStamps){const uri=normalize(stamp.documentId),doc=now.get(uri);if(stamp.version!=null&&(!doc||before.get(uri)!==doc||doc.version!==stamp.version||sourceDigest(doc.getText())!==stamp.sha256)||stamp.version==null&&doc)throw new vscode.CancellationError();}
@@ -141,19 +147,20 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             documentSelector:[{scheme:'file',language:'gretl-runtime'},{scheme:'untitled',language:'gretl-runtime'}],
             initializationOptions:languageConfiguration(config.get<string>('language','auto'),vscode.env.language),
             outputChannel:this.output,
-            synchronize:{fileEvents:vscode.workspace.createFileSystemWatcher('**/{job.groovy,settings.gretl,*.sql}')},
+            synchronize:{fileEvents:vscode.workspace.createFileSystemWatcher('**/{*.groovy,settings.gretl,*.sql}')},
             errorHandler:{
                 error:()=>({action:ErrorAction.Shutdown,message:'GRETL protocol failed. See Output and restart the server.'}),
                 closed:()=>{
                     if(this.disposed||this.stopped||generation!==this.generation||this.client!==client)return {action:CloseAction.DoNotRestart};
                     const child=this.child;
                     this.instance=undefined;this.client=undefined;this.actions.clear();
+                    const fragments=this.fragments;this.fragments=undefined;
                     for(const listener of this.sessionListeners.splice(0))listener.dispose();
                     const now=Date.now();this.crashes=this.crashes.filter(time=>now-time<60000);this.crashes.push(now);
                     this.state('Server stopped');
                     const retry=this.crashes.length<=2;
                     void this.serial(async()=>{
-                        await endOwnedProcess(child);
+                        await fragments?.dispose();await endOwnedProcess(child);
                         if(this.child===child)this.child=undefined;
                         await client.dispose();
                         if(retry)await this.start();else this.state('Repeated server failure — restart manually');
@@ -204,7 +211,17 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
                 }
             }
         });
-        this.client=client;
+        client.registerFeature({
+            fillClientCapabilities(capabilities){capabilities.experimental={...capabilities.experimental,gretlRuntime:{...capabilities.experimental?.gretlRuntime,includeToolingVersion:1}};},
+            initialize(capabilities){if(capabilities.experimental?.gretlRuntime?.includeToolingVersion!==1)throw Error('GRETL include tooling capability is unavailable.');},
+            getState:()=>({kind:'static'}),clear(){}
+        });
+        this.client=client;const pendingMembership:unknown[]=[];this.fragments=this.fragmentCoordinator(client);
+        this.sessionListeners.push(client.onNotification('gretl/sourceMembershipChanged',(message:unknown)=>{
+            if(this.client!==client)return;
+            if(!this.instance){if(pendingMembership.length<16)pendingMembership.push(message);return;}
+            void this.fragments?.acceptMembership(message).catch(error=>this.output.warn(String(error)));
+        }));
         this.sessionListeners.push(client.onNotification('gretl/analysisReady',(message:{context:GraphContext})=>{if(this.client===client&&message.context?.serverInstanceId===this.instance)this.analyses.fire(message.context);}));
         const watcher=(client.clientOptions.synchronize?.fileEvents);
         if(watcher&&!Array.isArray(watcher))this.sessionListeners.push(watcher);
@@ -215,11 +232,69 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             if(catalog.protocolVersion!==1||catalog.schemaVersion!==1||catalog.state!=='AVAILABLE'||!catalog.serverInstanceId)throw new Error('Incompatible GRETL catalogue protocol');
             if(this.client!==client)throw new Error('Obsolete GRETL session');
             this.instance=catalog.serverInstanceId;
+            for(const message of pendingMembership.splice(0))await this.fragments?.acceptMembership(message);
             this.output.info(`Connected server instance ${this.instance}`);
             // SQL buffers feed the same source overlay, without registering GRETL features for ordinary SQL documents.
             await this.synchronizeSql(client);
             this.state('Ready');
         }catch(error){await this.stop();throw error;}
+    }
+    private fragmentCoordinator(client:LanguageClient):FragmentDocumentCoordinator {
+        const views=new WeakMap<vscode.TextDocument,FragmentDocument>(),documents=new WeakMap<FragmentDocument,vscode.TextDocument>();
+        const view=(doc:vscode.TextDocument):FragmentDocument=>{
+            let value=views.get(doc);if(!value){value={get uri(){return doc.uri.toString();},get languageId(){return doc.languageId;},get version(){return doc.version;},get dirty(){return doc.isDirty;},get closed(){return doc.isClosed;},getText:()=>doc.getText()};views.set(doc,value);documents.set(value,doc);}return value;
+        };
+        const manual=new Map<string,{document:vscode.TextDocument;version:number}>();
+        const close=async(document:FragmentDocument)=>{
+            const doc=documents.get(document),key=document.uri,previous=manual.get(key);
+            if(previous?.document===doc){manual.delete(key);if(this.client===client&&client.isRunning())await client.sendNotification('textDocument/didClose',{textDocument:{uri:key}});}
+        };
+        const coordinator=new FragmentDocumentCoordinator({
+            instance:()=>this.instance,normalize:uri=>vscode.Uri.parse(uri).toString(),
+            owns:(uri,root)=>{const parsed=vscode.Uri.parse(uri),folder=vscode.workspace.getWorkspaceFolder(parsed);return parsed.scheme==='file'&&!!folder&&(!root||folder.uri.toString()===vscode.Uri.parse(root).toString());},
+            documents:()=>vscode.workspace.textDocuments.map(view),
+            changeLanguage:async(document,language)=>{const doc=documents.get(document);if(!doc||doc.isClosed)throw new vscode.CancellationError();await close(document);return view(await vscode.languages.setTextDocumentLanguage(doc,language));},
+            synchronize:async document=>{
+                const doc=documents.get(document);if(!doc||doc.isClosed||this.client!==client||!client.isRunning())throw new vscode.CancellationError();
+                if(doc.languageId==='gretl-runtime'||doc.languageId==='sql')return;
+                const previous=manual.get(doc.uri.toString());
+                if(previous?.document!==doc){if(previous)await client.sendNotification('textDocument/didClose',{textDocument:{uri:doc.uri.toString()}});
+                    await client.sendNotification('textDocument/didOpen',{textDocument:{uri:doc.uri.toString(),languageId:doc.languageId,version:doc.version,text:doc.getText()}});
+                }else if(previous.version!==doc.version)await client.sendNotification('textDocument/didChange',{textDocument:{uri:doc.uri.toString(),version:doc.version},contentChanges:[{text:doc.getText()}]});
+                manual.set(doc.uri.toString(),{document:doc,version:doc.version});
+            },closed:close,digest:sourceDigest,
+            confirm:async(update,buffers)=>{
+                if(this.client!==client||this.instance!==update.serverInstanceId)return false;
+                const response=await client.sendRequest<{protocolVersion:number;includeToolingVersion:number;current:boolean}>('gretl/confirmSourceMembership',{
+                    protocolVersion:1,includeToolingVersion:1,documentId:update.anchorDocument,ownerGeneration:update.ownerGeneration,syncToken:update.syncToken,buffers});
+                return this.client===client&&response.protocolVersion===1&&response.includeToolingVersion===1&&response.current;
+            }
+        });
+        this.sessionListeners.push(vscode.workspace.onDidOpenTextDocument(doc=>{void coordinator.opened(view(doc)).catch(error=>this.output.warn(String(error)));}),
+            vscode.workspace.onDidChangeTextDocument(event=>coordinator.changed(view(event.document))),vscode.workspace.onDidCloseTextDocument(doc=>coordinator.closed(view(doc))));
+        return coordinator;
+    }
+    private async synchronizedGraph(client:LanguageClient,params:{documentId:string;[key:string]:unknown},token:vscode.CancellationToken){
+        for(let attempt=0;attempt<4;attempt++){
+            if(this.client!==client||token.isCancellationRequested)throw new vscode.CancellationError();
+            await this.fragments?.settled();const before=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
+            const value=await client.sendRequest<Graph>('gretl/graph',params,token);
+            if(!value.context?.notices?.includes('INCLUDE_MEMBERSHIP_PENDING'))return {value,before};
+            await this.fragments?.settled();
+            await client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId:params.documentId});
+        }
+        throw new vscode.CancellationError();
+    }
+    private async selectSourceContext(){
+        const doc=vscode.window.activeTextEditor?.document,client=this.client;
+        if(!doc||!client?.isRunning()||!this.instance)return;
+        const contexts=sourceContexts(await client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId:doc.uri.toString()}));
+        if(contexts.serverInstanceId!==this.instance)throw new vscode.CancellationError();
+        if(!contexts.contexts.length){await vscode.window.showInformationMessage('No GRETL entry owns this source.');return;}
+        const chosen=await vscode.window.showQuickPick(contexts.contexts.map(c=>({label:c.ownerScope,description:vscode.workspace.asRelativePath(vscode.Uri.parse(c.entryDocument)),detail:c.resourceBase??'No resource base',contextToken:c.contextToken})),{placeHolder:'Choose the GRETL source context'});
+        if(!chosen||doc.isClosed)return;
+        sourceContexts(await client.sendRequest('gretl/selectSourceContext',{protocolVersion:1,includeToolingVersion:1,documentId:doc.uri.toString(),contextToken:chosen.contextToken,incarnation:contexts.incarnation??null,ownerGeneration:contexts.ownerGeneration}));
+        this.backendChanges.fire(true);
     }
     private async synchronizeSql(client:LanguageClient){
         const owns=(doc:vscode.TextDocument)=>doc.languageId==='sql'&&doc.uri.scheme==='file'&&!!vscode.workspace.getWorkspaceFolder(doc.uri);
@@ -231,7 +306,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         for(const doc of vscode.workspace.textDocuments)open(doc);
     }
     private async capture(client:LanguageClient,doc:vscode.TextDocument,token:vscode.CancellationToken):Promise<Context>{
-        const graph=await client.sendRequest<Graph>('gretl/graph',{protocolVersion:1,documentId:doc.uri.toString()},token);
+        const {value:graph}=await this.synchronizedGraph(client,{protocolVersion:1,documentId:doc.uri.toString()},token);
         const context=graph.context;
         if(context?.protocolVersion!==1||context.schemaVersion!==1||context.serverInstanceId!==this.instance||!Array.isArray(context.sourceStamps)||context.sourceStamps.length>4096)throw new Error('GRETL source capture is stale or incompatible. Retry.');
         context.sourceStamps=context.sourceStamps.map(stamp=>({...stamp,sha256:stamp.sha256??null,version:stamp.version??null,incarnation:stamp.incarnation??null,unavailableCode:stamp.unavailableCode??null}));
@@ -254,6 +329,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
     private async stop():Promise<void>{
         ++this.generation;this.instance=undefined;this.actions.clear();
         for(const listener of this.sessionListeners.splice(0))listener.dispose();
+        const fragments=this.fragments;this.fragments=undefined;await fragments?.dispose();
         const client=this.client;const child=this.child;this.client=undefined;
         if(client){try{await client.stop(3000);}catch{this.output.warn('Server shutdown timed out. Terminating the owned process.');}finally{await client.dispose();}}
         await endOwnedProcess(child);

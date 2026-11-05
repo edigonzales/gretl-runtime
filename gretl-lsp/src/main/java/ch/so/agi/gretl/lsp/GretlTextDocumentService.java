@@ -20,7 +20,7 @@ final class GretlTextDocumentService implements TextDocumentService {
     private QueryContext context(AnalysisSnapshot snapshot,String uri,Position position){URI id=URI.create(uri);return new QueryContext(snapshot,id,new LspQueryMapper(snapshot).offset(id,position));}
     public void didOpen(DidOpenTextDocumentParams params){server.notification(()-> {
         var document=params.getTextDocument();var id=server.workspace().document(document.getUri());
-        if(!Set.of("gretl-runtime","gretl","sql").contains(document.getLanguageId())&&!id.getPath().endsWith("/settings.gretl")&&!id.getPath().endsWith("/job.groovy"))throw new IllegalArgumentException("DOCUMENT_NOT_SELECTED");
+        if(!server.workspace().knownMember(id)&&!Set.of("gretl-runtime","gretl","sql").contains(document.getLanguageId())&&!id.getPath().endsWith("/settings.gretl")&&!id.getPath().endsWith("/job.groovy"))throw new IllegalArgumentException("DOCUMENT_NOT_SELECTED");
         server.workspace().documents.open(id,document.getLanguageId(),document.getVersion(),document.getText(),LspHostSourceRepository.writable(id,server.workspace().rootFor(id)));server.workspace().changed();
     });}
     public void didChange(DidChangeTextDocumentParams params){server.notification(()-> {
@@ -66,17 +66,17 @@ final class GretlTextDocumentService implements TextDocumentService {
         var mapper=new LspQueryMapper(snapshot);return queries.foldingRanges(new QueryContext(snapshot,URI.create(params.getTextDocument().getUri()),0)).stream().filter(f->mapper.range(f.anchor()).isPresent()).map(f->{var range=mapper.range(f.anchor()).orElseThrow();var result=new FoldingRange();result.setStartLine(range.getStart().getLine());result.setEndLine(range.getEnd().getLine());if(!server.lineFoldingOnly()){result.setStartCharacter(range.getStart().getCharacter());result.setEndCharacter(range.getEnd().getCharacter());}result.setKind(f.kind());return result;}).toList();
     });}
     public CompletableFuture<Either3<Range,PrepareRenameResult,PrepareRenameDefaultBehavior>> prepareRename(PrepareRenameParams params){return server.query(params.getTextDocument().getUri(),(snapshot,cancel)-> {
-        server.ensureEdits();var preparation=queries.prepareRename(context(snapshot,params.getTextDocument().getUri(),params.getPosition())).orElseThrow(()->new IllegalArgumentException("EDIT_RENAME_POSITION"));
+        server.ensureEdits();server.workspace().requireMembershipReady(snapshot);var preparation=queries.prepareRename(context(snapshot,params.getTextDocument().getUri(),params.getPosition())).orElseThrow(()->new IllegalArgumentException("EDIT_RENAME_POSITION"));
         if(preparation.capability().state()!=EditCapability.State.ALLOWED)throw new IllegalArgumentException(preparation.capability().reasons().getFirst().code());
         var result=new PrepareRenameResult();result.setRange(new LspQueryMapper(snapshot).range(preparation.anchor()).orElseThrow());result.setPlaceholder(preparation.placeholder());return Either3.forSecond(result);
     });}
     public CompletableFuture<WorkspaceEdit> rename(RenameParams params){return server.query(params.getTextDocument().getUri(),(snapshot,cancel)-> {
-        server.ensureEdits();var preparation=queries.prepareRename(context(snapshot,params.getTextDocument().getUri(),params.getPosition())).orElseThrow(()->new IllegalArgumentException("EDIT_RENAME_POSITION"));
+        server.ensureEdits();server.workspace().requireMembershipReady(snapshot);var preparation=queries.prepareRename(context(snapshot,params.getTextDocument().getUri(),params.getPosition())).orElseThrow(()->new IllegalArgumentException("EDIT_RENAME_POSITION"));
         var result=new SemanticEditPlanner().plan(snapshot,new SemanticEditIntent.RenameSymbol(preparation.target(),params.getNewName()),EditStyle.defaults(),cancel);
         var plan=result.plan().orElseThrow(()->new IllegalArgumentException(result.capability().reasons().getFirst().code()));server.workspace().requireWritableTargets(plan);return new LspQueryMapper(snapshot).edit(plan);
     });}
     public CompletableFuture<List<Either<Command,CodeAction>>> codeAction(CodeActionParams params){return server.query(params.getTextDocument().getUri(),(snapshot,cancel)-> {
-        server.ensureEdits();if(!server.codeActionLiterals())return List.of();var mapper=new LspQueryMapper(snapshot);var context=context(snapshot,params.getTextDocument().getUri(),params.getRange().getStart());
+        server.ensureEdits();server.workspace().requireMembershipReady(snapshot);if(!server.codeActionLiterals())return List.of();var mapper=new LspQueryMapper(snapshot);var context=context(snapshot,params.getTextDocument().getUri(),params.getRange().getStart());
         var diagnostics=snapshot.analysis().diagnostics().stream().filter(d->d.anchor().documentId().equals(context.documentId())&&mapper.range(d.anchor()).filter(range->intersects(params.getRange(),range)).isPresent()).map(d->new QueryResults.DiagnosticId(d.code(),d.anchor())).toList();
         return queries.codeActions(context,diagnostics,cancel).stream().map(proposal->{cancel.check();var planned=queries.applyQuickFix(context,proposal,cancel).plan().orElseThrow();server.workspace().requireWritableTargets(planned);var action=new CodeAction();action.setTitle(proposal.title());action.setKind(CodeActionKind.QuickFix);action.setEdit(mapper.edit(planned));return Either.<Command,CodeAction>forRight(action);}).toList();
     });}

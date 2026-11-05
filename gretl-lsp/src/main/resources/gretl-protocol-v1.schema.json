@@ -5,7 +5,8 @@
   "oneOf": [
     {"$ref":"#/$defs/CatalogRequest"}, {"$ref":"#/$defs/GraphRequest"},
     {"$ref":"#/$defs/EditRequest"}, {"$ref":"#/$defs/ValidationRequest"},
-    {"$ref":"#/$defs/NavigationRequest"}
+    {"$ref":"#/$defs/NavigationRequest"}, {"$ref":"#/$defs/SourceContextsRequest"},
+    {"$ref":"#/$defs/SelectSourceContextRequest"}, {"$ref":"#/$defs/ConfirmSourceMembershipRequest"}
   ],
   "$defs": {
     "DocumentId":{"type":"string","minLength":1,"maxLength":8192,"pattern":"^(file:|untitled:|memory:)"},
@@ -62,17 +63,33 @@
         {"if":{"properties":{"kind":{"const":"SetDefaults"}}},"then":{"required":["targets"]}}
       ]
     },
+    "SourceContextsRequest":{
+      "type":"object","additionalProperties":false,"required":["protocolVersion","includeToolingVersion","documentId"],
+      "properties":{"protocolVersion":{"const":1},"includeToolingVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"registerAsEntry":{"type":"boolean"}}
+    },
+    "SelectSourceContextRequest":{
+      "type":"object","additionalProperties":false,"required":["protocolVersion","includeToolingVersion","documentId","contextToken","ownerGeneration"],
+      "properties":{"protocolVersion":{"const":1},"includeToolingVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"contextToken":{"type":"string","format":"uuid"},"incarnation":{"type":["string","null"],"pattern":"^[0-9]{1,19}$"},"ownerGeneration":{"type":"string","pattern":"^[0-9]{1,19}$"}}
+    },
+    "MemberBuffer":{
+      "type":"object","additionalProperties":false,"required":["documentId"],
+      "properties":{"documentId":{"$ref":"#/$defs/DocumentId"},"version":{"type":["integer","null"],"minimum":0},"sha256":{"type":["string","null"],"pattern":"^[0-9a-f]{64}$"}}
+    },
+    "ConfirmSourceMembershipRequest":{
+      "type":"object","additionalProperties":false,"required":["protocolVersion","includeToolingVersion","documentId","ownerGeneration","syncToken","buffers"],
+      "properties":{"protocolVersion":{"const":1},"includeToolingVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"ownerGeneration":{"type":"string","pattern":"^[0-9]{1,19}$"},"syncToken":{"type":"string","format":"uuid"},"buffers":{"type":"array","maxItems":512,"items":{"$ref":"#/$defs/MemberBuffer"}}}
+    },
     "CatalogRequest":{
       "type":"object","additionalProperties":false,"required":["protocolVersion","catalogSchemaVersion"],
       "properties":{"protocolVersion":{"const":1},"catalogSchemaVersion":{"const":1}}
     },
     "GraphRequest":{
       "type":"object","additionalProperties":false,"required":["protocolVersion","documentId"],
-      "properties":{"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"includeInnerInvocations":{"type":"boolean"},"requestedSources":{"type":"array","maxItems":32,"uniqueItems":true,"items":{"$ref":"#/$defs/DocumentId"}},"previewTargets":{"type":"array","maxItems":1024,"uniqueItems":true,"items":{"type":"string","maxLength":65536}}}
+      "properties":{"contextToken":{"type":"string","format":"uuid"},"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"includeInnerInvocations":{"type":"boolean"},"requestedSources":{"type":"array","maxItems":32,"uniqueItems":true,"items":{"$ref":"#/$defs/DocumentId"}},"previewTargets":{"type":"array","maxItems":1024,"uniqueItems":true,"items":{"type":"string","maxLength":65536}}}
     },
     "EditRequest":{
       "type":"object","additionalProperties":false,"required":["protocolVersion","documentId","expectedSnapshotId","intent","requireOpenDocuments"],
-      "properties":{"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"intent":{"$ref":"#/$defs/Intent"},"requireOpenDocuments":{"type":"boolean"}}
+      "properties":{"contextToken":{"type":"string","format":"uuid"},"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"intent":{"$ref":"#/$defs/Intent"},"requireOpenDocuments":{"type":"boolean"}}
     },
     "ValidationRequest":{
       "type":"object","additionalProperties":false,"required":["protocolVersion","planId","expectedSnapshotId"],
@@ -80,7 +97,7 @@
     },
     "NavigationRequest":{
       "type":"object","additionalProperties":false,"required":["protocolVersion","documentId","expectedSnapshotId"],
-      "properties":{"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"elementId":{"type":"string","maxLength":128},"offsetUtf16":{"type":"integer","minimum":0,"maximum":1048576}},
+      "properties":{"contextToken":{"type":"string","format":"uuid"},"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"elementId":{"type":"string","maxLength":128},"offsetUtf16":{"type":"integer","minimum":0,"maximum":1048576}},
       "oneOf":[{"required":["elementId"]},{"required":["offsetUtf16"]}]
     }
   }

@@ -70,7 +70,7 @@ def launch(a):
                    criteria=CRITERIA[a.phase], evidence_directory=str(ev),
                    implementer_evidence=str(a.implementer_evidence.resolve()),
                    opencode_version=version.removeprefix('opencode v'), provider_model='deepseek/deepseek-flash',
-                   model_mapping_evidence=str(ev / 'model-mapping.html'), test_command=a.test_command)
+                   model_mapping_evidence=str(ev / 'model-mapping.html'), test_command=a.test_command,extra_test_commands=a.extra_test_command)
     write(ev / 'handoff.json', handoff)
     permissions = [dict(action='*', resource='*', effect='deny')]
     def allow(action, resource):
@@ -86,6 +86,8 @@ def launch(a):
                 f'python3 {ev}/*.py', f'node {ev}/*.mjs',
                 f'javac -cp * -d {ev}/* {ev}/*.java', f'java -cp * *IndependentProbe*'):
         allow('shell', cmd)
+    for cmd in a.extra_test_command:
+        allow('shell', cmd)
     for pattern in ('*.env', '*.env.*', '*/auth.json', '*credential*'):
         permissions.append(dict(action='read', resource=pattern, effect='deny'))
     agent = dict(description='Independent include-tooling reviewer', mode='primary', permissions=permissions,
@@ -99,7 +101,7 @@ def launch(a):
     write(ev / 'effective-policy.json', config)
     prompt = (f'Review {a.phase} at exact SHA {sha}. Read {ev}/handoff.json, requirements.sha256, '
               f'{SPEC}/EXECUTION_PLAN.md, OPENCODE_REVIEW_PROMPT.md and review/{a.phase}-request.md yourself. '
-              f'Run test_command in handoff yourself in {wt}; save real test logs and inspect fresh XMLs with >0 tests and zero skips/errors/failures. '
+              f'Run test_command and all extra_test_commands in handoff yourself in {wt}; save real test logs and inspect fresh XMLs with >0 tests and zero skips/errors/failures. '
               f'Invent and execute your own relevant new counterprobe under {ev}; no implementer-supplied counterprobe. '
               f'Write ORIGINAL review.md and verdict.json under {ev}, following plan section 9.4 exactly. '
               'Copy handoff identity fields, supply actual session_id; criteria is a list of objects with id/status/evidence; '
@@ -184,6 +186,8 @@ def validate(ev, binary):
     states = [e['part']['state'] for e in events if e.get('part', {}).get('tool') == 'shell'
               and e['part']['state'].get('status') == 'completed']
     assert v['executed_checks'] and v['counterprobes']
+    for required in [h['test_command']] + h.get('extra_test_commands', []):
+        assert any(shlex.split(c['command']) == shlex.split(required) for c in v['executed_checks']), 'Missing required command: '+required
     for c in v['executed_checks'] + v['counterprobes']:
         assert c['exit_code'] == 0 and c['assertion'] and c['evidence']
         assert any(s.get('input', {}).get('command') == c['command'] and
@@ -208,6 +212,7 @@ if __name__ == '__main__':
     parser.add_argument('--maven-repo', type=Path)
     parser.add_argument('--implementer-evidence', type=Path)
     parser.add_argument('--test-command')
+    parser.add_argument('--extra-test-command', action='append', default=[])
     parser.add_argument('--timeout', type=int, default=1200)
     args = parser.parse_args()
     if args.operation == 'run':

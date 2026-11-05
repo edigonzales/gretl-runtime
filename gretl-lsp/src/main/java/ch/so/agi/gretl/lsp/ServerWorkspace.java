@@ -20,6 +20,15 @@ final class ServerWorkspace implements AutoCloseable {
     final DocumentStore documents=new DocumentStore();
     final CatalogRepository catalog;
     final WorkspaceManager manager;
+    final SourceContextService sourceContexts=new SourceContextService();
+    volatile boolean includeTooling;
+    private static final class MembershipState {
+        final ch.so.agi.gretl.tooling.workspace.WorkspaceManager.WorkspaceCapture capture;
+        final GretlProtocol.SourceMembershipChanged update;boolean ready;
+        MembershipState(ch.so.agi.gretl.tooling.workspace.WorkspaceManager.WorkspaceCapture capture,GretlProtocol.SourceMembershipChanged update){this.capture=capture;this.update=update;}
+    }
+    private final Map<URI,MembershipState> memberships=new HashMap<>();
+
     private final Set<URI> roots=new LinkedHashSet<>();
     private final LinkedHashMap<ProjectResolver.ProjectId,AnalysisSnapshot> snapshots=new LinkedHashMap<>(16,.75f,true);
     private record Retained(AnalysisSnapshot snapshot,PlannedEdit edit,Instant expires) { }
@@ -50,7 +59,7 @@ final class ServerWorkspace implements AutoCloseable {
         manager.updateConfiguration(id,new WorkspaceManager.Configuration(configuration.language(),Map.of()));
         watcher.capture(List.of(SourceUris.child(id,"settings.gretl")));
     }
-    void removeRoot(URI id){id=SourceUris.directoryIdentity(local(id));manager.removeRoot(id);synchronized(this){roots.remove(id);snapshots.clear();plans.clear();epoch++;}schedule();}
+    void removeRoot(URI id){id=SourceUris.directoryIdentity(local(id));manager.removeRoot(id);synchronized(this){roots.remove(id);snapshots.clear();plans.clear();sourceContexts.clear();epoch++;}schedule();}
     /** Control-thread transaction: all fallible validation precedes changes to ownership or retained plans. */
     void updateRoots(List<URI> additions,List<URI> removals) throws IOException {
         if(additions.size()>16||removals.size()>16)throw new IllegalArgumentException("WORKSPACE_ROOT_LIMIT");
@@ -72,7 +81,7 @@ final class ServerWorkspace implements AutoCloseable {
                 manager.addRoot(entry.getKey(),entry.getValue());
                 manager.updateConfiguration(entry.getKey(),new WorkspaceManager.Configuration(configuration.language(),Map.of()));
             }
-            synchronized(this){roots.clear();roots.addAll(next);snapshots.clear();plans.clear();epoch++;}
+            synchronized(this){roots.clear();roots.addAll(next);snapshots.clear();plans.clear();sourceContexts.clear();epoch++;}
             watcher.capture(addIds.stream().map(id->SourceUris.child(id,"settings.gretl")).toList());
         }
         schedule();
@@ -107,6 +116,10 @@ final class ServerWorkspace implements AutoCloseable {
         },75,TimeUnit.MILLISECONDS);
     }
     <T> CompletableFuture<T> request(URI document,List<URI> extra,BiFunction<AnalysisSnapshot,CancellationToken,T> operation) {
+        return request(document,extra,null,false,operation);
+    }
+    <T> CompletableFuture<T> request(URI document,List<URI> extra,String panelContext,boolean contextsOnly,BiFunction<AnalysisSnapshot,CancellationToken,T> operation) {
+        if(panelContext!=null){GretlProtocol.required(panelContext,64);if(!includeTooling)throw new IllegalArgumentException("SOURCE_CONTEXT_CAPABILITY_REQUIRED");}
         var result=new CompletableFuture<T>();var cancelled=new AtomicBoolean();
         inFlight.add(result);
         result.whenComplete((value,failure)->{inFlight.remove(result);if(result.isCancelled())cancelled.set(true);});
@@ -120,6 +133,26 @@ final class ServerWorkspace implements AutoCloseable {
                 synchronized(acquisition) {
                 cancellation.check();snapshot=null;
                 List<AnalysisSnapshot> cachedSnapshots;synchronized(this){cachedSnapshots=List.copyOf(snapshots.values());}
+                if(includeTooling){
+                    for(var cached:cachedSnapshots)if(cached.sources().containsKey(document)&&extra.isEmpty()&&manager.sameGeneration(cached.analysis().capture())){
+                        var known=sourceContexts.contextsFor(cached.analysis().capture(),document);
+                        if(contextsOnly||known.contexts().isEmpty()&&cached.analysis().capture().project().jobs().isEmpty()
+                                ||!known.contexts().isEmpty()&&sourceContexts.resolveForQuery(cached.analysis().capture(),document,panelContext).application().id().project().equals(cached.analysis().capture().project().id())){
+                            snapshot=cached;break;
+                        }
+                    }
+                    if(snapshot!=null&&!manager.isCurrent(snapshot.analysis().capture(),cancellation))snapshot=null;
+                    if(snapshot==null){
+                        var capture=manager.captureSource(new ProjectResolver.ProjectRequest(rootFor(document),document,false,List.of(),extra),cancellation);
+                        var known=sourceContexts.contextsFor(capture,document);
+                        if(!contextsOnly)capture=known.contexts().isEmpty()?manager.syntaxOnly(capture,document,cancellation)
+                                :manager.inContext(capture,sourceContexts.resolveForQuery(capture,document,panelContext).application().id().project());
+                        snapshot=analyzer.analyze(capture,cancellation);
+                        watcher.capture(capture.project().sources().versions().keySet());
+                        var analyzed=snapshot;
+                        if(!manager.publishIfCurrent(capture,()->{synchronized(this){snapshots.put(analyzed.analysis().capture().project().id(),analyzed);while(snapshots.size()>8)snapshots.remove(snapshots.keySet().iterator().next());}publish.accept(analyzed,cancellation);},cancellation))throw new CancellationException();
+                    }
+                }else{
                 String path=document.getPath();
                 var buffer=documents.get(document);
                 boolean singleJob=(path==null||!path.endsWith("/job.groovy")&&!path.endsWith("/settings.gretl"))
@@ -141,6 +174,7 @@ final class ServerWorkspace implements AutoCloseable {
                     if(!manager.publishIfCurrent(capture,()->{synchronized(this){snapshots.put(capture.project().id(),analyzed);while(snapshots.size()>8)snapshots.remove(snapshots.keySet().iterator().next());}publish.accept(analyzed,cancellation);},cancellation))throw new CancellationException();
                 }
                 }
+                }
                 cancellation.check();T value=operation.apply(snapshot,cancellation);cancellation.check();
                 if(!manager.publishIfCurrent(snapshot.analysis().capture(),()->result.complete(value),cancellation))throw new CancellationException();
             } catch(CancellationException obsolete){result.completeExceptionally(error(ResponseErrorCode.ContentModified,"STALE_OR_CANCELLED_ANALYSIS"));}
@@ -151,6 +185,46 @@ final class ServerWorkspace implements AutoCloseable {
         return result;
     }
     private synchronized boolean epochChanged(long expected){return expected!=epoch;}
+    synchronized GretlProtocol.SourceMembershipChanged membershipUpdate(AnalysisSnapshot snapshot){
+        if(!includeTooling)return null;
+        var capture=snapshot.analysis().capture();var root=capture.project().id().workspaceRoot();var previous=memberships.get(root);
+        var members=capture.ownership().applications().entrySet().stream().filter(e->e.getValue().stream().anyMatch(a->a.role()==IncludeModel.SourceRole.FRAGMENT))
+                .sorted(Map.Entry.comparingByKey()).map(e->new GretlProtocol.MemberInfo(e.getKey().toString(),e.getValue().size())).toList();
+        if(previous!=null&&previous.update.ownerGeneration().equals(Long.toString(capture.ownership().generation()))&&previous.update.members().equals(members))return null;
+        var update=new GretlProtocol.SourceMembershipChanged(1,1,manager.serverInstance().toString(),root.toString(),capture.project().id().anchor().toString(),
+                Long.toString(capture.ownership().generation()),UUID.randomUUID().toString(),capture.ownership().complete(),members);
+        var state=new MembershipState(capture,update);state.ready=members.isEmpty();memberships.put(root,state);return update;
+    }
+    synchronized boolean knownMember(URI document){return memberships.values().stream().anyMatch(state->state.update.members().stream().anyMatch(m->URI.create(m.documentId()).equals(document)));}
+    synchronized boolean membershipReady(AnalysisSnapshot snapshot){
+        if(!includeTooling)return true;var capture=snapshot.analysis().capture();var state=memberships.get(capture.project().id().workspaceRoot());
+        return state!=null&&state.ready&&state.update.ownerGeneration().equals(Long.toString(capture.ownership().generation()));
+    }
+    void requireMembershipReady(AnalysisSnapshot snapshot){
+        if(includeTooling&&!membershipReady(snapshot))throw error(ResponseErrorCode.RequestFailed,"INCLUDE_MEMBERSHIP_PENDING");
+    }
+    GretlProtocol.ConfirmSourceMembershipResponse confirmMembership(AnalysisSnapshot snapshot,GretlProtocol.ConfirmSourceMembershipRequest request){
+        GretlProtocol.required(request.ownerGeneration(),20);GretlProtocol.required(request.syncToken(),64);
+        var capture=snapshot.analysis().capture();MembershipState state;
+        synchronized(this){state=memberships.get(capture.project().id().workspaceRoot());}
+        boolean current=state!=null&&state.update.ownerGeneration().equals(request.ownerGeneration())&&state.update.syncToken().equals(request.syncToken())
+                &&Long.toString(capture.ownership().generation()).equals(request.ownerGeneration());
+        var buffers=request.buffers();if(buffers==null||buffers.size()>512)throw new IllegalArgumentException("MEMBERSHIP_BUFFER_LIMIT");
+        var claimed=new LinkedHashMap<URI,GretlProtocol.MemberBuffer>();
+        for(var buffer:buffers)if(claimed.put(document(buffer.documentId()),buffer)!=null)throw new IllegalArgumentException("MEMBERSHIP_DUPLICATE_BUFFER");
+        if(current){
+            current=claimed.keySet().equals(state.update.members().stream().map(m->URI.create(m.documentId())).collect(java.util.stream.Collectors.toSet()));
+            for(var entry:claimed.entrySet()){
+                var open=documents.get(entry.getKey());var stamp=entry.getValue();
+                current&=open.isEmpty()?stamp.version()==null&&stamp.sha256()==null:
+                        Objects.equals(open.get().source().stamp().bufferVersion(),stamp.version())&&Objects.equals(open.get().source().stamp().contentSha256(),stamp.sha256());
+            }
+        }
+        if(current&&!manager.isCurrent(capture,CancellationToken.NONE))current=false;
+        synchronized(this){if(current&&memberships.get(capture.project().id().workspaceRoot())==state)state.ready=true;else current=false;}
+        return new GretlProtocol.ConfirmSourceMembershipResponse(1,1,current,Long.toString(capture.ownership().generation()),current?List.of():List.of("MEMBERSHIP_STALE_OR_UNSYNCHRONIZED"));
+    }
+    void contextChanged(){synchronized(this){epoch++;snapshots.clear();plans.clear();}schedule();}
     synchronized void retain(AnalysisSnapshot snapshot,PlannedEdit edit){plans.entrySet().removeIf(e->e.getValue().expires().isBefore(Instant.now()));plans.put(edit.id().toString(),new Retained(snapshot,edit,Instant.now().plusSeconds(60)));while(plans.size()>32)plans.remove(plans.keySet().iterator().next());}
     synchronized AnalysisSnapshot planSnapshot(String id){var plan=plans.get(id);if(plan==null||plan.expires().isBefore(Instant.now()))throw error(ResponseErrorCode.InvalidParams,"EDIT_PLAN_UNKNOWN_OR_EXPIRED");return plan.snapshot();}
     synchronized PlannedEdit plan(String id){planSnapshot(id);return plans.get(id).edit();}
@@ -160,10 +234,10 @@ final class ServerWorkspace implements AutoCloseable {
     static ResponseErrorException error(ResponseErrorCode code,String message){return new ResponseErrorException(new ResponseError(code,message,null));}
     static String code(Throwable failure){String message=failure.getMessage();return message!=null&&message.matches("[A-Z][A-Z0-9_]{0,127}")?message:"INVALID_REQUEST";}
     public void close() {
-        synchronized(this){if(closed)return;closed=true;epoch++;plans.clear();snapshots.clear();}
+        synchronized(this){if(closed)return;closed=true;epoch++;plans.clear();snapshots.clear();memberships.clear();}
         debounce.shutdownNow();workers.shutdownNow();try{watcher.close();}catch(IOException ignored){ }
         for(var future:inFlight)future.cancel(false);
         try{workers.awaitTermination(5,TimeUnit.SECONDS);debounce.awaitTermination(5,TimeUnit.SECONDS);}catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
-        manager.close();
+        sourceContexts.clear();manager.close();
     }
 }

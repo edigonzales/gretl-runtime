@@ -19,7 +19,9 @@ final class LspHostSourceRepository implements SourceRepository {
         var source=read.source().orElseThrow();
         return SourceRead.found(new SourceText(id,source.text(),source.stamp().bufferVersion(),source.stamp().origin(),source.stamp().editable()&&writable(id,root),source.stamp().diskIdentity()));
     }
+    public java.util.List<SourceIssue> checkIncludeTraversal(IncludeTraversal traversal,ReadPolicy policy,CancellationToken cancellation){return files.checkIncludeTraversal(traversal,policy,cancellation);}
     public SourceListing listProjectEntries(URI root,ScanBudget budget,CancellationToken cancellation){return files.listProjectEntries(root,budget,cancellation);}
+    public SourceListing listProjectEntries(URI root,ScanBudget budget,ReadPolicy policy,CancellationToken cancellation){return files.listProjectEntries(root,budget,policy,cancellation);}
     static boolean writable(URI id,URI root) {
         if(!"file".equals(id.getScheme()))return "untitled".equals(id.getScheme());
         try {

@@ -1,9 +1,11 @@
 # Include-tooling: Arbeitsstand
 
-**Stand: P0 REVIEWED_ACCEPTED; P1 IMPLEMENTED, finales Kandidatengate anstehend.**
+**Stand: P0/P1 REVIEWED_ACCEPTED; P2 IMPLEMENTED, finales Kandidatengate anstehend.**
 P0-Kandidat `d2dccba942a749a3f270a7dbfbdb11ffe2814a1a` wurde unabhängig
 abgenommen und nach vollständigem Prozess-/Sessionabschluss maschinell validiert.
-P2 beginnt erst nach unabhängiger P1-Abnahme.
+P1-Kandidat `fb4664de265d06e3145d2757c1d1aed853d25da1` wurde ohne Findings
+unabhängig abgenommen und nach Prozess-/Sessionabschluss maschinell validiert.
+P3 beginnt erst nach unabhängiger P2-Abnahme.
 
 Basis: `9773c42ddb12a7343cf5f9ad7b6be81b489abb30`, sauberer Main und
 `origin/main` (Remote bei Start geprüft). Branch `codex/include-tooling`, eigener
@@ -104,4 +106,49 @@ die beobachtete Abschneidung grosser JSONs an einer Pipe; Sessionoutcome und
 Idleabschluss sind ebenfalls Pflichtchecks. Diese Adapteränderungen gehören zum
 neuen P1-Kandidaten, nicht rückwirkend zum geprüften P0-SHA.
 
-Nächste Aktion: finales P1-Gate und neue unabhängige Session am Kandidaten.
+## P2-Kandidat
+
+Transitive Closure im bestehenden Resolver mit einem gemeinsamen SourceView und
+Parsecache; physische Quellen, logische Anwendungen, negative Reads und rohe
+Pfadprüfungen getrennt. Sichere Directoryhandles prüfen Zwischenkomponenten
+**vor** einer `..`-Normalisierung. Owner-/SQLressourcen kommen vom echten Einstieg,
+Includeziele von der enthaltenden Quelle. Fragmentdefaults, fehlende Ziele,
+Zyklen, doppelte Anwendungen und Limits sind sichtbare strukturierte Befunde.
+
+Der begrenzte Ownerindex benutzt `listProjectEntries` plus explizite Einstiege,
+denselben Resolver und denselben Capture. Settings-Einstiege werden nicht doppelt
+gezählt. Ungeschlossene/limitierte Inventare bleiben UNKNOWN. Neue Besitzer,
+Quellbytes und Inventare entwerten alte Captures auch vor einem Watcherevent.
+Ausgeschlossene/nested Workspacewurzeln werden nicht rekursiv inventarisiert.
+Postimages erhalten jetzt auch erfasste Inventare, negative Reads, fremde
+Besitzerquellen und Bufferinkarnationen ohne neue IO; P4-Bindungs-/Footprintprüfung
+und positive strukturelle Include-Edits bleiben ausdrücklich ausstehend.
+
+Neue additive, ausgehandelte Includeversion 1: sourceContexts,
+selectSourceContext, sourceMembershipChanged und confirmSourceMembership.
+Die zusätzliche Bestätigung verhindert eine schreibbare Zwischenansicht gegen
+Disk, während ein vorher dirty geöffnetes normales Groovyfragment erst in die
+Synchronisierung aufgenommen wird. Der Client übernimmt nur gemeldete Fragmente,
+erhält Text/Dirtyflag, respektiert explizite Sprachwechsel und beobachtet Groovy-
+Dateievents ohne globale Sprachassoziation. Normale Fragmentqueries registrieren
+keinen Standalonejob; das bestehende explizite Use-File-Kommando tut dies bewusst.
+Alte Clients bleiben ohne neue Kontextrequests/Edits begrenzt kompatibel.
+
+Entwicklungsbelege: `/Users/stefan/.cache/gretl-include-tooling/evidence/P2/`.
+Ganze kleine Core-/LSP-Unitfamilie und ServerProcessIT, ApplyIncludeServerIT,
+IncludeMembershipServerIT; 24 gezielte Hosttests und TypeScriptcheck erfolgreich.
+Neu geprüft: Dirty-vor-Membership, Bestätigungssperre, Close/Reopen gleicher
+Version, Disk-/Watcherwechsel, explizite Sharedkontexte und unabhängige gepinnte
+Queries; unowned Source versus bewusst registrierter Einstieg. Der installierte
+VSIX-/native GUI-Abnahmepfad bleibt P4, keine Mockbehauptung als GUI-PASS.
+Runtime-/JARbelege von P1 bleiben unverändert, ohne neue Ausführung in P2.
+
+Testmigration: Die Positivfixture ApplyPartialCoverage hat nun ein wirkliches
+Fragment; ein separater Missingfall verlangt APPLY_NOT_FOUND und unvollständige
+Analyse. Die früher absichtlich ungelesene kaputte Serverfragmentfixture wird
+jetzt gelesen und korrekt INVALID diagnostiziert; Nichtausführung und alle
+Edit-/Staleassertions bleiben. Hostfixtures liefern nun explizite bounded
+Ownerinventare und verbieten deren Wiederbeschaffung während Semantik/Edits.
+
+P1-Originalreview: `/Users/stefan/.cache/gretl-include-tooling/review/P1-attempt-1/`.
+Nächste Aktion: finales P2-Gate und autonome unabhängige Session am exakten SHA.
