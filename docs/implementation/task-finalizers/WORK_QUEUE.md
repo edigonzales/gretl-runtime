@@ -323,3 +323,17 @@ Root-/Distributionsbeispielquellen sind identisch. 451 strikte Linkziele ohne
 Defekt, 73 Dokumentationswerkzeugtests ohne Fehler/Skips. Der endgültige
 kandidatengleiche Lauf folgt; Entwicklungsartefakte mit sourceDirty=true werden
 nicht als saubere Schlussartefakte ausgegeben.
+
+
+P5-Erstkandidat `5ea8b4673a29d85f960093d09790704c1b477317`: kumulatives
+gezieltes Gate 266 Fälle in 38 Klassen, 0 Fehler/Skips, frische Distribution mit
+sourceDirty=false und genau diesem SHA; zwölf Beispiel-/GUIprozesse erfolgreich.
+84 Client-, vier Adapter- und 73 Dokumentationswerkzeugtests erfolgreich.
+VSIX-Paketprüfung scheiterte jedoch streng am README-Payloaddigest: vsce schreibt
+den neuen relativen Featurelink automatisch auf GitHub um. Keine Phaseabnahme.
+Roh-XMLs, Logs und zurückgewiesene VSIX extern unter
+`evidence/P5/candidate-5ea8b46` gesichert. Fix ausschliesslich am README-Link:
+feste Repository-URL vermeidet die Transformation; Hashassertions unverändert.
+Neuer Kandidat qualifiziert Paketierung und aktuelle Artefakte erneut. Die
+266 Javafälle bleiben als Beleg von 5ea8b46 erhalten; Runtime-/LSP-/Hostcode sind
+bytegleich. Der frische Schlussreview testet den neuen SHA selbst kumulativ.
