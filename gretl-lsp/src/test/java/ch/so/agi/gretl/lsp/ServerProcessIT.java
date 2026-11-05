@@ -51,6 +51,9 @@ class ServerProcessIT {
             }while(System.nanoTime()<deadline);
             throw new AssertionError("Analysis did not settle for "+method+": "+response);
         }
+        JsonObject graphAfterRefresh(String uri)throws Exception {
+            return callAfterRefresh("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();
+        }
         JsonObject await(int id)throws Exception {
             var existing=responses.remove(id);if(existing!=null)return existing;
             long deadline=System.nanoTime()+Duration.ofSeconds(20).toNanos();
@@ -96,7 +99,7 @@ class ServerProcessIT {
 
     private JsonObject graphAfterDiskChange(Wire wire,String uri,Path source,String sha256)throws Exception {
         // A native watch event can invalidate a request after the explicit LSP notification.
-        var graph=wire.callAfterRefresh("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();
+        var graph=wire.graphAfterRefresh(uri);
         assertTrue(hasSourceStamp(graph.getAsJsonObject("context"),source.toUri(),sha256),graph.toString());
         return graph;
     }
@@ -208,15 +211,15 @@ class ServerProcessIT {
         Files.writeString(custom,source);String uri=custom.toUri().toString();
         try(var wire=new Wire(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(job.toUri().toString(),1,Files.readString(job));graph(wire,job.toUri().toString());
-            wire.opened(uri,1,source);graph(wire,job.toUri().toString());var current=graph(wire,uri);
+            wire.opened(uri,1,source);wire.graphAfterRefresh(job.toUri().toString());var current=wire.graphAfterRefresh(uri);
             var titles=current.getAsJsonObject("payload").getAsJsonArray("nodes").asList().stream().map(value->value.getAsJsonObject().get("title").getAsString()).toList();
             assertTrue(titles.containsAll(List.of("custom","consumer")),titles.toString());assertFalse(titles.contains(":canonical"));
-            var definitions=wire.call("textDocument/definition",position(uri,1,31)).getAsJsonArray();assertEquals(1,definitions.size());
+            var definitions=wire.callAfterRefresh("textDocument/definition",position(uri,1,31)).getAsJsonArray();assertEquals(1,definitions.size());
             assertEquals(java.net.URI.create(uri),java.net.URI.create(definitions.get(0).getAsJsonObject().get("uri").getAsString()));
             var rename=new HashMap<String,Object>(position(uri,0,8));rename.put("newName","renamedCustom");
             assertEquals(3,wire.callAfterRefresh("textDocument/rename",rename).getAsJsonObject().getAsJsonArray("documentChanges").get(0).getAsJsonObject().getAsJsonArray("edits").size());
             wire.send("textDocument/didClose",Map.of("textDocument",Map.of("uri",uri)),null);
-            assertTrue(graph(wire,uri).getAsJsonObject("payload").getAsJsonArray("nodes").asList().stream().anyMatch(value->value.getAsJsonObject().get("title").getAsString().equals("custom")));wire.stop();
+            assertTrue(wire.graphAfterRefresh(uri).getAsJsonObject("payload").getAsJsonArray("nodes").asList().stream().anyMatch(value->value.getAsJsonObject().get("title").getAsString().equals("custom")));wire.stop();
         }
     }
 

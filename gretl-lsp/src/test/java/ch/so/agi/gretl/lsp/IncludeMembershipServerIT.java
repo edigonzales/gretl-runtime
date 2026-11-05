@@ -51,7 +51,7 @@ class IncludeMembershipServerIT {
             assertEquals("SOURCE_CONTEXT_STALE",w.response("gretl/selectSourceContext",select).getAsJsonObject("error").get("message").getAsString());
             w.send("textDocument/didClose",Map.of("textDocument",Map.of("uri",fragment.toUri().toString())),null);String saved="task('changedOnDisk',Gzip){dataFile=file('input');gzipFile=workPath('saved.gz')}";Files.writeString(fragment,saved);
             w.send("workspace/didChangeWatchedFiles",Map.of("changes",List.of(Map.of("uri",fragment.toUri().toString(),"type",2))),null);
-            assertEquals(hash(fragment.toUri(),saved),stamp(graph(w,uri),fragment.toUri()).get("sha256").getAsString());assertEquals(source,Files.readString(job));assertEquals(saved,Files.readString(fragment));w.stop();
+            assertEquals(hash(fragment.toUri(),saved),stamp(w.graphAfterRefresh(uri),fragment.toUri()).get("sha256").getAsString());assertEquals(source,Files.readString(job));assertEquals(saved,Files.readString(fragment));w.stop();
         }
     }
     @Test void unownedSourceIsNotAnImplicitEntryAndFeatureNegotiationIsRequired()throws Exception{
