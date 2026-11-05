@@ -39,6 +39,20 @@ class IncludeEditsTest {
     AnalysisSnapshot capture(WorkspaceManager manager)throws Exception{io.set(true);var capture=manager.capture(new ProjectResolver.ProjectRequest(root.toUri(),root.resolve("job.groovy").toUri()),CancellationToken.NONE);io.set(false);return AnalysisSnapshot.of(new ProjectAnalyzer().analyze(capture,CancellationToken.NONE));}
     PlannedEdit allowed(AnalysisSnapshot snapshot,SemanticEditIntent intent){var result=new SemanticEditPlanner().plan(snapshot,intent,EditStyle.defaults(),CancellationToken.NONE);assertEquals(EditCapability.State.ALLOWED,result.capability().state(),result.capability().toString());return result.plan().orElseThrow();}
     void denied(AnalysisSnapshot snapshot,SemanticEditIntent intent,String code){var result=new SemanticEditPlanner().plan(snapshot,intent,EditStyle.defaults(),CancellationToken.NONE);assertTrue(result.plan().isEmpty());assertEquals(code,result.capability().reasons().getFirst().code());}
+    @Test void finalizerGraphSetterAndBatchRespectSharedDeclaringOwnerButAllowLocalOwner()throws Exception{
+        write("settings.gretl","include 'north','south'\ndefaults ':north:local'");
+        for(String side:List.of("north","south"))write(side+"/job.groovy","apply from:'../shared/tasks.groovy'\naction('local'){}\n");
+        write("shared/tasks.groovy","action('owner',finalizedBy:'release'){}\naction('release'){}\n");
+        try(var manager=manager(true)){
+            var before=capture(manager);
+            denied(before,new SemanticEditIntent.AddDependency(task(":north:owner"),task(":north:local"),EdgeKind.FINALIZED_BY),"EDIT_SHARED_SOURCE");
+            denied(before,new SemanticEditIntent.RemoveDependency(task(":north:owner"),task(":north:release"),EdgeKind.FINALIZED_BY),"EDIT_SHARED_SOURCE");
+            denied(before,new SemanticEditIntent.SetTaskOption(task(":north:owner"),"finalizedBy",new EditableValue.Sequence(List.of())),"EDIT_SHARED_SOURCE");
+            var batch=new SemanticEditPlanner().planConfiguration(before,task(":north:owner"),Map.of(),Set.of(),Map.of("finalizedBy",new EditableValue.Literal(null)),EditStyle.defaults(),CancellationToken.NONE);assertTrue(batch.plan().isEmpty());assertEquals("EDIT_SHARED_SOURCE",batch.capability().reasons().getFirst().code());
+            var add=allowed(before,new SemanticEditIntent.AddDependency(task(":north:local"),task(":north:release"),EdgeKind.FINALIZED_BY));assertEquals(Set.of(root.resolve("north/job.groovy").toUri()),add.changes().keySet());
+            var remove=allowed(add.postimage(),new SemanticEditIntent.RemoveDependency(task(":north:local"),task(":north:release"),EdgeKind.FINALIZED_BY));assertEquals(add.changes().keySet(),remove.changes().keySet());
+        }
+    }
     @Test void taskAndParameterRenameUpdateEveryKnownOriginalFileLosslesslyWithoutIo()throws Exception{
         String entry="// entry 😀\r\napply from:'parts/source.groovy'\r\napply from:'parts/use.groovy'\r\ndefaults 'source','use'\r\n";
         String producer="parameter('p',description:'Path',type:'path',defaultValue:'in.txt')\r\ntask('source',Echo){ input=parameter('p') } // source retained\r\n";

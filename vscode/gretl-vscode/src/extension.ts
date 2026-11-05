@@ -271,7 +271,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         });
         client.registerFeature({
             fillClientCapabilities(capabilities){capabilities.experimental={...capabilities.experimental,gretlRuntime:{...capabilities.experimental?.gretlRuntime,includeToolingVersion:1}};},
-            initialize(capabilities){if(capabilities.experimental?.gretlRuntime?.includeToolingVersion!==1)throw Error('GRETL include tooling capability is unavailable.');},
+            initialize(capabilities){if(capabilities.experimental?.gretlRuntime?.taskFinalizersVersion!==1||capabilities.experimental?.gretlRuntime?.graphSchemaVersion!==2)throw Error('GRETL task finalizers capability is unavailable.');if(capabilities.experimental?.gretlRuntime?.includeToolingVersion!==1)throw Error('GRETL include tooling capability is unavailable.');},
             getState:()=>({kind:'static'}),clear(){}
         });
         this.client=client;this.sentEntryRoles.clear();const pendingMembership=new Map<string,ReturnType<typeof membershipUpdate>>();this.fragments=this.fragmentCoordinator(client);

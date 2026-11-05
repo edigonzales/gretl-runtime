@@ -44,7 +44,7 @@
       "properties":{
         "kind":{"enum":["AddTask","AddAction","AddParameter","SetField","RemoveField","SetTaskOption","AddDependency","RemoveDependency","BindResult","RenameSymbol","DeleteTask","SetDefaults","ConfigureTask"]},
         "target":{"$ref":"#/$defs/SymbolKey"},"producer":{"$ref":"#/$defs/SymbolKey"},
-        "field":{"type":"string","minLength":1,"maxLength":1024},"outputField":{"type":"string","minLength":1,"maxLength":1024},"edgeKind":{"enum":["DEPENDS_ON","AFTER"]},
+        "field":{"type":"string","minLength":1,"maxLength":1024},"outputField":{"type":"string","minLength":1,"maxLength":1024},"edgeKind":{"enum":["DEPENDS_ON","AFTER","FINALIZED_BY"]},
         "name":{"type":"string","minLength":1,"maxLength":65536},"operationId":{"type":"string","minLength":1,"maxLength":1024},"insertionOffset":{"type":"integer","minimum":0,"maximum":1048576},
         "value":{"$ref":"#/$defs/Value"},"fields":{"$ref":"#/$defs/Fields"},"targets":{"type":"array","maxItems":1024,"items":{"$ref":"#/$defs/SymbolKey"}},
         "parameter":{"$ref":"#/$defs/Parameter"},"removedFields":{"type":"array","maxItems":128,"uniqueItems":true,"items":{"type":"string","maxLength":1024}},"options":{"$ref":"#/$defs/Fields"}

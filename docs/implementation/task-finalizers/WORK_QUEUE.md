@@ -155,7 +155,7 @@ Eigene Reviewer-Ausführung: 190 Tests, neue Drain-/Startgrenzenprobe mit 38
 Assertions; keine offenen Findings. Das ablehnende erste Urteil ist separat
 als `rejection-validated.json` identitätsgeprüft, keine nachträgliche Freigabe.
 
-## P3 — REVIEW_PENDING
+## P3 — REVIEWED_ACCEPTED
 
 Feste Phasebase `9aa1205b44cb9ea583a3e94c79746940aa23e679`.
 Öffentlicher Task-/Action-Header, vorhandene Linknormalisierung und
@@ -233,3 +233,40 @@ Beleg `evidence/P3/transport-fix/inherited-environment-tests.log` unter dem
 externen Taskcache. Kein Produkt-/Runtime-/JAR-/Reporterbyte gegenüber dem
 geprüften P3-Produkt verändert. Neuer Kandidat und frische unabhängige Prüfung
 gegen dieselbe P3-Phasebase folgen; P4 bleibt gesperrt.
+
+
+P3-Abschluss: unabhängiger Review 2 hat `b507e03f204c8201119e721518f84a38ea3e7780`
+mit ABGENOMMEN beurteilt und am selben SHA alle 122 Produktfälle, vier
+Adaptertests und eine eigene öffentliche SCRIPT-/JAR-Gegenprobe ausgeführt.
+Modell, Session, frische XMLs, eigene Gegenprobe und unveränderte getrackte Bytes
+sind maschinell validiert: externer Cache `review/P3-attempt-2/validated.json`.
+P4 wurde erst danach begonnen.
+
+## P4 — IMPLEMENTED
+
+Feste Phasebase `b507e03f204c8201119e721518f84a38ea3e7780`.
+Finalizer als eigene Taskreferenz, ownergerichtete Graphkante, ursprüngliche
+Fragmentanker für Diagnosen und Queries; Erfolgsplanvorschau mit normaler und
+bedingter Auswahl aus PlanSemantics. Kein Ergebnisrecht durch Finalizerkanten.
+Ownerdialog und ausdrückliche Verbindungsart, gezieltes Disconnect, Rename und
+Löschschutz; Add/Remove schreiben den deklarierenden Owner. Setter und Batch
+unterliegen denselben Sharedsource-/Coverage-/Postimageprüfungen.
+Graphschema 2 verhindert die Interpretation der neuen Enum durch alte strikte
+Clients; Server bietet taskFinalizersVersion=1 und die VSIX prüft diese Fähigkeit
+plus Graphschema beim Verbindungsaufbau. Basisprotokoll/Katalog/Viewstate bleiben 1.
+
+Entwicklungsprüfungen im externen Cache `evidence/`: P4-targeted-development2.log
+mit 68 Corefällen und 27 echten stdio-Fällen, 0 Fehler/Skips; danach zusätzlicher
+Self-Finalizer-mit-Result-Regressionstest und erneuter vollständiger gezielter
+Lauf. TypeScript und 83 Clientfälle erfolgreich (P4-client-development2.log).
+Vorherige fehlgeschlagene Entwicklungsläufe bleiben erhalten.
+
+Ein zusätzlich gestarteter breiter Entwicklungslauf (*Test) scheiterte an den
+beiden unveränderten CatalogSemanticParityTest-Fällen: deren Repositoryfixture
+verweigert die bereits seit dem Includeauftrag erforderliche Ownerinventur.
+Dasselbe gezielte CatalogSemanticParityTest-Gate scheitert unverändert am
+sauberen P3-Commit b507e03 im externen P4-baseline-Worktree, Beleg
+`evidence/P4-baseline-catalog.log`. Kein Katalogprodukt-/Testfix ausserhalb des
+Auftrags, keine abgeschwächten Assertions. Das P4-Gate wählt ausdrücklich die
+betroffenen Core-/Query-/Edit-/Wiretests und läuft mit frischem Server/Katalogbau.
+Native VSIX-Belege und unabhängiger Review stehen noch aus; kein P4-PASS.

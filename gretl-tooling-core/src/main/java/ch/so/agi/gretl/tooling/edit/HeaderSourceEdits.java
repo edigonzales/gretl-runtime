@@ -23,7 +23,7 @@ final class HeaderSourceEdits {
         if (entries.size() > 1) throw new IllegalArgumentException("EDIT_MULTIPLE_OPTIONS");
         var matcher = new FieldSourceEdits();
         if (entries.isEmpty() && desired instanceof EditableValue.Literal literal && literal.value() == null) return;
-        if ((option.equals("dependsOn") || option.equals("after")) && emptyLinks(desired)
+        if ((option.equals("dependsOn") || option.equals("after") || option.equals("finalizedBy")) && emptyLinks(desired)
                 && (entries.isEmpty() || entries.getFirst().value() instanceof ListValue list && list.items().isEmpty()
                 || entries.getFirst().value() instanceof LiteralValue literal && literal.value() == null)) return;
         if (!entries.isEmpty() && matcher.same(entries.getFirst().value(),desired,transaction,symbol.scope())) return;
@@ -104,7 +104,7 @@ final class HeaderSourceEdits {
                 catch (java.time.format.DateTimeParseException invalid) { throw new IllegalArgumentException("EDIT_TIMEOUT"); }
             }
             case "when" -> throw new IllegalArgumentException("EDIT_OPAQUE_CONDITION");
-            case "dependsOn", "after" -> {
+            case "dependsOn", "after", "finalizedBy" -> {
                 List<EditableValue> values = value instanceof EditableValue.Sequence list ? list.items() : List.of(value);
                 if (values.stream().anyMatch(v -> !(v instanceof EditableValue.Literal l && l.value() instanceof String))) throw new IllegalArgumentException("EDIT_OPTION_TYPE");
             }

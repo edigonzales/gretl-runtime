@@ -9,21 +9,22 @@ import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
 import ch.so.agi.gretl.tooling.syntax.TokenIndex.Channel;
 import java.util.List;
 
-/** Producer-to-consumer graph intents edit only the consumer header and the requested field. */
+/** Graph intents edit the declaring header: consumer for dependencies, owner for finalizers. */
 final class DependencySourceEdits {
     void add(EditTransaction transaction, SymbolId producer, SymbolId consumer, EdgeKind kind) {
-        if (kind == EdgeKind.FINALIZED_BY) throw new IllegalArgumentException("EDIT_FINALIZER_NOT_IMPLEMENTED");
         checkTasks(transaction,producer,consumer);
+        var declaring=kind==EdgeKind.FINALIZED_BY?producer:consumer;
+        var referenced=kind==EdgeKind.FINALIZED_BY?consumer:producer;
         if (has(transaction.before.analysis().graph(),producer,consumer,kind)) return;
-        var symbol=transaction.symbol(consumer);
+        var symbol=transaction.symbol(declaring);
         String option=option(kind);
-        var entry=entry(transaction,consumer,option);
-        String name=transaction.spelling(symbol.scope(),producer);
+        var entry=entry(transaction,declaring,option);
+        String name=transaction.spelling(symbol.scope(),referenced);
         if(entry!=null&&entry.value() instanceof ListValue list) append(transaction,symbol,list,SourceValueWriter.string(name,QuoteKind.SINGLE));
         else if(entry==null||entry.value() instanceof LiteralValue literal&&literal.value()==null) {
-            new HeaderSourceEdits().set(transaction,consumer,option,new EditableValue.Literal(name));
+            new HeaderSourceEdits().set(transaction,declaring,option,new EditableValue.Literal(name));
         } else {
-            var previous=transaction.before.analysis().references().stream().filter(r->consumer.equals(r.owner())&&r.kind()==referenceKind(kind)).toList();
+            var previous=transaction.before.analysis().references().stream().filter(r->declaring.equals(r.owner())&&r.kind()==referenceKind(kind)).toList();
             if(previous.size()!=1||previous.getFirst().target().isEmpty())throw new IllegalArgumentException("EDIT_REFERENCE_COVERAGE");
             String old=transaction.source(symbol.anchor().documentId()).slice(entry.value().span());
             transaction.replace(symbol.anchor().documentId(),entry.value().span(),"["+old+", "+SourceValueWriter.string(name,QuoteKind.SINGLE)+"]");
@@ -32,8 +33,9 @@ final class DependencySourceEdits {
     }
 
     void remove(EditTransaction transaction, SymbolId producer, SymbolId consumer, EdgeKind kind) {
-        if (kind == EdgeKind.FINALIZED_BY) throw new IllegalArgumentException("EDIT_FINALIZER_NOT_IMPLEMENTED");
         checkTasks(transaction,producer,consumer);
+        var declaring=kind==EdgeKind.FINALIZED_BY?producer:consumer;
+        var referenced=kind==EdgeKind.FINALIZED_BY?consumer:producer;
         var graph=transaction.before.analysis().graph();
         if(!has(graph,producer,consumer,kind))return;
         var remaining=graph.edges().stream().filter(e->!(e.fromId().equals(producer.qualifiedName())&&e.toId().equals(consumer.qualifiedName())&&e.kind()==kind)).toList();
@@ -50,11 +52,11 @@ final class DependencySourceEdits {
                 if(lost.stream().anyMatch(r->beforeRights.contains(r.target().orElseThrow().qualifiedName())))throw new IllegalArgumentException("EDIT_RESULT_DEPENDENCY");
             }
         }
-        var symbol=transaction.symbol(consumer);
-        var entry=entry(transaction,consumer,option(kind));
+        var symbol=transaction.symbol(declaring);
+        var entry=entry(transaction,declaring,option(kind));
         if(entry==null)throw new IllegalArgumentException("EDIT_REFERENCE_COVERAGE");
-        var references=transaction.before.analysis().references().stream().filter(r->consumer.equals(r.owner())&&r.kind()==referenceKind(kind)
-                &&r.target().filter(producer::equals).isPresent()).toList();
+        var references=transaction.before.analysis().references().stream().filter(r->declaring.equals(r.owner())&&r.kind()==referenceKind(kind)
+                &&r.target().filter(referenced::equals).isPresent()).toList();
         if(references.size()!=1)throw new IllegalArgumentException("EDIT_MULTIPLE_LINKS");
         if(entry.value() instanceof ListValue list) {
             var values=list.items().stream().filter(v->v.span().contains(references.getFirst().anchor().span())).toList();
@@ -68,7 +70,7 @@ final class DependencySourceEdits {
                     .or(()->commas.stream().filter(t->t.span().endUtf16()<=value.span().startUtf16()).reduce((first,last)->last));
             transaction.edits(symbol.anchor().documentId()).deleteOwnedRegion(value.span());
             comma.ifPresent(t->transaction.edits(symbol.anchor().documentId()).deleteOwnedRegion(t.span()));
-        } else new HeaderSourceEdits().set(transaction,consumer,option(kind),new EditableValue.Literal(null));
+        } else new HeaderSourceEdits().set(transaction,declaring,option(kind),new EditableValue.Literal(null));
         transaction.expect(after->!has(after.analysis().graph(),producer,consumer,kind));
     }
 
@@ -118,8 +120,8 @@ final class DependencySourceEdits {
     private boolean has(PlanSemantics.DeclaredGraph graph,SymbolId producer,SymbolId consumer,EdgeKind kind) {
         return graph.edges().stream().anyMatch(e->e.fromId().equals(producer.qualifiedName())&&e.toId().equals(consumer.qualifiedName())&&e.kind()==kind);
     }
-    private String option(EdgeKind kind){return kind==EdgeKind.DEPENDS_ON?"dependsOn":"after";}
-    private ReferenceKind referenceKind(EdgeKind kind){return kind==EdgeKind.DEPENDS_ON?ReferenceKind.DEPENDS_ON:ReferenceKind.AFTER;}
+    private String option(EdgeKind kind){return switch(kind){case DEPENDS_ON->"dependsOn";case AFTER->"after";case FINALIZED_BY->"finalizedBy";};}
+    private ReferenceKind referenceKind(EdgeKind kind){return switch(kind){case DEPENDS_ON->ReferenceKind.DEPENDS_ON;case AFTER->ReferenceKind.AFTER;case FINALIZED_BY->ReferenceKind.FINALIZED_BY;};}
     private void checkTasks(EditTransaction transaction,SymbolId producer,SymbolId consumer) {
         if(producer.namespace()!=Namespace.TASK||consumer.namespace()!=Namespace.TASK)throw new IllegalArgumentException("EDIT_TARGET_KIND");
         transaction.symbol(producer);transaction.symbol(consumer);

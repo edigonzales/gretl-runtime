@@ -19,7 +19,7 @@ public final class SemanticModel {
         public Symbol(SymbolId id,String localName,String scope,Anchor anchor,Declaration declaration,OperationDescriptor operation){this(id,localName,scope,anchor,declaration,operation,null);}
     }
     public enum Resolution { RESOLVED, UNRESOLVED, AMBIGUOUS, DYNAMIC }
-    public enum ReferenceKind { DEPENDS_ON, AFTER, DEFAULT, RESULT, RESULT_OPTIONAL, PARAMETER }
+    public enum ReferenceKind { DEPENDS_ON, AFTER, FINALIZED_BY, DEFAULT, RESULT, RESULT_OPTIONAL, PARAMETER }
     public record Reference(ReferenceKind kind,Anchor anchor,SymbolId owner,String spelling,Resolution resolution,List<SymbolId> candidates,ApplicationId application) {
         public Reference(ReferenceKind kind,Anchor anchor,SymbolId owner,String spelling,Resolution resolution,List<SymbolId> candidates){this(kind,anchor,owner,spelling,resolution,candidates,null);}
         public Reference { candidates=List.copyOf(candidates); }

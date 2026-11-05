@@ -10,7 +10,7 @@ export type EditIntent={kind:'AddTask';name:string;operationId:string;insertionO
     |{kind:'SetField'|'SetTaskOption';target:SymbolKey;field:string;value:EditableValue}
     |{kind:'RemoveField';target:SymbolKey;field:string}
     |{kind:'ConfigureTask';target:SymbolKey;fields:Record<string,EditableValue>;removedFields:string[];options:Record<string,EditableValue>}
-    |{kind:'AddDependency'|'RemoveDependency';producer:SymbolKey;target:SymbolKey;edgeKind:'DEPENDS_ON'|'AFTER'}
+    |{kind:'AddDependency'|'RemoveDependency';producer:SymbolKey;target:SymbolKey;edgeKind:'DEPENDS_ON'|'AFTER'|'FINALIZED_BY'}
     |{kind:'BindResult';producer:SymbolKey;outputField:string;target:SymbolKey;field:string}
     |{kind:'RenameSymbol';target:SymbolKey;name:string}
     |{kind:'DeleteTask';target:SymbolKey}
@@ -93,7 +93,7 @@ export function editIntent(v:unknown):v is EditIntent {
         case 'SetField':case 'SetTaskOption':if(!target()||!text(v.field,1024)||!editableValue(v.value))return false;allowed=['target','field','value'];break;
         case 'RemoveField':if(!target()||!text(v.field,1024))return false;allowed=['target','field'];break;
         case 'ConfigureTask':if(!target()||!object(v.fields)||!object(v.options)||Object.keys(v.fields).length>128||Object.keys(v.options).length>128||![...Object.entries(v.fields),...Object.entries(v.options)].every(([k,x])=>text(k,1024)&&editableValue(x))||!Array.isArray(v.removedFields)||v.removedFields.length>128||v.removedFields.some(x=>!text(x,1024)))return false;allowed=['target','fields','removedFields','options'];break;
-        case 'AddDependency':case 'RemoveDependency':if(!target()||!symbolKey(v.producer)||!['DEPENDS_ON','AFTER'].includes(String(v.edgeKind)))return false;allowed=['target','producer','edgeKind'];break;
+        case 'AddDependency':case 'RemoveDependency':if(!target()||!symbolKey(v.producer)||!['DEPENDS_ON','AFTER','FINALIZED_BY'].includes(String(v.edgeKind)))return false;allowed=['target','producer','edgeKind'];break;
         case 'BindResult':if(!target()||!symbolKey(v.producer)||!text(v.field,1024)||!text(v.outputField,1024))return false;allowed=['target','producer','field','outputField'];break;
         case 'RenameSymbol':if(!target()||!text(v.name))return false;allowed=['target','name'];break;
         case 'DeleteTask':if(!target())return false;allowed=['target'];break;

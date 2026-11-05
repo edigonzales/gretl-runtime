@@ -24,7 +24,7 @@ public final class ProjectAnalyzer {
         final Map<Declaration,EffectiveOptions> optionCache=new IdentityHashMap<>();
         final Map<ApplicationId,Map<String,List<Symbol>>> aliases=new LinkedHashMap<>();final List<Symbol> declarations=new ArrayList<>();
         SourceApplication currentApplication;
-        final List<OperationDescriptor> operations;final boolean catalogComplete;boolean declarationsComplete,referencesComplete,graphComplete,bounded=true;
+        final List<OperationDescriptor> operations;final boolean catalogComplete;boolean declarationsComplete,referencesComplete,graphComplete,dataGraphValid,bounded=true;
         Pass(WorkspaceCapture capture,CancellationToken cancellation){this.capture=Objects.requireNonNull(capture);this.cancellation=Objects.requireNonNull(cancellation);language=capture.configuration().language();operations=capture.catalog().result().catalog().map(c->c.operations()).orElse(List.of());catalogComplete=capture.catalog().result().state().name().equals("AVAILABLE");declarationsComplete=capture.project().complete();referencesComplete=declarationsComplete;}
         Analysis run(){
             for(var p:capture.project().problems())diagnostic(p.code(),p.error()?Severity.ERROR:Severity.INFORMATION,new Anchor(p.documentId(),p.span()),java.util.stream.Stream.concat(p.related().stream().map(s->new Anchor(p.documentId(),s)),p.relatedSources().stream().map(s->new Anchor(s.documentId(),s.span()))).toList());
@@ -56,11 +56,12 @@ public final class ProjectAnalyzer {
             currentApplication=null;
             for(var values:symbols.values())if(values.size()>1){String code=switch(values.getFirst().id().namespace()){case TASK->"DUPLICATE_TASK_ID";case PARAMETER->"DUPLICATE_PARAMETER";case CLEANUP->"DUPLICATE_CLEANUP_NAME";};for(var value:values){currentApplication=value.application();diagnostic(code,Severity.ERROR,value.anchor(),values.stream().filter(s->s!=value).map(Symbol::anchor).toList());}currentApplication=null;}
             graphComplete=declarationsComplete&&symbols.values().stream().noneMatch(v->v.size()!=1);
-            for(var symbol:declarations){cancellation.check();currentApplication=symbol.application();validateOptions(symbol);if(symbol.id().namespace()==Namespace.PARAMETER)validateParameter(symbol);else if(symbol.id().namespace()==Namespace.TASK){links(symbol,"dependsOn",ReferenceKind.DEPENDS_ON,PlanSemantics.EdgeKind.DEPENDS_ON);links(symbol,"after",ReferenceKind.AFTER,PlanSemantics.EdgeKind.AFTER);} }
+            for(var symbol:declarations){cancellation.check();currentApplication=symbol.application();validateOptions(symbol);if(symbol.id().namespace()==Namespace.PARAMETER)validateParameter(symbol);else if(symbol.id().namespace()==Namespace.TASK){links(symbol,"dependsOn",ReferenceKind.DEPENDS_ON,PlanSemantics.EdgeKind.DEPENDS_ON);links(symbol,"after",ReferenceKind.AFTER,PlanSemantics.EdgeKind.AFTER);links(symbol,"finalizedBy",ReferenceKind.FINALIZED_BY,PlanSemantics.EdgeKind.FINALIZED_BY);} }
             currentApplication=null;collectDefaults();currentApplication=null;
             var nodes=new ArrayList<PlanSemantics.Node>();for(var symbol:declarations)if(symbol.id().namespace()==Namespace.TASK&&unique(symbol.id()).isPresent())nodes.add(new PlanSemantics.Node(symbol.id().qualifiedName(),nodes.size()));
             var graph=new PlanSemantics.DeclaredGraph(nodes,edges);
-            if(graphComplete){for(var problem:new PlanSemantics().validateDeclaredDependencies(graph))graphProblem(problem);if(!defaults.isEmpty())try{new PlanSemantics().plan(graph,List.of(),defaults);}catch(PlanSemantics.GraphException problem){if(problem.code().equals("PLAN_CYCLE"))graphProblem(problem.problem());}}
+            dataGraphValid=graphComplete&&new PlanSemantics().validateDeclaredDependencies(graph).isEmpty();
+            if(graphComplete){for(var problem:new PlanSemantics().validateDeclaredDependencies(graph))graphProblem(problem);if(!defaults.isEmpty())try{new PlanSemantics().plan(graph,List.of(),defaults);}catch(PlanSemantics.GraphException problem){if(Set.of("PLAN_CYCLE","FINALIZER_ACTIVATION_DEADLOCK").contains(problem.code()))graphProblem(problem.problem());}}
             for(var symbol:declarations){cancellation.check();currentApplication=symbol.application();validateReferences(symbol,graph);if(symbol.id().namespace()==Namespace.TASK&&symbol.declaration().kind()==DeclarationKind.TASK)validateFields(symbol.operation(),symbol.declaration().fields(),symbol.declaration().coverage(),symbol.anchor(),conditional(symbol),span->conditionalBody(symbol,span));for(var inner:symbol.declaration().invocations())if(effective(symbol.declaration()).active(inner.span()))validateFields(operation(inner.operation(),new Anchor(symbol.anchor().documentId(),inner.span())),inner.fields(),inner.coverage(),new Anchor(symbol.anchor().documentId(),inner.span()),conditionalBody(symbol,inner.span()),span->conditionalBody(symbol,span));SqlTemplateAnalyzer.validate(capture,symbol,(code,severity,anchor)->diagnostic(code,severity,anchor,List.of()),cancellation,conditional(symbol)||symbol.declaration().coverage().fieldAssignments()!=Completeness.COMPLETE,span->conditionalBody(symbol,span));}
             currentApplication=null;
             if(!declarationsComplete||!referencesComplete)diagnostic("PARTIAL_ANALYSIS",Severity.INFORMATION,global(),List.of());
@@ -78,7 +79,7 @@ public final class ProjectAnalyzer {
         void addDefault(String name,Anchor anchor){if(defaults.contains(name))diagnostic("DUPLICATE_DEFAULT_TARGET",Severity.ERROR,anchor,List.of());else defaults.add(name);}
         void links(Symbol owner,String option,ReferenceKind kind,PlanSemantics.EdgeKind edgeKind){
             var effective=effective(owner.declaration());if(!effective.complete()){graphComplete=false;referencesComplete=false;return;}
-            for(var entry:effective.entries().values())if(option.equals(text(entry.key()))){if(entry.value() instanceof LiteralValue l&&l.value()==null)continue;var items=entry.value() instanceof ListValue list?list.items():List.of(entry.value());var seen=new HashSet<SymbolId>();for(var item:items){var ref=resolve(owner,Namespace.TASK,item,kind,new Anchor(owner.anchor().documentId(),item.span()),scope(owner));if(ref.resolution()!=Resolution.RESOLVED){graphComplete=false;continue;}var target=ref.target().orElseThrow();if(!seen.add(target))diagnostic("DUPLICATE_TASK_LINK",Severity.ERROR,ref.anchor(),List.of());else if(unique(owner.id()).isPresent())edges.add(new PlanSemantics.Edge(target.qualifiedName(),owner.id().qualifiedName(),edgeKind));}}
+            for(var entry:effective.entries().values())if(option.equals(text(entry.key()))){if(entry.value() instanceof LiteralValue l&&l.value()==null)continue;var items=entry.value() instanceof ListValue list?list.items():List.of(entry.value());var seen=new HashSet<SymbolId>();for(var item:items){var ref=resolve(owner,Namespace.TASK,item,kind,new Anchor(owner.anchor().documentId(),item.span()),scope(owner));if(ref.resolution()!=Resolution.RESOLVED){graphComplete=false;continue;}var target=ref.target().orElseThrow();if(!seen.add(target))diagnostic("DUPLICATE_TASK_LINK",Severity.ERROR,ref.anchor(),List.of());else if(unique(owner.id()).isPresent())edges.add(edgeKind==PlanSemantics.EdgeKind.FINALIZED_BY?new PlanSemantics.Edge(owner.id().qualifiedName(),target.qualifiedName(),edgeKind):new PlanSemantics.Edge(target.qualifiedName(),owner.id().qualifiedName(),edgeKind));}}
         }
         Reference resolve(Symbol owner,Namespace namespace,ValueExpression value,ReferenceKind kind,Anchor anchor,ProjectNameRules scope){
             if(references.size()>=MAX_REFERENCES){limit();return new Reference(kind,anchor,owner==null?null:owner.id(),null,Resolution.DYNAMIC,List.of(),currentApplication==null?null:currentApplication.id());}
@@ -108,7 +109,7 @@ public final class ProjectAnalyzer {
                     var ref=resolve(owner,Namespace.TASK,call.arguments().getFirst(),call.name().equals("result")?ReferenceKind.RESULT:ReferenceKind.RESULT_OPTIONAL,anchor,scope(owner));
                     boolean allowed=owner.id().namespace()==Namespace.TASK&&(owner.declaration().body()!=null&&contains(owner.declaration().body(),call.span())||inWhen(owner,call.span()));
                     if(!allowed)diagnostic("RESULT_SCOPE",error,new Anchor(anchor.documentId(),call.span()),List.of());
-                    else if(graphComplete&&ref.target().isPresent()&&!new PlanSemantics().dataPredecessors(graph,owner.id().qualifiedName()).contains(ref.target().get().qualifiedName()))diagnostic("RESULT_DEPENDENCY_REQUIRED",error,anchor,List.of());
+                    else if(dataGraphValid&&ref.target().isPresent()&&!new PlanSemantics().dataPredecessors(graph,owner.id().qualifiedName()).contains(ref.target().get().qualifiedName()))diagnostic("RESULT_DEPENDENCY_REQUIRED",error,anchor,List.of());
                     if(call.name().equals("result")&&text(call.arguments().getFirst())!=null&&ref.target().isPresent())for(var property:owner.declaration().properties())if(property.receiver() instanceof CallValue receiver&&receiver.span().equals(call.span()))unique(ref.target().get()).ifPresent(producer->{if(producer.operation()!=null&&!Set.of("class","metaClass").contains(property.property())&&producer.operation().outputs().stream().noneMatch(o->o.name().equals(property.property())))diagnostic("UNKNOWN_OUTPUT",catalogComplete&&declarationsComplete?error:Severity.WARNING,new Anchor(anchor.documentId(),property.propertySpan()),List.of(producer.anchor()));});
                 }else if(call.name().equals("parameter")){
                     if(!(owner.declaration().body()!=null&&contains(owner.declaration().body(),call.span()))&&!inWhen(owner,call.span()))diagnostic("TOPLEVEL_PARAMETER_READ",error,new Anchor(anchor.documentId(),call.span()),List.of());
@@ -157,7 +158,24 @@ public final class ProjectAnalyzer {
         ProjectNameRules scope(Symbol symbol){return ProjectNameRules.parseQualified(symbol.scope());}
         EffectiveOptions effective(Declaration declaration){return optionCache.computeIfAbsent(declaration,EffectiveOptions::of);}
         Anchor global(){return new Anchor(capture.project().id().anchor(),null);}
-        void graphProblem(PlanSemantics.GraphProblem problem){var owner=unique(new SymbolId(Namespace.TASK,problem.taskId()));currentApplication=owner.map(Symbol::application).orElse(null);var primary=owner.map(Symbol::anchor).orElse(global());diagnostic(problem.code(),Severity.ERROR,primary,problem.edges().stream().map(e->unique(new SymbolId(Namespace.TASK,e.fromId())).map(Symbol::anchor).orElse(global())).distinct().toList());currentApplication=null;}
+        void graphProblem(PlanSemantics.GraphProblem problem){
+            var locations=new ArrayList<Reference>();
+            for(var edge:problem.edges()) {
+                var kind=switch(edge.kind()){case DEPENDS_ON->ReferenceKind.DEPENDS_ON;case AFTER->ReferenceKind.AFTER;case FINALIZED_BY->ReferenceKind.FINALIZED_BY;};
+                String owner=edge.kind()==PlanSemantics.EdgeKind.FINALIZED_BY?edge.fromId():edge.toId();
+                String target=edge.kind()==PlanSemantics.EdgeKind.FINALIZED_BY?edge.toId():edge.fromId();
+                references.stream().filter(r->r.kind()==kind&&r.owner()!=null&&r.owner().qualifiedName().equals(owner)
+                        &&r.target().filter(t->t.qualifiedName().equals(target)).isPresent()).forEach(locations::add);
+            }
+            var owner=problem.taskId()==null?Optional.<Symbol>empty():unique(new SymbolId(Namespace.TASK,problem.taskId()));
+            if(!locations.isEmpty()) {
+                // Prefer the new relation for activation failures; keep its physical fragment and application.
+                var primary=locations.stream().filter(r->r.kind()==ReferenceKind.FINALIZED_BY).findFirst().orElse(locations.getFirst());
+                currentApplication=unique(primary.owner()).map(Symbol::application).orElse(null);
+                diagnostic(problem.code(),Severity.ERROR,primary.anchor(),locations.stream().filter(r->r!=primary).map(Reference::anchor).distinct().toList());
+            } else {currentApplication=owner.map(Symbol::application).orElse(null);diagnostic(problem.code(),Severity.ERROR,owner.map(Symbol::anchor).orElse(global()),List.of());}
+            currentApplication=null;
+        }
         void limit(){if(bounded){bounded=false;declarationsComplete=false;referencesComplete=false;graphComplete=false;diagnostic("SEMANTIC_LIMIT",Severity.INFORMATION,global(),List.of());}}
         void diagnostic(String code,Severity severity,Anchor anchor,List<Anchor> related){diagnostic(code,severity,anchor,related,code);}
         void diagnostic(String code,Severity severity,Anchor anchor,List<Anchor> related,String messageKey){if(diagnostics.size()<MAX_DIAGNOSTICS)diagnostics.add(new Diagnostic(code,severity,DiagnosticMessages.message(messageKey,language),anchor,related,currentApplication==null?null:currentApplication.id()));else{bounded=false;referencesComplete=false;diagnostics.set(MAX_DIAGNOSTICS-1,new Diagnostic("SEMANTIC_LIMIT",Severity.INFORMATION,DiagnosticMessages.message("SEMANTIC_LIMIT",language),global(),List.of()));}}

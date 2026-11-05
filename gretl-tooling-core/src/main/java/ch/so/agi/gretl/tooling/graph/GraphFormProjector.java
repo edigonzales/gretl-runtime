@@ -36,7 +36,7 @@ public final class GraphFormProjector {
             for(var option:symbol.declaration().options())if(option.key() instanceof LiteralValue literal&&literal.value() instanceof String name){
                 if(name.length()>1024||!options.containsKey(name)&&options.size()>=128)continue;
                 if(options.containsKey(name))options.put(name,new Field(true,null,"EDIT_MULTIPLE_OPTIONS"));
-                else options.put(name,field(snapshot,symbol,option.value(),cancellation));
+                else options.put(name,linkOption(name)?linkField(snapshot,symbol,option.value(),cancellation):field(snapshot,symbol,option.value(),cancellation));
             }
             values.put(node.id(),new NodeValues(fields,options));
         }
@@ -52,6 +52,19 @@ public final class GraphFormProjector {
         }
         URI defaultsDocument=project.projectMode()?project.settingsId():project.id().anchor();
         return new Projection(values,insertions,defaultsDocument,snapshot.analysis().defaultTargets().stream().map(name->new SymbolId(Namespace.TASK,name)).toList());
+    }
+    private boolean linkOption(String name){return Set.of("dependsOn","after","finalizedBy").contains(name);}
+    private Field linkField(AnalysisSnapshot snapshot,Symbol owner,ValueExpression expression,CancellationToken cancellation){
+        if(expression instanceof NameValue){
+            var targets=snapshot.analysis().references().stream().filter(r->owner.id().equals(r.owner())&&owner.anchor().documentId().equals(r.anchor().documentId())&&expression.span().contains(r.anchor().span()))
+                    .map(Reference::target).flatMap(Optional::stream).distinct().toList();
+            return targets.size()==1?new Field(true,scalar("Text",targets.getFirst().qualifiedName()),null):new Field(true,null,"EDIT_UNRESOLVED_VALUE");
+        }
+        if(expression instanceof ListValue list){
+            var items=list.items().stream().map(item->linkField(snapshot,owner,item,cancellation)).toList();
+            return items.stream().anyMatch(f->f.value()==null)?new Field(true,null,"EDIT_UNRESOLVED_VALUE"):new Field(true,new Value("List",null,items.stream().map(Field::value).toList(),null,null,null),null);
+        }
+        return field(snapshot,owner,expression,cancellation);
     }
     private Field field(AnalysisSnapshot snapshot,Symbol owner,ValueExpression expression,CancellationToken cancellation){
         try{return new Field(true,value(snapshot,owner,expression,0,new int[]{0},cancellation),null);}

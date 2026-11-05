@@ -51,8 +51,8 @@ final class SignatureQueries {
 
     private Optional<SignatureInfo> signature(QueryContext context,Candidate call) {
         List<String> parameters=switch(call.name()) {
-            case "task"->List.of("name: String","operation: OperationType","options: [dependsOn, after, description, when: Closure, timeout: positive ISO-8601 Duration]","configuration: Closure");
-            case "action"->List.of("name: String","options: [dependsOn, after, description, when: Closure, timeout: positive ISO-8601 Duration]","body: Closure");
+            case "task"->List.of("name: String","operation: OperationType","options: [dependsOn, after, finalizedBy, description, when: Closure, timeout: positive ISO-8601 Duration]","configuration: Closure");
+            case "action"->List.of("name: String","options: [dependsOn, after, finalizedBy, description, when: Closure, timeout: positive ISO-8601 Duration]","body: Closure");
             case "parameterDeclaration"->List.of("name: String","options: [type: text|boolean|integer|path, required: boolean, description: String, defaultValue]");
             case "parameter"->List.of("name: String","type: Class (optional; integer resolves to Long)");
             case "result"->List.of("task: String (ResultView) | TaskRef (raw result)");

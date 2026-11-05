@@ -44,6 +44,7 @@ public final class JobGraphProjector {
             capabilities.put("rename",editability.assess(snapshot,new SemanticEditIntent.RenameSymbol(symbol.id(),symbol.localName()),style));
             if(symbol.id().namespace()==Namespace.TASK) {
                 capabilities.put("delete",editability.assess(snapshot,new SemanticEditIntent.DeleteTask(symbol.id()),style));
+                capabilities.put("finalizedBy",editability.assess(snapshot,new SemanticEditIntent.SetTaskOption(symbol.id(),"finalizedBy",new EditableValue.Sequence(List.of())),style));
                 capabilities.put("options",editability.assess(snapshot,new SemanticEditIntent.SetTaskOption(symbol.id(),"description",new EditableValue.Literal(null)),style));
                 if(symbol.operation()!=null)for(var input:symbol.operation().inputs())capabilities.put("field:"+input.name(),editability.assess(snapshot,new SemanticEditIntent.SetField(symbol.id(),input.name(),new EditableValue.Literal(null)),style));
             }
@@ -78,10 +79,11 @@ public final class JobGraphProjector {
             String from=symbols.get(reference.target().orElseThrow()),to=symbols.get(reference.owner());
             if(from==null||to==null)continue;
             EdgeKind kind=switch(reference.kind()) {
-                case DEPENDS_ON->EdgeKind.DEPENDS_ON;case AFTER->EdgeKind.AFTER;
+                case DEPENDS_ON->EdgeKind.DEPENDS_ON;case AFTER->EdgeKind.AFTER;case FINALIZED_BY->EdgeKind.FINALIZED_BY;
                 case RESULT,RESULT_OPTIONAL->EdgeKind.RESULT_BINDING;default->null;
             };
             if(kind==null)continue;
+            if(kind==EdgeKind.FINALIZED_BY){String owner=to;to=from;from=owner;}
             String output=null,input=null;boolean known=false;
             if(kind==EdgeKind.RESULT_BINDING&&reference.kind()==ReferenceKind.RESULT) {
                 var owner=analysis.unique(reference.owner()).orElseThrow();

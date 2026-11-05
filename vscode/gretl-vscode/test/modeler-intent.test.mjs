@@ -26,3 +26,10 @@ test('Core form values tolerate unused null record components but reject foreign
  let deep={kind:'Null'};for(let i=0;i<18;i++)deep={kind:'List',items:[deep]};assert.throws(()=>m.projectedValue(deep),/INVALID/);
 });
 test('unfinished reference selectors cannot be confirmed, and Core refusal reasons remain visible data',()=>{assert.equal(m.completeDraftValue({kind:'ParameterRef',symbol:{namespace:'PARAMETER',qualifiedName:''}}),false);assert.equal(m.completeDraftValue({kind:'ResultFieldRef',symbol:task,field:''}),false);assert.equal(m.completeDraftValue({kind:'List',items:[{kind:'ParameterRef',symbol:{namespace:'PARAMETER',qualifiedName:''}}]}),false);assert.equal(m.completeDraftValue({kind:'ResultFieldRef',symbol:task,field:'file'}),true);assert.equal(m.capabilityReason({state:'REJECTED',reasons:[{code:'EDIT_REFERENCED_TARGET',message:'Still referenced; no cascade.'}]}),'EDIT_REFERENCED_TARGET: Still referenced; no cascade.');assert.equal(m.capabilityReason({state:'ALLOWED',reasons:[]}), '');});
+
+test('finalizer add, remove, owner setter and form batch are explicit typed intents',()=>{
+ for(const kind of ['AddDependency','RemoveDependency'])assert(m.editIntent({kind,target:task,producer:task,edgeKind:'FINALIZED_BY'}));
+ assert(m.editIntent({kind:'SetTaskOption',target:task,field:'finalizedBy',value:{kind:'List',items:[{kind:'Text',scalar:':release'}]}}));
+ assert(m.editIntent({kind:'ConfigureTask',target:task,fields:{},removedFields:[],options:{finalizedBy:{kind:'Null'}}}));
+ assert.equal(m.editIntent({kind:'AddDependency',target:task,producer:task,edgeKind:'finalizedBy'}),false);
+});

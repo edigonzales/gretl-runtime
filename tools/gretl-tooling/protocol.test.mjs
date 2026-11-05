@@ -33,3 +33,8 @@ test('include context requests are additive, negotiated and bounded',()=>{
  for(const value of [{...context,includeToolingVersion:2},{...context,contextToken:'forged',ownerGeneration:'42'},
   {...context,contextToken:id,ownerGeneration:42},{...context,ownerGeneration:'42',syncToken:id,buffers:Array(513).fill({documentId:context.documentId})}])assert(!validate(value),JSON.stringify(value));
 });
+
+test('finalizer edge intents extend protocol one without changing catalogue or include versions',()=>{
+ for(const kind of ['AddDependency','RemoveDependency'])assert(validate({protocolVersion:1,documentId:'file:///work/job.groovy',expectedSnapshotId:id,requireOpenDocuments:true,intent:{kind,producer:symbol,target:symbol,edgeKind:'FINALIZED_BY'}}),JSON.stringify(validate.errors));
+ assert(!validate({protocolVersion:1,documentId:'file:///work/job.groovy',expectedSnapshotId:id,requireOpenDocuments:true,intent:{kind:'AddDependency',producer:symbol,target:symbol,edgeKind:'UNKNOWN'}}));
+});

@@ -13,7 +13,7 @@ public record JobGraph(UUID snapshotId,EditPreconditions preconditions,Status st
                        List<Edge> edges,List<Node> parameters,List<Node> cleanup,List<Diagnostic> diagnostics) {
     public enum Status { COMPLETE, PARTIAL, INVALID }
     public enum NodeKind { TASK, ACTION, DYNAMIC_CODE, PROJECT, INNER_INVOCATION, PARAMETER, CLEANUP }
-    public enum EdgeKind { DEPENDS_ON, AFTER, RESULT_BINDING }
+    public enum EdgeKind { DEPENDS_ON, AFTER, FINALIZED_BY, RESULT_BINDING }
     public record Node(String id,String presentationKey,SymbolId symbol,Anchor anchor,NodeKind kind,String title,
                        String operationId,String parentId,Map<String,EditCapability> editCapabilities,
                        List<InputDescriptor> inputs,List<OutputDescriptor> outputs,List<Diagnostic> diagnostics) {

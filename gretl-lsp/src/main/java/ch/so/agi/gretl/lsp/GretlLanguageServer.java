@@ -83,7 +83,7 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
             capabilities.setDocumentLinkProvider(new DocumentLinkOptions(false));capabilities.setFoldingRangeProvider(true);
             if(documentChanges){var rename=new RenameOptions();rename.setPrepareProvider(true);capabilities.setRenameProvider(rename);if(codeActionLiterals)capabilities.setCodeActionProvider(new CodeActionOptions(List.of(CodeActionKind.QuickFix)));}
             var workspaceCapabilities=new WorkspaceServerCapabilities();var options=new WorkspaceFoldersOptions();options.setSupported(true);options.setChangeNotifications(true);workspaceCapabilities.setWorkspaceFolders(options);capabilities.setWorkspace(workspaceCapabilities);
-            capabilities.setExperimental(Map.of("gretlRuntime",Map.of("protocolVersion",1,"catalogSchemaVersion",1,"graphSchemaVersion",1,"graph",true,"editPlanning",documentChanges,"navigation",true,"analysisNotifications",true,"includeToolingVersion",1)));
+            capabilities.setExperimental(Map.of("gretlRuntime",Map.of("protocolVersion",1,"catalogSchemaVersion",1,"graphSchemaVersion",2,"graph",true,"editPlanning",documentChanges,"navigation",true,"analysisNotifications",true,"includeToolingVersion",1,"taskFinalizersVersion",1)));
             state=State.INITIALIZED;
             var result=new InitializeResult();result.setCapabilities(capabilities);result.setServerInfo(new ServerInfo("gretl-runtime-lsp","6.0.0-SNAPSHOT"));return CompletableFuture.completedFuture(result);
         }catch(IOException|IllegalArgumentException invalid){return CompletableFuture.failedFuture(ServerWorkspace.error(ResponseErrorCode.InvalidParams,Objects.requireNonNullElse(invalid.getMessage(),"INITIALIZATION_FAILED")));}

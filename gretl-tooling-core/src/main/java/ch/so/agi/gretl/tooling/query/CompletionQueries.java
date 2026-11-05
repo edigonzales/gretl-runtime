@@ -94,7 +94,7 @@ final class CompletionQueries {
                     if(touch(option.value().span(),context.offsetUtf16())) {
                         if(option.value() instanceof OpaqueExpression)return List.of();
                         if(option.key() instanceof LiteralValue key&&key.value() instanceof String name) {
-                            if(name.equals("dependsOn")||name.equals("after"))names(context,result,Namespace.TASK,wordOrLiteral(context),scope(context));
+                            if(name.equals("dependsOn")||name.equals("after")||name.equals("finalizedBy"))names(context,result,Namespace.TASK,wordOrLiteral(context),scope(context));
                             if(name.equals("required"))booleans(result,option.value().span());
                             if(name.equals("type"))for(var type:DslVocabulary.parameterTypes())quoted(result,type,"VALUE","Parameter type",option.value().span());
                         }

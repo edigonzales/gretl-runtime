@@ -63,7 +63,7 @@ public final class EditabilityAnalyzer {
         // Generic setters and form batches must obey the same coverage rule as graph intents.
         boolean graphChange = intent instanceof SemanticEditIntent.AddDependency || intent instanceof SemanticEditIntent.RemoveDependency
                 || intent instanceof SemanticEditIntent.BindResult || intent instanceof SemanticEditIntent.SetDefaults
-                || intent instanceof SemanticEditIntent.SetTaskOption option && List.of("dependsOn","after").contains(option.option())
+                || intent instanceof SemanticEditIntent.SetTaskOption option && List.of("dependsOn","after","finalizedBy").contains(option.option())
                 || intent instanceof SemanticEditIntent.SetField field && references(field.value(),0);
         boolean closedReferences = graphChange || intent instanceof SemanticEditIntent.RenameSymbol || intent instanceof SemanticEditIntent.DeleteTask;
         if (closedReferences && (!analysis.capabilities().declarationsComplete() || !analysis.capabilities().referencesComplete())) {
@@ -127,8 +127,8 @@ public final class EditabilityAnalyzer {
             case SemanticEditIntent.SetField i -> i.target();
             case SemanticEditIntent.RemoveField i -> i.target();
             case SemanticEditIntent.SetTaskOption i -> i.target();
-            case SemanticEditIntent.AddDependency i -> i.consumer();
-            case SemanticEditIntent.RemoveDependency i -> i.consumer();
+            case SemanticEditIntent.AddDependency i -> i.kind()==ch.so.agi.gretl.language.PlanSemantics.EdgeKind.FINALIZED_BY?i.producer():i.consumer();
+            case SemanticEditIntent.RemoveDependency i -> i.kind()==ch.so.agi.gretl.language.PlanSemantics.EdgeKind.FINALIZED_BY?i.producer():i.consumer();
             case SemanticEditIntent.BindResult i -> i.consumer();
             case SemanticEditIntent.RenameSymbol i -> i.target();
             case SemanticEditIntent.DeleteTask i -> i.target();

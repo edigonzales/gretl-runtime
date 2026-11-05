@@ -23,17 +23,6 @@ class DependencySourceEditsTest {
         fixture.manager.onCatalogChanged();
     }
 
-    @Test void p1NewRelationCannotFallThroughToAfterMutation() {
-        try(var fixture=new Fixture()) {
-            fixture.files.put(JOB,"action('owner'){}\naction('release'){}\n");
-            var before=fixture.capture();var transaction=new EditTransaction(before,EditStyle.defaults());
-            var edits=new DependencySourceEdits();
-            assertEquals("EDIT_FINALIZER_NOT_IMPLEMENTED",assertThrows(IllegalArgumentException.class,
-                    ()->edits.add(transaction,id("owner"),id("release"),EdgeKind.FINALIZED_BY)).getMessage());
-            assertEquals("EDIT_FINALIZER_NOT_IMPLEMENTED",assertThrows(IllegalArgumentException.class,
-                    ()->edits.remove(transaction,id("owner"),id("release"),EdgeKind.FINALIZED_BY)).getMessage());
-        }
-    }
     @Test void creatingAConsumerWithAnInitialResultBindingIncludesItsDataDependency() {
         try(var fixture=new Fixture()) {
             catalog(fixture);

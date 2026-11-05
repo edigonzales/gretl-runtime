@@ -40,6 +40,8 @@ final class DiagnosticMessages {
         entry("DUPLICATE_DEFAULT_TARGET","Duplicate default target.","Defaultziel ist doppelt."),
         entry("DUPLICATE_TASK_LINK","Duplicate dependency or ordering link.","Daten- oder Reihenfolgeabhaengigkeit ist doppelt."),
         entry("DEPENDENCY_CYCLE","Cycle in the data dependency graph.","Zyklus im Datenabhaengigkeitsgraph."),
+        entry("SELF_FINALIZER","A task cannot finalize itself.","Ein Task darf nicht sein eigener Finalizer sein."),
+        entry("FINALIZER_ACTIVATION_DEADLOCK","Finalizer activation and ordering cannot make progress.","Finalizeraktivierung und Reihenfolge blockieren sich."),
         entry("PLAN_CYCLE","Cycle in the selected plan.","Zyklus im ausgewaehlten Plan."),
         entry("SEMANTIC_LIMIT","Project exceeds the static analysis budget.","Projekt ueberschreitet das Budget fuer statische Analyse."),
         entry("SQL_PARAMETER_MISSING","SQL template refers to a missing or null parameter.","SQLvorlage referenziert einen fehlenden oder nullwertigen Parameter."),

@@ -1,14 +1,14 @@
 import {EditIntent,FormProjection,editIntent,formProjection} from './edit-model';
 /** Wire data from the Java core. No Groovy parsing, binding or graph-selection rules live here. */
 export type NodeKind='TASK'|'ACTION'|'DYNAMIC_CODE'|'PROJECT'|'INNER_INVOCATION'|'PARAMETER'|'CLEANUP';
-export type EdgeKind='DEPENDS_ON'|'AFTER'|'RESULT_BINDING';
+export type EdgeKind='DEPENDS_ON'|'AFTER'|'FINALIZED_BY'|'RESULT_BINDING';
 export interface Anchor {documentId:string;span?:{startUtf16:number;endUtf16:number}|null}
 export interface Diagnostic {code:string;severity:'ERROR'|'WARNING'|'INFORMATION';message:string;anchor:Anchor;application?:{ownerScope:string;entryDocument:string;sourceDocument:string}|null}
 export interface SourceStamp {documentId:string;sha256?:string|null;version?:number|null;incarnation?:string|null;editable:boolean;unavailableCode?:string|null}
-export interface GraphContext {protocolVersion:1;schemaVersion:1;serverInstanceId:string;projectId:string;workspaceGeneration:string;snapshotId:string;ownerGeneration?:string|null;contextGeneration?:string|null;contextDocumentId?:string|null;contextToken?:string|null;catalogId?:string;sourceStamps:SourceStamp[];completeness:Record<string,boolean>;notices:string[]}
+export interface GraphContext {protocolVersion:1;schemaVersion:2;serverInstanceId:string;projectId:string;workspaceGeneration:string;snapshotId:string;ownerGeneration?:string|null;contextGeneration?:string|null;contextDocumentId?:string|null;contextToken?:string|null;catalogId?:string;sourceStamps:SourceStamp[];completeness:Record<string,boolean>;notices:string[]}
 export interface GraphNode {id:string;presentationKey?:string|null;symbol?:{namespace:string;qualifiedName:string}|null;anchor:Anchor;kind:NodeKind;title:string;operationId?:string|null;parentId?:string|null;editCapabilities:Record<string,{state:string;reason?:string;[key:string]:unknown}>;inputs:{name:string;[key:string]:unknown}[];outputs:{name:string;[key:string]:unknown}[];diagnostics:Diagnostic[]}
 export interface GraphEdge {id:string;source:string;target:string;kind:EdgeKind;anchor:Anchor;outputField?:string|null;inputField?:string|null;schemaKnown:boolean}
-export interface GraphResponse {context:GraphContext;payload:{status:'COMPLETE'|'PARTIAL'|'INVALID';nodes:GraphNode[];edges:GraphEdge[];parameters:GraphNode[];cleanup:GraphNode[];diagnostics:Diagnostic[];forms?:FormProjection|null;preview?:{available:boolean;reason?:string|null;targets:string[];orderedSymbols:string[]}|null}}
+export interface GraphResponse {context:GraphContext;payload:{status:'COMPLETE'|'PARTIAL'|'INVALID';nodes:GraphNode[];edges:GraphEdge[];parameters:GraphNode[];cleanup:GraphNode[];diagnostics:Diagnostic[];forms?:FormProjection|null;preview?:{available:boolean;reason?:string|null;targets:string[];orderedSymbols:string[];normalSymbols:string[];conditionalSymbols:string[]}|null}}
 export interface Position {x:number;y:number;parentKey:string|null}
 export interface ViewState {schemaVersion:1;key:string;positions:Record<string,Position>;viewport:{x:number;y:number;zoom:number}}
 export type ViewStatus='EMPTY'|'LOADING'|'FRESH'|'STALE'|'ERROR';
@@ -24,7 +24,7 @@ export function validAnchor(v:unknown):v is Anchor {
 export function graphResponse(v:unknown):GraphResponse {
     if(!object(v)||encodedSize(v)>16*1024*1024||!object(v.context)||!object(v.payload))throw Error('GRAPH_PAYLOAD_INVALID');
     const c=v.context,p=v.payload;
-    if(c.protocolVersion!==1||c.schemaVersion!==1||!text(c.serverInstanceId,128)||!text(c.snapshotId,128)||!text(c.projectId,16384)||!text(c.workspaceGeneration,32)||!Array.isArray(c.sourceStamps)||c.sourceStamps.length>4096)throw Error('GRAPH_CONTEXT_INVALID');
+    if(c.protocolVersion!==1||c.schemaVersion!==2||!text(c.serverInstanceId,128)||!text(c.snapshotId,128)||!text(c.projectId,16384)||!text(c.workspaceGeneration,32)||!Array.isArray(c.sourceStamps)||c.sourceStamps.length>4096)throw Error('GRAPH_CONTEXT_INVALID');
     for(const field of ['ownerGeneration','contextGeneration'])if(c[field]!=null&&(typeof c[field]!=='string'||!/^[0-9]{1,19}$/.test(c[field] as string)))throw Error('GRAPH_CONTEXT_INVALID');
     for(const field of ['contextDocumentId','contextToken'])if(c[field]!=null&&!text(c[field],8192))throw Error('GRAPH_CONTEXT_INVALID');
     for(const s of c.sourceStamps)if(!object(s)||!text(s.documentId,8192)||s.version!=null&&(!Number.isSafeInteger(s.version)||Number(s.version)<0)||s.sha256!=null&&!/^[a-f0-9]{64}$/.test(String(s.sha256)))throw Error('GRAPH_STAMP_INVALID');
@@ -41,9 +41,9 @@ export function graphResponse(v:unknown):GraphResponse {
     for(const n of nodes as GraphNode[])if(n.parentId&&!ids.has(n.parentId))throw Error('GRAPH_PARENT_INVALID');
     const parents=new Map((nodes as GraphNode[]).map(n=>[n.id,n.parentId]));
     for(const n of nodes as GraphNode[]){let parent=n.parentId;let depth=0;while(parent){if(parent===n.id||++depth>4)throw Error('GRAPH_PARENT_INVALID');parent=parents.get(parent);}}
-    for(const edge of p.edges as unknown[]){if(!object(edge)||!text(edge.id,128)||ids.has(edge.id)||!ids.has(String(edge.source))||!ids.has(String(edge.target))||!['DEPENDS_ON','AFTER','RESULT_BINDING'].includes(String(edge.kind))||!validAnchor(edge.anchor))throw Error('GRAPH_EDGE_INVALID');ids.add(edge.id);}
+    for(const edge of p.edges as unknown[]){if(!object(edge)||!text(edge.id,128)||ids.has(edge.id)||!ids.has(String(edge.source))||!ids.has(String(edge.target))||!['DEPENDS_ON','AFTER','FINALIZED_BY','RESULT_BINDING'].includes(String(edge.kind))||!validAnchor(edge.anchor))throw Error('GRAPH_EDGE_INVALID');ids.add(edge.id);}
     for(const d of p.diagnostics as unknown[])if(!object(d)||!text(d.code,128)||!text(d.message)||!validAnchor(d.anchor)||!['ERROR','WARNING','INFORMATION'].includes(String(d.severity))||d.application!=null&&(!object(d.application)||!text(d.application.ownerScope,4096)||!text(d.application.entryDocument,8192)||!text(d.application.sourceDocument,8192)))throw Error('GRAPH_DIAGNOSTIC_INVALID');
-    if(p.preview!=null){const preview=p.preview;if(!object(preview)||typeof preview.available!=='boolean'||!Array.isArray(preview.targets)||!Array.isArray(preview.orderedSymbols)||preview.targets.some(t=>!text(t))||preview.orderedSymbols.some(t=>!text(t)))throw Error('GRAPH_PREVIEW_INVALID');}
+    if(p.preview!=null){const preview=p.preview;if(!object(preview)||typeof preview.available!=='boolean'||!Array.isArray(preview.targets)||!Array.isArray(preview.orderedSymbols)||preview.targets.some(t=>!text(t))||preview.orderedSymbols.some(t=>!text(t))||![preview.normalSymbols,preview.conditionalSymbols].every(v=>Array.isArray(v)&&v.every(t=>text(t)&&(preview.orderedSymbols as unknown[]).includes(t))))throw Error('GRAPH_PREVIEW_INVALID');}
     if(p.forms!=null)p.forms=formProjection(p.forms,new Set(nodes.map(n=>(n as GraphNode).id)),new Set((c.sourceStamps as SourceStamp[]).map(s=>s.documentId)));
     return v as unknown as GraphResponse;
 }
