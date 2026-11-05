@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.lsp;
 
+import ch.so.agi.gretl.tooling.source.SourceText;
 import com.google.gson.*;
 import java.io.*;
 import java.net.URI;
@@ -72,6 +73,32 @@ class ServerProcessIT {
     Map<String,Object> position(String uri,int line,int character){return Map.of("textDocument",Map.of("uri",uri),"position",Map.of("line",line,"character",character));}
     JsonObject graph(Wire wire,String uri)throws Exception{return wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();}
     boolean diagnostic(JsonObject graph,String code){return graph.getAsJsonObject("payload").getAsJsonArray("diagnostics").asList().stream().map(JsonElement::getAsJsonObject).anyMatch(d->code.equals(d.get("code").getAsString()));}
+
+    private static boolean hasSourceStamp(JsonObject context,URI source,String sha256){
+        return context.getAsJsonArray("sourceStamps").asList().stream().map(JsonElement::getAsJsonObject)
+                .anyMatch(stamp->stamp.has("sha256")&&sha256.equals(stamp.get("sha256").getAsString())
+                        &&source.equals(URI.create(stamp.get("documentId").getAsString())));
+    }
+
+    private JsonObject graphAfterDiskChange(Wire wire,String uri,Path source,String sha256)throws Exception {
+        // A native watch event can invalidate a request after the explicit LSP notification.
+        // Only that protocol response is retryable; a successful graph must use the new bytes.
+        long deadline=System.nanoTime()+Duration.ofSeconds(10).toNanos();
+        JsonObject response;
+        do {
+            response=wire.response("gretl/graph",Map.of("protocolVersion",1,"documentId",uri));
+            if(!response.has("error")){
+                assertTrue(response.has("result"),response.toString());
+                var graph=response.getAsJsonObject("result");
+                assertTrue(hasSourceStamp(graph.getAsJsonObject("context"),source.toUri(),sha256),graph.toString());
+                return graph;
+            }
+            var error=response.getAsJsonObject("error");
+            assertEquals(-32801,error.get("code").getAsInt(),response.toString());
+            assertEquals("STALE_OR_CANCELLED_ANALYSIS",error.get("message").getAsString(),response.toString());
+        }while(System.nanoTime()<deadline);
+        throw new AssertionError("SQL analysis did not settle after the file change: "+response);
+    }
 
     @Test void formsCarryCoreBoundValuesAndExactIntegersWithoutExecutingOpaqueSource()throws Exception {
         Path job=temporary.resolve("job.groovy"),marker=temporary.resolve("must-not-exist");String uri=job.toUri().toString();
@@ -298,17 +325,19 @@ class ServerProcessIT {
             wire.send("textDocument/didClose",Map.of("textDocument",Map.of("uri",settingsUri)),null);
             wire.send("textDocument/didClose",Map.of("textDocument",Map.of("uri",sqlUri)),null);
             assertFalse(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"));
-            Files.writeString(sql,"select ${external}");wire.send("workspace/didChangeWatchedFiles",Map.of("changes",List.of(Map.of("uri",sqlUri,"type",2))),null);
-            assertTrue(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"));
+            String externalText="select ${external}";
+            String externalHash=new SourceText(sql.toUri(),externalText,null,"DISK",true).stamp().contentSha256();
+            Files.writeString(sql,externalText);wire.send("workspace/didChangeWatchedFiles",Map.of("changes",List.of(Map.of("uri",sqlUri,"type",2))),null);
+            assertTrue(diagnostic(graphAfterDiskChange(wire,uri,sql,externalHash),"SQL_PARAMETER_MISSING"));
             String watchedText="select 2";Files.writeString(sql,watchedText);
-            String watchedHash=new ch.so.agi.gretl.tooling.source.SourceText(sql.toUri(),watchedText,null,"DISK",true).stamp().contentSha256();
-            wire.notification("gretl/analysisReady",params->params.getAsJsonObject("context").getAsJsonArray("sourceStamps").asList().stream().map(JsonElement::getAsJsonObject).anyMatch(stamp->stamp.has("sha256")&&watchedHash.equals(stamp.get("sha256").getAsString())));
-            assertFalse(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"),"Native watcher must refresh without didChangeWatchedFiles");
-            Files.writeString(sql,"select ${external}");wire.send("workspace/didChangeWatchedFiles",Map.of("changes",List.of(Map.of("uri",sqlUri,"type",2))),null);
+            String watchedHash=new SourceText(sql.toUri(),watchedText,null,"DISK",true).stamp().contentSha256();
+            wire.notification("gretl/analysisReady",params->hasSourceStamp(params.getAsJsonObject("context"),sql.toUri(),watchedHash));
+            assertFalse(diagnostic(graphAfterDiskChange(wire,uri,sql,watchedHash),"SQL_PARAMETER_MISSING"),"Native watcher must refresh without didChangeWatchedFiles");
+            Files.writeString(sql,externalText);wire.send("workspace/didChangeWatchedFiles",Map.of("changes",List.of(Map.of("uri",sqlUri,"type",2))),null);
             wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("added",List.of(),"removed",List.of(Map.of("uri",temporary.toUri().toString(),"name","root")))),null);
             assertTrue(wire.response("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).has("error"));
             wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("added",List.of(Map.of("uri",temporary.toUri().toString(),"name","root")),"removed",List.of())),null);
-            assertTrue(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"));
+            assertTrue(diagnostic(graphAfterDiskChange(wire,uri,sql,externalHash),"SQL_PARAMETER_MISSING"));
             assertFalse(Files.exists(marker));wire.stop();
         }
     }
