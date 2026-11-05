@@ -19,7 +19,7 @@ final class SafeGroovySyntaxReader {
         try(var loader=new GroovyClassLoader(ClassLoader.getPlatformClassLoader(),configuration)) {
             // BOM remains in original coordinates. Replace only its parser-view character with one space.
             String parserText=source.hasBom()?" "+source.text().substring(1):source.text();
-            unit=new SourceUnit(source.stamp().documentId().toString(),parserText,configuration,loader,new ErrorCollector(configuration));
+            unit=new SourceUnit(ch.so.agi.gretl.syntax.ScriptSourceNames.virtualGroovyName(source.stamp().documentId().toString()),parserText,configuration,loader,new ErrorCollector(configuration));
             unit.parse();unit.completePhase();unit.nextPhase();unit.convert();module=unit.getAST();
         } catch(StackOverflowError exceeded) {
             // Groovy's own parser/convert may recurse before a converted AST is available.

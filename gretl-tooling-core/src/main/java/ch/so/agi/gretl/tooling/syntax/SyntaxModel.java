@@ -52,7 +52,11 @@ public final class SyntaxModel {
     public record OpaqueStatement(TextSpan span,String reason,boolean mayRegisterDeclarations) { }
     public enum DocumentKind { JOB, SETTINGS, GROOVY_SOURCE, SQL }
     public record ParsedDocument(SourceText source,DocumentKind kind,TokenIndex tokens,List<Declaration> declarations,
-            List<OpaqueStatement> opaque,List<SyntaxProblem> problems,Coverage coverage) {
+            List<OpaqueStatement> opaque,List<SyntaxProblem> problems,Coverage coverage,ch.so.agi.gretl.syntax.ApplyAstInspector.Result includes) {
+        public ParsedDocument(SourceText source,DocumentKind kind,TokenIndex tokens,List<Declaration> declarations,
+                List<OpaqueStatement> opaque,List<SyntaxProblem> problems,Coverage coverage) {
+            this(source,kind,tokens,declarations,opaque,problems,coverage,new ch.so.agi.gretl.syntax.ApplyAstInspector.Result(List.of(),List.of(),false));
+        }
         public ParsedDocument { declarations=List.copyOf(declarations);opaque=List.copyOf(opaque);problems=List.copyOf(problems); }
     }
 }

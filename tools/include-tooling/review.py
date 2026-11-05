@@ -4,9 +4,15 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import fnmatch
+import shlex
 import os
 from pathlib import Path
 import signal
+import sys
+
+if sys.flags.optimize:
+    raise SystemExit("Optimized Python disables review assertions; refusing execution")
 import subprocess as sp
 import xml.etree.ElementTree as ET
 
@@ -124,6 +130,25 @@ def launch(a):
     write(ev / 'process.json', meta)
     print(json.dumps(meta))
 
+def validate_reports(wt, command, started_at):
+    reports = list(wt.glob('*/target/surefire-reports/TEST-*.xml')) + list(wt.glob('*/target/failsafe-reports/TEST-*.xml'))
+    assert reports, 'Missing test reports'
+    names=[]
+    for report in reports:
+        attrs=ET.parse(report).getroot().attrib
+        assert int(attrs['tests']) > 0 and all(int(attrs[k]) == 0 for k in ('failures','errors','skipped')), report
+        assert report.stat().st_mtime >= dt.datetime.fromisoformat(started_at).timestamp(), 'Stale report: '+str(report)
+        names.append(attrs['name'])
+    patterns=[]
+    for arg in shlex.split(command):
+        for prefix in ('-Dtest=', '-Dit.test='):
+            if arg.startswith(prefix):
+                patterns.extend(p.split('#')[0] for p in arg[len(prefix):].split(','))
+    assert patterns, 'Explicit target tests required'
+    for pattern in patterns:
+        assert any(fnmatch.fnmatchcase(n,pattern) or fnmatch.fnmatchcase(n.split('.')[-1],pattern) for n in names), 'Missing selected test: '+pattern
+
+
 def validate(ev, binary):
     h = json.loads((ev / 'handoff.json').read_text())
     v = json.loads((ev / 'verdict.json').read_text())
@@ -146,10 +171,14 @@ def validate(ev, binary):
     events = [json.loads(line) for line in (ev / 'opencode.jsonl').read_text().splitlines()]
     assert not any(e['type'] == 'error' for e in events)
     assert {e['sessionID'] for e in events if 'sessionID' in e} == {v['session_id']}
-    session = json.loads(output([str(binary), 'session', 'export', v['session_id']], wt))
-    write(ev / 'session-export.json', session)
+    # CLI output to a pipe may truncate large exports; a regular file drains fully.
+    export = ev / 'session-export.json'
+    with export.open('w') as stream:
+        run([str(binary), 'session', 'export', v['session_id']], wt, stdout=stream)
+    session = json.loads(export.read_text())
     info = session['info']
     assert info['id'] == v['session_id'] and info['location']['directory'] == str(wt)
+    assert info.get('outcome') == 'succeeded' and info['time'].get('idle'), 'Reviewer session unfinished'
     assert info['model']['providerID'] + '/' + info['model']['id'] == h['provider_model']
     assert info['agent'] == 'include-tooling-review'
     states = [e['part']['state'] for e in events if e.get('part', {}).get('tool') == 'shell'
@@ -163,11 +192,7 @@ def validate(ev, binary):
             file = Path(path) if Path(path).is_absolute() else ev / path
             assert file.is_file() and file.stat().st_size > 0
     assert all(c['authored_by_reviewer'] and c['executed'] for c in v['counterprobes'])
-    reports = list(wt.glob('*/target/surefire-reports/TEST-*.xml')) + list(wt.glob('*/target/failsafe-reports/TEST-*.xml'))
-    assert reports
-    for report in reports:
-        attrs = ET.parse(report).getroot().attrib
-        assert int(attrs['tests']) > 0 and all(int(attrs[k]) == 0 for k in ('failures', 'errors', 'skipped'))
+    validate_reports(wt, h['test_command'], p['started_at'])
     write(ev / 'validated.json', dict(accepted=True, candidate=h['head_sha'], phase=h['phase'], session=v['session_id']))
     print('ABGENOMMEN', h['phase'], h['head_sha'])
 

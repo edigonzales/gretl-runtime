@@ -6,7 +6,7 @@ import {resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
 const repo=resolve(import.meta.dirname,'../..');
 export function verifyTree(node,kind){
-  const internal=kind==='contract'?new Set():new Set(['gretl-tooling-core','gretl-language-contract',...(kind==='server'?['gretl-tooling-catalog']:[])]);
+  const internal=kind==='contract'?new Set():new Set(['gretl-tooling-core','gretl-language-contract','gretl-script-syntax',...(kind==='server'?['gretl-tooling-catalog']:[])]);
   const visit=(n,root=false)=>{
     if(!root&&n.scope!=='test'){
       if(kind==='contract')assert.fail(`Contract has production dependency ${n.groupId}:${n.artifactId}`);

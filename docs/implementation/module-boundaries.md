@@ -6,13 +6,14 @@ den aktuellen Zuschnitt.
 | Artefakt (`ch.so.agi.gretl`, Version `6.0.0-SNAPSHOT`) | Verantwortung | Erlaubte interne Produktionsabhängigkeiten |
 | --- | --- | --- |
 | gretl-language-contract | Reine Namens-, DSL- und Graphregeln | keine; ausschliesslich JDK |
-| gretl-tooling-core | Sicheres Parsing, Katalogdaten, Workspacecaptures und statische Semantik | Language-Contract |
+| gretl-script-syntax | Gemeinsame reine Include-AST-Inspektion und Quellnamen | keine; JDK und Groovy |
+| gretl-tooling-core | Sicheres Parsing, Katalogdaten, Workspacecaptures und statische Semantik | Language-Contract, Script-Syntax |
 | gretl-tooling-catalog | Vertrauenswuerdiger Buildexport; separates reines Katalogdatenartefakt | API, Tooling-Core, aktuelle Taskbibliotheken |
-| gretl-lsp | Eigenstaendiger Java25-stdio-Host fuer Queries, Graph und Editplanung | Tooling-Core, Language-Contract; ausschliesslich der isolierte Datenclassifier des Katalogs |
+| gretl-lsp | Eigenstaendiger Java25-stdio-Host fuer Queries, Graph und Editplanung | Tooling-Core, Language-Contract, Script-Syntax; ausschliesslich der isolierte Datenclassifier des Katalogs |
 | gretl-api | Neutrale Java-SPI, Metadaten und Kontexte | keine; ausschliesslich JDK |
 | gretl-i18n | Meldungskataloge | keine |
 | gretl-runner | Planung, sequenzielle Ausführung, Lebensdauer | API, i18n, Language-Contract |
-| gretl-groovy | Groovy-6-DSL und Kompilierkonfiguration | API, Runner, i18n, Language-Contract |
+| gretl-groovy | Groovy-6-DSL und Kompilierkonfiguration | API, Runner, i18n, Language-Contract, Script-Syntax |
 | gretl-logging | Logging, Telemetrie und Report | API, Runner, i18n |
 | gretl-job-runtime | Jobquelle, Parameter, Konfiguration, Ausführung und Abschluss für Skript und JAR | API, Runner, Groovy, Logging, i18n |
 | gretl-packager | Authoring: Descriptor, Kompilierung, Ressourcen und JAR | API, Groovy, Logging, i18n |
@@ -64,3 +65,11 @@ Ergebnissen. Der Dateiadapter verwendet auf der geprueften macOS-Primärplattfor
 sichere relative Directoryhandles ohne Symlinkfolgen. Nicht unterstuetzte
 Dateisystemadapter liefern einen sichtbaren Policyzustand. Eine atomare
 Transaktion mit unabhaengigen externen Dateischreibern wird nicht behauptet.
+
+Die gemeinsame Includeerkennung in `gretl-script-syntax` inspiziert nur bereits
+konvertierte Groovy-ASTs und Originalkoordinaten. Runtime und Tooling behalten
+getrennte Parsehüllen; die Runtimefassade bildet weiterhin ihre bisherigen
+Fehler ab. Der Toolingparser behält Platform-Classloader, deaktivierte
+Transformationen, Recovery und Budgets. Das Syntaxmodul besitzt keine
+Quellen-IO und keine Runtime- oder Tooling-Core-Abhängigkeit. Includeerkennung
+allein verspricht noch keine vollständige Closure oder Mehrdateien-Editfähigkeit.

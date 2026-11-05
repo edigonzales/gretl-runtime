@@ -1,7 +1,9 @@
 # Include-tooling: Arbeitsstand
 
-**Stand: P0 TESTED, unabhängiger Review ausstehend.** P1 beginnt erst nach
-maschinell geprüfter P0-Abnahme. Keine Include-Produktänderung in P0.
+**Stand: P0 REVIEWED_ACCEPTED; P1 IMPLEMENTED, finales Kandidatengate anstehend.**
+P0-Kandidat `d2dccba942a749a3f270a7dbfbdb11ffe2814a1a` wurde unabhängig
+abgenommen und nach vollständigem Prozess-/Sessionabschluss maschinell validiert.
+P2 beginnt erst nach unabhängiger P1-Abnahme.
 
 Basis: `9773c42ddb12a7343cf5f9ad7b6be81b489abb30`, sauberer Main und
 `origin/main` (Remote bei Start geprüft). Branch `codex/include-tooling`, eigener
@@ -76,4 +78,30 @@ Modellidentität, echte Checks/Gegenprobe und unveränderte getrackte Bytes prü
 Reviewrequests unter [review](review/P0-request.md); Kandidaten-SHA und Ergebnis
 werden extern erfasst, nach Abnahme hier als getrennte Statusänderung referenziert.
 
-Nächste Aktion: P0-Kandidat committen und autonom unabhängig prüfen lassen.
+## P1-Kandidat
+
+Neues neutrales Modul mit gemeinsamer ASTinspektion, originalen Helper-/Shadowing-
+und Literalregeln, Rollenbefunden, Kontrollflussunsicherheit und Quellnamen.
+Runtimefassade bleibt kompatibel; Tooling liefert den schon sicher konvertierten
+AST und den vorhandenen UTF-16-Tokenledger. Anwendungen und Ressourcenbasen sind
+getrennte Werte; RegistrationSequence erweitert bestätigte Links depth-first an
+der Apply-Site. Unaufgelöste Includes bleiben partiell; keine strukturelle
+Include-Editfreigabe und noch kein Resolver-/Membership-/Queryversprechen.
+
+Entwicklungsläufe unter `/Users/stefan/.cache/gretl-include-tooling/evidence/P1/`:
+Parser-/Runtimefamilien, echte SCRIPT-/JARprozesse und Distribution bereits
+erfolgreich. Finale Tests laufen nach Commit am sauberen Kandidaten mit dem
+exakten Befehl aus [P1-request](review/P1-request.md). Berichte vor clean gesichert.
+Das neue Modul ist transitiv im Server und in Runtime-/Packager-/Distributions-
+classpaths enthalten; Enforcer- und Inventarregeln werden erhalten/ergänzt.
+
+P0-Originalreview und Validierung:
+`/Users/stefan/.cache/gretl-include-tooling/review/P0-attempt-1/`.
+Der unabhängige MINOR P0-M1 wurde durch Ablehnung optimierten Pythons gehärtet.
+Zusätzliche negative Adaptertests prüfen falschen Digest, Nulltests, fehlende
+Zielklasse und stale XMLs. Ein echter CLIexport in eine reguläre Datei vermeidet
+die beobachtete Abschneidung grosser JSONs an einer Pipe; Sessionoutcome und
+Idleabschluss sind ebenfalls Pflichtchecks. Diese Adapteränderungen gehören zum
+neuen P1-Kandidaten, nicht rückwirkend zum geprüften P0-SHA.
+
+Nächste Aktion: finales P1-Gate und neue unabhängige Session am Kandidaten.

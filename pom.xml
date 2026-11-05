@@ -18,6 +18,7 @@
 
   <modules>
     <module>gretl-language-contract</module>
+    <module>gretl-script-syntax</module>
     <module>gretl-tooling-core</module>
     <module>gretl-tooling-catalog</module>
     <module>gretl-lsp</module>

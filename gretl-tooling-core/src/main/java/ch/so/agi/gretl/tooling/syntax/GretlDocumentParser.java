@@ -30,8 +30,21 @@ public final class GretlDocumentParser {
                 return limited(source,kind,tokens,bounded);
             }
             var extracted=new GretlAstExtractor(source,tokens,cancellation).extract(parsed.module());
-            var coverage=problems.isEmpty()?extracted.coverage():new Coverage(extracted.coverage().declarations(),extracted.coverage().references(),extracted.coverage().fieldAssignments(),Completeness.PARTIAL);
-            return new ParsedDocument(source,kind,tokens,extracted.declarations(),extracted.opaque(),problems,coverage);
+            var includeTokens=tokens.all().stream().map(t->new ch.so.agi.gretl.syntax.ApplyAstInspector.LiteralToken(
+                    t.span().startUtf16(),t.span().endUtf16(),t.text(),t.type()==org.apache.groovy.parser.antlr4.GroovyLexer.StringLiteral)).toList();
+            var includes=new ch.so.agi.gretl.syntax.ApplyAstInspector().inspect(source.stamp().documentId().toString(),
+                    source.text(),parsed.module(),includeTokens,false,cancellation::check);
+            var includeProblems=new ArrayList<>(problems);var mapper=new ParserCoordinateMapper(source);
+            for(var problem:includes.problems()){
+                int at=mapper.parserOffset(problem.line(),problem.column());
+                includeProblems.add(new SyntaxProblem(problem.code(),new TextSpan(at,at),"Invalid static include"));
+            }
+            var coverage=includeProblems.isEmpty()?extracted.coverage():Coverage.partial();
+            // A recognized site still needs a complete closure. Do not open structural edit paths in P1.
+            var opaque=extracted.opaque().stream().map(o->includes.directives().stream().anyMatch(d->
+                    o.span().startUtf16()==d.start()&&o.span().endUtf16()==d.end())
+                    ?new OpaqueStatement(o.span(),"UNRESOLVED_INCLUDE",true):o).toList();
+            return new ParsedDocument(source,kind,tokens,extracted.declarations(),opaque,includeProblems,coverage,includes);
         }
         var recovery=new RecoveringDslParser(source,tokens,cancellation).recover();var islands=new ArrayList<Declaration>();int attempts=0;
         for(var declaration:recovery.declarations()){
