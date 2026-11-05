@@ -22,11 +22,11 @@ public final class SqlTemplateAnalyzer {
     }
     @FunctionalInterface interface Reporter {void report(String code,Severity severity,Anchor anchor);}
     static void validate(WorkspaceCapture capture,Symbol symbol,Reporter reporter,CancellationToken cancellation,boolean conditional,java.util.function.Predicate<ch.so.agi.gretl.tooling.source.TextSpan> guarded){
-        if(symbol.operation()!=null)validateFields(capture,symbol.anchor(),symbol.operation().symbol(),symbol.declaration().fields(),guarded(reporter,conditional),cancellation);
-        for(var inner:symbol.declaration().invocations())if(EffectiveOptions.of(symbol.declaration()).active(inner.span())&&inner.operation() instanceof NameValue operation&&capture.catalog().result().catalog().stream().flatMap(c->c.operations().stream()).anyMatch(op->op.symbol().equals(operation.name())))validateFields(capture,new Anchor(symbol.anchor().documentId(),inner.span()),operation.name(),inner.fields(),guarded(reporter,guarded.test(inner.span())||inner.coverage().fieldAssignments()!=Completeness.COMPLETE),cancellation);
+        if(symbol.operation()!=null)validateFields(capture,symbol.application()==null?SourceUris.parent(symbol.anchor().documentId()):symbol.application().resourceBase(),symbol.anchor(),symbol.operation().symbol(),symbol.declaration().fields(),guarded(reporter,conditional),cancellation);
+        for(var inner:symbol.declaration().invocations())if(EffectiveOptions.of(symbol.declaration()).active(inner.span())&&inner.operation() instanceof NameValue operation&&capture.catalog().result().catalog().stream().flatMap(c->c.operations().stream()).anyMatch(op->op.symbol().equals(operation.name())))validateFields(capture,symbol.application()==null?SourceUris.parent(symbol.anchor().documentId()):symbol.application().resourceBase(),new Anchor(symbol.anchor().documentId(),inner.span()),operation.name(),inner.fields(),guarded(reporter,guarded.test(inner.span())||inner.coverage().fieldAssignments()!=Completeness.COMPLETE),cancellation);
     }
     private static Reporter guarded(Reporter reporter,boolean conditional){return (code,severity,anchor)->reporter.report(code,conditional&&severity==Severity.ERROR?Severity.WARNING:severity,anchor);}
-    private static void validateFields(WorkspaceCapture capture,Anchor owner,String operation,List<FieldAssignment> fields,Reporter reporter,CancellationToken cancellation){
+    private static void validateFields(WorkspaceCapture capture,java.net.URI resourceBase,Anchor owner,String operation,List<FieldAssignment> fields,Reporter reporter,CancellationToken cancellation){
         // SqlExecutor.scripts are plain SQL; its prepared statements use JDBC ?, not named templates.
         if(!SqlSourceSyntax.templated(operation))return;
         var assignments=SqlSourceSyntax.assignments(fields);var values=SqlSourceSyntax.files(operation,fields);
@@ -36,7 +36,7 @@ public final class SqlTemplateAnalyzer {
                 reporter.report("PATH_DYNAMIC",Severity.INFORMATION,new Anchor(owner.documentId(),file.span()));continue;
             }
             java.net.URI resource;
-            try{resource=SourceUris.jobResource(owner.documentId(),text(call.arguments().getFirst()));}catch(IllegalArgumentException invalid){reporter.report("PATH_INVALID",Severity.ERROR,new Anchor(owner.documentId(),file.span()));continue;}
+            try{resource=SourceUris.resource(resourceBase,text(call.arguments().getFirst()));}catch(IllegalArgumentException invalid){reporter.report("PATH_INVALID",Severity.ERROR,new Anchor(owner.documentId(),file.span()));continue;}
             if(resource==null){reporter.report("PATH_DYNAMIC",Severity.INFORMATION,new Anchor(owner.documentId(),file.span()));continue;}
             var source=capture.project().sources().texts().get(resource);if(source==null){reporter.report("SQL_SOURCE_NOT_INSPECTED",Severity.INFORMATION,new Anchor(owner.documentId(),file.span()));continue;}
             var scan=placeholders(source.text(),cancellation);if(!scan.complete())reporter.report("SEMANTIC_LIMIT",Severity.INFORMATION,new Anchor(resource,null));

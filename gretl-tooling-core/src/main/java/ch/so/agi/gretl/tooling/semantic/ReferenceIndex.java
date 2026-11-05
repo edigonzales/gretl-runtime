@@ -3,6 +3,7 @@ package ch.so.agi.gretl.tooling.semantic;
 import ch.so.agi.gretl.tooling.semantic.SemanticModel.*;
 import ch.so.agi.gretl.tooling.workspace.DocumentStore;
 import java.net.URI;
+import ch.so.agi.gretl.tooling.workspace.IncludeModel.ApplicationId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,16 +49,27 @@ public final class ReferenceIndex {
     }
 
     public List<Reference> referencesAt(URI document, int offset) {
+        return referencesAt(document,offset,infer(document));
+    }
+    private ApplicationId infer(URI document){
+        var applications=analysis.capture().project().includeClosure().applications().stream().map(a->a.id()).filter(a->a.sourceDocument().equals(DocumentStore.identity(document))).distinct().toList();
+        return applications.size()==1?applications.getFirst():null;
+    }
+    public List<Reference> referencesAt(URI document,int offset,ApplicationId application){
         return byDocument.getOrDefault(DocumentStore.identity(document), List.of()).stream()
+                .filter(r->r.application()==null||r.application().equals(application))
                 .filter(r -> at(r.anchor(), offset)).toList();
     }
 
     public Set<SymbolId> targetsAt(URI document, int offset) {
+        return targetsAt(document,offset,infer(document));
+    }
+    public Set<SymbolId> targetsAt(URI document,int offset,ApplicationId application){
         URI id = DocumentStore.identity(document);
         var targets = new LinkedHashSet<SymbolId>();
-        for (var reference : referencesAt(id, offset)) targets.addAll(reference.candidates());
+        for (var reference : referencesAt(id, offset,application)) targets.addAll(reference.candidates());
         for (var entry : analysis.symbols().entrySet()) for (var symbol : entry.getValue()) {
-            if (!symbol.anchor().documentId().equals(id)) continue;
+            if (!symbol.anchor().documentId().equals(id)||symbol.application()!=null&&!symbol.application().id().equals(application)) continue;
             if (at(symbol.anchor(), offset) || symbol.declaration().bindingSpan() != null
                     && symbol.declaration().bindingSpan().contains(offset)) targets.add(entry.getKey());
         }
@@ -65,7 +77,10 @@ public final class ReferenceIndex {
     }
 
     public List<Anchor> definitionsAt(URI document, int offset) {
-        return targetsAt(document, offset).stream().flatMap(id -> analysis.symbols().getOrDefault(id, List.of()).stream())
+        return definitionsAt(document,offset,infer(document));
+    }
+    public List<Anchor> definitionsAt(URI document,int offset,ApplicationId application){
+        return targetsAt(document, offset,application).stream().flatMap(id -> analysis.symbols().getOrDefault(id, List.of()).stream())
                 .map(Symbol::anchor).distinct().toList();
     }
 

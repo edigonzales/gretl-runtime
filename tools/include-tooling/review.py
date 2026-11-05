@@ -107,6 +107,9 @@ def launch(a):
               'Copy handoff identity fields, supply actual session_id; criteria is a list of objects with id/status/evidence; '
               'executed_checks and counterprobes each need actual command, exit_code, assertion, evidence. '
               'Counterprobes also need authored_by_reviewer=true and executed=true. '
+              'Read this adapter validate first: each reported command must exactly match a completed successful shell event. '
+              'Run required Maven/npm commands directly through shell, not as inner subprocesses of a wrapper. '
+              'Evidence paths must be nonempty regular files, never directories. '
               'No prefilled judgment. Give findings and required_not_executed honestly. '
               'Read current public behavior and full phase scope. Check tracked bytes before/after. Finish the session.')
     argv = [str(a.binary), 'run', '--standalone', '--agent', 'include-tooling-review', '--model', handoff['provider_model'],

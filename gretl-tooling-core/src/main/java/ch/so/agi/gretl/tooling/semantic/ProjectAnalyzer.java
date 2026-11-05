@@ -9,6 +9,8 @@ import ch.so.agi.gretl.tooling.syntax.EffectiveOptions;
 import ch.so.agi.gretl.tooling.syntax.ExecutionRegions;
 import ch.so.agi.gretl.tooling.workspace.WorkspaceManager.WorkspaceCapture;
 import java.net.URI;
+import ch.so.agi.gretl.tooling.workspace.IncludeModel.*;
+import ch.so.agi.gretl.tooling.syntax.RegistrationSequence;
 import java.util.*;
 import static ch.so.agi.gretl.tooling.semantic.SemanticModel.*;
 
@@ -20,37 +22,47 @@ public final class ProjectAnalyzer {
         final WorkspaceCapture capture;final CancellationToken cancellation;final String language;
         final Map<SymbolId,List<Symbol>> symbols=new LinkedHashMap<>();final List<Reference> references=new ArrayList<>();final List<PathReference> paths=new ArrayList<>();final List<Diagnostic> diagnostics=new ArrayList<>();final List<PlanSemantics.Edge> edges=new ArrayList<>();final List<String> defaults=new ArrayList<>();
         final Map<Declaration,EffectiveOptions> optionCache=new IdentityHashMap<>();
-        final Map<URI,Map<String,List<Symbol>>> aliases=new LinkedHashMap<>();final List<Symbol> declarations=new ArrayList<>();
+        final Map<ApplicationId,Map<String,List<Symbol>>> aliases=new LinkedHashMap<>();final List<Symbol> declarations=new ArrayList<>();
+        SourceApplication currentApplication;
         final List<OperationDescriptor> operations;final boolean catalogComplete;boolean declarationsComplete,referencesComplete,graphComplete,bounded=true;
         Pass(WorkspaceCapture capture,CancellationToken cancellation){this.capture=Objects.requireNonNull(capture);this.cancellation=Objects.requireNonNull(cancellation);language=capture.configuration().language();operations=capture.catalog().result().catalog().map(c->c.operations()).orElse(List.of());catalogComplete=capture.catalog().result().state().name().equals("AVAILABLE");declarationsComplete=capture.project().complete();referencesComplete=declarationsComplete;}
         Analysis run(){
             for(var p:capture.project().problems())diagnostic(p.code(),p.error()?Severity.ERROR:Severity.INFORMATION,new Anchor(p.documentId(),p.span()),java.util.stream.Stream.concat(p.related().stream().map(s->new Anchor(p.documentId(),s)),p.relatedSources().stream().map(s->new Anchor(s.documentId(),s.span()))).toList());
             if(!catalogComplete)diagnostic("CATALOG_UNAVAILABLE",Severity.WARNING,global(),List.of());
-            for(var job:capture.project().jobs()){
-                cancellation.check();var doc=capture.project().documents().get(job.documentId());declarationsComplete&=doc.coverage().declarations()==Completeness.COMPLETE;referencesComplete&=doc.coverage().references()==Completeness.COMPLETE;
-                for(var problem:doc.problems())diagnostic(problem.code(),Severity.ERROR,new Anchor(job.documentId(),problem.span()),List.of());
-                for(var declaration:doc.declarations()){
-                    if(unknownHeader(declaration)){declarationsComplete=false;referencesComplete=false;}
-                    if(declarations.size()>=MAX_SYMBOLS){limit();break;}cancellation.check();
-                    if(declaration.kind()==DeclarationKind.DEFAULTS||declaration.kind()==DeclarationKind.INCLUDE)continue;
-                    if(declaration.kind()==DeclarationKind.PARAMETER&&declaration.options().isEmpty()){diagnostic("TOPLEVEL_PARAMETER_READ",Severity.ERROR,new Anchor(job.documentId(),declaration.header()),List.of());continue;}
-                    if(declaration.name()==null){declarationsComplete=false;continue;}
-                    var namespace=switch(declaration.kind()){case PARAMETER->Namespace.PARAMETER;case CLEANUP->Namespace.CLEANUP;default->Namespace.TASK;};
-                    String name=qualify(job.scope(),declaration.name(),namespace,true);if(name==null){diagnostic("INVALID_NAME",Severity.ERROR,new Anchor(job.documentId(),declaration.header()),List.of());continue;}
-                    var anchor=new Anchor(job.documentId(),declaration.nameLiteral()==null?declaration.header():declaration.nameLiteral().content());
-                    var symbol=new Symbol(new SymbolId(namespace,name),declaration.name(),job.scope().canonical(),anchor,declaration,operation(declaration.operation(),new Anchor(job.documentId(),declaration.header())));
-                    declarations.add(symbol);symbols.computeIfAbsent(symbol.id(),id->new ArrayList<>()).add(symbol);
-                    if(declaration.bindingName()!=null&&namespace==Namespace.TASK)aliases.computeIfAbsent(job.documentId(),id->new LinkedHashMap<>()).computeIfAbsent(declaration.bindingName(),id->new ArrayList<>()).add(symbol);
-                }
+            var closure=capture.project().includeClosure();
+            declarationsComplete&=closure.sourcesComplete()&&closure.orderProven();referencesComplete&=declarationsComplete;
+            var checked=new HashSet<URI>();
+            for(var application:closure.applications()){
+                cancellation.check();var doc=capture.project().documents().get(application.id().sourceDocument());if(doc==null){declarationsComplete=false;referencesComplete=false;continue;}
+                var coverage=RegistrationSequence.coverage(doc,application,closure);
+                declarationsComplete&=coverage.declarations()==Completeness.COMPLETE;referencesComplete&=coverage.references()==Completeness.COMPLETE;
+                if(checked.add(application.id().sourceDocument()))for(var problem:doc.problems())diagnostic(problem.code(),Severity.ERROR,new Anchor(application.id().sourceDocument(),problem.span()),List.of());
             }
-            for(var values:symbols.values())if(values.size()>1){String code=switch(values.getFirst().id().namespace()){case TASK->"DUPLICATE_TASK_ID";case PARAMETER->"DUPLICATE_PARAMETER";case CLEANUP->"DUPLICATE_CLEANUP_NAME";};for(var value:values)diagnostic(code,Severity.ERROR,value.anchor(),values.stream().filter(s->s!=value).map(Symbol::anchor).toList());}
+            for(var event:closure.registrationOrder()){
+                cancellation.check();currentApplication=event.application();var declaration=event.declaration();var document=currentApplication.id().sourceDocument();
+                var scope=ProjectNameRules.parseQualified(currentApplication.id().ownerScope());
+                if(unknownHeader(declaration)){declarationsComplete=false;referencesComplete=false;}
+                if(declarations.size()>=MAX_SYMBOLS){limit();break;}
+                if(declaration.kind()==DeclarationKind.DEFAULTS||declaration.kind()==DeclarationKind.INCLUDE)continue;
+                if(declaration.kind()==DeclarationKind.PARAMETER&&declaration.options().isEmpty()){diagnostic("TOPLEVEL_PARAMETER_READ",Severity.ERROR,new Anchor(document,declaration.header()),List.of());continue;}
+                if(declaration.name()==null){declarationsComplete=false;continue;}
+                var namespace=switch(declaration.kind()){case PARAMETER->Namespace.PARAMETER;case CLEANUP->Namespace.CLEANUP;default->Namespace.TASK;};
+                String name=qualify(scope,declaration.name(),namespace,true);if(name==null){diagnostic("INVALID_NAME",Severity.ERROR,new Anchor(document,declaration.header()),List.of());continue;}
+                var anchor=new Anchor(document,declaration.nameLiteral()==null?declaration.header():declaration.nameLiteral().content());
+                var symbol=new Symbol(new SymbolId(namespace,name),declaration.name(),scope.canonical(),anchor,declaration,operation(declaration.operation(),new Anchor(document,declaration.header())),currentApplication);
+                declarations.add(symbol);symbols.computeIfAbsent(symbol.id(),id->new ArrayList<>()).add(symbol);
+                if(declaration.bindingName()!=null&&namespace==Namespace.TASK)aliases.computeIfAbsent(currentApplication.id(),id->new LinkedHashMap<>()).computeIfAbsent(declaration.bindingName(),id->new ArrayList<>()).add(symbol);
+            }
+            currentApplication=null;
+            for(var values:symbols.values())if(values.size()>1){String code=switch(values.getFirst().id().namespace()){case TASK->"DUPLICATE_TASK_ID";case PARAMETER->"DUPLICATE_PARAMETER";case CLEANUP->"DUPLICATE_CLEANUP_NAME";};for(var value:values){currentApplication=value.application();diagnostic(code,Severity.ERROR,value.anchor(),values.stream().filter(s->s!=value).map(Symbol::anchor).toList());}currentApplication=null;}
             graphComplete=declarationsComplete&&symbols.values().stream().noneMatch(v->v.size()!=1);
-            for(var symbol:declarations){cancellation.check();validateOptions(symbol);if(symbol.id().namespace()==Namespace.PARAMETER)validateParameter(symbol);else if(symbol.id().namespace()==Namespace.TASK){links(symbol,"dependsOn",ReferenceKind.DEPENDS_ON,PlanSemantics.EdgeKind.DEPENDS_ON);links(symbol,"after",ReferenceKind.AFTER,PlanSemantics.EdgeKind.AFTER);} }
-            collectDefaults();
+            for(var symbol:declarations){cancellation.check();currentApplication=symbol.application();validateOptions(symbol);if(symbol.id().namespace()==Namespace.PARAMETER)validateParameter(symbol);else if(symbol.id().namespace()==Namespace.TASK){links(symbol,"dependsOn",ReferenceKind.DEPENDS_ON,PlanSemantics.EdgeKind.DEPENDS_ON);links(symbol,"after",ReferenceKind.AFTER,PlanSemantics.EdgeKind.AFTER);} }
+            currentApplication=null;collectDefaults();currentApplication=null;
             var nodes=new ArrayList<PlanSemantics.Node>();for(var symbol:declarations)if(symbol.id().namespace()==Namespace.TASK&&unique(symbol.id()).isPresent())nodes.add(new PlanSemantics.Node(symbol.id().qualifiedName(),nodes.size()));
             var graph=new PlanSemantics.DeclaredGraph(nodes,edges);
             if(graphComplete){for(var problem:new PlanSemantics().validateDeclaredDependencies(graph))graphProblem(problem);if(!defaults.isEmpty())try{new PlanSemantics().plan(graph,List.of(),defaults);}catch(PlanSemantics.GraphException problem){if(problem.code().equals("PLAN_CYCLE"))graphProblem(problem.problem());}}
-            for(var symbol:declarations){cancellation.check();validateReferences(symbol,graph);if(symbol.id().namespace()==Namespace.TASK&&symbol.declaration().kind()==DeclarationKind.TASK)validateFields(symbol.operation(),symbol.declaration().fields(),symbol.declaration().coverage(),symbol.anchor(),conditional(symbol),span->conditionalBody(symbol,span));for(var inner:symbol.declaration().invocations())if(effective(symbol.declaration()).active(inner.span()))validateFields(operation(inner.operation(),new Anchor(symbol.anchor().documentId(),inner.span())),inner.fields(),inner.coverage(),new Anchor(symbol.anchor().documentId(),inner.span()),conditionalBody(symbol,inner.span()),span->conditionalBody(symbol,span));SqlTemplateAnalyzer.validate(capture,symbol,(code,severity,anchor)->diagnostic(code,severity,anchor,List.of()),cancellation,conditional(symbol)||symbol.declaration().coverage().fieldAssignments()!=Completeness.COMPLETE,span->conditionalBody(symbol,span));}
+            for(var symbol:declarations){cancellation.check();currentApplication=symbol.application();validateReferences(symbol,graph);if(symbol.id().namespace()==Namespace.TASK&&symbol.declaration().kind()==DeclarationKind.TASK)validateFields(symbol.operation(),symbol.declaration().fields(),symbol.declaration().coverage(),symbol.anchor(),conditional(symbol),span->conditionalBody(symbol,span));for(var inner:symbol.declaration().invocations())if(effective(symbol.declaration()).active(inner.span()))validateFields(operation(inner.operation(),new Anchor(symbol.anchor().documentId(),inner.span())),inner.fields(),inner.coverage(),new Anchor(symbol.anchor().documentId(),inner.span()),conditionalBody(symbol,inner.span()),span->conditionalBody(symbol,span));SqlTemplateAnalyzer.validate(capture,symbol,(code,severity,anchor)->diagnostic(code,severity,anchor,List.of()),cancellation,conditional(symbol)||symbol.declaration().coverage().fieldAssignments()!=Completeness.COMPLETE,span->conditionalBody(symbol,span));}
+            currentApplication=null;
             if(!declarationsComplete||!referencesComplete)diagnostic("PARTIAL_ANALYSIS",Severity.INFORMATION,global(),List.of());
             boolean fieldsComplete=declarationsComplete&&declarations.stream().allMatch(s->s.declaration().coverage().fieldAssignments()==Completeness.COMPLETE&&s.declaration().invocations().stream().allMatch(i->i.coverage().fieldAssignments()==Completeness.COMPLETE));
             boolean executionComplete=declarationsComplete&&declarations.stream().allMatch(s->!conditional(s)&&!s.declaration().recovered()&&s.declaration().guardedExecution().isEmpty()&&s.declaration().coverage().references()==Completeness.COMPLETE);
@@ -69,16 +81,16 @@ public final class ProjectAnalyzer {
             for(var entry:effective.entries().values())if(option.equals(text(entry.key()))){if(entry.value() instanceof LiteralValue l&&l.value()==null)continue;var items=entry.value() instanceof ListValue list?list.items():List.of(entry.value());var seen=new HashSet<SymbolId>();for(var item:items){var ref=resolve(owner,Namespace.TASK,item,kind,new Anchor(owner.anchor().documentId(),item.span()),scope(owner));if(ref.resolution()!=Resolution.RESOLVED){graphComplete=false;continue;}var target=ref.target().orElseThrow();if(!seen.add(target))diagnostic("DUPLICATE_TASK_LINK",Severity.ERROR,ref.anchor(),List.of());else if(unique(owner.id()).isPresent())edges.add(new PlanSemantics.Edge(target.qualifiedName(),owner.id().qualifiedName(),edgeKind));}}
         }
         Reference resolve(Symbol owner,Namespace namespace,ValueExpression value,ReferenceKind kind,Anchor anchor,ProjectNameRules scope){
-            if(references.size()>=MAX_REFERENCES){limit();return new Reference(kind,anchor,owner==null?null:owner.id(),null,Resolution.DYNAMIC,List.of());}
+            if(references.size()>=MAX_REFERENCES){limit();return new Reference(kind,anchor,owner==null?null:owner.id(),null,Resolution.DYNAMIC,List.of(),currentApplication==null?null:currentApplication.id());}
             if(value instanceof LiteralValue l&&l.literal()!=null)anchor=new Anchor(anchor.documentId(),l.literal().content());
             var error=conditionalBody(owner,value.span())?Severity.WARNING:Severity.ERROR;
             String spelling=text(value);List<Symbol> found=List.of();boolean dynamic=false;
             if(spelling!=null){String qualified=qualify(scope,spelling,namespace,false);if(qualified==null){diagnostic("INVALID_NAME",error,anchor,List.of());}else found=symbols.getOrDefault(new SymbolId(namespace,qualified),List.of());}
             else if(value instanceof NameValue name&&namespace==Namespace.TASK){
-                spelling=name.name();boolean shadowed=!declarationsComplete||owner!=null&&owner.declaration().locals().stream().anyMatch(l->l.name().equals(name.name())&&l.span().startUtf16()<value.span().startUtf16());found=shadowed?List.of():aliases.getOrDefault(anchor.documentId(),Map.of()).getOrDefault(name.name(),List.of());dynamic=shadowed||found.isEmpty();
+                spelling=name.name();boolean shadowed=!declarationsComplete||owner!=null&&owner.declaration().locals().stream().anyMatch(l->l.name().equals(name.name())&&l.span().startUtf16()<value.span().startUtf16());found=shadowed?List.of():aliases.getOrDefault(owner==null?null:owner.application().id(),Map.of()).getOrDefault(name.name(),List.of());dynamic=shadowed||found.isEmpty();
             }else dynamic=true;
             var resolution=dynamic?Resolution.DYNAMIC:found.size()>1?Resolution.AMBIGUOUS:found.isEmpty()?Resolution.UNRESOLVED:Resolution.RESOLVED;
-            var ref=new Reference(kind,anchor,owner==null?null:owner.id(),spelling,resolution,found.stream().map(Symbol::id).distinct().toList());references.add(ref);
+            var ref=new Reference(kind,anchor,owner==null?null:owner.id(),spelling,resolution,found.stream().map(Symbol::id).distinct().toList(),currentApplication==null?null:currentApplication.id());references.add(ref);
             if(resolution==Resolution.DYNAMIC){referencesComplete=false;diagnostic("DYNAMIC_REFERENCE",Severity.INFORMATION,anchor,List.of());}
             else if(resolution==Resolution.AMBIGUOUS)diagnostic("AMBIGUOUS_REFERENCE",error,anchor,found.stream().map(Symbol::anchor).toList());
             else if(resolution==Resolution.UNRESOLVED&&declarationsComplete)diagnostic(namespace==Namespace.PARAMETER?"UNKNOWN_PARAMETER":"UNKNOWN_TASK_REFERENCE",error,anchor,List.of());
@@ -90,8 +102,8 @@ public final class ProjectAnalyzer {
                 cancellation.check();if(call.arguments().isEmpty()||!effective(owner.declaration()).active(call.span()))continue;var anchor=new Anchor(owner.anchor().documentId(),call.arguments().getFirst().span());var error=conditionalBody(owner,call.span())?Severity.WARNING:Severity.ERROR;
                 if(Set.of("file","workPath","path").contains(call.name())){
                     java.net.URI resource=null;PathKind kind=call.name().equals("workPath")?PathKind.WORK:PathKind.DYNAMIC;
-                    if(call.name().equals("file")&&text(call.arguments().getFirst())!=null)try{resource=ch.so.agi.gretl.tooling.workspace.SourceUris.jobResource(owner.anchor().documentId(),text(call.arguments().getFirst()));if(resource!=null)kind=PathKind.JOB_RESOURCE;}catch(IllegalArgumentException invalid){diagnostic("PATH_INVALID",error,anchor,List.of());}
-                    paths.add(new PathReference(new Anchor(owner.anchor().documentId(),call.span()),kind,resource,null));
+                    if(call.name().equals("file")&&text(call.arguments().getFirst())!=null)try{resource=ch.so.agi.gretl.tooling.workspace.SourceUris.resource(owner.application().resourceBase(),text(call.arguments().getFirst()));if(resource!=null)kind=PathKind.JOB_RESOURCE;}catch(IllegalArgumentException invalid){diagnostic("PATH_INVALID",error,anchor,List.of());}
+                    paths.add(new PathReference(new Anchor(owner.anchor().documentId(),call.span()),kind,resource,null,owner.application().id()));
                 }else if(call.name().equals("result")||call.name().equals("resultOptional")){
                     var ref=resolve(owner,Namespace.TASK,call.arguments().getFirst(),call.name().equals("result")?ReferenceKind.RESULT:ReferenceKind.RESULT_OPTIONAL,anchor,scope(owner));
                     boolean allowed=owner.id().namespace()==Namespace.TASK&&(owner.declaration().body()!=null&&contains(owner.declaration().body(),call.span())||inWhen(owner,call.span()));
@@ -101,7 +113,7 @@ public final class ProjectAnalyzer {
                 }else if(call.name().equals("parameter")){
                     if(!(owner.declaration().body()!=null&&contains(owner.declaration().body(),call.span()))&&!inWhen(owner,call.span()))diagnostic("TOPLEVEL_PARAMETER_READ",error,new Anchor(anchor.documentId(),call.span()),List.of());
                     var ref=resolve(owner,Namespace.PARAMETER,call.arguments().getFirst(),ReferenceKind.PARAMETER,anchor,scope(owner));
-                    if(ref.target().isPresent())unique(ref.target().get()).filter(p->parameterType(p).equals("path")).ifPresent(p->paths.add(new PathReference(new Anchor(owner.anchor().documentId(),call.span()),PathKind.EXTERNAL_PARAMETER,null,p.id())));
+                    if(ref.target().isPresent())unique(ref.target().get()).filter(p->parameterType(p).equals("path")).ifPresent(p->paths.add(new PathReference(new Anchor(owner.anchor().documentId(),call.span()),PathKind.EXTERNAL_PARAMETER,null,p.id(),owner.application().id())));
                     if(ref.target().isPresent()&&call.arguments().size()>1&&call.arguments().get(1) instanceof NameValue requested)unique(ref.target().get()).ifPresent(parameter->{String type=parameterType(parameter);String simple=requested.name().substring(requested.name().lastIndexOf('.')+1);boolean known=Set.of("String","CharSequence","Boolean","boolean","Long","long","Integer","int","Number","Path","Object").contains(simple);boolean compatible=!known||switch(type){case "text"->Set.of("String","CharSequence","Object").contains(simple);case "boolean"->Set.of("Boolean","Object").contains(simple);case "integer"->Set.of("Long","Number","Object").contains(simple);case "path"->Set.of("Path","Object").contains(simple);default->true;};if(!compatible)diagnostic("PARAMETER_READ_TYPE",error,new Anchor(anchor.documentId(),call.arguments().get(1).span()),List.of(parameter.anchor()));});
                 }
             }
@@ -145,10 +157,10 @@ public final class ProjectAnalyzer {
         ProjectNameRules scope(Symbol symbol){return ProjectNameRules.parseQualified(symbol.scope());}
         EffectiveOptions effective(Declaration declaration){return optionCache.computeIfAbsent(declaration,EffectiveOptions::of);}
         Anchor global(){return new Anchor(capture.project().id().anchor(),null);}
-        void graphProblem(PlanSemantics.GraphProblem problem){var primary=unique(new SymbolId(Namespace.TASK,problem.taskId())).map(Symbol::anchor).orElse(global());diagnostic(problem.code(),Severity.ERROR,primary,problem.edges().stream().map(e->unique(new SymbolId(Namespace.TASK,e.fromId())).map(Symbol::anchor).orElse(global())).distinct().toList());}
+        void graphProblem(PlanSemantics.GraphProblem problem){var owner=unique(new SymbolId(Namespace.TASK,problem.taskId()));currentApplication=owner.map(Symbol::application).orElse(null);var primary=owner.map(Symbol::anchor).orElse(global());diagnostic(problem.code(),Severity.ERROR,primary,problem.edges().stream().map(e->unique(new SymbolId(Namespace.TASK,e.fromId())).map(Symbol::anchor).orElse(global())).distinct().toList());currentApplication=null;}
         void limit(){if(bounded){bounded=false;declarationsComplete=false;referencesComplete=false;graphComplete=false;diagnostic("SEMANTIC_LIMIT",Severity.INFORMATION,global(),List.of());}}
         void diagnostic(String code,Severity severity,Anchor anchor,List<Anchor> related){diagnostic(code,severity,anchor,related,code);}
-        void diagnostic(String code,Severity severity,Anchor anchor,List<Anchor> related,String messageKey){if(diagnostics.size()<MAX_DIAGNOSTICS)diagnostics.add(new Diagnostic(code,severity,DiagnosticMessages.message(messageKey,language),anchor,related));else{bounded=false;referencesComplete=false;diagnostics.set(MAX_DIAGNOSTICS-1,new Diagnostic("SEMANTIC_LIMIT",Severity.INFORMATION,DiagnosticMessages.message("SEMANTIC_LIMIT",language),global(),List.of()));}}
+        void diagnostic(String code,Severity severity,Anchor anchor,List<Anchor> related,String messageKey){if(diagnostics.size()<MAX_DIAGNOSTICS)diagnostics.add(new Diagnostic(code,severity,DiagnosticMessages.message(messageKey,language),anchor,related,currentApplication==null?null:currentApplication.id()));else{bounded=false;referencesComplete=false;diagnostics.set(MAX_DIAGNOSTICS-1,new Diagnostic("SEMANTIC_LIMIT",Severity.INFORMATION,DiagnosticMessages.message("SEMANTIC_LIMIT",language),global(),List.of()));}}
     }
     static Map<String,ValueExpression> options(Declaration declaration){var result=new LinkedHashMap<String,ValueExpression>();for(var e:EffectiveOptions.of(declaration).entries().values())if(text(e.key())!=null)result.put(text(e.key()),e.value());return result;}
     private static boolean unknownHeader(Declaration declaration){

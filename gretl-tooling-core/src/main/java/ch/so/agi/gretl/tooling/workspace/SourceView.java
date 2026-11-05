@@ -11,8 +11,12 @@ import static ch.so.agi.gretl.tooling.workspace.SourceRepository.*;
 public final class SourceView {
     public record ListingKey(URI root,ScanBudget budget){public ListingKey{root=SourceUris.directoryIdentity(root);}}
     public record SourceVersion(SourceText.SourceStamp stamp,Long bufferIncarnation,String unavailableCode) { }
-    public record SnapshotSources(Map<URI,SourceRead> reads,Map<URI,SourceVersion> versions,Map<URI,DocumentStore.OpenDocument> buffers,boolean limited,Map<IncludeTraversal,List<SourceIssue>> traversals,Map<ListingKey,SourceListing> listings) implements SourceRepository {
-        public SnapshotSources { reads=Map.copyOf(reads);versions=Map.copyOf(versions);buffers=Map.copyOf(buffers);traversals=Map.copyOf(traversals);listings=Map.copyOf(listings); }
+    public record SnapshotSources(Map<URI,SourceRead> reads,Map<URI,SourceVersion> versions,Map<URI,DocumentStore.OpenDocument> buffers,boolean limited,Map<IncludeTraversal,List<SourceIssue>> traversals,Map<ListingKey,SourceListing> listings,Map<URI,PathListing> pathListings) implements SourceRepository {
+        public SnapshotSources { reads=Map.copyOf(reads);versions=Map.copyOf(versions);buffers=Map.copyOf(buffers);traversals=Map.copyOf(traversals);listings=Map.copyOf(listings);pathListings=Map.copyOf(pathListings); }
+        public SnapshotSources(Map<URI,SourceRead> reads,Map<URI,SourceVersion> versions,Map<URI,DocumentStore.OpenDocument> buffers,boolean limited,Map<IncludeTraversal,List<SourceIssue>> traversals,Map<ListingKey,SourceListing> listings){this(reads,versions,buffers,limited,traversals,listings,Map.of());}
+        @Override public PathListing listIncludePaths(URI directory,ReadPolicy policy,CancellationToken cancellation){
+            cancellation.check();return pathListings.getOrDefault(SourceUris.directoryIdentity(directory),new PathListing(List.of(),List.of(new SourceIssue("SOURCE_PATH_LISTING_NOT_CAPTURED",directory)),false));
+        }
         @Override public SourceRead read(URI id,ReadPolicy policy,CancellationToken cancellation){
             cancellation.check();id=DocumentStore.identity(id);
             if(!policy.permits(id))return SourceRead.unavailable("SOURCE_OUTSIDE_POLICY",id);
@@ -34,6 +38,7 @@ public final class SourceView {
     private final Map<URI,SourceVersion> versions=new LinkedHashMap<>();
     private final Map<ListingKey,SourceListing> listings=new LinkedHashMap<>();
     private final Map<IncludeTraversal,List<SourceIssue>> traversals=new LinkedHashMap<>();
+    private final Map<URI,PathListing> pathListings=new LinkedHashMap<>();
     private final int maximumSources,maximumTotalUtf16;
     private int usedUtf16;
     private boolean limited;
@@ -69,9 +74,17 @@ public final class SourceView {
         if(traversals.size()>=4096&&!traversals.containsKey(traversal)){limited=true;return List.of(new SourceIssue("SOURCE_CAPTURE_LIMIT",traversal.caller()));}
         return traversals.computeIfAbsent(traversal,t->List.copyOf(disk.checkIncludeTraversal(t,policy,cancellation)));
     }
+    public PathListing listIncludePaths(URI directory,CancellationToken cancellation){
+        cancellation.check();directory=SourceUris.directoryIdentity(directory);var cached=pathListings.get(directory);if(cached!=null)return cached;
+        if(pathListings.size()>=64)return new PathListing(List.of(),List.of(new SourceIssue("SOURCE_SCAN_LIMIT",directory)),false);
+        var listing=disk.listIncludePaths(directory,policy,cancellation);var entries=new TreeMap<URI,PathEntry>();
+        listing.entries().stream().filter(e->policy.permits(e.documentId())).forEach(e->entries.put(e.documentId(),e));
+        for(var buffer:buffers.keySet())if(policy.permits(buffer)&&buffer.getPath()!=null&&buffer.getPath().endsWith(".groovy")&&Objects.equals(SourceUris.directoryIdentity(SourceUris.parent(buffer)),directory))entries.put(buffer,new PathEntry(buffer,false));
+        var result=new PathListing(entries.values().stream().limit(512).toList(),listing.issues(),listing.complete()&&entries.size()<=512);pathListings.put(directory,result);return result;
+    }
     public SnapshotSources freeze(){
         var used=new LinkedHashMap<URI,DocumentStore.OpenDocument>();versions.forEach((id,version)->{if(version.bufferIncarnation()!=null)used.put(id,buffers.get(id));});
-        return new SnapshotSources(reads,versions,used,limited,traversals,listings);
+        return new SnapshotSources(reads,versions,used,limited,traversals,listings,pathListings);
     }
     public ReadPolicy policy(){return policy;}
     SourceVersion version(URI id){return versions.get(DocumentStore.identity(id));}

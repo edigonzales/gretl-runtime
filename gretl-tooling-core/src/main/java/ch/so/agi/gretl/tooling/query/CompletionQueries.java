@@ -16,6 +16,7 @@ import java.util.List;
 /** Contexts come from captured DSL nodes. Token depth only constrains insertion into their owned gaps. */
 final class CompletionQueries {
     List<CompletionProposal> complete(QueryContext context) {
+        var includePaths=new IncludePathQueries().complete(context);if(includePaths.applicable())return includePaths.items();
         if(context.tokens().isEmpty()||context.tokens().orElseThrow().budgetExceeded())return List.of();
         var token=context.tokens().orElseThrow().at(context.offsetUtf16());
         if(token.isPresent()&&(token.get().channel()==Channel.COMMENT||token.get().channel()==Channel.OPAQUE))return List.of();
@@ -23,7 +24,7 @@ final class CompletionQueries {
         var result=new ArrayList<CompletionProposal>();
         var analysis=context.snapshot().analysis();
         // Bound references also cover settings defaults and all dependency scalar/list forms.
-        for(var reference:analysis.references())if(reference.anchor().documentId().equals(context.documentId())&&touch(reference.anchor().span(),context.offsetUtf16())) {
+        for(var reference:analysis.references())if(context.accepts(reference.application())&&reference.anchor().documentId().equals(context.documentId())&&touch(reference.anchor().span(),context.offsetUtf16())) {
             var owned=context.tokens().orElseThrow().all().stream().filter(t->t.span().contains(reference.anchor().span())
                     &&(t.channel()==Channel.STRING&&!t.kind().equals("GString")||t.channel()==Channel.CODE&&t.span().equals(reference.anchor().span())&&t.text().matches("[\\p{L}_$][\\p{L}\\p{N}_$]*"))).findFirst();
             if(owned.isEmpty())return List.of();
@@ -36,11 +37,11 @@ final class CompletionQueries {
         if(document==null)return settings(context,result);
         for(var declaration:document.declarations()) {
             if(!touch(declaration.span(),context.offsetUtf16()))continue;
-            var symbol=analysis.symbols().values().stream().flatMap(List::stream).filter(s->s.anchor().documentId().equals(context.documentId())&&s.declaration().equals(declaration)).findFirst().orElse(null);
+            var symbol=analysis.symbols().values().stream().flatMap(List::stream).filter(s->context.accepts(s)&&s.anchor().documentId().equals(context.documentId())&&s.declaration().equals(declaration)).findFirst().orElse(null);
             for(var property:declaration.properties())if(touch(property.propertySpan(),context.offsetUtf16())
                     &&property.receiver() instanceof CallValue call&&call.name().equals("result")&&call.arguments().size()==1
                     &&call.arguments().getFirst() instanceof LiteralValue literal&&literal.value() instanceof String) {
-                var reference=analysis.references().stream().filter(r->r.kind()==ReferenceKind.RESULT&&r.anchor().documentId().equals(context.documentId())
+                var reference=analysis.references().stream().filter(r->context.accepts(r.application())&&r.kind()==ReferenceKind.RESULT&&r.anchor().documentId().equals(context.documentId())
                         &&call.span().contains(r.anchor().span())&&r.resolution()==Resolution.RESOLVED).findFirst();
                 reference.flatMap(Reference::target).flatMap(analysis::unique).filter(s->s.operation()!=null).ifPresent(producer-> {
                     for(var output:producer.operation().outputs())add(result,output.name(),"FIELD",output.description(),property.propertySpan(),propertyName(output.name()));
@@ -127,7 +128,8 @@ final class CompletionQueries {
     }
 
     private void paths(QueryContext context,List<CompletionProposal> result,TextSpan range,boolean include) {
-        var base=context.documentId().resolve(".");
+        if(context.ambiguous())return;
+        var base=(context.application()==null?context.documentId():context.application().entryDocument()).resolve(".");
         for(var id:context.snapshot().sources().keySet()) {
             if(!context.snapshot().analysis().capture().readPolicy().permits(id))continue;
             var relative=base.relativize(id);
@@ -142,7 +144,7 @@ final class CompletionQueries {
         }
     }
     private void names(QueryContext context,List<CompletionProposal> result,Namespace namespace,TextSpan range,String scope) {
-        var analysis=context.snapshot().analysis();
+        var analysis=context.snapshot().analysis();if(context.ambiguous())return;
         for(var entry:analysis.symbols().entrySet())if(entry.getKey().namespace()==namespace&&entry.getValue().size()==1) {
             String name=entry.getKey().qualifiedName();
             if(analysis.capture().project().projectMode())name=ProjectNameRules.parseQualified(scope).renderReference(name);
@@ -150,7 +152,7 @@ final class CompletionQueries {
         }
     }
     private String scope(QueryContext context) {
-        return context.snapshot().analysis().capture().project().jobs().stream().filter(j->j.documentId().equals(context.documentId())).map(j->j.scope().canonical()).findFirst().orElse(":");
+        return context.application()==null?":":context.application().ownerScope();
     }
     private void operations(QueryContext context,List<CompletionProposal> result,TextSpan range) {
         for(var op:operations(context))add(result,op.symbol(),"CLASS",op.description(),range,op.symbol());

@@ -6,6 +6,7 @@ import ch.so.agi.gretl.tooling.source.TextSpan;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
 import ch.so.agi.gretl.tooling.workspace.WorkspaceManager.WorkspaceCapture;
 import java.net.URI;
+import ch.so.agi.gretl.tooling.workspace.IncludeModel.*;
 import java.util.*;
 
 /** Immutable bound project. IDs distinguish namespaces; duplicate definitions remain visible. */
@@ -14,17 +15,23 @@ public final class SemanticModel {
     public enum Namespace { TASK, PARAMETER, CLEANUP }
     public record SymbolId(Namespace namespace,String qualifiedName) { }
     public record Anchor(URI documentId,TextSpan span) { }
-    public record Symbol(SymbolId id,String localName,String scope,Anchor anchor,Declaration declaration,OperationDescriptor operation) { }
+    public record Symbol(SymbolId id,String localName,String scope,Anchor anchor,Declaration declaration,OperationDescriptor operation,SourceApplication application) {
+        public Symbol(SymbolId id,String localName,String scope,Anchor anchor,Declaration declaration,OperationDescriptor operation){this(id,localName,scope,anchor,declaration,operation,null);}
+    }
     public enum Resolution { RESOLVED, UNRESOLVED, AMBIGUOUS, DYNAMIC }
     public enum ReferenceKind { DEPENDS_ON, AFTER, DEFAULT, RESULT, RESULT_OPTIONAL, PARAMETER }
-    public record Reference(ReferenceKind kind,Anchor anchor,SymbolId owner,String spelling,Resolution resolution,List<SymbolId> candidates) {
+    public record Reference(ReferenceKind kind,Anchor anchor,SymbolId owner,String spelling,Resolution resolution,List<SymbolId> candidates,ApplicationId application) {
+        public Reference(ReferenceKind kind,Anchor anchor,SymbolId owner,String spelling,Resolution resolution,List<SymbolId> candidates){this(kind,anchor,owner,spelling,resolution,candidates,null);}
         public Reference { candidates=List.copyOf(candidates); }
         public Optional<SymbolId> target(){return resolution==Resolution.RESOLVED?Optional.of(candidates.getFirst()):Optional.empty();}
     }
     public enum PathKind { JOB_RESOURCE, WORK, EXTERNAL_PARAMETER, DYNAMIC }
-    public record PathReference(Anchor anchor,PathKind kind,URI resourceId,SymbolId parameter) { }
+    public record PathReference(Anchor anchor,PathKind kind,URI resourceId,SymbolId parameter,ApplicationId application) {
+        public PathReference(Anchor anchor,PathKind kind,URI resourceId,SymbolId parameter){this(anchor,kind,resourceId,parameter,null);}
+    }
     public enum Severity { ERROR, WARNING, INFORMATION }
-    public record Diagnostic(String code,Severity severity,String message,Anchor anchor,List<Anchor> related) {
+    public record Diagnostic(String code,Severity severity,String message,Anchor anchor,List<Anchor> related,ApplicationId application) {
+        public Diagnostic(String code,Severity severity,String message,Anchor anchor,List<Anchor> related){this(code,severity,message,anchor,related,null);}
         public Diagnostic { related=List.copyOf(related); }
     }
     public record Capabilities(boolean declarationsComplete,boolean referencesComplete,boolean graphComplete,boolean catalogAvailable,boolean bounded,boolean fieldAssignmentsComplete,boolean executionComplete) {

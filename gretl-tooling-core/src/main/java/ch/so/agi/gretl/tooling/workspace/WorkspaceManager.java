@@ -173,6 +173,8 @@ public final class WorkspaceManager implements AutoCloseable {
         }
         for(var listing:expected.listings().entrySet())
             if(!listing.getValue().equals(current.listProjectEntries(listing.getKey().root(),listing.getKey().budget(),cancellation)))return false;
+        for(var listing:expected.pathListings().entrySet())
+            if(!listing.getValue().equals(current.listIncludePaths(listing.getKey(),cancellation)))return false;
         for(var traversal:expected.traversals().entrySet())
             if(!traversal.getValue().equals(current.checkIncludeTraversal(traversal.getKey(),cancellation)))return false;
         return true;

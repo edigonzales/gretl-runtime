@@ -135,7 +135,7 @@
     }
   },
   "scripts": {
-    "test:includes": "node --test test/fragment-documents.test.mjs test/host.test.mjs test/read-query.test.mjs test/edit-guard.test.mjs test/modeler-edit-plan.test.mjs",
+    "test:includes": "node --test test/source-context.test.mjs test/fragment-documents.test.mjs test/host.test.mjs test/read-query.test.mjs test/edit-guard.test.mjs test/modeler-edit-plan.test.mjs",
     "build": "node scripts/build.mjs",
     "check": "tsc --noEmit",
     "test": "node --test test/*.test.mjs",

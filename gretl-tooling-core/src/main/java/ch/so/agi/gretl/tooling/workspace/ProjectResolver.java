@@ -27,7 +27,7 @@ public final class ProjectResolver {
         public ProjectProblem{related=List.copyOf(related);relatedSources=List.copyOf(relatedSources);}
     }
     public record ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete,SettingsDocumentParser.SettingsDocument settings,IncludeModel.IncludeClosure includeClosure){
-        public ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete,SettingsDocumentParser.SettingsDocument settings){this(id,directory,settingsId,projectMode,jobs,defaultTargets,problems,documents,sources,complete,settings,IncludeModel.IncludeClosure.empty());}
+        public ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete,SettingsDocumentParser.SettingsDocument settings){this(id,directory,settingsId,projectMode,jobs,defaultTargets,problems,documents,sources,complete,settings,IncludeModel.localClosure(id,jobs,documents));}
         public ResolvedProject(ProjectId id,URI directory,URI settingsId,boolean projectMode,List<JobSource> jobs,List<SettingsDocumentParser.SettingName> defaultTargets,List<ProjectProblem> problems,Map<URI,ParsedDocument> documents,SourceView.SnapshotSources sources,boolean complete){this(id,directory,settingsId,projectMode,jobs,defaultTargets,problems,documents,sources,complete,null);}
         public ResolvedProject withSources(SourceView.SnapshotSources captured){return new ResolvedProject(id,directory,settingsId,projectMode,jobs,defaultTargets,problems,documents,captured,complete,settings,includeClosure);}
         public ResolvedProject { jobs=List.copyOf(jobs);defaultTargets=List.copyOf(defaultTargets);problems=List.copyOf(problems);documents=Map.copyOf(documents); }
@@ -83,19 +83,29 @@ public final class ProjectResolver {
         complete&=closure.sourcesComplete();
         for(var application:closure.applications()){
             var parsed=documents.get(application.id().sourceDocument());if(parsed==null)continue;
+            for(var site:IncludeCompletionSite.in(parsed)){
+                var prefixes=new LinkedHashSet<String>();prefixes.add("");String value=site.value();
+                for(int at=0;at<value.length()&&prefixes.size()<16;at++)if(value.charAt(at)=='/')prefixes.add(value.substring(0,at+1));
+                for(String prefix:prefixes)try{
+                    if(prefix.startsWith("/")||prefix.indexOf(':')>=0||prefix.indexOf('\\')>=0||prefix.codePoints().anyMatch(Character::isISOControl))continue;
+                    URI directory=SourceUris.child(SourceUris.parent(application.id().sourceDocument()),prefix);
+                    if(!directory.equals(SourceUris.directoryIdentity(projectDirectory))&&!SourceUris.contains(projectDirectory,directory)||!directory.equals(SourceUris.directoryIdentity(view.policy().root()))&&!view.policy().permits(directory))continue;
+                    if(view.checkIncludeTraversal(new SourceRepository.IncludeTraversal(application.id().sourceDocument(),prefix+"__completion__.groovy",projectDirectory),cancellation).isEmpty())view.listIncludePaths(directory,cancellation);
+                }catch(IllegalArgumentException ignored){}
+            }
             for(var declaration:parsed.declarations()){
-                acquireSqlFiles(declaration.operation(),declaration.fields(),application.id().entryDocument(),view,cancellation);
-                for(var inner:declaration.invocations())if(EffectiveOptions.of(declaration).active(inner.span()))acquireSqlFiles(inner.operation(),inner.fields(),application.id().entryDocument(),view,cancellation);
+                acquireSqlFiles(declaration.operation(),declaration.fields(),application.resourceBase(),view,cancellation);
+                for(var inner:declaration.invocations())if(EffectiveOptions.of(declaration).active(inner.span()))acquireSqlFiles(inner.operation(),inner.fields(),application.resourceBase(),view,cancellation);
             }
         }
         for(var additional:request.requestedSources())view.read(additional,cancellation);
         var snapshot=view.freeze();if(snapshot.limited()){complete=false;problems.add(new ProjectProblem("PROJECT_CAPTURE_LIMIT",request.documentId(),null,false,List.of()));}
         return new ResolvedProject(projectId,projectDirectory,settings,settings!=null,jobs,defaults,problems,documents,snapshot,complete,settingsDocument,closure);
     }
-    private static void acquireSqlFiles(ValueExpression operation,List<FieldAssignment> fields,URI job,SourceView view,CancellationToken cancellation){
+    private static void acquireSqlFiles(ValueExpression operation,List<FieldAssignment> fields,URI resourceBase,SourceView view,CancellationToken cancellation){
         if(!(operation instanceof NameValue name)||!SqlSourceSyntax.templated(name.name()))return;
         for(var value:SqlSourceSyntax.files(name.name(),fields))if(value instanceof CallValue call&&call.name().equals("file")&&call.arguments().size()==1&&call.arguments().getFirst() instanceof LiteralValue literal&&literal.value() instanceof String relative){
-            try{URI resource=SourceUris.jobResource(job,relative);if(resource!=null)view.read(resource,cancellation);}catch(IllegalArgumentException invalid){/* semantic path diagnostic */}
+            try{URI resource=SourceUris.resource(resourceBase,relative);if(resource!=null)view.read(resource,cancellation);}catch(IllegalArgumentException invalid){/* semantic path diagnostic */}
         }
     }
 

@@ -70,6 +70,13 @@ public final class EditabilityAnalyzer {
         if (graphChange && !analysis.capabilities().graphComplete()) {
             return rejected(snapshot, dependencies, "EDIT_REFERENCE_COVERAGE", null);
         }
+        if(analysis.capture().project().includeClosure().hasIncludes()) {
+            if(closedReferences||intent instanceof SemanticEditIntent.AddTask||intent instanceof SemanticEditIntent.AddAction||intent instanceof SemanticEditIntent.AddParameter)
+                return rejected(snapshot,dependencies,"EDIT_INCLUDE_PHASE_GUARD",null);
+            for(var document:documents)if(analysis.capture().ownership().contexts(document).size()>1
+                    ||analysis.capture().project().includeClosure().applications().stream().anyMatch(a->a.id().sourceDocument().equals(document)&&a.role()==ch.so.agi.gretl.tooling.workspace.IncludeModel.SourceRole.FRAGMENT)&&!analysis.capture().ownership().exclusive(document))
+                return rejected(snapshot,dependencies,"EDIT_SHARED_SOURCE",new Anchor(document,null));
+        }
         if (intent instanceof SemanticEditIntent.RenameSymbol rename) {
             if(!snapshot.references().referencesTo(rename.target()).complete())return rejected(snapshot,dependencies,"EDIT_REFERENCE_COVERAGE",null);
             try{new AliasUseGuard().check(snapshot,analysis.unique(rename.target()).orElseThrow(),false);}
@@ -157,6 +164,8 @@ public final class EditabilityAnalyzer {
             case "EDIT_FIELD_COVERAGE" -> de ? "Weitere Feldzuweisungen sind statisch nicht ausgeschlossen." : "Additional field assignments cannot be ruled out statically.";
             case "EDIT_OPTION_COVERAGE" -> de ? "Weitere Optionen sind statisch nicht ausgeschlossen." : "Additional options cannot be ruled out statically.";
             case "EDIT_MULTIPLE_OPTIONS" -> de ? "Diese Option wird mehrfach angegeben. Bitte im Quelltext bearbeiten." : "This option occurs more than once. Edit in source.";
+            case "EDIT_INCLUDE_PHASE_GUARD" -> de ? "Strukturelle Include-Edits sind bis zur Footprintprüfung gesperrt." : "Structural include edits are locked pending footprint verification.";
+            case "EDIT_SHARED_SOURCE" -> de ? "Die Quelle hat mehrere oder nicht vollständig bekannte Besitzer." : "Source ownership is shared or incomplete.";
             case "EDIT_REFERENCE_COVERAGE" -> de ? "Nicht alle relevanten Deklarationen und Referenzen sind bekannt." : "Some relevant declarations or references are not known.";
             case "EDIT_REFERENCED_TARGET" -> de ? "Das Ziel wird noch referenziert. Es gibt keine automatische Kaskadenlöschung." : "The target is still referenced. Deletion does not cascade automatically.";
             case "EDIT_ALIAS_ESCAPE" -> de ? "Die TaskRef-Variable wird ausserhalb der belegten GRETL-Referenzen verwendet. Bitte im Quelltext bearbeiten." : "The TaskRef variable is used outside proven GRETL references. Edit in source.";

@@ -1,3 +1,4 @@
+import {pinnedContext,PinnedSourceContext} from './modeler/source-context';
 import * as vscode from 'vscode';
 import {spawn,ChildProcess} from 'node:child_process';
 import {once} from 'node:events';
@@ -71,19 +72,38 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             vscode.commands.registerCommand('gretlRuntime.selectSourceContext',()=>this.selectSourceContext()),
             vscode.workspace.onDidGrantWorkspaceTrust(()=>this.serial(()=>this.start())),
             vscode.workspace.onDidChangeWorkspaceFolders(()=>{if(!this.stopped)void this.serial(async()=>{await this.stop();await this.start();});}),
-            vscode.workspace.onDidOpenTextDocument(doc=>{if(doc.languageId==='gretl-runtime'&&!this.stopped)void this.serial(()=>this.start());}),
+            vscode.workspace.onDidOpenTextDocument(doc=>{if(doc.languageId==='gretl-runtime'&&!this.stopped)void this.serial(()=>this.start());void this.useNavigationPin(doc);}),
             vscode.workspace.onDidChangeConfiguration(event=>{
                 if(event.affectsConfiguration('gretlRuntime')&&!this.stopped)void this.serial(async()=>{await this.stop();await this.start();});
             })
         );
     }
     private state(message:string){this.status.text=`GRETL: ${message}`;this.status.tooltip=message;this.backendChanges.fire(message==='Ready'&&!!this.instance);}
+    private readonly navigationPins=new Map<string,{context:PinnedSourceContext;instance:string;expires:number}>();
+    private async useNavigationPin(document:vscode.TextDocument){
+        const pin=this.navigationPins.get(document.uri.toString());if(!pin)return;this.navigationPins.delete(document.uri.toString());
+        if(pin.instance!==this.instance||Date.now()>pin.expires)return;
+        const cancellation=new vscode.CancellationTokenSource();
+        try{await this.activateSourceContext(document.uri.toString(),pin.context,cancellation.token);}
+        catch(error){this.output.warn(String(error));}finally{cancellation.dispose();}
+    }
+    private readonly graphSourceContexts=new WeakMap<GraphResponse,{documentId:string;contextToken:string}>();
+    private async panelContext(client:LanguageClient,documentId:string,pin:PinnedSourceContext|undefined,token:vscode.CancellationToken,choose:boolean){
+        const contexts=sourceContexts(await client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId},token));
+        let selected=pinnedContext(contexts,pin,!choose);
+        if(!selected&&choose&&contexts.contexts.length){
+            const pick=await vscode.window.showQuickPick(contexts.contexts.map(c=>({label:c.ownerScope,description:vscode.workspace.asRelativePath(vscode.Uri.parse(c.entryDocument)),detail:c.resourceBase??'No resource base',context:c})),{placeHolder:'Choose the context for this GRETL Modeler panel'},token);selected=pick?.context;
+        }
+        if(!selected)throw Error(contexts.contexts.length?'Choose a GRETL source context before opening this panel.':'No GRETL owner is known. Use this file as an entry explicitly if intended.');
+        return selected;
+    }
     async graph(document:vscode.TextDocument,options:ModelerOptions,token:vscode.CancellationToken):Promise<GraphResponse>{
         const client=this.client,instance=this.instance,version=document.version;
         if(!client?.isRunning()||!instance||!vscode.workspace.isTrusted)throw Error('GRETL server is not ready.');
         const normalize=(uri:string)=>vscode.Uri.parse(uri).toString();
-        const {value,before}=await this.synchronizedGraph(client,{protocolVersion:1,documentId:document.uri.toString(),includeInnerInvocations:options.includeInnerInvocations,...(options.previewTargets===null?{}:{previewTargets:options.previewTargets})},token);
-        const response=graphResponse(value);
+        const selected=await this.panelContext(client,document.uri.toString(),options.sourceContext,token,true);options.sourceContext={projectId:selected.projectId,entryDocument:selected.entryDocument,ownerScope:selected.ownerScope,role:selected.role};
+        const {value,before,contextToken}=await this.synchronizedGraph(client,{protocolVersion:1,documentId:document.uri.toString(),contextToken:selected.contextToken,includeInnerInvocations:options.includeInnerInvocations,...(options.previewTargets===null?{}:{previewTargets:options.previewTargets})},token,options.sourceContext);
+        const response=graphResponse(value);this.graphSourceContexts.set(response,{documentId:document.uri.toString(),contextToken:typeof contextToken==='string'?contextToken:selected.contextToken});
         if(token.isCancellationRequested||this.client!==client||this.instance!==instance||response.context.serverInstanceId!==instance||document.isClosed||document.version!==version)throw new vscode.CancellationError();
         const now=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
         for(const stamp of response.context.sourceStamps){const uri=normalize(stamp.documentId),doc=now.get(uri);if(stamp.version!=null&&(!doc||before.get(uri)!==doc||doc.version!==stamp.version||sourceDigest(doc.getText())!==stamp.sha256)||stamp.version==null&&doc)throw new vscode.CancellationError();}
@@ -104,7 +124,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             const cancelled=()=>token.isCancellationRequested||this.client!==client||this.instance!==instance||document.isClosed;
             return applyEditPlan<ProtocolEdit,vscode.WorkspaceEdit>(graph.context,{
                 cancelled,
-                plan:()=>client.sendRequest<EditPlan<ProtocolEdit>>('gretl/planEdit',{protocolVersion:1,documentId:intent.kind==='SetDefaults'?graph.payload.forms?.defaultsDocument??document.uri.toString():document.uri.toString(),expectedSnapshotId:graph.context.snapshotId,intent,requireOpenDocuments:true},token),
+                plan:()=>client.sendRequest<EditPlan<ProtocolEdit>>('gretl/planEdit',{protocolVersion:1,documentId:document.uri.toString(),contextToken:this.graphSourceContexts.get(graph)?.contextToken,expectedSnapshotId:graph.context.snapshotId,intent,requireOpenDocuments:true},token),
                 guard:edit=>this.current(client,capture,edit),
                 validate:(planId,expectedSnapshotId)=>client.sendRequest('gretl/validateEdit',{protocolVersion:1,planId,expectedSnapshotId},token),
                 convert:async edit=>(await client.protocol2CodeConverter.asWorkspaceEdit(edit,token))??undefined,
@@ -113,10 +133,17 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         };
         const result=this.modelerEditQueue.then(operation,operation);this.modelerEditQueue=result.then(()=>undefined,()=>undefined);return result;
     }
-    async navigate(documentId:string,snapshotId:string,elementId:string|undefined,offsetUtf16:number|undefined,token:vscode.CancellationToken){
+    async activateSourceContext(documentId:string,context:PinnedSourceContext,token:vscode.CancellationToken){
+        const client=this.client;if(!client?.isRunning())throw new vscode.CancellationError();await this.fragments?.settled();
+        const contexts=sourceContexts(await client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId},token));
+        const selected=pinnedContext(contexts,context,true);if(!selected)throw Error('Navigation context is no longer available.');
+        await client.sendRequest('gretl/selectSourceContext',{protocolVersion:1,includeToolingVersion:1,documentId,contextToken:selected.contextToken,incarnation:contexts.incarnation??null,ownerGeneration:contexts.ownerGeneration},token);
+    }
+    async navigate(documentId:string,snapshotId:string,elementId:string|undefined,offsetUtf16:number|undefined,token:vscode.CancellationToken,sourceContext?:PinnedSourceContext){
         const client=this.client,instance=this.instance;
         if(!client?.isRunning()||!instance)throw Error('GRETL server is not ready.');
-        const result=await client.sendRequest<Awaited<ReturnType<ModelerBackend['navigate']>>>('gretl/navigation',{protocolVersion:1,documentId,expectedSnapshotId:snapshotId,...(elementId===undefined?{offsetUtf16}:{elementId})},token);
+        const selected=sourceContext?await this.panelContext(client,documentId,sourceContext,token,false):undefined;
+        const result=await client.sendRequest<Awaited<ReturnType<ModelerBackend['navigate']>>>('gretl/navigation',{protocolVersion:1,documentId,...(selected?{contextToken:selected.contextToken}:{}),expectedSnapshotId:snapshotId,...(elementId===undefined?{offsetUtf16}:{elementId})},token);
         if(token.isCancellationRequested||this.client!==client||this.instance!==instance||result.context.serverInstanceId!==instance||result.context.snapshotId!==snapshotId)throw new vscode.CancellationError();return result;
     }
     private serial(operation:()=>Promise<void>):Promise<void>{
@@ -172,6 +199,21 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
                 }
             },
             middleware:{
+                provideDefinition:async(doc,position,token,next)=>{
+                    const version=doc.version,instance=this.instance;
+                    const contexts=sourceContexts(await client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId:doc.uri.toString()},token));
+                    const selected=pinnedContext(contexts);const result=await next(doc,position,token);
+                    if(selected&&instance&&this.client===client&&this.instance===instance&&!token.isCancellationRequested&&!doc.isClosed&&doc.version===version){
+                        const locations=result?(Array.isArray(result)?result:[result]):[];
+                        for(const location of locations){
+                            const uri=('targetUri' in location?location.targetUri:location.uri).toString();
+                            this.navigationPins.set(uri,{context:selected,instance,expires:Date.now()+10000});
+                            while(this.navigationPins.size>16)this.navigationPins.delete(this.navigationPins.keys().next().value!);
+                            const open=vscode.workspace.textDocuments.find(d=>!d.isClosed&&d.uri.toString()===uri);if(open)await this.useNavigationPin(open);
+                        }
+                    }
+                    return result;
+                },
                 provideDocumentSymbols:async(doc,token)=>{
                     const version=doc.version;
                     const current=()=>this.client===client&&client.isRunning()&&!token.isCancellationRequested&&!doc.isClosed&&doc.version===version;
@@ -296,12 +338,13 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             vscode.workspace.onDidChangeTextDocument(event=>coordinator.changed(view(event.document))),vscode.workspace.onDidCloseTextDocument(doc=>coordinator.closed(view(doc))));
         return coordinator;
     }
-    private async synchronizedGraph(client:LanguageClient,params:{documentId:string;[key:string]:unknown},token:vscode.CancellationToken){
+    private async synchronizedGraph(client:LanguageClient,params:{documentId:string;[key:string]:unknown},token:vscode.CancellationToken,pin?:PinnedSourceContext){
         for(let attempt=0;attempt<4;attempt++){
             if(this.client!==client||token.isCancellationRequested)throw new vscode.CancellationError();
             await this.fragments?.settled();const before=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
+            if(pin)params.contextToken=(await this.panelContext(client,params.documentId,pin,token,false)).contextToken;
             const value=await client.sendRequest<Graph>('gretl/graph',params,token);
-            if(!value.context?.notices?.includes('INCLUDE_MEMBERSHIP_PENDING'))return {value,before};
+            if(!value.context?.notices?.includes('INCLUDE_MEMBERSHIP_PENDING'))return {value,before,contextToken:params.contextToken};
             await this.fragments?.settled();
             await client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId:params.documentId});
         }

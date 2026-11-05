@@ -32,7 +32,7 @@ class StaticSemanticsParityTest {
     private Analysis staticAnalysis(String text){return staticAnalysis(text,catalog());}
     private Analysis staticAnalysis(String text,CatalogRepository descriptors){
         URI root=URI.create("memory:/fixture"),job=URI.create("memory:/fixture/job.groovy");var store=new DocumentStore();store.open(job,"gretl",1,text);
-        SourceRepository repository=new SourceRepository(){public SourceRead read(URI id,ReadPolicy policy,CancellationToken cancellation){return SourceRead.unavailable("SOURCE_MISSING",id);}public SourceListing listProjectEntries(URI id,ScanBudget budget,CancellationToken cancellation){throw new AssertionError("No scan required");}};
+        SourceRepository repository=new SourceRepository(){public SourceRead read(URI id,ReadPolicy policy,CancellationToken cancellation){return SourceRead.unavailable("SOURCE_MISSING",id);}public SourceListing listProjectEntries(URI id,ScanBudget budget,CancellationToken cancellation){return new SourceListing(List.of(job),List.of(),true);}};
         try(var manager=new WorkspaceManager(store,descriptors)){manager.addRoot(root,repository);return new ProjectAnalyzer().analyze(manager.capture(new ProjectResolver.ProjectRequest(root,job),CancellationToken.NONE),CancellationToken.NONE);}
     }
     private static List<String> errors(Analysis analysis){return analysis.diagnostics().stream().filter(d->d.severity()==Severity.ERROR).map(Diagnostic::code).toList();}
@@ -186,4 +186,21 @@ class StaticSemanticsParityTest {
         var literal=staticAnalysis("def values=[1,[2,3],[flag:true]]; action('main') {}; defaults 'main'");assertTrue(literal.capabilities().declarationsComplete());assertTrue(literal.capabilities().graphComplete());
     }
 
+    @Test void includedDefinitionsHaveTheSameRegistrationOrderTargetsAndExecutionPlan()throws Exception{
+        var harness=new GroovyHarness(temp);var parts=java.nio.file.Files.createDirectories(harness.jobDir.resolve("parts"));
+        java.nio.file.Files.writeString(parts.resolve("nested.groovy"),"task('nested',Echo,dependsOn:'first'){text=result('first').result}");
+        java.nio.file.Files.writeString(parts.resolve("middle.groovy"),"parameter('p',description:'P',defaultValue:'value')\napply from:'nested.groovy'\ntask('middle',Echo,dependsOn:'nested'){text=parameter('p')}");
+        String source="task('first',Echo){text='first'}\napply from:'parts/middle.groovy'\ntask('last',Echo,dependsOn:'middle'){text=result('middle').result}\ndefaults 'last'";
+        var definition=harness.loadSource("job.groovy",source);var documents=new DocumentStore();
+        try(var manager=new WorkspaceManager(documents,catalog())){
+            manager.addRoot(harness.jobDir.toUri(),new FileSourceRepository(harness.jobDir.toUri()));
+            var analysis=new ProjectAnalyzer().analyze(manager.capture(new ProjectResolver.ProjectRequest(harness.jobDir.toUri(),harness.jobDir.resolve("job.groovy").toUri()),CancellationToken.NONE),CancellationToken.NONE);
+            assertEquals(List.of(),errors(analysis));assertTrue(analysis.capabilities().declarationsComplete());assertTrue(analysis.capabilities().referencesComplete());
+            assertEquals(List.of("first","nested","middle","last"),analysis.graph().nodes().stream().map(PlanSemantics.Node::id).toList());
+            var actual=new ExecutionPlanner().plan(definition,List.of());var pure=new PlanSemantics().plan(analysis.graph(),List.of(),analysis.defaultTargets());
+            assertEquals(actual.selectedTasks().stream().map(TaskDefinition::id).toList(),pure.orderedIds());assertEquals(actual.dataPredecessors(),pure.dataPredecessors());
+            var outcome=harness.run(definition,Map.of());assertEquals(RunStatus.SUCCEEDED,outcome.status());
+            assertEquals("value",((TestGroovyOperations.EchoResult)((ResultSlot.Value)outcome.task("last").orElseThrow().slot()).value()).result());
+        }
+    }
 }

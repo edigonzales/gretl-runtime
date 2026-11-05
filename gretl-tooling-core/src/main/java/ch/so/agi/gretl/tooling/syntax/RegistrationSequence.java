@@ -23,6 +23,22 @@ public final class RegistrationSequence {
         document.includes().directives().forEach(d->events.add(new IncludeEvent(d)));
         events.sort(Comparator.comparingInt(Event::startUtf16));return List.copyOf(events);
     }
+    /** Effective coverage belongs to an application; never mutate the physical parser result. */
+    public static Coverage coverage(ParsedDocument document,SourceApplication application,IncludeClosure closure) {
+        if(document.includes().directives().isEmpty())return document.coverage();
+        boolean syntax=document.problems().isEmpty()&&document.coverage().syntax()==Completeness.COMPLETE;
+        boolean declarations=syntax&&!document.includes().topLevelControlFlowUncertain()
+                &&document.opaque().stream().noneMatch(o->o.mayRegisterDeclarations()&&!resolved(o,application,closure))
+                &&document.declarations().stream().noneMatch(d->d.name()==null&&d.kind()!=DeclarationKind.DEFAULTS&&d.kind()!=DeclarationKind.INCLUDE);
+        boolean references=declarations&&document.declarations().stream().allMatch(d->d.coverage().references()==Completeness.COMPLETE);
+        return new Coverage(declarations?Completeness.COMPLETE:Completeness.PARTIAL,references?Completeness.COMPLETE:Completeness.PARTIAL,
+                document.coverage().fieldAssignments(),document.coverage().syntax());
+    }
+    public static boolean resolved(OpaqueStatement statement,SourceApplication application,IncludeClosure closure) {
+        return statement.reason().equals("UNRESOLVED_INCLUDE")&&closure.links().stream().anyMatch(l->
+                l.caller().equals(application.id())&&l.site().startUtf16()==statement.span().startUtf16()
+                        &&l.resolution()==IncludeResolution.RESOLVED);
+    }
     public record Expansion(List<RegistrationEvent> registrations,boolean orderProven) {
         public Expansion { registrations=List.copyOf(registrations); }
     }
@@ -44,7 +60,7 @@ public final class RegistrationSequence {
         cancellation.check();
         if(depth>=64||visited.size()>=4096||!visited.add(application.id()))return false;
         var document=sources.get(application.id().sourceDocument());if(document==null)return false;
-        boolean proven=document.problems().isEmpty()&&document.coverage().syntax()==Completeness.COMPLETE
+        boolean proven=document.problems().isEmpty()&&!document.includes().topLevelControlFlowUncertain()&&document.coverage().syntax()==Completeness.COMPLETE
                 &&document.opaque().stream().noneMatch(o->o.mayRegisterDeclarations()&&!o.reason().equals("UNRESOLVED_INCLUDE"));
         for(var event:local(document)){
             cancellation.check();

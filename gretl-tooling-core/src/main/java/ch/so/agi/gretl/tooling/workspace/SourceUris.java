@@ -11,9 +11,10 @@ public final class SourceUris {
         String path=id.getPath();if(path==null)return null;int end=path.endsWith("/")?path.length()-1:path.length();int slash=path.lastIndexOf('/',end-1);if(slash<0)return null;return path(id,path.substring(0,slash+1));
     }
     public static URI child(URI directory,String relative){String base=directory.getPath();if(base==null)throw new IllegalArgumentException("No source directory");return path(directory,(base.endsWith("/")?base:base+"/")+relative);}
-    public static URI jobResource(URI source,String literal){
-        URI directory=parent(source);if(directory==null)return null;
-        if("file".equalsIgnoreCase(source.getScheme()))return DocumentStore.fileUri(Path.of(directory).resolve(literal).normalize());
+    public static URI jobResource(URI source,String literal){return resource(parent(source),literal);}
+    public static URI resource(URI directory,String literal){
+        if(directory==null)return null;
+        if("file".equalsIgnoreCase(directory.getScheme()))return DocumentStore.fileUri(Path.of(directory).resolve(literal).normalize());
         return literal.startsWith("/")?path(directory,literal):child(directory,literal);
     }
     public static boolean contains(URI root,URI id){return new SourceRepository.ReadPolicy(root,1,false).permits(id);}

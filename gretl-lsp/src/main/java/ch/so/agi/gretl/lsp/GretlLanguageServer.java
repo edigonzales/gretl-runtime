@@ -101,6 +101,9 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
     <T> CompletableFuture<T> query(String document,BiFunction<AnalysisSnapshot,CancellationToken,T> operation) {
         return deferred(()->workspace.request(workspace.document(document),List.of(),operation));
     }
+    <T> CompletableFuture<T> physicalQuery(String document,BiFunction<AnalysisSnapshot,CancellationToken,T> operation){
+        return deferred(()->workspace.request(workspace.document(document),List.of(),null,true,operation));
+    }
     private void enqueue(Runnable action,CompletableFuture<?> failureTarget) {
         synchronized(order) {
             var done=new CompletableFuture<Void>();controlSequence++;
@@ -229,8 +232,20 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
             version(request.protocolVersion());expected(snapshot,request.expectedSnapshotId(),true);
             var projector=new JobGraphProjector();var graph=projector.project(snapshot,new JobGraphProjector.GraphOptions(true,true),cancel);
             var mapper=new LspQueryMapper(snapshot);
-            return request.elementId()!=null?new NavigationResponse(context(snapshot),projector.sourceFor(graph,required(request.elementId(),128),snapshot.id()).flatMap(mapper::location).orElse(null),List.of()):
-                    new NavigationResponse(context(snapshot),null,projector.elementsAt(graph,workspace.document(request.documentId()),Objects.requireNonNull(request.offsetUtf16()),snapshot.id()));
+            if(request.elementId()!=null){
+                String element=required(request.elementId(),128);var location=projector.sourceFor(graph,element,snapshot.id()).flatMap(mapper::location).orElse(null);
+                var owner=graph.edges().stream().filter(e->e.id().equals(element)).map(e->e.target()).findFirst().orElse(element);
+                var application=java.util.stream.Stream.of(graph.nodes(),graph.parameters(),graph.cleanup()).flatMap(List::stream)
+                        .filter(n->n.id().equals(owner)&&n.symbol()!=null).map(n->snapshot.analysis().unique(n.symbol())).flatMap(Optional::stream).map(s->s.application()).findFirst().orElse(null);
+                SourceContextInfo selected=null;
+                if(workspace.includeTooling&&application!=null&&location!=null){
+                    var choices=workspace.sourceContexts.contextsFor(snapshot.analysis().capture(),URI.create(location.getUri()));
+                    var wanted=application.id();var choice=choices.contexts().stream().filter(c->c.application().id().equals(wanted)).findFirst();
+                    if(choice.isPresent())selected=new SourceContextInfo(choice.get().token(),wanted.project().toString(),wanted.entryDocument().toString(),wanted.ownerScope(),application.resourceBase()==null?null:application.resourceBase().toString(),application.role().name());
+                }
+                return new NavigationResponse(context(snapshot),location,List.of(),selected);
+            }
+            return new NavigationResponse(context(snapshot),null,projector.elementsAt(snapshot,graph,workspace.document(request.documentId()),Objects.requireNonNull(request.offsetUtf16()),snapshot.id(),workspace.includeTooling?workspace.sourceContexts.resolveForQuery(snapshot.analysis().capture(),workspace.document(request.documentId()),request.contextToken()).application().id():null));
         }));
     }
     private void expected(AnalysisSnapshot snapshot,String expected,boolean required){if(required&&expected==null||expected!=null&&!snapshot.id().toString().equals(expected))throw ServerWorkspace.error(ResponseErrorCode.ContentModified,"SNAPSHOT_MISMATCH");}

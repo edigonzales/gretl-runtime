@@ -84,6 +84,7 @@ public final class EditVerifier {
             @Override public List<SourceIssue> checkIncludeTraversal(IncludeTraversal traversal,ReadPolicy policy,CancellationToken token) {
                 return frozen.checkIncludeTraversal(traversal,policy,token);
             }
+            @Override public PathListing listIncludePaths(URI directory,ReadPolicy policy,CancellationToken token){return frozen.listIncludePaths(directory,policy,token);}
             @Override public SourceListing listProjectEntries(URI root, ScanBudget budget, CancellationToken token) {
                 return frozen.listProjectEntries(root, budget, token);
             }
@@ -103,6 +104,7 @@ public final class EditVerifier {
         // Preserve the frozen refactoring domain, inventories, negative reads and incarnations as well as the active closure.
         for(var source:frozen.versions().keySet())view.read(source,cancellation);
         for(var listing:frozen.listings().keySet())view.listProjectEntries(listing.root(),listing.budget(),cancellation);
+        for(var directory:frozen.pathListings().keySet())view.listIncludePaths(directory,cancellation);
         for(var traversal:frozen.traversals().keySet())view.checkIncludeTraversal(traversal,cancellation);
         resolved=resolved.withSources(view.freeze());
         var capture = new WorkspaceCapture(original.serverInstance(), original.generation(),

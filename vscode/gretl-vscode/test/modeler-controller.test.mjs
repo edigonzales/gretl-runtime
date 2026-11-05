@@ -132,3 +132,15 @@ test('native text undo/redo and save are scoped to the pinned document, without 
   let finish;api.window.showTextDocument=()=>new Promise(resolve=>{finish=resolve;});p.send({kind:'undoText'});await tick();p.dispose();finish({document:a});await tick();assert.deepEqual(calls,['undo','redo','save']);
  }finally{api.window.showTextDocument=oldShow;api.commands.executeCommand=oldExecute;api.window.activeTextEditor=undefined;f.provider.dispose();}
 });
+
+test('panel pins survive view controls without entering editable webview options; reveal confirms the node owner',async()=>{
+ const f=fixture(),a=doc('context-panel'),p=panel(f.provider,a),pin={projectId:'p',entryDocument:'file:///work/north/job.groovy',ownerScope:':north',role:'FRAGMENT'},confirmations=[];
+ f.backend.activateSourceContext=async(...args)=>{confirmations.push(args);};
+ f.backend.navigate=async(...args)=>({context:{snapshotId:args[1]},elements:[],sourceContext:pin,location:{uri:a.uri.toString(),range:{start:{line:0,character:0},end:{line:0,character:1}}}});
+ try{
+  p.send({kind:'ready'});await tick();f.pending[0].options.sourceContext=pin;f.pending[0].resolve(graph(a,'pinned'));await tick();
+  const published=p.messages.find(m=>m.kind==='graph');assert.deepEqual(published.sourceContext,pin);assert.deepEqual(Object.keys(published.options).sort(),['includeInnerInvocations','previewTargets']);
+  p.send({kind:'reveal',snapshotId:'pinned',elementId:'pinned:known'});await tick();assert.equal(confirmations.length,1);assert.equal(confirmations[0][0],a.uri.toString());assert.deepEqual(confirmations[0][1],pin);
+  p.send({kind:'options',previewTargets:[],includeInnerInvocations:true});const deadline=Date.now()+2000;while(f.pending.length<2){assert(Date.now()<deadline,'View-control refresh did not arrive');await new Promise(resolve=>setTimeout(resolve,5));}assert.deepEqual(f.pending[1].options.sourceContext,pin);
+ }finally{f.provider.dispose();}
+});

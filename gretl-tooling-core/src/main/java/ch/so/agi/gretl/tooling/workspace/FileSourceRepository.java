@@ -78,6 +78,29 @@ public final class FileSourceRepository implements SourceRepository {
         catch(IOException|UnsupportedOperationException|IllegalArgumentException unsafe){return List.of(new SourceIssue("SOURCE_UNSAFE_OR_UNREADABLE",traversal.caller()));}
         finally {for(int i=opened.size()-1;i>=0;i--)try{opened.get(i).close();}catch(IOException ignored){}}
     }
+    @Override public PathListing listIncludePaths(URI directory,ReadPolicy policy,CancellationToken cancellation){
+        var entries=new ArrayList<PathEntry>();var opened=new ArrayList<SecureDirectoryStream<Path>>();
+        try{
+            directory=SourceUris.directoryIdentity(directory);Path target=localPath(directory);
+            if(!SourceUris.directoryIdentity(policy.root()).equals(rootId)||!target.startsWith(logicalRoot)
+                    ||!directory.equals(rootId)&&!policy.permits(directory))return new PathListing(List.of(),List.of(new SourceIssue("SOURCE_OUTSIDE_POLICY",directory)),false);
+            Path relative=logicalRoot.relativize(target);if(relative.getNameCount()>64)return new PathListing(List.of(),List.of(new SourceIssue("SOURCE_PATH_LIMIT",directory)),false);
+            opened.add(openPinnedRoot());
+            for(Path segment:relative)if(!segment.toString().isEmpty())opened.add(opened.getLast().newDirectoryStream(segment,LinkOption.NOFOLLOW_LINKS));
+            int visited=0;for(Path path:opened.getLast()){
+                cancellation.check();if(++visited>4096||entries.size()>=512)return new PathListing(entries,List.of(new SourceIssue("SOURCE_SCAN_LIMIT",directory)),false);
+                Path name=path.getFileName();String label=name.toString();if(label.startsWith(".")||Set.of("target","node_modules","dist").contains(label)||label.indexOf(':')>=0||label.indexOf('\\')>=0
+                        ||label.codePoints().anyMatch(Character::isISOControl)||label.chars().anyMatch(c->"*?[]{}".indexOf(c)>=0))continue;
+                URI id=DocumentStore.fileUri(target.resolve(name));if(!policy.permits(id))continue;
+                var attrs=opened.getLast().getFileAttributeView(name,BasicFileAttributeView.class,LinkOption.NOFOLLOW_LINKS).readAttributes();
+                if(attrs.isSymbolicLink())continue;
+                if(attrs.isDirectory()||attrs.isRegularFile()&&label.endsWith(".groovy"))entries.add(new PathEntry(id,attrs.isDirectory()));
+            }
+            entries.sort(Comparator.comparing(e->e.documentId().toString()));return new PathListing(entries,List.of(),true);
+        }catch(java.util.concurrent.CancellationException cancelled){throw cancelled;}
+        catch(IOException|UnsupportedOperationException|IllegalArgumentException failure){return new PathListing(List.of(),List.of(new SourceIssue("SOURCE_PATH_LISTING_UNAVAILABLE",directory)),false);}
+        finally{for(int i=opened.size()-1;i>=0;i--)try{opened.get(i).close();}catch(IOException ignored){}}
+    }
     @Override public SourceListing listProjectEntries(URI root,ScanBudget budget,CancellationToken cancellation){
         return listProjectEntries(root,budget,new ReadPolicy(root,1,false),cancellation);
     }

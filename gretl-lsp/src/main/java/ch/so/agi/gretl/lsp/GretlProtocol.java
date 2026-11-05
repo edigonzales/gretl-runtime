@@ -97,7 +97,9 @@ public final class GretlProtocol {
     public record NavigationRequest(int protocolVersion,String documentId,String expectedSnapshotId,String elementId,Integer offsetUtf16,String contextToken) {
         public NavigationRequest(int protocolVersion,String documentId,String expectedSnapshotId,String elementId,Integer offsetUtf16){this(protocolVersion,documentId,expectedSnapshotId,elementId,offsetUtf16,null);}
     }
-    public record NavigationResponse(Context context,Location location,List<String> elements) { }
+    public record NavigationResponse(Context context,Location location,List<String> elements,SourceContextInfo sourceContext) {
+        public NavigationResponse(Context context,Location location,List<String> elements){this(context,location,elements,null);}
+    }
     static Context context(AnalysisSnapshot snapshot) {
         var capture=snapshot.analysis().capture();
         var stamps=capture.project().sources().versions().entrySet().stream().sorted(Map.Entry.comparingByKey()).map(e->{var stamp=e.getValue().stamp();return new SourceStamp(e.getKey().toString(),stamp==null?null:stamp.contentSha256(),stamp==null?null:stamp.bufferVersion(),e.getValue().bufferIncarnation()==null?null:e.getValue().bufferIncarnation().toString(),stamp!=null&&stamp.editable(),e.getValue().unavailableCode());}).toList();

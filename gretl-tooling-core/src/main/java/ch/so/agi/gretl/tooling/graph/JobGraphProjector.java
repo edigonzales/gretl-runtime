@@ -49,9 +49,9 @@ public final class JobGraphProjector {
             }
             var operation=symbol.operation();
             var anchor=new Anchor(symbol.anchor().documentId(),symbol.declaration().statementSpan());
-            var diagnostics=analysis.diagnostics().stream().filter(d->inside(anchor,d.anchor())).toList();
+            var diagnostics=analysis.diagnostics().stream().filter(d->inside(anchor,d.anchor())&&(d.application()==null||symbol.application()!=null&&d.application().equals(symbol.application().id()))).toList();
             var node=new Node(id,entry.getValue().size()==1?key(project,symbol.id().namespace().name(),symbol.id().qualifiedName(),kind.name()):null,
-                    symbol.id(),anchor,kind,symbol.id().qualifiedName(),operation==null?null:operation.operationId(),containers.get(anchor.documentId()),capabilities,
+                    symbol.id(),anchor,kind,symbol.id().qualifiedName(),operation==null?null:operation.operationId(),containers.get(symbol.application()==null?anchor.documentId():symbol.application().id().entryDocument()),capabilities,
                     operation==null?List.of():operation.inputs(),operation==null?List.of():operation.outputs(),diagnostics);
             if(kind==NodeKind.PARAMETER)parameters.add(node);else if(kind==NodeKind.CLEANUP)cleanup.add(node);else nodes.add(node);
             if(options.includeInnerInvocations())for(var inner:symbol.declaration().invocations()) {
@@ -63,12 +63,14 @@ public final class JobGraphProjector {
                         innerOperation.map(o->o.operationId()).orElse(null),id,Map.of(),innerOperation.map(o->o.inputs()).orElse(List.of()),innerOperation.map(o->o.outputs()).orElse(List.of()),List.of()));
             }
         }
-        for(var document:analysis.capture().project().documents().values()) {
-            cancellation.check();
-            for(var declaration:document.declarations())if(declaration.name()==null&&declaration.kind()!=DeclarationKind.DEFAULTS&&declaration.kind()!=DeclarationKind.INCLUDE) {
-                nodes.add(dynamic(snapshot,next++,document.source().stamp().documentId(),declaration.statementSpan(),containers));
-            }
-            for(var opaque:document.opaque())if(opaque.mayRegisterDeclarations())nodes.add(dynamic(snapshot,next++,document.source().stamp().documentId(),opaque.span(),containers));
+        var closure=analysis.capture().project().includeClosure();
+        for(var application:closure.applications()) {
+            cancellation.check();var document=analysis.capture().project().documents().get(application.id().sourceDocument());if(document==null)continue;
+            String parent=containers.get(application.id().entryDocument());
+            for(var declaration:document.declarations())if(declaration.name()==null&&declaration.kind()!=DeclarationKind.DEFAULTS&&declaration.kind()!=DeclarationKind.INCLUDE)
+                nodes.add(dynamic(snapshot,next++,application.id().sourceDocument(),declaration.statementSpan(),parent));
+            for(var opaque:document.opaque())if(opaque.mayRegisterDeclarations()&&!ch.so.agi.gretl.tooling.syntax.RegistrationSequence.resolved(opaque,application,closure))
+                nodes.add(dynamic(snapshot,next++,application.id().sourceDocument(),opaque.span(),parent));
         }
         for(var reference:analysis.references()) {
             cancellation.check();
@@ -110,16 +112,22 @@ public final class JobGraphProjector {
         return graph.edges().stream().filter(e->e.id().equals(elementId)).map(Edge::anchor).findFirst();
     }
     public List<String> elementsAt(JobGraph graph,URI document,int offset,UUID expectedSnapshot) {
+        return elementsAt(null,graph,document,offset,expectedSnapshot,null);
+    }
+    public List<String> elementsAt(AnalysisSnapshot snapshot,JobGraph graph,URI document,int offset,UUID expectedSnapshot,ch.so.agi.gretl.tooling.workspace.IncludeModel.ApplicationId application) {
         requireSnapshot(graph,expectedSnapshot);
         var result=new ArrayList<String>();
-        allNodes(graph).filter(n->n.anchor().documentId().equals(document)&&n.anchor().span()!=null&&n.anchor().span().contains(offset)).forEach(n->result.add(n.id()));
-        graph.edges().stream().filter(e->e.anchor().documentId().equals(document)&&e.anchor().span()!=null&&e.anchor().span().contains(offset)).forEach(e->result.add(e.id()));
+        allNodes(graph).filter(n->application==null||n.symbol()==null||symbolApplication(snapshot,n.symbol(),application)).filter(n->n.anchor().documentId().equals(document)&&n.anchor().span()!=null&&n.anchor().span().contains(offset)).forEach(n->result.add(n.id()));
+        graph.edges().stream().filter(e->application==null||allNodes(graph).filter(n->n.id().equals(e.target())).allMatch(n->n.symbol()==null||symbolApplication(snapshot,n.symbol(),application))).filter(e->e.anchor().documentId().equals(document)&&e.anchor().span()!=null&&e.anchor().span().contains(offset)).forEach(e->result.add(e.id()));
         return List.copyOf(result);
+    }
+    private boolean symbolApplication(AnalysisSnapshot snapshot,SymbolId symbol,ch.so.agi.gretl.tooling.workspace.IncludeModel.ApplicationId application){
+        return snapshot.analysis().unique(symbol).map(s->s.application()!=null&&s.application().id().equals(application)).orElse(false);
     }
     private java.util.stream.Stream<Node> allNodes(JobGraph graph){return java.util.stream.Stream.of(graph.nodes(),graph.parameters(),graph.cleanup()).flatMap(List::stream);}
     private void requireSnapshot(JobGraph graph,UUID expected){if(!graph.snapshotId().equals(expected))throw new IllegalArgumentException("GRAPH_STALE_SNAPSHOT");}
-    private Node dynamic(AnalysisSnapshot snapshot,int index,URI document,TextSpan span,Map<URI,String> containers) {
-        return new Node(id(snapshot,"node",index),null,null,new Anchor(document,span),NodeKind.DYNAMIC_CODE,"Dynamic code",null,containers.get(document),Map.of(),List.of(),List.of(),List.of());
+    private Node dynamic(AnalysisSnapshot snapshot,int index,URI document,TextSpan span,String parent) {
+        return new Node(id(snapshot,"node",index),null,null,new Anchor(document,span),NodeKind.DYNAMIC_CODE,"Dynamic code",null,parent,Map.of(),List.of(),List.of(),List.of());
     }
     private boolean inside(Anchor parent,Anchor child){return parent.documentId().equals(child.documentId())&&parent.span()!=null&&child.span()!=null&&parent.span().contains(child.span());}
     private String id(AnalysisSnapshot snapshot,String kind,int index){return snapshot.id()+":"+kind+":"+index;}

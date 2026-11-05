@@ -1,11 +1,11 @@
 # Include-tooling: Arbeitsstand
 
-**Stand: P0/P1 REVIEWED_ACCEPTED; P2 NACHARBEIT korrigiert, erneuter Review ausstehend.**
+**Stand: P0/P1/P2 REVIEWED_ACCEPTED; P3 implementiert, finale Kandidatenprüfung/Review ausstehend.**
 P0-Kandidat `d2dccba942a749a3f270a7dbfbdb11ffe2814a1a` wurde unabhängig
 abgenommen und nach vollständigem Prozess-/Sessionabschluss maschinell validiert.
 P1-Kandidat `fb4664de265d06e3145d2757c1d1aed853d25da1` wurde ohne Findings
 unabhängig abgenommen und nach Prozess-/Sessionabschluss maschinell validiert.
-P3 beginnt erst nach unabhängiger P2-Abnahme.
+P2-Korrektur `a9cd26c3e5b89f1d91aa09be49ae628f18e9b980` ist unabhängig abgenommen und maschinell validiert. P3 hat danach begonnen; P4 bleibt gesperrt.
 
 Basis: `9773c42ddb12a7343cf5f9ad7b6be81b489abb30`, sauberer Main und
 `origin/main` (Remote bei Start geprüft). Branch `codex/include-tooling`, eigener
@@ -16,12 +16,11 @@ Andere Worktrees bleiben unverändert.
 
 ## Phasen und nächste Arbeit
 
-- P0: reale Baseline erfolgreich; schlanker neuer Reviewadapter, isolierte Session
-  und unabhängige Gegenprobe sind jetzt abzuprüfen (W01–W04).
-- P1: neutrale Include-AST-Inspektion im neuen `gretl-script-syntax`, kompatible
+- P0: Baseline und autonomer unabhängiger Reviewweg abgenommen (W01–W04).
+- P1 (abgenommen): neutrale Include-AST-Inspektion im neuen `gretl-script-syntax`, kompatible
   Runtimefassade, Toolingadapter, Anwendungen und Reihenfolge. Reader-, SafeParser-,
   Loaderfamilie und kleiner echter SCRIPT/JAR-/Paketnachweis.
-- P2: Closure, Sourcecapture, Ownerindex, Context-/Membershipvertrag und Client.
+- P2 (abgenommen): Closure, Sourcecapture, Ownerindex, Context-/Membershipvertrag und Client.
   Resolver-/Workspace-/SQLbasis-/Dirty-/Owner-/stdio-/Hosttests.
 - P3: Semantik, originale Navigation, Completion, vollständiger statischer Graph,
   Contextwahl. Query-/Alias-/Graph-/Preview-/stdio- und Runtimeplanparität;
@@ -171,5 +170,54 @@ Gezielte Nachtests betreffen Workspace/Owner/Context/Host, Semantik-/Defaults-/
 Postimagekontrollen und reale Settings-/Membership-/Lifecycle-Serverwege. Die
 unveränderten Parser-/Query-/Editfamilienbelege des ersten P2-Laufs bleiben als
 solche kenntlich; keine alte SHA wird als frisch geprüft ausgegeben.
-Nächste Aktion: Korrekturkandidat committen, gezielt prüfen und in frischer
-unabhängiger Session die ganze P2-Phase gegen dieselbe Phasebase bewerten.
+P2-Abnahme und validierter Sessionabschluss:
+`/Users/stefan/.cache/gretl-include-tooling/review/P2-attempt-3/`.
+Session `ses_e549dc130ffe44EPiJVCU00pSx`, ABGENOMMEN ohne Findings.
+Attempt 2 enthält ebenfalls fachlich ABGENOMMEN und eine zusätzliche erfolgreiche
+Vollfamilie, wurde aber wegen Wrapped-Commands/Verzeichnisbelegen vom strikten
+Validator verworfen. Kein Gate darauf gestützt; neue frische Session in Attempt 3
+am gleichen unveränderten SHA führte die Commands direkt und eine eigene neue
+stdio-Gegenprobe aus. Originale bleiben erhalten.
+
+
+## P3-Kandidat
+
+Geordnete RegistrationEvents binden Fragmentdeklarationen und datei-/anwendungs-
+lokale Aliase. Symbole, Referenzen, Ressourcen und semantische Diagnosen tragen
+ihre Anwendung; file/SQL verwenden ausdrücklich deren Ressourcenbasis. Effektive
+Include-Coverage ist je Anwendung abgeleitet und überschreibt keine physisch
+gecachten Parsergebnisse. Return/Throw/Recovery und opaker Code bleiben partiell.
+Graphcontainer gehören zum Entry, Anker zur Originalquelle; keine Include-DAGkante.
+
+QueryContext und ReferenceIndex mischen Shared-Anwendungen nicht. Standard-LSP
+und Modeler benutzen die bestätigte Auswahl; Outline/Folding und identische
+Includelinks funktionieren auch vor der Auswahl. Der Modeler hält pro Panel die
+Anwendungsidentität und erneuert nur diese Tokens. Reveal und Go-to-Definition
+übertragen den bekannten Einbinderkontext in die Zieltextansicht. Kontextabhängige
+Diagnosen zeigen Scope und Entry. Source-/Form-/Previewprojektionen teilen dieselbe
+Analyse und Originalanker.
+
+Pfadcompletion liest ausschliesslich captured, begrenzte Directorylisten; Host
+prüft Policy, sichere Handles und Links. Auch offene Quotes erhalten nur einen
+lexikalischen Completionumschlag, keine gültige Include-Deklaration. Unsupported
+oder fehlende Listen bleiben ausdrücklich incomplete. Erfasste Listen bleiben in
+Currentness-/Postimagewegen erhalten; Quotes und vorhandene Escapepräfixe bleiben.
+
+Strukturelle Include-Edits bleiben mit separatem EDIT_INCLUDE_PHASE_GUARD gesperrt;
+neue Fragmentwrites in Shared/UNKNOWN werden abgelehnt. Die bisherigen lokal
+bewiesenen Entry-Skalarpfade bleiben erhalten; der vollständige endgültige
+Footprint-/Owner-/Postimageguard und positive Mehrdateien-Edits sind erst P4.
+Keine native GUI-Abnahme in P3 behauptet.
+
+Entwicklung unter `/Users/stefan/.cache/gretl-include-tooling/evidence/P3/`:
+ganze kleine Core-/Query-/Editfamilie, StaticSemanticsParityTest und reale
+ServerProcess-/Apply-/Membership-/IncludeSemanticServerIT sowie gezielte
+Clientfamilie. Der frühere positive always-PARTIAL-Test verlangt jetzt COMPLETE
+und originale Fragmenttasks (IT11/IT12); fehlende/kaputte/Throwfälle und sämtliche
+Sicherheitsassertions bleiben. Runtimeplanparität vergleicht Registrierungsfolge,
+Zielclosure, Datenvorgänger und tatsächliche lokale Ausgabe; typisierte Gzip-
+Komplettheit wird zusätzlich über den echten stdio-Server belegt.
+
+Nächste Aktion: P3-Code/Tests/Request committen, frische gezielte Gates am sauberen
+SHA und neue unabhängige P3-Session gegen feste Phasebase a9cd26c. Erst nach
+validierter Abnahme P4 beginnen.

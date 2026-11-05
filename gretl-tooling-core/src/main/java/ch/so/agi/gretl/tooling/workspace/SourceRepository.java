@@ -37,6 +37,13 @@ public interface SourceRepository {
     record SourceListing(List<URI> entries,List<SourceIssue> issues,boolean complete) {
         public SourceListing { entries=List.copyOf(entries);issues=List.copyOf(issues); }
     }
+    record PathEntry(URI documentId,boolean directory) { }
+    record PathListing(List<PathEntry> entries,List<SourceIssue> issues,boolean complete) {
+        public PathListing {entries=List.copyOf(entries);issues=List.copyOf(issues);}
+    }
+    default PathListing listIncludePaths(URI directory,ReadPolicy policy,CancellationToken cancellation){
+        cancellation.check();return new PathListing(List.of(),List.of(new SourceIssue("SOURCE_PATH_LISTING_UNSUPPORTED",directory)),false);
+    }
     record IncludeTraversal(URI caller,String literal,URI definitionRoot) {
         public IncludeTraversal { caller=DocumentStore.identity(caller);definitionRoot=SourceUris.directoryIdentity(definitionRoot);Objects.requireNonNull(literal); }
     }

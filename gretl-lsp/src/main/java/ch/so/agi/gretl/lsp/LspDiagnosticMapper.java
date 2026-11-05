@@ -13,7 +13,7 @@ final class LspDiagnosticMapper {
         var settings=snapshot.analysis().capture().project().settings();if(settings!=null)grouped.put(settings.source().stamp().documentId(),new ArrayList<>());
         for(var diagnostic:snapshot.analysis().diagnostics()) {
             var range=mapper.range(diagnostic.anchor());if(range.isEmpty())continue;
-            var item=new org.eclipse.lsp4j.Diagnostic();item.setRange(range.orElseThrow());item.setMessage(diagnostic.message());item.setSource("gretl-runtime");item.setCode(diagnostic.code());
+            var item=new org.eclipse.lsp4j.Diagnostic();item.setRange(range.orElseThrow());item.setMessage(diagnostic.message()+(diagnostic.application()==null?"":" ["+diagnostic.application().ownerScope()+" · "+diagnostic.application().entryDocument()+"]"));item.setSource("gretl-runtime");item.setCode(diagnostic.code());
             item.setSeverity(switch(diagnostic.severity()){case ERROR->DiagnosticSeverity.Error;case WARNING->DiagnosticSeverity.Warning;case INFORMATION->DiagnosticSeverity.Information;});
             if(relatedInformation)item.setRelatedInformation(diagnostic.related().stream().map(mapper::location).flatMap(Optional::stream).map(location->new DiagnosticRelatedInformation(location,diagnostic.code())).toList());
             grouped.computeIfAbsent(diagnostic.anchor().documentId(),id->new ArrayList<>()).add(item);

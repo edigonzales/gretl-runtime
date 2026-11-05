@@ -3,7 +3,7 @@ import {EditIntent,FormProjection,editIntent,formProjection} from './edit-model'
 export type NodeKind='TASK'|'ACTION'|'DYNAMIC_CODE'|'PROJECT'|'INNER_INVOCATION'|'PARAMETER'|'CLEANUP';
 export type EdgeKind='DEPENDS_ON'|'AFTER'|'RESULT_BINDING';
 export interface Anchor {documentId:string;span?:{startUtf16:number;endUtf16:number}|null}
-export interface Diagnostic {code:string;severity:'ERROR'|'WARNING'|'INFORMATION';message:string;anchor:Anchor}
+export interface Diagnostic {code:string;severity:'ERROR'|'WARNING'|'INFORMATION';message:string;anchor:Anchor;application?:{ownerScope:string;entryDocument:string;sourceDocument:string}|null}
 export interface SourceStamp {documentId:string;sha256?:string|null;version?:number|null;incarnation?:string|null;editable:boolean;unavailableCode?:string|null}
 export interface GraphContext {protocolVersion:1;schemaVersion:1;serverInstanceId:string;projectId:string;workspaceGeneration:string;snapshotId:string;catalogId?:string;sourceStamps:SourceStamp[];completeness:Record<string,boolean>;notices:string[]}
 export interface GraphNode {id:string;presentationKey?:string|null;symbol?:{namespace:string;qualifiedName:string}|null;anchor:Anchor;kind:NodeKind;title:string;operationId?:string|null;parentId?:string|null;editCapabilities:Record<string,{state:string;reason?:string;[key:string]:unknown}>;inputs:{name:string;[key:string]:unknown}[];outputs:{name:string;[key:string]:unknown}[];diagnostics:Diagnostic[]}
@@ -40,7 +40,7 @@ export function graphResponse(v:unknown):GraphResponse {
     const parents=new Map((nodes as GraphNode[]).map(n=>[n.id,n.parentId]));
     for(const n of nodes as GraphNode[]){let parent=n.parentId;let depth=0;while(parent){if(parent===n.id||++depth>4)throw Error('GRAPH_PARENT_INVALID');parent=parents.get(parent);}}
     for(const edge of p.edges as unknown[]){if(!object(edge)||!text(edge.id,128)||ids.has(edge.id)||!ids.has(String(edge.source))||!ids.has(String(edge.target))||!['DEPENDS_ON','AFTER','RESULT_BINDING'].includes(String(edge.kind))||!validAnchor(edge.anchor))throw Error('GRAPH_EDGE_INVALID');ids.add(edge.id);}
-    for(const d of p.diagnostics as unknown[])if(!object(d)||!text(d.code,128)||!text(d.message)||!validAnchor(d.anchor)||!['ERROR','WARNING','INFORMATION'].includes(String(d.severity)))throw Error('GRAPH_DIAGNOSTIC_INVALID');
+    for(const d of p.diagnostics as unknown[])if(!object(d)||!text(d.code,128)||!text(d.message)||!validAnchor(d.anchor)||!['ERROR','WARNING','INFORMATION'].includes(String(d.severity))||d.application!=null&&(!object(d.application)||!text(d.application.ownerScope,4096)||!text(d.application.entryDocument,8192)||!text(d.application.sourceDocument,8192)))throw Error('GRAPH_DIAGNOSTIC_INVALID');
     if(p.preview!=null){const preview=p.preview;if(!object(preview)||typeof preview.available!=='boolean'||!Array.isArray(preview.targets)||!Array.isArray(preview.orderedSymbols)||preview.targets.some(t=>!text(t))||preview.orderedSymbols.some(t=>!text(t)))throw Error('GRAPH_PREVIEW_INVALID');}
     if(p.forms!=null)p.forms=formProjection(p.forms,new Set(nodes.map(n=>(n as GraphNode).id)),new Set((c.sourceStamps as SourceStamp[]).map(s=>s.documentId)));
     return v as unknown as GraphResponse;

@@ -121,7 +121,8 @@ class ModelerPanelController implements vscode.Disposable {
             if(!this.requests.accepts(ticket)||cancellation.token.isCancellationRequested)return;
             const key=viewKey(graph,this.document.uri.toString(),this.viewSlot);this.view=this.view?.key===key?this.view:this.store.load(key);
             this.graph=graph;this.status=graph.payload.nodes.length||graph.payload.parameters.length||graph.payload.cleanup.length?'FRESH':'EMPTY';
-            this.post({kind:'graph',graph,status:this.status,key,viewState:this.view,options:this.options});
+            this.panel.title=`${vscode.workspace.asRelativePath(this.document.uri)}${this.options.sourceContext?' · '+this.options.sourceContext.ownerScope:''}`;
+            this.post({kind:'graph',graph,status:this.status,key,viewState:this.view,options:{includeInnerInvocations:this.options.includeInnerInvocations,previewTargets:this.options.previewTargets},sourceContext:this.options.sourceContext});
             try{const catalog=await this.backend.catalog(graph,cancellation.token);if(this.graph===graph&&!cancellation.token.isCancellationRequested)this.post({kind:'catalog',snapshotId:graph.context.snapshotId,catalog});}
             catch(error){if(!cancellation.token.isCancellationRequested&&this.graph===graph)this.post({kind:'catalogUnavailable',reason:error instanceof Error?error.message:String(error)});}
         }).catch(error=>{if(this.requests.accepts(ticket)&&!cancellation.token.isCancellationRequested)this.failure(error);});
@@ -156,7 +157,7 @@ class ModelerPanelController implements vscode.Disposable {
             case 'inspection':if(this.inspection?.id===message.requestId&&this.graph?.context.snapshotId===message.snapshotId)this.finishInspection({documentId:this.document.uri.toString(),version:this.document.version,dirty:this.document.isDirty,status:this.status,context:this.graph.context,view:message.view});return;
             case 'ready':this.ready=true;this.refresh('Open');return;
             case 'refresh':this.refresh('Refresh');return;
-            case 'options':this.options={includeInnerInvocations:message.includeInnerInvocations,previewTargets:message.previewTargets};this.invalidate('View changed');return;
+            case 'options':this.options={sourceContext:this.options.sourceContext,includeInnerInvocations:message.includeInnerInvocations,previewTargets:message.previewTargets};this.invalidate('View changed');return;
             case 'problems':await vscode.commands.executeCommand('workbench.actions.view.problems');return;
             case 'source':await vscode.window.showTextDocument(this.document,{viewColumn:this.sourceColumn(),preserveFocus:false});return;
             case 'viewState':if(this.graph&&message.snapshotId===this.graph.context.snapshotId){const view=readViewState(message.state,viewKey(this.graph,this.document.uri.toString(),this.viewSlot));if(view){this.view=view;if(!await this.store.save(view))this.post({kind:'notice',reason:'View positions could not be persisted.'});}}return;
@@ -165,13 +166,14 @@ class ModelerPanelController implements vscode.Disposable {
                 this.reveal?.cancel();this.reveal?.dispose();
                 const graph=this.graph,token=this.reveal=new vscode.CancellationTokenSource();
                 try {
-                    const result=await this.backend.navigate(this.document.uri.toString(),graph.context.snapshotId,message.elementId,undefined,token.token);
+                    const result=await this.backend.navigate(this.document.uri.toString(),graph.context.snapshotId,message.elementId,undefined,token.token,this.options.sourceContext);
                     if(this.disposed||token.token.isCancellationRequested||this.graph!==graph||!['FRESH','EMPTY'].includes(this.status)||!result.location)return;
                     const location=result.location,stamp=graph.context.sourceStamps.find(s=>normalize(s.documentId)===normalize(location.uri));if(!stamp?.sha256)return;
                     const document=await vscode.workspace.openTextDocument(vscode.Uri.parse(location.uri));if(this.disposed||token.token.isCancellationRequested||this.graph!==graph)return;if(sourceDigest(document.getText())!==stamp.sha256){this.invalidate('Navigation source changed');return;}
                     const r=location.range;if(![r.start.line,r.start.character,r.end.line,r.end.character].every(n=>Number.isSafeInteger(n)&&n>=0))return;
                     const range=new vscode.Range(r.start.line,r.start.character,r.end.line,r.end.character);
                     const editor=await vscode.window.showTextDocument(document,{viewColumn:this.sourceColumn(),preserveFocus:false,selection:range});editor.revealRange(range,vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+                    if(result.sourceContext)await this.backend.activateSourceContext?.(location.uri,result.sourceContext,token.token);
                 } catch(error){if(!this.disposed&&!token.token.isCancellationRequested)throw error;}
                 finally {if(this.reveal===token)this.reveal=undefined;token.dispose();}return;
             }
@@ -184,7 +186,7 @@ class ModelerPanelController implements vscode.Disposable {
         // A revealed declaration selects a half-open source range. Its end can
         // lie outside the declaration; map the start to retain that selection.
         const position=editor.selection.isEmpty?editor.selection.active:editor.selection.start;
-        try {const result=await this.backend.navigate(editor.document.uri.toString(),graph.context.snapshotId,undefined,editor.document.offsetAt(position),token.token);
+        try {const result=await this.backend.navigate(editor.document.uri.toString(),graph.context.snapshotId,undefined,editor.document.offsetAt(position),token.token,this.options.sourceContext);
             if(this.graph!==graph||!this.selections.accepts(ticket)||token.token.isCancellationRequested)return;
             this.post({kind:'selection',snapshotId:graph.context.snapshotId,elements:result.elements,focus});if(focus)this.panel.reveal(this.panel.viewColumn,false);
         }catch{/* Selection races are retried on the next source selection or graph refresh. */}

@@ -16,17 +16,19 @@ public final class LanguageQueries {
         return new CompletionQueries().complete(context);
     }
 
+    public boolean completionIncomplete(QueryContext context){return new IncludePathQueries().complete(context).incomplete();}
+
     public Optional<SignatureInfo> signatureHelp(QueryContext context) {
         return new SignatureQueries().signatureHelp(context);
     }
 
     public Optional<RenamePreparation> prepareRename(QueryContext context) {
-        var targets=context.snapshot().references().targetsAt(context.documentId(),context.offsetUtf16());
+        var targets=context.snapshot().references().targetsAt(context.documentId(),context.offsetUtf16(),context.application());
         if(targets.size()!=1)return Optional.empty();
         var symbol=context.snapshot().analysis().unique(targets.iterator().next());
         if(symbol.isEmpty())return Optional.empty();
         var s=symbol.orElseThrow();
-        var references=context.snapshot().references().referencesAt(context.documentId(),context.offsetUtf16());
+        var references=context.snapshot().references().referencesAt(context.documentId(),context.offsetUtf16(),context.application());
         var anchor=references.isEmpty()?s.anchor():references.getFirst().anchor();
         // A TaskRef variable is a different Groovy binding, not the task's literal DSL name.
         if(references.isEmpty()&&s.declaration().bindingSpan()!=null&&s.declaration().bindingSpan().contains(context.offsetUtf16()))return Optional.empty();
@@ -57,8 +59,8 @@ public final class LanguageQueries {
         for(var diagnostic:analysis.diagnostics()) {
             cancellation.check();if(actions.size()>=32)break;
             var id=new DiagnosticId(diagnostic.code(),diagnostic.anchor());
-            if(!requested.contains(id)||!diagnostic.anchor().documentId().equals(context.documentId())||!diagnostic.code().equals("RESULT_DEPENDENCY_REQUIRED"))continue;
-            for(var reference:analysis.references())if(reference.anchor().documentId().equals(diagnostic.anchor().documentId())
+            if(!context.accepts(diagnostic.application())||!requested.contains(id)||!diagnostic.anchor().documentId().equals(context.documentId())||!diagnostic.code().equals("RESULT_DEPENDENCY_REQUIRED"))continue;
+            for(var reference:analysis.references())if(context.accepts(reference.application())&&reference.anchor().documentId().equals(diagnostic.anchor().documentId())
                     &&diagnostic.anchor().span()!=null&&diagnostic.anchor().span().contains(reference.anchor().span())
                     &&(reference.kind()==ReferenceKind.RESULT||reference.kind()==ReferenceKind.RESULT_OPTIONAL)&&reference.target().isPresent()&&reference.owner()!=null) {
                 var intent=new ch.so.agi.gretl.tooling.edit.SemanticEditIntent.AddDependency(reference.target().orElseThrow(),reference.owner(),ch.so.agi.gretl.language.PlanSemantics.EdgeKind.DEPENDS_ON);
@@ -81,14 +83,15 @@ public final class LanguageQueries {
     }
 
     public List<Anchor> definitions(QueryContext context) {
-        return context.snapshot().references().definitionsAt(context.documentId(), context.offsetUtf16());
+        var includes=includeLinks(context).stream().filter(l->l.anchor().span().contains(context.offsetUtf16())).map(l->new Anchor(l.target(),new ch.so.agi.gretl.tooling.source.TextSpan(0,0))).toList();
+        return includes.isEmpty()?context.snapshot().references().definitionsAt(context.documentId(), context.offsetUtf16(),context.application()):includes;
     }
 
     public ReferenceResult references(QueryContext context, boolean includeDeclaration) {
         var index = context.snapshot().references();
         var locations = new LinkedHashSet<Anchor>();
         boolean complete = context.snapshot().analysis().capabilities().referencesComplete();
-        for (var target : index.targetsAt(context.documentId(), context.offsetUtf16())) {
+        for (var target : index.targetsAt(context.documentId(), context.offsetUtf16(),context.application())) {
             if (includeDeclaration) context.snapshot().analysis().symbols().getOrDefault(target, List.of())
                     .forEach(s -> locations.add(s.anchor()));
             var references = index.referencesTo(target);
@@ -121,10 +124,21 @@ public final class LanguageQueries {
 
     public List<FileLink> documentLinks(QueryContext context) {
         var capture = context.snapshot().analysis().capture();
-        return context.snapshot().analysis().paths().stream()
+        return java.util.stream.Stream.concat(includeLinks(context).stream(),context.snapshot().analysis().paths().stream()
                 .filter(p -> p.anchor().documentId().equals(context.documentId()) && p.kind() == PathKind.JOB_RESOURCE
-                        && p.resourceId() != null && capture.readPolicy().permits(p.resourceId()))
-                .map(p -> new FileLink(p.anchor(), p.resourceId())).distinct().toList();
+                        && p.resourceId() != null && capture.readPolicy().permits(p.resourceId())&&context.accepts(p.application()))
+                .map(p -> new FileLink(p.anchor(), p.resourceId()))).distinct().toList();
+    }
+
+    private List<FileLink> includeLinks(QueryContext context){
+        var project=context.snapshot().analysis().capture().project();var document=context.document().orElse(null);if(document==null)return List.of();
+        var links=new ArrayList<FileLink>();
+        for(var directive:document.includes().directives()){
+            var matches=project.includeClosure().links().stream().filter(l->l.site().sourceDocument().equals(context.documentId())&&l.site().startUtf16()==directive.start()
+                    &&l.resolution()==ch.so.agi.gretl.tooling.workspace.IncludeModel.IncludeResolution.RESOLVED).map(l->l.targetDocument()).distinct().toList();
+            if(matches.size()==1)links.add(new FileLink(new Anchor(context.documentId(),new ch.so.agi.gretl.tooling.source.TextSpan(directive.literalStart(),directive.literalEnd())),matches.getFirst()));
+        }
+        return List.copyOf(links);
     }
 
     public List<FoldingRegion> foldingRanges(QueryContext context) {
@@ -152,7 +166,7 @@ public final class LanguageQueries {
                     ||call.arguments().size()!=1||!(call.arguments().getFirst() instanceof LiteralValue literal)
                     ||!(literal.value() instanceof String))continue;
             var references=analysis.references().stream().filter(reference->reference.kind()==ReferenceKind.RESULT
-                    &&reference.anchor().documentId().equals(context.documentId())
+                    &&context.accepts(reference.application())&&reference.anchor().documentId().equals(context.documentId())
                     &&call.span().contains(reference.anchor().span())).toList();
             if(references.size()!=1)return Optional.empty();
             return references.getFirst().target().flatMap(analysis::unique).filter(producer->producer.operation()!=null)
@@ -160,21 +174,22 @@ public final class LanguageQueries {
                     .map(output->new HoverInfo(new Anchor(context.documentId(),property.propertySpan()),
                             output.name()+" : "+output.shape().runtimeType()+(output.nullable()?"?":""),output.description()));
         }
-        var targets = context.snapshot().references().targetsAt(context.documentId(), context.offsetUtf16());
+        var targets = context.snapshot().references().targetsAt(context.documentId(), context.offsetUtf16(),context.application());
         if (targets.size() == 1) {
             var symbol = analysis.unique(targets.iterator().next());
             if (symbol.isPresent()) {
                 var s = symbol.get();
                 String documentation = s.operation() == null ? s.declaration().kind().name() : s.operation().description();
-                var reference = context.snapshot().references().referencesAt(context.documentId(), context.offsetUtf16());
+                var reference = context.snapshot().references().referencesAt(context.documentId(), context.offsetUtf16(),context.application());
                 var anchor = reference.isEmpty() ? s.anchor() : reference.getFirst().anchor();
                 if (reference.isEmpty() && s.declaration().bindingSpan() != null && s.declaration().bindingSpan().contains(context.offsetUtf16())) {
                     anchor = new Anchor(context.documentId(), s.declaration().bindingSpan());
                 }
-                return Optional.of(new HoverInfo(anchor, s.id().qualifiedName(), documentation));
+                return Optional.of(new HoverInfo(anchor, s.id().qualifiedName(), documentation+(s.application()==null?"":"\nContext: "+s.scope()+" · "+s.application().id().entryDocument()+"\nSource: "+s.anchor().documentId())));
             }
         }
         for (var symbols : analysis.symbols().values()) for (var symbol : symbols) {
+            if(!context.accepts(symbol))continue;
             if(symbol.anchor().documentId().equals(context.documentId()))for(var inner:symbol.declaration().invocations()) {
                 if(inner.operation() instanceof NameValue name) {
                     var operation=analysis.capture().catalog().result().catalog().stream().flatMap(c->c.operations().stream()).filter(o->o.symbol().equals(name.name())).findFirst();
