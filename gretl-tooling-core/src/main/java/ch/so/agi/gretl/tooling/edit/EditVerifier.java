@@ -50,6 +50,7 @@ public final class EditVerifier {
             changes.put(id, edits);
             postimages.put(id, text);
         }
+        if(!new EditImpactAnalyzer().assess(before,null,changes).allowed())throw new IllegalArgumentException("EDIT_SHARED_SOURCE");
         var after = changes.isEmpty() ? before : reanalyze(before, postimages, cancellation);
         if (!after.analysis().capabilities().bounded() || after.analysis().capture().project().sources().limited()) {
             throw new IllegalArgumentException("EDIT_ANALYSIS_LIMIT");
@@ -64,6 +65,9 @@ public final class EditVerifier {
         for (var entry : errorCounts(after,Map.of(),false).entrySet()) {
             if (!intermediateConfiguration&&entry.getValue() > remaining.getOrDefault(entry.getKey(), 0)) throw new IllegalArgumentException("EDIT_NEW_ERROR");
         }
+        var applicationsBefore=before.analysis().capture().project().includeClosure().applications().stream().map(a->a.id()).collect(java.util.stream.Collectors.toSet());
+        var applicationsAfter=after.analysis().capture().project().includeClosure().applications().stream().map(a->a.id()).collect(java.util.stream.Collectors.toSet());
+        if(!applicationsBefore.equals(applicationsAfter))throw new IllegalArgumentException("EDIT_SOURCE_CONTEXT_CHANGED");
         if (!expectedDelta.test(after)) throw new IllegalArgumentException("EDIT_POSTCONDITION");
         return new PlannedEdit(UUID.randomUUID(), EditPreconditions.capture(before), summary, changes, postimages, after, notices);
     }
@@ -110,10 +114,10 @@ public final class EditVerifier {
         var capture = new WorkspaceCapture(original.serverInstance(), original.generation(),
                 original.rootConfigurationGeneration(), original.configurationDigest(), original.configuration(),
                 original.catalog(), resolved, original.readPolicy(),original.ownership());
-        return AnalysisSnapshot.of(new ProjectAnalyzer().analyze(capture, cancellation));
+        return before.postimage(new ProjectAnalyzer().analyze(capture, cancellation));
     }
 
-    private record ErrorKey(String code,URI document,ch.so.agi.gretl.tooling.source.TextSpan span) { }
+    private record ErrorKey(String code,URI document,ch.so.agi.gretl.tooling.source.TextSpan span,ch.so.agi.gretl.tooling.workspace.IncludeModel.ApplicationId application) { }
 
     private Map<ErrorKey, Integer> errorCounts(AnalysisSnapshot snapshot,Map<URI,List<SourceReplacement>> changes,boolean literalRename) {
         var counts = new LinkedHashMap<ErrorKey, Integer>();
@@ -123,7 +127,7 @@ public final class EditVerifier {
             var edits=changes.getOrDefault(anchor.documentId(),List.of());
             var mapped=mapDiagnostic(anchor.span(),edits,literalRename);
             if(anchor.span()!=null&&mapped==null)continue; // Changed erroneous expressions do not excuse a new error.
-            var key = new ErrorKey(diagnostic.code(),anchor.documentId(),mapped);
+            var key = new ErrorKey(diagnostic.code(),anchor.documentId(),mapped,diagnostic.application());
             counts.merge(key, 1, Integer::sum);
         }
         return counts;

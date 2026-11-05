@@ -11,7 +11,8 @@ import java.util.UUID;
 /** Includes absent sources and buffer incarnations, not only the files receiving edits. */
 public record EditPreconditions(UUID snapshotId, UUID serverInstance, ProjectId project,
         long generation, long rootConfigurationGeneration, String configurationDigest,
-        long catalogGeneration, String catalogId, Map<URI, SourceVersion> sources) {
+        long catalogGeneration, String catalogId, Map<URI, SourceVersion> sources,long ownerGeneration,AnalysisSnapshot.ContextSelection context) {
+    public EditPreconditions(UUID snapshotId,UUID serverInstance,ProjectId project,long generation,long rootConfigurationGeneration,String configurationDigest,long catalogGeneration,String catalogId,Map<URI,SourceVersion> sources){this(snapshotId,serverInstance,project,generation,rootConfigurationGeneration,configurationDigest,catalogGeneration,catalogId,sources,-1,null);}
     public EditPreconditions {
         Objects.requireNonNull(snapshotId);
         Objects.requireNonNull(serverInstance);
@@ -26,7 +27,7 @@ public record EditPreconditions(UUID snapshotId, UUID serverInstance, ProjectId 
         return new EditPreconditions(snapshot.id(), capture.serverInstance(), capture.project().id(),
                 capture.generation(), capture.rootConfigurationGeneration(), capture.configurationDigest(),
                 capture.catalog().generation(), capture.catalog().result().catalog().map(c -> c.catalogId()).orElse(""),
-                capture.project().sources().versions());
+                capture.project().sources().versions(),capture.ownership().generation(),snapshot.contextSelection());
     }
 
     /** The host additionally checks current disk/buffer acquisition before supplying this snapshot. */

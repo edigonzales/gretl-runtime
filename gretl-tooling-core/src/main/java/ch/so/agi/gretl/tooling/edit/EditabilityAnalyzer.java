@@ -25,6 +25,8 @@ public final class EditabilityAnalyzer {
             var symbol = analysis.unique(target).orElse(null);
             if (symbol == null) return rejected(snapshot, dependencies, "EDIT_AMBIGUOUS_TARGET", null);
             documents.add(symbol.anchor().documentId());
+            var targetImpact=new EditImpactAnalyzer().assessSources(snapshot,documents);
+            if(!targetImpact.allowed())return impactRejected(snapshot,dependencies,targetImpact);
             var declaration = symbol.declaration();
             if (declaration.nameLiteral() == null || declaration.recovered() || declaration.coverage().syntax() != Completeness.COMPLETE) {
                 return rejected(snapshot, dependencies, "EDIT_UNSAFE_REGION", symbol.anchor());
@@ -70,13 +72,6 @@ public final class EditabilityAnalyzer {
         if (graphChange && !analysis.capabilities().graphComplete()) {
             return rejected(snapshot, dependencies, "EDIT_REFERENCE_COVERAGE", null);
         }
-        if(analysis.capture().project().includeClosure().hasIncludes()) {
-            if(closedReferences||intent instanceof SemanticEditIntent.AddTask||intent instanceof SemanticEditIntent.AddAction||intent instanceof SemanticEditIntent.AddParameter)
-                return rejected(snapshot,dependencies,"EDIT_INCLUDE_PHASE_GUARD",null);
-            for(var document:documents)if(analysis.capture().ownership().contexts(document).size()>1
-                    ||analysis.capture().project().includeClosure().applications().stream().anyMatch(a->a.id().sourceDocument().equals(document)&&a.role()==ch.so.agi.gretl.tooling.workspace.IncludeModel.SourceRole.FRAGMENT)&&!analysis.capture().ownership().exclusive(document))
-                return rejected(snapshot,dependencies,"EDIT_SHARED_SOURCE",new Anchor(document,null));
-        }
         if (intent instanceof SemanticEditIntent.RenameSymbol rename) {
             if(!snapshot.references().referencesTo(rename.target()).complete())return rejected(snapshot,dependencies,"EDIT_REFERENCE_COVERAGE",null);
             try{new AliasUseGuard().check(snapshot,analysis.unique(rename.target()).orElseThrow(),false);}
@@ -98,6 +93,8 @@ public final class EditabilityAnalyzer {
             documents.add(add.document());
             if (!analysis.capabilities().declarationsComplete()) return rejected(snapshot, dependencies, "EDIT_REFERENCE_COVERAGE", null);
         } else if (intent instanceof SemanticEditIntent.SetDefaults defaults) documents.add(defaults.scopeDocument());
+        var impact=new EditImpactAnalyzer().assessSources(snapshot,documents);
+        if(!impact.allowed())return impactRejected(snapshot,dependencies,impact);
         var open = new ArrayList<URI>();
         for (var document : documents) {
             var source = snapshot.source(document).orElse(null);
@@ -120,6 +117,11 @@ public final class EditabilityAnalyzer {
         };
     }
 
+    private EditCapability impactRejected(AnalysisSnapshot snapshot,List<URI> dependencies,EditImpactAnalyzer.EditImpact impact){
+        return new EditCapability(EditCapability.State.REJECTED,List.of(new EditCapability.Reason("EDIT_SHARED_SOURCE",
+                reason(snapshot,"EDIT_SHARED_SOURCE",null).message(),impact.sources(),impact.sources().stream()
+                .flatMap(a->snapshot.analysis().capture().ownership().contexts(a.documentId()).stream()).map(a->a.id()).distinct().toList())),dependencies,List.of());
+    }
     private SymbolId target(SemanticEditIntent intent) {
         return switch (intent) {
             case SemanticEditIntent.SetField i -> i.target();

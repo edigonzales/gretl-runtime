@@ -8,14 +8,14 @@ import {LanguageClient,CloseAction,ErrorAction,State,RenameRequest,CodeActionReq
 import {checkBundle,checkJava,languageConfiguration,localHost,sourceDigest} from './host';
 
 import {FragmentDocumentCoordinator,FragmentDocument,sourceContexts,membershipUpdate} from './fragment-documents';
-import {Stamp,validateEditSources} from './edit-guard';
+import {Stamp,validateEditSources,validateEditContext,EditContextIdentity} from './edit-guard';
 import {currentRead} from './read-query';
-import {ModelerBackend,ModelerOptions} from './modeler/backend';
+import {ModelerBackend,ModelerOptions,ModelerCommit} from './modeler/backend';
 import {GraphContext,GraphResponse,graphResponse} from './modeler/graph-model';
 import {GretlModelerProvider} from './modeler/provider';
 import {CatalogResponse,EditIntent,catalogResponse,editIntent} from './modeler/edit-model';
 import {EditPlan,applyEditPlan} from './modeler/edit-plan';
-interface Context {protocolVersion:number;schemaVersion:number;serverInstanceId:string;snapshotId:string;sourceStamps:Stamp[];notices?:string[]}
+interface Context extends EditContextIdentity {sourceStamps:Stamp[];notices?:string[]}
 interface Graph {context:Context}
 
 class RuntimeHost implements vscode.Disposable,ModelerBackend {
@@ -117,24 +117,26 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         const result=catalogResponse(await client.sendRequest('gretl/catalog',{protocolVersion:1,catalogSchemaVersion:1},token),instance,graph.context.catalogId);
         if(token.isCancellationRequested||this.client!==client||this.instance!==instance)throw new vscode.CancellationError();return result;
     }
-    commit(document:vscode.TextDocument,graph:GraphResponse,intent:EditIntent,token:vscode.CancellationToken):Promise<string[]>{
+    commit(document:vscode.TextDocument,graph:GraphResponse,intent:EditIntent,token:vscode.CancellationToken):Promise<ModelerCommit>{
         const operation=async()=>{
             const client=this.client,instance=this.instance,capture=this.modelerCaptures.get(graph);
             if(!vscode.workspace.isTrusted||!client?.isRunning()||!instance||!capture||instance!==graph.context.serverInstanceId||!editIntent(intent))throw Error('GRETL edit context is unavailable or stale. Refresh first.');
             const cancelled=()=>token.isCancellationRequested||this.client!==client||this.instance!==instance||document.isClosed;
-            return applyEditPlan<ProtocolEdit,vscode.WorkspaceEdit>(graph.context,{
+            let changed:string[]=[];
+            const notices=await applyEditPlan<ProtocolEdit,vscode.WorkspaceEdit>(graph.context,{
                 cancelled,
                 plan:()=>client.sendRequest<EditPlan<ProtocolEdit>>('gretl/planEdit',{protocolVersion:1,documentId:document.uri.toString(),contextToken:this.graphSourceContexts.get(graph)?.contextToken,expectedSnapshotId:graph.context.snapshotId,intent,requireOpenDocuments:true},token),
                 guard:edit=>this.current(client,capture,edit),
                 validate:(planId,expectedSnapshotId)=>client.sendRequest('gretl/validateEdit',{protocolVersion:1,planId,expectedSnapshotId},token),
                 convert:async edit=>(await client.protocol2CodeConverter.asWorkspaceEdit(edit,token))??undefined,
-                apply:edit=>Promise.resolve(vscode.workspace.applyEdit(edit))
+                apply:async edit=>{const applied=await vscode.workspace.applyEdit(edit);if(applied)changed=edit.entries().map(([uri])=>uri.toString());return applied;}
             });
+            return {notices,documents:changed};
         };
         const result=this.modelerEditQueue.then(operation,operation);this.modelerEditQueue=result.then(()=>undefined,()=>undefined);return result;
     }
     async activateSourceContext(documentId:string,context:PinnedSourceContext,token:vscode.CancellationToken){
-        const client=this.client;if(!client?.isRunning())throw new vscode.CancellationError();await this.fragments?.settled();
+        const client=this.client;if(!client?.isRunning())throw new vscode.CancellationError();await new Promise<void>(resolve=>setImmediate(resolve));await this.fragments?.settled();
         const contexts=sourceContexts(await client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId},token));
         const selected=pinnedContext(contexts,context,true);if(!selected)throw Error('Navigation context is no longer available.');
         await client.sendRequest('gretl/selectSourceContext',{protocolVersion:1,includeToolingVersion:1,documentId,contextToken:selected.contextToken,incarnation:contexts.incarnation??null,ownerGeneration:contexts.ownerGeneration},token);
@@ -226,8 +228,14 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
                     return converted;
                 },
                 provideRenameEdits:async(doc,position,newName,token)=>{
-                    const capture=await this.capture(client,doc,token);
-                    const edit=await client.sendRequest(RenameRequest.type,{textDocument:{uri:doc.uri.toString()},position,newName},token);
+                    let capture:Context|undefined,edit:ProtocolEdit|null|undefined;
+                    for(let attempt=0;attempt<3;attempt++){
+                        capture=await this.capture(client,doc,token);
+                        edit=await client.sendRequest(RenameRequest.type,{textDocument:{uri:doc.uri.toString()},position,newName},token);
+                        if(!edit||!await this.openEditTargets(capture,edit))break;
+                        if(attempt===2)throw new vscode.CancellationError();
+                    }
+                    if(!capture)throw new vscode.CancellationError();
                     if(!edit||token.isCancellationRequested)return null;
                     await this.current(client,capture,edit);
                     const result=await client.protocol2CodeConverter.asWorkspaceEdit(edit,token);
@@ -235,9 +243,14 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
                     return result;
                 },
                 provideCodeActions:async(doc,range,context,token)=>{
-                    const capture=await this.capture(client,doc,token);
+                    let capture=await this.capture(client,doc,token);
                     const params={textDocument:{uri:doc.uri.toString()},range:client.code2ProtocolConverter.asRange(range),context:await client.code2ProtocolConverter.asCodeActionContext(context,token)};
-                    const actions=await client.sendRequest(CodeActionRequest.type,params,token);
+                    let actions=await client.sendRequest(CodeActionRequest.type,params,token);
+                    for(let attempt=0;attempt<3&&actions;attempt++){
+                        let opened=false;for(const action of actions)if(ProtocolAction.is(action)&&action.edit)opened=await this.openEditTargets(capture,action.edit)||opened;
+                        if(!opened)break;if(attempt===2)throw new vscode.CancellationError();
+                        capture=await this.capture(client,doc,token);actions=await client.sendRequest(CodeActionRequest.type,params,token);
+                    }
                     if(!actions||token.isCancellationRequested)return [];
                     for(const action of actions)if(ProtocolAction.is(action)&&action.edit)await this.current(client,capture,action.edit);
                     const converted=await client.protocol2CodeConverter.asCodeActionResult(actions,token);
@@ -379,9 +392,27 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         this.captures.set(context,new Map(vscode.workspace.textDocuments.filter(doc=>ownedBuffers.has(doc.uri.toString())).map(doc=>[doc.uri.toString(),doc])));
         return context;
     }
+    private async openEditTargets(capture:Context,edit:ProtocolEdit):Promise<boolean>{
+        if(edit.changes&&Object.keys(edit.changes).length||!edit.documentChanges)throw Error('GRETL requires versioned document changes.');
+        let opened=false;
+        for(const change of edit.documentChanges){
+            if(!TextDocumentEdit.is(change))throw Error('GRETL file operations are unsupported.');
+            const uri=vscode.Uri.parse(change.textDocument.uri),id=uri.toString();
+            if(uri.scheme!=='file'||!vscode.workspace.getWorkspaceFolder(uri)||!capture.sourceStamps.some(s=>vscode.Uri.parse(s.documentId).toString()===id&&s.editable))throw Error('GRETL edit target is outside its captured workspace.');
+            if(!vscode.workspace.textDocuments.some(d=>!d.isClosed&&d.uri.toString()===id)){await vscode.workspace.openTextDocument(uri);opened=true;}
+        }
+        if(opened){await new Promise<void>(resolve=>setImmediate(resolve));await this.fragments?.settled();}
+        return opened;
+    }
     private async current(client:LanguageClient,capture:Context,edit:ProtocolEdit):Promise<void>{
         if(this.client!==client||capture.serverInstanceId!==this.instance||!client.isRunning())throw new Error('GRETL edit belongs to an obsolete session. Retry.');
         if(edit.changes&&Object.keys(edit.changes).length||!edit.documentChanges)throw new Error('GRETL requires versioned document changes.');
+        if(!capture.ownerGeneration||!capture.contextGeneration||!capture.contextDocumentId||!capture.contextToken)throw Error('GRETL edit has no confirmed ownership context.');
+        const currentContext=async()=>{
+            const graph=await client.sendRequest<Graph>('gretl/graph',{protocolVersion:1,documentId:capture.contextDocumentId,contextToken:capture.contextToken});
+            validateEditContext(capture,graph.context);if(graph.context.notices?.includes('INCLUDE_MEMBERSHIP_PENDING'))throw Error('GRETL fragment synchronization is pending.');
+        };
+        await currentContext();
         const normalize=(uri:string)=>vscode.Uri.parse(uri).toString();
         const stamps=capture.sourceStamps.map(stamp=>({...stamp,documentId:normalize(stamp.documentId)}));
         const changes=edit.documentChanges.map(change=>{
@@ -389,6 +420,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             return {uri:normalize(change.textDocument.uri),version:change.textDocument.version};
         });
         await validateEditSources(stamps,changes,this.captures.get(capture)??new Map(),()=>new Map(vscode.workspace.textDocuments.map(doc=>[doc.uri.toString(),doc])));
+        await currentContext();
         if(this.client!==client||capture.serverInstanceId!==this.instance||!client.isRunning())throw new Error('GRETL edit belongs to an obsolete session. Retry.');
     }
     private async stop():Promise<void>{

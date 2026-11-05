@@ -71,13 +71,32 @@ def launch(a):
                    implementer_evidence=str(a.implementer_evidence.resolve()),
                    opencode_version=version.removeprefix('opencode v'), provider_model='deepseek/deepseek-flash',
                    model_mapping_evidence=str(ev / 'model-mapping.html'), test_command=a.test_command,extra_test_commands=a.extra_test_command,reference_evidence=[str(p.resolve()) for p in a.reference_evidence])
+    if a.phase=='P4':
+        assert a.native_evidence and a.native_evidence.resolve().is_dir(), 'P4 needs installed native evidence'
+        handoff['native_driver']=dict(kind='cua-file-bridge',requests=str(ev/'native-requests.jsonl'),responses=str(ev/'native-responses.jsonl'),
+                                      evidence=str(a.native_evidence.resolve()),instructions=str(ev/'native-instructions.md'))
+        (ev/'native-instructions.md').write_text(
+            'Own native counterprobe required. Read installed identity and existing native evidence yourself. '
+            'The orchestrator provides a mechanical CUA gateway for this one isolated Code test window. '
+            'You choose the hypothesis, actions, observations and assertions yourself; the gateway supplies no verdict. '
+            'No AppleScript, CDP, synthetic provider API or shell UI actions. Author an external Python probe that appends '
+            'one JSON line to native-requests.jsonl and waits for its matching id in native-responses.jsonl. '
+            'Request schema: {"id":"unique-short-id","actions":[{"kind":"pressKey","key":"super+shift+p"},'
+            '{"kind":"paste","text":"GRETL: Select Source Context"}],"screenshot":true}. '
+            'Other action kinds: click with target (observed AX index or [x,y]); typeText with text. '
+            'At most eight deterministic actions per request; after each request inspect fresh AX state before choosing new indexes. '
+            'An empty actions list requests initial observation. Responses name nonempty AX and optional PNG files, candidate and actual app path. '
+            'Stay in the named isolated synthetic workspace/profile. No product fixes, foreign windows, terminal commands or publication. '
+            'Inspect actual visible results and save your own assertion report. Mark the executed counterprobe native_user_path=true; '
+            'include native-responses.jsonl among its evidence. Run your probe through shell with a sufficient bounded timeout, '
+            'then finish all owned children and the review session.\n')
     write(ev / 'handoff.json', handoff)
     permissions = [dict(action='*', resource='*', effect='deny')]
     def allow(action, resource):
         permissions.append(dict(action=action, resource=resource, effect='allow'))
     for action in ('read', 'glob', 'grep'):
         allow(action, '*')
-    for path in (ev, a.implementer_evidence.resolve(), a.maven_repo.resolve(), *(p.resolve() for p in a.reference_evidence)):
+    for path in (ev, a.implementer_evidence.resolve(), a.maven_repo.resolve(), *(p.resolve() for p in a.reference_evidence), *([a.native_evidence.resolve()] if a.native_evidence else [])):
         allow('external_directory', str(path) + '/*')
     allow('edit', str(ev) + '/*')
     for cmd in ('pwd', 'git status *', 'git diff *', 'git show *', 'git rev-parse *', 'git log *',
@@ -111,7 +130,9 @@ def launch(a):
               'Run required Maven/npm commands directly through shell, not as inner subprocesses of a wrapper. '
               'Evidence paths must be nonempty regular files, never directories. '
               'No prefilled judgment. Give findings and required_not_executed honestly. '
-              'Read current public behavior and full phase scope. Check tracked bytes before/after. Finish the session.')
+              'Read current public behavior and full phase scope. Check tracked bytes before/after. '
+              + (f'For P4 read {ev}/native-instructions.md and perform your own new native counterprobe via that CUA gateway. ' if a.phase=='P4' else '')
+              + 'Finish the session.')
     argv = [str(a.binary), 'run', '--standalone', '--agent', 'include-tooling-review', '--model', handoff['provider_model'],
             '--format', 'json', '--file', str(ev / 'handoff.json'), prompt]
     meta = dict(argv=argv, cwd=str(wt), started_at=dt.datetime.now(dt.timezone.utc).isoformat())
@@ -199,6 +220,16 @@ def validate(ev, binary):
             file = Path(path) if Path(path).is_absolute() else ev / path
             assert file.is_file() and file.stat().st_size > 0
     assert all(c['authored_by_reviewer'] and c['executed'] for c in v['counterprobes'])
+    if h['phase']=='P4':
+        driver=h['native_driver'];receipts=Path(driver['responses'])
+        identity=json.loads((Path(driver['evidence'])/'identity.json').read_text())
+        assert identity['product']['sourceCommit']==h['head_sha'] and identity['product']['sourceDirty'] is False
+        assert hashlib.sha256(Path(identity['product']['vsix']).read_bytes()).hexdigest()==identity['product']['sha256']
+        observations=[json.loads(line) for line in receipts.read_text().splitlines()]
+        assert observations and any(x['request'].get('actions') for x in observations), 'Missing independent native actions'
+        assert all(x['candidate']==h['head_sha'] and x.get('ok') and x['app']==identity['executable'] and Path(x['state']).is_file() for x in observations)
+        assert any(x.get('screenshot') and Path(x['screenshot']).stat().st_size>0 for x in observations), 'Missing native screenshot'
+        assert any(c.get('native_user_path') and str(receipts) in c['evidence'] for c in v['counterprobes']), 'Missing native reviewer probe'
     validate_reports(wt, h['test_command'], p['started_at'])
     write(ev / 'validated.json', dict(accepted=True, candidate=h['head_sha'], phase=h['phase'], session=v['session_id']))
     print('ABGENOMMEN', h['phase'], h['head_sha'])
@@ -216,6 +247,7 @@ if __name__ == '__main__':
     parser.add_argument('--implementer-evidence', type=Path)
     parser.add_argument('--test-command')
     parser.add_argument('--extra-test-command', action='append', default=[])
+    parser.add_argument('--native-evidence', type=Path)
     parser.add_argument('--reference-evidence', type=Path, action='append', default=[])
     parser.add_argument('--timeout', type=int, default=1200)
     args = parser.parse_args()

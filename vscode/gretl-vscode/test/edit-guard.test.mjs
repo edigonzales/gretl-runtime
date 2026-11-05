@@ -9,7 +9,7 @@ const directory=await mkdtemp(path.join(await realpath(os.tmpdir()),'gretl-edit-
 after(()=>rm(directory,{recursive:true,force:true}));
 await build({entryPoints:['src/edit-guard.ts'],bundle:true,platform:'node',format:'esm',outfile:path.join(directory,'guard.mjs')});
 await build({entryPoints:['src/host.ts'],bundle:true,platform:'node',format:'esm',outfile:path.join(directory,'host.mjs')});
-const {validateEditSources:validate,diskSourceHash}=await import(pathToFileURL(path.join(directory,'guard.mjs')));
+const {validateEditSources:validate,diskSourceHash,validateEditContext}=await import(pathToFileURL(path.join(directory,'guard.mjs')));
 const {sourceDigest}=await import(pathToFileURL(path.join(directory,'host.mjs')));
 const uri=pathToFileURL(path.join(directory,'job.groovy')).toString();
 const doc=()=>({version:4,isClosed:false,getText:()=>"action('a') {}\n"});
@@ -48,4 +48,10 @@ test('disk guard preserves BOM/hash format, rejects symlinks and over-limit file
  await writeFile(filename,Buffer.alloc(4*1024*1024+1));await assert.rejects(diskSourceHash(url),/byte limit/);
  await assert.rejects(diskSourceHash(pathToFileURL(directory).toString()),/regular file/);
  assert.equal(await diskSourceHash(pathToFileURL(path.join(directory,'absent')).toString()),null);
+});
+
+test('unchanged source bytes cannot excuse a new owner, selected context or stale context token',()=>{
+ const before={protocolVersion:1,schemaVersion:1,serverInstanceId:'server',snapshotId:'snapshot',ownerGeneration:'1',contextGeneration:'4',contextDocumentId:uri,contextToken:'token'};
+ validateEditContext(before,{...before});
+ for(const change of[{ownerGeneration:'2'},{contextGeneration:'5'},{contextDocumentId:uri+'x'},{contextToken:'new'},{serverInstanceId:'other'},{snapshotId:'new'}])assert.throws(()=>validateEditContext(before,{...before,...change}),/ownership or source context/);
 });

@@ -16,7 +16,10 @@ public final class GretlProtocol {
     public static final int VERSION=1;
     public record SourceStamp(String documentId,String sha256,Integer version,String incarnation,boolean editable,String unavailableCode) { }
     public record Context(int protocolVersion,int schemaVersion,String serverInstanceId,String projectId,String workspaceGeneration,
-                          String snapshotId,String catalogId,List<SourceStamp> sourceStamps,Capabilities completeness,List<String> notices) { }
+                          String snapshotId,String catalogId,List<SourceStamp> sourceStamps,Capabilities completeness,List<String> notices,
+                          String ownerGeneration,String contextGeneration,String contextDocumentId,String contextToken) {
+        public Context(int protocolVersion,int schemaVersion,String serverInstanceId,String projectId,String workspaceGeneration,String snapshotId,String catalogId,List<SourceStamp> sourceStamps,Capabilities completeness,List<String> notices){this(protocolVersion,schemaVersion,serverInstanceId,projectId,workspaceGeneration,snapshotId,catalogId,sourceStamps,completeness,notices,null,null,null,null);}
+    }
     public record AnalysisReady(Context context) { }
     public record CatalogRequest(int protocolVersion,int catalogSchemaVersion) { }
     public record CatalogResponse(int protocolVersion,int schemaVersion,String serverInstanceId,String state,OperationCatalog catalog,List<String> notices) { }
@@ -103,7 +106,7 @@ public final class GretlProtocol {
     static Context context(AnalysisSnapshot snapshot) {
         var capture=snapshot.analysis().capture();
         var stamps=capture.project().sources().versions().entrySet().stream().sorted(Map.Entry.comparingByKey()).map(e->{var stamp=e.getValue().stamp();return new SourceStamp(e.getKey().toString(),stamp==null?null:stamp.contentSha256(),stamp==null?null:stamp.bufferVersion(),e.getValue().bufferIncarnation()==null?null:e.getValue().bufferIncarnation().toString(),stamp!=null&&stamp.editable(),e.getValue().unavailableCode());}).toList();
-        return new Context(VERSION,1,capture.serverInstance().toString(),capture.project().id().toString(),Long.toString(capture.generation()),snapshot.id().toString(),capture.catalog().result().catalog().map(c->c.catalogId()).orElse(null),stamps,snapshot.analysis().capabilities(),List.of());
+        return new Context(VERSION,1,capture.serverInstance().toString(),capture.project().id().toString(),Long.toString(capture.generation()),snapshot.id().toString(),capture.catalog().result().catalog().map(c->c.catalogId()).orElse(null),stamps,snapshot.analysis().capabilities(),List.of(),Long.toString(capture.ownership().generation()),snapshot.contextSelection()==null?null:Long.toString(snapshot.contextSelection().generation()),snapshot.contextSelection()==null?null:snapshot.contextSelection().application().sourceDocument().toString(),snapshot.contextSelection()==null?null:snapshot.contextSelection().token());
     }
     static Map<String,EditableValue> values(Map<String,Value> fields) {
         if(fields==null)return Map.of();if(fields.size()>128)throw new IllegalArgumentException("EDIT_FIELD_LIMIT");

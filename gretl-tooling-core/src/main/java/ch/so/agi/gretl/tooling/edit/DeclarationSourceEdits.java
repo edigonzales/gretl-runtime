@@ -95,8 +95,9 @@ final class DeclarationSourceEdits {
     }
 
     private String scope(EditTransaction transaction, URI document) {
-        return transaction.before.analysis().capture().project().jobs().stream().filter(j -> j.documentId().equals(document))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("EDIT_JOB_DOCUMENT_REQUIRED")).scope().canonical();
+        var applications=transaction.before.analysis().capture().project().includeClosure().applications().stream().filter(a->a.id().sourceDocument().equals(document)).toList();
+        if(applications.size()!=1||!transaction.before.analysis().capture().ownership().exclusive(document))throw new IllegalArgumentException("EDIT_JOB_DOCUMENT_REQUIRED");
+        return applications.getFirst().id().ownerScope();
     }
 
     private SymbolId newId(EditTransaction transaction, String scope, String name, Namespace namespace) {

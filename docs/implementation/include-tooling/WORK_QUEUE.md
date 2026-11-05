@@ -1,11 +1,11 @@
 # Include-tooling: Arbeitsstand
 
-**Stand: P0/P1/P2 REVIEWED_ACCEPTED; P3 implementiert, finale Kandidatenprüfung/Review ausstehend.**
+**Stand: P0–P3 REVIEWED_ACCEPTED; P4 implementiert/testet, native Abnahme und kumulativer Review ausstehend.**
 P0-Kandidat `d2dccba942a749a3f270a7dbfbdb11ffe2814a1a` wurde unabhängig
 abgenommen und nach vollständigem Prozess-/Sessionabschluss maschinell validiert.
 P1-Kandidat `fb4664de265d06e3145d2757c1d1aed853d25da1` wurde ohne Findings
 unabhängig abgenommen und nach Prozess-/Sessionabschluss maschinell validiert.
-P2-Korrektur `a9cd26c3e5b89f1d91aa09be49ae628f18e9b980` ist unabhängig abgenommen und maschinell validiert. P3 hat danach begonnen; P4 bleibt gesperrt.
+P2-Korrektur `a9cd26c3e5b89f1d91aa09be49ae628f18e9b980` ist unabhängig abgenommen und maschinell validiert. P3 wurde danach unabhängig abgenommen; P4 hat nach validiertem Sessionabschluss begonnen.
 
 Basis: `9773c42ddb12a7343cf5f9ad7b6be81b489abb30`, sauberer Main und
 `origin/main` (Remote bei Start geprüft). Branch `codex/include-tooling`, eigener
@@ -218,6 +218,62 @@ Sicherheitsassertions bleiben. Runtimeplanparität vergleicht Registrierungsfolg
 Zielclosure, Datenvorgänger und tatsächliche lokale Ausgabe; typisierte Gzip-
 Komplettheit wird zusätzlich über den echten stdio-Server belegt.
 
-Nächste Aktion: P3-Code/Tests/Request committen, frische gezielte Gates am sauberen
-SHA und neue unabhängige P3-Session gegen feste Phasebase a9cd26c. Erst nach
-validierter Abnahme P4 beginnen.
+P3-Abnahme am `4ab062b8436b77eaf6af0cf6303d812ca3c346a6`:
+`/Users/stefan/.cache/gretl-include-tooling/review/P3-attempt-1/`, Session
+`ses_e547d91fbffeJupoZjvcyhj5W9`, ABGENOMMEN ohne Findings und maschinell validiert.
+240 Java-/Servertests in 43 Klassen, 58 Clienttests, TypeScript- und Bundlebau
+am sauberen Kandidaten; originale XMLs/Logs unter `evidence/P3` gesichert.
+Der Reviewer führte diese Auswahl und seine eigene Sharedscope-/Alias-/Resource-
+Completion-/Referencegegenprobe erfolgreich aus. Eine enge transiente Allowregel
+für den bereits beauftragten inneren Nodebefehl wurde im lokalen Reviewprofil
+transparent archiviert und zurückgenommen; keine Produkt-/Testbytes änderten sich.
+
+
+## P4-Kandidat
+
+EditImpactAnalyzer prüft benötigte und tatsächliche physische Write-Footprints.
+Shared/UNKNOWN ist auch für native Rename/Quick Fix, generische Setter,
+Formularbatches und direkten EditVerifier geschlossen. Rejections nennen
+Strukturcode, Originalquellen und bekannte Anwendungen. Die P3-Phasensperre ist
+gezielt durch diese Guards ersetzt. Positive Task-/Parameter-Renames über Entry/
+Fragmente/Defaults sowie Dependency-/Result-/Form-/Insertionswege sind geprüft.
+Ein unabhängiger eindeutiger Edit und ein eindeutiger Consumer mit Shared-Produzent
+bleiben positiv; ein eindeutiger Rename-Target mit Shared-Use bleibt negativ.
+
+Ownership trennt vollständiges begrenztes Entryinventar von vollständiger
+Quellenanalyse. Eindeutige bekannte Entries behalten ihren lokalen Skalarnachweis,
+wenn eine unvollständige fremde Definition sie nach Root-/Entryregeln nicht
+konsumieren kann. Eine unvollständige explizite Definition im selben Verzeichnis
+verhindert diesen Nachweis. Kein pauschaler Fallback bei unbekanntem Inventar.
+
+Postimages behalten Anwendung, eingefrorene Sources/Inventare und Kontextbindung.
+BindingPreservation und ErrorKey unterscheiden Anwendungen; ein SQLfehler mit
+gleicher physischer Range kann nicht in einen anderen Scope kompensiert werden.
+Owner-/Kontextgeneration sind zusätzliche Editpreconditions. Server- und Hostwege
+prüfen sie neben Quellen/Inkarnationen vor und nach asynchroner Konvertierung.
+Native Zielpuffer werden vor Neuplanung geöffnet/synchronisiert. Der Modeler
+verwendet einen WorkspaceEdit und speichert/undo-/redo-bedient dessen tatsächliche
+Zieldokumente. Keine eigene Rückpatchengine, keine automatische Speicherung.
+
+P4-Entwicklungstests unter `/Users/stefan/.cache/gretl-include-tooling/`:
+ganze kleine Core-/Editfamilie und Runtimeplanparität grün; neue reale
+IncludeEditServerIT für positive Rename-/Form-/Defaults-/Binding-/Quick-Fixwege,
+unveränderte Hashes mit neuem ungeöffnetem Besitzer, Shared-Uses und Kontextwechsel.
+60 gezielte Clienttests grün. Die neuen Beispielkommandos wurden wirklich
+angewendet: `--keep-work` benötigt `always`; korrigierter Lauf dekomprimiert zweimal
+und vergleicht alle 97 Originalbytes. Fehlversuch und korrigierter Lauf bleiben
+getrennt erhalten. Historische Runtime-/JARgates bleiben unverändert.
+
+Native installierte VSIX-Abläufe und gespeicherte GUI-Fixture-Runtime sind hier
+noch NOT_EXECUTED. Nächste Aktion: sauberen Produkt-/Dokumentkandidaten bauen,
+getrennte synthetische Testprofile verwenden, beide native Abläufe ausführen und
+belegen; bei einem Fix passenden neuen Kandidaten bauen. Danach frische autonome
+kumulative OpenCode-/DeepSeekprüfung aller IT01–IT24 seit Auftragsbasis.
+
+Der Reviewer benötigt wegen Host-/GUIänderungen eine eigene neue native Probe.
+Dafür stellt der Orchestrator einen kleinen CUA-Dateigateway nur für das isolierte
+Code-Testfenster bereit. Der Reviewer entwickelt Hypothese, Aktionen und Assertions
+selbst; der Gateway führt nur die gewählten nativen Aktionen aus und speichert
+unbearbeitete AX-/PNG-Beobachtungen. Keine menschliche Promptübergabe und keine
+Codex-Gegenprobe als Reviewerprobe. Der strikte P4-Validator verlangt reale
+Reviewer-Shellereignisse plus eigene Native-Action-Receipts.

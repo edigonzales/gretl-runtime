@@ -36,7 +36,7 @@ class IncludeSemanticsTest {
         var form=new GraphFormProjector().project(s,graph,CancellationToken.NONE);
         var node=graph.nodes().stream().filter(n->n.title().equals("middle")).findFirst().orElseThrow();
         assertEquals(new SymbolId(Namespace.PARAMETER,"p"),form.nodes().get(node.id()).fields().get("input").value().symbol());
-        assertEquals(EditCapability.State.REJECTED,new SemanticEditPlanner().plan(s,new SemanticEditIntent.RenameSymbol(new SymbolId(Namespace.TASK,"middle"),"renamed"),new EditStyle("    ",false),CancellationToken.NONE).capability().state());
+        assertEquals(EditCapability.State.ALLOWED,new SemanticEditPlanner().plan(s,new SemanticEditIntent.RenameSymbol(new SymbolId(Namespace.TASK,"middle"),"renamed"),new EditStyle("    ",false),CancellationToken.NONE).capability().state());
     }
     @Test void sharedAliasesResourcesAndSqlDiagnosticsKeepTheirApplication()throws Exception{
         write("settings.gretl","include 'north','south'");

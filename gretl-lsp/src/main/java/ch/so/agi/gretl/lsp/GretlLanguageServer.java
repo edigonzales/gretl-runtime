@@ -183,7 +183,7 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
     }
     private Context responseContext(AnalysisSnapshot snapshot){
         var context=context(snapshot);
-        return !workspace.includeTooling||workspace.membershipReady(snapshot)?context:new Context(context.protocolVersion(),context.schemaVersion(),context.serverInstanceId(),context.projectId(),context.workspaceGeneration(),context.snapshotId(),context.catalogId(),context.sourceStamps(),context.completeness(),List.of("INCLUDE_MEMBERSHIP_PENDING"));
+        return !workspace.includeTooling||workspace.membershipReady(snapshot)?context:new Context(context.protocolVersion(),context.schemaVersion(),context.serverInstanceId(),context.projectId(),context.workspaceGeneration(),context.snapshotId(),context.catalogId(),context.sourceStamps(),context.completeness(),List.of("INCLUDE_MEMBERSHIP_PENDING"),context.ownerGeneration(),context.contextGeneration(),context.contextDocumentId(),context.contextToken());
     }
     public CompletableFuture<CatalogResponse> catalog(CatalogRequest request) {
         try{requireActive();version(request.protocolVersion());if(request.catalogSchemaVersion()!=1)throw new IllegalArgumentException("CATALOG_SCHEMA_MISMATCH");var loaded=workspace.catalog.snapshot().result();return CompletableFuture.completedFuture(new CatalogResponse(1,1,workspace.manager.serverInstance().toString(),loaded.state().name(),loaded.catalog().orElse(null),loaded.problems()));}
@@ -211,7 +211,8 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
             return workspace.request(document,List.of(),request.contextToken(),false,(snapshot,cancel)-> {
                 workspace.requireMembershipReady(snapshot);expected(snapshot,request.expectedSnapshotId(),true);
                 var planner=new SemanticEditPlanner();var style=new EditStyle("    ",request.requireOpenDocuments());
-                var result="ConfigureTask".equals(intent.kind())?planner.planConfiguration(snapshot,Objects.requireNonNull(intent.target()).core(),values(intent.fields()),intent.removedFields()==null?Set.of():intent.removedFields(),values(intent.options()),style,cancel):planner.plan(snapshot,intent.core(document),style,cancel);
+                var destination="SetDefaults".equals(intent.kind())?(snapshot.analysis().capture().project().projectMode()?snapshot.analysis().capture().project().settingsId():snapshot.analysis().capture().project().id().anchor()):document;
+                var result="ConfigureTask".equals(intent.kind())?planner.planConfiguration(snapshot,Objects.requireNonNull(intent.target()).core(),values(intent.fields()),intent.removedFields()==null?Set.of():intent.removedFields(),values(intent.options()),style,cancel):planner.plan(snapshot,intent.core(destination),style,cancel);
                 var plan=result.plan().orElse(null);if(plan!=null){workspace.requireWritableTargets(plan);workspace.retain(snapshot,plan);}
                 return new EditResponse(context(snapshot),result.capability(),plan==null?null:plan.id().toString(),plan==null?null:new LspQueryMapper(snapshot).edit(plan),plan==null?List.of():plan.notices());
             });
@@ -220,11 +221,11 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
     public CompletableFuture<ValidationResponse> validateEdit(ValidationRequest request) {
         return deferred(()-> {
             requireActive();version(request.protocolVersion());var original=workspace.planSnapshot(required(request.planId(),64));
-            var document=original.analysis().capture().project().id().anchor();
-            return workspace.request(document,List.of(),(current,cancel)-> {
+            var selection=original.contextSelection();var document=selection==null?original.analysis().capture().project().id().anchor():selection.application().sourceDocument();
+            return workspace.request(document,List.of(),selection==null?null:selection.token(),false,(current,cancel)-> {
                 var plan=workspace.plan(request.planId());workspace.requireWritableTargets(plan);boolean valid=current.id().equals(original.id())&&Objects.equals(request.expectedSnapshotId(),original.id().toString())&&plan.isCurrent(current);
                 return new ValidationResponse(1,valid,valid?List.of():List.of("EDIT_STALE_SNAPSHOT"));
-            });
+            }).exceptionally(failure->new ValidationResponse(1,false,List.of("EDIT_STALE_SNAPSHOT")));
         });
     }
     public CompletableFuture<NavigationResponse> navigate(NavigationRequest request) {

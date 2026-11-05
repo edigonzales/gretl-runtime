@@ -12,12 +12,12 @@ final class AliasUseGuard {
         if(alias==null)return;
         var document=snapshot.document(symbol.anchor().documentId()).orElseThrow();
         var references=snapshot.analysis().references().stream()
-                .filter(r->r.anchor().documentId().equals(symbol.anchor().documentId())).toList();
+                .filter(r->r.anchor().documentId().equals(symbol.anchor().documentId())&&(symbol.application()==null||symbol.application().id().equals(r.application()))).toList();
         var spans=new java.util.TreeMap<Integer,java.util.List<ch.so.agi.gretl.tooling.source.TextSpan>>();
         for(var reference:references)if(reference.anchor().span()!=null)spans.computeIfAbsent(reference.anchor().span().startUtf16(),key->new java.util.ArrayList<>()).add(reference.anchor().span());
         var exact=references.stream().map(r->r.anchor().span()).filter(java.util.Objects::nonNull).collect(java.util.stream.Collectors.toSet());
         var properties=snapshot.analysis().symbols().values().stream().flatMap(java.util.Collection::stream)
-                .filter(s->s.anchor().documentId().equals(symbol.anchor().documentId())).flatMap(s->s.declaration().properties().stream()).toList();
+                .filter(s->s.anchor().documentId().equals(symbol.anchor().documentId())&&(symbol.application()==null||s.application()!=null&&symbol.application().id().equals(s.application().id()))).flatMap(s->s.declaration().properties().stream()).toList();
         var mention=java.util.regex.Pattern.compile("(?<![\\p{L}\\p{N}_])"+java.util.regex.Pattern.quote(alias)+"(?![\\p{L}\\p{N}_$])");
         for(var token:document.tokens().all()) {
             if(deleting&&symbol.declaration().statementSpan().contains(token.span()))continue;

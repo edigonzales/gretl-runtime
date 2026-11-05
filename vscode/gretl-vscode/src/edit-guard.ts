@@ -51,3 +51,13 @@ export async function validateEditSources(stamps:Stamp[],changes:ChangedDocument
     }
     assertBuffers();
 }
+
+export interface EditContextIdentity {
+    protocolVersion:number;schemaVersion:number;serverInstanceId:string;snapshotId:string;
+    ownerGeneration?:string|null;contextGeneration?:string|null;contextDocumentId?:string|null;contextToken?:string|null;
+}
+/** Source hashes alone do not notice new owners or a changed editor context. */
+export function validateEditContext(expected:EditContextIdentity,current:EditContextIdentity):void {
+    for(const key of ['protocolVersion','schemaVersion','serverInstanceId','snapshotId','ownerGeneration','contextGeneration','contextDocumentId','contextToken'] as const)
+        if(expected[key]!==current[key])throw new Error('GRETL ownership or source context changed. Retry.');
+}

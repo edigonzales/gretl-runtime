@@ -104,7 +104,7 @@ test('semantic messages are pinned, snapshot guarded and serialize confirmations
  try{p.send({kind:'ready'});await tick();const g=graph(a,'edit-current');f.pending[0].resolve(g);await tick();const intent={kind:'AddAction',name:'added',insertionOffset:a.getText().length};
   p.send({kind:'intent',requestId:'obsolete',snapshotId:'old',intent});p.send({kind:'intent',requestId:'foreign',snapshotId:'edit-current',intent,panelId:'other'});p.send({kind:'intent',requestId:'injected',snapshotId:'edit-current',intent:{...intent,textEdits:[]}});await tick();assert.equal(commits.length,0);
   p.send({kind:'intent',requestId:'first',snapshotId:'edit-current',intent});p.send({kind:'intent',requestId:'duplicate',snapshotId:'edit-current',intent});await tick();assert.equal(commits.length,1);assert.equal(commits[0][0],a);assert.equal(commits[0][1],g);assert.deepEqual(commits[0][2],intent);assert.equal(p.messages.find(m=>m.kind==='editResult'&&m.requestId==='duplicate').applied,false);
-  assert.equal(p.messages.filter(m=>m.kind==='graph').length,1);finish(['Planned in Core']);await tick();assert.equal(p.messages.find(m=>m.kind==='editResult'&&m.requestId==='first').applied,true);assert.equal(p.messages.filter(m=>m.kind==='graph').length,1);assert.equal(a.version,1);
+  assert.equal(p.messages.filter(m=>m.kind==='graph').length,1);finish({notices:['Planned in Core'],documents:[a.uri.toString()]});await tick();assert.equal(p.messages.find(m=>m.kind==='editResult'&&m.requestId==='first').applied,true);assert.equal(p.messages.filter(m=>m.kind==='graph').length,1);assert.equal(a.version,1);
  }finally{f.provider.dispose();}
 });
 test('panel disposal and source invalidation cancel pending semantic edits, with no late UI resurrection',async()=>{
@@ -126,7 +126,7 @@ test('opening required sources consumes only a host-issued request nonce and cap
   p.send({kind:'openRequiredSources',requestId:'other'});p.send({kind:'openRequiredSources',requestId:'confirmation',uri:'file:///outside'});await tick();assert.deepEqual(reads,[]);p.send({kind:'openRequiredSources',requestId:'confirmation'});await tick();assert.deepEqual(reads,[other.uri.toString()]);p.send({kind:'openRequiredSources',requestId:'confirmation'});await tick();assert.equal(reads.length,1);
  }finally{api.workspace.openTextDocument=original;f.provider.dispose();}
 });
-test('native text undo/redo and save are scoped to the pinned document, without accepting arbitrary commands',async()=>{
+test('without a modeler transaction undo/redo and save remain pinned and reject arbitrary commands',async()=>{
  const f=fixture(),a=doc('native-undo'),p=panel(f.provider,a),calls=[];const oldShow=api.window.showTextDocument,oldExecute=api.commands.executeCommand;a.save=async()=>{calls.push('save');return true;};api.window.showTextDocument=async document=>{assert.equal(document,a);api.window.activeTextEditor={document};return{document,revealRange(){}};};api.commands.executeCommand=async command=>{calls.push(command);};
  try{for(const kind of['undoText','redoText','saveSource']){p.send({kind});await tick();}assert.deepEqual(calls,['undo','redo','save']);p.send({kind:'undoText',command:'terminal'});p.send({kind:'executeCommand',command:'terminal'});await tick();assert.deepEqual(calls,['undo','redo','save']);
   let finish;api.window.showTextDocument=()=>new Promise(resolve=>{finish=resolve;});p.send({kind:'undoText'});await tick();p.dispose();finish({document:a});await tick();assert.deepEqual(calls,['undo','redo','save']);
@@ -143,4 +143,19 @@ test('panel pins survive view controls without entering editable webview options
   p.send({kind:'reveal',snapshotId:'pinned',elementId:'pinned:known'});await tick();assert.equal(confirmations.length,1);assert.equal(confirmations[0][0],a.uri.toString());assert.deepEqual(confirmations[0][1],pin);
   p.send({kind:'options',previewTargets:[],includeInnerInvocations:true});const deadline=Date.now()+2000;while(f.pending.length<2){assert(Date.now()<deadline,'View-control refresh did not arrive');await new Promise(resolve=>setTimeout(resolve,5));}assert.deepEqual(f.pending[1].options.sourceContext,pin);
  }finally{f.provider.dispose();}
+});
+
+test('save and native text undo/redo follow the actual multi-file transaction rather than its pinned entry',async()=>{
+ const f=fixture(),entry=doc('transaction-entry'),first=doc('fragment-first'),second=doc('fragment-second'),p=panel(f.provider,entry),saved=[],calls=[];
+ const oldShow=api.window.showTextDocument,oldExecute=api.commands.executeCommand;
+ for(const d of[entry,first,second])d.save=async()=>{saved.push(d.uri.toString());return true;};
+ api.window.showTextDocument=async document=>{api.window.activeTextEditor={document};return{document,revealRange(){}};};api.commands.executeCommand=async command=>{calls.push([command,api.window.activeTextEditor.document.uri.toString()]);};
+ f.backend.commit=async()=>({notices:[],documents:[first.uri.toString(),second.uri.toString()]});
+ try{
+  p.send({kind:'ready'});await tick();const g=graph(entry,'transaction');for(const d of[first,second])g.context.sourceStamps.push({...g.context.sourceStamps[0],documentId:d.uri.toString()});f.pending[0].resolve(g);await tick();
+  p.send({kind:'intent',requestId:'apply',snapshotId:'transaction',intent:{kind:'AddAction',name:'added',insertionOffset:0}});await tick();assert.equal(p.messages.findLast(m=>m.kind==='editResult').applied,true);
+  p.send({kind:'saveSource'});await tick();assert.deepEqual(saved,[first.uri.toString(),second.uri.toString()]);assert(!saved.includes(entry.uri.toString()));
+  for(const kind of['undoText','redoText']){p.send({kind});await tick();}
+  assert.deepEqual(calls,[['undo',first.uri.toString()],['redo',first.uri.toString()]]);
+ }finally{api.window.showTextDocument=oldShow;api.commands.executeCommand=oldExecute;api.window.activeTextEditor=undefined;f.provider.dispose();}
 });

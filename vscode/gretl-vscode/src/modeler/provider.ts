@@ -74,6 +74,7 @@ class ModelerPanelController implements vscode.Disposable {
     private requiredSources?:{requestId:string;uris:string[]};
     private timer?:ReturnType<typeof setTimeout>;
     private graph?:GraphResponse;
+    private changedDocuments:string[]=[];
     private status:ViewStatus='LOADING';
     private ready=false;
     private disposed=false;
@@ -142,15 +143,19 @@ class ModelerPanelController implements vscode.Disposable {
             }
             case 'undoText':case 'redoText':case 'saveSource':{
                 if(this.edit||this.document.isClosed)return;
-                if(message.kind==='saveSource'){if(!await this.document.save())this.post({kind:'notice',reason:'The source could not be saved.'});return;}
-                await vscode.window.showTextDocument(this.document,{viewColumn:this.sourceColumn(),preserveFocus:false});
-                if(this.disposed||this.document.isClosed||vscode.window.activeTextEditor?.document!==this.document)return;
+                const targets=this.changedDocuments.length?this.changedDocuments:[this.document.uri.toString()];
+                if(message.kind==='saveSource'){
+                    for(const uri of targets){if(this.disposed)return;const doc=uri===this.document.uri.toString()?this.document:await vscode.workspace.openTextDocument(vscode.Uri.parse(uri));if(!await doc.save())this.post({kind:'notice',reason:'A changed source could not be saved: '+uri});}return;
+                }
+                const target=targets[0]===this.document.uri.toString()?this.document:await vscode.workspace.openTextDocument(vscode.Uri.parse(targets[0]));
+                await vscode.window.showTextDocument(target,{viewColumn:this.sourceColumn(),preserveFocus:false});
+                if(this.disposed||target.isClosed||vscode.window.activeTextEditor?.document!==target)return;
                 await vscode.commands.executeCommand(message.kind==='undoText'?'undo':'redo');return;
             }
             case 'intent':{
                 if(!this.graph||!['FRESH','EMPTY'].includes(this.status)||message.snapshotId!==this.graph.context.snapshotId||this.edit){this.post({kind:'editResult',requestId:message.requestId,applied:false,reasons:['The source changed or another edit is pending. Refresh and confirm again.']});return;}
                 this.requiredSources=undefined;const graph=this.graph,token=this.edit=new vscode.CancellationTokenSource();
-                try{const notices=await this.backend.commit(this.document,graph,message.intent,token.token);this.post({kind:'editResult',requestId:message.requestId,applied:true,notices});if(!this.disposed)this.invalidate('Edit applied');}
+                try{const result=await this.backend.commit(this.document,graph,message.intent,token.token);if(result.documents.some(uri=>!graph.context.sourceStamps.some(s=>normalize(s.documentId)===normalize(uri))))throw Error('Changed source is outside the graph capture.');if(result.documents.length)this.changedDocuments=[...new Set(result.documents)];this.post({kind:'editResult',requestId:message.requestId,applied:true,notices:result.notices});if(!this.disposed)this.invalidate('Edit applied');}
                 catch(error){const uris=error instanceof ModelerEditRejected?error.documentsToOpen:[];if(uris.length)this.requiredSources={requestId:message.requestId,uris};this.post({kind:'editResult',requestId:message.requestId,applied:false,reasons:error instanceof ModelerEditRejected?error.reasons:[error instanceof Error?error.message:String(error)],requiredOpenDocuments:uris});}
                 finally{if(this.edit===token)this.edit=undefined;token.dispose();}return;
             }

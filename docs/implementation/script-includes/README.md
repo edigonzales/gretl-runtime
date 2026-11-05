@@ -106,30 +106,61 @@ Vertrauenswürdiger Script-Toplevel kann beim Definitionsladen wie bisher laufen
 Der reine Direktivenleser führt dagegen weder Top-Level-Code noch
 Annotationstransformationen aus. JAR-Hilfe/-Plan materialisieren keine Runressourcen.
 
-## Aktuelle IDE-Unterstützung: sicher partiell
+## Aktuelle IDE-Unterstützung
 
-Der vorhandene LSP löst Includes noch nicht transitiv auf. Der Modeler zeigt
-bekannte lokale Tasks und den unbekannten Includeanteil als Codebereich; eine
-sonst gültige Quelle bleibt `PARTIAL`. Fehlende oder defekte Fragmentinhalte gelten
-damit nicht als validiert. Der LSP startet weder Runtime, Check/Plan noch Tasks.
+Der LSP erfasst den statischen Includeabschluss transitiv, verwendet offene Buffer
+vor Disk und analysiert Deklarationen anwendungsbezogen in Registrierungsreihenfolge.
+Ein vollständig erfasster, sonst statisch vollständiger Includejob erhält einen
+vollständigen Graphen mit Originalquellen. Das
+[typisierte Toolingbeispiel](../../../examples/include-tooling/README.md) zeigt den
+Texteditor-/Modelerweg und eine getrennte tatsächliche Runtimeausführung.
 
-Eindeutig lokale skalare Feldänderungen bleiben möglich. Änderungen, die vollständige
-Deklarations-, Referenz- oder Graphabdeckung voraussetzen, werden serverseitig
-abgelehnt: unter anderem Rename, DeleteTask, Abhängigkeitsänderungen, BindResult,
-referenzbildende Feldwerte sowie entsprechende generische Optionssetter und
-Formularbatches. Defaults dürfen unbekannte vorhandene Ziele nicht beiläufig
-entfernen. Gewöhnliche Text- und Dateipfadwerte sind keine Taskreferenzen.
-Kommentare, Unicode und Zeilenenden werden bei erlaubten lokalen Edits erhalten;
-Layoutspeicherung ändert keinen Groovytext. Aktuelle Source-/Snapshotguards gelten
-auch bei geändertem Include-Literal und nativer Undo-/Redo-Bearbeitung.
+Navigation, Referenzen, Hover und Completion umfassen die Fragmente im gewählten
+Scope. Include-Pfadcompletion benutzt begrenzte sicher erfasste Verzeichnislisten;
+nicht unterstützte Listen bleiben sichtbar unvollständig. Outline und Ranges
+gehören jeweils zur physischen Quelldatei. SQL-/file-Ressourcen kommen weiterhin
+vom Besitzerroot, Includes von der enthaltenden Quelle. Der LSP lädt keinen Job,
+startet weder Runtime/Check/Plan noch Tasks und führt keine Scriptbodies aus.
 
-Nicht zugesichert sind Vollgraph, Include-Pfadcompletion, Navigation oder Rename
-über Fragmente, Taskverschiebungen zwischen Dateien oder ein erratener
-Einbinderkontext für eine allein geöffnete `.groovy`-Datei. Shared-Fragmente bis zu
-einer eigenen kontextsensitiven Integration im Texteditor bearbeiten. Änderungen
-vom Resolver nicht erfasster Fragmentdateien besitzen noch keine zugesicherte
-kontextsensitive Invalidierung. Der [Tooling-Handoff](TOOLING_HANDOFF.md) trennt
-physische Quelle, besitzenden Scope und Ressourcenbasis.
+Bei genau einem bekannten Besitzer wird dessen Kontext automatisch verwendet.
+Bei mehreren Besitzern **GRETL: Select Source Context** wählen. Die Textansicht
+besitzt eine bestätigte Auswahl; Modelerpanels halten jeweils ihre eigene Anwendung
+mit Entry, Scope und Ressourcenbasis. Navigation aus dem Graphen übernimmt den
+gewählten Knotenkontext in die Originaltextansicht. Eine neue, nicht zugeordnete
+Groovydatei ist kein impliziter Rootjob; **Use Active File as Runtime Job** registriert
+bewusst einen eigenständigen Einstieg. Gewöhnliche Groovy-/Gradledateien behalten
+ihre Sprache. Ein bereits dirty geöffnetes Fragment wird ohne Textverlust und ohne
+Speichern synchronisiert, bevor der Server einen frischen editierbaren Graphen liefert.
+
+Eindeutige Quellen unterstützen lokale Feld-/Optionsänderungen, Rename über alle
+gebundenen Einstiegs-/Fragment-/Settingsstellen, Dependencies, Resultbindings und
+Formularbatches. Neue Deklarationen benötigen eine ausdrücklich bestimmte zulässige
+Zieldatei; Defaults bleiben im tatsächlichen Entry/Settings. Erforderliche Zielpuffer
+vor der Bestätigung öffnen und gegen den aktualisierten Capture neu planen.
+Ein nativer WorkspaceEdit erhält Originalranges, Kommentare, CRLF und Unicode.
+**Undo text**/**Redo text** bedienen die tatsächlich geänderte Quelldatei;
+**Save changed sources** speichert die Zieldateien des letzten Modeleredits.
+Layoutspeicherung und Layout-Undo ändern keinen Groovytext.
+
+Shared-Fragmente werden in allen bekannten Anwendungen gelesen, aber nicht
+automatisch verändert. Der gesamte Write-Footprint zählt: Auch ein eindeutiger
+Task mit einer zu schreibenden Referenz in einer Shareddatei wird abgelehnt.
+Unvollständige Ownershipkenntnis ist keine Schreibfreigabe. Ein unabhängiger Edit
+in einer bewiesen eindeutigen Datei bleibt möglich; ein eindeutiger Consumer darf
+bekannte Shared-Produzenten referenzieren, ohne deren Quelle zu schreiben.
+Die Refactoringdomäne umfasst unterstützte Workspace-Einstiege und ausdrücklich
+registrierte Jobs; unbekannte externe Konsumenten werden nicht als erfasst behauptet.
+Quellhashes, Bufferinkarnationen, Owner-/Kontextgenerationen und eingefrorene
+Postimages schützen alle Editwege auch bei neu hinzugefügten ungeöffneten Besitzern.
+
+Dynamischer/opaker Toplevel, Return/Throw, Recovery, defekte Quellen und Limits
+bleiben konservativ PARTIAL bzw. diagnostiziert INVALID. Vollständiger statischer
+Quellenabschluss beweist keine beliebige Groovy-Kontrollflussausführung.
+Nicht beauftragt sind Taskverschiebungen, automatische Fragmentaufteilung,
+Dateiumbenennung und globale Sharedrefactorings. Die frühere immer-partielle
+IDEgrenze ist der historische Ursprung des
+[Runtime-Arbeitsstands](WORK_QUEUE.md); aktuelle Toolingarbeit und Abnahmen stehen
+im [Include-Tooling-Arbeitsstand](../include-tooling/WORK_QUEUE.md).
 
 Die [Arbeitsstände und Abnahmen](WORK_QUEUE.md) dokumentieren die lokalen
 Featuregates. Sie ersetzen keine Root-, CI- oder Releasequalifikation und keinen

@@ -5,7 +5,7 @@ export type EdgeKind='DEPENDS_ON'|'AFTER'|'RESULT_BINDING';
 export interface Anchor {documentId:string;span?:{startUtf16:number;endUtf16:number}|null}
 export interface Diagnostic {code:string;severity:'ERROR'|'WARNING'|'INFORMATION';message:string;anchor:Anchor;application?:{ownerScope:string;entryDocument:string;sourceDocument:string}|null}
 export interface SourceStamp {documentId:string;sha256?:string|null;version?:number|null;incarnation?:string|null;editable:boolean;unavailableCode?:string|null}
-export interface GraphContext {protocolVersion:1;schemaVersion:1;serverInstanceId:string;projectId:string;workspaceGeneration:string;snapshotId:string;catalogId?:string;sourceStamps:SourceStamp[];completeness:Record<string,boolean>;notices:string[]}
+export interface GraphContext {protocolVersion:1;schemaVersion:1;serverInstanceId:string;projectId:string;workspaceGeneration:string;snapshotId:string;ownerGeneration?:string|null;contextGeneration?:string|null;contextDocumentId?:string|null;contextToken?:string|null;catalogId?:string;sourceStamps:SourceStamp[];completeness:Record<string,boolean>;notices:string[]}
 export interface GraphNode {id:string;presentationKey?:string|null;symbol?:{namespace:string;qualifiedName:string}|null;anchor:Anchor;kind:NodeKind;title:string;operationId?:string|null;parentId?:string|null;editCapabilities:Record<string,{state:string;reason?:string;[key:string]:unknown}>;inputs:{name:string;[key:string]:unknown}[];outputs:{name:string;[key:string]:unknown}[];diagnostics:Diagnostic[]}
 export interface GraphEdge {id:string;source:string;target:string;kind:EdgeKind;anchor:Anchor;outputField?:string|null;inputField?:string|null;schemaKnown:boolean}
 export interface GraphResponse {context:GraphContext;payload:{status:'COMPLETE'|'PARTIAL'|'INVALID';nodes:GraphNode[];edges:GraphEdge[];parameters:GraphNode[];cleanup:GraphNode[];diagnostics:Diagnostic[];forms?:FormProjection|null;preview?:{available:boolean;reason?:string|null;targets:string[];orderedSymbols:string[]}|null}}
@@ -25,6 +25,8 @@ export function graphResponse(v:unknown):GraphResponse {
     if(!object(v)||encodedSize(v)>16*1024*1024||!object(v.context)||!object(v.payload))throw Error('GRAPH_PAYLOAD_INVALID');
     const c=v.context,p=v.payload;
     if(c.protocolVersion!==1||c.schemaVersion!==1||!text(c.serverInstanceId,128)||!text(c.snapshotId,128)||!text(c.projectId,16384)||!text(c.workspaceGeneration,32)||!Array.isArray(c.sourceStamps)||c.sourceStamps.length>4096)throw Error('GRAPH_CONTEXT_INVALID');
+    for(const field of ['ownerGeneration','contextGeneration'])if(c[field]!=null&&(typeof c[field]!=='string'||!/^[0-9]{1,19}$/.test(c[field] as string)))throw Error('GRAPH_CONTEXT_INVALID');
+    for(const field of ['contextDocumentId','contextToken'])if(c[field]!=null&&!text(c[field],8192))throw Error('GRAPH_CONTEXT_INVALID');
     for(const s of c.sourceStamps)if(!object(s)||!text(s.documentId,8192)||s.version!=null&&(!Number.isSafeInteger(s.version)||Number(s.version)<0)||s.sha256!=null&&!/^[a-f0-9]{64}$/.test(String(s.sha256)))throw Error('GRAPH_STAMP_INVALID');
     if(!['COMPLETE','PARTIAL','INVALID'].includes(String(p.status)))throw Error('GRAPH_STATUS_INVALID');
     for(const key of ['nodes','parameters','cleanup','edges','diagnostics'])if(!Array.isArray(p[key]))throw Error('GRAPH_COLLECTION_INVALID');

@@ -22,25 +22,23 @@ final class ReferenceSourceEdits {
         if(original.declaration().nameLiteral()==null||original.declaration().recovered())throw new IllegalArgumentException("EDIT_UNSAFE_REGION");
         var literals=new SyntaxLiteralIndex(transaction.before,cancellation);
         record Location(URI document,TextSpan span) { }
-        var replaced=new HashSet<Location>();
+        var replaced=new java.util.LinkedHashMap<Location,String>();
         var declaration=original.declaration().nameLiteral();
         transaction.replace(original.anchor().documentId(),declaration.token(),SourceValueWriter.string(intent.newLocalName(),declaration.quotes()));
-        replaced.add(new Location(original.anchor().documentId(),declaration.token()));
+        replaced.put(new Location(original.anchor().documentId(),declaration.token()),SourceValueWriter.string(intent.newLocalName(),declaration.quotes()));
         for(var reference:references.uses()) {
             cancellation.check();
             var literal=literals.at(reference.anchor().documentId(),reference.anchor().span());
             if(literal.isEmpty())continue; // A proven TaskRef variable keeps its binding name.
             String name=replacement.qualifiedName();
             if(transaction.before.analysis().capture().project().projectMode()&&!reference.spelling().startsWith(":")) {
-                String scope=reference.owner()==null?transaction.before.analysis().capture().project().jobs().stream()
-                        .filter(j->j.documentId().equals(reference.anchor().documentId())).map(j->j.scope().canonical()).findFirst().orElse(":")
-                        :transaction.symbol(reference.owner()).scope();
+                String scope=reference.application()!=null?reference.application().ownerScope():reference.owner()==null?":":transaction.symbol(reference.owner()).scope();
                 name=ProjectNameRules.parseQualified(scope).renderReference(replacement.qualifiedName());
             }
             var envelope=literal.orElseThrow();
-            if(replaced.add(new Location(reference.anchor().documentId(),envelope.token()))) {
-                transaction.replace(reference.anchor().documentId(),envelope.token(),SourceValueWriter.string(name,envelope.quotes()));
-            }
+            String text=SourceValueWriter.string(name,envelope.quotes());var location=new Location(reference.anchor().documentId(),envelope.token());
+            String previous=replaced.putIfAbsent(location,text);if(previous!=null&&!previous.equals(text))throw new IllegalArgumentException("EDIT_CONFLICTING_REPLACEMENTS");
+            if(previous==null)transaction.replace(location.document(),location.span(),text);
         }
         var changes=transaction.changes();
         transaction.expect(after->after.analysis().unique(replacement).isPresent()&&!after.analysis().symbols().containsKey(intent.target())

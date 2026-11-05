@@ -38,7 +38,7 @@ class IncludeSemanticServerIT {
             var literalDef=w.call("textDocument/definition",position(uri,0,entry.indexOf("prepare")+1)).getAsJsonArray();assertEquals(source.toUri(),java.net.URI.create(literalDef.get(0).getAsJsonObject().get("uri").getAsString()));
             var node=payload.getAsJsonArray("nodes").asList().stream().map(JsonElement::getAsJsonObject).filter(n->n.get("title").getAsString().equals("finish")).findFirst().orElseThrow();
             var nav=w.call("gretl/navigation",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",graph.getAsJsonObject("context").get("snapshotId").getAsString(),"elementId",node.get("id").getAsString())).getAsJsonObject();assertEquals(target.toUri(),java.net.URI.create(nav.getAsJsonObject("location").get("uri").getAsString()));assertEquals(job.toUri(),java.net.URI.create(nav.getAsJsonObject("sourceContext").get("entryDocument").getAsString()));
-            assertEquals("REJECTED",node.getAsJsonObject("editCapabilities").getAsJsonObject("rename").get("state").getAsString());w.stop();
+            assertEquals("NEEDS_OPEN_DOCUMENTS",node.getAsJsonObject("editCapabilities").getAsJsonObject("rename").get("state").getAsString());w.stop();
         }
     }
     @Test void sharedStandardQueriesRequireSelectionAndNavigationDoesNotMergeApplications()throws Exception{

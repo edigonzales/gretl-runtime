@@ -11,17 +11,26 @@ import java.util.UUID;
 
 /** One published analysis identity shared by queries, graph navigation and edit plans. */
 public final class AnalysisSnapshot {
+    public record ContextSelection(ch.so.agi.gretl.tooling.workspace.IncludeModel.ApplicationId application,long generation,String token) {
+        public ContextSelection{Objects.requireNonNull(application);Objects.requireNonNull(token);}
+    }
+    private final ContextSelection contextSelection;
     private final UUID id;
     private final SemanticModel.Analysis analysis;
     private final ReferenceIndex references;
 
-    public AnalysisSnapshot(UUID id, SemanticModel.Analysis analysis) {
+    public AnalysisSnapshot(UUID id,SemanticModel.Analysis analysis){this(id,analysis,null);}
+    public AnalysisSnapshot(UUID id, SemanticModel.Analysis analysis,ContextSelection contextSelection) {
+        this.contextSelection=contextSelection;
         this.id = Objects.requireNonNull(id);
         this.analysis = Objects.requireNonNull(analysis);
         this.references = new ReferenceIndex(analysis);
     }
 
     public UUID id() { return id; }
+    public ContextSelection contextSelection(){return contextSelection;}
+    public AnalysisSnapshot inContext(ContextSelection context){return new AnalysisSnapshot(id,analysis,context);}
+    public AnalysisSnapshot postimage(SemanticModel.Analysis analysis){return new AnalysisSnapshot(UUID.randomUUID(),analysis,contextSelection);}
     public SemanticModel.Analysis analysis() { return analysis; }
     public ReferenceIndex references() { return references; }
 

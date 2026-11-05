@@ -13,7 +13,7 @@ import java.util.Set;
 
 /** Checks every bound or unresolved use after a rename/delete, not only a total reference count. */
 final class BindingPreservation {
-    private record Key(ReferenceKind kind,SymbolId owner,URI document,TextSpan span) { }
+    private record Key(ReferenceKind kind,SymbolId owner,URI document,TextSpan span,ch.so.agi.gretl.tooling.workspace.IncludeModel.ApplicationId application) { }
     boolean verify(AnalysisSnapshot before,AnalysisSnapshot after,Map<URI,List<SourceReplacement>> changes,
                    Map<SymbolId,SymbolId> renamed,Set<SymbolId> removed,CancellationToken cancellation) {
         var available=new LinkedHashMap<Key,List<Reference>>();
@@ -25,7 +25,7 @@ final class BindingPreservation {
             if(span==null)return false;
             SymbolId owner=reference.owner()==null?null:renamed.getOrDefault(reference.owner(),reference.owner());
             var candidates=reference.candidates().stream().map(id->renamed.getOrDefault(id,id)).toList();
-            var key=new Key(reference.kind(),owner,reference.anchor().documentId(),span);
+            var key=new Key(reference.kind(),owner,reference.anchor().documentId(),span,reference.application());
             var found=available.getOrDefault(key,List.of());
             Reference matching=null;
             for(var candidate:found)if(candidate.resolution()==reference.resolution()&&candidate.candidates().equals(candidates)){matching=candidate;break;}
@@ -41,7 +41,7 @@ final class BindingPreservation {
         }
         return after.analysis().symbols().size()==before.analysis().symbols().size()-removed.size();
     }
-    private Key key(Reference reference){return new Key(reference.kind(),reference.owner(),reference.anchor().documentId(),reference.anchor().span());}
+    private Key key(Reference reference){return new Key(reference.kind(),reference.owner(),reference.anchor().documentId(),reference.anchor().span(),reference.application());}
     private TextSpan map(TextSpan original,List<SourceReplacement> edits) {
         if(original==null)return null;
         for(var edit:edits)if(edit.span().contains(original)&&edit.span().length()>0) {

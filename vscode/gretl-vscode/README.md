@@ -52,11 +52,38 @@ Delete and disconnect refuse changes that would leave unsafe references; they
 never cascade silently. If another source must be open for a safe edit, open the
 requested sources and confirm a newly planned change.
 
-**Undo text** and **Redo text** use the pinned source's native VS Code history.
+**Undo text** and **Redo text** use native VS Code history in an actual target of
+the last modeler edit.
 **Undo view** and **Redo view** affect only node positions and viewport. Use
-**Save source** to persist the Groovy job; reopening the graph reads that same
-source. Modelling never executes a job. Run saved jobs separately with the
+**Save changed sources** to persist that edit's target documents; reopening the
+graph reads the same original files. Modelling never executes a job. Run saved jobs separately with the
 Runtime's normal execution workflow.
+
+## Static includes and shared contexts
+
+A completely captured static `apply from:` job has a full graph. Fragment tasks
+keep their original files and owner scope; includes add no execution edges.
+Definition, references, hover and completion cross source files. Relative `file`
+and SQL resources use the owning job directory. Include literals use the containing
+source directory. Safe include-path suggestions also work in an unfinished quote;
+unsupported or limited listings remain incomplete.
+
+Server-confirmed fragments synchronize dirty buffers before offering fresh edits.
+They acquire GRETL mode only while members; explicit language choices are respected.
+There is no global `*.groovy` association. A source without an owner stays unassigned;
+**Use Active File as Runtime Job** explicitly chooses its standalone entry role.
+
+For a shared fragment use **GRETL: Select Source Context**. Each modeler panel pins
+its own entry/scope, so another editor or panel cannot replace it. Shared sources
+are readable in every known context. Automatically planned writes require an
+exclusive known physical footprint, including all uses changed by rename. Independent
+edits in unique sources and references to shared producers remain possible.
+Opening additional buffers, closing/reopening a source, new unopened owners and
+changed context selections invalidate old plans. No files are saved automatically.
+Opaque control flow, recovery and missing sources keep analysis partial or invalid.
+Unknown consumers outside the captured workspace domain are not claimed as covered.
+
+## Development and qualification
 
 Build from the repository root with JDK 25, Node 22 or newer, and the local `zip`/`unzip` tools using `./mvnw -B
 clean verify`. This includes the server build, locked npm installation, host

@@ -42,9 +42,9 @@ public final class GraphFormProjector {
         }
         var insertions=new ArrayList<Insertion>();var analyzer=new EditabilityAnalyzer();var style=EditStyle.openDocuments();
         var project=snapshot.analysis().capture().project();
-        for(var job:project.jobs()){
-            cancellation.check();var source=snapshot.source(job.documentId()).orElse(null);if(source==null)continue;
-            int end=source.text().length();var uri=job.documentId();
+        for(var application:project.includeClosure().applications().stream().filter(a->snapshot.analysis().capture().ownership().exclusive(a.id().sourceDocument())).toList()){
+            cancellation.check();var source=snapshot.source(application.id().sourceDocument()).orElse(null);if(source==null)continue;
+            int end=source.text().length();var uri=application.id().sourceDocument();
             insertions.add(new Insertion(uri,end,
                     analyzer.assess(snapshot,new SemanticEditIntent.AddTask(uri,end,"draft","",Map.of()),style),
                     analyzer.assess(snapshot,new SemanticEditIntent.AddAction(uri,end,"draft"),style),

@@ -182,6 +182,13 @@ final class ServerWorkspace implements AutoCloseable {
                 }
                 }
                 }
+                if(includeTooling&&!contextsOnly){
+                    var contexts=sourceContexts.contextsFor(snapshot.analysis().capture(),document);
+                    if(!contexts.contexts().isEmpty()){
+                        var selected=sourceContexts.resolveForQuery(snapshot.analysis().capture(),document,panelContext);
+                        snapshot=snapshot.inContext(new AnalysisSnapshot.ContextSelection(selected.application().id(),contexts.contextGeneration(),selected.token()));
+                    }
+                }
                 cancellation.check();T value=operation.apply(snapshot,cancellation);cancellation.check();
                 if(!manager.publishIfCurrent(snapshot.analysis().capture(),()->result.complete(value),cancellation))throw new CancellationException();
             } catch(CancellationException obsolete){result.completeExceptionally(error(ResponseErrorCode.ContentModified,"STALE_OR_CANCELLED_ANALYSIS"));}
@@ -231,7 +238,7 @@ final class ServerWorkspace implements AutoCloseable {
         synchronized(this){if(current&&memberships.get(capture.project().id().workspaceRoot())==state)state.ready=true;else current=false;}
         return new GretlProtocol.ConfirmSourceMembershipResponse(1,1,current,Long.toString(capture.ownership().generation()),current?List.of():List.of("MEMBERSHIP_STALE_OR_UNSYNCHRONIZED"));
     }
-    void contextChanged(){synchronized(this){epoch++;snapshots.clear();plans.clear();}schedule();}
+    void contextChanged(){synchronized(this){epoch++;}schedule();}
     synchronized void retain(AnalysisSnapshot snapshot,PlannedEdit edit){plans.entrySet().removeIf(e->e.getValue().expires().isBefore(Instant.now()));plans.put(edit.id().toString(),new Retained(snapshot,edit,Instant.now().plusSeconds(60)));while(plans.size()>32)plans.remove(plans.keySet().iterator().next());}
     synchronized AnalysisSnapshot planSnapshot(String id){var plan=plans.get(id);if(plan==null||plan.expires().isBefore(Instant.now()))throw error(ResponseErrorCode.InvalidParams,"EDIT_PLAN_UNKNOWN_OR_EXPIRED");return plan.snapshot();}
     synchronized PlannedEdit plan(String id){planSnapshot(id);return plans.get(id).edit();}
