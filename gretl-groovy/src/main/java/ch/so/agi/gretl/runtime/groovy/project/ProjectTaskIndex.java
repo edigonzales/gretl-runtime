@@ -56,7 +56,11 @@ public final class ProjectTaskIndex {
 
     /** Only source-aware existence checking; the existing builder resolves refs and plans the DAG. */
     public void rememberLinks(String owner, List<TaskLink> dependsOn, List<TaskLink> after) {
-        var combined = new java.util.ArrayList<>(dependsOn); combined.addAll(after);
+        rememberLinks(owner,dependsOn,after,List.of());
+    }
+
+    public void rememberLinks(String owner,List<TaskLink> dependsOn,List<TaskLink> after,List<TaskLink> finalizedBy) {
+        var combined = new java.util.ArrayList<>(dependsOn); combined.addAll(after); combined.addAll(finalizedBy);
         links.put(owner, List.copyOf(combined));
     }
 

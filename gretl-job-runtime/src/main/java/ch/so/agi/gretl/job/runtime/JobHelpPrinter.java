@@ -55,6 +55,9 @@ public final class JobHelpPrinter {
                 out.println("      " + text("help.dependsOn") + ": " + task.dependsOn().stream()
                         .map(ref -> ref.id()).toList());
             }
+            if (!task.finalizedBy().isEmpty()) {
+                out.println("      finalizedBy: " + task.finalizedBy().stream().map(ref->ref.id()).toList());
+            }
             if (!task.after().isEmpty()) {
                 out.println("      " + text("help.after") + ": " + task.after().stream()
                         .map(ref -> ref.id()).toList());
@@ -65,11 +68,14 @@ public final class JobHelpPrinter {
     public void plan(ExecutionPlan plan) {
         out.println(text("help.targets") + ": " + String.join(", ", plan.requestedTargets()));
         out.println(text("help.order") + ":");
+        if(plan.edges().stream().anyMatch(edge->edge.type()==ch.so.agi.gretl.runtime.runner.PlanEdge.EdgeType.FINALIZED_BY))
+            out.println("  " + text("help.finalizerHint"));
         for (TaskDefinition<?> task : plan.selectedTasks()) {
-            out.printf("  %-24s registrationIndex=%d dependsOn=%s after=%s%n",
+            out.printf("  %-24s registrationIndex=%d dependsOn=%s after=%s finalizedBy=%s normalSelected=%s%n",
                     task.id(), task.registrationIndex(),
                     task.dependsOn().stream().map(ref -> ref.id()).toList(),
-                    task.after().stream().map(ref -> ref.id()).toList());
+                    task.after().stream().map(ref -> ref.id()).toList(),
+                    task.finalizedBy().stream().map(ref->ref.id()).toList(),plan.selection().normalDemand().contains(task.id()));
         }
     }
 }

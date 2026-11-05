@@ -20,9 +20,6 @@ public final class PlanGraphRenderer {
         java.util.Objects.requireNonNull(plan, "plan");
         java.util.Objects.requireNonNull(format, "format");
         java.util.Objects.requireNonNull(locale, "locale");
-        if (plan.edges().stream().anyMatch(edge -> edge.type() == PlanEdge.EdgeType.FINALIZED_BY)) {
-            throw new IllegalArgumentException("Finalizer rendering requires P3");
-        }
         String source = sourceName == null || sourceName.isBlank() ? "job" : sourceName;
         return switch (format) {
             case MERMAID -> mermaid(plan, source);
@@ -36,13 +33,13 @@ public final class PlanGraphRenderer {
         StringBuilder out = new StringBuilder();
         out.append("flowchart TB\n");
         out.append("%% gretl plan: ").append(singleLine(source)).append('\n');
-        out.append("%% solid = dependsOn, dotted = after, highlighted = target\n");
+        out.append("%% solid = dependsOn, dotted = after, thick = finalizedBy (conditional), highlighted = target\n");
         if (!targets.isEmpty()) {
             out.append("  classDef target fill:#ffe8a3,stroke:#b26a00,stroke-width:2px;\n");
         }
         for (TaskDefinition<?> task : plan.selectedTasks()) {
             out.append("  ").append(aliases.get(task.id())).append("[\"")
-                    .append(mermaidLabel(task)).append("\"]");
+                    .append(mermaidLabel(task,!plan.selection().normalDemand().contains(task.id()))).append("\"]");
             if (targets.contains(task.id())) {
                 out.append(":::target");
             }
@@ -53,6 +50,8 @@ public final class PlanGraphRenderer {
             String to = alias(aliases, edge.toId());
             if (edge.type() == PlanEdge.EdgeType.DEPENDS_ON) {
                 out.append("  ").append(from).append(" -->|dependsOn| ").append(to).append('\n');
+            } else if (edge.type() == PlanEdge.EdgeType.FINALIZED_BY) {
+                out.append("  ").append(from).append(" ==>|finalizedBy| ").append(to).append('\n');
             } else {
                 out.append("  ").append(from).append(" -.->|after| ").append(to).append('\n');
             }
@@ -70,7 +69,7 @@ public final class PlanGraphRenderer {
                 "plan.graph.title", singleLine(source))).append('\n');
         out.append("skinparam shadowing false\n");
         for (TaskDefinition<?> task : plan.selectedTasks()) {
-            out.append("rectangle \"").append(plantumlLabel(task)).append("\" as ")
+            out.append("rectangle \"").append(plantumlLabel(task,!plan.selection().normalDemand().contains(task.id()))).append("\" as ")
                     .append(aliases.get(task.id()));
             if (targets.contains(task.id())) {
                 out.append(" #FFE8A3");
@@ -82,6 +81,8 @@ public final class PlanGraphRenderer {
             String to = alias(aliases, edge.toId());
             if (edge.type() == PlanEdge.EdgeType.DEPENDS_ON) {
                 out.append(from).append(" --> ").append(to).append(" : dependsOn\n");
+            } else if (edge.type() == PlanEdge.EdgeType.FINALIZED_BY) {
+                out.append(from).append(" -[#7B1FA2,bold]-> ").append(to).append(" : finalizedBy\n");
             } else {
                 out.append(from).append(" ..> ").append(to).append(" : after\n");
             }
@@ -119,19 +120,21 @@ public final class PlanGraphRenderer {
         return result;
     }
 
-    private static String mermaidLabel(TaskDefinition<?> task) {
+    private static String mermaidLabel(TaskDefinition<?> task,boolean completionCandidate) {
         List<String> parts = new ArrayList<>();
         parts.add(task.id());
         parts.add(task.operation() == null ? "action" : task.operation().symbol());
         parts.add("#" + task.registrationIndex());
+        if(completionCandidate)parts.add("completion candidate");
         return String.join("<br/>", parts.stream().map(PlanGraphRenderer::mermaidText).toList());
     }
 
-    private static String plantumlLabel(TaskDefinition<?> task) {
+    private static String plantumlLabel(TaskDefinition<?> task,boolean completionCandidate) {
         List<String> parts = new ArrayList<>();
         parts.add(task.id());
         parts.add(task.operation() == null ? "action" : task.operation().symbol());
         parts.add("#" + task.registrationIndex());
+        if(completionCandidate)parts.add("completion candidate");
         return String.join("\\n", parts.stream().map(PlanGraphRenderer::plantumlText).toList());
     }
 

@@ -14,9 +14,23 @@ public record JobOutcome(
         Optional<FailureInfo> primaryFailure, List<FailureInfo> secondaryFailures,
         Instant startedAt, Instant finishedAt, long durationMillis,
         boolean finishRequested, Optional<String> finishReason,
-        boolean workRetained, Optional<ch.so.agi.gretl.runtime.api.CancelReason> cancelReason) {
+        boolean workRetained, Optional<ch.so.agi.gretl.runtime.api.CancelReason> cancelReason,
+        java.util.Map<String,TaskFinalization> finalization) {
+
+    public JobOutcome(UUID runId, UUID definitionId, String jobName,
+            RunStatus status, int exitCode, List<String> requestedTargets,
+            List<TaskOutcome> tasks, List<Diagnostic> diagnostics,
+            Optional<FailureInfo> primaryFailure, List<FailureInfo> secondaryFailures,
+            Instant startedAt, Instant finishedAt, long durationMillis,
+            boolean finishRequested, Optional<String> finishReason, boolean workRetained,
+            Optional<ch.so.agi.gretl.runtime.api.CancelReason> cancelReason) {
+        this(runId,definitionId,jobName,status,exitCode,requestedTargets,tasks,diagnostics,
+                primaryFailure,secondaryFailures,startedAt,finishedAt,durationMillis,
+                finishRequested,finishReason,workRetained,cancelReason,java.util.Map.of());
+    }
 
     public JobOutcome {
+        finalization=java.util.Collections.unmodifiableMap(new java.util.LinkedHashMap<>(finalization));
         java.util.Objects.requireNonNull(cancelReason, "cancelReason");
         if ((status == RunStatus.CANCELLED) != cancelReason.isPresent()) {
             throw new IllegalArgumentException("cancelReason required exactly for CANCELLED");

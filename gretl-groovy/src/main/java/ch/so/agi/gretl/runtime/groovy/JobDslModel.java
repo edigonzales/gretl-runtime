@@ -170,8 +170,8 @@ final class JobDslModel {
 
     void ensureAvailable(String id) { if (projectMode()) index.ensureAvailable(id, currentSource()); }
 
-    void registerLinks(String id, List<TaskLink> dependsOn, List<TaskLink> after) {
-        if (projectMode()) index.rememberLinks(id, dependsOn, after);
+    void registerLinks(String id, List<TaskLink> dependsOn, List<TaskLink> after, List<TaskLink> finalizedBy) {
+        if (projectMode()) index.rememberLinks(id, dependsOn, after, finalizedBy);
     }
 
     String resourceRelativePath(String raw) {

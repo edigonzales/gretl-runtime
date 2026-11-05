@@ -32,6 +32,30 @@ class RunReportWriterTest {
     Path tempDir;
 
     @Test
+    void finalizationReportSeparatesSelectionDeclaredOwnersTriggersAndActualRoles() throws Exception {
+        var builder=new JobDefinitionBuilder(tempDir);
+        builder.register(TaskRegistration.builder("a",Object.class).finalizedBy("f").body(ctx->{throw new java.io.IOException("owner-first");}).build());
+        builder.register(TaskRegistration.builder("b",Object.class).finalizedBy("f").body(ctx->{throw new AssertionError("b must not start");}).build());
+        builder.register(TaskRegistration.builder("d",Object.class).body(ctx->"private-result").build());
+        builder.register(TaskRegistration.builder("f",Object.class).dependsOn("d").body(ctx->"done").build());builder.defaults("a","b");
+        var definition=builder.freeze();var plan=new ExecutionPlanner().plan(definition,List.of());
+        var input=RunInput.builder().jobRoot(tempDir).startCwd(tempDir).workRoot(tempDir.resolve("work")).build();
+        var outcome=new SequentialJobRunner().run(definition,plan,input);
+        var context=new LogContext("command",outcome.runId(),"finalizers","6.0.0-SNAPSHOT",Optional.empty());
+        var reportInput=new RunReportInput(context,outcome,definition,plan,tempDir.resolve("job.groovy"),"hash",Optional.empty(),"inventory",
+                new LoggingState(LoggingConfig.Format.TEXT,true,Optional.empty(),false,false,false,0),Instant.now(),Optional.empty());
+        var report=new RunReportWriter(new Redactor(input.secretRegistry())).report(reportInput);
+        var execution=(Map<?,?>)report.get("execution");
+        var tasks=(List<?>)execution.get("tasks");
+        var finalizer=(Map<?,?>)tasks.stream().map(v->(Map<?,?>)v).filter(v->v.get("taskId").equals("f")).findFirst().orElseThrow().get("finalization");
+        assertEquals(false,finalizer.get("normalSelected"));assertEquals(List.of("a","b"),finalizer.get("declaredOwners"));assertEquals(List.of("a"),finalizer.get("activatingOwners"));assertEquals(List.of("FINALIZER"),finalizer.get("executedRoles"));
+        assertEquals(List.of("FINALIZER_PREREQUISITE"),outcome.finalization().get("d").executedRoles());
+        assertEquals(List.of(),outcome.finalization().get("b").executedRoles());
+        assertTrue(((List<?>)execution.get("planEdges")).stream().map(v->(Map<?,?>)v).anyMatch(v->v.get("from").equals("a")&&v.get("to").equals("f")&&v.get("kind").equals("FINALIZED_BY")));
+        assertFalse(Json.write(report).contains("private-result"));assertEquals(1,report.get("schemaVersion"));
+    }
+
+    @Test
     void writesSchemaOneReportWithoutResultValuesOrSecrets() throws Exception {
         JobDefinitionBuilder builder = new JobDefinitionBuilder(tempDir);
         builder.register(TaskRegistration.builder("ok", Object.class)

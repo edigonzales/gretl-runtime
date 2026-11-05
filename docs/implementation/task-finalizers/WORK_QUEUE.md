@@ -97,7 +97,7 @@ Unabhängiger Reviewer führte die 82 Tests sowie eine eigene Java-Gegenprobe
 mit 63 Assertions aus; ABGENOMMEN ohne Findings. Sessionidentität und
 unveränderte getrackte Bytes durch den Adapter validiert.
 
-## P2 — REVIEW_PENDING
+## P2 — REVIEWED_ACCEPTED
 
 Feste Phasebase `bbd37bdfb73e902a0a2b073e7a8f929b1cce3fd9`.
 Ein Runner konsumiert TaskSchedule; kein zweiter Closure-Ausführungspfad.
@@ -148,6 +148,53 @@ unter `/Users/stefan/.cache/gretl-task-finalizers/evidence/P2-revision1/`:
 `start-boundary-red.log`, `start-boundary-final.log`, `summary.json`, Ziel-XMLs.
 Die ursprünglichen Belege des ersten Kandidaten bleiben separat erhalten.
 
-Nächste Arbeit: korrigierter Kandidatencommit und frischer unabhängiger
-P2-Korrekturreview gegen dieselbe Phasebase. P3 erst nach validiertem
-ABGENOMMEN; P3–P5: PLANNED.
+Korrigierter P2-Kandidat `9aa1205b44cb9ea583a3e94c79746940aa23e679`:
+ABGENOMMEN im frischen Korrekturreview und maschinell validiert.
+Originale `/Users/stefan/.cache/gretl-task-finalizers/review/P2-attempt-2/`.
+Eigene Reviewer-Ausführung: 190 Tests, neue Drain-/Startgrenzenprobe mit 38
+Assertions; keine offenen Findings. Das ablehnende erste Urteil ist separat
+als `rejection-validated.json` identitätsgeprüft, keine nachträgliche Freigabe.
+
+## P3 — REVIEW_PENDING
+
+Feste Phasebase `9aa1205b44cb9ea583a3e94c79746940aa23e679`.
+Öffentlicher Task-/Action-Header, vorhandene Linknormalisierung und
+Include-/Projektindex erweitert. Finalizer behalten ihre eigene Scope- und
+Ressourcenbasis. Additive SourceLocatedFailure-Metadaten erklären fehlerhafte
+Finalizerdefinitionen am Ownerfragment. Neue immutable TaskFinalization-Daten
+trennen normale Auswahl, ausgewählte deklarierte Owner, aktive Trigger und
+wirkliche Rollen. Report-Schema 1 erhält diese Daten und explizite primäre/
+sekundäre Fehlerrefs; bestehende Felder bleiben erhalten. Keine Paketformat-
+oder Bundleversionsänderung: Descriptor 1/2/3 und bestehende JAR-Metadaten
+1/2/3 bleiben gültig. Textplan und Mermaid/PlantUML zeigen finalizedBy in
+Owner→Finalizer-Richtung und markieren bedingte Abschlusskandidaten.
+
+Beispielgrundlage `examples/task-finalizers/` läuft mit echtem Gzip-Finalizer,
+Ownerfehler, Sharedowner und globalem Cleanup. Vollständige Nutzerdokumentation
+und Distributionskopie folgen in P5; keine IDElieferung vor P4 behauptet.
+Die P0-UNKNOWN_OPTION-Probe ist jetzt der positive öffentliche Fehler-/Finalizer-
+Vertrag. Die bisherigen Renderer-Ablehnungsproben wurden durch echte getrennte
+Kanten-/Kandidatenassertions ersetzt.
+
+Vorabgate mit JDK 25: 106 ausgewählte Unitfälle und 8 FinalizerJobIT-Fälle,
+Exit 0, Fehler/Skips 0. Die ITs starten 21 echte Produktprozesse: SCRIPT und
+quellenfreie Single-/Project-JARs bei Erfolg/Ownerfehler; Sharedfragment mit
+zwei Ressourcenbasen; SCRIPT- und JAR-Introspektion ohne Bodyeffekt;
+Aktivierungsdeadlock vor Nebenwirkungen; fehlende kompilierte Finalizerklasse
+als präziser Startfehler; Fragmentzeile und ursprünglicher Fehler trotz
+Finalizerfehler; SIGTERM nach beobachtetem Ownerstart in SCRIPT und JAR.
+Vier bestehende Legacy-/Include-JAR-Fälle liefen zusätzlich erfolgreich mit
+Source-Compiler-Wächter; der finale Kandidatenlauf führt sie erneut aus.
+
+Die gemeinsame Pakettestprüfung erwartete bisher nur JAR-Schema 1/2 und wies
+das bereits vorhandene Includeformat 3 ab. Sie prüft nun dessen Eingabeclosure,
+Hash, Quellen-/Klassenidentität und Include-Kanten ausdrücklich; die alten
+Schema-1/2-Assertions und Modul-/Provider-/Ressourcenprüfungen bleiben bestehen.
+Die feste Szenariendeklaration enthält die neuen Tests samt tatsächlichen
+Startzahlen; alte Zeilen wurden nicht abgeschwächt.
+
+Vorabbelege `/Users/stefan/.cache/gretl-task-finalizers/evidence/P3/`
+(`gate-precommit.log`, vorherige Red-/Entwicklungslogs im Elternverzeichnis).
+Nächste Arbeit: sauberer Kandidatencommit, SHA-gebundener vollständiger gezielter
+P3-Lauf, frischer unabhängiger Review. P4 erst nach validiertem ABGENOMMEN.
+P4–P5: PLANNED.

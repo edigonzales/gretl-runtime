@@ -88,6 +88,7 @@ public abstract class GretlScript extends Script {
                 .description(description(normalized, id))
                 .dependsOn(links(normalized.get("dependsOn"), "dependsOn", id))
                 .after(links(normalized.get("after"), "after", id))
+                .finalizedBy(links(normalized.get("finalizedBy"), "finalizedBy", id))
                 .when(condition(normalized.get("when"), id))
                 .timeout(duration(normalized.get("timeout"), id))
                 .body(GroovyTaskAdapter.typedBody(type, configure, model))
@@ -95,7 +96,7 @@ public abstract class GretlScript extends Script {
                 .source(runnerSource(model.currentSource()));
         var task = registration.build();
         TaskRef<R> ref = model.builder().register(task);
-        model.registerLinks(id, task.dependsOn(), task.after());
+        model.registerLinks(id, task.dependsOn(), task.after(), task.finalizedBy());
         model.registerTask(id, ref, type);
         return ref;
     }
@@ -119,13 +120,14 @@ public abstract class GretlScript extends Script {
                 .description(description(normalized, id))
                 .dependsOn(links(normalized.get("dependsOn"), "dependsOn", id))
                 .after(links(normalized.get("after"), "after", id))
+                .finalizedBy(links(normalized.get("finalizedBy"), "finalizedBy", id))
                 .when(condition(normalized.get("when"), id))
                 .timeout(duration(normalized.get("timeout"), id))
                 .body(GroovyTaskAdapter.actionBody(body, model))
                 .source(runnerSource(model.currentSource()));
         var task = registration.build();
         TaskRef<Object> ref = model.builder().register(task);
-        model.registerLinks(id, task.dependsOn(), task.after());
+        model.registerLinks(id, task.dependsOn(), task.after(), task.finalizedBy());
         model.registerTask(id, ref, null);
         return ref;
     }

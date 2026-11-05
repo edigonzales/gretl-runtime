@@ -84,6 +84,7 @@ public final class SequentialJobRunner {
             boolean hasFinalizers = plan.edges().stream().anyMatch(e -> e.type() == PlanEdge.EdgeType.FINALIZED_BY);
             var tasks = new java.util.LinkedHashMap<String,TaskDefinition<?>>();
             plan.selectedTasks().forEach(task -> tasks.put(task.id(),task));
+            var executedRoles = new java.util.LinkedHashMap<String,List<String>>();
             boolean restoreInterrupt = false;
             try {
                 while (true) {
@@ -139,7 +140,7 @@ public final class SequentialJobRunner {
                     try {
                         outcome = executeTask(task,environment,workspace,results,invoker,arbiter,execution,
                                 Map.of("task.roles",String.join(",",role),"finalizer.active_owners",String.join(",",schedule.activatingOwners(id))),
-                                () -> schedule.started(id));
+                                () -> {schedule.started(id);executedRoles.put(id,List.copyOf(role));});
                     } catch (FinishSignal beforeStart) {
                         // The scope opened but RUNNING was never reached. Re-evaluate demand.
                         continue;
@@ -222,6 +223,12 @@ public final class SequentialJobRunner {
                         Optional.ofNullable(primaryFailure));
 
                 List<TaskOutcome> taskOutcomes = results.outcomes();
+                var finalization=new java.util.LinkedHashMap<String,TaskFinalization>();
+                for(var task:plan.selectedTasks()) {
+                    var owners=plan.edges().stream().filter(edge->edge.type()==PlanEdge.EdgeType.FINALIZED_BY&&edge.toId().equals(task.id())).map(PlanEdge::fromId).toList();
+                    finalization.put(task.id(),new TaskFinalization(schedule.normalDemand(task.id()),owners,
+                            new ArrayList<>(schedule.activatingOwners(task.id())),executedRoles.getOrDefault(task.id(),List.of())));
+                }
                 JobOutcome outcome = new JobOutcome(
                         input.runId(), definition.definitionId(), input.jobName(),
                         status, status.exitCode(), plan.requestedTargets(),
@@ -229,7 +236,7 @@ public final class SequentialJobRunner {
                         Optional.ofNullable(primaryFailure), secondaryFailures,
                         startedAt, finishedAt, durationMillis,
                         finishRequested, Optional.ofNullable(finishReason), workRetained,
-                        status == RunStatus.CANCELLED ? environment.control().snapshot().cancellationReason() : Optional.empty());
+                        status == RunStatus.CANCELLED ? environment.control().snapshot().cancellationReason() : Optional.empty(),finalization);
                 environment.close();
                 return outcome;
             } finally {

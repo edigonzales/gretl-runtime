@@ -108,6 +108,8 @@ public final class RunReportWriter {
         execution.put("status", outcome.status().name());
         execution.put("cancelReason", outcome.cancelReason().map(Enum::name).orElse(null));
         execution.put("exitCode", outcome.exitCode());
+        execution.put("primaryErrorRef",outcome.primaryFailure().map(FailureInfo::id).orElse(null));
+        execution.put("secondaryErrorRefs",outcome.secondaryFailures().stream().map(FailureInfo::id).toList());
         execution.put("startedAt", timestamp(outcome.startedAt()));
         execution.put("finishedAt", timestamp(outcome.finishedAt()));
         execution.put("durationMillis", outcome.durationMillis());
@@ -116,8 +118,9 @@ public final class RunReportWriter {
         outcome.finishReason().ifPresent(reason -> execution.put("finishReason", reason));
         execution.put("workRetained", outcome.workRetained());
         execution.put("selectedPlan", plan.selectedTasks().stream()
-                .map(this::plannedTask).toList());
-        execution.put("tasks", outcome.tasks().stream().map(this::task).toList());
+                .map(task -> plannedTask(task,plan)).toList());
+        execution.put("planEdges",plan.edges().stream().map(edge->Map.of("from",edge.fromId(),"to",edge.toId(),"kind",edge.type().name())).toList());
+        execution.put("tasks", outcome.tasks().stream().map(task->task(task,outcome.finalization().get(task.taskId()))).toList());
         List<InvocationOutcome> allInvocations = outcome.invocations();
         execution.put("invocations", allInvocations.stream().limit(MAX_INVOCATIONS)
                 .map(this::invocation).toList());
@@ -125,12 +128,14 @@ public final class RunReportWriter {
         return execution;
     }
 
-    private Map<String, Object> plannedTask(TaskDefinition<?> task) {
+    private Map<String, Object> plannedTask(TaskDefinition<?> task,ExecutionPlan plan) {
         Map<String, Object> planned = new LinkedHashMap<>();
         planned.put("taskId", task.id());
         planned.put("registrationIndex", task.registrationIndex());
         planned.put("dependsOn", task.dependsOn().stream().map(ref -> ref.id()).toList());
         planned.put("after", task.after().stream().map(ref -> ref.id()).toList());
+        planned.put("finalizedBy",task.finalizedBy().stream().map(ref->ref.id()).toList());
+        planned.put("normalSelected",plan.selection().normalDemand().contains(task.id()));
         planned.put("condition", task.condition() != null);
         if (task.timeout() != null) {
             planned.put("timeout", task.timeout().toString());
@@ -142,9 +147,11 @@ public final class RunReportWriter {
         return planned;
     }
 
-    private Map<String, Object> task(TaskOutcome task) {
+    private Map<String, Object> task(TaskOutcome task,ch.so.agi.gretl.runtime.runner.TaskFinalization finalization) {
         Map<String, Object> value = new LinkedHashMap<>();
         value.put("taskId", task.taskId());
+        if(finalization!=null)value.put("finalization",Map.of("normalSelected",finalization.normalSelected(),
+                "declaredOwners",finalization.declaredOwners(),"activatingOwners",finalization.activatingOwners(),"executedRoles",finalization.executedRoles()));
         value.put("status", task.status().name());
         value.put("reason", task.reason());
         value.put("cancelReason", task.cancelReason().map(Enum::name).orElse(null));

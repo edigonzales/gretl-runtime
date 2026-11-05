@@ -6,7 +6,7 @@ import java.util.Set;
 public final class DslVocabulary {
     private DslVocabulary() { }
     public static Set<String> reservedConfigurationFields() { return Set.of("ctx", "delegate", "owner", "thisObject", "metaClass", "class"); }
-    public static Set<String> taskOptions() { return Set.of("dependsOn", "after", "description", "when", "timeout"); }
+    public static Set<String> taskOptions() { return Set.of("dependsOn", "after", "finalizedBy", "description", "when", "timeout"); }
     public static Set<String> parameterOptions() { return Set.of("type", "required", "description", "defaultValue"); }
     public static Set<String> parameterTypes() { return Set.of("text", "boolean", "integer", "path"); }
     public enum ScopeKind { TOPLEVEL, CONFIGURATION, ACTION, WHEN, INNER_CONFIGURATION, CLEANUP }

@@ -24,14 +24,15 @@ class PlanGraphRendererTest {
     Path tempDir;
 
     @Test
-    void p1NewRelationCannotBeRenderedAsAfter() {
+    void finalizersHaveTheirOwnForwardEdgeInEachGraphFormat() {
         var builder=new JobDefinitionBuilder(tempDir);
         builder.register(TaskRegistration.builder("owner",Object.class).finalizedBy("release").body(ctx->null).build());
         builder.register(TaskRegistration.builder("release",Object.class).body(ctx->null).build());
         var plan=new ExecutionPlanner().plan(builder.freeze(),List.of("owner"));
-        for(var format:PlanGraphFormat.values())
-            org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
-                    ()->new PlanGraphRenderer().render(plan,format,"probe",Locale.ENGLISH));
+        String mermaid=new PlanGraphRenderer().render(plan,PlanGraphFormat.MERMAID,"probe",Locale.ENGLISH);
+        assertTrue(mermaid.contains("n0 ==>|finalizedBy| n1"),mermaid);assertTrue(mermaid.contains("completion candidate"),mermaid);assertFalse(mermaid.contains("|after|"),mermaid);
+        String uml=new PlanGraphRenderer().render(plan,PlanGraphFormat.PLANTUML,"probe",Locale.ENGLISH);
+        assertTrue(uml.contains("t0 -[#7B1FA2,bold]-> t1 : finalizedBy"),uml);assertTrue(uml.contains("completion candidate"),uml);assertFalse(uml.contains(": after"),uml);
     }
 
     @Test

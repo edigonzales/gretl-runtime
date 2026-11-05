@@ -138,11 +138,11 @@ public final class JobDefinitionBuilder {
                 finalizedBy = resolveLinks(pending.registration.finalizedBy(), pending.ref.id());
             } catch (DefinitionException invalid) {
                 throw new DefinitionException(invalid.code(), invalid.getMessage()
-                        + " (finalizedBy at " + pending.registration.source() + ")", invalid);
+                        + " (finalizedBy at " + pending.registration.source() + ")", invalid, pending.registration.source());
             }
             if (finalizedBy.stream().anyMatch(ref -> ref.id().equals(pending.ref.id()))) {
                 throw new DefinitionException("SELF_FINALIZER", "Task " + pending.ref.id()
-                        + " cannot finalize itself at " + pending.registration.source());
+                        + " cannot finalize itself at " + pending.registration.source(), null, pending.registration.source());
             }
             tasks.add(createDefinition(pending, dependsOn, after, finalizedBy));
         }

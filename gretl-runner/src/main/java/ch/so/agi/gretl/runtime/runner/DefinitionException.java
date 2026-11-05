@@ -1,18 +1,26 @@
 package ch.so.agi.gretl.runtime.runner;
 
 /** A static job/provider definition error discovered before task execution. */
-public class DefinitionException extends RuntimeException {
+public class DefinitionException extends RuntimeException implements SourceLocatedFailure {
     private static final long serialVersionUID = 1L;
     private final String code;
+    private final SourceLocation source;
 
     public DefinitionException(String code, String message) {
-        super(message);
-        this.code = requireText(code, "code");
+        this(code,message,null,null);
     }
 
     public DefinitionException(String code, String message, Throwable cause) {
-        super(message, cause);
-        this.code = requireText(code, "code");
+        this(code,message,cause,null);
+    }
+
+    public DefinitionException(String code,String message,Throwable cause,SourceLocation source) {
+        super(message,cause);
+        this.code=requireText(code,"code");this.source=source;
+    }
+
+    @Override public java.util.Optional<SourceLocation> failureSource() {
+        return source == null || source.line() == 0 ? java.util.Optional.empty() : java.util.Optional.of(source);
     }
 
     public String code() {

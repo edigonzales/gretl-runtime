@@ -72,8 +72,32 @@ final class PackageArtifactAssertions {
             }
             var metadata = (Map<?, ?>) Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job.json")).readAllBytes(), StandardCharsets.UTF_8));
             boolean project = Long.valueOf(3).equals(descriptor.get("schemaVersion"));
-            assertEquals(project ? 2L : 1L, metadata.get("schemaVersion"));
-            if (project) {
+            var sourceRoot=descriptorFile.toAbsolutePath().getParent();
+            var bundle=project
+                    ? ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.project(
+                        new ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser().parse(sourceRoot),Locale.ENGLISH)
+                    : ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.single(
+                        sourceRoot.resolve(descriptor.get("entryScript").toString()),Locale.ENGLISH);
+            assertEquals(bundle!=null ? 3L : project ? 2L : 1L, metadata.get("schemaVersion"));
+            if (bundle!=null) {
+                assertEquals(project?"project":"single",metadata.get("definitionMode"));
+                var actualBundle=(Map<?,?>)metadata.get("bundle");assertEquals(1L,actualBundle.get("version"));
+                assertEquals(bundle.bundle().sha256(),actualBundle.get("sha256"));
+                var expectedSources=new HashSet<>(bundle.bundle().sources().keySet());expectedSources.remove(bundle.bundle().settingsId());
+                Set<String> actualSources=new HashSet<>();Set<String> classes=new HashSet<>();
+                for(Object value:(List<?>)actualBundle.get("sources")) {
+                    var source=(Map<?,?>)value;String id=source.get("sourceId").toString();
+                    assertTrue(actualSources.add(id),"Unique physical bundle source");assertTrue(classes.add(source.get("className").toString()),"Unique compiled source class");
+                    assertEquals(bundle.bundle().virtualName(id),source.get("virtualName"));present(jar,source.get("className").toString().replace('.','/')+".class");
+                }
+                assertEquals(expectedSources,actualSources);assertEquals(bundle.bundle().entries().size(),((List<?>)actualBundle.get("entries")).size());
+                var edges=(List<?>)actualBundle.get("edges");assertEquals(bundle.bundle().edges().size(),edges.size());
+                for(var expected:bundle.bundle().edges())assertTrue(edges.stream().map(e->(Map<?,?>)e).anyMatch(e->
+                        expected.scopeId().equals(e.get("scopeId"))&&expected.sourceId().equals(e.get("sourceId"))
+                        &&expected.targetId().equals(e.get("targetId"))&&expected.directive().from().equals(e.get("from"))
+                        &&expected.directive().line()==((Number)e.get("line")).intValue()),"Exact captured include edge");
+                assertFalse(metadata.containsKey("entryClass"));
+            } else if (project) {
                 assertEquals(true, metadata.get("project")); assertFalse(metadata.containsKey("entryClass"));
                 assertFalse(metadata.containsKey("entryScript")); assertEquals("settings.gretl", metadata.get("settingsFile"));
                 Set<Object> classes = new HashSet<>();

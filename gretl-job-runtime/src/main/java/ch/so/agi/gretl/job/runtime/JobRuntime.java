@@ -117,7 +117,7 @@ public final class JobRuntime {
             return 2;
         } catch (DefinitionException exception) {
             error(new StartException(2, safeMessage(exception), exception,
-                            exception.code(), null, null, null),
+                            exception.code(), null, null, exception.failureSource().map(position->position.file()+":"+position.line()).orElse(null)),
                     options.logFormat() == LoggingConfig.Format.JSON);
             return 2;
         } catch (GroovyDslException exception) {
