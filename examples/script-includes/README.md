@@ -55,8 +55,8 @@ Tasks oder Cleanups. Der reine Direktivenleser führt keinen Jobcode aus.
 Die IDE unterstützt vollständig erfasste statische Includejobs mit Originalquell-
 Navigation, vollständigem Graphen und sicheren eindeutigen Mehrdateien-Edits.
 Sharedquellen bleiben lesend kontextsensitiv; automatische Writes mit Shared- oder
-unbekanntem Footprint werden abgelehnt. Die frühere immer-partielle IDEsicht ist
-historisch. Das [typisierte Toolingbeispiel](https://github.com/edigonzales/gretl-runtime/blob/main/examples/include-tooling/README.md) zeigt den
+unbekanntem Footprint werden abgelehnt.
+Das [typisierte Toolingbeispiel](https://github.com/edigonzales/gretl-runtime/blob/main/examples/include-tooling/README.md) zeigt den
 aktuellen Benutzerweg und die separate Runtimeprüfung. Die
 [Featureanleitung](https://github.com/edigonzales/gretl-runtime/blob/main/docs/guides/script-includes.md) beschreibt
 Syntax, Fehler, Ressourcenbasen, Kontexte und bewusste Grenzen.

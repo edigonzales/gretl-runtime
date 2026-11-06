@@ -199,4 +199,4 @@ mit `definitionMode` und Bundleversion 1. Die Deskriptorschemata bleiben dabei
 1/2/3; `sources` bleibt für Helperquellen und `resources` für ausdrücklich
 gewählte Daten. Alte interne Einzel-/Projektmetadaten 1/2 bleiben lesbar.
 [Scriptfragmente](script-includes.md) erklären den gemeinsamen
-Source-Snapshot, Bytecodestart und die aktuell partielle IDE-Sicht.
+Source-Snapshot, Bytecodestart und die aktuelle Include-Unterstützung im Editor.
