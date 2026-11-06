@@ -93,6 +93,16 @@ Unknown consumers outside the captured workspace domain are not claimed as cover
 
 ## Development and qualification
 
+For local development, open the repository root in VS Code. Make JDK 25,
+Node 22 or newer, `zip` and `unzip` available to VS Code. Select **GRETL
+Extension** in **Run and Debug** and press **F5**. The launch task runs
+`./mvnw -B -pl vscode/gretl-vscode -am package` to build the language server,
+extension and modeler. The Extension Development Host loads the extension from
+the checkout and opens the editor fixture and its `job.groovy`. If prompted,
+trust the repository to run the build task and the fixture workspace to start
+the language server. To rebuild and reload after a change, stop the debug
+session and press **F5** again.
+
 Build from the repository root with JDK 25, Node 22 or newer, and the local `zip`/`unzip` tools using `./mvnw -B
 clean verify`. This includes the server build, locked npm installation, host
 tests, type checking and local VSIX packaging. The VSIX is written to

@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "GRETL Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "preLaunchTask": "Build GRETL Extension",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/vscode/gretl-vscode",
+        "${workspaceFolder}/vscode/gretl-vscode/test/fixtures/editor",
+        "${workspaceFolder}/vscode/gretl-vscode/test/fixtures/editor/job.groovy"
+      ]
+    }
+  ]
+}
