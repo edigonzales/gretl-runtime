@@ -95,10 +95,8 @@ Deploy mit `publish-settings.xml`, Profil `publish-snapshots` und den
 Deploy-Flags `-DskipTests -DskipITs`. Ein Fehler in einem Pflichtgate beendet
 das Skript vor jedem Deploy. Zusätzliche Argumente gelten nur für den Deploy.
 
-Das Schreiben dieser Verdrahtung führt keine Publikation aus. Für diesen
-Implementierungsauftrag sind Push, Merge, Release und tatsächlicher Deploy
-nicht beauftragt; die Kontrolltests verwenden ausschliesslich Fake-Programme
-und synthetische Credentials.
+Push, Merge, Release und Deploy benötigen einen ausdrücklichen Auftrag.
+Die Kontrolltests verwenden lokale Ersatzprogramme und synthetische Credentials.
 
 Maven erzeugt für `6.0.0-SNAPSHOT` timestamped Snapshot-Artefakte und
 aktualisiert `maven-metadata.xml`. Der Deploy bricht bei fehlenden

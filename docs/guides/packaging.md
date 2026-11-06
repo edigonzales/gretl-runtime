@@ -120,23 +120,12 @@ scheitert vor dem Jobstart. Der Quellordner wird vor dem isolierten Lauf gelösc
 HOME ist leer, PATH enthält keine Buildwerkzeuge, CWD liegt ausserhalb des
 Checkouts. Fachliche HTTP-/DB-Dienste bleiben ausdrücklich erreichbar.
 
-Die vollständigen Root-Gates und die CI prüfen weiterhin den gesamten
-migrierten Bestand, einschliesslich positiver Ergebnisse für alle 44
-Operationen und konkreter fachlicher Negativfälle. Der CI-Audit prüft die
-Hashidentität jedes gestarteten JARs, Distributionschecksummen, saubere
-Commitprovenienz und alle 44 positiven Operationsnachweise. CI bewahrt Logs,
-Reports, Ereignisse, Ergebnisdateien, Eingabeinventare und repräsentative
-Pakete. Ein späterer Build mit übersprungenen Tests ersetzt diese Artefakte
-nicht. Coverage misst die Test-JVMs; separate Jobprozesse sind nicht instrumentiert.
-
-JAR ist der aktuelle fachliche Prüfweg. IMAGE ist vorbereitet und durch
-Vertragstests ohne Produktcontainer geprüft, aber noch nicht ausgeführt.
-Der manuelle Workflow `image-qualification.yml` verlangt eine explizite
-Image-Referenz und verwendet denselben Szenariobestand mit denselben Assertions.
-Die zusätzlichen Packager-Qualifikationen bleiben ausdrücklich JAR-Tests,
-die älteren SCRIPT-Regressionen bleiben Skriptprüfungen. Details und Rechte-
-/Endpointkonfiguration stehen in [Job-Artefakttests](../development/job-artifact-tests.md).
-
+Der [Qualifikationsweg](../development/job-artifact-tests.md) unterscheidet
+SCRIPT, JAR und IMAGE. JAR prüft paketierte Jobs; IMAGE startet externe Scripts
+und Projekte im generischen Runtime-Container. Die vollständige Matrix verlangt
+alle 44 positiven Operationsnachweise je Modus sowie gebundene Quellen- und
+Artefaktidentitäten. Der manuelle IMAGE-Workflow ergänzt die reguläre CI um eine
+gezielte Containerdiagnose.
 
 ## Projektpakete
 

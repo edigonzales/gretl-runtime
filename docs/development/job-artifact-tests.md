@@ -33,7 +33,7 @@ Netzwerk-, Mount- oder Imagevoraussetzungen sind Fehler, kein Skip und kein
 Fallback auf einen anderen Modus. Vollständige Modi benötigen je alle 44
 positiven Standardoperationen. Eine Vereinigungsmenge verschiedener Modi
 kann diese Pflicht nicht erfüllen. Teiltests dienen der Entwicklung; sie
-ersetzen die jeweils fälligen Phasengates nicht.
+ersetzen die jeweils fälligen Qualifikationsgates nicht.
 
 ## Vorbereitung und echte Prozesse
 
