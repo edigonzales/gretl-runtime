@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build GRETL Extension",
+      "type": "process",
+      "command": "${workspaceFolder}/mvnw",
+      "args": ["-B", "-pl", "vscode/gretl-vscode", "-am", "package"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

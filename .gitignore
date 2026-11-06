@@ -5,6 +5,10 @@ target/
 .idea/
 *.iml
 .vscode/
+!/.vscode/
+/.vscode/*
+!/.vscode/launch.json
+!/.vscode/tasks.json
 build/
 docs/reference/biblios.local.yml
 docs/reference/.thoth/
