@@ -102,13 +102,12 @@ def run(root,evidence,thoth=None):
     command('reference-generate',[str(dist/'bin/gretl'),'operations','--format','adoc','--lang','de','--output',str(root/'docs/reference/generated')],root)
     after={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'docs/reference/generated').glob('task-*.adoc')}
     if len(after)!=44 or before!=after:raise RuntimeError('Generated 44-task reference drift')
-    command('quarto',['quarto','render','website/'],root)
-    site=root/'website/_site'
+    site=evidence/'rendered-website'
+    command('quarto',['quarto','render','website/','--output-dir',str(site)],root)
     for name in ['index','features','getting-started','docs']:
         page=site/(name+'.html')
         if not page.is_file():raise RuntimeError('Missing Quarto page: '+name)
         if any(bad in page.read_text() for bad in ['Lorem ipsum','tasks.register','./gradlew','Lightweight control plane']):raise RuntimeError('Obsolete website content: '+name)
-    shutil.copytree(site,evidence/'rendered-website')
     thoth=thoth or os.environ.get('GRETL_THOTH_JAR')
     if not thoth or not Path(thoth).is_file():raise RuntimeError('Provide the existing Thoth Biblios JAR via GRETL_THOTH_JAR')
     # JGit cannot reliably clone a linked detached worktree. Materialize the
