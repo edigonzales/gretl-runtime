@@ -52,6 +52,30 @@ class IncludeSemanticsTest {
         var graph=new JobGraphProjector().project(s,JobGraphProjector.GraphOptions.defaults(),CancellationToken.NONE);
         for(var node:graph.nodes())if(node.symbol()!=null)assertNotNull(node.parentId(),node.toString());
     }
+
+    @Test
+    void registrationLimitReportsTheFragmentThatExceedsIt() throws Exception {
+        var source = new StringBuilder();
+        for (int i = 0; i < 2_000; i++) {
+            source.append("action('task").append(i).append("') {}\n");
+        }
+        source.append("apply from:'overflow.groovy'\naction('afterOverflow') {}\n");
+        write("job.groovy", source.toString());
+        var fragment = write("overflow.groovy", "action('overflow') {}\n");
+
+        var analysis = analyze("job.groovy").analysis();
+        assertEquals(2_000, analysis.graph().nodes().size());
+        assertEquals("task1999", analysis.graph().nodes().getLast().id());
+        assertFalse(analysis.capabilities().bounded());
+        assertFalse(analysis.capabilities().declarationsComplete());
+        assertFalse(analysis.capabilities().referencesComplete());
+        assertFalse(analysis.capabilities().graphComplete());
+        assertEquals(List.of("SEMANTIC_LIMIT", "PARTIAL_ANALYSIS"),
+                analysis.diagnostics().stream().map(Diagnostic::code).toList());
+        assertEquals(fragment.toUri(), analysis.diagnostics().getFirst().application().sourceDocument());
+        assertNull(analysis.diagnostics().getLast().application());
+    }
+
     @Test void aliasesDoNotExportAndAfterDoesNotGrantResultRights()throws Exception{
         write("job.groovy","apply from:'a.groovy'\ntask('bad',Echo,dependsOn:local){input='x'}");
         write("a.groovy","def local=task('producer',Echo){input='x'}\ntask('consumer',Echo,after:'producer'){input=result('producer').file}");

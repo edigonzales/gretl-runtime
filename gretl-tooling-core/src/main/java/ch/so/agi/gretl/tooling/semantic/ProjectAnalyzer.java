@@ -92,96 +92,8 @@ public final class ProjectAnalyzer {
                                 new Anchor(application.id().sourceDocument(), problem.span()),
                                 List.of());
             }
-            for (var event : closure.registrationOrder()) {
-                cancellation.check();
-                currentApplication = event.application();
-                var declaration = event.declaration();
-                var document = currentApplication.id().sourceDocument();
-                var scope = ProjectNameRules.parseQualified(currentApplication.id().ownerScope());
-                if (unknownHeader(declaration)) {
-                    declarationsComplete = false;
-                    referencesComplete = false;
-                }
-                if (declarations.size() >= MAX_SYMBOLS) {
-                    limit();
-                    break;
-                }
-                if (declaration.kind() == DeclarationKind.DEFAULTS
-                        || declaration.kind() == DeclarationKind.INCLUDE) continue;
-                if (declaration.kind() == DeclarationKind.PARAMETER
-                        && declaration.options().isEmpty()) {
-                    diagnostic(
-                            "TOPLEVEL_PARAMETER_READ",
-                            Severity.ERROR,
-                            new Anchor(document, declaration.header()),
-                            List.of());
-                    continue;
-                }
-                if (declaration.name() == null) {
-                    declarationsComplete = false;
-                    continue;
-                }
-                var namespace =
-                        switch (declaration.kind()) {
-                            case PARAMETER -> Namespace.PARAMETER;
-                            case CLEANUP -> Namespace.CLEANUP;
-                            default -> Namespace.TASK;
-                        };
-                String name = qualify(scope, declaration.name(), namespace, true);
-                if (name == null) {
-                    diagnostic(
-                            "INVALID_NAME",
-                            Severity.ERROR,
-                            new Anchor(document, declaration.header()),
-                            List.of());
-                    continue;
-                }
-                var anchor =
-                        new Anchor(
-                                document,
-                                declaration.nameLiteral() == null
-                                        ? declaration.header()
-                                        : declaration.nameLiteral().content());
-                var symbol =
-                        new Symbol(
-                                new SymbolId(namespace, name),
-                                declaration.name(),
-                                scope.canonical(),
-                                anchor,
-                                declaration,
-                                operation(
-                                        declaration.operation(),
-                                        new Anchor(document, declaration.header())),
-                                currentApplication);
-                declarations.add(symbol);
-                symbols.computeIfAbsent(symbol.id(), id -> new ArrayList<>()).add(symbol);
-                if (declaration.bindingName() != null && namespace == Namespace.TASK)
-                    aliases.computeIfAbsent(currentApplication.id(), id -> new LinkedHashMap<>())
-                            .computeIfAbsent(declaration.bindingName(), id -> new ArrayList<>())
-                            .add(symbol);
-            }
-            currentApplication = null;
-            for (var values : symbols.values())
-                if (values.size() > 1) {
-                    String code =
-                            switch (values.getFirst().id().namespace()) {
-                                case TASK -> "DUPLICATE_TASK_ID";
-                                case PARAMETER -> "DUPLICATE_PARAMETER";
-                                case CLEANUP -> "DUPLICATE_CLEANUP_NAME";
-                            };
-                    for (var value : values) {
-                        currentApplication = value.application();
-                        diagnostic(
-                                code,
-                                Severity.ERROR,
-                                value.anchor(),
-                                values.stream()
-                                        .filter(s -> s != value)
-                                        .map(Symbol::anchor)
-                                        .toList());
-                    }
-                    currentApplication = null;
-                }
+            registerSymbols(closure.registrationOrder());
+            reportDuplicateSymbols();
             graphComplete =
                     declarationsComplete && symbols.values().stream().noneMatch(v -> v.size() != 1);
             for (var symbol : declarations) {
@@ -206,25 +118,7 @@ public final class ProjectAnalyzer {
             currentApplication = null;
             collectDefaults();
             currentApplication = null;
-            var nodes = new ArrayList<PlanSemantics.Node>();
-            for (var symbol : declarations)
-                if (symbol.id().namespace() == Namespace.TASK && unique(symbol.id()).isPresent())
-                    nodes.add(new PlanSemantics.Node(symbol.id().qualifiedName(), nodes.size()));
-            var graph = new PlanSemantics.DeclaredGraph(nodes, edges);
-            dataGraphValid =
-                    graphComplete
-                            && new PlanSemantics().validateDeclaredDependencies(graph).isEmpty();
-            if (graphComplete) {
-                for (var problem : new PlanSemantics().validateDeclaredDependencies(graph))
-                    graphProblem(problem);
-                if (!defaults.isEmpty())
-                    try {
-                        new PlanSemantics().plan(graph, List.of(), defaults);
-                    } catch (PlanSemantics.GraphException problem) {
-                        if (Set.of("PLAN_CYCLE", "FINALIZER_ACTIVATION_DEADLOCK")
-                                .contains(problem.code())) graphProblem(problem.problem());
-                    }
-            }
+            var graph = validateGraph();
             for (var symbol : declarations) {
                 cancellation.check();
                 currentApplication = symbol.application();
@@ -243,7 +137,8 @@ public final class ProjectAnalyzer {
                         validateFields(
                                 operation(
                                         inner.operation(),
-                                        new Anchor(symbol.anchor().documentId(), inner.span())),
+                                        new Anchor(symbol.anchor().documentId(), inner.span()),
+                                        symbol.application()),
                                 inner.fields(),
                                 inner.coverage(),
                                 new Anchor(symbol.anchor().documentId(), inner.span()),
@@ -309,6 +204,126 @@ public final class ProjectAnalyzer {
                             bounded,
                             fieldsComplete,
                             executionComplete));
+        }
+
+        private void registerSymbols(List<RegistrationEvent> registrationOrder) {
+            for (var event : registrationOrder) {
+                cancellation.check();
+                var application = event.application();
+                var declaration = event.declaration();
+                var document = application.id().sourceDocument();
+                var scope = ProjectNameRules.parseQualified(application.id().ownerScope());
+                if (unknownHeader(declaration)) {
+                    declarationsComplete = false;
+                    referencesComplete = false;
+                }
+                if (declarations.size() >= MAX_SYMBOLS) {
+                    limit(application);
+                    break;
+                }
+                if (declaration.kind() == DeclarationKind.DEFAULTS
+                        || declaration.kind() == DeclarationKind.INCLUDE) continue;
+                if (declaration.kind() == DeclarationKind.PARAMETER
+                        && declaration.options().isEmpty()) {
+                    diagnosticFor(
+                            application,
+                            "TOPLEVEL_PARAMETER_READ",
+                            Severity.ERROR,
+                            new Anchor(document, declaration.header()),
+                            List.of());
+                    continue;
+                }
+                if (declaration.name() == null) {
+                    declarationsComplete = false;
+                    continue;
+                }
+                var namespace =
+                        switch (declaration.kind()) {
+                            case PARAMETER -> Namespace.PARAMETER;
+                            case CLEANUP -> Namespace.CLEANUP;
+                            default -> Namespace.TASK;
+                        };
+                String name = qualify(scope, declaration.name(), namespace, true);
+                if (name == null) {
+                    diagnosticFor(
+                            application,
+                            "INVALID_NAME",
+                            Severity.ERROR,
+                            new Anchor(document, declaration.header()),
+                            List.of());
+                    continue;
+                }
+                var anchor =
+                        new Anchor(
+                                document,
+                                declaration.nameLiteral() == null
+                                        ? declaration.header()
+                                        : declaration.nameLiteral().content());
+                var symbol =
+                        new Symbol(
+                                new SymbolId(namespace, name),
+                                declaration.name(),
+                                scope.canonical(),
+                                anchor,
+                                declaration,
+                                operation(
+                                        declaration.operation(),
+                                        new Anchor(document, declaration.header()),
+                                        application),
+                                application);
+                declarations.add(symbol);
+                symbols.computeIfAbsent(symbol.id(), id -> new ArrayList<>()).add(symbol);
+                if (declaration.bindingName() != null && namespace == Namespace.TASK)
+                    aliases.computeIfAbsent(application.id(), id -> new LinkedHashMap<>())
+                            .computeIfAbsent(declaration.bindingName(), id -> new ArrayList<>())
+                            .add(symbol);
+            }
+        }
+
+        private void reportDuplicateSymbols() {
+            for (var values : symbols.values())
+                if (values.size() > 1) {
+                    String code =
+                            switch (values.getFirst().id().namespace()) {
+                                case TASK -> "DUPLICATE_TASK_ID";
+                                case PARAMETER -> "DUPLICATE_PARAMETER";
+                                case CLEANUP -> "DUPLICATE_CLEANUP_NAME";
+                            };
+                    for (var value : values) {
+                        diagnosticFor(
+                                value.application(),
+                                code,
+                                Severity.ERROR,
+                                value.anchor(),
+                                values.stream()
+                                        .filter(s -> s != value)
+                                        .map(Symbol::anchor)
+                                        .toList());
+                    }
+                }
+        }
+
+        private PlanSemantics.DeclaredGraph validateGraph() {
+            var nodes = new ArrayList<PlanSemantics.Node>();
+            for (var symbol : declarations)
+                if (symbol.id().namespace() == Namespace.TASK && unique(symbol.id()).isPresent())
+                    nodes.add(new PlanSemantics.Node(symbol.id().qualifiedName(), nodes.size()));
+            var graph = new PlanSemantics.DeclaredGraph(nodes, edges);
+            dataGraphValid =
+                    graphComplete
+                            && new PlanSemantics().validateDeclaredDependencies(graph).isEmpty();
+            if (graphComplete) {
+                for (var problem : new PlanSemantics().validateDeclaredDependencies(graph))
+                    graphProblem(problem);
+                if (!defaults.isEmpty())
+                    try {
+                        new PlanSemantics().plan(graph, List.of(), defaults);
+                    } catch (PlanSemantics.GraphException problem) {
+                        if (Set.of("PLAN_CYCLE", "FINALIZER_ACTIVATION_DEADLOCK")
+                                .contains(problem.code())) graphProblem(problem.problem());
+                    }
+            }
+            return graph;
         }
 
         void collectDefaults() {
@@ -409,7 +424,7 @@ public final class ProjectAnalyzer {
                 Anchor anchor,
                 ProjectNameRules scope) {
             if (references.size() >= MAX_REFERENCES) {
-                limit();
+                limit(currentApplication);
                 return new Reference(
                         kind,
                         anchor,
@@ -896,7 +911,8 @@ public final class ProjectAnalyzer {
                                 conditional ? "REQUIRED_INPUT_CONDITIONAL" : "REQUIRED_INPUT");
         }
 
-        OperationDescriptor operation(ValueExpression expression, Anchor anchor) {
+        private OperationDescriptor operation(
+                ValueExpression expression, Anchor anchor, SourceApplication application) {
             String name = expression instanceof NameValue n ? n.name() : null;
             if (name == null) return null;
             var matches =
@@ -905,7 +921,8 @@ public final class ProjectAnalyzer {
                             .toList();
             if (matches.size() == 1) return matches.getFirst();
             if (matches.isEmpty() && catalogComplete)
-                diagnostic(
+                diagnosticFor(
+                        application,
                         "UNKNOWN_OPERATION",
                         Severity.WARNING,
                         expression == null
@@ -948,7 +965,7 @@ public final class ProjectAnalyzer {
             return new Anchor(capture.project().id().anchor(), null);
         }
 
-        void graphProblem(PlanSemantics.GraphProblem problem) {
+        private void graphProblem(PlanSemantics.GraphProblem problem) {
             var locations = new ArrayList<Reference>();
             for (var edge : problem.edges()) {
                 var kind =
@@ -991,8 +1008,8 @@ public final class ProjectAnalyzer {
                                 .filter(r -> r.kind() == ReferenceKind.FINALIZED_BY)
                                 .findFirst()
                                 .orElse(locations.getFirst());
-                currentApplication = unique(primary.owner()).map(Symbol::application).orElse(null);
-                diagnostic(
+                diagnosticFor(
+                        unique(primary.owner()).map(Symbol::application).orElse(null),
                         problem.code(),
                         Severity.ERROR,
                         primary.anchor(),
@@ -1002,23 +1019,23 @@ public final class ProjectAnalyzer {
                                 .distinct()
                                 .toList());
             } else {
-                currentApplication = owner.map(Symbol::application).orElse(null);
-                diagnostic(
+                diagnosticFor(
+                        owner.map(Symbol::application).orElse(null),
                         problem.code(),
                         Severity.ERROR,
                         owner.map(Symbol::anchor).orElse(global()),
                         List.of());
             }
-            currentApplication = null;
         }
 
-        void limit() {
+        private void limit(SourceApplication application) {
             if (bounded) {
                 bounded = false;
                 declarationsComplete = false;
                 referencesComplete = false;
                 graphComplete = false;
-                diagnostic("SEMANTIC_LIMIT", Severity.INFORMATION, global(), List.of());
+                diagnosticFor(
+                        application, "SEMANTIC_LIMIT", Severity.INFORMATION, global(), List.of());
             }
         }
 
@@ -1032,6 +1049,25 @@ public final class ProjectAnalyzer {
                 Anchor anchor,
                 List<Anchor> related,
                 String messageKey) {
+            diagnosticFor(currentApplication, code, severity, anchor, related, messageKey);
+        }
+
+        private void diagnosticFor(
+                SourceApplication application,
+                String code,
+                Severity severity,
+                Anchor anchor,
+                List<Anchor> related) {
+            diagnosticFor(application, code, severity, anchor, related, code);
+        }
+
+        private void diagnosticFor(
+                SourceApplication application,
+                String code,
+                Severity severity,
+                Anchor anchor,
+                List<Anchor> related,
+                String messageKey) {
             if (diagnostics.size() < MAX_DIAGNOSTICS)
                 diagnostics.add(
                         new Diagnostic(
@@ -1040,7 +1076,7 @@ public final class ProjectAnalyzer {
                                 DiagnosticMessages.message(messageKey, language),
                                 anchor,
                                 related,
-                                currentApplication == null ? null : currentApplication.id()));
+                                application == null ? null : application.id()));
             else {
                 bounded = false;
                 referencesComplete = false;
