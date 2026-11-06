@@ -31,11 +31,14 @@ class DatabaseArtifactIT {
                 ArtifactJobRunner.cancel(running);
                 var cancelled = ArtifactJobRunner.finish(running, true);
                 assertFalse(cancelled.timedOut());
-                String report = Files.readString(cancelled.report());
-                assertTrue(report.contains("\"status\":\"CANCELLED\""), report);
-                assertTrue(report.contains("\"exitCode\":20"), report);
-                assertFalse(report.contains("DB2DB_EXECUTION"), report);
-                assertTrue(report.contains("NOT_RUN"), report);
+                var report = JobTestJson.read(cancelled.report());
+                var execution = JobTestJson.execution(report);
+                assertEquals("CANCELLED", execution.get("status"));
+                assertEquals(20L, execution.get("exitCode"));
+                assertFalse(JobTestJson.errors(report).anyMatch(error -> "DB2DB_EXECUTION".equals(error.get("code"))));
+                var never = ((List<?>) execution.get("tasks")).stream().map(JobTestJson::object)
+                        .filter(task -> "never".equals(task.get("taskId"))).findFirst().orElseThrow();
+                assertEquals("NOT_RUN", never.get("status"));
                 try (var db = connection(lease); var statement = db.createStatement();
                      var rows = statement.executeQuery("select string_agg(name, ',' order by id) from colors_copy")) {
                     assertTrue(rows.next()); assertEquals("red,Grün", rows.getString(1));
@@ -70,7 +73,7 @@ class DatabaseArtifactIT {
         }
     }
 
-    @Test void positiveFederationAndOriginalScalarAndListParameterResults() throws Exception {
+    @Test void scalarAndListParametersAndFederationProduceExpectedDatabaseRows() throws Exception {
         try (var lease = PostgresFixture.lease(); var db = connection(lease); var statement = db.createStatement()) {
             statement.execute("create table source1(id int primary key,name text)");
             statement.execute("create table source2(id int primary key,name text)");

@@ -21,7 +21,7 @@ class CliProjectRunTest {
     @TempDir Path temp;
 
     @Test
-    void prj102And110RealHttpExtractChainHasOneRunAndPlanningHasNoTaskWork() throws Exception {
+    void realHttpExtractChainHasOneRunAndPlanningHasNoTaskWork() throws Exception {
         AtomicInteger requests = new AtomicInteger();
         var zipBytes = new ByteArrayOutputStream();
         try (var zip = new ZipOutputStream(zipBytes)) { zip.putNextEntry(new ZipEntry("payload.txt")); zip.write("synthetic payload ü\n".getBytes(StandardCharsets.UTF_8)); zip.closeEntry(); }
@@ -65,7 +65,7 @@ class CliProjectRunTest {
     }
 
     @Test
-    void prj114InvalidUnknownTargetsAndMissingSettingsNeverStartARun() throws Exception {
+    void invalidUnknownTargetsAndMissingSettingsNeverStartARun() throws Exception {
         Path root = temp.resolve("project"); write(root, "settings.gretl", "defaults ':missing'\n"); write(root, "job.groovy", "action('run') { throw new AssertionError('not executed') }\n");
         var unknown = run("run", root.toString()); assertEquals(2, unknown.code()); assertTrue(unknown.err().contains("UNKNOWN_DEFAULT_TARGET"), unknown.err());
         write(root, "settings.gretl", "defaults ':run'\n");
@@ -76,7 +76,7 @@ class CliProjectRunTest {
     }
 
     @Test
-    void prj108QualifiedParametersSharePrecedenceTypesAndGlobalAliases() throws Exception {
+    void qualifiedParametersSharePrecedenceTypesAndGlobalAliases() throws Exception {
         Path root = temp.resolve("project");
         write(root, "settings.gretl", "include 'a', 'b'\ndefaults ':a:run'\n");
         write(root, "job.groovy", "parameter('output', description: 'Output', type: 'path', defaultValue: 'actual.txt')\n");
@@ -115,7 +115,7 @@ class CliProjectRunTest {
     }
 
     @Test
-    void prj108MissingUnselectedRequiredAndInvalidExplicitParametersFailBeforeRun() throws Exception {
+    void missingUnselectedRequiredAndInvalidExplicitParametersFailBeforeRun() throws Exception {
         Path root = temp.resolve("project");
         write(root, "settings.gretl", "include 'a', 'b'\ndefaults ':a:run'\n");
         write(root, "a/job.groovy", "action('run') { throw new AssertionError('never run') }\n");

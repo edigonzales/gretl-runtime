@@ -10,7 +10,7 @@ import org.junit.jupiter.api.io.TempDir;
 class ProjectHashTest {
     @TempDir Path temp;
     @Test
-    void prj115HashesOnlyFramedDefinitionSourcesAndIsIndependentOfAbsoluteRoot() throws Exception {
+    void hashesOnlyFramedDefinitionSourcesAndIsIndependentOfAbsoluteRoot() throws Exception {
         Path first = tree(temp.resolve("one")); Path second = tree(temp.resolve("two"));
         var source = new ProjectJobSource(first, Locale.ENGLISH);
         String initial = source.sha256();

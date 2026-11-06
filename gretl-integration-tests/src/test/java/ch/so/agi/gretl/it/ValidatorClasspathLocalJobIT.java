@@ -45,7 +45,7 @@ class ValidatorClasspathLocalJobIT {
         assertTrue(Files.readString(log).contains("validation done"));
     }
 
-    @Test void businessNegativeStillNeedsItsConcreteDiagnostics() throws Exception {
+    @Test void invalidCsvProducesNumberAndEnumerationDiagnostics() throws Exception {
         Path root = ArtifactJobRunner.directory("minimal-invalid-csv");
         Path log = root.resolve("output/validation.log");
         int exit = run(List.of(tool("java"), "-cp", classpath, "probe.MinimalFormatValidation", "csv",

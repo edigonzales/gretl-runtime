@@ -12,7 +12,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 class ProjectPackageDescriptorTest {
     @TempDir Path root;
-    @Test void prj201Schema3IsSeparateAndLegacyConstructorsRemainUsable() throws Exception {
+    @Test void schema3IsSeparateAndLegacyConstructorsRemainUsable() throws Exception {
         Files.writeString(root.resolve("settings.gretl"), ""); Files.writeString(root.resolve("job.groovy"), "action('run') {}\n");
         Path file = root.resolve("job-package.json");
         var fields = new LinkedHashMap<String,Object>(Map.of("schemaVersion",3,"name","project","version","1","runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl","taskModules",List.of("io")));

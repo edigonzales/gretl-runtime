@@ -1,18 +1,19 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.syntax.EffectiveOptions;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.LiteralValue;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HeaderSourceEditsTest {
     @Test void updatesActualNamedExplicitEmptyMapAndClosureArgumentForms() {
         for (String source : List.of("task('a', Echo) { input='x' }", "task([description:'old'], 'a', Echo) { input='x' }",
                 "task([:], 'a', Echo) { input='x' }", "task('a', Echo, { input='x' })", "task 'a', Echo, { input='x' }")) {
-            try (var fixture = new Fixture()) {
+            try (var fixture = new EditTestWorkspace()) {
                 fixture.files.put(JOB,source);
                 var before = fixture.capture();
                 assertTrue(before.analysis().unique(TASK).isPresent(),source);
@@ -28,7 +29,7 @@ class HeaderSourceEditsTest {
     }
 
     @Test void multilineMapsKeepCommentsCommasIndentationAndCrLf() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             String before="task([\r\n  description:'old', // map comment\r\n], 'a', Echo) { input='x' }\r\n";
             fixture.files.put(JOB,before);
             var transaction = new EditTransaction(fixture.capture(),EditStyle.defaults());
@@ -43,7 +44,7 @@ class HeaderSourceEditsTest {
     }
 
     @Test void semanticNoOpsKeepExistingEscapesAndDoNotAddEmptyDependencyOptions() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             String source="task('a', Echo, description:\"\\u006f\\u006c\\u0064\") { input='x' }";
             fixture.files.put(JOB,source);
             var transaction = new EditTransaction(fixture.capture(),EditStyle.defaults());
@@ -57,7 +58,7 @@ class HeaderSourceEditsTest {
     }
 
     @Test void validatesCurrentDslOptionTypesAndNeverChoosesADuplicate() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             var before = fixture.capture();
             var edits = new HeaderSourceEdits();
             for(var item:List.of(new SemanticEditIntent.SetTaskOption(TASK,"when",new EditableValue.Literal(false)),

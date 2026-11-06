@@ -26,7 +26,7 @@ class GretlProjectParserTest {
     @TempDir Path temp;
 
     @Test
-    void prj001RootThenExplicitIncludeOrderAndSettingsPositionsAreStable() throws Exception {
+    void rootThenExplicitIncludeOrderAndSettingsPositionsAreStable() throws Exception {
         Path root = project("// ordered\ninclude 'a', ':b:c'\n\ndefaults ':b:c:run', ':a:run'\n");
         script(root, ""); script(root, "a"); script(root, "b/c");
         script(root, "b"); script(root, "notIncluded");
@@ -50,7 +50,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj002NestedIncludesNeedNoRootOrImplicitParentJob() throws Exception {
+    void nestedIncludesNeedNoRootOrImplicitParentJob() throws Exception {
         Path root = project("include 'b:c', 'a'\n");
         script(root, "a"); script(root, "b/c");
         Files.writeString(root.resolve("b/c/settings.gretl"), "System.exit(99)");
@@ -80,7 +80,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj003MalformedAndDuplicateDirectivesHaveCodesAndOriginalPositions() throws Exception {
+    void malformedAndDuplicateDirectivesHaveCodesAndOriginalPositions() throws Exception {
         for (String include : List.of("include()", "include ':'", "include '..'", "include 'a/b'",
                 "include 'a\\\\b'", "include 'a::b'", "include 'a:'", "include '1a'")) {
             rejected("// heading\n" + include, "PROJECT_INCLUDE_INVALID", 2);
@@ -101,7 +101,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj004UnsupportedSettingsNeverExecuteOrCreateTheirMarker() throws Exception {
+    void unsupportedSettingsNeverExecuteOrCreateTheirMarker() throws Exception {
         Path marker = temp.resolve("must-not-exist");
         String markerText = marker.toString().replace("\\", "\\\\").replace("'", "\\'");
         List<String> attempts = List.of(
@@ -128,7 +128,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj004ModuleImportsRetainTheirOriginalTokenPositionWithoutExecution() throws Exception {
+    void moduleImportsRetainTheirOriginalTokenPositionWithoutExecution() throws Exception {
         Path marker = temp.resolve("module-import-must-not-run");
         String body = "new File('" + marker.toString().replace("\\", "\\\\").replace("'", "\\'")
                 + "').text = 'executed'";
@@ -161,7 +161,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj006RequiresSettingsAndAtLeastOneRegularScript() throws Exception {
+    void requiresSettingsAndAtLeastOneRegularScript() throws Exception {
         Path root = Files.createDirectory(temp.resolve("empty"));
         ProjectException absent = assertThrows(ProjectException.class, () -> new GretlProjectParser().parse(root));
         assertEquals("PROJECT_SETTINGS_MISSING", absent.code());
@@ -178,7 +178,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj006RejectsSymlinksAtRootSettingsDirectoriesAndScriptEvenIfContained() throws Exception {
+    void rejectsSymlinksAtRootSettingsDirectoriesAndScriptEvenIfContained() throws Exception {
         Path outside = Files.createDirectory(temp.resolve("outside"));
         script(outside, "");
         Files.writeString(outside.resolve("settings.gretl"), "");
@@ -212,7 +212,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj006SupplementaryUtf8CommentsKeepLiteralSourceColumns() throws Exception {
+    void supplementaryUtf8CommentsKeepLiteralSourceColumns() throws Exception {
         record Attempt(String prefix, int defaultColumn) {}
         for (var attempt : List.of(new Attempt("/* 😀 */ ", 18), new Attempt("/* ä😀 */ ", 19),
                 new Attempt("/* 😀🚀 */ ", 19))) {
@@ -241,7 +241,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj004QuotedLineContinuationsRemainConstantStrings() throws Exception {
+    void quotedLineContinuationsRemainConstantStrings() throws Exception {
         for (String newline : List.of("\n", "\r\n")) {
             for (String quote : List.of("'", "\"")) {
                 Path root = project("/* 😀 */ include " + quote + "a\\" + newline + "b" + quote + newline
@@ -259,7 +259,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj006BareCarriageReturnsFollowGroovySourceCoordinates() throws Exception {
+    void bareCarriageReturnsFollowGroovySourceCoordinates() throws Exception {
         record Attempt(String prefix, int line, int defaultColumn) {}
         for (var attempt : List.of(new Attempt("\r", 1, 11),
                 new Attempt("// heading\r", 1, 21), new Attempt("/* ä */\r", 1, 18),
@@ -289,7 +289,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj004ParenthesizedConstantStringsKeepTheirAstOriginAndQuoteRestrictions() throws Exception {
+    void parenthesizedConstantStringsKeepTheirAstOriginAndQuoteRestrictions() throws Exception {
         for (String template : List.of("%s", "(%s)", "((%s))", "(/* decoy */ %s)",
                 "(\n /* 😀 */ %s\n)")) {
             for (String quote : List.of("'", "\"")) {
@@ -315,7 +315,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj006SizeLimitCountsUtf8BytesAndMalformedUtf8IsRejected() throws Exception {
+    void sizeLimitCountsUtf8BytesAndMalformedUtf8IsRejected() throws Exception {
         Path root = project("//" + " ".repeat(262142));
         script(root, "");
         assertEquals(1, new GretlProjectParser().parse(root).entries().size());
@@ -328,7 +328,7 @@ class GretlProjectParserTest {
     }
 
     @Test
-    void prj007QualifiedDefaultsAreSyntaxCheckedWithoutLoadingJobs() throws Exception {
+    void qualifiedDefaultsAreSyntaxCheckedWithoutLoadingJobs() throws Exception {
         for (String directive : List.of("defaults()", "defaults 'run'", "defaults ':'", "defaults ':a::run'",
                 "defaults ':a:run:'", "defaults ':a/run'")) {
             rejected(directive, "PROJECT_TARGET_INVALID", 1);

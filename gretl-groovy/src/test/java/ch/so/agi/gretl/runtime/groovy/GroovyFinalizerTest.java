@@ -90,4 +90,18 @@ class GroovyFinalizerTest {
         assertEquals(List.of("a","f"),new ExecutionPlanner().plan(d,List.of()).selectedTasks().stream().map(TaskDefinition::id).toList());
         assertTrue(h.events.events().isEmpty());assertTrue(h.messages.messages().isEmpty());
     }
+
+    @Test void finalizedByRunsAfterOwnerFailure() throws Exception {
+        var harness = new GroovyHarness(root);
+        var definition = harness.loadSource("finalizers.groovy", """
+                action('owner', finalizedBy: 'release') { throw new IllegalStateException('owner failed') }
+                action('release') { println 'released' }
+                defaults 'owner'
+                """);
+        var outcome=harness.run(definition, Map.of());
+        assertEquals(RunStatus.FAILED,outcome.status());
+        assertEquals("owner failed",outcome.primaryFailure().orElseThrow().message());
+        assertEquals(TaskStatus.SUCCEEDED,outcome.task("release").orElseThrow().status());
+        assertEquals(List.of("released"),harness.messages.messages());
+    }
 }

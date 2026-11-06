@@ -13,7 +13,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 class ProjectCompilerTest {
     @TempDir Path root;
-    @Test void prj202203ThreeEntriesHelpersAndSettingsCompileWithoutExecutingCode() throws Exception {
+    @Test void threeEntriesHelpersAndSettingsCompileWithoutExecutingCode() throws Exception {
         var descriptor = tree(); var project = new GretlProjectParser().parse(root);
         var compiled = new ProjectCompiler().compile(project, descriptor, JobPackager.currentClasspath());
         assertEquals(3,compiled.entries().size()); assertEquals(3,compiled.entries().stream().map(CompiledProject.Entry::entryClass).distinct().count());
@@ -22,7 +22,7 @@ class ProjectCompilerTest {
         assertEquals(ProjectSourceHash.sha256(project), compiled.projectSha256());
         assertEquals(List.of("settings.gretl","a/job.groovy","b/c/job.groovy","a_b/job.groovy","helpers/Label.groovy"),compiled.sources().stream().map(JobCompiler.SourceFile::relativePath).toList());
     }
-    @Test void prj203HiddenHelperScriptAndDuplicateClassesAreRejectedWithSources() throws Exception {
+    @Test void hiddenHelperScriptAndDuplicateClassesAreRejectedWithSources() throws Exception {
         var descriptor = tree();var project = new GretlProjectParser().parse(root);
         Files.writeString(root.resolve("helpers/Hidden.groovy"),"throw new AssertionError('must not run')\n");
         assertEquals("PACKAGE_MULTIPLE_SCRIPTS",assertThrows(PackageException.class,()->new ProjectCompiler().compile(project,descriptor,JobPackager.currentClasspath())).code());

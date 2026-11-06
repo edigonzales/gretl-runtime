@@ -1,31 +1,22 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.language.PlanSemantics;
 import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.tooling.CancellationToken;
-import ch.so.agi.gretl.tooling.catalog.OperationCatalog.*;
 import ch.so.agi.gretl.tooling.semantic.SemanticModel.*;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DependencySourceEditsTest {
     SymbolId id(String name){return new SymbolId(Namespace.TASK,name);}
-    void catalog(Fixture fixture) {
-        var input=new InputDescriptor("input","Input",true,false,null,List.of(),"input",ValueShape.fromMetadata("path"),null,false,Map.of());
-        var output=new OutputDescriptor("file","File",ValueShape.fromMetadata("path"),false);
-        fixture.catalog.mergeExplicitDescriptors(List.of(
-                new OperationDescriptor("test.source","Source","Source","fixture",List.of(),List.of(output),"example",false),
-                new OperationDescriptor("test.sink","Sink","Sink","fixture",List.of(input),List.of(),"example",true)));
-        fixture.manager.onCatalogChanged();
-    }
-
     @Test void creatingAConsumerWithAnInitialResultBindingIncludesItsDataDependency() {
-        try(var fixture=new Fixture()) {
-            catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             fixture.files.put(JOB,"task('p', Source) {}\n");
             var transaction=new EditTransaction(fixture.capture(),EditStyle.defaults());
             new DeclarationSourceEdits().addTask(transaction,new SemanticEditIntent.AddTask(JOB,fixture.files.get(JOB).length(),"c","test.sink",
@@ -39,8 +30,8 @@ class DependencySourceEditsTest {
     }
 
     @Test void disconnectAlsoProtectsDownstreamTransitiveResultAccess() {
-        try(var fixture=new Fixture()) {
-            catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             fixture.files.put(JOB,"task('p', Source) {}; action('middle', dependsOn:'p') {}; task('c', Sink, dependsOn:'middle') { input=result('p').file }; defaults 'c'");
             var transaction=new EditTransaction(fixture.capture(),EditStyle.defaults());
             assertEquals("EDIT_RESULT_DEPENDENCY",assertThrows(IllegalArgumentException.class,()->new DependencySourceEdits().remove(transaction,id("p"),id("middle"),EdgeKind.DEPENDS_ON)).getMessage());
@@ -48,8 +39,8 @@ class DependencySourceEditsTest {
     }
 
     @Test void resultBindingAddsTheFieldAndDataDependencyAtomicallyWithoutChangingAfter() {
-        try(var fixture=new Fixture()) {
-            catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             String source="task('p', Source) {}; task('c', Sink, after:'p') { input=workPath('old') }; defaults 'c'";
             fixture.files.put(JOB,source);
             var transaction=new EditTransaction(fixture.capture(),EditStyle.defaults());
@@ -67,8 +58,8 @@ class DependencySourceEditsTest {
     }
 
     @Test void aTransitiveDataChainIsEnoughForBindingAndNeedsNoExtraEdge() {
-        try(var fixture=new Fixture()) {
-            catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             fixture.files.put(JOB,"task('p', Source) {}; action('middle', dependsOn:'p') {}; task('c', Sink, dependsOn:'middle') { input=workPath('old') }; defaults 'c'");
             var before=fixture.capture();
             var transaction=new EditTransaction(before,EditStyle.defaults());
@@ -81,8 +72,8 @@ class DependencySourceEditsTest {
     }
 
     @Test void removingLastDataRightIsRejectedButRemovingAfterDoesNotRemoveDataRights() {
-        try(var fixture=new Fixture()) {
-            catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             fixture.files.put(JOB,"task('p', Source) {}; task('c', Sink, dependsOn:'p', after:'p') { input=result('p').file }; defaults 'c'");
             var before=fixture.capture();
             var edits=new DependencySourceEdits();
@@ -97,8 +88,8 @@ class DependencySourceEditsTest {
     }
 
     @Test void removingRedundantDirectDependencyKeepsCommentsAndTransitiveAccess() {
-        try(var fixture=new Fixture()) {
-            catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             fixture.files.put(JOB,"task('p', Source) {}; action('middle', dependsOn:'p') {}; task('c', Sink, dependsOn:['p', /* keep */ 'middle']) { input=result('p').file }; defaults 'c'");
             var transaction=new EditTransaction(fixture.capture(),EditStyle.defaults());
             new DependencySourceEdits().remove(transaction,id("p"),id("c"),EdgeKind.DEPENDS_ON);
@@ -109,8 +100,8 @@ class DependencySourceEditsTest {
     }
 
     @Test void listInsertionPreservesCommentsAndAlreadyConnectedIsANoOp() {
-        try(var fixture=new Fixture()) {
-            catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             fixture.files.put(JOB,"task('p', Source) {}; task('q', Source) {}; task('text', Echo) { input='x' }; task('c', Sink, dependsOn:['p', // keep\n]) { input=workPath('old') }; defaults 'c'");
             var before=fixture.capture();
             var edits=new DependencySourceEdits();

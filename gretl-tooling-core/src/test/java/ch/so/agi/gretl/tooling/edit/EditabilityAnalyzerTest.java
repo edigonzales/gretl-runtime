@@ -1,8 +1,9 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EditabilityAnalyzerTest {
@@ -10,7 +11,7 @@ class EditabilityAnalyzerTest {
     private final SemanticEditIntent.SetField set = new SemanticEditIntent.SetField(TASK, "input", new EditableValue.Literal("new"));
 
     @Test void modelerRequestsOpeningClosedTargetsThenAllowsSynchronizedBuffers() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             var closed = fixture.capture();
             var capability = analyzer.assess(closed, set, EditStyle.openDocuments());
             assertEquals(EditCapability.State.NEEDS_OPEN_DOCUMENTS, capability.state());
@@ -22,7 +23,7 @@ class EditabilityAnalyzerTest {
     }
 
     @Test void duplicateAssignmentsAndDuplicateOptionsAreNotArbitrarilyResolved() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             fixture.files.put(JOB, "task('a', Echo) { input='first'; input='last' }");
             var duplicateField = analyzer.assess(fixture.capture(), set, EditStyle.defaults());
             assertEquals(EditCapability.State.REJECTED, duplicateField.state());
@@ -35,7 +36,7 @@ class EditabilityAnalyzerTest {
     }
 
     @Test void aSeparateStaticFieldCanRemainEditableWhileOpaqueExpressionsAreRetained() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             fixture.files.put(JOB, "task('a', Echo) { input='old'; other=loadDynamicValue() }");
             assertEquals(EditCapability.State.ALLOWED, analyzer.assess(fixture.capture(), set, EditStyle.defaults()).state());
             fixture.files.put(JOB, "task('a', Echo) { input=loadDynamicValue() }");
@@ -46,7 +47,7 @@ class EditabilityAnalyzerTest {
     }
 
     @Test void deletionDoesNotCascadeThroughKnownDefaultsAndDynamicReferencesBlockRename() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             var referenced = analyzer.assess(fixture.capture(), new SemanticEditIntent.DeleteTask(TASK), EditStyle.defaults());
             assertEquals(EditCapability.State.REJECTED, referenced.state());
             assertEquals("EDIT_REFERENCED_TARGET", referenced.reasons().getFirst().code());

@@ -1,16 +1,17 @@
-package ch.so.agi.gretl.tooling.edit;
+package ch.so.agi.gretl.tooling.query;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.query.LanguageQueries;
 import ch.so.agi.gretl.tooling.query.QueryContext;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SnapshotNavigationTest {
     @Test void navigationHoverOutlineFoldingAndLinksShareTheActualProjectCapture() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             URI producer = URI.create("file:/work/a/job.groovy"), consumer = URI.create("file:/work/b/job.groovy");
             fixture.files.put(SETTINGS, "include 'a','b'\ndefaults ':b:use'");
             String source = "/* preserved\n comment */\ntask('source', Echo) {\n  input=file('data.txt')\n}\n";
@@ -41,7 +42,7 @@ class SnapshotNavigationTest {
     }
 
     @Test void ambiguousDefinitionsRemainMultipleAndReferenceCoverageIsNotClaimedComplete() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             String text = "task('a', Echo) { input='one' }; task('a', Echo) { input='two' }; action('use', dependsOn:'a') {}";
             fixture.files.put(JOB, text);
             var snapshot = fixture.capture();

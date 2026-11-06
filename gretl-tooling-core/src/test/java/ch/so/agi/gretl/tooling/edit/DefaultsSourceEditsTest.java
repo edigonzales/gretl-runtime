@@ -1,12 +1,13 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.semantic.SemanticModel.*;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.DeclarationKind;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultsSourceEditsTest {
@@ -14,7 +15,7 @@ class DefaultsSourceEditsTest {
     String tasks(){return "task('a', Echo) { input='a' }\r\ntask('b', Echo) { input='b' }\r\n";}
 
     @Test void updatesAllStandaloneDefaultsAndKeepsEveryCommentAndSelectedTarget() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             String before=tasks()+"defaults 'a' // first\r\n// between\r\ndefaults 'b' // second\r\n";
             fixture.files.put(JOB,before);
             var snapshot=fixture.capture();
@@ -30,7 +31,7 @@ class DefaultsSourceEditsTest {
     }
 
     @Test void clearingDefaultsKeepsInternalCommentsWithoutDeletingTasks() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             fixture.files.put(JOB,tasks()+"defaults('a', /* keep */ 'b')\r\n");
             var transaction=new EditTransaction(fixture.capture(),EditStyle.defaults());
             new DefaultsSourceEdits().set(transaction,new SemanticEditIntent.SetDefaults(JOB,List.of()));
@@ -44,7 +45,7 @@ class DefaultsSourceEditsTest {
     }
 
     @Test void projectDefaultsEditOnlySettingsAndPreserveAllQualifiedSelections() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             URI sub=URI.create("file:/work/sub/job.groovy");
             fixture.files.put(sub,"task('b', Echo) { input='b' }");
             fixture.files.put(SETTINGS,"include 'sub'\r\ndefaults ':a' // selected\r\n");
@@ -62,7 +63,7 @@ class DefaultsSourceEditsTest {
     }
 
     @Test void canAddMissingDefaultsAndRemoveAnExplicitlyDeselectedUnresolvedTarget() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             fixture.files.put(JOB,tasks());
             var transaction=new EditTransaction(fixture.capture(),EditStyle.defaults());
             new DefaultsSourceEdits().set(transaction,new SemanticEditIntent.SetDefaults(JOB,List.of(id("a"),id("b"))));

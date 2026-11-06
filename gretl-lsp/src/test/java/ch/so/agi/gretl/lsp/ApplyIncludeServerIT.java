@@ -11,13 +11,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class ApplyIncludeServerIT {
     @TempDir Path root;
     private Map<String,String> task(String name){return Map.of("namespace","TASK","qualifiedName",name);}
-    private JsonObject graph(ServerProcessIT.Wire wire,String uri)throws Exception{return wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();}
-    private JsonObject plan(ServerProcessIT.Wire wire,String uri,String snapshot,Map<String,?> intent)throws Exception{return wire.call("gretl/planEdit",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",snapshot,"requireOpenDocuments",true,"intent",intent)).getAsJsonObject();}
+    private JsonObject graph(LspProcessHarness wire,String uri)throws Exception{return wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();}
+    private JsonObject plan(LspProcessHarness wire,String uri,String snapshot,Map<String,?> intent)throws Exception{return wire.call("gretl/planEdit",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",snapshot,"requireOpenDocuments",true,"intent",intent)).getAsJsonObject();}
     @Test void invalidFragmentSafeLocalEditUnsafeRoutesAndStaleIncludeLiteralUseRealWire()throws Exception{
         String source="// ä😀 preserve\r\napply from: 'tasks/extra.groovy' // opaque include\r\ntask('p',Gzip){dataFile=file('input.txt');gzipFile=workPath('p.gz')}\r\ntask('visible',Gzip,dependsOn:'p',after:'p'){\r\n dataFile=file('input.txt')\r\n gzipFile=workPath('visible.gz')\r\n overwrite = true // local comment\r\n}\r\ndefaults 'visible'\r\n";
         Path job=root.resolve("job.groovy"),fragment=root.resolve("tasks/extra.groovy"),marker=root.resolve("executed");Files.createDirectories(fragment.getParent());Files.writeString(job,source);Files.writeString(fragment,"new File('"+marker+"').text='executed'\nthis is deliberately invalid {");
         String uri=job.toUri().toString();
-        try(var wire=new ServerProcessIT.Wire(root,"--stdio")){
+        try(var wire=new LspProcessHarness(root,"--stdio")){
             wire.initialize(root,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             var graph=graph(wire,uri);var payload=graph.getAsJsonObject("payload");assertEquals("INVALID",payload.get("status").getAsString());
             assertTrue(payload.getAsJsonArray("nodes").asList().stream().anyMatch(n->n.getAsJsonObject().get("kind").getAsString().equals("DYNAMIC_CODE")));

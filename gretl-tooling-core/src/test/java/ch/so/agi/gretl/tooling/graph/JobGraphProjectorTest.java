@@ -1,19 +1,21 @@
-package ch.so.agi.gretl.tooling.edit;
+package ch.so.agi.gretl.tooling.graph;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
+import ch.so.agi.gretl.tooling.edit.EditCapability;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.graph.*;
 import ch.so.agi.gretl.tooling.graph.JobGraph.*;
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JobGraphProjectorTest {
     final JobGraphProjector projector=new JobGraphProjector();
     @Test void projectsAllDefinitionsSeparateEdgeKindsAndAuxiliaryDeclarations() {
-        try(var fixture=new Fixture()) {
-            new DependencySourceEditsTest().catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             String source="parameter('arg',defaultValue:'x')\n"
                     +"task('p', Source) {}\ntask('c', Sink, dependsOn:'p',after:'p') { input=result('p').file }\n"
                     +"action('unused') { ctx.run(Echo) { input='inside' } }\ncleanup('close') {}\ndefaults 'p'\n";
@@ -41,8 +43,8 @@ class JobGraphProjectorTest {
     }
 
     @Test void missingDataRightsRemainInvalidWithoutAnInventedDependencyAndRawPortsRemainUnknown() {
-        try(var fixture=new Fixture()) {
-            new DependencySourceEditsTest().catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             fixture.files.put(JOB,"def p=task('p', Source) {}; task('c', Sink) { input=result('p').file }; action('raw',dependsOn:p) { println result(p).file }");
             var graph=projector.project(fixture.capture(),JobGraphProjector.GraphOptions.defaults(),CancellationToken.NONE);
             assertEquals(Status.INVALID,graph.status());
@@ -54,7 +56,7 @@ class JobGraphProjectorTest {
     }
 
     @Test void dynamicCodeIsVisibleAndPresentationIdentitySurvivesSnapshotChanges() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             fixture.files.put(JOB,"task('a', Echo) { input='old' }; def x=System.getProperty('name'); task(x,Echo) { input='dynamic' }");
             var first=fixture.capture();var graph=projector.project(first,JobGraphProjector.GraphOptions.defaults(),CancellationToken.NONE);
             assertEquals(Status.PARTIAL,graph.status());

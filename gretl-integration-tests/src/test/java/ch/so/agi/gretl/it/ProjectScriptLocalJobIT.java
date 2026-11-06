@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 /** Script-project execution proof through the candidate distribution, without packaging a project. */
 class ProjectScriptLocalJobIT {
     @Test
-    void prj101102107112PublishedExampleRunsAsOneGraphFromForeignCwd() throws Exception {
+    void publishedExampleRunsAsOneGraphFromForeignCwd() throws Exception {
         Path root = copyExample("complete");
         var result = invoke(root, "run", "run", "--param", ":output=output.txt");
         assertEquals(0, result.code(), result.err());
@@ -36,7 +36,7 @@ class ProjectScriptLocalJobIT {
     }
 
     @Test
-    void prj103110111PlanningSelectionAndExplicitSingleFileRemainDistinct() throws Exception {
+    void planningSelectionAndExplicitSingleFileRemainDistinct() throws Exception {
         Path root = copyExample("selection");
         for (String command : List.of("check", "plan")) {
             var result = invoke(root, command, command, command.equals("plan") ? new String[]{"--graph", "mermaid"} : new String[]{});
@@ -60,7 +60,7 @@ class ProjectScriptLocalJobIT {
     }
 
     @Test
-    void prj112FailureReportAndEventsReferToOriginalScriptLineAndQualifiedTask() throws Exception {
+    void failureReportAndEventsReferToOriginalScriptLineAndQualifiedTask() throws Exception {
         Path root = copyExample("failure"); Path script = root.resolve("project with spaces/publish/job.groovy");
         Files.writeString(script, "action('run', dependsOn: ':checks:local:run') {\n    def text = 'synthetic failure'\n    throw new IllegalStateException(text)\n}\n");
         var result = invoke(root, "failure", "run", "--param", ":output=unused.txt");

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.io.TempDir;
 class ProjectSourceLocationTest {
     @TempDir Path temp;
 
-    @Test void prj112CompilerAndToplevelFailuresKeepOriginalPathsAndActualLines() throws Exception {
+    @Test void compilerAndToplevelFailuresKeepOriginalPathsAndActualLines() throws Exception {
         for (String body : List.of("throw new IllegalStateException('load-failure')", "task('run', MissingType) { }", "action('run') {")) {
             var h = new GroovyHarness(Files.createTempDirectory(temp, "load-"));
             Path source = tree(h, "// heading\n" + body + "\n");
@@ -25,7 +25,7 @@ class ProjectSourceLocationTest {
         }
     }
 
-    @Test void prj112WhenConfigurationActionAndCleanupFailuresHaveStructuredOriginalSources() throws Exception {
+    @Test void whenConfigurationActionAndCleanupFailuresHaveStructuredOriginalSources() throws Exception {
         record Sample(String source, String code, int line, boolean cleanup) {}
         var cases = List.of(
                 new Sample("// heading\naction('run', when: { 'not boolean' }) { 'never' }", "CONDITION_NOT_BOOLEAN", 2, false),

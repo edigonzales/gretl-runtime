@@ -7,13 +7,13 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import static ch.so.agi.gretl.tooling.workspace.ProjectResolver.*;
-import static ch.so.agi.gretl.tooling.workspace.WorkspaceManagerTest.*;
+import static ch.so.agi.gretl.tooling.workspace.InMemoryWorkspaceSources.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AnalysisSchedulerTest {
     private static void await(CountDownLatch latch){try{assertTrue(latch.await(5,TimeUnit.SECONDS),"Worker did not reach the expected boundary");}catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new CancellationException();}}
     @Test void supersededAnalysisCannotPublishAfterNewerAnalysisEvenWhenItIgnoresInterruption() throws Exception {
-        var files=new Files();files.texts.put(JOB,"action('disk') {}");var store=new DocumentStore();store.open(JOB,"gretl",1,"action('one') {}");var entered=new CountDownLatch(1);var release=new CountDownLatch(1);var calls=new AtomicInteger();var published=new CopyOnWriteArrayList<String>();
+        var files=new InMemoryWorkspaceSources();files.texts.put(JOB,"action('disk') {}");var store=new DocumentStore();store.open(JOB,"gretl",1,"action('one') {}");var entered=new CountDownLatch(1);var release=new CountDownLatch(1);var calls=new AtomicInteger();var published=new CopyOnWriteArrayList<String>();
         try(var manager=new WorkspaceManager(store,new CatalogRepository())){
             manager.addRoot(ROOT,files);
             var scheduler=new AnalysisScheduler<String>(manager,(capture,cancellation)->{
@@ -30,7 +30,7 @@ class AnalysisSchedulerTest {
         }
     }
     @Test void queueLimitIsExplicitAndClosingCompletesQueuedTickets() throws Exception {
-        var files=new Files();files.texts.put(JOB,"action('root') {}");var entered=new CountDownLatch(1);var released=new CountDownLatch(1);
+        var files=new InMemoryWorkspaceSources();files.texts.put(JOB,"action('root') {}");var entered=new CountDownLatch(1);var released=new CountDownLatch(1);
         try(var manager=new WorkspaceManager(new DocumentStore(),new CatalogRepository())){
             manager.addRoot(ROOT,files);var scheduler=new AnalysisScheduler<String>(manager,(capture,cancellation)->{entered.countDown();try{released.await(5,TimeUnit.SECONDS);}catch(InterruptedException interrupted){Thread.currentThread().interrupt();}cancellation.check();return "done";},(capture,value)->fail("Cancelled job must not publish"),1,1,1);
             try{
@@ -42,7 +42,7 @@ class AnalysisSchedulerTest {
         }
     }
     @Test void externalFileChangeBetweenAnalysisAndPublishRejectsResult() throws Exception {
-        var files=new Files();files.texts.put(JOB,"action('first') {}");var entered=new CountDownLatch(1);var release=new CountDownLatch(1);
+        var files=new InMemoryWorkspaceSources();files.texts.put(JOB,"action('first') {}");var entered=new CountDownLatch(1);var release=new CountDownLatch(1);
         try(var manager=new WorkspaceManager(new DocumentStore(),new CatalogRepository())){
             manager.addRoot(ROOT,files);
             try(var scheduler=new AnalysisScheduler<String>(manager,(capture,cancellation)->{entered.countDown();await(release);return "obsolete";},(capture,value)->fail("External change must reject publication"))){
@@ -52,7 +52,7 @@ class AnalysisSchedulerTest {
     }
     @Test void settingsAndCatalogChangesCancelInFlightCapturesBeforePublication() throws Exception {
         for(boolean catalogChange:List.of(false,true)){
-            var files=new Files();files.texts.put(JOB,"action('root') {}");files.texts.put(SETTINGS,"defaults 'root'");var store=new DocumentStore();store.open(SETTINGS,"gretl",1,"defaults 'root'");var catalogs=new CatalogRepository();var entered=new CountDownLatch(1);var release=new CountDownLatch(1);
+            var files=new InMemoryWorkspaceSources();files.texts.put(JOB,"action('root') {}");files.texts.put(SETTINGS,"defaults 'root'");var store=new DocumentStore();store.open(SETTINGS,"gretl",1,"defaults 'root'");var catalogs=new CatalogRepository();var entered=new CountDownLatch(1);var release=new CountDownLatch(1);
             try(var manager=new WorkspaceManager(store,catalogs)){
                 manager.addRoot(ROOT,files);
                 try(var scheduler=new AnalysisScheduler<String>(manager,(capture,cancellation)->{entered.countDown();await(release);return "old";},(capture,value)->fail("Invalidated settings/catalog must not publish"))){

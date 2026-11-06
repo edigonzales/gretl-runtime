@@ -71,7 +71,7 @@ class FinalizerJobIT {
             assertEquals(mode.equals("success")?List.of("importData","secondOwner","prepareFinalizer","release","record","cleanup"):List.of("importData","prepareFinalizer","release","record","cleanup"),Files.readAllLines(request.directory().resolve("output/trace.txt")));
             var e=execution(result);assertEquals(mode.equals("success")?"SUCCEEDED":"FAILED",e.get("status"));assertEquals("SUCCEEDED",task(e,"release").get("status"));assertEquals("SUCCEEDED",task(e,"record").get("status"));
             var f=object(task(e,"release").get("finalization"));assertEquals(List.of("importData","secondOwner"),f.get("declaredOwners"));assertEquals(mode.equals("success")?List.of("importData","secondOwner"):List.of("importData"),f.get("activatingOwners"));assertEquals(List.of("FINALIZER"),f.get("executedRoles"));
-            if(mode.equals("fail")){assertEquals("NOT_RUN",task(e,"secondOwner").get("status"));assertTrue(Files.readString(result.report()).contains("synthetic-owner-failure"));}
+            if(mode.equals("fail")){assertEquals("NOT_RUN",task(e,"secondOwner").get("status"));assertEquals("synthetic-owner-failure",JobTestJson.primaryError(JobTestJson.read(result.report())).get("message"));}
             assertEquals(1,((List<?>)e.get("invocations")).size());assertEquals("global",Files.readString(request.directory().resolve("output/cleanup.txt")));
         }
     }
@@ -85,14 +85,26 @@ class FinalizerJobIT {
             if(mode.equals("fail")){assertEquals("NOT_RUN",task(e,":b:end").get("status"));assertEquals("FINALIZER_NOT_TRIGGERED",task(e,":b:end").get("reason"));}
         }
     }
+    private record Introspection(String name, ArtifactJobRunner.Invocation invocation, List<String> expectedOutput) {
+        void assertOutput(String output) {
+            for (String expected : expectedOutput) assertTrue(output.contains(expected), output);
+        }
+    }
+
     @Test void scriptIntrospectionAndGraphAreLazyAndExplainConditionalCandidates()throws Exception {
-        var invocations=List.of(ArtifactJobRunner.Invocation.check(),ArtifactJobRunner.Invocation.plan(),ArtifactJobRunner.Invocation.jobHelp(),ArtifactJobRunner.Invocation.plan("mermaid",null),ArtifactJobRunner.Invocation.plan("plantuml",null));
-        for(int i=0;i<invocations.size();i++) {
-            var request=request("finalizer-controls-"+i,false,"fail",invocations.get(i));var result=execute(request,ArtifactJobRunner.Mode.SCRIPT);assertEquals(0,result.code(),result.err());
+        var scenarios = List.of(
+                new Introspection("check", ArtifactJobRunner.Invocation.check(), List.of()),
+                new Introspection("text-plan", ArtifactJobRunner.Invocation.plan(), List.of("finalizedBy", "normalSelected=false", "prepareFinalizer")),
+                new Introspection("job-help", ArtifactJobRunner.Invocation.jobHelp(), List.of("finalizedBy")),
+                new Introspection("mermaid", ArtifactJobRunner.Invocation.plan("mermaid", null), List.of("finalizedBy", "==>|finalizedBy|")),
+                new Introspection("plantuml", ArtifactJobRunner.Invocation.plan("plantuml", null), List.of("finalizedBy", " : finalizedBy")));
+        for (var scenario : scenarios) {
+            var request = request("finalizer-controls-" + scenario.name(), false, "fail", scenario.invocation());
+            var result = execute(request, ArtifactJobRunner.Mode.SCRIPT);
+            assertEquals(0, result.code(), result.err());
             try(var files=Files.list(request.directory().resolve("output"))){assertEquals(0,files.count(),"No predicate/configuration/body/cleanup during introspection");}
-            assertFalse(Files.exists(result.report()));if(i>0)assertTrue(result.out().contains("finalizedBy"),result.out());
-            if(i==1){assertTrue(result.out().contains("normalSelected=false"));assertTrue(result.out().contains("prepareFinalizer"));}
-            if(i==3)assertTrue(result.out().contains("==>|finalizedBy|"));if(i==4)assertTrue(result.out().contains(" : finalizedBy"));
+            assertFalse(Files.exists(result.report()));
+            scenario.assertOutput(result.out());
         }
     }
     @Test void publicActivationDeadlockIsRejectedBeforeAnyTaskSideEffect()throws Exception {
@@ -105,20 +117,23 @@ class FinalizerJobIT {
                 action('f',dependsOn:'d'){throw new AssertionError('f must not start')}
                 defaults 'a'
                 """);
-        var result=execute(request,ArtifactJobRunner.Mode.SCRIPT);assertEquals(2,result.code(),result.err());assertTrue(result.err().contains("FINALIZER_ACTIVATION_DEADLOCK"),result.err());assertFalse(result.err().contains("gretl.run.started"));assertFalse(Files.exists(result.report()));
+        var result=execute(request,ArtifactJobRunner.Mode.SCRIPT);assertEquals(2,result.code(),result.err());assertTrue(result.err().contains("FINALIZER_ACTIVATION_DEADLOCK"),result.err());assertEquals(0, JobTestJson.events(result.err(), "gretl.run.started").count());assertFalse(Files.exists(result.report()));
         try(var files=Files.list(request.directory().resolve("output"))){assertEquals(0,files.count());}
     }
     @Test void compiledJarIntrospectionExplainsFinalizersWithoutMaterializingSourcesOrRunningBodies()throws Exception {
-        var invocations=List.of(ArtifactJobRunner.Invocation.plan(),ArtifactJobRunner.Invocation.jobHelp(),ArtifactJobRunner.Invocation.plan("mermaid",null));
-        for(int i=0;i<invocations.size();i++) {
-            var request=request("finalizer-jar-controls-"+i,false,"fail",invocations.get(i));var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.JAR);
+        var scenarios = List.of(
+                new Introspection("text-plan", ArtifactJobRunner.Invocation.plan(), List.of("finalizedBy")),
+                new Introspection("job-help", ArtifactJobRunner.Invocation.jobHelp(), List.of("finalizedBy")),
+                new Introspection("mermaid", ArtifactJobRunner.Invocation.plan("mermaid", null), List.of("finalizedBy", "==>|finalizedBy|")));
+        for (var scenario : scenarios) {
+            var request = request("finalizer-jar-controls-" + scenario.name(), false, "fail", scenario.invocation());
+            var prepared = ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.JAR);
             SelectedPackageSupport.delete(request.jobDirectory());SelectedPackageSupport.delete(prepared.source());
             var running=ArtifactJobRunner.start(prepared);
             try {
-                var result=ArtifactJobRunner.finish(running,false);assertEquals(0,result.code(),result.err());assertTrue(result.out().contains("finalizedBy"),result.out());assertFalse(Files.exists(result.report()));
+                var result=ArtifactJobRunner.finish(running,false);assertEquals(0,result.code(),result.err());scenario.assertOutput(result.out());assertFalse(Files.exists(result.report()));
                 try(var files=Files.list(request.directory().resolve("output"))){assertEquals(0,files.count());}
                 assertFalse(Files.exists(request.directory().resolve("work")),"Introspection must not start a run workspace");
-                if(i==2)assertTrue(result.out().contains("==>|finalizedBy|"));
             }finally{if(running.process().isAlive())ArtifactJobRunner.stop(running);}
         }
     }
@@ -138,8 +153,8 @@ class FinalizerJobIT {
         }
         var altered=ArtifactJobRunner.existingJar(request,prepared.source(),changed,prepared.report(),prepared.inputSnapshot());var running=ArtifactJobRunner.start(altered);
         try {
-            var result=ArtifactJobRunner.finish(running,false);assertEquals(2,result.code(),result.err());var error=result.err().lines().filter(line->line.contains("\"event_name\":\"gretl.cli.error\"")).map(Json::parse).map(this::object).findFirst().orElseThrow();
-            assertEquals(missingClass,error.get("message"),"The declared compiled finalizer class is missing, not a toolchain failure");assertFalse(Files.exists(result.report()));assertFalse(result.err().contains("gretl.run.started"));
+            var result=ArtifactJobRunner.finish(running,false);assertEquals(2,result.code(),result.err());var error=JobTestJson.events(result.err(), "gretl.cli.error").findFirst().orElseThrow();
+            assertEquals(missingClass,error.get("message"),"The declared compiled finalizer class is missing, not a toolchain failure");assertFalse(Files.exists(result.report()));assertEquals(0, JobTestJson.events(result.err(), "gretl.run.started").count());
             try(var files=Files.list(request.directory().resolve("output"))){assertEquals(0,files.count());}
         }finally{if(running.process().isAlive())ArtifactJobRunner.stop(running);}
     }
@@ -169,7 +184,7 @@ class FinalizerJobIT {
                     var e=execution(result);assertEquals("CANCELLED",e.get("status"));assertEquals("REQUESTED",e.get("cancelReason"));assertEquals("CANCELLED",task(e,"importData").get("status"));assertEquals("SUCCEEDED",task(e,"release").get("status"));assertEquals("NOT_RUN",task(e,"secondOwner").get("status"));
                     assertEquals(List.of("importData","prepareFinalizer","release","record","cleanup"),Files.readAllLines(request.directory().resolve("output/trace.txt")));
                     gzip(request.directory().resolve("output/finalized.gz"),Files.readString(Path.of("../examples/task-finalizers/input.txt")));
-                    assertEquals(1,result.err().lines().filter(l->l.contains("\"event_name\":\"gretl.run.finished\"")).count());
+                    assertEquals(1,JobTestJson.events(result.err(), "gretl.run.finished").count());
                 }finally{if(running.process().isAlive())ArtifactJobRunner.stop(running);}
             }
         }

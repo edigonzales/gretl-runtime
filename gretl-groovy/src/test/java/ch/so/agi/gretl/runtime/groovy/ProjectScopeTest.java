@@ -16,7 +16,7 @@ class ProjectScopeTest {
     @TempDir Path temp;
 
     @Test
-    void prj103SelectionUsesOnlyDependsOnClosureAndAfterOnlyOrdersSelectedNodes() throws Exception {
+    void selectionUsesOnlyDependsOnClosureAndAfterOnlyOrdersSelectedNodes() throws Exception {
         var h = new GroovyHarness(temp);
         settings(h, "include 'downstream', 'upstream', 'unrelated'\ndefaults ':downstream:run'");
         script(h, "downstream", "action('run', dependsOn: ':upstream:run', after: ':unrelated:run') { 'downstream' }");
@@ -31,7 +31,7 @@ class ProjectScopeTest {
     }
 
     @Test
-    void prj104And105AfterNeverPermitsResultOrOptionalResultAccess() throws Exception {
+    void afterNeverPermitsResultOrOptionalResultAccess() throws Exception {
         for (String access : List.of("result", "resultOptional")) {
             var h = new GroovyHarness(temp.resolve(access));
             settings(h, "include 'a', 'b'\ndefaults ':a:run', ':b:run'");
@@ -45,7 +45,7 @@ class ProjectScopeTest {
     }
 
     @Test
-    void prj106UnselectedDataCyclesUnknownLinksAndDuplicateIdsAreDefinitionErrors() throws Exception {
+    void unselectedDataCyclesUnknownLinksAndDuplicateIdsAreDefinitionErrors() throws Exception {
         var h = new GroovyHarness(temp);
         settings(h, "include 'a', 'b'\ndefaults ':a:ok'");
         script(h, "a", "action('ok') { 'ok' }\naction('cycle', dependsOn: ':b:cycle') { 'a' }");
@@ -62,7 +62,7 @@ class ProjectScopeTest {
     }
 
     @Test
-    void prj107FileScopeSurvivesWhenConfigurationNestedRunActionAndCleanupContext() throws Exception {
+    void fileScopeSurvivesWhenConfigurationNestedRunActionAndCleanupContext() throws Exception {
         var h = new GroovyHarness(temp);
         settings(h, "include 'a', 'b:c'\ndefaults ':a:run', ':b:c:run'");
         for (String directory : List.of("a", "b/c")) {
@@ -95,7 +95,7 @@ class ProjectScopeTest {
     }
 
     @Test
-    void prj109And113OneCleanupLifecycleRetainsFailureNoDataAndCancellationSemantics() throws Exception {
+    void oneCleanupLifecycleRetainsFailureNoDataAndCancellationSemantics() throws Exception {
         for (String mode : List.of("success", "failure", "no-data", "cancel")) {
             var h = new GroovyHarness(temp.resolve(mode));
             settings(h, "include 'a', 'b'\ndefaults ':a:run', ':b:run'");
@@ -113,7 +113,7 @@ class ProjectScopeTest {
     }
 
     @Test
-    void prj111SingleFileRetainsUnqualifiedNamesInsideProjectDirectory() throws Exception {
+    void singleFileRetainsUnqualifiedNamesInsideProjectDirectory() throws Exception {
         var h = new GroovyHarness(temp);
         settings(h, "System.exit(99)");
         Path file = script(h, "", "parameter('legacy.name', description: 'Legacy', defaultValue: 'old')\naction('legacy:run') { parameter('legacy.name') }\ndefaults 'legacy:run'");

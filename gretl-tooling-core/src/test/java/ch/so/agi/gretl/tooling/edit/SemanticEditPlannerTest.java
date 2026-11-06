@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.semantic.SemanticModel.*;
@@ -7,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SemanticEditPlannerTest {
     SymbolId id(String name) { return new SymbolId(Namespace.TASK,name); }
 
     @Test void allFieldAndFormPathsEnforceResultPortCompatibilityIncludingNestedValues() {
-        for(String kind:List.of("Text","Opaque","Path","NullablePath","ListPath"))try(var fixture=new Fixture()) {
-            new DependencySourceEditsTest().catalog(fixture);
+        for(String kind:List.of("Text","Opaque","Path","NullablePath","ListPath"))try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             var shape=new ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape(kind.equals("Text")?"Text":kind.equals("Opaque")?"Opaque":"Path",kind.equals("Text")?"text":kind.equals("Opaque")?"unknown":"path",List.of());
             var inputShape=kind.equals("ListPath")?new ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape("ListOf","list",List.of(shape)):shape;
             var input=new ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor("input","Input",true,false,null,List.of(),"input",inputShape,null,false,Map.of());
@@ -42,8 +43,8 @@ class SemanticEditPlannerTest {
     }
 
     @Test void aFormMayChangeAResultAndItsDependencyTogetherButCannotPublishAnInvalidIntermediateState() {
-        try(var fixture=new Fixture()) {
-            new DependencySourceEditsTest().catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             fixture.files.put(JOB,"task('p', Source) {}; task('c', Sink) { input=workPath('old') }");
             var snapshot=fixture.capture();var planner=new SemanticEditPlanner();
             var fields=Map.<String,EditableValue>of("input",new EditableValue.ResultFieldRef(id("p"),"file"));
@@ -56,7 +57,7 @@ class SemanticEditPlannerTest {
     }
 
     @Test void oneFormConfirmationComposesSharedAnchorsWithoutReformattingOrPartialApplication() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             var shape=ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape.fromMetadata("text");
             var fields=List.of("input","first","second").stream().map(name->new ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor(name,name,name.equals("input"),false,null,List.<String>of(),"example",shape,null,false,Map.<String,String>of())).toList();
             fixture.catalog.mergeExplicitDescriptors(List.of(new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor("test.wide","Wide","Wide","fixture",fields,List.of(),"example",true)));
@@ -80,8 +81,8 @@ class SemanticEditPlannerTest {
     }
 
     @Test void everyIntentUsesTheSameAppliedVerifiedPlanBoundary() {
-        try(var fixture=new Fixture()) {
-            new DependencySourceEditsTest().catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             String job="task('a', Echo) { input='old'; mode='FAST' }\n"
                     +"task('p', Source) {}\ntask('c', Sink, after:'p') { input=workPath('old') }\naction('spare') {}\n";
             fixture.files.put(JOB,job);
@@ -114,7 +115,7 @@ class SemanticEditPlannerTest {
     }
 
     @Test void refusalsNoOpsOpenRequirementsAndCancellationRemainDistinct() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             var before=fixture.capture();
             var planner=new SemanticEditPlanner();
             var same=new SemanticEditIntent.SetField(TASK,"input",new EditableValue.Literal("old"));

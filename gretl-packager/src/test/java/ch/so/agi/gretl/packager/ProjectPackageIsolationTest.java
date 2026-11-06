@@ -12,7 +12,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 class ProjectPackageIsolationTest {
     @TempDir Path root;
-    @Test void prj210SelectedCompilerNeverInheritsHostPackagerClassesAndGrabStaysDisabled() throws Exception {
+    @Test void selectedCompilerNeverInheritsHostPackagerClassesAndGrabStaysDisabled() throws Exception {
         Files.writeString(root.resolve("settings.gretl"),"defaults ':run'\n");
         Path file=root.resolve("job-package.json");Files.writeString(file,Json.write(Map.of("schemaVersion",3,"name","isolated","version","1","runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl")));
         var descriptor=PackageDescriptor.load(file);

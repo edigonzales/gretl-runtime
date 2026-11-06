@@ -1,13 +1,14 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FieldSourceEditsTest {
     @Test void anEquivalentQualifiedParameterReferenceDoesNotRewriteItsSpelling() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             fixture.files.put(SETTINGS,"defaults ':a'");
             String before = "parameter('p', description:'Input'); task('a', Echo) { input=parameter(':p') }";
             fixture.files.put(JOB,before);
@@ -21,7 +22,7 @@ class FieldSourceEditsTest {
         }
     }
     @Test void changesOnlyTheQuotedRhsAndKeepsOpaqueCodeAndInlineComment() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             String before = "task('a', Echo) {\r\n  input=\"old\" // keep\r\n  other=opaqueCall()\r\n}\r\n";
             fixture.files.put(JOB, before);
             var snapshot = fixture.capture();
@@ -38,7 +39,7 @@ class FieldSourceEditsTest {
     }
 
     @Test void equivalentDecodedLiteralDoesNotNormalizeQuotesOrEscapes() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             String before = "task('a', Echo) { input=\"\\u006f\\u006c\\u0064\" }";
             fixture.files.put(JOB,before);
             var transaction = new EditTransaction(fixture.capture(),EditStyle.defaults());
@@ -51,7 +52,7 @@ class FieldSourceEditsTest {
     }
 
     @Test void insertingFieldPreservesTheExistingClosingBraceIndentationAndCrLf() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             fixture.files.put(JOB,"  task('a', Echo) {\r\n    input='old'\r\n  }\r\n");
             var transaction = new EditTransaction(fixture.capture(),EditStyle.defaults());
             new FieldSourceEdits().set(transaction,TASK,"mode",new EditableValue.Literal("FAST"));
@@ -61,7 +62,7 @@ class FieldSourceEditsTest {
     }
 
     @Test void removalRetainsCommentsAndDoesNotRemoveRequiredFields() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             fixture.files.put(JOB,"task('a', Echo) { input='old'; mode='FAST' /* retained */ }");
             var before = fixture.capture();
             var transaction = new EditTransaction(before,EditStyle.defaults());
@@ -73,7 +74,7 @@ class FieldSourceEditsTest {
     }
 
     @Test void commentsInsideAnEditedValueAreNotSilentlyDiscarded() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             fixture.files.put(JOB,"task('a', Echo) { input=['a', /* keep */ 'b'] }");
             var transaction = new EditTransaction(fixture.capture(),EditStyle.defaults());
             var value = new EditableValue.Sequence(java.util.List.of(new EditableValue.Literal("new")));

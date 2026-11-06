@@ -141,10 +141,10 @@ class SelectedPackageLocalJobIT {
                     Map.of("output", root.resolve("output")), Map.of("GRETL_CORRELATION_ID", "/packages/minimal/42"), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45)));
             assertEquals(target.equals("success") ? 0 : 10, result.code(), result.err());
             if (target.equals("success")) assertEquals("minimal package ü\n", Files.readString(root.resolve("output/message.txt")));
-            else assertTrue(Files.readString(result.report()).contains("selected-package-business-failure"));
+            else assertEquals("selected-package-business-failure", JobTestJson.primaryError(JobTestJson.read(result.report())).get("message"));
             assertEquals("cleaned", Files.readString(root.resolve("output/cleaned.txt")));
             assertTrue(result.err().contains("/packages/minimal/42"));
-            assertTrue(Files.readString(root.resolve("isolation.json")).contains("\"emptyMavenCache\":true"));
+            assertEquals(true, JobTestJson.read(root.resolve("isolation.json")).get("emptyMavenCache"));
             assertFalse(Files.exists(root.resolve("source")));
         }
     }

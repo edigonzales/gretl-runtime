@@ -1,16 +1,17 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.semantic.SemanticModel.*;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DeclarationSourceEditsTest {
     @Test void createsARealTaskFromCatalogDataWithoutInventingRequiredValues() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             var before = fixture.capture();
             var transaction = new EditTransaction(before,EditStyle.defaults());
             String name = "next's😀";
@@ -30,7 +31,7 @@ class DeclarationSourceEditsTest {
     }
 
     @Test void actionAndParameterHaveActualDslShapesAndIndependentNamespaces() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             var before = fixture.capture();
             var action = new EditTransaction(before,EditStyle.defaults());
             new DeclarationSourceEdits().addAction(action,new SemanticEditIntent.AddAction(JOB,fixture.files.get(JOB).length(),"work"));
@@ -51,7 +52,7 @@ class DeclarationSourceEditsTest {
     }
 
     @Test void unsafeInsertionOffsetsAndCollidingNamesAreRejectedBeforeApplication() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             var before = fixture.capture();
             var edits = new DeclarationSourceEdits();
             assertThrows(IllegalArgumentException.class,()->edits.addAction(new EditTransaction(before,EditStyle.defaults()),
@@ -68,7 +69,7 @@ class DeclarationSourceEditsTest {
     }
 
     @Test void rejectsInvalidParameterContractsAndKeepsALeadingBomWhenAppending() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             fixture.files.put(JOB,"\uFEFF");
             var before = fixture.capture();
             var transaction = new EditTransaction(before,EditStyle.defaults());

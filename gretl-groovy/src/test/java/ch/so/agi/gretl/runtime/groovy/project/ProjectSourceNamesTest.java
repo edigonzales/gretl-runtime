@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 class ProjectSourceNamesTest {
     @Test
-    void prj005NamesUseTheWholeCanonicalIdentityAndProduceDifferentRealGroovyClasses() throws Exception {
+    void namesUseTheWholeCanonicalIdentityAndProduceDifferentRealGroovyClasses() throws Exception {
         var paths = List.of(ProjectPath.root(), ProjectPath.parseInclude("a:b"),
                 ProjectPath.parseInclude("a_b"));
         var configuration = CompilerSettings.create();

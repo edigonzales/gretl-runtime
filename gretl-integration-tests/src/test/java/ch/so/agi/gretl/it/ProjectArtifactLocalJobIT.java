@@ -23,7 +23,7 @@ class ProjectArtifactLocalJobIT {
         return new ArtifactJobRunner.Request(id,input,root,targets,Map.of(":output",root.resolve("output/result.txt"),":mode",mode,":import:count","9"),
                 Map.of(),config,Map.of(),Duration.ofSeconds(60), ArtifactJobRunner.JobInput.project("."), ArtifactJobRunner.Invocation.run());
     }
-    @Test void prj202203204206210211SameIndependentBytesAndGraphInScriptAndDetachedJar() throws Exception {
+    @Test void sameIndependentBytesAndGraphInScriptAndDetachedJar() throws Exception {
         var sourceRequest=request("project-script","success",List.of(),"never");
         var sourcePrepared=ArtifactJobRunner.prepare(sourceRequest,ArtifactJobRunner.Mode.SCRIPT);
         assertFalse(Files.exists(sourceRequest.directory().resolve("toplevel-marker.txt")),"Source preparation must not execute Toplevel code");
@@ -56,7 +56,7 @@ class ProjectArtifactLocalJobIT {
             assertEquals(metadata.get("projectSha256"),object(report(result).get("source")).get("sha256"));
         }
     }
-    @Test void prj205VersionHelpPlanHaveNoMaterializationAndCompiledClassesNeedNoSourceTexts() throws Exception {
+    @Test void versionHelpPlanHaveNoMaterializationAndCompiledClassesNeedNoSourceTexts() throws Exception {
         var request=request("project-controls","success",List.of(),"always");
         var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.JAR);
         // Remove provenance text after compilation: startup must never recompile or parse settings.
@@ -80,7 +80,7 @@ class ProjectArtifactLocalJobIT {
         // Keep audit bound to the actual executed JAR, not the superseded package input.
         assertEquals(strippedPrepared.sha256(),hash(stripped));
     }
-    @Test void prj209FailurePreservesCauseCleanupOriginalLineAndRetainedProjectResources() throws Exception {
+    @Test void failurePreservesCauseCleanupOriginalLineAndRetainedProjectResources() throws Exception {
         var request=request("project-failure","fail",List.of(),"on-failure");
         var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.JAR);
         var result=ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared),false);
@@ -95,7 +95,7 @@ class ProjectArtifactLocalJobIT {
             var resource=paths.filter(p->p.endsWith("job-resources/validation/nested/sql/update.sql")).findFirst().orElseThrow();assertEquals("validation-B\n",Files.readString(resource));
         }
     }
-    @Test void prj209InnerHandlerFailuresKeepOriginalSourceBeforeCaptureEvenWhenCaught() throws Exception {
+    @Test void innerHandlerFailuresKeepOriginalSourceBeforeCaptureEvenWhenCaught() throws Exception {
         var mode = ArtifactJobRunner.Mode.configured();
         for (boolean caught : List.of(false, true)) {
             var request = request("project-inner-" + (caught ? "caught-" : "failed-") + mode.name().toLowerCase(java.util.Locale.ROOT),
@@ -140,7 +140,7 @@ class ProjectArtifactLocalJobIT {
             map.values().forEach(this::assertNoVirtualFileNames);
         } else if (value instanceof List<?> list) list.forEach(this::assertNoVirtualFileNames);
     }
-    @Test void prj209TargetSelectionAndNoDataRetainOneCommonCompletion() throws Exception {
+    @Test void targetSelectionAndNoDataRetainOneCommonCompletion() throws Exception {
         for(boolean empty:List.of(false,true)) {
             var request=request(empty?"project-no-data":"project-selection",empty?"empty":"success",empty?List.of():List.of(":validation:nested:run"),"never");
             var result=ArtifactJobRunner.run(request);assertEquals(0,result.code(),result.err());
@@ -149,7 +149,7 @@ class ProjectArtifactLocalJobIT {
             assertEquals("ivd",Files.readString(request.directory().resolve("output/cleanup.txt")));
         }
     }
-    @Test void prj207TamperedMetadataAndMissingMaterializedResourceAreRealStartFailures() throws Exception {
+    @Test void tamperedMetadataAndMissingMaterializedResourceAreRealStartFailures() throws Exception {
         for(String mode:List.of("metadata","syntax","resource")) {
             var request=request("project-broken-"+mode,"success",List.of(),"always");var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.JAR);
             Path changed=request.directory().resolve("changed.jar");

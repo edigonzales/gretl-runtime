@@ -6,7 +6,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class ProjectSourceFrameTest {
-    @Test void prj209UnknownLibrarySourceFramesDoNotReplaceTheOriginalException() {
+    @Test void unknownLibrarySourceFramesDoNotReplaceTheOriginalException() {
         var failure=new IllegalStateException("original-library-failure");
         failure.setStackTrace(new StackTraceElement[]{new StackTraceElement("Library","execute",null,-1),
                 new StackTraceElement("Entry","run","Virtual.groovy",9)});

@@ -165,7 +165,7 @@ class RuntimeSafetyLocalJobIT {
         Map<?, ?> execution = (Map<?, ?>) report.get("execution");
         assertEquals(status, execution.get("status"));
         assertEquals((long) code, execution.get("exitCode"));
-        assertEquals(1, result.err().lines().filter(line -> line.contains("\"event_name\":\"gretl.run.finished\"")).count(), result.err());
-        assertEquals(1, result.err().lines().filter(line -> line.contains("\"event_name\":\"gretl.cleanup.finished\"")).count(), result.err());
+        assertEquals(1, JobTestJson.events(result.err(), "gretl.run.finished").count(), result.err());
+        assertEquals(1, JobTestJson.events(result.err(), "gretl.cleanup.finished").count(), result.err());
     }
 }

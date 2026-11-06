@@ -68,21 +68,67 @@ class IncludeEditsTest {
             assertTrue(allowed(before,new SemanticEditIntent.RenameSymbol(task("source"),"source")).noOp());
         }
     }
-    @Test void explicitFragmentInsertionDependencyResultAndFormPathsArePositive()throws Exception{
+    private record FragmentTargets(Path source, Path use) {}
+
+    private FragmentTargets writeEditableFragments() throws Exception {
         write("job.groovy","apply from:'parts/source.groovy'\napply from:'parts/use.groovy'\ndefaults 'use'");
         var source=write("parts/source.groovy","task('source',Echo){input='input'}\n");var use=write("parts/use.groovy","task('use',Echo){input='old'}\n");
-        try(var manager=manager(true)){
-            var before=capture(manager);var dependency=allowed(before,new SemanticEditIntent.AddDependency(task("source"),task("use"),EdgeKind.DEPENDS_ON));assertEquals(Set.of(use.toUri()),dependency.changes().keySet());
-            var bound=allowed(before,new SemanticEditIntent.BindResult(task("source"),"file",task("use"),"input"));assertEquals(Set.of(use.toUri()),bound.changes().keySet());
-            assertTrue(bound.postimage().analysis().references().stream().anyMatch(r->r.kind()==ReferenceKind.RESULT&&r.target().orElseThrow().equals(task("source"))));
-            allowed(dependency.postimage(),new SemanticEditIntent.RemoveDependency(task("source"),task("use"),EdgeKind.DEPENDS_ON));
-            var form=new SemanticEditPlanner().planConfiguration(before,task("use"),Map.of("input",new EditableValue.ResultFieldRef(task("source"),"file")),Set.of(),Map.of("dependsOn",new EditableValue.Literal("source"),"description",new EditableValue.Literal("Changed")),EditStyle.defaults(),CancellationToken.NONE);assertTrue(form.plan().isPresent(),form.capability().toString());
-            allowed(before,new SemanticEditIntent.AddTask(use.toUri(),Files.readString(use).length(),"added","test.echo",Map.of("input",new EditableValue.Literal("value"))));
-            allowed(before,new SemanticEditIntent.AddAction(source.toUri(),Files.readString(source).length(),"actionAdded"));
-            allowed(before,new SemanticEditIntent.AddParameter(use.toUri(),Files.readString(use).length(),new SemanticEditIntent.ParameterDeclaration("addedPath","Path","path",false,null)));
-            denied(before,new SemanticEditIntent.SetDefaults(use.toUri(),List.of(task("source"))),"EDIT_DEFAULTS_SCOPE");
+        return new FragmentTargets(source, use);
+    }
+
+    @Test void addingAndRemovingADependencyEditsTheConsumerFragment() throws Exception {
+        var targets = writeEditableFragments();
+        try (var manager = manager(true)) {
+            var before = capture(manager);
+            var dependency = allowed(before, new SemanticEditIntent.AddDependency(task("source"), task("use"), EdgeKind.DEPENDS_ON));
+            assertEquals(Set.of(targets.use().toUri()), dependency.changes().keySet());
+            allowed(dependency.postimage(), new SemanticEditIntent.RemoveDependency(task("source"), task("use"), EdgeKind.DEPENDS_ON));
         }
     }
+
+    @Test void bindingAResultEditsTheConsumerFragmentAndBindsItsProducer() throws Exception {
+        var targets = writeEditableFragments();
+        try (var manager = manager(true)) {
+            var bound = allowed(capture(manager), new SemanticEditIntent.BindResult(task("source"), "file", task("use"), "input"));
+            assertEquals(Set.of(targets.use().toUri()), bound.changes().keySet());
+            assertTrue(bound.postimage().analysis().references().stream()
+                    .anyMatch(r -> r.kind() == ReferenceKind.RESULT && r.target().orElseThrow().equals(task("source"))));
+        }
+    }
+
+    @Test void aConfigurationFormCanBindAResultAndEditOptionsInTheFragment() throws Exception {
+        writeEditableFragments();
+        try (var manager = manager(true)) {
+            var form = new SemanticEditPlanner().planConfiguration(capture(manager), task("use"),
+                    Map.of("input", new EditableValue.ResultFieldRef(task("source"), "file")), Set.of(),
+                    Map.of("dependsOn", new EditableValue.Literal("source"), "description", new EditableValue.Literal("Changed")),
+                    EditStyle.defaults(), CancellationToken.NONE);
+            assertTrue(form.plan().isPresent(), form.capability().toString());
+        }
+    }
+
+    @Test void declarationsCanBeInsertedIntoExplicitFragmentTargets() throws Exception {
+        var targets = writeEditableFragments();
+        var source = targets.source();
+        var use = targets.use();
+        try (var manager = manager(true)) {
+            var before = capture(manager);
+            allowed(before, new SemanticEditIntent.AddTask(use.toUri(), Files.readString(use).length(), "added",
+                    "test.echo", Map.of("input", new EditableValue.Literal("value"))));
+            allowed(before, new SemanticEditIntent.AddAction(source.toUri(), Files.readString(source).length(), "actionAdded"));
+            allowed(before, new SemanticEditIntent.AddParameter(use.toUri(), Files.readString(use).length(),
+                    new SemanticEditIntent.ParameterDeclaration("addedPath", "Path", "path", false, null)));
+        }
+    }
+
+    @Test void defaultsCannotBeWrittenIntoAFragment() throws Exception {
+        var targets = writeEditableFragments();
+        try (var manager = manager(true)) {
+            denied(capture(manager), new SemanticEditIntent.SetDefaults(targets.use().toUri(), List.of(task("source"))),
+                    "EDIT_DEFAULTS_SCOPE");
+        }
+    }
+
     @Test void entireWriteFootprintRejectsSharedUsesWhileIndependentAndSharedReadsRemainAllowed()throws Exception{
         write("settings.gretl","include 'north','south'");write("job.groovy","task('unique',Echo){input='root'}");
         for(String side:List.of("north","south"))write(side+"/job.groovy","apply from:'../shared/tasks.groovy'\ntask('local',Echo){input='old'}");

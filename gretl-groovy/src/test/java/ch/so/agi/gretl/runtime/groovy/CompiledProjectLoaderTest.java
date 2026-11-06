@@ -9,7 +9,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 class CompiledProjectLoaderTest {
     @TempDir Path temp;
-    @Test void prj207EmptyDuplicateOrForeignEntryClassesFailBeforeRun() throws Exception {
+    @Test void emptyDuplicateOrForeignEntryClassesFailBeforeRun() throws Exception {
         var h=new GroovyHarness(temp);var loader=new GroovyJobLoader();var classes=getClass().getClassLoader();
         var entry=new CompiledProjectScript(ProjectPath.root(),"java.lang.String","job.groovy",ProjectSourceNames.virtualGroovyName(ProjectPath.root()));
         for(var entries:List.of(List.<CompiledProjectScript>of(),List.of(entry,entry))) {

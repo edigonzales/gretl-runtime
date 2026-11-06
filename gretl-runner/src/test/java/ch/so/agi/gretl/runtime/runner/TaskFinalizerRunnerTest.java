@@ -47,7 +47,7 @@ class TaskFinalizerRunnerTest {
         assertTrue(out.secondaryFailures().stream().anyMatch(f->f.message().equals("finalizer-second")));
         assertEquals(List.of("f","g","cleanup"),trace);status(out,"normal",TaskStatus.NOT_RUN);
     }
-    @Test void whenFalseAndPredicateFailureActivateButNotRunOwnerDoesNot() {
+    @Test void falseOrFailingPredicatesStillActivateFinalizers() {
         for(boolean failure:List.of(false,true)) {
             trace.clear();var out=run(b->{b.register(task("a").when(ctx->{if(failure)throw new IOException("predicate");return false;}).finalizedBy("f").build());b.register(task("f").build());});
             status(out,"a",failure?TaskStatus.FAILED:TaskStatus.SKIPPED);assertEquals(List.of("f","cleanup"),trace);

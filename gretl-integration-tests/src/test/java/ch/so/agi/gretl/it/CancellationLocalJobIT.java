@@ -32,11 +32,11 @@ class CancellationLocalJobIT {
                 else assertEquals(20, result.code(), result.err());
                 assertTrue(Files.exists(root.resolve("output/cleaned")));
                 assertFalse(Files.exists(root.resolve("output/unexpected")));
-                String report = Files.readString(result.report());
-                assertTrue(report.contains("\"status\":\"CANCELLED\""), report);
-                assertTrue(report.contains("\"exitCode\":20"), report);
-                assertEquals(1, result.err().lines().filter(s -> s.contains("\"event_name\":\"gretl.run.finished\"")).count());
-                assertEquals(1, result.err().lines().filter(s -> s.contains("\"event_name\":\"gretl.cleanup.finished\"")).count());
+                var execution = JobTestJson.execution(JobTestJson.read(result.report()));
+                assertEquals("CANCELLED", execution.get("status"));
+                assertEquals(20L, execution.get("exitCode"));
+                assertEquals(1, JobTestJson.events(result.err(), "gretl.run.finished").count());
+                assertEquals(1, JobTestJson.events(result.err(), "gretl.cleanup.finished").count());
             } finally {
                 if (running.process().isAlive()) ArtifactJobRunner.stop(running);
             }
@@ -58,10 +58,11 @@ class CancellationLocalJobIT {
                 ArtifactJobRunner.cancel(running);
                 Files.writeString(root.resolve("output/release"), "release");
                 var result = ArtifactJobRunner.finish(running, true);
-                String report = Files.readString(result.report());
-                assertTrue(report.contains("\"status\":\"FAILED\""), report);
-                assertTrue(report.contains("\"exitCode\":10"), report);
-                assertTrue(report.contains("original-business-failure"));
+                var report = JobTestJson.read(result.report());
+                var execution = JobTestJson.execution(report);
+                assertEquals("FAILED", execution.get("status"));
+                assertEquals(10L, execution.get("exitCode"));
+                assertEquals("original-business-failure", JobTestJson.primaryError(report).get("message"));
             } finally {
                 Files.writeString(root.resolve("output/release"), "release");
                 if (running.process().isAlive()) ArtifactJobRunner.stop(running);
@@ -84,7 +85,7 @@ class CancellationLocalJobIT {
                 var result = ArtifactJobRunner.finish(running, false);
                 assertTrue(result.timedOut());
                 assertFalse(running.process().isAlive());
-                assertTrue(Files.readString(result.report()).contains("\"status\":\"CANCELLED\""));
+                assertEquals("CANCELLED", JobTestJson.execution(JobTestJson.read(result.report())).get("status"));
                 assertTrue(Files.exists(root.resolve("output/cleaned")));
             } finally {
                 if (running.process().isAlive()) ArtifactJobRunner.stop(running);

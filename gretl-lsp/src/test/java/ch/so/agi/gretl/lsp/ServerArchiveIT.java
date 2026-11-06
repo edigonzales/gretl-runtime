@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ServerArchiveIT {
     @TempDir Path temporary;
     @Test void standaloneArchiveHasNoRuntimeClassesAndBrokenCatalogBytesFailBeforeTransport()throws Exception {
-        Path original=ServerProcessIT.ARTIFACT,broken=temporary.resolve("broken bundle.jar");
+        Path original=LspProcessHarness.packagedServer(),broken=temporary.resolve("broken bundle.jar");
         try(var jar=new JarFile(original.toFile())) {
             assertEquals("ch.so.agi.gretl.lsp.GretlServerLauncher",jar.getManifest().getMainAttributes().getValue("Main-Class"));
             assertTrue(jar.stream().noneMatch(entry->entry.getName().startsWith("ch/so/agi/gretl/runtime/")||entry.getName().startsWith("org/gradle/")||entry.getName().endsWith(".jar")));

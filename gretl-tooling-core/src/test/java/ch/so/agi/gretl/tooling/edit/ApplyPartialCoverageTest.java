@@ -1,14 +1,15 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.graph.*;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ApplyPartialCoverageTest {
     @Test void staticIncludesNowProduceACompleteGraphWithOriginalFragmentTasks() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             String source = "task('a', Echo) { input='value' }\ndefaults 'a'\n";
             fixture.files.put(JOB, source);
             var projector = new JobGraphProjector();
@@ -24,7 +25,7 @@ class ApplyPartialCoverageTest {
         }
     }
     @Test void missingIncludeIsDiagnosedAndNeverComplete() {
-        try(var fixture=new Fixture()){
+        try(var fixture=new EditTestWorkspace()){
             fixture.files.put(JOB,"apply from:'missing.groovy'\ntask('a',Echo){input='value'}");
             var snapshot=fixture.capture();var graph=new JobGraphProjector().project(snapshot,JobGraphProjector.GraphOptions.defaults(),CancellationToken.NONE);
             assertEquals(JobGraph.Status.INVALID,graph.status());assertFalse(snapshot.analysis().capabilities().declarationsComplete());

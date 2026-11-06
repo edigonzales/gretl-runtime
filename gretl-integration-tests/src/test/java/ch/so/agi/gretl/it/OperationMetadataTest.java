@@ -77,12 +77,9 @@ class OperationMetadataTest {
             migrated.put("provider", provider);
             assertEquals(migrated, byId.get(id), "Operation metadata: " + id);
         }
-        assertEquals(Map.of("ch.so.agi.gretl.tasks.io.IoTaskProvider", 13L,
-                        "ch.so.agi.gretl.tasks.database.DatabaseTaskProvider", 3L,
-                        "ch.so.agi.gretl.tasks.interlis.InterlisTaskProvider", 27L,
-                        "ch.so.agi.gretl.tasks.ilivalidator.IliValidatorProvider", 1L),
-                registry.registered().stream().collect(java.util.stream.Collectors.groupingBy(
-                        OperationRegistry.RegisteredOperation::origin, java.util.stream.Collectors.counting())));
+        // Each versioned row above already verifies its provider, so a second provider-count table is unnecessary.
+        assertEquals(expected.stream().map(row -> ((Map<?, ?>) row).get("id")).collect(java.util.stream.Collectors.toSet()),
+                byId.keySet());
         assertTrue(registry.requireSymbol("CsvValidator").inputs().stream().noneMatch(f -> f.name().equals("tableName")));
         assertTrue(registry.requireSymbol("GpkgValidator").inputs().stream().anyMatch(f -> f.name().equals("tableName") && f.required()));
         assertTrue(registry.requireSymbol("Ili2gpkgImport").inputs().stream().anyMatch(f -> f.name().equals("defaultSrsCode")));

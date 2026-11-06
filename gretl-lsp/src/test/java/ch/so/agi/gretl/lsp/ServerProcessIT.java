@@ -2,11 +2,9 @@ package ch.so.agi.gretl.lsp;
 
 import ch.so.agi.gretl.tooling.source.SourceText;
 import com.google.gson.*;
-import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import org.junit.jupiter.api.*;
@@ -16,79 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Real packaged process, framed JSON-RPC, no direct server-method substitute. */
 class ServerProcessIT {
     @TempDir Path temporary;
-    static final Gson JSON=new Gson();
-    static final Path ARTIFACT=Path.of("target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar").toAbsolutePath();
-    static final class Wire implements AutoCloseable {
-        final Process process;
-        final BlockingQueue<JsonObject> incoming=new LinkedBlockingQueue<>();
-        final List<JsonObject> notifications=new CopyOnWriteArrayList<>();
-        final List<String> failures=new CopyOnWriteArrayList<>();
-        final Map<Integer,JsonObject> responses=new HashMap<>();
-        int next;
-        Wire(Path working,String...args)throws Exception {
-            Path installed=working.resolve("installed server ü.jar");Files.copy(ARTIFACT,installed,StandardCopyOption.REPLACE_EXISTING);
-            var command=new ArrayList<>(List.of(Path.of(System.getProperty("java.home"),"bin/java").toString(),"-jar",installed.toString()));command.addAll(List.of(args));
-            process=new ProcessBuilder(command).directory(working.toFile()).redirectError(working.resolve("server-stderr.log").toFile()).start();
-            var reader=new Thread(()->{try {while(true){var message=read(process.getInputStream());if(message==null)break;incoming.add(message);}}catch(Exception failure){failures.add(failure.toString());}},"wire-test-reader");reader.setDaemon(true);reader.start();
-        }
-        void send(String method,Object params,Integer id)throws Exception {
-            var object=new JsonObject();object.addProperty("jsonrpc","2.0");object.addProperty("method",method);if(id!=null)object.addProperty("id",id);object.add("params",JSON.toJsonTree(params));
-            byte[] bytes=object.toString().getBytes(StandardCharsets.UTF_8);var output=process.getOutputStream();output.write(("Content-Length: "+bytes.length+"\r\n\r\n").getBytes(StandardCharsets.US_ASCII));output.write(bytes);output.flush();
-        }
-        JsonObject response(String method,Object params)throws Exception {int id=++next;send(method,params,id);return await(id);}
-        JsonElement call(String method,Object params)throws Exception {return result(response(method,params));}
-        private static JsonElement result(JsonObject response){assertFalse(response.has("error"),response.toString());assertTrue(response.has("result"),response.toString());return response.get("result");}
-        // Use only for read-only requests or edit proposals that can overlap an expected refresh.
-        JsonElement callAfterRefresh(String method,Object params)throws Exception {
-            long deadline=System.nanoTime()+Duration.ofSeconds(10).toNanos();
-            JsonObject response;
-            do {
-                response=response(method,params);
-                if(!response.has("error"))return result(response);
-                var error=response.getAsJsonObject("error");
-                assertEquals(-32801,error.get("code").getAsInt(),response.toString());
-                assertEquals("STALE_OR_CANCELLED_ANALYSIS",error.get("message").getAsString(),response.toString());
-            }while(System.nanoTime()<deadline);
-            throw new AssertionError("Analysis did not settle for "+method+": "+response);
-        }
-        JsonObject graphAfterRefresh(String uri)throws Exception {
-            return callAfterRefresh("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();
-        }
-        JsonObject await(int id)throws Exception {
-            var existing=responses.remove(id);if(existing!=null)return existing;
-            long deadline=System.nanoTime()+Duration.ofSeconds(20).toNanos();
-            while(System.nanoTime()<deadline) {
-                var message=incoming.poll(100,TimeUnit.MILLISECONDS);if(message==null){assertTrue(process.isAlive(),"Process exited "+failures);continue;}
-                if(message.has("id")&&message.get("id").getAsInt()==id)return message;
-                if(message.has("method"))notifications.add(message);else responses.put(message.get("id").getAsInt(),message);
-            }
-            throw new AssertionError("Timed out "+id+" "+failures);
-        }
-        JsonObject notification(String method,java.util.function.Predicate<JsonObject> accepts)throws Exception {
-            for(var previous:notifications)if(method.equals(previous.get("method").getAsString())&&accepts.test(previous.getAsJsonObject("params")))return previous.getAsJsonObject("params");
-            long deadline=System.nanoTime()+Duration.ofSeconds(15).toNanos();
-            while(System.nanoTime()<deadline) {
-                var message=incoming.poll(100,TimeUnit.MILLISECONDS);if(message==null){assertTrue(process.isAlive());continue;}
-                if(message.has("method")) {notifications.add(message);if(method.equals(message.get("method").getAsString())&&accepts.test(message.getAsJsonObject("params")))return message.getAsJsonObject("params");}
-                else responses.put(message.get("id").getAsInt(),message);
-            }
-            throw new AssertionError("Notification timeout "+method+" "+failures);
-        }
-        JsonObject initialize(Path root,boolean trusted,boolean edits)throws Exception {
-            return call("initialize",Map.of("rootUri",root.toUri().toString(),"locale","de","capabilities",Map.of("workspace",Map.of("workspaceEdit",Map.of("documentChanges",edits)),"textDocument",Map.of("codeAction",Map.of("codeActionLiteralSupport",Map.of("codeActionKind",Map.of("valueSet",List.of("quickfix")))))),"initializationOptions",Map.of("trusted",trusted))).getAsJsonObject();
-        }
-        void opened(String uri,int version,String text)throws Exception {send("textDocument/didOpen",Map.of("textDocument",Map.of("uri",uri,"languageId","gretl-runtime","version",version,"text",text)),null);}
-        void stop()throws Exception {call("shutdown",Map.of());send("exit",Map.of(),null);assertTrue(process.waitFor(8,TimeUnit.SECONDS),"Exit must finish while stdin remains open");assertEquals(0,process.exitValue());assertTrue(failures.isEmpty(),failures.toString());}
-        public void close(){if(process.isAlive()){process.destroy();try{if(!process.waitFor(5,TimeUnit.SECONDS))process.destroyForcibly();}catch(InterruptedException interrupted){Thread.currentThread().interrupt();}}}
-        static JsonObject read(InputStream input)throws Exception {
-            var header=new ByteArrayOutputStream();int state=0;
-            while(state!=4){int value=input.read();if(value<0){if(header.size()==0)return null;throw new EOFException();}header.write(value);if(header.size()>8192)throw new IOException("Non-RPC stdout: "+header);state=switch(state){case 0->value=='\r'?1:0;case 1->value=='\n'?2:0;case 2->value=='\r'?3:0;default->value=='\n'?4:0;};}
-            int length=-1;for(var line:header.toString(StandardCharsets.US_ASCII).split("\r\n"))if(line.startsWith("Content-Length:"))length=Integer.parseInt(line.substring(15).trim());
-            if(length<0||length>8_388_608)throw new IOException("Invalid output frame");var bytes=input.readNBytes(length);if(bytes.length!=length)throw new EOFException();return JsonParser.parseString(new String(bytes,StandardCharsets.UTF_8)).getAsJsonObject();
-        }
-    }
     Map<String,Object> position(String uri,int line,int character){return Map.of("textDocument",Map.of("uri",uri),"position",Map.of("line",line,"character",character));}
-    JsonObject graph(Wire wire,String uri)throws Exception{return wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();}
+    JsonObject graph(LspProcessHarness wire,String uri)throws Exception{return wire.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();}
     boolean diagnostic(JsonObject graph,String code){return graph.getAsJsonObject("payload").getAsJsonArray("diagnostics").asList().stream().map(JsonElement::getAsJsonObject).anyMatch(d->code.equals(d.get("code").getAsString()));}
 
     private static boolean hasSourceStamp(JsonObject context,URI source,String sha256){
@@ -97,7 +24,7 @@ class ServerProcessIT {
                         &&source.equals(URI.create(stamp.get("documentId").getAsString())));
     }
 
-    private JsonObject graphAfterDiskChange(Wire wire,String uri,Path source,String sha256)throws Exception {
+    private JsonObject graphAfterDiskChange(LspProcessHarness wire,String uri,Path source,String sha256)throws Exception {
         // A native watch event can invalidate a request after the explicit LSP notification.
         var graph=wire.graphAfterRefresh(uri);
         assertTrue(hasSourceStamp(graph.getAsJsonObject("context"),source.toUri(),sha256),graph.toString());
@@ -110,7 +37,7 @@ class ServerProcessIT {
                 +"task('p',HttpDownload) { url=parameter('url'); output=workPath('archive.zip'); maxBytes=9223372036854775807L }\n"
                 +"task('c',Extract,dependsOn:'p') { archive=result('p').file; compression='ZIP'; outputDirectory=\"${new File('"+marker+"').text='EXECUTED'}\" }\ndefaults 'c'\n";
         Files.writeString(job,source);
-        try(var wire=new Wire(temporary,"--stdio")){
+        try(var wire=new LspProcessHarness(temporary,"--stdio")){
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             var payload=graph(wire,uri).getAsJsonObject("payload");var forms=payload.getAsJsonObject("forms");
             String producer=payload.getAsJsonArray("nodes").asList().stream().map(JsonElement::getAsJsonObject).filter(n->n.get("title").getAsString().equals("p")).findFirst().orElseThrow().get("id").getAsString();
@@ -128,7 +55,7 @@ class ServerProcessIT {
         String uri=temporary.resolve("job.groovy").toUri().toString();
         String source="action('afterOnly') {}\naction('producer') {}\naction('consumer',dependsOn:'producer',after:'afterOnly') {}\naction('unused') {}\ndefaults 'consumer'\n";
         Files.writeString(temporary.resolve("job.groovy"),source);
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             var definitions=graph(wire,uri).getAsJsonObject("payload");
             assertEquals(4,definitions.getAsJsonArray("nodes").size());assertTrue(!definitions.has("preview")||definitions.get("preview").isJsonNull());
@@ -144,7 +71,7 @@ class ServerProcessIT {
 
     @Test void quotedCompletionFilteringMatchesTheOriginalDelimiterAndKeepsTheCoreEdit()throws Exception {
         String uri=temporary.resolve("job.groovy").toUri().toString();Files.writeString(temporary.resolve("job.groovy"),"action('initial') {}\n");
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);
             int version=0;
             for(String opening:List.of("'","\"","'''","\"\"\"","/","$/")) {
@@ -169,7 +96,7 @@ class ServerProcessIT {
         Path job=temporary.resolve("job.groovy"),settings=temporary.resolve("settings.gretl"),sub=Files.createDirectory(temporary.resolve("sub"));
         Files.writeString(job,"action('root') {}\n");Files.writeString(settings,"include 'sub'\ndefaults ':root'\n");Files.writeString(sub.resolve("job.groovy"),"action('child') {}\n");
         String jobUri=job.toUri().toString(),settingsUri=settings.toUri().toString();
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(jobUri,1,Files.readString(job));
             wire.opened(settingsUri,4,"// 😀\r\ninclude 'notThere'\r\ndefaults ':root'\r\n");
             assertTrue(diagnostic(graph(wire,jobUri),"PROJECT_ENTRY_MISSING"));
@@ -187,7 +114,7 @@ class ServerProcessIT {
         Path job=temporary.resolve("job.groovy"),sql=temporary.resolve("query.sql");String uri=job.toUri().toString(),sqlUri=sql.toUri().toString();
         String source="task('q', DuckDbSqlExecutor) { sqlFiles=[file('query.sql')]; sqlParameters=[ok:'value'] }\n";
         Files.writeString(job,source);Files.writeString(sql,"select '${ok}';\n");
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);graph(wire,uri);
             wire.send("textDocument/didOpen",Map.of("textDocument",Map.of("uri",sqlUri,"languageId","sql","version",1,"text","select '${missing}';\n")),null);
             assertTrue(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"));
@@ -209,7 +136,7 @@ class ServerProcessIT {
         Files.writeString(job,"action('canonical') { file('custom-runtime.groovy') }\n");Files.writeString(temporary.resolve("settings.gretl"),"defaults ':canonical'\n");
         String source="task('custom', HttpDownload) { url='https://example.invalid/a'; output=workPath('a') }\naction('consumer', dependsOn:'custom') { println result('custom').file }\ndefaults 'consumer'\n";
         Files.writeString(custom,source);String uri=custom.toUri().toString();
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(job.toUri().toString(),1,Files.readString(job));graph(wire,job.toUri().toString());
             wire.opened(uri,1,source);wire.graphAfterRefresh(job.toUri().toString());var current=wire.graphAfterRefresh(uri);
             var titles=current.getAsJsonObject("payload").getAsJsonArray("nodes").asList().stream().map(value->value.getAsJsonObject().get("title").getAsString()).toList();
@@ -229,7 +156,7 @@ class ServerProcessIT {
                 +"task('p', HttpDownload) { url='https://example.invalid/a'; output=workPath('a.zip') }\r\n"
                 +"task('c', Extract, dependsOn:'p') { archive=result('p').file; outputDirectory=workPath('out') }\r\ndefaults 'c'\r\n";
         Files.writeString(root.resolve("job.groovy"),source);
-        try(var wire=new Wire(root,"--stdio")) {
+        try(var wire=new LspProcessHarness(root,"--stdio")) {
             var capabilities=wire.initialize(root,true,true).getAsJsonObject("capabilities");assertEquals("utf-16",capabilities.get("positionEncoding").getAsString());
             assertTrue(capabilities.getAsJsonObject("experimental").getAsJsonObject("gretlRuntime").get("graph").getAsBoolean());
             wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
@@ -263,20 +190,20 @@ class ServerProcessIT {
 
     @Test void protocolStatesTrustAndExitWithoutShutdownAreRealProcessBoundaries()throws Exception {
         String uri=temporary.resolve("job.groovy").toUri().toString();Files.writeString(temporary.resolve("job.groovy"),"action('a') {}\n");
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             assertEquals(-32002,wire.response("textDocument/completion",position(uri,0,0)).getAsJsonObject("error").get("code").getAsInt());
             var capabilities=wire.initialize(temporary,false,false).getAsJsonObject("capabilities");assertFalse(capabilities.has("renameProvider"));
             wire.send("initialized",Map.of(),null);wire.opened(uri,1,"action('a') {}\n");
             assertTrue(wire.response("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject("error").get("message").getAsString().contains("UNTRUSTED"));
             wire.send("exit",Map.of(),null);assertTrue(wire.process.waitFor(8,TimeUnit.SECONDS));assertEquals(1,wire.process.exitValue());
         }
-        try(var wire=new Wire(temporary,"--bad")){assertTrue(wire.process.waitFor(8,TimeUnit.SECONDS));assertEquals(2,wire.process.exitValue());assertTrue(wire.failures.isEmpty());}
-        try(var wire=new Wire(temporary,"--stdio")){wire.process.getOutputStream().close();assertTrue(wire.process.waitFor(8,TimeUnit.SECONDS));assertEquals(1,wire.process.exitValue());}
+        try(var wire=new LspProcessHarness(temporary,"--bad")){assertTrue(wire.process.waitFor(8,TimeUnit.SECONDS));assertEquals(2,wire.process.exitValue());assertTrue(wire.failures.isEmpty());}
+        try(var wire=new LspProcessHarness(temporary,"--stdio")){wire.process.getOutputStream().close();assertTrue(wire.process.waitFor(8,TimeUnit.SECONDS));assertEquals(1,wire.process.exitValue());}
     }
 
     @Test void incrementalEventsVersionsCloseReopenAndStalePlansUseTheActualBuffer()throws Exception {
         Path job=temporary.resolve("job.groovy");String uri=job.toUri().toString();String source="// 😀\r\naction('a') {}\r\ndefaults 'a'\r\n";Files.writeString(job,source);
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             var initial=graph(wire,uri);String original=initial.getAsJsonObject("context").get("snapshotId").getAsString();
             var edit=wire.call("gretl/planEdit",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",original,"requireOpenDocuments",true,
@@ -309,7 +236,7 @@ class ServerProcessIT {
         String source="new File('"+quoted+"').text='unsafe'\n"
                 +"task('q', DuckDbSqlExecutor) { sqlFiles=[file('query.sql')]; sqlParameters=[:] }\n";
         Files.writeString(job,source);Files.writeString(sql,"select 1");Files.writeString(part.resolve("job.groovy"),"action('child') {}\n");
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             assertFalse(diagnostic(graph(wire,uri),"SQL_PARAMETER_MISSING"));
             wire.send("textDocument/didOpen",Map.of("textDocument",Map.of("uri",sqlUri,"languageId","sql","version",7,"text","-- 😀\r\nselect ${missing}")),null);
@@ -349,7 +276,7 @@ class ServerProcessIT {
     @Test void quickFixCrossFileReadonlyAndMessageLimitsRemainFailClosed()throws Exception {
         String source="task('p', HttpDownload) { url='https://example.invalid/a' }; task('c', Extract) { archive=result('p').file }\n";
         Path job=temporary.resolve("job.groovy");Files.writeString(job,source);String uri=job.toUri().toString();
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             var before=graph(wire,uri);assertTrue(diagnostic(before,"RESULT_DEPENDENCY_REQUIRED"));
             int character=source.indexOf("result('p')")+8;
@@ -365,21 +292,34 @@ class ServerProcessIT {
             wire.stop();
         }
         var original=Files.getPosixFilePermissions(job);Files.setPosixFilePermissions(job,Set.of(java.nio.file.attribute.PosixFilePermission.OWNER_READ));
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             var rename=new HashMap<String,Object>(position(uri,0,6));rename.put("newName","renamed");
             assertTrue(wire.response("textDocument/rename",rename).getAsJsonObject("error").get("message").getAsString().contains("READONLY"));wire.stop();
         } finally {Files.setPosixFilePermissions(job,original);}
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.process.getOutputStream().write("Content-Length: 2097153\r\n\r\n".getBytes(StandardCharsets.US_ASCII));wire.process.getOutputStream().flush();
             assertTrue(wire.process.waitFor(8,TimeUnit.SECONDS));assertEquals(1,wire.process.exitValue());
+        }
+    }
+
+    @Test void refreshRetryRejectsAnUnexpectedServerErrorAfterOneRequest() throws Exception {
+        try (var wire = new LspProcessHarness(temporary, "--stdio")) {
+            wire.initialize(temporary, true, true);
+            wire.send("initialized", Map.of(), null);
+            int before = wire.next;
+            var failure = assertThrows(AssertionError.class,
+                    () -> wire.callAfterRefresh("gretl/doesNotExist", Map.of()));
+            assertTrue(failure.getMessage().contains("-32601"), failure.getMessage());
+            assertEquals(before + 1, wire.next);
+            wire.stop();
         }
     }
 
     @Test void cancellationAndBurstyChangesCannotPublishObsoleteRepliesAsCurrent()throws Exception {
         Path job=temporary.resolve("job.groovy");String uri=job.toUri().toString();
         StringBuilder source=new StringBuilder();for(int i=0;i<1200;i++)source.append("action('a").append(i).append("') {}\n");Files.writeString(job,source);
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source.toString());
             int cancelled=++wire.next;wire.send("gretl/graph",Map.of("protocolVersion",1,"documentId",uri),cancelled);
             wire.send("$/cancelRequest",Map.of("id",cancelled),null);
@@ -413,7 +353,7 @@ class ServerProcessIT {
                 Map.of("kind","SetDefaults","targets",List.of(p,c)),
                 Map.of("kind","ConfigureTask","target",c,"fields",Map.of("archive",Map.of("kind","JobFileRef","scalar","new.zip")),"options",Map.of("description",Map.of("kind","Text","scalar","Configured")))
         );
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             String snapshot=graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString();
             var outline=wire.call("textDocument/documentSymbol",Map.of("textDocument",Map.of("uri",uri))).getAsJsonArray();
@@ -429,7 +369,7 @@ class ServerProcessIT {
 
     @Test void closedBomFileRenameUsesDisplayCoordinatesAndExplicitNullVersions()throws Exception {
         String source="\uFEFFaction('a') {}\r\naction('b',dependsOn:'a') {}\r\n";Path job=temporary.resolve("job.groovy");Files.writeString(job,source);String uri=job.toUri().toString();
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);
             var prepare=wire.call("textDocument/prepareRename",position(uri,0,8)).getAsJsonObject();assertEquals(8,prepare.getAsJsonObject("range").getAsJsonObject("start").get("character").getAsInt());
             var params=new HashMap<String,Object>(position(uri,0,8));params.put("newName","renamed");
@@ -442,7 +382,7 @@ class ServerProcessIT {
     @Test void invalidCombinedFolderUpdatesPreserveRootsSnapshotAndRetainedPlans()throws Exception {
         Path root=Files.createDirectory(temporary.resolve("root"));Path job=root.resolve("job.groovy");String source="action('a') {}\n";Files.writeString(job,source);
         Path invalid=temporary.resolve("not-a-directory");Files.writeString(invalid,"file");String uri=job.toUri().toString();
-        try(var wire=new Wire(temporary,"--stdio")) {
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(root,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             String snapshot=graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString();
             var plan=wire.call("gretl/planEdit",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",snapshot,"requireOpenDocuments",true,"intent",Map.of("kind","RenameSymbol","target",Map.of("namespace","TASK","qualifiedName","a"),"name","renamed"))).getAsJsonObject();

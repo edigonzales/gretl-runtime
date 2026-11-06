@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.semantic.AnalysisSnapshot;
 import ch.so.agi.gretl.tooling.catalog.OperationCatalog.*;
@@ -8,20 +9,20 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SupplementalSourcesTest {
     static final URI SQL = URI.create("file:/work/sql/query.sql");
 
-    void sqlCatalog(Fixture fixture) {
+    void sqlCatalog(EditTestWorkspace fixture) {
         var files = new InputDescriptor("sqlFiles","Files",true,false,null,List.of(),"files",ValueShape.fromMetadata("list"),null,false,Map.of());
         var parameters = new InputDescriptor("sqlParameters","Parameters",false,false,null,List.of(),"parameters",ValueShape.fromMetadata("map"),null,false,Map.of());
         fixture.catalog.mergeExplicitDescriptors(List.of(new OperationDescriptor("test.duckdb","DuckDbSqlExecutor","SQL","fixture",List.of(files,parameters),List.of(),"example",true)));
         fixture.manager.onCatalogChanged();
     }
 
-    PlannedEdit plan(Fixture fixture, AnalysisSnapshot before) {
+    PlannedEdit plan(EditTestWorkspace fixture, AnalysisSnapshot before) {
         var transaction = new EditTransaction(before,EditStyle.defaults());
         new DeclarationSourceEdits().addTask(transaction,new SemanticEditIntent.AddTask(JOB,fixture.files.get(JOB).length(),"sql","test.duckdb",
                 Map.of("sqlFiles",new EditableValue.Sequence(List.of(new EditableValue.JobFileRef("sql/query.sql"))),
@@ -30,7 +31,7 @@ class SupplementalSourcesTest {
     }
 
     @Test void newSqlDependencyRequiresAnExplicitCaptureAndItsHashInvalidatesThePlan() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             sqlCatalog(fixture);
             fixture.files.put(SQL,"select ${key}");
             var missing = fixture.capture();
@@ -48,7 +49,7 @@ class SupplementalSourcesTest {
     }
 
     @Test void requestedDirtySqlBufferWinsAndIsPartOfThePreconditionVector() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             sqlCatalog(fixture);
             fixture.files.put(SQL,"select ${diskOnly}");
             fixture.buffers.open(SQL,"sql",7,"select ${key}");
@@ -62,7 +63,7 @@ class SupplementalSourcesTest {
     }
 
     @Test void extraSourceRequestsAreBoundedAndDoNotBypassTheRootReadPolicy() {
-        try (var fixture = new Fixture()) {
+        try (var fixture = new EditTestWorkspace()) {
             URI outside = URI.create("file:/outside/secret.sql");
             fixture.files.put(outside,"must not be read");
             var capture = fixture.capture(List.of(outside));

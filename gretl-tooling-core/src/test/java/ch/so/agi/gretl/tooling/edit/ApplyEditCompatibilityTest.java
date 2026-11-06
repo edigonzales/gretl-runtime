@@ -1,17 +1,18 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.catalog.OperationCatalog.*;
 import ch.so.agi.gretl.tooling.semantic.SemanticModel.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ApplyEditCompatibilityTest {
     private SymbolId task(String name){return new SymbolId(Namespace.TASK,name);}
-    private void setup(Fixture f){
+    private void setup(EditTestWorkspace f){
         var input=new InputDescriptor("input","Input",true,false,null,List.of(),"input",ValueShape.fromMetadata("path"),null,false,Map.of());
         var overwrite=new InputDescriptor("overwrite","Overwrite",false,false,null,List.of(),"overwrite",ValueShape.fromMetadata("boolean"),null,false,Map.of());
         f.catalog.mergeExplicitDescriptors(List.of(new OperationDescriptor("test.source","Source","Source","fixture",List.of(),List.of(new OutputDescriptor("file","File",ValueShape.fromMetadata("path"),false)),"example",false),
@@ -22,7 +23,7 @@ class ApplyEditCompatibilityTest {
         f.files.put(java.net.URI.create("file:/work/tasks/extra.groovy"),"throw new AssertionError('never execute or resolve')");
     }
     @Test void allGraphAndReferenceRoutesRejectPartialIncludesWithoutEdits(){
-        try(var f=new Fixture()){
+        try(var f=new EditTestWorkspace()){
             setup(f);var before=f.capture();String original=f.files.get(JOB);var planner=new SemanticEditPlanner();
             var intents=List.<SemanticEditIntent>of(new SemanticEditIntent.RenameSymbol(task("a"),"renamed"),new SemanticEditIntent.DeleteTask(task("a")),
                     new SemanticEditIntent.AddDependency(task("p"),task("a"),EdgeKind.DEPENDS_ON),new SemanticEditIntent.RemoveDependency(task("p"),task("a"),EdgeKind.AFTER),
@@ -36,13 +37,13 @@ class ApplyEditCompatibilityTest {
         }
     }
     @Test void resultFieldSetterUsesTheSameReferenceCoverageRuleAsBindResult(){
-        try(var f=new Fixture()){
+        try(var f=new EditTestWorkspace()){
             setup(f);var result=new SemanticEditPlanner().plan(f.capture(),new SemanticEditIntent.SetField(task("a"),"input",new EditableValue.ResultFieldRef(task("p"),"file")),EditStyle.defaults(),CancellationToken.NONE);
             assertTrue(result.plan().isEmpty());assertEquals(EditCapability.State.REJECTED,result.capability().state());
         }
     }
     @Test void nestedReferenceValuesCannotBypassTheCoverageGuard(){
-        try(var f=new Fixture()){
+        try(var f=new EditTestWorkspace()){
             setup(f);var before=f.capture();var ref=new EditableValue.ResultFieldRef(task("p"),"file");
             for(var intent:List.of(new SemanticEditIntent.SetField(task("a"),"items",new EditableValue.Sequence(List.of(ref))),
                     new SemanticEditIntent.SetField(task("a"),"options",new EditableValue.Mapping(Map.of("path",ref))))){
@@ -51,20 +52,20 @@ class ApplyEditCompatibilityTest {
         }
     }
     @Test void parameterReferencesAlsoRequireKnownDeclarationCoverage(){
-        try(var f=new Fixture()){
+        try(var f=new EditTestWorkspace()){
             setup(f);f.files.put(JOB,"parameter('path',type:'path',description:'Path')\r\n"+f.files.get(JOB));
             var result=new SemanticEditPlanner().plan(f.capture(),new SemanticEditIntent.SetField(task("a"),"input",new EditableValue.ParameterRef(new SymbolId(Namespace.PARAMETER,"path"))),EditStyle.defaults(),CancellationToken.NONE);
             assertTrue(result.plan().isEmpty());assertEquals("EDIT_REFERENCE_COVERAGE",result.capability().reasons().getFirst().code());
         }
     }
     @Test void aFormCannotHideGraphMutationBehindAnOtherwiseSafeLocalChange(){
-        try(var f=new Fixture()){
+        try(var f=new EditTestWorkspace()){
             setup(f);var result=new SemanticEditPlanner().planConfiguration(f.capture(),task("a"),Map.of("overwrite",new EditableValue.Literal(false)),Set.of(),Map.of("dependsOn",new EditableValue.Sequence(List.of())),EditStyle.defaults(),CancellationToken.NONE);
             assertTrue(result.plan().isEmpty());assertEquals(EditCapability.State.REJECTED,result.capability().state());
         }
     }
     @Test void localScalarEditPreservesEveryOtherByteWithCapturedFragments(){
-        try(var f=new Fixture()){
+        try(var f=new EditTestWorkspace()){
             setup(f);String original=f.files.get(JOB);var before=f.capture();
             assertTrue(before.analysis().capture().project().sources().versions().containsKey(java.net.URI.create("file:/work/tasks/extra.groovy")));
             var result=new SemanticEditPlanner().plan(before,new SemanticEditIntent.SetField(task("a"),"overwrite",new EditableValue.Literal(false)),EditStyle.defaults(),CancellationToken.NONE);
@@ -72,7 +73,7 @@ class ApplyEditCompatibilityTest {
         }
     }
     @Test void unknownExistingDefaultsCannotDisappearThroughASetter(){
-        try(var f=new Fixture()){
+        try(var f=new EditTestWorkspace()){
             setup(f);f.files.put(JOB,f.files.get(JOB).replace("defaults 'a'","defaults 'a', 'fragmentTarget'"));String original=f.files.get(JOB);
             var result=new SemanticEditPlanner().plan(f.capture(),new SemanticEditIntent.SetDefaults(JOB,List.of(task("a"))),EditStyle.defaults(),CancellationToken.NONE);assertTrue(result.plan().isEmpty());assertEquals(original,f.files.get(JOB));
         }

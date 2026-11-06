@@ -15,14 +15,14 @@ import java.nio.file.Path;
 
 class ProjectMetadataTest {
     @TempDir Path temp;
-    @Test void prj207ValidProjectMetadataIsImmutableAndOldConstructorStillWorks() throws Exception {
+    @Test void validProjectMetadataIsImmutableAndOldConstructorStillWorks() throws Exception {
         var metadata=read(valid()); assertEquals(2,metadata.schemaVersion());assertEquals(1,metadata.projectEntries().size());
         assertThrows(UnsupportedOperationException.class,()->metadata.projectEntries().clear());
         assertEquals(List.of(":a:run"),metadata.defaultTargets());
         var old = new JobJarMain.JobMetadata(1,"old","1","6.0.0-SNAPSHOT",25,"job","job.groovy",JobJarMain.RESOURCE_ROOT,List.of(),List.of("job.groovy"),"a".repeat(64));
         assertTrue(old.projectEntries().isEmpty());assertEquals("job",old.entryClass());
     }
-    @Test void prj207MalformedFieldsClassesPathsAndMixedSchemasFailBeforeInstantiation() throws Exception {
+    @Test void malformedFieldsClassesPathsAndMixedSchemasFailBeforeInstantiation() throws Exception {
         for(var mutation:List.<java.util.function.Consumer<Map<String,Object>>>of(
                 m->m.put("unknown",true), m->m.put("schemaVersion",2.5),m->m.put("project",false),
                 m->m.put("entryClass","job"),m->m.put("entryScript","job.groovy"),m->m.put("scriptSha256","a".repeat(64)),
@@ -41,7 +41,7 @@ class ProjectMetadataTest {
             assertTrue(failure.getMessage().startsWith("JOB_METADATA_INVALID:"),failure.getMessage());
         }
     }
-    @Test void prj206NormalizedResourcesAllowDotsWithinNamesAndUseOwnedRunRoot() throws Exception {
+    @Test void normalizedResourcesAllowDotsWithinNamesAndUseOwnedRunRoot() throws Exception {
         var input=valid(); input.put("resourceFiles",List.of("a/data..txt"));
         var metadata=read(input); Path run=Files.createDirectory(temp.resolve("run"));
         var loader=new ClassLoader(null) {

@@ -1,29 +1,33 @@
 package ch.so.agi.gretl.tasks.io;
 
-import ch.so.agi.gretl.tasks.io.http.*;
-import ch.so.agi.gretl.tasks.io.archive.*;
+import ch.so.agi.gretl.tasks.io.http.HttpDownloadOperation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class IoTaskProviderTest {
     @Test
-    void serviceLoaderExposesThirteenIoTasks() {
+    void serviceLoaderExposesTheSupportedIoOperations() {
         OperationRegistry registry = OperationRegistry.load(getClass().getClassLoader());
-        assertEquals(13, registry.all().size());
-        assertEquals("HttpDownload", registry.requireSymbol("HttpDownload").symbol());
-        assertEquals("Curl", registry.requireSymbol("Curl").symbol());
-        assertEquals("Gzip", registry.requireSymbol("Gzip").symbol());
-        assertEquals("Extract", registry.requireSymbol("Extract").symbol());
-        assertFalse(registry.all().stream().anyMatch(operation ->
-                operation.symbol().equals("Publisher")));
+        var expected = List.of("HttpDownload", "Curl", "Gzip", "Extract",
+                "FtpList", "FtpDownload", "FtpUpload", "FtpDelete",
+                "S3Download", "S3Upload", "S3Delete", "S3Bucket2Bucket", "XslTransformer");
+        assertEquals(expected.stream().sorted().toList(),
+                registry.all().stream().map(OperationType::symbol).sorted().toList());
+    }
+
+    @Test
+    void ftpDownloadRequiresALocalDirectory() {
+        OperationRegistry registry = OperationRegistry.load(getClass().getClassLoader());
+        assertTrue(registry.requireSymbol("FtpDownload").inputs().stream()
+                .anyMatch(field -> field.name().equals("localDir") && field.required()));
     }
 
     @Test

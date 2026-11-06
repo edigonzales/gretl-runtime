@@ -15,7 +15,7 @@ class GroovyProjectLoaderTest {
     @TempDir Path temp;
 
     @Test
-    void prj101SameBasenamesAndLocalNamesKeepBodiesBindingsAndOneDefinition() throws Exception {
+    void sameBasenamesAndLocalNamesKeepBodiesBindingsAndOneDefinition() throws Exception {
         var h = new GroovyHarness(temp);
         write(h, "settings.gretl", "include 'a', 'b:c'\ndefaults ':run', ':a:run', ':b:c:run'\n");
         write(h, "job.groovy", "def value = 'root'\naction('run') { value }\ndefaults 'ignored'\n");
@@ -35,7 +35,7 @@ class GroovyProjectLoaderTest {
     }
 
     @Test
-    void prj104ForwardCrossProjectTypedResultUsesActualDependencyAndOperationFields() throws Exception {
+    void forwardCrossProjectTypedResultUsesActualDependencyAndOperationFields() throws Exception {
         var h = new GroovyHarness(temp);
         write(h, "settings.gretl", "include 'consumer', 'producer'\ndefaults ':consumer:run'\n");
         write(h, "consumer/job.groovy", "task('run', Echo, dependsOn: ':producer:run') { text = result(':producer:run').result + '-consumer' }\n");
@@ -49,7 +49,7 @@ class GroovyProjectLoaderTest {
     }
 
     @Test
-    void prj108RootLocalAndAbsoluteParametersRetainConversions() throws Exception {
+    void rootLocalAndAbsoluteParametersRetainConversions() throws Exception {
         var h = new GroovyHarness(temp);
         write(h, "settings.gretl", "include 'a'\ndefaults ':a:run'\n");
         write(h, "job.groovy", "parameter('root', description: 'Root', defaultValue: 'R')\n");
@@ -60,7 +60,7 @@ class GroovyProjectLoaderTest {
     }
 
     @Test
-    void prj112ProjectSourcesUseOriginalFilesForRegistrationAndRuntimeFailure() throws Exception {
+    void projectSourcesUseOriginalFilesForRegistrationAndRuntimeFailure() throws Exception {
         var h = new GroovyHarness(temp);
         write(h, "settings.gretl", "include 'a:b'\ndefaults ':a:b:run'\n");
         Path source = write(h, "a/b/job.groovy", "// heading\naction('run') {\n throw new IllegalStateException('original-error')\n}\n");

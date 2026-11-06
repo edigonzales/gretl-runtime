@@ -1,12 +1,14 @@
-package ch.so.agi.gretl.tooling.edit;
+package ch.so.agi.gretl.tooling.query;
 
-import ch.so.agi.gretl.tooling.query.*;
+import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
+import ch.so.agi.gretl.tooling.edit.EditVerifier;
+import ch.so.agi.gretl.tooling.edit.SourceReplacement;
 import ch.so.agi.gretl.tooling.query.QueryResults.*;
 import ch.so.agi.gretl.tooling.semantic.AnalysisSnapshot;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import static ch.so.agi.gretl.tooling.edit.EditVerifierTest.*;
+import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LanguageFeatureQueriesTest {
@@ -16,7 +18,7 @@ class LanguageFeatureQueriesTest {
     String apply(String source,CompletionProposal proposal) {return source.substring(0,proposal.replacement().startUtf16())+proposal.newText()+source.substring(proposal.replacement().endUtf16());}
 
     @Test void resultOutputHoverUsesBoundSpiDescriptorAndExactPropertyAnchor() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             var shape=ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape.fromMetadata("path");
             var output=new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OutputDescriptor("file","Downloaded archive",shape,false);
             fixture.catalog.mergeExplicitDescriptors(List.of(new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor("test.producer","Producer","Producer","fixture",List.of(),List.of(output),"example",false)));
@@ -31,7 +33,7 @@ class LanguageFeatureQueriesTest {
     }
 
     @Test void booleanValuesAndTextEnumsAreDistinctFromUriSchemesAndApplyWithoutNewErrors() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             var fields=List.of(
                     new ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor("url","URL",false,false,null,List.of("http","https"),"url",new ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape("Opaque","uri",List.of()),null,false,java.util.Map.of()),
                     new ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor("enabled","Enabled",false,false,null,List.of(),"enabled",ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape.fromMetadata("boolean"),null,false,java.util.Map.of()));
@@ -48,7 +50,7 @@ class LanguageFeatureQueriesTest {
     }
 
     @Test void settingsAndInnerInvocationsUseCapturedProjectAndCatalogInformation() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             var part=java.net.URI.create("file:/work/part/job.groovy");
             fixture.files.put(SETTINGS,"include 'part'\ndefaults ':part:a'\n");
             fixture.files.put(part,"task('a', Echo) { input='part' }\n");
@@ -66,7 +68,7 @@ class LanguageFeatureQueriesTest {
     }
 
     @Test void completionUsesCatalogAndExactQuotedReplacementInsteadOfDoublingQuotes() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             String source="parameter('arg', type:'text', defaultValue:'x')\n"
                     +"task('a', Echo, description:'A') { input=parameter('arg'); mode='FAST' }\n"
                     +"action('c', dependsOn:'a') { println result('a') }\ndefaults 'c'\n";
@@ -87,8 +89,8 @@ class LanguageFeatureQueriesTest {
     }
 
     @Test void fieldsPathsAndResultPortsComeFromTheirOwnedSnapshotContexts() {
-        try(var fixture=new Fixture()) {
-            new DependencySourceEditsTest().catalog(fixture);
+        try(var fixture=new EditTestWorkspace()) {
+            fixture.addResultOperations();
             String source="task('p', Source) {}\n"
                     +"task('a', Echo) {\n    input=file('query.sql')\n    \n}\n"
                     +"task('c', Sink, dependsOn:'p') { input=result('p').file }\n";
@@ -108,7 +110,7 @@ class LanguageFeatureQueriesTest {
     }
 
     @Test void commentsForeignCallsOpaqueExpressionsAndOrdinaryStringsDoNotReceiveDslProposals() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             String source="task('a', Echo) {\n input=foreign('FAST')\n foreign(mode:'FAST')\n // mode input\n}\n"
                     +"def ordinary='Echo'\nforeign('Echo')\n";
             fixture.files.put(JOB,source);var snapshot=fixture.capture();
@@ -121,7 +123,7 @@ class LanguageFeatureQueriesTest {
     }
 
     @Test void partiallyTypedOwnedGapsRemainUsefulButForeignHeaderCallsAndCommentEndsStayQuiet() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             for(String source:List.of("task('a', Ec) { input='x' }","task('a', ) { input='x' }")) {
                 fixture.files.put(JOB,source);var snapshot=fixture.capture();
                 int position=source.contains("Ec")?source.indexOf("Ec")+1:source.indexOf(",")+2;
@@ -138,32 +140,72 @@ class LanguageFeatureQueriesTest {
         }
     }
 
-    @Test void signaturesRenameAndQuickFixesUseCurrentDslAndApplyRealPostimages() {
-        try(var fixture=new Fixture()) {
-            new DependencySourceEditsTest().catalog(fixture);
-            String source="parameter('arg',type:'integer',defaultValue:7)\n"
-                    +"task('p', Source) {}\ntask('c', Sink) { input=result('p').file; println parameter('arg',Long) }\n";
-            fixture.files.put(JOB,source);var snapshot=fixture.capture();
-            assertTrue(queries.signatureHelp(at(snapshot,source,"task('c', Sink",12)).orElseThrow().label().contains("when: Closure"));
-            assertTrue(queries.signatureHelp(at(snapshot,source,"parameter('arg',Long)",17)).orElseThrow().label().contains("resolves to Long"));
-            var rename=queries.rename(at(snapshot,source,"task('p'",7),"producer").plan().orElseThrow();
+    private static final String RESULT_BINDING_SOURCE = "parameter('arg',type:'integer',defaultValue:7)\n"
+            + "task('p', Source) {}\ntask('c', Sink) { input=result('p').file; println parameter('arg',Long) }\n";
+
+    private AnalysisSnapshot captureResultBinding(EditTestWorkspace fixture) {
+        fixture.addResultOperations();
+        fixture.files.put(JOB, RESULT_BINDING_SOURCE);
+        return fixture.capture();
+    }
+
+    private DiagnosticId missingResultDependency(AnalysisSnapshot snapshot) {
+        var diagnostic = snapshot.analysis().diagnostics().stream()
+                .filter(d -> d.code().equals("RESULT_DEPENDENCY_REQUIRED")).findFirst().orElseThrow();
+        return new DiagnosticId(diagnostic.code(), diagnostic.anchor());
+    }
+
+    @Test void signatureHelpDescribesTaskOptionsAndTypedParameters() {
+        try (var fixture = new EditTestWorkspace()) {
+            var snapshot = captureResultBinding(fixture);
+            assertTrue(queries.signatureHelp(at(snapshot, RESULT_BINDING_SOURCE, "task('c', Sink", 12))
+                    .orElseThrow().label().contains("when: Closure"));
+            assertTrue(queries.signatureHelp(at(snapshot, RESULT_BINDING_SOURCE, "parameter('arg',Long)", 17))
+                    .orElseThrow().label().contains("resolves to Long"));
+        }
+    }
+
+    @Test void renamingAProducerUpdatesItsBoundResultReference() {
+        try (var fixture = new EditTestWorkspace()) {
+            var snapshot = captureResultBinding(fixture);
+            var rename = queries.rename(at(snapshot, RESULT_BINDING_SOURCE, "task('p'", 7), "producer")
+                    .plan().orElseThrow();
             assertTrue(rename.postimages().get(JOB).contains("result('producer').file"));
-            var diagnostic=snapshot.analysis().diagnostics().stream().filter(d->d.code().equals("RESULT_DEPENDENCY_REQUIRED")).findFirst().orElseThrow();
-            var context=at(snapshot,source,"result('p')",8);
-            var actions=queries.codeActions(context,List.of(new DiagnosticId(diagnostic.code(),diagnostic.anchor())));
-            assertEquals(1,actions.size());
-            assertThrows(java.util.concurrent.CancellationException.class,()->queries.codeActions(context,List.of(new DiagnosticId(diagnostic.code(),diagnostic.anchor())),()->true));
-            assertThrows(java.util.concurrent.CancellationException.class,()->queries.applyQuickFix(context,actions.getFirst(),()->true));
-            var fixed=queries.applyQuickFix(context,actions.getFirst()).plan().orElseThrow();
+        }
+    }
+
+    @Test void quickFixAddsTheMissingDependencyAndRejectsAnOutdatedSnapshot() {
+        try (var fixture = new EditTestWorkspace()) {
+            var snapshot = captureResultBinding(fixture);
+            var diagnostic = missingResultDependency(snapshot);
+            var context = at(snapshot, RESULT_BINDING_SOURCE, "result('p')", 8);
+            var actions = queries.codeActions(context, List.of(diagnostic));
+            assertEquals(1, actions.size());
+            var fixed = queries.applyQuickFix(context, actions.getFirst()).plan().orElseThrow();
             assertTrue(fixed.postimages().get(JOB).contains("dependsOn: 'p'"));
-            assertFalse(fixed.postimage().analysis().diagnostics().stream().anyMatch(d->d.code().equals("RESULT_DEPENDENCY_REQUIRED")));
-            assertTrue(queries.codeActions(context,List.of(new DiagnosticId("WRONG",diagnostic.anchor()))).isEmpty());
-            assertThrows(IllegalArgumentException.class,()->queries.applyQuickFix(new QueryContext(fixed.postimage(),JOB,0),actions.getFirst()));
+            assertFalse(fixed.postimage().analysis().diagnostics().stream()
+                    .anyMatch(d -> d.code().equals("RESULT_DEPENDENCY_REQUIRED")));
+            assertTrue(queries.codeActions(context, List.of(new DiagnosticId("WRONG", diagnostic.anchor()))).isEmpty());
+            assertThrows(IllegalArgumentException.class,
+                    () -> queries.applyQuickFix(new QueryContext(fixed.postimage(), JOB, 0), actions.getFirst()));
+        }
+    }
+
+    @Test void cancelledQuickFixQueryAndApplyBothAbort() {
+        try (var fixture = new EditTestWorkspace()) {
+            var snapshot = captureResultBinding(fixture);
+            var diagnostic = missingResultDependency(snapshot);
+            var context = at(snapshot, RESULT_BINDING_SOURCE, "result('p')", 8);
+            var action = queries.codeActions(context, List.of(diagnostic)).getFirst();
+            assertThrows(java.util.concurrent.CancellationException.class,
+                    () -> queries.codeActions(context, List.of(diagnostic), () -> true));
+            assertThrows(java.util.concurrent.CancellationException.class,
+                    () -> queries.applyQuickFix(context, action, () -> true));
         }
     }
 
     @Test void signaturePositionsDistinguishNamedOptionEntriesFromSeparateArgumentsAndLeadingMaps() {
-        try(var fixture=new Fixture()) {
+        try(var fixture=new EditTestWorkspace()) {
             String named="task('a', Echo, description:'A', timeout:'PT1S') { input='x' }";
             fixture.files.put(JOB,named);var snapshot=fixture.capture();
             assertEquals(2,queries.signatureHelp(at(snapshot,named,"PT1S",2)).orElseThrow().activeParameter());
