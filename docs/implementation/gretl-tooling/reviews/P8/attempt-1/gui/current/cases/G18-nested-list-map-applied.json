@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T14:18:47.741Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "9b44c703aa1d3defcac765e653f571f9bcfeacdff59dfefd24501d60f70b78f5",
-  "imageSha256": "339f7a7a584851d82e5f957592bf606db65907cc99ef553c1caed76f1787dce1",
-  "image": "G18-nested-list-map-applied.jpg"
-}

@@ -68,4 +68,4 @@ Die IDE bietet eine eigene beschriftete Kante und den Ownerdialog an. Shared-
 Quellen bleiben ohne exklusiven Schreibfootprint schreibgeschützt; die Wahl eines
 Lesekontexts hebt das nicht auf. Den gespeicherten Job separat mit der Runtime
 ausführen. Die ausführliche Featureanleitung steht im zugehörigen Quellcheckout
-unter `docs/implementation/task-finalizers/README.md`.
+unter [Finalizer-Guide](https://github.com/edigonzales/gretl-runtime/blob/main/docs/guides/task-finalizers.md).

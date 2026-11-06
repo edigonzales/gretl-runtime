@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T14:19:34.927Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "ecf43a031d77406f49e4e64a96fec30172f36cea0a342c480084b9a1d6f5188c",
-  "imageSha256": "fa730e80848b2233745fa74c1a98a87370383a74f120f7f0a07649a1b860611e",
-  "image": "G21-modeler-rename-four-references.jpg"
-}

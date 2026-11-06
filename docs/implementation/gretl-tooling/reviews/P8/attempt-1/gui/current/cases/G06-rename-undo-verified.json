@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T13:50:58.116Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "91e7aff9f49b0b978f33234dd796a22489c875cbfbd8dfc3e1b8b3be27fd2a29",
-  "imageSha256": "797e8b5610227bcb55ce690e71b8814ca6285e0e31d8161213d228ec37d5441f",
-  "image": "G06-rename-undo-verified.jpg"
-}

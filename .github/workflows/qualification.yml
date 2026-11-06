@@ -18,6 +18,10 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+      - name: Check current documentation links and checker
+        run: |
+          python3 -m unittest discover -s tests/docs -v
+          python3 scripts/check-docs.py
       - name: Verify standard and preserve audited evidence
         env:
           DOCKER_HOST: unix:///tmp/gretl-intentionally-unavailable-docker.sock

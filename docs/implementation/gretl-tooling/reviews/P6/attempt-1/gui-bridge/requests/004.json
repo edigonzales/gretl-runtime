@@ -1,9 +1,0 @@
-{
-  "id": "004",
-  "purpose": "Reviewer independent native probe setup: focus editor group 1 (Main text active) and pin the Main modeler beside the existing Other modeler",
-  "actions": [
-    {"kind": "command", "title": "View: Focus First Editor Group"},
-    {"kind": "command", "title": "GRETL: Open Modeler"},
-    {"kind": "observe"}
-  ]
-}

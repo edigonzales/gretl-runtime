@@ -3,10 +3,9 @@
 Diese Seite beschreibt die gegenwärtige Implementierung. Öffentliche Signaturen
 stehen in `gretl-api/src/main/java/ch/so/agi/gretl/runtime/api/`; fachliche
 Operationsfelder stehen in der [Taskreferenz](../reference/reference.adoc).
-[Module](../implementation/module-boundaries.md),
-[Paketierung](../implementation/job-packaging.md) und
-[Projekte](../implementation/project-subprojects/README.md) haben eigene Anleitungen.
-Historische Sollkapitel sind keine zusätzlichen aktuellen Implementierungsaufträge.
+[Module](module-boundaries.md),
+[Paketierung](../guides/packaging.md) und
+[Projekte](../guides/projects.md) haben eigene Anleitungen.
 
 ## Öffentliche Java-SPI
 
@@ -38,7 +37,7 @@ Streams oder Verbindungen. Typ-/Feldmetadaten definieren lesende Ergebnisansicht
 Resultatobjekte werden nicht pauschal als Logs oder Berichte serialisiert.
 
 Nachweise: `ApiRuntimeTypesTest`, `ApiMetadataTest`, `ApiIsolationTest`, die Runner-Kontext-/Ressourcentests sowie
-`OperationMetadataTest`. Die unveränderten historischen
+`OperationMetadataTest`. Die ursprünglichen
 [Operationsverträge](../../tests/contracts/operation-baseline.json) und
 [Java-Typumzüge](../../tests/contracts/java-type-moves.json) bleiben dessen Orakel.
 Sie werden bei Pfadumzügen nicht auf den aktuellen Ist-Code neu erzeugt.
@@ -51,7 +50,7 @@ Deklarierte Parameter und `taskConfig`-Aliase werden vor beziehungsweise beim
 vorgesehenen Aufruf aufgelöst. Unbekannte Konfigurationsfelder sind Fehler.
 `dependsOn` wählt echte Datenvorgänger; `after` ordnet nur schon ausgewählte
 Tasks. `finalizedBy` wählt bedingte Abschlusskandidaten und aktiviert sie erst
-nach einem erreichten Ownerabschluss. Siehe [Finalizervertrag](../implementation/task-finalizers/README.md).
+nach einem erreichten Ownerabschluss. Siehe [Finalizervertrag](../guides/task-finalizers.md).
 Ergebniszugriff erfordert weiterhin Datenabhängigkeit. Named Tasks,
 Actions und synchrone innere Operationsaufrufe nutzen denselben Invoker.
 
@@ -60,7 +59,7 @@ Vertrauenswürdiger Groovy-Top-Level-Code kann beim Definitionsladen dennoch lau
 Dies ist keine allgemeine Sandbox für Jobcode. Settings sind dagegen deklarativ:
 Der AST-Parser erlaubt konstante `include`-/`defaults`-Argumente und führt die
 Settings nicht aus. Projekt- und Einzeldateimodus behalten ihre unterschiedlichen
-Namens-/Pfadbasen; siehe [Subprojektvertrag](../implementation/project-subprojects/README.md).
+Namens-/Pfadbasen; siehe [Subprojektvertrag](../guides/projects.md).
 
 ## Runner, Fehler und Abschluss
 
@@ -115,7 +114,7 @@ Secretaliasse haben unter Konfigurationsschema 1 genau eine Quelle:
 `environment`, `file` oder `plaintext`. Es gibt keinen automatischen Fallback.
 Klartextwerte in einer Konfiguration werden nicht durch spätere Logmaskierung
 verschlüsselt. Datei-/Wertgrenzen und Pfadbasen stehen in der
-[Build-/Betriebsanleitung](../implementation/build.md).
+[Build-/Betriebsanleitung](../development/build.md).
 
 Jobressourcen sind explizit. Ein paketierter Job materialisiert sie rungebunden;
 Modellverzeichnisse werden ausdrücklich angegeben. Tagesdaten und dauerhafte
@@ -271,3 +270,10 @@ Mermaid wird nicht über einen Netzwerkdienst gerendert.
   Groovy-Top-Level-Code kann beim Laden der Definition ausgeführt werden.
 - Die technischen Kantenlabels `dependsOn`, `after` und `finalizedBy` bleiben
   sprachneutral; Titel und Fehlermeldungen folgen der Locale.
+
+## Funktionsgrenzen
+
+Die Distribution enthält keine Operationen `Publisher` oder `XtfToGpkg`.
+Die vorhandenen `Ili2gpkg`-Operationen haben eigene Verträge in der
+[Taskreferenz](../reference/reference.adoc). Runtime und Job-JARs benötigen
+Java 25; ein Native Image wird nicht ausgeliefert.

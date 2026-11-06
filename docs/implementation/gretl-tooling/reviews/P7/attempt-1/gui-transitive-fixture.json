@@ -1,7 +1,0 @@
-{
-  "generatedAt": "2026-11-04T10:45:56.044Z",
-  "path": "/Users/stefan/.cache/gretl-tooling-review/P7-candidate-3-gui/workspace ä space/transitive job/counterprobe.groovy",
-  "size": 374,
-  "sha256": "97e197504673fe03dd23c9b013e6c259a431baed2edba9a78f2e206d3ce3876a",
-  "source": "task('producer', HttpDownload) {\n    url = 'https://example.invalid/a.zip'\n    output = workPath('archive.zip')\n}\naction('bridge', dependsOn: 'producer') { println 'not executed' }\ntask('consumer', Extract, after: 'producer', dependsOn: [ 'bridge']) {\n    archive = workPath('archive.zip')\n    compression = 'ZIP'\n    outputDirectory = workPath('out')\n}\ndefaults 'consumer'\n"
-}

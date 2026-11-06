@@ -89,7 +89,7 @@ cmp examples/minimal-action/message.txt "$gretl_demo_dir/jar-message.txt"
 Das fertige JAR benötigt Java 25 und seine Laufzeitwerte. Paketieren führt
 keine Jobtasks aus. Schemas 1 und 2 bleiben für Einzeljobs unterstützt;
 Schema 3 bündelt Projekte mit `settings.gretl`. Details stehen im
-[Paketierungsvertrag](docs/implementation/job-packaging.md).
+[Paketierungsvertrag](docs/guides/packaging.md).
 
 ## Dokumentation und Grenzen
 
@@ -105,14 +105,14 @@ für Hilfe, Check und Planung laufen. Plattform- und Releasefreigaben brauchen
 jeweils eigene, an einen Commit gebundene Nachweise.
 
 
-Lokale [Scriptfragmente mit `apply from:`](docs/implementation/script-includes/README.md)
+Lokale [Scriptfragmente mit `apply from:`](docs/guides/script-includes.md)
 teilen den bestehenden Job-/Subprojektscope und funktionieren auch im
 vorkompilierten Job-JAR. Das [lokale Beispiel](examples/script-includes/README.md)
-prüft den vollständigen Inhalt nach Gzip-Dekompression. Die IDE-Sicht bleibt
-partiell; vollständige Includeauflösung und dateiübergreifendes Rename sind
-nicht zugesichert.
+prüft den vollständigen Inhalt nach Gzip-Dekompression. Der Editor analysiert statische Includes und kann eindeutige Quellen
+dateiübergreifend bearbeiten. Gemeinsam genutzte Fragmente bleiben dabei
+schreibgeschützt.
 
-[Taskgebundene Finalizer](docs/implementation/task-finalizers/README.md) ergänzen
+[Taskgebundene Finalizer](docs/guides/task-finalizers.md) ergänzen
 den normalen Taskgraphen um bedingte Abschlussarbeit. Das lokale
 [ausführbare Beispiel](examples/task-finalizers/README.md) zeigt Erfolg,
 Ownerfehler, gemeinsamen Finalizer und globales Cleanup.

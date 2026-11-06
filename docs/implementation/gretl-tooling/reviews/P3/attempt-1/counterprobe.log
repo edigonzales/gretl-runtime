@@ -1,3 +1,0 @@
-A duplicate-and-opaque-safe-option: PASS (task('a', Echo, description: 'reviewed') {\r\n  input='first'\r\n  input='last'\r\n  mode=loadDynamicValue()\r\n}\r\n)
-B read-only-reference-rename-boundary: PASS (locked=EDIT_READONLY, editable=ALLOWED)
-COUNTERPROBE PASS

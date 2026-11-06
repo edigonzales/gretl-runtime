@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T13:50:15.447Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "b94a1a7ac29779c3e1f78b3c1733bde0bb07f018de3e52ba7fdd794e53f319fa",
-  "imageSha256": "3613240eaa73850b157150f9cb6aed37151a177483593ceece4b5906a22bec05",
-  "image": "G02-undo-completion-native-command.jpg"
-}

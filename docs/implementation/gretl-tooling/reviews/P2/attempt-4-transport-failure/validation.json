@@ -1,6 +1,0 @@
-{
-  "reviewId": "e4ef667b-d693-4694-857c-11a92a854d8d",
-  "candidateSha": "1a8d9f0a4096295c2e5898bab2593bb3eb34789e",
-  "result": "INVALID",
-  "error": "ENOENT: no such file or directory, open '/Users/stefan/.cache/gretl-tooling-review/P2-review-4/evidence/verdict.json'"
-}

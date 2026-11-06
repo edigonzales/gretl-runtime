@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T13:53:59.589Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "7b34c1e80458bbb7b4a90ea6770b49624c0f4eab523499b54e897e22803df957",
-  "imageSha256": "40eac3c1bed8e344223a10e1e3350d8ac4c6c77b551728890051dc0a77aa6114",
-  "image": "G07-dependency-fix-menu.jpg"
-}

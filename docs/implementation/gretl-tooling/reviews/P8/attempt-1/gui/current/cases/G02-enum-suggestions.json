@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T13:51:53.380Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "afb56095c534a2ed526f75db5b692f0ae03a9a32e8bf03c5d29d40e01cd26fbc",
-  "imageSha256": "690ee2d6561ee5645c071876c95b63bb6ab63bb30e8b87443b75c17cf796d589",
-  "image": "G02-enum-suggestions.jpg"
-}

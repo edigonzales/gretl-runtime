@@ -1,9 +1,0 @@
-{
-  "id": "010",
-  "purpose": "Reviewer independent native counterprobe: choose the Main modeler pinned in editor group 1 from the duplicate-panel quick pick, revealing it beside the unchanged Other modeler in group 2",
-  "actions": [
-    {"kind": "key", "key": "Down"},
-    {"kind": "key", "key": "Return"},
-    {"kind": "observe"}
-  ]
-}

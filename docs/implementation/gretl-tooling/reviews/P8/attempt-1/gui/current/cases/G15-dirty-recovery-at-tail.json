@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T14:05:11.956Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "2e19a4a6a179b35c995f64e67e38792d1040d7691f0af40fc19b682614ee935e",
-  "imageSha256": "cd45a6f602eac49edb1268e426cec630c209667ec4934b0234e1521a854730f4",
-  "image": "G15-dirty-recovery-at-tail.jpg"
-}

@@ -1,9 +1,0 @@
-runtime.status=SUCCEEDED
-task.present status=SKIPPED failure=none
-builderCreations=0 handlerCreations=0 handlerCalls=0
-control.status=FAILED
-control.code=MISSING_REQUIRED_FIELD
-nullAssignment.status=FAILED
-nullAssignment.code=INVALID_CONFIGURATION_VALUE
-dynamicWhen.status=SUCCEEDED
-dynamicWhen.task=SKIPPED

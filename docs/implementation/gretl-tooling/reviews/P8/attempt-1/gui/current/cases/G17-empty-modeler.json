@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T14:07:07.980Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "d3f748b7490fd7146b7607db2bb6767c3b1b5a4ed9c0264b0d1723e7d63d63b1",
-  "imageSha256": "f510a73a0a7b8c0407575945392ab145bd253c2974a2f1d9acdd842a54ac6575",
-  "image": "G17-empty-modeler.jpg"
-}

@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T13:46:21.733Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "bd5c0c813ce9bb6f706b754dbd4429048f520b5b25edf8b630f1378fdb4f7d8d",
-  "imageSha256": "221a3da05a6ebeeb47f71d444b6336c0f3b4fa0e057ee3a4c3223c13fb22ae24",
-  "image": "G03-operation-hover.jpg"
-}

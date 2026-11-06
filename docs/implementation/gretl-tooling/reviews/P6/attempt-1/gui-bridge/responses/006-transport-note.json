@@ -1,5 +1,0 @@
-{
-  "relatedRequest": "006",
-  "operatorOnly": true,
-  "note": "openFile activated the existing custom editor; no source edit/find occurred. Use visible Show source first. click supports occurrence to distinguish identical panel buttons; see README clarification. super+2 is native group-2 shortcut, absent command is not substituted."
-}

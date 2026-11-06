@@ -1,2 +1,0 @@
-standard { tests: 918, failures: 0, errors: 0, skipped: 0 }
-services { tests: 974, failures: 0, errors: 0, skipped: 0 }

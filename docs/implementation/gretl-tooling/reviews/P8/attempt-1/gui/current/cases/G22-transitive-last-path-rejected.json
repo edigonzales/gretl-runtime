@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T14:24:59.742Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "e680a4c679fd7f464b0d95c6473769d08519434659e9aa242a2bcfb632ee8692",
-  "imageSha256": "109ceb2fcdd988550fa507e021730b6a32bf214bae23e7d6d50ee79c366f9cb5",
-  "image": "G22-transitive-last-path-rejected.jpg"
-}

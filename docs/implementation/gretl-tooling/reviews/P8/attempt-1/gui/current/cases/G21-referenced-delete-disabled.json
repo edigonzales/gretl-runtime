@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T14:13:55.232Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "0e456d47e3203bc0922a53e08bd2777f4c28dae8acca5fc0e1cbe5351ae9070c",
-  "imageSha256": "53a16da245adb2676e46874bca4508b7d3c364e50ef9d4d031205b377007bd26",
-  "image": "G21-referenced-delete-disabled.jpg"
-}

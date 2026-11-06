@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T14:16:08.759Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "872df1cc6a940af7373e2fa242e33a551c4d32491a3c3a6854a7c2201509ef20",
-  "imageSha256": "980f72d03059b9e63bbad94972b5b682301098f350aec5803095e966a08eddce",
-  "image": "G18-typed-config-undo.jpg"
-}

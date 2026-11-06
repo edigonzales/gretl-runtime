@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T14:29:47.630Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "352e9bdb9a9decab0ccdc847e6e6b57093be3c0c3c4d248b4495def433e2afc8",
-  "imageSha256": "6f3c6fe9dc97e55b014fd559cb89932512c0b4bc0b664cc287d110977b7dd053",
-  "image": "G28-dirty-before-stop.jpg"
-}

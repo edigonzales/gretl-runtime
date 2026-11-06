@@ -58,7 +58,7 @@ updates bound finalizer links and delete refuses referenced targets. Static targ
 previews show a nominal success plan with conditional candidates: selection alone
 does not activate a finalizer or grant result access. The matching server advertises
 `graphSchemaVersion=2` and `taskFinalizersVersion=1`; base protocol and catalogue
-remain version 1. See the [finalizer guide](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/task-finalizers/README.md).
+remain version 1. See the [finalizer guide](https://github.com/edigonzales/gretl-runtime/blob/main/docs/guides/task-finalizers.md).
 
 **Undo text** and **Redo text** use native VS Code history in an actual target of
 the last modeler edit.

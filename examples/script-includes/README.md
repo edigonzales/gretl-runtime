@@ -58,5 +58,5 @@ Sharedquellen bleiben lesend kontextsensitiv; automatische Writes mit Shared- od
 unbekanntem Footprint werden abgelehnt. Die frühere immer-partielle IDEsicht ist
 historisch. Das [typisierte Toolingbeispiel](https://github.com/edigonzales/gretl-runtime/blob/main/examples/include-tooling/README.md) zeigt den
 aktuellen Benutzerweg und die separate Runtimeprüfung. Die
-[Featureanleitung](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/script-includes/README.md) beschreibt
+[Featureanleitung](https://github.com/edigonzales/gretl-runtime/blob/main/docs/guides/script-includes.md) beschreibt
 Syntax, Fehler, Ressourcenbasen, Kontexte und bewusste Grenzen.

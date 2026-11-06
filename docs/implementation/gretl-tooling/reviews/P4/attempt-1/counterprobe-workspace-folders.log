@@ -1,6 +1,0 @@
-java openjdk version "25.0.2" 2026-01-20 LTS
-initialize ok
-rejection-log {"type":2,"message":"WORKSPACE_ROOT_UNSAFE"}
-graph-after-invalid-update graph error -32602: SOURCE_OUTSIDE_WORKSPACE
-shutdown ok
-exit 0

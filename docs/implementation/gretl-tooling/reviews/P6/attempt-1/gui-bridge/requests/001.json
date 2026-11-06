@@ -1,7 +1,0 @@
-{
-  "id": "001",
-  "purpose": "Reviewer fresh baseline observe before independent native P6 counterprobe",
-  "actions": [
-    {"kind": "observe"}
-  ]
-}

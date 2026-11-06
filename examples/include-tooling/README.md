@@ -39,5 +39,5 @@ synchronisiert; ein noch nicht zugeordnetes Fragment wird kein erratener Rootjob
 **GRETL: Use Active File as Runtime Job** registriert diese andere Rolle ausdrücklich.
 
 Details und bewusste Grenzen stehen in der
-[Featureanleitung](../../docs/implementation/script-includes/README.md) und im
-[Tooling-Handoff](../../docs/implementation/script-includes/TOOLING_HANDOFF.md).
+[Featureanleitung](../../docs/guides/script-includes.md) und im
+[Tooling-Architektur](../../docs/architecture/tooling.md).

@@ -1,28 +1,26 @@
 # Repository-Anweisungen
 
-Implementiere ausschliesslich den ausdrücklich beauftragten Umfang. Prüfe zuerst
-Gitstatus, aktuellen Commit, betroffene Implementierung und bestehende Tests.
-Bewahre fremde Änderungen und verwende einen eigenen Arbeitsbranch.
+Implementiere den ausdrücklich beauftragten Umfang. Prüfe zuerst Gitstatus,
+aktuellen Commit, betroffene Implementierung und bestehende Tests. Bewahre
+fremde Änderungen und arbeite auf einem eigenen Branch. Funktionale API-,
+DSL-, Paket- und Fehlerverträge bleiben erhalten.
 
-Der Einstieg in die geltenden Anleitungen ist [docs/README.md](docs/README.md).
-Abgeschlossene Spezifikationen, Agentenprompts und Meilensteinberichte sind
-historische Quellen; sie sind keine neuen Implementierungsaufträge.
-Funktionale API-, DSL-, Paket- und Fehlerverträge bleiben erhalten.
+Die [Dokumentation](docs/README.md) beschreibt den aktuellen Stand. Wähle
+lokale Tests nach dem betroffenen Verhalten und seinen Verbrauchern. Prüfe
+Dokumentationslinks mit `python3 scripts/check-docs.py`; bei geänderten
+Beispielen oder Renderpfaden führe die betroffenen Wege gemäss
+[Buildanleitung](docs/development/build.md) aus.
 
-Führe mit JDK 25 beide vollständigen Gates aus:
+Die [vollständige Qualifikation](docs/development/testing.md) verwendet
+JDK 25 und Docker für das Dienstprofil. Die beiden Rootläufe lauten:
 
 ```sh
 ./mvnw -B clean verify
 ./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
 
-Docker ist für das vollständige Dienstprofil erforderlich. Keine stillen
-Testskips, keine abgeschwächten Assertions und kein Ersatz durch Teiltests.
-Sichere Berichte vor einem weiteren `clean`; dokumentiere Befehle, SHA und
-Ergebnisse. Dokumentationsänderungen benötigen passende Link-, Beispiel- und
-Renderprüfungen gemäss [Buildanleitung](docs/implementation/build.md).
-
-Für den laufenden Cleanupauftrag gilt zusätzlich unverändert
-[Cleanup-Spezifikation 1.2](docs/maintenance/cleanup/spec-v2.md) mit den
-unabhängigen OpenCode/DeepSeek-Gates. Keine automatische Veröffentlichung:
-Push, Merge, Release und Ausführung produktiver Jobs benötigen einen Auftrag.
+CI und Release verwenden ihre vollständigen Modus- und Artefaktgates.
+Ersetze keine geforderte Prüfung durch Teiltests, Skips oder schwächere
+Assertions. Sichere Berichte vor einem weiteren `clean`; dokumentiere
+Befehle, SHA und Ergebnisse. Push, Merge, Release und produktive Jobs
+benötigen einen ausdrücklichen Auftrag.

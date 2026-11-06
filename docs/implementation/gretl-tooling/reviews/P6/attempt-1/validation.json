@@ -1,6 +1,0 @@
-{
-  "reviewId": "8ecbf47e-9ca7-4604-8eaa-895643791a97",
-  "candidateSha": "ee3a2e8a40bf965a183bc688157d755e2f2320b2",
-  "result": "INVALID",
-  "error": "Evidence must be an absolute local path: docs/implementation/gretl-tooling/implementation/P6.md"
-}

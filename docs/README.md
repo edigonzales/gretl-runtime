@@ -1,30 +1,24 @@
-# Aktuelle Dokumentation
+# GRETL Runtime
 
-Diese Seiten beschreiben den implementierten Stand von GRETL Runtime:
+Der [Einstieg im Repository](../README.md) zeigt einen ausführbaren Job und
+seine Paketierung. Die [Taskreferenz](reference/reference.adoc) beschreibt
+verfügbare Operationen und ihre Felder.
 
-- [Einstieg und ausführbare Beispiele](../README.md)
-- [Build, Distribution und Dokumentationswerkzeuge](implementation/build.md)
-- [Teststrategie und Backing-Services](implementation/testing.md)
-- [Module und Abhängigkeitsgrenzen](implementation/module-boundaries.md)
-- [Jobpaketierung und Schemas 1/2/3](implementation/job-packaging.md)
-- [Lokale Scriptfragmente und sichere partielle IDE-Sicht](implementation/script-includes/README.md)
-- [Taskgebundene Finalizer und Abschlussbudgets](implementation/task-finalizers/README.md)
-- [Subprojekte und gemeinsamer Taskgraph](implementation/project-subprojects/README.md)
-- [SCRIPT-, JAR- und reale IMAGE-Fachtests](implementation/job-artifact-tests.md)
+## Jobs schreiben und betreiben
+
+- [Projekte und Subprojekte](guides/projects.md)
+- [Scriptfragmente mit `apply from:`](guides/script-includes.md)
+- [Taskgebundene Finalizer und globales Cleanup](guides/task-finalizers.md)
+- [Job-JARs, Paketformate und Validatorfunktionen](guides/packaging.md)
+- [Konfiguration, Pfade, Secrets und Runberichte](guides/runtime-configuration.md)
 - [Generisches Runtime-Image und OpenShift](../gretl-dist/src/main/docker/README.md)
-- [GRETL-Texteditor und interaktiver Graph für VS Code](../vscode/gretl-vscode/README.md)
-- [Lokalisierung](architecture/runtime-contracts.md#lokalisierung) und [Plangraphen](architecture/runtime-contracts.md#plangraphen)
-- [Validatorfunktionen](implementation/job-packaging.md#validatorfunktionen)
-- [Taskreferenz](reference/reference.adoc) und [deren Generierung](reference/README.md)
-- [Snapshot-Veröffentlichung und Pflichtgates](implementation/publish-snapshots.md)
+- [Texteditor und interaktiver Graph für VS Code](../vscode/gretl-vscode/README.md)
 
-## Technische Verträge und historische Quellen
+## Entwickeln und prüfen
 
-- [Implementierte API-, DSL-, Runner-, Logging- und Sicherheitsverträge](architecture/runtime-contracts.md)
-- [Publisher, XtfToGpkg und Native Image: nicht gelieferter Backlog](backlog/publisher-and-native.md)
-- [Kuratiertes historisches Wissen, Herkunft und Abschluss-SHAs](history/README.md)
-
-Die frühere Soll-Spezifikation und abgeschlossene Agentenpläne sind aus dem
-aktiven Baum entfernt. Die [Cleanup-Spezifikation](maintenance/cleanup/spec-v2.md)
-und das [Verfahren](maintenance/cleanup/README.md) dokumentieren Auswahl und
-Nachweise. Für neue Arbeiten gelten die [Repository-Regeln](../AGENTS.md).
+- [Runtimeverträge](architecture/runtime-contracts.md), [Module](architecture/module-boundaries.md) und [statisches Tooling](architecture/tooling.md)
+- [Build, Distribution und Dokumentationsprüfung](development/build.md)
+- [Teststrategie und Backing-Services](development/testing.md)
+- [Taskreferenz generieren und rendern](reference/README.md)
+- [Artefakte prüfen und veröffentlichen](development/publication.md)
+- [Unabhängige Kandidatenprüfung](development/review.md)

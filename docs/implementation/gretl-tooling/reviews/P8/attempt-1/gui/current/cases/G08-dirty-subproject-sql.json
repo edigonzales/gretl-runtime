@@ -1,9 +1,0 @@
-{
-  "observedAt": "2026-11-04T13:58:40.508Z",
-  "artifactSourceCommit": "b5bead4c91ee7e393310c3ea440dd12db312291b",
-  "vsixSha256": "11a8832cd2fef1aae56f4b74a11b518d19cc16247f3ccd24c3c24c3531c9d005",
-  "serverSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "axSha256": "adb64abceb4f66aa13f57bce95cee4949e71f87d21666ebd5bc7316071e5d75f",
-  "imageSha256": "db4bf5426eca0ab0130a264e3669fac16eae819fcf53c31bfb4d6492f4a95ba5",
-  "image": "G08-dirty-subproject-sql.jpg"
-}

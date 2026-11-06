@@ -1,9 +1,0 @@
-{
-  "kind": "DELIBERATELY_INVALID_CATALOG_GUI_CANARY",
-  "baseCandidate": "54bb123070fc7bd81aea58b4e1191beecf568cbf",
-  "mutation": "Embedded operations.json schemaVersion 1 -> 999. Package JAR digests updated so the real server catalog loader, rather than a byte mismatch, must reject this input.",
-  "originalVsixSha256": "cdec076b970c1d890a9d1b45e6166ee9da721509d3e31af804c38b095197d6c8",
-  "wrongVsixSha256": "c840cff4db97ec7a08c4b2e24f4291bf3dd6789606a8b41ddfd65f38bf3f35d7",
-  "originalJarSha256": "40c742353ba12d8ce9b4d949e31c683db08666fef0c39e35403c2e9fd475c056",
-  "wrongJarSha256": "db70ebab82b1698f34a6c446e3bc659e1cbf52c7d97fde7fef40a52a6056fb67"
-}

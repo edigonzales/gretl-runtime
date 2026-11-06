@@ -15,10 +15,10 @@ Es enthaelt den Java-Core, LSP4J und den validierten Katalog als Daten, keine
 ausfuehrenden Task-/Runnerbibliotheken. Kopieren dieses JARs genuegt zum Start;
 ein anderer GRETL-Checkout oder ein Katalogdownload ist nicht erforderlich.
 
-Die ausgelieferte Distribution wird auf macOS arm64 und mit einem echten
-Linux-arm64-Java25-Prozess geprueft. Der Linux-Container bekommt nur das gelieferte
-JAR und kontrollierte Quellen, keinen Checkout; sein Netzwerk ist deaktiviert.
-Andere Architekturen, Windows und echte Remotehosts sind damit nicht freigegeben.
+Die [Distributionsprüfung](../docs/development/build.md#tooling-distributionsqualifikation)
+startet das tatsächlich ausgelieferte JAR. Der optionale Linux-Container
+bekommt das JAR und kontrollierte Quellen als schreibgeschützte Mounts;
+sein Netzwerk ist deaktiviert. Der Beleg gilt für die ausgeführte Plattform.
 
 ```sh
 java -jar gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar --stdio
@@ -78,4 +78,5 @@ Grenzen: 2 MiB pro Eingabenachricht, 8 KiB Header, 64 geordnete Controlauftraege
 4096 Watchdateien. Hinzu kommen die Core-Parser-/Capturebudgets. Bis zu 32
 sichere Quickfix-Vorschlaege je Anfrage; Cancellation wird bis in die Editpruefung
 weitergereicht. Native Watcher und Client-Watchmeldungen invalidieren dieselben
-Captures. Abgeschlossene Testbelege stehen im [Phasenbericht](../docs/implementation/gretl-tooling/implementation/P4.md).
+Captures. [Tooling-Architektur](../docs/architecture/tooling.md) und
+[Buildanleitung](../docs/development/build.md) beschreiben Kontext und Paketprüfung.

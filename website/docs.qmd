@@ -7,15 +7,15 @@ description: "Current source documentation and executable examples."
 
 - [Run a local example](getting-started.qmd)
 - [Repository and checkout quickstart](https://github.com/edigonzales/gretl-runtime/blob/main/README.md)
-- [Build and distribution](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/build.md)
+- [Build and distribution](https://github.com/edigonzales/gretl-runtime/blob/main/docs/development/build.md)
 - [Task reference source](https://github.com/edigonzales/gretl-runtime/blob/main/docs/reference/reference.adoc)
 - [Generate and render the reference with Thoth Biblios](https://github.com/edigonzales/gretl-runtime/blob/main/docs/reference/README.md)
-- [Job packaging](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/job-packaging.md)
-- [Task finalizers and completion budgets](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/task-finalizers/README.md)
-- [Projects and subprojects](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/project-subprojects/README.md)
-- [Tests and service requirements](https://github.com/edigonzales/gretl-runtime/blob/main/docs/implementation/testing.md)
+- [Job packaging](https://github.com/edigonzales/gretl-runtime/blob/main/docs/guides/packaging.md)
+- [Task finalizers and completion budgets](https://github.com/edigonzales/gretl-runtime/blob/main/docs/guides/task-finalizers.md)
+- [Projects and subprojects](https://github.com/edigonzales/gretl-runtime/blob/main/docs/guides/projects.md)
+- [Tests and service requirements](https://github.com/edigonzales/gretl-runtime/blob/main/docs/development/testing.md)
 
 The reference contains all 44 operation chapters. Field tables are generated
 from the distribution; examples and task descriptions are maintained alongside
-the tested sources. Historical plans describe earlier commits and do not define
-the current product status. Release qualification is bound to its tested commit.
+the tested sources. The [documentation index](https://github.com/edigonzales/gretl-runtime/blob/main/docs/README.md)
+also links to runtime configuration, static includes and the editor.
