@@ -87,7 +87,7 @@ Die begrenzte Abschlusszeit, Shutdown-Behandlung, Report und Retention verwenden
 dieselbe Job-Runtime für Script und JAR. Die Runtime verspricht kein Rollback
 bereits geschehener fachlicher Wirkungen und keine Transaktion über Tasks hinweg.
 Exitcodes und Status sind im [CLI-/Betriebsteil der Referenz](../reference/reference.adoc)
-und den bestehenden CLI-/Jobprozess-Tests definiert; diese Bereinigung ändert sie nicht.
+und den bestehenden CLI-/Jobprozess-Tests definiert.
 
 ## Logging, Sicherheit und Pfade
 

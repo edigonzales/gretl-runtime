@@ -67,8 +67,8 @@ Das Beispiel verwendet `emptyDir`; dauerhafte Ergebnisse benötigen einen
 passenden PVC oder einen externen fachlichen Export.
 
 Die Vorlage ist vor Verwendung mit einer tatsächlichen veröffentlichten
-Image-Referenz nach Digest zu ersetzen. Dieser Auftrag baut und prüft lokal;
-er führt weder Registry-Push noch einen Job im OpenShift-Cluster aus.
+Image-Referenz nach Digest zu ersetzen. Der lokale Build und die Prüfung umfassen
+weder Registry-Push noch einen Job im OpenShift-Cluster.
 Die Docker-Gegenprobe deckt beliebige UID, Gruppe 0, read-only Root und
 Quelle, `no-new-privileges`, entfernte Capabilities und native Bibliotheken
 ab. Eine Clusterzulassung beziehungsweise ein konkreter PVC wurde damit
