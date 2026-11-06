@@ -359,7 +359,7 @@
       ],
       "inScope": true,
       "historicallyDisabled": false,
-      "test": "DatabaseArtifactIT#positiveFederationAndOriginalScalarAndListParameterResults",
+      "test": "DatabaseArtifactIT#scalarAndListParametersAndFederationProduceExpectedDatabaseRows",
       "status": "implementiert; Vollgatenachweis im Phasenbericht",
       "equivalence": "Gleichwertige isolierte Tabellen: ursprüngliche 2/5 Zeilen und Parameterwerte, bzw. vollständige ursprüngliche Datentypen und 2056-Geometrien; zwei Db2Db-Transfers mit relativen SQL-Dateien und Löschung vorhandener Zielzeile. Schemaqualifikation wird durch den Lease-search_path ersetzt."
     },
@@ -374,7 +374,7 @@
       ],
       "inScope": true,
       "historicallyDisabled": false,
-      "test": "DatabaseArtifactIT#positiveFederationAndOriginalScalarAndListParameterResults",
+      "test": "DatabaseArtifactIT#scalarAndListParametersAndFederationProduceExpectedDatabaseRows",
       "status": "implementiert; Vollgatenachweis im Phasenbericht",
       "equivalence": "Gleichwertige isolierte Tabellen: ursprüngliche 2/5 Zeilen und Parameterwerte, bzw. vollständige ursprüngliche Datentypen und 2056-Geometrien; zwei Db2Db-Transfers mit relativen SQL-Dateien und Löschung vorhandener Zielzeile. Schemaqualifikation wird durch den Lease-search_path ersetzt."
     },
@@ -1343,7 +1343,7 @@
       ],
       "inScope": true,
       "historicallyDisabled": false,
-      "test": "DatabaseArtifactIT#positiveFederationAndOriginalScalarAndListParameterResults",
+      "test": "DatabaseArtifactIT#scalarAndListParametersAndFederationProduceExpectedDatabaseRows",
       "status": "implementiert; Vollgatenachweis im Phasenbericht",
       "equivalence": "Gleichwertige isolierte SQL-Kette mit relativen Skripten und nichtleeren kopierten Daten; skalare und wiederholte Prepared Statements erhalten ele1 bzw. ele1/ele2. Keine automatische Rückkehr zur historischen SQL-Textinterpolations-API."
     },
@@ -1360,7 +1360,7 @@
       ],
       "inScope": true,
       "historicallyDisabled": false,
-      "test": "DatabaseArtifactIT#positiveFederationAndOriginalScalarAndListParameterResults",
+      "test": "DatabaseArtifactIT#scalarAndListParametersAndFederationProduceExpectedDatabaseRows",
       "status": "implementiert; Vollgatenachweis im Phasenbericht",
       "equivalence": "Gleichwertige isolierte SQL-Kette mit relativen Skripten und nichtleeren kopierten Daten; skalare und wiederholte Prepared Statements erhalten ele1 bzw. ele1/ele2. Keine automatische Rückkehr zur historischen SQL-Textinterpolations-API."
     },
