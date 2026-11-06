@@ -48,19 +48,15 @@ public final class GroovyJobLoader {
         java.util.Objects.requireNonNull(classLoader, "classLoader");
         Path source = scriptLabel.toAbsolutePath().normalize();
         try {
-            Class<?> type = Class.forName(entryClass, true, classLoader);
+            Class<?> type = Class.forName(entryClass, false, classLoader);
             if (!GretlScript.class.isAssignableFrom(type)) {
                 throw new GroovyDslException("INVALID_SCRIPT_BASE",
                         Messages.get(environment.locale(), "error.groovy.invalidCompiledBase"),
                         null, null, SourceLocations.fallback(source), List.of(), null);
             }
             JobDslModel model = new JobDslModel(environment,
-                    new JobDefinitionBuilder(environment.jobRoot()), source);
-            Binding binding = new Binding();
-            binding.setVariable(JobDslModel.BINDING_NAME, model);
-            for (OperationType<?, ?> operation : environment.registry().all()) {
-                binding.setVariable(operation.symbol(), operation);
-            }
+                    new JobDefinitionBuilder(environment.jobRoot(), environment.locale()), source);
+            Binding binding = newScriptBinding(model, environment);
             GretlScript instance = (GretlScript) type.getDeclaredConstructor().newInstance();
             instance.setBinding(binding);
             instance.run();
@@ -92,15 +88,11 @@ public final class GroovyJobLoader {
             var snapshot=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.single(script,environment.locale());
             if(snapshot!=null)return loadBundle(snapshot,environment,List.of(),Map.of());
             JobDslModel model = new JobDslModel(environment,
-                    new JobDefinitionBuilder(environment.jobRoot()), script);
+                    new JobDefinitionBuilder(environment.jobRoot(), environment.locale()), script);
             var configuration = CompilerSettings.create();
             GroovyClassLoader classLoader = new GroovyClassLoader(
                     GroovyJobLoader.class.getClassLoader(), configuration);
-            Binding binding = new Binding();
-            binding.setVariable(JobDslModel.BINDING_NAME, model);
-            for (OperationType<?, ?> operation : environment.registry().all()) {
-                binding.setVariable(operation.symbol(), operation);
-            }
+            Binding binding = newScriptBinding(model, environment);
             GroovyShell shell = new GroovyShell(classLoader, binding, configuration);
             Script scriptInstance = shell.parse(script.toFile());
             if (!(scriptInstance instanceof GretlScript gretlScript)) {
@@ -179,9 +171,7 @@ public final class GroovyJobLoader {
                     virtual, sourceMap);
             models.add(model);
             try {
-                Binding binding = new Binding();
-                binding.setVariable(JobDslModel.BINDING_NAME, model);
-                for (var operation : environment.registry().all()) binding.setVariable(operation.symbol(), operation);
+                Binding binding = newScriptBinding(model, environment);
                 Script script;
                 if (compiledLoader == null) {
                     GroovyShell shell = new GroovyShell(loader, binding, configuration);
@@ -289,6 +279,15 @@ public final class GroovyJobLoader {
             }
         }catch(ReflectiveOperationException failure){throw new GroovyDslException("JOB_LOAD_FAILED",failure.getMessage(),failure);}
         return new FragmentLoadSession(bundle,environment.jobRoot(),environment,scripts).load(defaults,Map.of());
+    }
+
+    private static Binding newScriptBinding(JobDslModel model, DefinitionEnvironment environment) {
+        Binding binding = new Binding();
+        binding.setVariable(JobDslModel.BINDING_NAME, model);
+        for (OperationType<?, ?> operation : environment.registry().all()) {
+            binding.setVariable(operation.symbol(), operation);
+        }
+        return binding;
     }
 
     void registerScript(Script script, JobDslModel model) {
