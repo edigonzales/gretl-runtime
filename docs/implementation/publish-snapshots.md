@@ -27,7 +27,7 @@ export MAVEN_USERNAME='...'
 export MAVEN_PASSWORD='...'
 ```
 
-`docs/implementation/publish-settings.xml` enthält nur die Platzhalter
+`scripts/publish-settings.xml` enthält nur die Platzhalter
 `${env.MAVEN_USERNAME}` und `${env.MAVEN_PASSWORD}`. Maven löst sie beim
 Deploy auf; die Settings-Datei enthält keine Secrets. Das Passwort wird in
 Maven-Ausgaben maskiert.

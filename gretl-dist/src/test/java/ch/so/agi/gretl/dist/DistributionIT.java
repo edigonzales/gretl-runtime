@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.dist;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.sun.net.httpserver.HttpServer;
@@ -108,6 +110,18 @@ class DistributionIT {
         assertEquals(ChecksumManifest.sha256(base.resolve("bin/gretl")),
                 line.substring(0, 64));
         assertApiArtifact(base);
+        try (var taskJars = Files.list(base.resolve("lib/tasks"))) {
+            Path ioJar = taskJars.filter(path -> path.getFileName().toString().startsWith("gretl-io-tasks-"))
+                    .findFirst().orElseThrow();
+            try (var jar = new JarFile(ioJar.toFile())) {
+                var notice = jar.getJarEntry("META-INF/LICENSE-gretl-next.txt");
+                assertNotNull(notice, "the shipped IO tasks retain their adopted code licence");
+                try (var bytes = jar.getInputStream(notice)) {
+                    assertArrayEquals(Files.readAllBytes(Path.of("../LICENSES/gretl-next-MIT.txt")), bytes.readAllBytes());
+                }
+            }
+        }
+
 
         ProcessResult version = run(base, "--version");
         assertEquals(0, version.code(), version.err());

@@ -123,7 +123,7 @@ class AuditNegatives(unittest.TestCase):
             self.assertIn('Unsuccessful JUnit',self.audit().stderr)
     def test_E12_reduced_expectation_from_successes_is_rejected(self):
         fake=Path(self.scratch.name)/'checker'
-        paths=['scripts/audit-job-evidence.py','docs/history/contracts/operation-baseline.json',
+        paths=['scripts/audit-job-evidence.py','tests/contracts/operation-baseline.json',
                'gretl-dist/src/main/docker/Dockerfile','gretl-integration-tests/src/test/resources/qualification/scenarios.json']
         for relative in paths:
             target=fake/relative;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(repository/relative,target)
@@ -141,7 +141,7 @@ class AuditNegatives(unittest.TestCase):
         self.assertNotEqual(0,result.returncode);self.assertIn('Reduced scenario contract',result.stderr)
     def test_E07_other_modes_cannot_fill_operations(self):
         self.assertEqual('full', options.scope)
-        expected = {o['id'] for o in json.loads((repository/'docs/history/contracts/operation-baseline.json').read_text())}
+        expected = {o['id'] for o in json.loads((repository/'tests/contracts/operation-baseline.json').read_text())}
         other_mode_filled = False
         for path in self.executions:
             row=json.loads(path.read_text())

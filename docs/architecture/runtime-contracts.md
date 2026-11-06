@@ -39,8 +39,8 @@ Resultatobjekte werden nicht pauschal als Logs oder Berichte serialisiert.
 
 Nachweise: `ApiRuntimeTypesTest`, `ApiMetadataTest`, `ApiIsolationTest`, die Runner-Kontext-/Ressourcentests sowie
 `OperationMetadataTest`. Die unveränderten historischen
-[Operationsverträge](../history/contracts/operation-baseline.json) und
-[Java-Typumzüge](../history/contracts/java-type-moves.json) bleiben dessen Orakel.
+[Operationsverträge](../../tests/contracts/operation-baseline.json) und
+[Java-Typumzüge](../../tests/contracts/java-type-moves.json) bleiben dessen Orakel.
 Sie werden bei Pfadumzügen nicht auf den aktuellen Ist-Code neu erzeugt.
 
 ## Definition, DSL und Planung

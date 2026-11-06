@@ -1,8 +1,35 @@
 import {spawn,spawnSync} from 'node:child_process';
 import {mkdirSync,existsSync,readdirSync,readFileSync,writeFileSync,copyFileSync,statSync} from 'node:fs';
-import {resolve,relative,dirname} from 'node:path';
-import {hash,verifyCurrentGateManifest} from './review.mjs';
+import {resolve,relative,dirname,isAbsolute} from 'node:path';
+import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
+const hash = data => createHash('sha256').update(data).digest('hex');
+
+export function verifyArtifact(a) {
+  assert(isAbsolute(a.path)); assert(statSync(a.path).isFile());
+  assert.equal(hash(readFileSync(a.path)),a.sha256,`Artifact changed: ${a.path}`);
+}
+export function verifyCurrentGateManifest(manifest,candidateSha,argv){
+  assert.equal(manifest.sha,candidateSha);assert.equal(manifest.dirty,'');assert.equal(manifest.exit.code,0);assert.equal(manifest.exit.signal,null);
+  assert.deepEqual(manifest.argv,argv);
+  const start=Date.parse(manifest.startedAt),end=Date.parse(manifest.endedAt);
+  assert(Number.isFinite(start)&&Number.isFinite(end)&&end>=start,'Invalid gate times');
+  const counts={tests:0,failures:0,errors:0,skipped:0};
+  assert(Array.isArray(manifest.captured)&&manifest.captured.length>0,'No current captured evidence');
+  const paths=new Set();
+  for(const artifact of manifest.captured){
+    assert(!paths.has(artifact.path),'Duplicate captured evidence');paths.add(artifact.path);verifyArtifact(artifact);
+    const modified=Date.parse(artifact.sourceModifiedAt);
+    assert(Number.isFinite(modified)&&modified>=start&&modified<=end,'Captured evidence predates or postdates gate');
+    if(/\/(?:surefire|failsafe)-reports\/TEST-[^/]+\.xml$/.test(artifact.path)){
+      const header=readFileSync(artifact.path,'utf8').match(/<testsuite\b[^>]*>/)?.[0];assert(header,'Missing test suite');
+      for(const key of Object.keys(counts))counts[key]+=Number(header.match(new RegExp(`\\b${key}="(\\d+)"`))?.[1]??0);
+    }
+  }
+  assert.deepEqual(manifest.counts,counts,'Manifest counts differ from current raw XML');
+  assert(counts.tests>0,'No fresh tests');for(const key of ['failures','errors','skipped'])assert.equal(counts[key],0,`Gate ${key}`);
+}
+
 const repo=resolve(import.meta.dirname,'../..');
 function* files(dir) {if(!existsSync(dir))return;for(const e of readdirSync(dir,{withFileTypes:true})){const p=resolve(dir,e.name);if(e.isDirectory())yield*files(p);else if(e.isFile())yield p;}}
 export function snapshotReports(destination,{sourceRoot=repo,notBefore=null}={}) {

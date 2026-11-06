@@ -38,9 +38,9 @@ als separater Produktprozess- oder Modusnachweis. `PackagedSqlJobPostgresIT` ble
 ältere JAR-Regression.
 
 Die Originalzuordnung mit unveränderten Quellhashes, Originalassertionen und
-Dateiprüfsummen steht im [historischen Szenarioinventar](../history/provenance/original-scenarios.json).
+Dateiprüfsummen steht im [historischen Szenarioinventar](../../tests/provenance/original-scenarios.json).
 Die aktuelle Zuordnung, alle Varianten und konkret begründete Anpassungen
-stehen im [historischen Portnachweis](../history/provenance/scenario-mapping.json).
+stehen im [historischen Portnachweis](../../tests/provenance/scenario-mapping.json).
 Die [Jobtest-Verträge](job-artifact-tests.md) erklären Artefaktbau, separate
 Prozesse, Evidenz und die tatsächliche externe SCRIPT-Ausführung im IMAGE.
 

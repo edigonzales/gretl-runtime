@@ -18,7 +18,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def marked_examples(path):
     text=path.read_text()
-    return re.findall(r'<!-- cleanup-example: ([a-z-]+) -->\s*```sh\n(.*?)```',text,re.S)
+    return re.findall(r'<!-- checked-example: ([a-z-]+) -->\s*```sh\n(.*?)```',text,re.S)
 
 
 def run(root,evidence,thoth=None):
@@ -37,7 +37,10 @@ def run(root,evidence,thoth=None):
     minimal=(dist/'examples/minimal-action/job.groovy').read_text().strip()
     if minimal not in (root/'README.md').read_text():raise RuntimeError('README Groovy example drifted from executed minimal action')
     for doc in ['README.md','website/getting-started.qmd']:
-        for label,script in marked_examples(root/doc):
+        examples = marked_examples(root/doc)
+        if not examples:
+            raise RuntimeError('No checked example in ' + doc)
+        for label,script in examples:
             # Keep every synthetic result for independent inspection. mktemp is
             # overridden only to locate outputs; the documented commands run unchanged.
             sandbox=evidence/label;sandbox.mkdir()
@@ -106,8 +109,8 @@ def run(root,evidence,thoth=None):
         if not page.is_file():raise RuntimeError('Missing Quarto page: '+name)
         if any(bad in page.read_text() for bad in ['Lorem ipsum','tasks.register','./gradlew','Lightweight control plane']):raise RuntimeError('Obsolete website content: '+name)
     shutil.copytree(site,evidence/'rendered-website')
-    thoth=Path(thoth or os.environ.get('GRETL_THOTH_JAR','/Users/stefan/sources/thoth/thoth-biblios/build/libs/thoth-biblios-0.0.1-SNAPSHOT-all.jar'))
-    if not thoth.is_file():raise RuntimeError('Provide the existing Thoth Biblios JAR via GRETL_THOTH_JAR')
+    thoth=thoth or os.environ.get('GRETL_THOTH_JAR')
+    if not thoth or not Path(thoth).is_file():raise RuntimeError('Provide the existing Thoth Biblios JAR via GRETL_THOTH_JAR')
     # JGit cannot reliably clone a linked detached worktree. Materialize the
     # exact commit in a separate full Git repository, without touching user refs.
     revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
@@ -116,11 +119,11 @@ def run(root,evidence,thoth=None):
     command('reference-fetch',['git','-C',str(reference_source),'fetch','--quiet',str(root),revision],root)
     command('reference-checkout',['git','-C',str(reference_source),'checkout','--quiet','-B','main',revision],root)
     config_dir=reference_source/'docs/reference'
-    with tempfile.NamedTemporaryFile(prefix='biblios.cleanup-',suffix='.yml',dir=config_dir,delete=False) as temporary:
+    with tempfile.NamedTemporaryFile(prefix='biblios.verify-',suffix='.yml',dir=config_dir,delete=False) as temporary:
         config=Path(temporary.name)
     try:
         config.write_text((root/'docs/reference/biblios.local.yml.example').read_text().replace('/pfad/zu/gretl-runtime',str(reference_source)))
-        command('thoth',['java','-jar',str(thoth),'build','--config',str(config),'--use-local-working-tree','--clean','--output',str(evidence/'reference')],reference_source)
+        command('thoth',['java','-jar',str(Path(thoth).resolve()),'build','--config',str(config),'--use-local-working-tree','--clean','--output',str(evidence/'reference')],reference_source)
     finally:config.unlink(missing_ok=True)
     (evidence/'reference-source.json').write_text(json.dumps({'candidateSha':revision,'sourceHead':subprocess.check_output(['git','rev-parse','HEAD'],cwd=reference_source,text=True).strip(),'privateBranch':'main','sourceUrl':str(reference_source)},indent=2)+'\n')
     shutil.rmtree(reference_source)

@@ -15,7 +15,7 @@ Change into `gretl-dist/target/dist/`. This is the distribution root, containing
 `bin/`, `lib/` and `examples/`. An unpacked distribution has the same layout.
 The bundled minimal action copies a local synthetic text file:
 
-<!-- cleanup-example: website -->
+<!-- checked-example: website -->
 ```sh
 gretl_demo_dir="$(mktemp -d)"
 printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
@@ -25,7 +25,7 @@ cmp examples/minimal-action/message.txt "$gretl_demo_dir/message.txt"
 
 Package the same job, still from the distribution root:
 
-<!-- cleanup-example: website-jar -->
+<!-- checked-example: website-jar -->
 ```sh
 gretl_demo_dir="$(mktemp -d)"
 printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"

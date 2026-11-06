@@ -44,7 +44,7 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
         run: >-
           ./mvnw -B
-          -s docs/implementation/publish-settings.xml
+          -s scripts/publish-settings.xml
           -Ppublish-snapshots
           -DskipTests -DskipITs
           deploy

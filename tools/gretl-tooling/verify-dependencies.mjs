@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import Ajv from 'ajv/dist/2020.js';
-import {hash} from './review.mjs';
+import {createHash} from 'node:crypto';
 import {readFileSync,existsSync,readdirSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
+const hash = data => createHash('sha256').update(data).digest('hex');
 const repo=resolve(import.meta.dirname,'../..');
 export function verifyTree(node,kind){
   const internal=kind==='contract'?new Set():new Set(['gretl-tooling-core','gretl-language-contract','gretl-script-syntax',...(kind==='server'?['gretl-tooling-catalog']:[])]);

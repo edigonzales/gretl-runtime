@@ -43,7 +43,7 @@ action('write') {
 defaults 'write'
 ```
 
-<!-- cleanup-example: checkout -->
+<!-- checked-example: checkout -->
 ```sh
 gretl_demo_dir="$(mktemp -d)"
 printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
@@ -60,7 +60,7 @@ Die folgenden Befehle gelten **im Distributionsroot**, der `bin/`, `lib/` und
 `examples/` enthält. Im Checkout ist dies nach dem Build auch
 `gretl-dist/target/dist/`.
 
-<!-- cleanup-example: distribution -->
+<!-- checked-example: distribution -->
 ```sh
 gretl_demo_dir="$(mktemp -d)"
 printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
@@ -77,7 +77,7 @@ Scriptdateipfad startet einen Einzeljob. Ein Projektverzeichnis benötigt eine
 Auch diese Paketierbefehle gelten im Distributionsroot. Das Minimalpaket wählt
 mit Deskriptorschema 2 keine Standardtaskmodule aus.
 
-<!-- cleanup-example: jar -->
+<!-- checked-example: jar -->
 ```sh
 gretl_demo_dir="$(mktemp -d)"
 printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
@@ -116,3 +116,6 @@ nicht zugesichert.
 den normalen Taskgraphen um bedingte Abschlussarbeit. Das lokale
 [ausführbare Beispiel](examples/task-finalizers/README.md) zeigt Erfolg,
 Ownerfehler, gemeinsamen Finalizer und globales Cleanup.
+
+Die [Lizenzhinweise](LICENSES/) enthalten die MIT-Texte für übernommene
+GRETL-Quellen und Testfixtures sowie die [Quellenangaben](LICENSES/source-adoption.json).

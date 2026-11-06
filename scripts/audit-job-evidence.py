@@ -244,7 +244,7 @@ for file in sorted(p for name in ('job-evidence', 'project-script-evidence') for
 assert seen == set(expected_scenarios), {'missingScenarios': sorted(set(expected_scenarios)-seen)}
 assert len(run_ids) == 1, 'Mixed suite runs'
 assert executions and any(row['mode'] == args.mode for row in executions), 'No selected-mode job executions'
-expected = {o['id'] for o in read(repository / 'docs/history/contracts/operation-baseline.json')}
+expected = {o['id'] for o in read(repository / 'tests/contracts/operation-baseline.json')}
 if args.full:
     assert expected <= positive, {'missingPositiveOperations': sorted(expected - positive), 'mode': args.mode}
 

@@ -15,6 +15,6 @@ EVIDENCE_DIR=${GRETL_PUBLICATION_EVIDENCE:-"$ROOT_DIR/.gretl-verification/public
 "$ROOT_DIR/scripts/verify-job-matrix.sh" --mode ALL --scope full --output "$EVIDENCE_DIR/full"
 
 exec "$ROOT_DIR/mvnw" -B \
-  -s "$ROOT_DIR/docs/implementation/publish-settings.xml" \
+  -s "$ROOT_DIR/scripts/publish-settings.xml" \
   -Ppublish-snapshots \
   -DskipTests -DskipITs deploy "$@"

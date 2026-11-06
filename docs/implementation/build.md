@@ -97,8 +97,8 @@ Nach einem aktuellen Distributionsbuild, aus dem Repository-Root:
 
 ```sh
 ./gretl-dist/target/dist/bin/gretl operations --format adoc --lang de --output docs/reference/generated
-python3 -m unittest discover -s tests/cleanup_review -v
-python3 scripts/verify_cleanup_docs.py
+python3 -m unittest discover -s tests/docs -v
+python3 scripts/check-docs.py
 quarto render website/
 ```
 
