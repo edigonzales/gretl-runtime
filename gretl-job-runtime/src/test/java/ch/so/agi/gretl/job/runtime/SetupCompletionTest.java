@@ -87,12 +87,15 @@ class SetupCompletionTest {
         assertEquals("untouched", Files.readString(blocked));
         String logs = errors.toString(StandardCharsets.UTF_8);
         assertTrue(logs.contains("REPORT_WRITE_FAILED"), logs);
-        assertEquals(1, logs.lines().filter(line -> line.contains("gretl.run.finished")).count(), logs);
-        String terminal = logs.lines().filter(line -> line.contains("gretl.run.finished"))
-                .findFirst().orElseThrow();
-        assertTrue(terminal.contains("\"outcome\":\"FAILED\""), terminal);
-        assertTrue(terminal.contains("\"exit_code\":\"10\""), terminal);
-        assertTrue(logs.indexOf("gretl.report.write_failed") < logs.indexOf("gretl.run.finished"), logs);
+        var events = logs.lines().map(Json::parse).map(event -> (Map<?, ?>) event).toList();
+        var terminalEvents = events.stream().filter(event -> "gretl.run.finished".equals(event.get("event_name"))).toList();
+        assertEquals(1, terminalEvents.size(), logs);
+        var terminal = terminalEvents.getFirst();
+        assertEquals("FAILED", terminal.get("outcome"));
+        assertEquals("10", ((Map<?, ?>) terminal.get("attributes")).get("exit_code"));
+        var names = events.stream().map(event -> event.get("event_name")).toList();
+        assertTrue(names.indexOf("gretl.report.write_failed") >= 0
+                && names.indexOf("gretl.report.write_failed") < names.indexOf("gretl.run.finished"), logs);
         Map<?, ?> summary = (Map<?, ?>) Json.parseFile(termination, 4096);
         assertEquals("FAILED", summary.get("status"));
         assertEquals(10L, summary.get("exitCode"));

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.so.agi.gretl.runtime.logging.Json;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -88,7 +89,7 @@ class CliDefaultsAndParamsTest {
     }
 
     @Test
-    void configuredTerminationMessageIsSmallJsonWithoutSecretValues() throws Exception {
+    void configuredTerminationMessageContainsCompactSuccessJson() throws Exception {
         Path script = tempDir.resolve("term.groovy");
         Files.writeString(script, """
                 action('run') { return 'ok' }
@@ -104,7 +105,7 @@ class CliDefaultsAndParamsTest {
         assertEquals(0, code);
         assertTrue(Files.isRegularFile(termination));
         String text = Files.readString(termination);
-        assertTrue(text.contains("\"status\":\"SUCCEEDED\""));
+        assertEquals("SUCCEEDED", ((Map<?, ?>) Json.parse(text)).get("status"));
         assertTrue(text.length() < 3072);
     }
 

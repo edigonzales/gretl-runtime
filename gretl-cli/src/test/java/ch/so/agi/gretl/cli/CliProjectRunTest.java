@@ -55,9 +55,9 @@ class CliProjectRunTest {
             try (var files = Files.list(temp.resolve("gretl-reports"))) {
                 var events = files.filter(p -> p.toString().endsWith(".events.jsonl")).toList(); assertEquals(1, events.size());
                 String text = Files.readString(events.getFirst());
-                assertEquals(1, text.lines().filter(line -> line.contains("\"event_name\":\"gretl.run.started\"")).count());
-                assertEquals(1, text.lines().filter(line -> line.contains("\"event_name\":\"gretl.run.finished\"")).count());
                 var parsed = text.lines().map(Json::parse).map(CliProjectRunTest::object).toList();
+                assertEquals(1, parsed.stream().filter(event -> "gretl.run.started".equals(event.get("event_name"))).count());
+                assertEquals(1, parsed.stream().filter(event -> "gretl.run.finished".equals(event.get("event_name"))).count());
                 assertEquals(expectedOrder, parsed.stream().filter(e -> "gretl.task.started".equals(e.get("event_name"))).map(e -> e.get("task_id")).toList());
                 assertTrue(parsed.stream().allMatch(e -> !e.containsKey("run_id") || runId.equals(e.get("run_id"))));
             }

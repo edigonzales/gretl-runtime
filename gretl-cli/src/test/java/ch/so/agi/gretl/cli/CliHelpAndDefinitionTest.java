@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.so.agi.gretl.runtime.logging.Json;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -185,8 +186,9 @@ class CliHelpAndDefinitionTest {
         assertEquals(2, result.code());
         String line = result.err().lines().findFirst().orElseThrow();
         assertTrue(line.startsWith("{"));
-        assertTrue(line.contains("\"event_name\":\"gretl.cli.error\""));
-        assertTrue(line.contains("\"exit_code\":2"));
+        var event = (Map<?, ?>) Json.parse(line);
+        assertEquals("gretl.cli.error", event.get("event_name"));
+        assertEquals(2L, event.get("exit_code"));
     }
 
     private Path writeJob() throws Exception {

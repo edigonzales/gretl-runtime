@@ -19,18 +19,18 @@ class CorrelationTest {
                 "runtime", Map.of("correlationId", "configured", "jobName", "configured-job"))));
         String first = run(Map.of("GRETL_CORRELATION_ID", "environment", "GRETL_JOB_NAME", "environment-job"),
                 "first.json", true, 0);
-        assertTrue(first.contains("\"correlation_id\":\"configured\""), first);
+        assertTrue(events(first).anyMatch(event -> "configured".equals(event.get("correlation_id"))), first);
         assertFalse(first.contains("environment"));
-        String report = Files.readString(root.resolve("first.json"));
-        assertTrue(report.contains("\"correlationId\":\"configured\""));
-        assertTrue(report.contains("\"jobName\":\"configured-job\""));
+        var identity = identity("first.json");
+        assertEquals("configured", identity.get("correlationId"));
+        assertEquals("configured-job", identity.get("jobName"));
         String second = run(Map.of("GRETL_CORRELATION_ID", "second", "GRETL_JOB_NAME", "second-job"),
                 "second.json", false, 0);
-        assertTrue(second.contains("\"correlation_id\":\"second\""));
+        assertTrue(events(second).anyMatch(event -> "second".equals(event.get("correlation_id"))), second);
         assertFalse(second.contains("configured"));
         String third = run(Map.of(), "third.json", false, 0);
-        assertFalse(third.contains("correlation_id"));
-        assertFalse(Files.readString(root.resolve("third.json")).contains("correlationId"));
+        assertTrue(events(third).noneMatch(event -> event.containsKey("correlation_id")));
+        assertFalse(identity("third.json").containsKey("correlationId"));
     }
 
     @Test void rejectsControlCharactersAndOverlongEnvironmentBeforeTaskWork() throws Exception {
@@ -41,6 +41,14 @@ class CorrelationTest {
             assertFalse(Files.exists(root.resolve("invalid.json")));
         }
         run(Map.of("GRETL_CORRELATION_ID", "x".repeat(256)), "boundary.json", false, 10);
+    }
+
+    private java.util.stream.Stream<Map<?, ?>> events(String stderr) {
+        return stderr.lines().map(Json::parse).map(value -> (Map<?, ?>) value);
+    }
+
+    private Map<?, ?> identity(String report) throws Exception {
+        return (Map<?, ?>) ((Map<?, ?>) Json.parseFile(root.resolve(report), 1L << 20)).get("identity");
     }
 
     private String run(Map<String, String> env, String report, boolean config, int expected) throws Exception {

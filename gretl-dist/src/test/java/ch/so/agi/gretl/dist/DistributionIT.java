@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.so.agi.gretl.runtime.logging.Json;
 import com.sun.net.httpserver.HttpServer;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -201,14 +202,15 @@ class DistributionIT {
     @Test
     void inventoryListsAllCoreTasksAndTaskArtifacts() throws Exception {
         Path inventory = Path.of("src/main/dist/inventory.json");
-        String text = Files.readString(inventory);
+        var data = (Map<?, ?>) Json.parseFile(inventory, 1L << 20);
+        var tasks = (List<?>) data.get("tasks");
         for (String task : List.of("Ili2pgImportSchema", "Ili2pgImport", "Ili2pgExport",
                 "Ili2pgDelete", "Ili2pgReplace", "Ili2pgUpdate", "Ili2pgValidate",
                 "Ili2gpkgImport", "Ili2duckdbImportSchema", "Ili2duckdbImport",
                 "Ili2duckdbExport", "Av2ch", "Av2geobau", "Gpkg2Dxf")) {
-            assertTrue(text.contains("\"" + task + "\""), task);
+            assertTrue(tasks.contains(task), task);
         }
-        assertTrue(text.contains("gretl-interlis-tasks-${project.version}.jar"));
+        assertTrue(((List<?>) data.get("taskArtifacts")).contains("gretl-interlis-tasks-${project.version}.jar"));
     }
 
     @Test
@@ -638,8 +640,8 @@ class DistributionIT {
                     assertEquals(retained ? 1 : 0, runs.size(), result.err());
                     if (retained) assertEquals("packaged input", Files.readString(runs.getFirst().resolve("job-resources/data.txt")));
                 }
-                assertTrue(Files.readString(output.resolve("report.json"))
-                        .contains("\"workRetained\":" + retained));
+                var report = (Map<?, ?>) Json.parseFile(output.resolve("report.json"), 1L << 20);
+                assertEquals(retained, ((Map<?, ?>) report.get("execution")).get("workRetained"));
             }
         }
         // A broken resource is invisible to definition-only commands, but fails run setup.

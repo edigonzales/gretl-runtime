@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.so.agi.gretl.runtime.logging.Json;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -86,8 +87,9 @@ class CliDiagnosticFormattingTest {
                 "--log-format", "json");
 
         assertEquals(2, result.code());
-        assertTrue(result.err().contains("\"event_name\":\"gretl.cli.error\""));
-        assertTrue(result.err().contains("\"exit_code\":2"));
+        var event = (Map<?, ?>) Json.parse(result.err().lines().findFirst().orElseThrow());
+        assertEquals("gretl.cli.error", event.get("event_name"));
+        assertEquals(2L, event.get("exit_code"));
         assertFalse(result.err().contains("ERROR Parameter unbekannt"));
     }
 
