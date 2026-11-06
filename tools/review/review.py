@@ -70,8 +70,9 @@ def load_request(path, repo):
         require(re.fullmatch(r'[0-9a-f]{40}', value) and git(repo, 'rev-parse', value+'^{commit}') == value,
                 f'Invalid {key}')
     head = request['candidate_sha']
-    for ancestor in ('assignment_base_sha', 'phase_base_sha'):
-        subprocess.run(['git', 'merge-base', '--is-ancestor', request[ancestor], head], cwd=repo, check=True)
+    for ancestor, descendant in ((request['assignment_base_sha'], request['phase_base_sha']),
+                                 (request['phase_base_sha'], head)):
+        subprocess.run(['git', 'merge-base', '--is-ancestor', ancestor, descendant], cwd=repo, check=True)
     require(git(repo, 'rev-parse', 'HEAD') == head and not git(repo, 'status', '--porcelain=v1'),
             'Commit product changes and select the candidate first')
     evidence = external(request['evidence_directory'], repo)
@@ -203,8 +204,10 @@ def policy(request):
         rules.append(dict(action=action, resource=resource, effect='allow'))
     for action in ('read', 'glob', 'grep'):
         allow(action, '*')
-    for path in [evidence, request['requirements_directory'], *request.get('read_paths', [])]:
+    for path in (evidence, request['requirements_directory']):
         allow('external_directory', path + '/*')
+    for path in request.get('read_paths', []):
+        allow('external_directory', path + '/*' if Path(path).is_dir() else path)
     allow('edit', evidence + '/*')
     assignment = request['assignment_base_sha']+'..'+request['candidate_sha']
     phase = request['phase_base_sha']+'..'+request['candidate_sha']
@@ -321,9 +324,16 @@ def validate_verdict(request, verdict, process, events, session, evidence, workt
     tools = [event['part'] for event in events if event['type']=='tool_use' and
              event['part']['state']['status']=='completed']
     def completed(check):
-        matches = [part['state'] for part in tools if part['tool']=='shell' and
-                   part['state']['input']['command']==check['command'] and
-                   part['state']['metadata']['metadata'].get('exit')==check['exit_code']]
+        matches = []
+        for part in tools:
+            if part['tool'] != 'shell':
+                continue
+            state = part['state']
+            inputs = state['input']
+            cwd = (worktree / (inputs.get('workdir') or '.')).resolve()
+            if (inputs['command'] == check['command'] and cwd == worktree and
+                    state['metadata']['metadata'].get('exit') == check['exit_code']):
+                matches.append(state)
         require(matches and check['assertion'] and check['evidence'], 'No matching real check: '+check['command'])
         state = matches[-1]
         for value in check['evidence']:

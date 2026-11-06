@@ -86,6 +86,12 @@ class ReviewValidationTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Empty, failing or skipped'):
             self.validate()
 
+    def test_rejects_required_shell_check_from_a_different_worktree(self):
+        events = copy.deepcopy(self.events)
+        events[0]['part']['state']['input']['workdir'] = str(self.worktree.parent / 'different-candidate')
+        with self.assertRaisesRegex(ValueError, 'No matching real check'):
+            self.validate(events=events)
+
     def test_rejects_forged_or_failed_probe(self):
         with self.assertRaisesRegex(ValueError, 'reviewer-authored'):
             self.validate(events=[self.events[i] for i in (0,2,3)])
