@@ -13,7 +13,7 @@ final class JobExecutionEvidence {
     static boolean legacyMatrix() { return LEGACY_MATRIX; }
 
     static void started(ArtifactJobRunner.Prepared prepared, Instant at) throws IOException {
-        if (LEGACY_MATRIX || prepared.mode() == ArtifactJobRunner.Mode.IMAGE)
+        if (LEGACY_MATRIX || prepared.mode() != ArtifactJobRunner.Mode.SCRIPT)
             Files.writeString(prepared.request().directory().resolve("input-manifest.json"), Json.write(prepared.inputSnapshot().inventory()));
         if (!LEGACY_MATRIX) return;
         var row = base(prepared);

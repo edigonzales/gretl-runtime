@@ -215,6 +215,7 @@
   <profiles>
   <profile>
     <id>backing-services</id>
+    <properties><gretl.test.legacyMatrix>false</gretl.test.legacyMatrix></properties>
     <build><plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -239,6 +240,7 @@
                 <arg value="${maven.multiModuleProjectDirectory}/tests/contracts/operation-baseline.json"/>
                 <arg value="${project.build.directory}/script-operations.txt"/>
                 <arg value="${gretl.test.executionMode}"/>
+                <arg value="${gretl.test.legacyMatrix}"/>
               </java>
             </target></configuration>
           </execution>
