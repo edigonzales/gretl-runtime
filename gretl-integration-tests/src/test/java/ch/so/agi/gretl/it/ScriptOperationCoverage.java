@@ -49,12 +49,6 @@ public final class ScriptOperationCoverage implements BeforeEachCallback, AfterE
     }
 
     public static void main(String[] args) throws IOException {
-        var mode = ArtifactJobRunner.Mode.parse(args[2]);
-        // Only the explicit legacy matrix has separate JAR and IMAGE legs.
-        if (mode != ArtifactJobRunner.Mode.SCRIPT && args.length == 4 && Boolean.parseBoolean(args[3])) {
-            System.out.println("SCRIPT coverage is checked in the separate SCRIPT leg of the legacy matrix");
-            return;
-        }
         var baseline = (List<?>) Json.parseFile(Path.of(args[0]), 1L << 20);
         var expected = new TreeSet<String>();
         for (Object item : baseline) expected.add((String) ((Map<?, ?>) item).get("id"));

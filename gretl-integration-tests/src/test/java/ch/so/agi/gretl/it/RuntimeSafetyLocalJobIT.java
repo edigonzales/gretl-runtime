@@ -18,8 +18,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 class RuntimeSafetyLocalJobIT {
     @Test
     void preservesExistingRootsAndProtectsOwnedRunAndDiagnostics() throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
-        Path root = ArtifactJobRunner.directory("runtime-safety-permissions-" + mode);
+        Path root = ArtifactJobRunner.directory("runtime-safety-permissions");
         for (String name : List.of("work", "reports", "explicit-reports")) {
             Path directory = Files.createDirectories(root.resolve(name));
             Files.setPosixFilePermissions(directory, PosixFilePermissions.fromString("rwxrwx---"));
@@ -54,8 +53,7 @@ class RuntimeSafetyLocalJobIT {
     @ParameterizedTest
     @CsvSource({"caughtTimeout", "closeTimeout"})
     void localBudgetRemainsCancelledAfterCatchOrResourceClose(String target) throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
-        Path root = ArtifactJobRunner.directory("runtime-safety-budget-" + target + "-" + mode);
+        Path root = ArtifactJobRunner.directory("runtime-safety-budget-" + target);
         var result = run(prepare(root, target));
         assertFalse(result.timedOut(), result.err());
         assertEquals(20, result.code(), result.err());
@@ -72,8 +70,7 @@ class RuntimeSafetyLocalJobIT {
     @ParameterizedTest
     @CsvSource({"blockedTask", "originalFailure"})
     void setupFailureStillCleansUpAndReportsTheOriginalCause(String target) throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
-        Path root = ArtifactJobRunner.directory("runtime-safety-setup-" + target + "-" + mode);
+        Path root = ArtifactJobRunner.directory("runtime-safety-setup-" + target);
         var result = run(prepare(root, target));
         assertFalse(result.timedOut(), result.err());
         assertEquals(10, result.code(), result.err());
@@ -97,13 +94,12 @@ class RuntimeSafetyLocalJobIT {
     @Test
     @SuppressWarnings("unchecked")
     void failedStartHasNoRunReportOrCleanupEffects() throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
-        Path root = ArtifactJobRunner.directory("runtime-safety-start-" + mode);
+        Path root = ArtifactJobRunner.directory("runtime-safety-start");
         var prepared = prepare(root, "permissions");
         Path blocked = Files.writeString(root.resolve("reports/blocked-root"), "keep");
-        Path configFile=root.resolve(mode==ArtifactJobRunner.Mode.IMAGE ? "image-runtime.json" : "runtime.json");
+        Path configFile=root.resolve("runtime.json");
         Map<String,Object> config = (Map<String,Object>) Json.parseFile(configFile, 1L << 20);
-        ((Map<String,Object>) config.get("runtime")).put("workRoot",mode==ArtifactJobRunner.Mode.IMAGE ? "/reports/blocked-root" : blocked.toString());
+        ((Map<String,Object>) config.get("runtime")).put("workRoot",blocked.toString());
         Files.writeString(configFile, Json.write(config));
         var result = run(prepared);
         assertEquals(2, result.code(), result.err());
@@ -117,8 +113,7 @@ class RuntimeSafetyLocalJobIT {
     @ParameterizedTest
     @CsvSource({"requestedCancel,REQUESTED", "interruptedCancel,INTERRUPTED"})
     void concreteControlCauseSurvivesTheProductEntry(String target, String reason) throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
-        Path root = ArtifactJobRunner.directory("runtime-safety-cause-" + target + "-" + mode);
+        Path root = ArtifactJobRunner.directory("runtime-safety-cause-" + target);
         var result = run(prepare(root, target));
         assertEquals(20, result.code(), result.err());
         assertTerminal(result, "CANCELLED", 20);

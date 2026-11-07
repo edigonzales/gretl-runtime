@@ -10,7 +10,7 @@ vollständige Qualifikation. Dafür gelten vom Repository-Root mit JDK 25:
 ./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
 
-Die konsolidierte Prüfung mit JDK 25, Node und Docker startet mit:
+Der folgende Befehl startet die konsolidierte Prüfung mit JDK 25, Node und Docker.
 
 ```sh
 scripts/verify-runtime.sh
@@ -45,19 +45,15 @@ GeoTools-Probe nimmt keine GeoTools-JARs in die Standarddistribution auf.
 | FTP und S3 | ArtifactServicesIT; unabhängige FTP-/AWS-Clients |
 | Abbruch, SIGTERM und Abschlussreihenfolge | CancellationLocalJobIT und DatabaseArtifactIT |
 | Ausgewählte vollständige Pakete, externe Extension, Hostverunreinigung und Lauf ohne Buildumgebung | SelectedPackageLocalJobIT, SelectedPackageArtifactIT und DistributionIT; [Auswahlvertrag](../guides/packaging.md) |
-| Reale generische IMAGE-SCRIPT-Läufe und OpenShift-UID | ImageRuntimeIT, gemeinsame Fachsuite und echte Container; RecordingEngine nur zusätzliche Komponentenprüfung |
+| Reale generische IMAGE-SCRIPT-Läufe und OpenShift-UID | ImageRuntimeIT mit echten externen Jobs, Native-Libraries, PostGIS, HTTP und S3 |
 
 Die Suites `PostgresSqlExecutorIT`, `Db2DbPostgresIT`,
 `DuckDbFederationPostgresIT`, `FormatPostgresIT`, `FtpTaskFamilyIT` und
 `S3TaskFamilyIT` bleiben zusätzliche CLI-Komponentenprüfungen. Sie zählen nicht
 als separater Produktprozess- oder Modusnachweis. `PackagedSqlJobPostgresIT` prüft zusätzlich den paketierten SQL-Job.
 
-Die Originalzuordnung mit unveränderten Quellhashes, Originalassertionen und
-Dateiprüfsummen steht im [Szenarioinventar](../../tests/provenance/original-scenarios.json).
-Die aktuelle Zuordnung, alle Varianten und konkret begründete Anpassungen
-stehen im [Zuordnung zu heutigen Tests](../../tests/provenance/scenario-mapping.json).
-Die [Jobtest-Verträge](job-artifact-tests.md) erklären Artefaktbau, separate
-Prozesse, Evidenz und die tatsächliche externe SCRIPT-Ausführung im IMAGE.
+Die [Jobtest-Verträge](job-artifact-tests.md) erklären die drei
+Prozessarten, die Operationsabdeckung und das Testnetz.
 
 PostgreSQL/PostGIS: digestgepinntes `postgis/postgis:16-3.4`, pro Test isoliertes
 Schema und `currentSchema=<Lease>,public`; Erweiterungen `postgis` und
@@ -76,22 +72,12 @@ diesem Verbindungsproblem kann der Lauf mit
 `JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true` wiederholt werden.
 Dokumentiere die Einstellung. Assertions und Dienstprofil bleiben gleich.
 
-Die Tests laufen sequenziell pro Failsafe-JVM. SCRIPT ist der Hauptweg;
-JAR und IMAGE führen die COMMON-Fälle mit denselben Quellen und Orakeln aus.
-IMAGE startet den Produktlauncher mit externem Script/Projekt, kein
-Job-JAR. Die Standarddistribution wird vorher im Reactor gebaut.
-
-```sh
-scripts/verify-job-matrix.sh --mode ALL --scope full --output ../gretl-all-full
-```
-
-Dieser Pflichtweg umfasst drei vollständige Läufe mit echten Diensten,
-getrennter Operationsabdeckung und gesicherten Nachweisen vor clean.
-`--scope local` lässt die externen Dienste weg; IMAGE/local benötigt
-weiterhin Docker. Der feste Szenariokatalog und seine Startzahlen werden
-gegen alle tatsächlich ausgeführten JUnit-Varianten und Prozesse geprüft.
-Fehler, Skips, fehlende oder fremde Fälle sind kein qualifizierter Erfolg.
-Alle E01–E12-Proben stehen in `tests/script-first-testing/test_job_evidence.py`.
+Die Tests laufen in einer Failsafe-JVM. SCRIPT ist der Hauptweg.
+JAR und IMAGE werden ausdrücklich für ausgewählte Produktprozesse verwendet.
+Das Dienstprofil vergleicht erfolgreiche SCRIPT-Operationen mit
+dem [Operationskatalog](../../tests/contracts/operation-baseline.json).
+Jede fehlende Operation führt zu einem Buildfehler. Das IMAGE-Profil
+verlangt zusätzlich einen frischen Report von `ImageRuntimeIT`.
 
 Der reguläre Workflow `publish-snapshots.yml` verwendet die konsolidierte
 Prüfung bei Push auf `main`, bei Pull Requests gegen `main` und bei manuellem
@@ -101,7 +87,7 @@ SHA-256. Bei Fehlern bleibt ein kompakter Testüberblick verfügbar.
 JaCoCo misst Test-JVMs und aktive Produktmodule. Separate Launcher-,
 Job-JAR- und Containerprozesse liefern fachliche Nachweise, keine erfundene
 Codecoverage. Die [Jobtest-Verträge](job-artifact-tests.md) erklären
-Quelle/Input, JUnitbindung, nanosekundengenaue Zeitprüfung und Cleanup.
+Prozessstart, Eingaben, Reports und Cleanup.
 Testzahlen gelten für den jeweiligen SHA. Tatsächliche Plattform und
 nicht ausgeführte Cluster-/Architekturprüfungen gehören in den jeweiligen Prüfbeleg.
 

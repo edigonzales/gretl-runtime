@@ -16,6 +16,7 @@ if [ "$uid" = 0 ]; then
   exit 2
 fi
 run_id=$(python3 -c 'import uuid; print(uuid.uuid4())')
+export GRETL_VERIFICATION_RUN_ID="$run_id"
 label="gretl.verification.run=$run_id"
 network=$(docker network create --label "$label" "gretl-verify-$run_id")
 maven_pid=

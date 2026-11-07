@@ -19,13 +19,14 @@ das vollständige Dienstprofil benötigt. Vom Repository-Root:
 
 Der Standardweg benötigt kein Docker und startet lokale Fachjobs als
 SCRIPT-Prozesse. Die vollständige Qualifikation aller Auslieferungswege
-läuft am sauberen Commit mit:
+läuft am sauberen Commit mit dem folgenden Befehl.
 
 ```sh
-scripts/verify-job-matrix.sh --mode ALL --scope full --output ../gretl-all-full
+scripts/verify-runtime.sh
 ```
 
-Jeder Modus besitzt eigene Fach-/Operationsnachweise. Das
+SCRIPT prüft alle 44 Standardoperationen. JAR und IMAGE werden mit
+ausgewählten eigenständigen Prozessen geprüft. Das
 [generische Image](gretl-dist/src/main/docker/README.md) führt externe
 Groovy-Dateien oder Projekte aus und unterstützt die OpenShift-UID-/
 Volume-Bedingungen; konkrete Jobs werden nicht ins Image eingebaut.

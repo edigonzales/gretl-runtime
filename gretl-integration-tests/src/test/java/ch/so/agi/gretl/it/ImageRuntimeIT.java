@@ -10,6 +10,10 @@ import org.junit.jupiter.api.Test;
 
 /** Real product containers; selected by job-image, never skipped by a JUnit assumption. */
 class ImageRuntimeIT {
+    @Test void runsAnExternalProjectWithoutPackaging() throws Exception {
+        ProjectProcessLocalJobIT.externalProjectNeedsNoPackageDescriptor(ArtifactJobRunner.Mode.IMAGE);
+    }
+
     @Test void reachesPostgresAndCancelsItsActiveTransaction() throws Exception {
         DatabaseArtifactIT.realDatabaseChainAndCancellationRollback(ArtifactJobRunner.Mode.IMAGE);
     }

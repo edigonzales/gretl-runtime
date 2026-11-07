@@ -105,7 +105,7 @@ class IoLocalJobIT {
     }
 
     private static ArtifactJobRunner.Result run(String target, String variant, String url, Map<String, ArtifactJobRunner.Endpoint> endpoints) throws Exception {
-        return run(target, variant, url, endpoints, ArtifactJobRunner.Mode.configured());
+        return run(target, variant, url, endpoints, ArtifactJobRunner.Mode.SCRIPT);
     }
 
     private static ArtifactJobRunner.Result run(String target, String variant, String url,

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class DatabaseArtifactIT {
     @Test void realDatabaseChainAndCancellationRollback() throws Exception {
-        realDatabaseChainAndCancellationRollback(ArtifactJobRunner.Mode.configured());
+        realDatabaseChainAndCancellationRollback(ArtifactJobRunner.Mode.SCRIPT);
     }
 
     static void realDatabaseChainAndCancellationRollback(ArtifactJobRunner.Mode mode) throws Exception {

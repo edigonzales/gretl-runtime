@@ -79,32 +79,14 @@ gh run watch <run-id>
 
 Alternativ im GitHub-UI unter **Actions → verification and snapshots → Run workflow**.
 
-## 4. Veröffentlichen lokal
+Push, Merge, Release und produktive Veröffentlichung benötigen einen
+ausdrücklichen Auftrag. Die lokale Prüfung des Publishwegs verwendet ein
+privates Maven-Dateirepository, einen lokalen HTTP-Server und synthetische
+Zugangsdaten. Maven erzeugt timestamped Snapshot-Artefakte und
+`maven-metadata.xml`. Ein unvollständiger Upload oder fehlgeschlagener
+Download-Smoke schlägt den Publish-Job fehl.
 
-Ein gesondert autorisierter lokaler Publishaufruf erfolgt über:
-
-```sh
-./scripts/publish-snapshots.sh
-```
-
-Das Skript prüft zuerst beide Credentialvariablen, führt dann den Dockerfreien
-Standard und ALL/full ohne übernommene Skipargumente aus und bewahrt deren
-Evidenz unter `.gretl-verification/`. `GRETL_PUBLICATION_EVIDENCE` kann einen
-anderen Zielpfad wählen. Erst nach erfolgreichen Gates folgt der bisherige
-Deploy mit `publish-settings.xml`, Profil `publish-snapshots` und den
-Deploy-Flags `-DskipTests -DskipITs`. Ein Fehler in einem Pflichtgate beendet
-das Skript vor jedem Deploy. Zusätzliche Argumente gelten nur für den Deploy.
-
-Push, Merge, Release und Deploy benötigen einen ausdrücklichen Auftrag.
-Die Kontrolltests verwenden lokale Ersatzprogramme und synthetische Credentials.
-
-Maven erzeugt für `6.0.0-SNAPSHOT` timestamped Snapshot-Artefakte und
-aktualisiert `maven-metadata.xml`. Der Deploy bricht bei fehlenden
-Credentials, HTTP 401/403, Repositoryfehlern oder einem unvollständigen
-Upload ab. Snapshots dürfen nach einer Korrektur erneut veröffentlicht
-werden; eine automatische Rückabwicklung gibt es nicht.
-
-## 5. Veröffentlichte Koordinaten
+## 4. Veröffentlichte Koordinaten
 
 Gruppe: `ch.so.agi.gretl`
 
@@ -147,7 +129,7 @@ Beispiel zum Auflösen der ZIP:
 </dependency>
 ```
 
-## 6. Prüfung nach dem Deploy
+## 5. Prüfung nach dem Deploy
 
 Remote-Metadaten:
 
@@ -190,7 +172,7 @@ Die regulären Download-Kontrolltests laufen mit
 Fixtures prüfen den Kontrollfluss, während die Abnahme zusätzlich eine echte
 Distribution nach lokalem Maven-Deploy herunterlädt und ausführt.
 
-## 7. Fehlerfälle
+## 6. Fehlerfälle
 
 | Symptom | Vorgehen |
 |---|---|

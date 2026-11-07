@@ -14,8 +14,7 @@ class CancellationLocalJobIT {
     @ParameterizedTest
     @CsvSource({"false", "true"})
     void cooperativeCancelAndSigtermFinishOnce(boolean sigterm) throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
-        Path root = ArtifactJobRunner.directory("cancel-" + mode + "-" + sigterm);
+        Path root = ArtifactJobRunner.directory("cancel-" + sigterm);
         try (var watch = FileSystems.getDefault().newWatchService()) {
             root.resolve("output").register(watch, StandardWatchEventKinds.ENTRY_CREATE);
             var request = new ArtifactJobRunner.Request("cancel", ArtifactJobRunner.fixture("cancellation"),
@@ -45,8 +44,7 @@ class CancellationLocalJobIT {
 
     @Test
     void originalFailureWinsOverSigtermDuringCleanup() throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
-        Path root = ArtifactJobRunner.directory("failed-shutdown-" + mode);
+        Path root = ArtifactJobRunner.directory("failed-shutdown");
         try (var watch = FileSystems.getDefault().newWatchService()) {
             root.resolve("output").register(watch, StandardWatchEventKinds.ENTRY_CREATE);
             var request = new ArtifactJobRunner.Request("failed-shutdown", ArtifactJobRunner.fixture("cancellation"),
@@ -72,8 +70,7 @@ class CancellationLocalJobIT {
 
     @Test
     void runnerTimeoutReapsTheProcessAndPreservesCooperativeReport() throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
-        Path root = ArtifactJobRunner.directory("runner-timeout-" + mode);
+        Path root = ArtifactJobRunner.directory("runner-timeout");
         try (var watch = FileSystems.getDefault().newWatchService()) {
             root.resolve("output").register(watch, StandardWatchEventKinds.ENTRY_CREATE);
             var request = new ArtifactJobRunner.Request("runner-timeout", ArtifactJobRunner.fixture("cancellation"),

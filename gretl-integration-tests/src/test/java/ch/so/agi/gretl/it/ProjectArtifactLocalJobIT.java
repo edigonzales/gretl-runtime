@@ -96,9 +96,8 @@ class ProjectArtifactLocalJobIT {
         }
     }
     @Test void innerHandlerFailuresKeepOriginalSourceBeforeCaptureEvenWhenCaught() throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
         for (boolean caught : List.of(false, true)) {
-            var request = request("project-inner-" + (caught ? "caught-" : "failed-") + mode.name().toLowerCase(java.util.Locale.ROOT),
+            var request = request("project-inner-" + (caught ? "caught" : "failed"),
                     caught ? "caught" : "nested-fail", List.of(), "on-failure");
             var prepared = ArtifactJobRunner.prepare(request);
             var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared), false);
@@ -170,7 +169,6 @@ class ProjectArtifactLocalJobIT {
         var command=new ArrayList<>(List.of(Path.of(System.getProperty("java.home"),"bin/java").toString(),"-jar",jar.toString()));command.addAll(options);
         var process=ArtifactJobRunner.process(command,dir,Map.of(),"control").start();
         boolean finished=process.waitFor(60,TimeUnit.SECONDS);if(!finished)ArtifactJobRunner.stop(process);assertTrue(finished);
-        Files.writeString(dir.resolve("control-execution.json"),Json.write(Map.of("command",command,"exitCode",process.exitValue(),"artifactSha256",hash(jar))));
         assertFalse(Files.exists(dir.resolve("gretl-reports")));assertFalse(Files.exists(dir.resolve(".gretl-work")));
         return process.exitValue();
     }

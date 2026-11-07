@@ -118,15 +118,14 @@ class ProjectScriptLocalJobIT {
                 : ArtifactJobRunner.JobInput.script(fixture.relativize(input).toString());
         var request = new ArtifactJobRunner.Request("project-script-" + id, fixture, directory, targets, parameters, Map.of(),
                 JobRunner.baseConfig(directory), Map.of(), java.time.Duration.ofSeconds(60), selected, invocation);
-        var result = ArtifactJobRunner.run(request, ArtifactJobRunner.Mode.configured()==ArtifactJobRunner.Mode.IMAGE ? ArtifactJobRunner.Mode.IMAGE : ArtifactJobRunner.Mode.SCRIPT);
+        var result = ArtifactJobRunner.run(request);
         return new Result(result.code(), result.out(), result.err());
     }
     private String originalSource(Path root,String id,String relative) throws Exception {
-        return ArtifactJobRunner.Mode.configured()==ArtifactJobRunner.Mode.IMAGE ? "/job/"+relative : root.resolve(id+"/source/"+relative).toRealPath().toString();
+        return root.resolve(id+"/source/"+relative).toRealPath().toString();
     }
     private static void assertNoRunWork(Path root) throws Exception {
-        if(ArtifactJobRunner.Mode.configured()!=ArtifactJobRunner.Mode.IMAGE) assertFalse(Files.exists(root.resolve("work")));
-        else try(var files=Files.list(root.resolve("work"))) { assertEquals(java.util.Set.of("home","tmp"),files.map(p->p.getFileName().toString()).collect(java.util.stream.Collectors.toSet())); }
+        assertFalse(Files.exists(root.resolve("work")));
         try (var files = Files.list(root.resolve("reports"))) { assertEquals(0, files.count()); }
     }
 

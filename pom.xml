@@ -45,7 +45,6 @@
     <!-- Product baseline, spec 07. The wrapper pins Maven 3.10.0 separately. -->
     <java.version>25</java.version>
     <gretl.test.includes>**/*JobIT.java</gretl.test.includes>
-    <gretl.test.executionMode>SCRIPT</gretl.test.executionMode>
     <maven.build.timestamp.format>yyyyMMddHHmmssSSS</maven.build.timestamp.format>
     <gretl.test.runId>${maven.build.timestamp}</gretl.test.runId>
     <jacoco.version>0.8.14</jacoco.version>

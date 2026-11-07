@@ -42,15 +42,11 @@ final class FtpFixture implements AutoCloseable {
                     // pidproxy selects `pgrep vsftpd | tail -n 1`, which can
                     // select a transient connection worker during readiness.
                     .withCommand("vsftpd", "/etc/vsftpd/vsftpd.conf", "-obackground=NO",
-                            "-opasv_address=" + (ArtifactJobRunner.Mode.configured() == ArtifactJobRunner.Mode.IMAGE ? "ftp" : "127.0.0.1"), "-opasv_min_port=" + passive,
+                            "-opasv_address=127.0.0.1", "-opasv_min_port=" + passive,
                             "-opasv_max_port=" + passive)
                     .withCreateContainerCmdModifier(command ->
                             command.withHostName("ftp").withAliases("ftp"))
                     .waitingFor(Wait.forListeningPort());
-            if (ArtifactJobRunner.Mode.configured() == ArtifactJobRunner.Mode.IMAGE) {
-                candidate.withLabel("gretl.verification.run",System.getProperty("gretl.test.runId","development"));
-                candidate.withNetworkMode(System.getProperty("gretl.test.imageNetwork"));
-            }
             try {
                 candidate.start();
                 return candidate;

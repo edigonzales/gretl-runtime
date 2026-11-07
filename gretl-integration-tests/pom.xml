@@ -179,7 +179,6 @@
           <systemPropertyVariables>
             <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
             <gretl.test.runId>${gretl.test.runId}</gretl.test.runId>
-            <gretl.test.executionMode>${gretl.test.executionMode}</gretl.test.executionMode>
             <gretl.test.imageMetadata>${maven.multiModuleProjectDirectory}/gretl-dist/target/image/candidate.json</gretl.test.imageMetadata>
           </systemPropertyVariables>
         </configuration>
@@ -201,7 +200,6 @@
           <systemPropertyVariables>
             <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
             <gretl.test.runId>${gretl.test.runId}</gretl.test.runId>
-            <gretl.test.executionMode>${gretl.test.executionMode}</gretl.test.executionMode>
             <gretl.test.imageMetadata>${maven.multiModuleProjectDirectory}/gretl-dist/target/image/candidate.json</gretl.test.imageMetadata>
             <gretl.test.reactorDistribution>${maven.multiModuleProjectDirectory}/gretl-dist/target/dist</gretl.test.reactorDistribution>
             <gretl.test.distributionArchive>${maven.multiModuleProjectDirectory}/gretl-dist/target/gretl-runtime-${project.version}-bin.zip</gretl.test.distributionArchive>
@@ -215,7 +213,6 @@
   <profiles>
   <profile>
     <id>backing-services</id>
-    <properties><gretl.test.legacyMatrix>false</gretl.test.legacyMatrix></properties>
     <build><plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -239,8 +236,6 @@
                 <classpath refid="maven.test.classpath"/>
                 <arg value="${maven.multiModuleProjectDirectory}/tests/contracts/operation-baseline.json"/>
                 <arg value="${project.build.directory}/script-operations.txt"/>
-                <arg value="${gretl.test.executionMode}"/>
-                <arg value="${gretl.test.legacyMatrix}"/>
               </java>
             </target></configuration>
           </execution>

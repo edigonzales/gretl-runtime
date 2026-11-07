@@ -128,7 +128,7 @@ jobs:
         run: >-
           ./mvnw -B -s scripts/publish-settings.xml -Ppublish-snapshots
           -Dgretl.dist.reuseQualifiedArchives=true -DskipTests -DskipITs deploy
-      - name: Check the deployed archive inputs
+      - name: Recheck local archive inputs after deploy
         working-directory: gretl-dist/target
         run: sha256sum --strict --check "$RUNNER_TEMP/gretl-verified-runtime/distribution.sha256"
       - name: Download published runtime and execute an external Groovy job

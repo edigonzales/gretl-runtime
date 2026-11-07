@@ -20,19 +20,16 @@ Manifesthash, Image-ID, Plattform, Basisdigest und Buildkommando.
 Das Maven-Profil `job-image` führt diesen Schritt nach dem Distributionsbuild
 und vor den Integrationstests aus. Der Standardbuild benötigt kein Docker.
 
-Der dokumentierte lokale Prüfweg am sauberen Kandidaten ist:
+Der folgende Befehl startet die konsolidierte Qualifikation am sauberen Kandidaten.
 
 ```sh
-scripts/verify-job-matrix.sh --mode IMAGE --scope local --output ../gretl-image-local
-scripts/verify-job-matrix.sh --mode IMAGE --scope full --output ../gretl-image-full
+scripts/verify-runtime.sh
 ```
 
-Beide benötigen einen erreichbaren Docker-Daemon und einen non-root
-Hostbenutzer für private Bindmounts. Der Starter baut selbst die Runtime,
-legt ein eigenes Netz an, prüft tatsächliche Containerläufe und bewahrt
-Berichte vor dem nächsten `clean`. FULL umfasst zusätzlich die echten
-Backing Services und den GeoTools-Probe. Ausgaben müssen ausserhalb von
-Maven-`target` liegen; bereits belegte Modusausgaben werden nicht ersetzt.
+Sie benötigt Docker und einen non-root Hostbenutzer für private
+Bindmounts. Der Starter baut Runtime und Image, legt ein eigenes
+Testnetz an und prüft ausgewählte IMAGE-Prozesse mit externen Jobs.
+Die vollständige SCRIPT-Suite verwendet im selben Reaktor echte Dienste.
 
 Die Basis ist Java 25 auf Ubuntu 24.04, mit einem am 01.11.2026 tatsächlich
 aufgelösten OCI-Indexdigest im Dockerfile gepinnt. Die lokale Qualifikation

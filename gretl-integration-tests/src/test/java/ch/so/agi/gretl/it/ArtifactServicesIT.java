@@ -41,7 +41,7 @@ class ArtifactServicesIT {
             var params = new LinkedHashMap<>(Map.of("accessKey", lease.accessKey(), "endpoint", lease.endpoint(), "region", lease.region(),
                     "sourceBucket", lease.sourceBucket(), "targetBucket", lease.targetBucket()));
             var endpoints = Map.of("s3", new ArtifactJobRunner.Endpoint(lease.endpoint(), "http://s3:4566"));
-            assertS3Upload(params, lease, endpoints, ArtifactJobRunner.Mode.configured());
+            assertS3Upload(params, lease, endpoints, ArtifactJobRunner.Mode.SCRIPT);
             var copy = run("s3-copy", params, "s3SecretKey", lease.secretKey(), endpoints);
             assertEquals(0, copy.code(), copy.err());
             assertEquals(lease.keys(lease.sourceBucket()), lease.keys(lease.targetBucket()));
@@ -85,7 +85,7 @@ class ArtifactServicesIT {
 
     private static ArtifactJobRunner.Result run(String target, Map<String, String> values, String secret, String password,
                                          Map<String, ArtifactJobRunner.Endpoint> endpoints) throws Exception {
-        return run(target, values, secret, password, endpoints, ArtifactJobRunner.Mode.configured());
+        return run(target, values, secret, password, endpoints, ArtifactJobRunner.Mode.SCRIPT);
     }
 
     private static ArtifactJobRunner.Result run(String target, Map<String, String> values, String secret, String password,
