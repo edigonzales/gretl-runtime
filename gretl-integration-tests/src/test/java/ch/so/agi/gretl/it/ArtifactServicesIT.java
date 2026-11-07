@@ -41,12 +41,7 @@ class ArtifactServicesIT {
             var params = new LinkedHashMap<>(Map.of("accessKey", lease.accessKey(), "endpoint", lease.endpoint(), "region", lease.region(),
                     "sourceBucket", lease.sourceBucket(), "targetBucket", lease.targetBucket()));
             var endpoints = Map.of("s3", new ArtifactJobRunner.Endpoint(lease.endpoint(), "http://s3:4566"));
-            var upload = run("s3-upload", params, "s3SecretKey", lease.secretKey(), endpoints);
-            assertEquals(0, upload.code(), upload.err());
-            assertEquals(List.of("one.txt", "three.csv", "two.txt"), lease.keys(lease.sourceBucket()));
-            assertEquals("one", lease.read(lease.sourceBucket(), "one.txt"));
-            assertEquals("test", lease.head(lease.sourceBucket(), "one.txt").metadata().get("source"));
-            assertEquals("text/plain", lease.head(lease.sourceBucket(), "one.txt").contentType());
+            assertS3Upload(params, lease, endpoints, ArtifactJobRunner.Mode.configured());
             var copy = run("s3-copy", params, "s3SecretKey", lease.secretKey(), endpoints);
             assertEquals(0, copy.code(), copy.err());
             assertEquals(lease.keys(lease.sourceBucket()), lease.keys(lease.targetBucket()));
@@ -69,11 +64,35 @@ class ArtifactServicesIT {
             assertFalse(report.contains(lease.secretKey()));
         }
     }
-    private ArtifactJobRunner.Result run(String target, Map<String, String> values, String secret, String password,
+    static void imageS3Upload() throws Exception {
+        try (var fixture = new S3Fixture(); var lease = fixture.lease()) {
+            var params = Map.of("accessKey", lease.accessKey(), "endpoint", lease.endpoint(), "region", lease.region(),
+                    "sourceBucket", lease.sourceBucket(), "targetBucket", lease.targetBucket());
+            assertS3Upload(params, lease, Map.of("s3", new ArtifactJobRunner.Endpoint(lease.endpoint(), "http://s3:4566")),
+                    ArtifactJobRunner.Mode.IMAGE);
+        }
+    }
+
+    private static void assertS3Upload(Map<String, String> params, S3Fixture.Lease lease,
+                                       Map<String, ArtifactJobRunner.Endpoint> endpoints, ArtifactJobRunner.Mode mode) throws Exception {
+        var upload = run("s3-upload", params, "s3SecretKey", lease.secretKey(), endpoints, mode);
+        assertEquals(0, upload.code(), upload.err());
+        assertEquals(List.of("one.txt", "three.csv", "two.txt"), lease.keys(lease.sourceBucket()));
+        assertEquals("one", lease.read(lease.sourceBucket(), "one.txt"));
+        assertEquals("test", lease.head(lease.sourceBucket(), "one.txt").metadata().get("source"));
+        assertEquals("text/plain", lease.head(lease.sourceBucket(), "one.txt").contentType());
+    }
+
+    private static ArtifactJobRunner.Result run(String target, Map<String, String> values, String secret, String password,
                                          Map<String, ArtifactJobRunner.Endpoint> endpoints) throws Exception {
+        return run(target, values, secret, password, endpoints, ArtifactJobRunner.Mode.configured());
+    }
+
+    private static ArtifactJobRunner.Result run(String target, Map<String, String> values, String secret, String password,
+                                                 Map<String, ArtifactJobRunner.Endpoint> endpoints, ArtifactJobRunner.Mode mode) throws Exception {
         Path root = ArtifactJobRunner.directory(target); var params = new LinkedHashMap<String, Object>(values); params.put("output", root.resolve("output"));
         var config = JobRunner.baseConfig(root); JobRunner.secret(root, config, secret, password);
         var request = new ArtifactJobRunner.Request(target, ArtifactJobRunner.fixture("services"), root, List.of(target), params, Map.of(), config, endpoints, Duration.ofSeconds(90));
-        return ArtifactJobRunner.run(request);
+        return ArtifactJobRunner.run(request, mode);
     }
 }

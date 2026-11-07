@@ -10,6 +10,18 @@ import org.junit.jupiter.api.Test;
 
 /** Real product containers; selected by job-image, never skipped by a JUnit assumption. */
 class ImageRuntimeIT {
+    @Test void reachesPostgresAndCancelsItsActiveTransaction() throws Exception {
+        DatabaseArtifactIT.realDatabaseChainAndCancellationRollback(ArtifactJobRunner.Mode.IMAGE);
+    }
+
+    @Test void uploadsToRealS3WithMountedCredentials() throws Exception {
+        ArtifactServicesIT.imageS3Upload();
+    }
+
+    @Test void reachesHttpAndReportsAnExpectedFailure() throws Exception {
+        IoLocalJobIT.imageHttpDownloadAndFailure();
+    }
+
     @Test void defaultEntrypointReusesOneGenericImageForNewJobsAndChangedExternalSource() throws Exception {
         var settings = ImageExecutionAdapter.Settings.configured();
         String image = settings.image();

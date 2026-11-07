@@ -369,15 +369,5 @@
       <id>backing-services</id>
       <properties><gretl.test.includes>**/*IT.java</gretl.test.includes></properties>
     </profile>
-    <profile>
-      <id>job-image</id>
-      <properties><gretl.test.executionMode>IMAGE</gretl.test.executionMode></properties>
-      <build><plugins><plugin>
-        <groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId>
-        <executions><execution><id>require-image-mode</id><phase>validate</phase><goals><goal>enforce</goal></goals>
-          <configuration><rules><requireProperty><property>gretl.test.executionMode</property><regex>IMAGE</regex><message>job-image requires executionMode=IMAGE</message></requireProperty></rules></configuration>
-        </execution></executions>
-      </plugin></plugins></build>
-    </profile>
   </profiles>
 </project>

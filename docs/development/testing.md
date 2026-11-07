@@ -10,6 +10,20 @@ vollständige Qualifikation. Dafür gelten vom Repository-Root mit JDK 25:
 ./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
 
+Die konsolidierte Prüfung mit JDK 25, Node und Docker startet mit:
+
+```sh
+scripts/verify-runtime.sh
+```
+
+Das Skript legt ein eigenes Docker-Netz an und startet genau einen
+`./mvnw -B -Pgeotools-probe,backing-services,job-image clean verify`-Lauf.
+Der Reactor prüft die vollständige SCRIPT-Fachsuite mit 44
+Standardoperationen, explizite selbständige JAR-Prozesse und ausgewählte
+IMAGE-Prozesse mit externen Jobs. Das Image verwendet dasselbe Testnetz
+wie PostgreSQL/PostGIS und S3. Der Aufruf benötigt einen non-root
+Hostbenutzer für die privaten Bindmounts.
+
 Der normale Reactor enthält Unit-, Komponenten-, Distributions- und lokale
 fachliche SCRIPT-Prozesse (`*JobIT`) plus ausdrücklich erhaltene JAR-Paketverträge. Das Dienstprofil ergänzt die vollständigen
 `*IT` gegen echte Container; fehlendes Docker ist ein Fehler. Die getrennte

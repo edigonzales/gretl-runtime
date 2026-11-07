@@ -26,6 +26,30 @@ class IoLocalJobIT {
                 "<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>")) assertTrue(content.contains(expected), expected);
         if (variant.equals("set")) assertTrue(Files.isRegularFile(result.directory().resolve("output/MeldungAnGeometer_mehrere_gebaeude_mehrere_grundstuecke.xtf")));
     }
+    static void imageHttpDownloadAndFailure() throws Exception {
+        byte[] payload = Files.readAllBytes(ArtifactJobRunner.fixture("io").resolve("payload.txt"));
+        HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", 0), 0);
+        server.createContext("/download", exchange -> {
+            exchange.sendResponseHeaders(200, payload.length);
+            exchange.getResponseBody().write(payload);
+            exchange.close();
+        });
+        server.createContext("/failure", exchange -> { exchange.sendResponseHeaders(401, -1); exchange.close(); });
+        server.start();
+        try {
+            String host = "http://127.0.0.1:" + server.getAddress().getPort();
+            String image = "http://" + System.getProperty("gretl.test.httpImageHost", "services") + ":" + server.getAddress().getPort();
+            var endpoints = Map.of("http", new ArtifactJobRunner.Endpoint(host, image));
+            var download = run("download", "file", host + "/download", endpoints, ArtifactJobRunner.Mode.IMAGE);
+            assertEquals(0, download.code(), download.err());
+            assertArrayEquals(payload, Files.readAllBytes(download.directory().resolve("output/download.bin")));
+            var failure = run("curl", "get", host + "/failure", endpoints, ArtifactJobRunner.Mode.IMAGE);
+            assertEquals(10, failure.code(), failure.err());
+            assertEquals("FAILED", JobTestJson.execution(JobTestJson.read(failure.report())).get("status"));
+            assertFalse(Files.exists(failure.directory().resolve("output/response.txt")));
+        } finally { server.stop(0); }
+    }
+
     @Test void localHttpDownloadCurlRequestVariantsAndStatusFailure() throws Exception {
         var requests = new CopyOnWriteArrayList<String>();
         HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", 0), 0);
@@ -80,10 +104,15 @@ class IoLocalJobIT {
         } finally { server.stop(0); }
     }
 
-    private ArtifactJobRunner.Result run(String target, String variant, String url, Map<String, ArtifactJobRunner.Endpoint> endpoints) throws Exception {
+    private static ArtifactJobRunner.Result run(String target, String variant, String url, Map<String, ArtifactJobRunner.Endpoint> endpoints) throws Exception {
+        return run(target, variant, url, endpoints, ArtifactJobRunner.Mode.configured());
+    }
+
+    private static ArtifactJobRunner.Result run(String target, String variant, String url,
+                                                 Map<String, ArtifactJobRunner.Endpoint> endpoints, ArtifactJobRunner.Mode mode) throws Exception {
         Path root = ArtifactJobRunner.directory("io-" + target + "-" + variant);
         var config = JobRunner.baseConfig(root); JobRunner.secret(root, config, "curlPassword", "barPwd");
         return ArtifactJobRunner.run(new ArtifactJobRunner.Request("io-" + target + "-" + variant, ArtifactJobRunner.fixture("io"), root, List.of(target),
-                Map.of("output", root.resolve("output"), "url", url, "variant", variant), Map.of(), config, endpoints, Duration.ofSeconds(60)));
+                Map.of("output", root.resolve("output"), "url", url, "variant", variant), Map.of(), config, endpoints, Duration.ofSeconds(60)), mode);
     }
 }
