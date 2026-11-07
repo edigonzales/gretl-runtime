@@ -120,12 +120,11 @@ scheitert vor dem Jobstart. Der Quellordner wird vor dem isolierten Lauf gelösc
 HOME ist leer, PATH enthält keine Buildwerkzeuge, CWD liegt ausserhalb des
 Checkouts. Fachliche HTTP-/DB-Dienste bleiben ausdrücklich erreichbar.
 
-Der [Qualifikationsweg](../development/job-artifact-tests.md) unterscheidet
-SCRIPT, JAR und IMAGE. JAR prüft paketierte Jobs; IMAGE startet externe Scripts
-und Projekte im generischen Runtime-Container. Die vollständige Matrix verlangt
-alle 44 positiven Operationsnachweise je Modus sowie gebundene Quellen- und
-Artefaktidentitäten. Der manuelle IMAGE-Workflow ergänzt die reguläre CI um eine
-gezielte Containerdiagnose.
+Der [Qualifikationsweg](../development/job-artifact-tests.md) verwendet
+`scripts/verify-runtime.sh` für einen Maven-Reaktor. SCRIPT prüft alle
+44 Standardoperationen. Gezielte JAR-Tests starten eigenständige Pakete
+aus einem fremden Arbeitsverzeichnis. IMAGE prüft externe Scripts und
+Projekte im generischen Runtime-Container.
 
 ## Projektpakete
 

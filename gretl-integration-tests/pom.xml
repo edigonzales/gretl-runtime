@@ -267,8 +267,16 @@
           <execution>
             <id>require-image-tests</id><phase>verify</phase><goals><goal>run</goal></goals>
             <configuration><target>
-              <available file="${project.build.directory}/failsafe-reports/TEST-ch.so.agi.gretl.it.ImageRuntimeIT.xml" property="gretl.image.tests.ran"/>
+              <property name="gretl.image.test.report" location="${project.build.directory}/failsafe-reports/TEST-ch.so.agi.gretl.it.ImageRuntimeIT.xml"/>
+              <available file="${gretl.image.test.report}" property="gretl.image.tests.ran"/>
               <fail unless="gretl.image.tests.ran" message="job-image requires execution of ImageRuntimeIT"/>
+              <xmlproperty file="${gretl.image.test.report}" collapseAttributes="true"/>
+              <fail message="ImageRuntimeIT must execute at least one test without skips">
+                <condition><not><and>
+                  <matches string="${testsuite.tests}" pattern="^[1-9][0-9]*$"/>
+                  <equals arg1="${testsuite.skipped}" arg2="0"/>
+                </and></not></condition>
+              </fail>
             </target></configuration>
           </execution>
         </executions>
