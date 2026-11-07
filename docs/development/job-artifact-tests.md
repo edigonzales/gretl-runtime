@@ -160,13 +160,11 @@ und kontrollieren, dass ein eigener fremd markierter Kontrollcontainer lebt.
 
 ## CI und Aussagegrenzen
 
-Push und Pull Requests rufen über `publish-snapshots.yml` den gemeinsamen
-`qualification.yml` auf: Dockerfreier Standard und vollständiges ALL/full.
-Snapshot-Publikation sowie Release-Candidate-Auslieferung hängen von beiden
-Gates ab. Der Releasepfad verwendet die bereits qualifizierte ZIP-Datei und
-bewahrt seine zusätzliche Checksum-/Paketstartprobe. Der manuelle
-`image-qualification.yml` dient zusätzlicher IMAGE-Diagnose und ist nicht
-der einzige Imageprüfweg. Artefakte sind je Modus/SHA getrennt und kuratiert.
+`publish-snapshots.yml` führt `scripts/verify-runtime.sh` bei Push auf
+`main`, bei Pull Requests gegen `main` und bei manuellem Start aus.
+Der Reaktor prüft alle 44 Standardoperationen in SCRIPT und führt
+gezielte JAR- und IMAGE-Prozesse aus. Der Publish-Job hängt vom
+erfolgreichen Verify-Job ab und läuft auf `main`.
 
 Eine Workflowdatei ist kein ausgeführter Remote-CI-Lauf. Prüfbelege
 nennen die tatsächlich ausgeführten Gates und Plattformen;

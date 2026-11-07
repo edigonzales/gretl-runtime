@@ -50,12 +50,11 @@ läuft bei Push, Pull Request und manuell über `workflow_dispatch`.
 
 Ablauf:
 
-1. Der wiederverwendbare `qualification.yml` prüft mit JDK 25 den
-   Dockerfreien SCRIPT-Standard und `verify-job-matrix.sh --mode ALL --scope full`.
-   SCRIPT, JAR und tatsächliches IMAGE-SCRIPT besitzen getrennte vollständige
-   Fach-/Operationsnachweise desselben Commits, gesichert vor clean.
-2. Erst wenn beide Qualifikationsjobs erfolgreich sind, darf der davon
-   abhängige Publikationsjob beginnen. Pull Requests veröffentlichen nie.
+1. Der Verify-Job führt die konsolidierte Prüfung mit JDK 25, Node und
+   Docker aus. Die qualifizierte ZIP- und TAR-Distribution werden zusammen
+   mit ihren SHA-256-Prüfsummen als ein Artefakt gesichert.
+2. Der Publikationsjob beginnt erst nach erfolgreichem Verify auf `main`
+   und prüft die übergebenen Archivbytes. Pull Requests veröffentlichen nie.
 3. Nur auf `main` bleibt der vorhandene Maven-Deployweg
    `-Ppublish-snapshots -DskipTests -DskipITs deploy` aktiv. Diese Flags betreffen
    ausschliesslich den Deploy nach den Pflichtgates, nicht die Qualifikation.
@@ -67,7 +66,6 @@ Ablauf:
    externer Groovy-Job ohne Paketdeskriptor aus einem fremden Arbeitsverzeichnis
    gestartet. Exit 0, Report `SUCCEEDED` und exakt `snapshot-smoke-ok\n`
    sind Pflicht; sonst scheitert die Action auch nach erfolgreichem Upload.
-   Logs und JSON-Nachweise werden als `published-runtime-smoke-<sha>` gesichert.
 
 Manuell starten:
 

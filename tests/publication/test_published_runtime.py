@@ -142,8 +142,36 @@ class WorkflowCredentials(unittest.TestCase):
             self.assertEqual(0 if user and password else 2, result.returncode)
             self.assertNotIn('synthetic-password', result.stdout + result.stderr)
         self.assertLess(workflow.index('Require publishing credentials'), workflow.index('- name: Publish snapshot artefacts'))
-        self.assertIn('needs: qualification', workflow)
-        self.assertIn("github.event_name != 'pull_request'", workflow)
+
+    def test_workflow_publishes_only_after_success_on_main(self):
+        workflow = (ROOT / '.github/workflows/publish-snapshots.yml').read_text()
+        verify, publish = workflow.split('\n  publish:\n', maxsplit=1)
+        self.assertIn('\n  push:\n    branches: [main]\n', verify)
+        self.assertIn('\n  pull_request:\n    branches: [main]\n', verify)
+        self.assertIn('\n  workflow_dispatch:\n', verify)
+        self.assertIn('run: scripts/verify-runtime.sh', verify)
+        self.assertNotIn('secrets.', verify)
+        self.assertNotIn(' deploy', verify)
+        self.assertIn('needs: verify', publish)
+        condition = re.search(r'^    if: (.+)$', publish, re.M)
+        self.assertIsNotNone(condition)
+        clauses = [re.fullmatch(r"(needs.verify.result|github.ref|github.event_name) (==|!=) '([^']+)'", clause)
+                   for clause in condition.group(1).split(' && ')]
+        self.assertTrue(all(clauses))
+        self.assertEqual(3, len(clauses))
+        for event, ref, result, expected in [
+            ('pull_request', 'refs/heads/main', 'success', False),
+            ('workflow_dispatch', 'refs/heads/feature', 'success', False),
+            ('push', 'refs/heads/main', 'failure', False),
+            ('push', 'refs/heads/main', 'cancelled', False),
+            ('push', 'refs/heads/main', 'success', True),
+            ('workflow_dispatch', 'refs/heads/main', 'success', True),
+        ]:
+            with self.subTest(event=event, ref=ref, result=result):
+                values = {'needs.verify.result': result, 'github.ref': ref, 'github.event_name': event}
+                allowed = all((values[key] == value) == (operator == '==')
+                              for key, operator, value in (match.groups() for match in clauses))
+                self.assertEqual(expected, allowed)
 
 
 if __name__ == '__main__':

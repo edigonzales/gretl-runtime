@@ -93,13 +93,10 @@ gegen alle tatsächlich ausgeführten JUnit-Varianten und Prozesse geprüft.
 Fehler, Skips, fehlende oder fremde Fälle sind kein qualifizierter Erfolg.
 Alle E01–E12-Proben stehen in `tests/script-first-testing/test_job_evidence.py`.
 
-Die reguläre Push-/PR-CI und der Release-Candidate-Weg verwenden
-`qualification.yml`: Dockerfreier Standard und ALL/full auf demselben
-Commit. Publikation hängt von beiden Gates ab. Der manuelle IMAGE-Workflow
-ist eine zusätzliche Diagnose. Jeder Modus archiviert seine kuratierten
-Reports, Identitäten, Logs, Inventare und Ergebnisse; Secretquellen und
-Rohkonfiguration bleiben ausgeschlossen. Workflowverdrahtung wird nicht als
-bereits ausgeführter Remote-CI-Lauf bezeichnet.
+Der reguläre Workflow `publish-snapshots.yml` verwendet die konsolidierte
+Prüfung bei Push auf `main`, bei Pull Requests gegen `main` und bei manuellem
+Start. Bei Erfolg enthält das CI-Artefakt die ZIP- und TAR-Distribution mit
+SHA-256. Bei Fehlern bleibt ein kompakter Testüberblick verfügbar.
 
 JaCoCo misst Test-JVMs und aktive Produktmodule. Separate Launcher-,
 Job-JAR- und Containerprozesse liefern fachliche Nachweise, keine erfundene

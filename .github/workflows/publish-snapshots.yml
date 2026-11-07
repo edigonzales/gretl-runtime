@@ -2,7 +2,9 @@ name: verification and snapshots
 
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -10,16 +12,74 @@ permissions:
 
 concurrency:
   group: gretl-verification-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  qualification:
-    uses: ./.github/workflows/qualification.yml
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: vscode/gretl-vscode/package-lock.json
+      - name: Check documentation and snapshot smoke tooling
+        run: |
+          python3 scripts/check-docs.py
+          python3 -m unittest discover -s tests/docs -v
+          python3 -m unittest discover -s tests/publication -v
+      - name: Verify SCRIPT, detached JAR and targeted IMAGE processes
+        run: scripts/verify-runtime.sh
+      - name: Record qualified distribution hashes
+        working-directory: gretl-dist/target
+        run: |
+          sha256sum gretl-runtime-6.0.0-SNAPSHOT-bin.zip gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz > distribution.sha256
+      - name: Preserve qualified distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-runtime-${{ github.sha }}
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
+          path: |
+            gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip
+            gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz
+            gretl-dist/target/distribution.sha256
+      - name: Summarize test failures
+        if: failure()
+        run: |
+          python3 - <<'PY' > "$RUNNER_TEMP/gretl-test-summary.txt"
+          from pathlib import Path
+          from xml.etree import ElementTree
+
+          reports = sorted(Path(".").glob("*/target/*-reports/TEST-*.xml"))
+          print(f"Found {len(reports)} Maven test reports. See the job log for failure details.")
+          for path in reports[:250]:
+              suite = ElementTree.parse(path).getroot()
+              counts = [int(suite.get(key, "0")) for key in ("tests", "failures", "errors", "skipped")]
+              print(str(path)[:200], *counts)
+          PY
+      - name: Preserve test summary
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary-${{ github.sha }}
+          retention-days: 7
+          path: ${{ runner.temp }}/gretl-test-summary.txt
+          if-no-files-found: error
+
   publish:
     name: publish snapshot artefacts
-    needs: qualification
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    needs: verify
+    if: needs.verify.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +88,18 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
-      # Deployment retains the existing Maven path; skips apply only after both required jobs passed.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: vscode/gretl-vscode/package-lock.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-runtime-${{ github.sha }}
+          path: ${{ runner.temp }}/gretl-verified-runtime
+      - name: Check qualified distribution transfer
+        working-directory: ${{ runner.temp }}/gretl-verified-runtime
+        run: sha256sum --strict --check distribution.sha256
       - name: Require publishing credentials
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
@@ -42,27 +113,10 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-        run: >-
-          ./mvnw -B
-          -s scripts/publish-settings.xml
-          -Ppublish-snapshots
-          -DskipTests -DskipITs
-          deploy
+        run: ./mvnw -B -s scripts/publish-settings.xml -Ppublish-snapshots -DskipTests -DskipITs deploy
       - name: Download published runtime and execute an external Groovy job
         run: |
-          VERSION=$(python3 -c 'import json; print(json.load(open("gretl-dist/target/dist/package-catalog.json"))["runtimeVersion"])')
           python3 scripts/verify-published-runtime.py \
             --repository https://jars.interlis.guru/snapshots \
-            --version "$VERSION" --source "$GITHUB_SHA" \
+            --version 6.0.0-SNAPSHOT --source "$GITHUB_SHA" \
             --output "$RUNNER_TEMP/gretl-published-runtime"
-      - name: Preserve publication smoke evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: published-runtime-smoke-${{ github.sha }}
-          retention-days: 7
-          path: |
-            ${{ runner.temp }}/gretl-published-runtime/*.json
-            ${{ runner.temp }}/gretl-published-runtime/*.log
-            ${{ runner.temp }}/gretl-published-runtime/result.txt
-          if-no-files-found: warn
