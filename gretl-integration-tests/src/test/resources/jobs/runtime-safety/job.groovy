@@ -7,7 +7,8 @@ action('permissions') {
     Files.writeString(workPath('owned.txt'), 'owned')
 }
 
-action('caughtTimeout', timeout: 'PT0.1S') { ctx ->
+// Leave time for cold Groovy call sites to register the resource before the budget expires.
+action('caughtTimeout', timeout: 'PT1S') { ctx ->
     def output = parameter('output')
     ctx.resources().manage({ Files.writeString(output.resolve('closed'), 'closed') } as AutoCloseable)
     while (!ctx.budget().expired()) Thread.onSpinWait()
@@ -19,7 +20,7 @@ action('caughtTimeout', timeout: 'PT0.1S') { ctx ->
     Files.writeString(output.resolve('returned'), 'body-returned')
 }
 
-action('closeTimeout', timeout: 'PT0.1S') { ctx ->
+action('closeTimeout', timeout: 'PT1S') { ctx ->
     def output = parameter('output')
     def budget = ctx.budget()
     ctx.resources().manage({
