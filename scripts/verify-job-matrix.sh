@@ -77,7 +77,7 @@ cleanup_owned_resources() {
 trap 'exit 130' INT
 trap 'exit 143' TERM
 trap 'status=$?; cleanup_owned_resources || status=1; exit "$status"' EXIT
-args=(-B clean verify "-Dgretl.test.executionMode=$MODE" "-Dgretl.test.runId=$RUN_ID" "-Dgretl.test.candidateSha=$SHA")
+args=(-B clean verify -Dgretl.test.legacyMatrix=true "-Dgretl.test.executionMode=$MODE" "-Dgretl.test.runId=$RUN_ID" "-Dgretl.test.candidateSha=$SHA")
 PROFILES=
 if [ "$SCOPE" = full ]; then PROFILES=geotools-probe,backing-services; docker version > "$OUT/docker-version.txt"; fi
 if [ "$MODE" = IMAGE ]; then

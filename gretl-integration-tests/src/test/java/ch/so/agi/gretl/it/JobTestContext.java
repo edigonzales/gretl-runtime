@@ -11,8 +11,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public final class JobTestContext implements BeforeEachCallback, AfterEachCallback {
     private record State(String test, Map<Path, Integer> executions) {}
     private static final ThreadLocal<State> CURRENT = new ThreadLocal<>();
-    private static final Map<String, String> FAMILIES = families();
+    private static final Map<String, String> FAMILIES = JobExecutionEvidence.legacyMatrix() ? families() : Map.of();
     @Override public void beforeEach(ExtensionContext context) {
+        if (!JobExecutionEvidence.legacyMatrix()) return;
         String test = context.getRequiredTestClass().getName() + "#" + context.getRequiredTestMethod().getName();
         var matcher = java.util.regex.Pattern.compile("test-template-invocation:#([0-9]+)").matcher(context.getUniqueId());
         if (matcher.find()) test += "[" + matcher.group(1) + "]";

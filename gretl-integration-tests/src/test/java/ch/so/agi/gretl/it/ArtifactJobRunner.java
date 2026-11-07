@@ -294,6 +294,7 @@ final class ArtifactJobRunner {
         Result result = new Result(process.exitValue(), out, err, running.prepared().report(), request.directory(),
                 Duration.ofNanos(System.nanoTime() - running.startedNanos()), timedOut, aborted, identity,
                 running.prepared().mode().name(), forced);
+        ScriptOperationCoverage.record(request.invocation(), result);
         JobExecutionEvidence.completed(running, result);
         return result;
     }
