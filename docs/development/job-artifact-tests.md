@@ -101,8 +101,10 @@ Testsuite die in echten SCRIPT-Reports erfolgreich ausgeführten IDs.
 Maven prüft die Liste bei `verify` im Dienstprofil. Fehlende IDs oder
 ein leeres Ergebnis schlagen den Build fehl.
 
-Lokale Prozessdiagnosen, Reports und fachliche Ausgaben liegen unter
-`gretl-integration-tests/target/`. Die Tests prüfen die Unveränderlichkeit
+Lokale SCRIPT- und JAR-Diagnosen liegen unter
+`gretl-integration-tests/target/`. Die IMAGE-Arbeitsverzeichnisse liegen
+in einem privaten temporären Verzeichnis, das der Wrapper nach dem Lauf
+entfernt. JUnit-Reports bleiben im Maven-Modul. Die Tests prüfen die Unveränderlichkeit
 der staged SCRIPT- und IMAGE-Eingaben, die Distributionsbytes und die
 tatsächlich ausgewählte Image-ID. Der CI-Upload umfasst bei Erfolg die
 Bindist und deren SHA-256-Liste. Bei Fehlern ist ein kleiner

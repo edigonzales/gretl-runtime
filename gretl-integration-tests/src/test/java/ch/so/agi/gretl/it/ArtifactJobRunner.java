@@ -134,8 +134,18 @@ final class ArtifactJobRunner {
     record Running(Prepared prepared, Process process, Path out, Path err, long startedNanos) {}
 
     static Path directory(String id) throws IOException {
-        Path root = Path.of("target", "job-evidence", id + "-" + UUID.randomUUID())
-                .toAbsolutePath().normalize();
+        return directory(id, Mode.SCRIPT);
+    }
+
+    static Path directory(String id, Mode mode) throws IOException {
+        Path base = Path.of("target", "job-evidence");
+        if (mode == Mode.IMAGE) {
+            String workspace = System.getProperty("gretl.test.imageWorkspace");
+            if (workspace == null || !Files.isDirectory(Path.of(workspace)))
+                throw new IOException("IMAGE requires the private workspace created by scripts/verify-runtime.sh");
+            base = Path.of(workspace);
+        }
+        Path root = base.resolve(id + "-" + UUID.randomUUID()).toAbsolutePath().normalize();
         Files.createDirectories(root);
         privateDirectory(root);
         Files.createDirectories(root.resolve("output"));

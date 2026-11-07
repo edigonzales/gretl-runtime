@@ -90,7 +90,7 @@ class ArtifactServicesIT {
 
     private static ArtifactJobRunner.Result run(String target, Map<String, String> values, String secret, String password,
                                                  Map<String, ArtifactJobRunner.Endpoint> endpoints, ArtifactJobRunner.Mode mode) throws Exception {
-        Path root = ArtifactJobRunner.directory(target); var params = new LinkedHashMap<String, Object>(values); params.put("output", root.resolve("output"));
+        Path root = ArtifactJobRunner.directory(target, mode); var params = new LinkedHashMap<String, Object>(values); params.put("output", root.resolve("output"));
         var config = JobRunner.baseConfig(root); JobRunner.secret(root, config, secret, password);
         var request = new ArtifactJobRunner.Request(target, ArtifactJobRunner.fixture("services"), root, List.of(target), params, Map.of(), config, endpoints, Duration.ofSeconds(90));
         return ArtifactJobRunner.run(request, mode);

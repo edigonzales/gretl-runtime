@@ -110,7 +110,7 @@ class IoLocalJobIT {
 
     private static ArtifactJobRunner.Result run(String target, String variant, String url,
                                                  Map<String, ArtifactJobRunner.Endpoint> endpoints, ArtifactJobRunner.Mode mode) throws Exception {
-        Path root = ArtifactJobRunner.directory("io-" + target + "-" + variant);
+        Path root = ArtifactJobRunner.directory("io-" + target + "-" + variant, mode);
         var config = JobRunner.baseConfig(root); JobRunner.secret(root, config, "curlPassword", "barPwd");
         return ArtifactJobRunner.run(new ArtifactJobRunner.Request("io-" + target + "-" + variant, ArtifactJobRunner.fixture("io"), root, List.of(target),
                 Map.of("output", root.resolve("output"), "url", url, "variant", variant), Map.of(), config, endpoints, Duration.ofSeconds(60)), mode);

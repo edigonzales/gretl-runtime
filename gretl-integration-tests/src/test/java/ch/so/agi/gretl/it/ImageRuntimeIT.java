@@ -62,7 +62,7 @@ class ImageRuntimeIT {
         Path fixture=Files.createTempDirectory("gretl-image-native-");
         try {
             Files.writeString(fixture.resolve("job.groovy"),nativeScript());
-            Path root=ArtifactJobRunner.directory("image-native");
+            Path root=ArtifactJobRunner.directory("image-native", ArtifactJobRunner.Mode.IMAGE);
             var result=ArtifactJobRunner.run(new ArtifactJobRunner.Request("image-native",fixture,root,List.of(),Map.of("output",root.resolve("output")),Map.of(),JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(60)),ArtifactJobRunner.Mode.IMAGE);
             assertEquals(0,result.code(),result.err()); assertFalse(result.timedOut());
             long uid=new com.sun.security.auth.module.UnixSystem().getUid();
@@ -84,7 +84,7 @@ class ImageRuntimeIT {
                         while(true) { try { Thread.sleep(1000) } catch(InterruptedException ignored) {} }
                     }; defaults 'block'
                     """);
-            Path root=ArtifactJobRunner.directory("image-forced-stop");
+            Path root=ArtifactJobRunner.directory("image-forced-stop", ArtifactJobRunner.Mode.IMAGE);
             var request=new ArtifactJobRunner.Request("image-forced-stop",fixture,root,List.of(),Map.of("output",root.resolve("output")),Map.of(),JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(2));
             var running=ArtifactJobRunner.start(ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.IMAGE));
             try {
@@ -109,7 +109,7 @@ class ImageRuntimeIT {
         Path fixture=Files.createTempDirectory("gretl-openshift-");
         try {
             Files.writeString(fixture.resolve("job.groovy"),nativeScript("/work","/tmp"));
-            Path root=ArtifactJobRunner.directory("image-openshift");
+            Path root=ArtifactJobRunner.directory("image-openshift", ArtifactJobRunner.Mode.IMAGE);
             var request=new ArtifactJobRunner.Request("image-openshift",fixture,root,List.of(),Map.of("output",root.resolve("output")),Map.of(),JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(60));
             var base=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.IMAGE);
             // Read-only projected sources/config; writes use root-owned group-writable volumes.
@@ -182,7 +182,7 @@ class ImageRuntimeIT {
         Path fixture=Files.createTempDirectory("gretl-image-changed-source-");
         try {
             Files.writeString(fixture.resolve("job.groovy"),job("original"));
-            Path root=ArtifactJobRunner.directory("image-changed-source");
+            Path root=ArtifactJobRunner.directory("image-changed-source", ArtifactJobRunner.Mode.IMAGE);
             var request=new ArtifactJobRunner.Request("image-changed-source",fixture,root,List.of(),Map.of("output",root.resolve("output/result.txt")),Map.of(),JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(30));
             var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.IMAGE);
             Files.writeString(prepared.source().resolve("job.groovy"),job("tampered"));
@@ -235,7 +235,7 @@ class ImageRuntimeIT {
         return "parameter('output', type: 'path', required: true, description: 'Output')\naction('write') { boolean denied=false; try { java.nio.file.Files.writeString(file('payload.txt'), 'bad') } catch (java.nio.file.FileSystemException expected) { denied=true }; assert denied; java.nio.file.Files.writeString(parameter('output'),java.nio.file.Files.readString(file('payload.txt'))+'|"+value+"') }; defaults 'write'\n";
     }
     private ArtifactJobRunner.Result run(Path fixture,String name,Map<String,Object> extra) throws Exception {
-        Path root=ArtifactJobRunner.directory("generic-image-job");
+        Path root=ArtifactJobRunner.directory("generic-image-job", ArtifactJobRunner.Mode.IMAGE);
         var parameters=new LinkedHashMap<>(extra);parameters.put("output",root.resolve("output/result.txt"));
         var result=ArtifactJobRunner.run(new ArtifactJobRunner.Request("generic-image-job",fixture,root,List.of(),parameters,Map.of(),JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(45),ArtifactJobRunner.JobInput.script(name),ArtifactJobRunner.Invocation.run()),ArtifactJobRunner.Mode.IMAGE);
         assertEquals(0,result.code(),result.err()); assertFalse(result.timedOut());return result;

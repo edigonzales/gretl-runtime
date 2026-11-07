@@ -20,6 +20,7 @@ export GRETL_VERIFICATION_RUN_ID="$run_id"
 label="gretl.verification.run=$run_id"
 network=$(docker network create --label "$label" "gretl-verify-$run_id")
 maven_pid=
+image_workspace=
 cleanup() {
   local status=$? ids cleanup_failed=0
   trap - EXIT INT TERM
@@ -37,12 +38,18 @@ cleanup() {
     cleanup_failed=1
   fi
   docker network rm "$network" || cleanup_failed=1
+  if [ -n "$image_workspace" ]; then
+    rm -r -- "$image_workspace" || cleanup_failed=1
+  fi
   if [ "$status" -eq 0 ]; then status=$cleanup_failed; fi
   exit "$status"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
+
+# Keep Docker bind sources outside directories recreated by Maven clean.
+image_workspace=$(mktemp -d /tmp/gretl-image-jobs.XXXXXX)
 
 if [ "$(uname -s)" = Darwin ]; then
   http_host=host.docker.internal
@@ -54,7 +61,7 @@ fi
 
 ./mvnw -B -Pgeotools-probe,backing-services,job-image clean verify \
   "-Dgretl.test.runId=$run_id" "-Dgretl.test.imageNetwork=$network" \
-  "-Dgretl.test.imageUser=$uid:$gid" "-Dgretl.test.httpImageHost=$http_host" \
+  "-Dgretl.test.imageWorkspace=$image_workspace" "-Dgretl.test.imageUser=$uid:$gid" "-Dgretl.test.httpImageHost=$http_host" \
   "-Dgretl.test.imageExtraHost=$extra_host" &
 maven_pid=$!
 wait "$maven_pid"

@@ -91,7 +91,7 @@ class ProjectProcessLocalJobIT {
     }
 
     static void externalProjectNeedsNoPackageDescriptor(ArtifactJobRunner.Mode mode) throws Exception {
-        var original = request("success", "never", List.of());
+        var original = request("success", "never", List.of(), mode);
         Path fixture = original.directory().resolve("without-descriptor");
         SelectedPackageSupport.copy(original.jobDirectory(), fixture);
         Files.delete(fixture.resolve("job-package.json"));
@@ -103,7 +103,12 @@ class ProjectProcessLocalJobIT {
         assertFalse(Files.exists(request.directory().resolve("source/job-package.json")));
     }
     private static ArtifactJobRunner.Request request(String outcome, String keep, List<String> targets) throws Exception {
-        Path root = ArtifactJobRunner.directory("common-project-" + outcome + "-" + keep);
+        return request(outcome, keep, targets, ArtifactJobRunner.Mode.SCRIPT);
+    }
+
+    private static ArtifactJobRunner.Request request(String outcome, String keep, List<String> targets,
+                                                     ArtifactJobRunner.Mode mode) throws Exception {
+        Path root = ArtifactJobRunner.directory("common-project-" + outcome + "-" + keep, mode);
         var config = JobRunner.baseConfig(root);
         var runtime = new LinkedHashMap<>((Map<String,Object>)config.get("runtime")); runtime.put("keepWork", keep); config.put("runtime",runtime);
         Path fixture = Path.of(ProjectProcessLocalJobIT.class.getResource("/projects/pipeline").toURI());

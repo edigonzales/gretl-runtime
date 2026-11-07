@@ -16,7 +16,7 @@ class DatabaseArtifactIT {
 
     static void realDatabaseChainAndCancellationRollback(ArtifactJobRunner.Mode mode) throws Exception {
         try (var lease = PostgresFixture.lease()) {
-            Path root = ArtifactJobRunner.directory("database-chain");
+            Path root = ArtifactJobRunner.directory("database-chain", mode);
             var request = request(root, lease, List.of());
             var prepared = ArtifactJobRunner.prepare(request, mode);
             var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared), false);
@@ -28,7 +28,7 @@ class DatabaseArtifactIT {
                 assertFalse(rows.next());
             }
             // A fresh job process and work copy, using the same scenario and database lease.
-            Path cancelRoot = ArtifactJobRunner.directory("database-cancel");
+            Path cancelRoot = ArtifactJobRunner.directory("database-cancel", mode);
             var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request(cancelRoot, lease, List.of("never")), mode));
             try {
                 awaitQuery(lease, running.process());
