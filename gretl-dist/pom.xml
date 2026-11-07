@@ -13,6 +13,10 @@
   <name>GRETL Runtime Script Distribution</name>
   <description>Versioned script distribution with launcher, runtime, standard tasks, extensions and examples.</description>
 
+  <properties>
+    <gretl.dist.reuseQualifiedArchives>false</gretl.dist.reuseQualifiedArchives>
+  </properties>
+
   <repositories>
     <repository>
       <id>interlis-releases</id>
@@ -253,6 +257,7 @@
             <descriptor>src/main/assembly/dist.xml</descriptor>
           </descriptors>
           <appendAssemblyId>true</appendAssemblyId>
+          <skipAssembly>${gretl.dist.reuseQualifiedArchives}</skipAssembly>
           <attach>false</attach>
           <finalName>gretl-runtime-${project.version}</finalName>
         </configuration>

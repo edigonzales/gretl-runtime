@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 concurrency:
   group: gretl-verification-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -46,6 +50,7 @@ jobs:
         with:
           name: verified-runtime-${{ github.sha }}
           retention-days: 7
+          overwrite: true
           compression-level: 0
           if-no-files-found: error
           path: |
@@ -72,6 +77,7 @@ jobs:
         with:
           name: test-summary-${{ github.sha }}
           retention-days: 7
+          overwrite: true
           path: ${{ runner.temp }}/gretl-test-summary.txt
           if-no-files-found: error
 
@@ -97,9 +103,15 @@ jobs:
         with:
           name: verified-runtime-${{ github.sha }}
           path: ${{ runner.temp }}/gretl-verified-runtime
-      - name: Check qualified distribution transfer
-        working-directory: ${{ runner.temp }}/gretl-verified-runtime
-        run: sha256sum --strict --check distribution.sha256
+      - name: Install the qualified archives into the deploy reactor
+        run: |
+          qualified="$RUNNER_TEMP/gretl-verified-runtime"
+          mkdir -p gretl-dist/target
+          cp "$qualified/gretl-runtime-6.0.0-SNAPSHOT-bin.zip" \
+             "$qualified/gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz" gretl-dist/target/
+          cd gretl-dist/target
+          sha256sum gretl-runtime-6.0.0-SNAPSHOT-bin.zip gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz \
+            | cmp - "$qualified/distribution.sha256"
       - name: Require publishing credentials
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
@@ -113,10 +125,16 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-        run: ./mvnw -B -s scripts/publish-settings.xml -Ppublish-snapshots -DskipTests -DskipITs deploy
+        run: >-
+          ./mvnw -B -s scripts/publish-settings.xml -Ppublish-snapshots
+          -Dgretl.dist.reuseQualifiedArchives=true -DskipTests -DskipITs deploy
+      - name: Check the deployed archive inputs
+        working-directory: gretl-dist/target
+        run: sha256sum --strict --check "$RUNNER_TEMP/gretl-verified-runtime/distribution.sha256"
       - name: Download published runtime and execute an external Groovy job
         run: |
           python3 scripts/verify-published-runtime.py \
             --repository https://jars.interlis.guru/snapshots \
             --version 6.0.0-SNAPSHOT --source "$GITHUB_SHA" \
+            --checksums "$RUNNER_TEMP/gretl-verified-runtime/distribution.sha256" \
             --output "$RUNNER_TEMP/gretl-published-runtime"

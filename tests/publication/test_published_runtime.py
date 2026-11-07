@@ -1,5 +1,6 @@
 """HTTP/download control tests; tiny executable fixtures are not product qualification."""
 from functools import partial
+import gzip
 import hashlib
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import importlib.util
@@ -37,9 +38,13 @@ class DownloadVerification(unittest.TestCase):
         self.metadata = self.folder / 'maven-metadata.xml'
         self.metadata.write_text(f'''<metadata><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-dist</artifactId>
 <version>{VERSION}</version><versioning><snapshotVersions><snapshotVersion><classifier>bin</classifier>
-<extension>zip</extension><value>{VALUE}</value></snapshotVersion></snapshotVersions></versioning></metadata>''')
+<extension>zip</extension><value>{VALUE}</value></snapshotVersion><snapshotVersion><classifier>bin-tar-gz</classifier>
+<extension>tar.gz</extension><value>{VALUE}</value></snapshotVersion></snapshotVersions></versioning></metadata>''')
         self.archive = self.folder / ('gretl-dist-' + VALUE + '-bin.zip')
         self.write_archive()
+        self.tar_archive = self.folder / ('gretl-dist-' + VALUE + '-bin-tar-gz.tar.gz')
+        self.tar_archive.write_bytes(gzip.compress(b'qualified TAR fixture'))
+        self.checksums = self.root / 'distribution.sha256'
         self.server = ThreadingHTTPServer(('127.0.0.1', 0), partial(QuietHandler, directory=str(self.root)))
         thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         thread.start()
@@ -71,8 +76,16 @@ else:
             for name, data in {**files, 'SHA256SUMS': manifest.encode()}.items():
                 archive.writestr('gretl-runtime-' + VERSION + '/' + name, data)
 
+    def qualify(self):
+        self.checksums.write_text(''.join(
+            f'{hashlib.sha256(path.read_bytes()).hexdigest()}  gretl-runtime-{VERSION}-bin.{extension}\n'
+            for path, extension in ((self.archive, 'zip'), (self.tar_archive, 'tar.gz'))
+        ))
+
     def verify(self):
-        return published.verify(self.repository, VERSION, SOURCE, self.root / 'smoke proof')
+        if not self.checksums.exists():
+            self.qualify()
+        return published.verify(self.repository, VERSION, SOURCE, self.root / 'smoke proof', self.checksums)
 
     def test_timestamped_download_and_external_process(self):
         proof = self.verify()
@@ -82,6 +95,7 @@ else:
         self.assertIn('external job.groovy', proof['command'][2])
 
     def test_missing_zip_fails(self):
+        self.qualify()
         self.archive.unlink()
         with self.assertRaisesRegex(Exception, '404'):
             self.verify()
@@ -94,6 +108,38 @@ else:
     def test_missing_bin_classifier_fails(self):
         self.metadata.write_text(self.metadata.read_text().replace('<classifier>bin</classifier>', '<classifier>other</classifier>'))
         with self.assertRaisesRegex(ValueError, 'timestamped bin ZIP'):
+            self.verify()
+
+    def test_missing_tar_classifier_fails(self):
+        self.metadata.write_text(self.metadata.read_text().replace('<classifier>bin-tar-gz</classifier>', '<classifier>other</classifier>'))
+        with self.assertRaisesRegex(ValueError, 'timestamped bin-tar-gz'):
+            self.verify()
+
+    def test_mixed_timestamp_builds_fail(self):
+        original = self.metadata.read_text()
+        old = '<extension>tar.gz</extension><value>' + VALUE
+        self.metadata.write_text(original.replace(old, old[:-1] + '2'))
+        with self.assertRaisesRegex(ValueError, 'different builds'):
+            self.verify()
+
+    def test_wrong_zip_sha_fails_before_unpacking(self):
+        self.qualify()
+        with zipfile.ZipFile(self.archive, 'a') as archive:
+            archive.comment = b'Different ZIP bytes with the same internal files'
+        with self.assertRaisesRegex(ValueError, 'SHA-256 mismatch for runtime.zip'):
+            self.verify()
+        self.assertFalse((self.root / 'smoke proof/distribution').exists())
+
+    def test_wrong_tar_sha_fails(self):
+        self.qualify()
+        self.tar_archive.write_bytes(gzip.compress(b'different TAR bytes'))
+        with self.assertRaisesRegex(ValueError, 'SHA-256 mismatch for runtime.tar.gz'):
+            self.verify()
+
+    def test_missing_qualified_tar_digest_fails(self):
+        self.qualify()
+        self.checksums.write_text(self.checksums.read_text().splitlines()[0] + '\n')
+        with self.assertRaisesRegex(ValueError, 'both distribution archives'):
             self.verify()
 
     def test_wrong_runtime_version_fails(self):
@@ -142,6 +188,37 @@ class WorkflowCredentials(unittest.TestCase):
             self.assertEqual(0 if user and password else 2, result.returncode)
             self.assertNotIn('synthetic-password', result.stdout + result.stderr)
         self.assertLess(workflow.index('Require publishing credentials'), workflow.index('- name: Publish snapshot artefacts'))
+
+    def test_workflow_checks_both_archives_before_deploy(self):
+        workflow = (ROOT / '.github/workflows/publish-snapshots.yml').read_text()
+        match = re.search(r'- name: Install the qualified archives into the deploy reactor\n'
+                          r'        run: \|\n(.*?)      - name:', workflow, re.S)
+        self.assertIsNotNone(match)
+        script = '\n'.join(line[10:] for line in match.group(1).splitlines())
+        self.assertLess(workflow.index('Install the qualified archives'), workflow.index('- name: Publish snapshot artefacts'))
+        with tempfile.TemporaryDirectory(prefix='qualified-handoff-') as directory:
+            root = Path(directory)
+            handoff = root / 'gretl-verified-runtime'
+            handoff.mkdir()
+            archive_names = [f'gretl-runtime-{VERSION}-bin.{extension}' for extension in ('zip', 'tar.gz')]
+            checksums = handoff / 'distribution.sha256'
+            lines = [f'{hashlib.sha256(name.encode()).hexdigest()}  {name}\n' for name in archive_names]
+            env = dict(os.environ, RUNNER_TEMP=directory)
+            for files, manifest, expected in [
+                (archive_names, lines, 0),
+                (archive_names[:1], lines, 1),
+                (archive_names, lines[:1], 1),
+                (archive_names, [lines[0], '0' * 64 + lines[1][64:]], 1),
+            ]:
+                with self.subTest(files=files, manifest=manifest):
+                    for name in archive_names:
+                        (handoff / name).unlink(missing_ok=True)
+                    for name in files:
+                        (handoff / name).write_text(name)
+                    checksums.write_text(''.join(manifest))
+                    result = subprocess.run(['bash', '-euo', 'pipefail', '-c', script], cwd=root,
+                                            env=env, capture_output=True, timeout=10)
+                    self.assertEqual(expected, result.returncode, result.stderr)
 
     def test_workflow_publishes_only_after_success_on_main(self):
         workflow = (ROOT / '.github/workflows/publish-snapshots.yml').read_text()
