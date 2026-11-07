@@ -24,7 +24,7 @@ class ValidatorLocalJobIT {
         assertFalse(result.timedOut());
         assertTrue(Files.readString(root.resolve("output/validation.log")).contains("validation done"));
         assertTrue(Files.readString(result.report()).contains("SUCCEEDED"));
-        assertEquals(ArtifactJobRunner.Mode.configured().name(), result.mode());
+        assertEquals(ArtifactJobRunner.Mode.SCRIPT.name(), result.mode());
         assertTrue(result.hasValidArtifactIdentity());
     }
 

@@ -10,7 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/** One source graph and the same independent oracles in every configured process mode. */
+/** Project graph, results and diagnostics through the distribution launcher. */
 class ProjectProcessLocalJobIT {
     private static final List<String> ORDER = List.of(":download:run", ":validation:nested:run", ":import:run");
     @ParameterizedTest
@@ -64,8 +64,7 @@ class ProjectProcessLocalJobIT {
         assertEquals(2, result.code(), result.err()); assertFalse(result.timedOut());
         assertFalse(result.err().contains("ClassNotFoundException"), result.err());
         assertFalse(Files.exists(result.report()));
-        if(ArtifactJobRunner.Mode.configured()!=ArtifactJobRunner.Mode.IMAGE) assertFalse(Files.exists(root.resolve("work")));
-        else try(var files=Files.list(root.resolve("work"))) { assertEquals(Set.of("home","tmp"),files.map(p->p.getFileName().toString()).collect(java.util.stream.Collectors.toSet())); }
+        assertFalse(Files.exists(root.resolve("work")));
         assertTrue(result.err().toLowerCase(java.util.Locale.ROOT).contains(kind.equals("cycle") ? "zykl" : "absent"), result.err());
     }
     @ParameterizedTest @ValueSource(strings = {":a:run", ":b:run"})
@@ -88,22 +87,31 @@ class ProjectProcessLocalJobIT {
         else assertFalse(Files.exists(root.resolve("output/b.txt")));
     }
     @Test void externalProjectNeedsNoPackageDescriptor() throws Exception {
-        var original = request("success", "never", List.of());
+        externalProjectNeedsNoPackageDescriptor(ArtifactJobRunner.Mode.SCRIPT);
+    }
+
+    static void externalProjectNeedsNoPackageDescriptor(ArtifactJobRunner.Mode mode) throws Exception {
+        var original = request("success", "never", List.of(), mode);
         Path fixture = original.directory().resolve("without-descriptor");
         SelectedPackageSupport.copy(original.jobDirectory(), fixture);
         Files.delete(fixture.resolve("job-package.json"));
         var request = new ArtifactJobRunner.Request(original.id(),fixture,original.directory(),original.targets(),original.parameters(),original.environment(),original.config(),original.endpoints(),original.timeout(),original.input(),original.invocation());
-        var result = ArtifactJobRunner.run(request, ArtifactJobRunner.Mode.configured()==ArtifactJobRunner.Mode.IMAGE ? ArtifactJobRunner.Mode.IMAGE : ArtifactJobRunner.Mode.SCRIPT);
+        var result = ArtifactJobRunner.run(request, mode);
         assertEquals(0,result.code(),result.err());
         assertEquals("download-A\n|import-C\n|9|true|helper",Files.readString(request.directory().resolve("output/result.txt")));
         assertFalse(Files.exists(request.directory().resolve("job.jar")));
         assertFalse(Files.exists(request.directory().resolve("source/job-package.json")));
     }
-    private ArtifactJobRunner.Request request(String outcome, String keep, List<String> targets) throws Exception {
-        Path root = ArtifactJobRunner.directory("common-project-" + outcome + "-" + keep);
+    private static ArtifactJobRunner.Request request(String outcome, String keep, List<String> targets) throws Exception {
+        return request(outcome, keep, targets, ArtifactJobRunner.Mode.SCRIPT);
+    }
+
+    private static ArtifactJobRunner.Request request(String outcome, String keep, List<String> targets,
+                                                     ArtifactJobRunner.Mode mode) throws Exception {
+        Path root = ArtifactJobRunner.directory("common-project-" + outcome + "-" + keep, mode);
         var config = JobRunner.baseConfig(root);
         var runtime = new LinkedHashMap<>((Map<String,Object>)config.get("runtime")); runtime.put("keepWork", keep); config.put("runtime",runtime);
-        Path fixture = Path.of(getClass().getResource("/projects/pipeline").toURI());
+        Path fixture = Path.of(ProjectProcessLocalJobIT.class.getResource("/projects/pipeline").toURI());
         return new ArtifactJobRunner.Request("common-project-" + outcome + "-" + keep, fixture, root, targets,
                 Map.of(":output",root.resolve("output/result.txt"),":mode",outcome,":import:count","9"),Map.of(),config,Map.of(),Duration.ofSeconds(60),
                 ArtifactJobRunner.JobInput.project("."),ArtifactJobRunner.Invocation.run());

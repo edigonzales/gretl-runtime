@@ -11,13 +11,14 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /** Checks product output before ArtifactJobRunner applies its evidence redaction. */
 class PlaintextSecretLocalJobIT {
-    @Test
-    void scriptAndJarResolvePlaintextThroughAliasesAndMaskRawOutputs() throws Exception {
-        var mode = ArtifactJobRunner.Mode.configured();
+    @ParameterizedTest
+    @EnumSource(value = ArtifactJobRunner.Mode.class, names = {"SCRIPT", "JAR"})
+    void scriptAndJarResolvePlaintextThroughAliasesAndMaskRawOutputs(ArtifactJobRunner.Mode mode) throws Exception {
         Path root = ArtifactJobRunner.directory("plaintext-" + mode);
         String sentinel = "plaintext-artifact-sentinel-common";
         var config = JobRunner.baseConfig(root);
@@ -28,7 +29,7 @@ class PlaintextSecretLocalJobIT {
         var request = new ArtifactJobRunner.Request("plaintext-" + mode,
                 ArtifactJobRunner.fixture("plaintext-secret"), root, List.of(),
                 Map.of("output", root.resolve("output")), Map.of(), config, Map.of("sqlite",new ArtifactJobRunner.Endpoint("jdbc:sqlite:" + root.resolve("output/probe.sqlite"),"jdbc:sqlite:/outputs/probe.sqlite")), Duration.ofSeconds(45));
-        var prepared = ArtifactJobRunner.prepare(request);
+        var prepared = ArtifactJobRunner.prepare(request, mode);
         var running = ArtifactJobRunner.start(prepared);
         try {
             assertTrue(running.process().waitFor(45, TimeUnit.SECONDS), "Product process timed out");

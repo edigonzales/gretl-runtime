@@ -10,6 +10,20 @@ vollständige Qualifikation. Dafür gelten vom Repository-Root mit JDK 25:
 ./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
 
+Der folgende Befehl startet die konsolidierte Prüfung mit JDK 25, Node und Docker.
+
+```sh
+scripts/verify-runtime.sh
+```
+
+Das Skript legt ein eigenes Docker-Netz an und startet genau einen
+`./mvnw -B -Pgeotools-probe,backing-services,job-image clean verify`-Lauf.
+Der Reactor prüft die vollständige SCRIPT-Fachsuite mit 44
+Standardoperationen, explizite selbständige JAR-Prozesse und ausgewählte
+IMAGE-Prozesse mit externen Jobs. Das Image verwendet dasselbe Testnetz
+wie PostgreSQL/PostGIS und S3. Der Aufruf benötigt einen non-root
+Hostbenutzer für die privaten Bindmounts.
+
 Der normale Reactor enthält Unit-, Komponenten-, Distributions- und lokale
 fachliche SCRIPT-Prozesse (`*JobIT`) plus ausdrücklich erhaltene JAR-Paketverträge. Das Dienstprofil ergänzt die vollständigen
 `*IT` gegen echte Container; fehlendes Docker ist ein Fehler. Die getrennte
@@ -31,19 +45,15 @@ GeoTools-Probe nimmt keine GeoTools-JARs in die Standarddistribution auf.
 | FTP und S3 | ArtifactServicesIT; unabhängige FTP-/AWS-Clients |
 | Abbruch, SIGTERM und Abschlussreihenfolge | CancellationLocalJobIT und DatabaseArtifactIT |
 | Ausgewählte vollständige Pakete, externe Extension, Hostverunreinigung und Lauf ohne Buildumgebung | SelectedPackageLocalJobIT, SelectedPackageArtifactIT und DistributionIT; [Auswahlvertrag](../guides/packaging.md) |
-| Reale generische IMAGE-SCRIPT-Läufe und OpenShift-UID | ImageRuntimeIT, gemeinsame Fachsuite und echte Container; RecordingEngine nur zusätzliche Komponentenprüfung |
+| Reale generische IMAGE-SCRIPT-Läufe und OpenShift-UID | ImageRuntimeIT mit echten externen Jobs, Native-Libraries, PostGIS, HTTP und S3 |
 
 Die Suites `PostgresSqlExecutorIT`, `Db2DbPostgresIT`,
 `DuckDbFederationPostgresIT`, `FormatPostgresIT`, `FtpTaskFamilyIT` und
 `S3TaskFamilyIT` bleiben zusätzliche CLI-Komponentenprüfungen. Sie zählen nicht
 als separater Produktprozess- oder Modusnachweis. `PackagedSqlJobPostgresIT` prüft zusätzlich den paketierten SQL-Job.
 
-Die Originalzuordnung mit unveränderten Quellhashes, Originalassertionen und
-Dateiprüfsummen steht im [Szenarioinventar](../../tests/provenance/original-scenarios.json).
-Die aktuelle Zuordnung, alle Varianten und konkret begründete Anpassungen
-stehen im [Zuordnung zu heutigen Tests](../../tests/provenance/scenario-mapping.json).
-Die [Jobtest-Verträge](job-artifact-tests.md) erklären Artefaktbau, separate
-Prozesse, Evidenz und die tatsächliche externe SCRIPT-Ausführung im IMAGE.
+Die [Jobtest-Verträge](job-artifact-tests.md) erklären die drei
+Prozessarten, die Operationsabdeckung und das Testnetz.
 
 PostgreSQL/PostGIS: digestgepinntes `postgis/postgis:16-3.4`, pro Test isoliertes
 Schema und `currentSchema=<Lease>,public`; Erweiterungen `postgis` und
@@ -62,35 +72,22 @@ diesem Verbindungsproblem kann der Lauf mit
 `JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true` wiederholt werden.
 Dokumentiere die Einstellung. Assertions und Dienstprofil bleiben gleich.
 
-Die Tests laufen sequenziell pro Failsafe-JVM. SCRIPT ist der Hauptweg;
-JAR und IMAGE führen die COMMON-Fälle mit denselben Quellen und Orakeln aus.
-IMAGE startet den Produktlauncher mit externem Script/Projekt, kein
-Job-JAR. Die Standarddistribution wird vorher im Reactor gebaut.
+Die Tests laufen in einer Failsafe-JVM. SCRIPT ist der Hauptweg.
+JAR und IMAGE werden ausdrücklich für ausgewählte Produktprozesse verwendet.
+Das Dienstprofil vergleicht erfolgreiche SCRIPT-Operationen mit
+dem [Operationskatalog](../../tests/contracts/operation-baseline.json).
+Jede fehlende Operation führt zu einem Buildfehler. Das IMAGE-Profil
+verlangt zusätzlich einen frischen Report von `ImageRuntimeIT`.
 
-```sh
-scripts/verify-job-matrix.sh --mode ALL --scope full --output ../gretl-all-full
-```
-
-Dieser Pflichtweg umfasst drei vollständige Läufe mit echten Diensten,
-getrennter Operationsabdeckung und gesicherten Nachweisen vor clean.
-`--scope local` lässt die externen Dienste weg; IMAGE/local benötigt
-weiterhin Docker. Der feste Szenariokatalog und seine Startzahlen werden
-gegen alle tatsächlich ausgeführten JUnit-Varianten und Prozesse geprüft.
-Fehler, Skips, fehlende oder fremde Fälle sind kein qualifizierter Erfolg.
-Alle E01–E12-Proben stehen in `tests/script-first-testing/test_job_evidence.py`.
-
-Die reguläre Push-/PR-CI und der Release-Candidate-Weg verwenden
-`qualification.yml`: Dockerfreier Standard und ALL/full auf demselben
-Commit. Publikation hängt von beiden Gates ab. Der manuelle IMAGE-Workflow
-ist eine zusätzliche Diagnose. Jeder Modus archiviert seine kuratierten
-Reports, Identitäten, Logs, Inventare und Ergebnisse; Secretquellen und
-Rohkonfiguration bleiben ausgeschlossen. Workflowverdrahtung wird nicht als
-bereits ausgeführter Remote-CI-Lauf bezeichnet.
+Der reguläre Workflow `publish-snapshots.yml` verwendet die konsolidierte
+Prüfung bei Push auf `main`, bei Pull Requests gegen `main` und bei manuellem
+Start. Bei Erfolg enthält das CI-Artefakt die ZIP- und TAR-Distribution mit
+SHA-256. Bei Fehlern bleibt ein kompakter Testüberblick verfügbar.
 
 JaCoCo misst Test-JVMs und aktive Produktmodule. Separate Launcher-,
 Job-JAR- und Containerprozesse liefern fachliche Nachweise, keine erfundene
 Codecoverage. Die [Jobtest-Verträge](job-artifact-tests.md) erklären
-Quelle/Input, JUnitbindung, nanosekundengenaue Zeitprüfung und Cleanup.
+Prozessstart, Eingaben, Reports und Cleanup.
 Testzahlen gelten für den jeweiligen SHA. Tatsächliche Plattform und
 nicht ausgeführte Cluster-/Architekturprüfungen gehören in den jeweiligen Prüfbeleg.
 

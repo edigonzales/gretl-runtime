@@ -6,7 +6,6 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import re
-import shutil
 import stat
 import subprocess
 import sys
@@ -15,7 +14,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 
-def snapshot_url(repository, version):
+def snapshot_urls(repository, version):
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*-SNAPSHOT', version):
         raise ValueError('Expected a Maven SNAPSHOT version')
     base = repository.rstrip('/') + '/ch/so/agi/gretl/gretl-dist/' + version
@@ -24,11 +23,42 @@ def snapshot_url(repository, version):
     if (metadata.findtext('groupId'), metadata.findtext('artifactId'), metadata.findtext('version')) != (
             'ch.so.agi.gretl', 'gretl-dist', version):
         raise ValueError('Snapshot metadata coordinates differ')
-    values = [row.findtext('value') for row in metadata.findall('./versioning/snapshotVersions/snapshotVersion')
-              if row.findtext('classifier') == 'bin' and row.findtext('extension') == 'zip']
-    if len(values) != 1 or not re.fullmatch(re.escape(version[:-9]) + r'-\d{8}\.\d{6}-\d+', values[0] or ''):
-        raise ValueError('Missing or invalid timestamped bin ZIP in snapshot metadata')
-    return base + '/gretl-dist-' + values[0] + '-bin.zip'
+    urls = {}
+    timestamps = set()
+    for classifier, extension in (('bin', 'zip'), ('bin-tar-gz', 'tar.gz')):
+        values = [row.findtext('value') for row in metadata.findall('./versioning/snapshotVersions/snapshotVersion')
+                  if row.findtext('classifier') == classifier and row.findtext('extension') == extension]
+        if len(values) != 1 or not re.fullmatch(re.escape(version[:-9]) + r'-\d{8}\.\d{6}-\d+', values[0] or ''):
+            raise ValueError(f'Missing or invalid timestamped {classifier} {extension.upper()} in snapshot metadata')
+        timestamps.add(values[0])
+        urls[extension] = f'{base}/gretl-dist-{values[0]}-{classifier}.{extension}'
+    if len(timestamps) != 1:
+        raise ValueError('Snapshot distribution classifiers belong to different builds')
+    return urls
+
+
+def qualified_digests(path, version):
+    expected = {}
+    for line in path.read_text().splitlines():
+        match = re.fullmatch(r'([0-9a-f]{64})  ' + re.escape(f'gretl-runtime-{version}-bin.') + r'(zip|tar\.gz)', line)
+        if not match or match[2] in expected:
+            raise ValueError('Invalid qualified distribution checksum list')
+        expected[match[2]] = match[1]
+    if set(expected) != {'zip', 'tar.gz'}:
+        raise ValueError('Qualified checksums must cover both distribution archives')
+    return expected
+
+
+def download_verified(url, archive, expected):
+    digest = hashlib.sha256()
+    with urllib.request.urlopen(url, timeout=30) as response, archive.open('wb') as target:
+        while chunk := response.read(1 << 20):
+            digest.update(chunk)
+            target.write(chunk)
+    actual = digest.hexdigest()
+    if actual != expected:
+        raise ValueError(f'Qualified archive SHA-256 mismatch for {archive.name}')
+    return actual
 
 
 def unpack_verified(archive, output, version, source):
@@ -85,18 +115,22 @@ def run_cli(argv, cwd, output, name, environment):
                 process.wait(timeout=5)
             raise
     if code:
-        raise ValueError(name + ' failed with exit ' + str(code) + '; see retained logs')
+        with (output / (name + '.stderr.log')).open('rb') as stderr:
+            stderr.seek(max(0, stderr.seek(0, os.SEEK_END) - 4096))
+            diagnostic = stderr.read().decode('utf-8', errors='replace').strip()
+        raise ValueError(f'{name} failed with exit {code}\n{diagnostic}')
 
 
-def verify(repository, version, source, output):
+def verify(repository, version, source, output, checksums):
     if not re.fullmatch(r'[0-9a-f]{40}', source):
         raise ValueError('Expected full source commit SHA')
+    expected = qualified_digests(checksums, version)
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=False, mode=0o700)
-    url = snapshot_url(repository, version)
+    urls = snapshot_urls(repository, version)
     archive = output / 'runtime.zip'
-    with urllib.request.urlopen(url, timeout=30) as response, archive.open('wb') as target:
-        shutil.copyfileobj(response, target)
+    zip_digest = download_verified(urls['zip'], archive, expected['zip'])
+    tar_digest = download_verified(urls['tar.gz'], output / 'runtime.tar.gz', expected['tar.gz'])
     base = unpack_verified(archive, output / 'distribution', version, source)
     cwd = output / 'foreign cwd'
     cwd.mkdir()
@@ -130,8 +164,8 @@ defaults 'write'
     if (status['execution']['status'] != 'SUCCEEDED' or status['execution']['exitCode'] != 0
             or status['identity']['runtimeVersion'] != version or result.read_bytes() != b'snapshot-smoke-ok\n'):
         raise ValueError('Published runtime SCRIPT smoke result differs')
-    proof = dict(sourceRevision=source, runtimeVersion=version, url=url, status='PASS', command=argv,
-                 archiveSha256=hashlib.sha256(archive.read_bytes()).hexdigest())
+    proof = dict(sourceRevision=source, runtimeVersion=version, url=urls['zip'], tarUrl=urls['tar.gz'], status='PASS', command=argv,
+                 archiveSha256=zip_digest, tarArchiveSha256=tar_digest)
     (output / 'verification.json').write_text(json.dumps(proof, indent=2) + '\n')
     return proof
 
@@ -141,10 +175,11 @@ def main():
     parser.add_argument('--repository', required=True)
     parser.add_argument('--version', required=True)
     parser.add_argument('--source', required=True)
+    parser.add_argument('--checksums', required=True, type=Path, help='Qualified ZIP and TAR.GZ SHA-256 list')
     parser.add_argument('--output', required=True, type=Path, help='New directory for download, logs and proof')
     args = parser.parse_args()
     try:
-        proof = verify(args.repository, args.version, args.source, args.output)
+        proof = verify(args.repository, args.version, args.source, args.output, args.checksums)
     except Exception as error:
         print('Published runtime verification FAILED: ' + str(error), file=sys.stderr)
         return 1

@@ -24,9 +24,10 @@ final class PostgresFixture {
                     .withDatabaseName("gretl")
                     .withUsername("gretl_user")
                     .withPassword("gretl_password");
-            if (ArtifactJobRunner.Mode.configured() == ArtifactJobRunner.Mode.IMAGE) {
+            String network = System.getProperty("gretl.test.imageNetwork");
+            if (network != null) {
                 candidate.withLabel("gretl.verification.run",System.getProperty("gretl.test.runId","development"));
-                candidate.withNetworkMode(System.getProperty("gretl.test.imageNetwork"));
+                candidate.withNetworkMode(network);
                 candidate.withCreateContainerCmdModifier(command -> command.withHostName("postgres").withAliases("postgres"));
             }
             candidate.start();

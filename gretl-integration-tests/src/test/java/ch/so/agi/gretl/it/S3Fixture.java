@@ -22,9 +22,10 @@ final class S3Fixture implements AutoCloseable {
     static synchronized FlociContainer container() {
         if (container == null) {
             FlociContainer candidate = new FlociContainer().withRegion("us-east-1");
-            if (ArtifactJobRunner.Mode.configured() == ArtifactJobRunner.Mode.IMAGE) {
+            String network = System.getProperty("gretl.test.imageNetwork");
+            if (network != null) {
                 candidate.withLabel("gretl.verification.run",System.getProperty("gretl.test.runId","development"));
-                candidate.withNetworkMode(System.getProperty("gretl.test.imageNetwork"));
+                candidate.withNetworkMode(network);
                 candidate.withCreateContainerCmdModifier(command -> command.withHostName("s3").withAliases("s3"));
             }
             candidate.start();

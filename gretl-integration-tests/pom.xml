@@ -179,7 +179,6 @@
           <systemPropertyVariables>
             <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
             <gretl.test.runId>${gretl.test.runId}</gretl.test.runId>
-            <gretl.test.executionMode>${gretl.test.executionMode}</gretl.test.executionMode>
             <gretl.test.imageMetadata>${maven.multiModuleProjectDirectory}/gretl-dist/target/image/candidate.json</gretl.test.imageMetadata>
           </systemPropertyVariables>
         </configuration>
@@ -201,7 +200,6 @@
           <systemPropertyVariables>
             <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
             <gretl.test.runId>${gretl.test.runId}</gretl.test.runId>
-            <gretl.test.executionMode>${gretl.test.executionMode}</gretl.test.executionMode>
             <gretl.test.imageMetadata>${maven.multiModuleProjectDirectory}/gretl-dist/target/image/candidate.json</gretl.test.imageMetadata>
             <gretl.test.reactorDistribution>${maven.multiModuleProjectDirectory}/gretl-dist/target/dist</gretl.test.reactorDistribution>
             <gretl.test.distributionArchive>${maven.multiModuleProjectDirectory}/gretl-dist/target/gretl-runtime-${project.version}-bin.zip</gretl.test.distributionArchive>
@@ -212,11 +210,78 @@
       </plugin>
     </plugins>
   </build>
-  <profiles><profile><id>job-image</id><build><plugins><plugin>
-    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-failsafe-plugin</artifactId>
-    <configuration>
-      <includes combine.self="override"><include>${gretl.test.includes}</include><include>**/ImageRuntimeIT.java</include></includes>
-      <excludes combine.self="override"/>
-    </configuration>
-  </plugin></plugins></build></profile></profiles>
+  <profiles>
+  <profile>
+    <id>backing-services</id>
+    <build><plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration><systemPropertyVariables>
+          <gretl.test.operationCoverageFile>${project.build.directory}/script-operations.txt</gretl.test.operationCoverageFile>
+        </systemPropertyVariables></configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>reset-script-operation-coverage</id><phase>pre-integration-test</phase><goals><goal>run</goal></goals>
+            <configuration><target><delete file="${project.build.directory}/script-operations.txt"/></target></configuration>
+          </execution>
+          <execution>
+            <id>check-script-operation-coverage</id><phase>verify</phase><goals><goal>run</goal></goals>
+            <configuration><target>
+              <java classname="ch.so.agi.gretl.it.ScriptOperationCoverage" fork="true" failonerror="true">
+                <classpath refid="maven.test.classpath"/>
+                <arg value="${maven.multiModuleProjectDirectory}/tests/contracts/operation-baseline.json"/>
+                <arg value="${project.build.directory}/script-operations.txt"/>
+              </java>
+            </target></configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins></build>
+  </profile>
+  <profile>
+    <id>job-image</id>
+    <build><plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <includes combine.self="override"><include>${gretl.test.includes}</include><include>**/ImageRuntimeIT.java</include></includes>
+          <excludes combine.self="override"/>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>reset-image-test-report</id><phase>pre-integration-test</phase><goals><goal>run</goal></goals>
+            <configuration><target>
+              <delete file="${project.build.directory}/failsafe-reports/TEST-ch.so.agi.gretl.it.ImageRuntimeIT.xml"/>
+            </target></configuration>
+          </execution>
+          <execution>
+            <id>require-image-tests</id><phase>verify</phase><goals><goal>run</goal></goals>
+            <configuration><target>
+              <property name="gretl.image.test.report" location="${project.build.directory}/failsafe-reports/TEST-ch.so.agi.gretl.it.ImageRuntimeIT.xml"/>
+              <available file="${gretl.image.test.report}" property="gretl.image.tests.ran"/>
+              <fail unless="gretl.image.tests.ran" message="job-image requires execution of ImageRuntimeIT"/>
+              <xmlproperty file="${gretl.image.test.report}" collapseAttributes="true"/>
+              <fail message="ImageRuntimeIT must execute at least one test without skips">
+                <condition><not><and>
+                  <matches string="${testsuite.tests}" pattern="^[1-9][0-9]*$"/>
+                  <equals arg1="${testsuite.skipped}" arg2="0"/>
+                </and></not></condition>
+              </fail>
+            </target></configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins></build>
+  </profile>
+  </profiles>
 </project>

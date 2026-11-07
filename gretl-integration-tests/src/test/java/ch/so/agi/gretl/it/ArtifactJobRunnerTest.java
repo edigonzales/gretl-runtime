@@ -9,14 +9,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 class ArtifactJobRunnerTest {
     @TempDir Path root;
-    @Test void modeParserRejectsExplicitInvalidValues() {
-        assertEquals(ArtifactJobRunner.Mode.SCRIPT, ArtifactJobRunner.Mode.parse("SCRIPT"));
-        for (String mode : List.of("", " ", "shell", " JAR"))
-            assertThrows(IllegalArgumentException.class, () -> ArtifactJobRunner.Mode.parse(mode));
-        // Do not mutate a JVM-wide mode selected for a matrix run.
-        assertEquals(System.getProperty("gretl.test.executionMode") == null ? ArtifactJobRunner.Mode.SCRIPT
-                : ArtifactJobRunner.Mode.parse(System.getProperty("gretl.test.executionMode")), ArtifactJobRunner.Mode.configured());
-    }
     @Test void pathsAndInvocationRejectContradictoryStates() {
         for (String path : List.of("../escape", "/host/path", ""))
             assertThrows(IllegalArgumentException.class, () -> ArtifactJobRunner.JobInput.script(path));

@@ -11,10 +11,14 @@ import org.junit.jupiter.api.Test;
 
 class DatabaseArtifactIT {
     @Test void realDatabaseChainAndCancellationRollback() throws Exception {
+        realDatabaseChainAndCancellationRollback(ArtifactJobRunner.Mode.SCRIPT);
+    }
+
+    static void realDatabaseChainAndCancellationRollback(ArtifactJobRunner.Mode mode) throws Exception {
         try (var lease = PostgresFixture.lease()) {
-            Path root = ArtifactJobRunner.directory("database-chain");
+            Path root = ArtifactJobRunner.directory("database-chain", mode);
             var request = request(root, lease, List.of());
-            var prepared = ArtifactJobRunner.prepare(request);
+            var prepared = ArtifactJobRunner.prepare(request, mode);
             var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared), false);
             assertEquals(0, result.code(), result.err());
             try (var db = connection(lease); var statement = db.createStatement();
@@ -24,8 +28,8 @@ class DatabaseArtifactIT {
                 assertFalse(rows.next());
             }
             // A fresh job process and work copy, using the same scenario and database lease.
-            Path cancelRoot = ArtifactJobRunner.directory("database-cancel");
-            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request(cancelRoot, lease, List.of("never"))));
+            Path cancelRoot = ArtifactJobRunner.directory("database-cancel", mode);
+            var running = ArtifactJobRunner.start(ArtifactJobRunner.prepare(request(cancelRoot, lease, List.of("never")), mode));
             try {
                 awaitQuery(lease, running.process());
                 ArtifactJobRunner.cancel(running);
@@ -124,7 +128,7 @@ class DatabaseArtifactIT {
         }
     }
 
-    private ArtifactJobRunner.Request request(Path root, PostgresFixture.Lease lease, List<String> targets) throws Exception {
+    private static ArtifactJobRunner.Request request(Path root, PostgresFixture.Lease lease, List<String> targets) throws Exception {
         var config = JobRunner.baseConfig(root);
         JobRunner.secret(root, config, "dbPassword", lease.password());
         JobRunner.taskConfig(config, "db", Map.of("jdbcUrl", lease.jdbcUrl(), "user", lease.user(), "passwordSecret", "dbPassword"));

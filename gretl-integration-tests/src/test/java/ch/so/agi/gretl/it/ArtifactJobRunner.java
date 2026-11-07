@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
@@ -18,21 +17,10 @@ import java.util.concurrent.TimeUnit;
 
 /** Process boundary: actual distribution SCRIPT by default, optional JAR or IMAGE.
  * Capture uses OS file redirection: no pipe can deadlock or remain undrained.
- * Evidence survives JUnit temp cleanup under target/job-evidence.
+ * Workspaces and process diagnostics stay under target/job-evidence.
  */
 final class ArtifactJobRunner {
-    enum Mode {
-        SCRIPT, IMAGE, JAR;
-        static Mode configured() {
-            String value = System.getProperty("gretl.test.executionMode");
-            return value == null ? SCRIPT : parse(value);
-        }
-        static Mode parse(String value) {
-            if (value == null || value.isBlank()) throw new IllegalArgumentException("Empty execution mode");
-            try { return valueOf(value.toUpperCase(java.util.Locale.ROOT)); }
-            catch (IllegalArgumentException e) { throw new IllegalArgumentException("Unknown execution mode: " + value); }
-        }
-    }
+    enum Mode { SCRIPT, IMAGE, JAR }
     enum InputKind { SCRIPT_FILE, PROJECT_DIRECTORY }
     record JobInput(InputKind kind, String relativePath) {
         JobInput {
@@ -143,11 +131,21 @@ final class ArtifactJobRunner {
             return artifactIdentity.matches(mode.equals("IMAGE") ? "sha256:[0-9a-f]{64}" : "[0-9a-f]{64}");
         }
     }
-    record Running(Prepared prepared, Process process, Path out, Path err, Instant started, long startedNanos) {}
+    record Running(Prepared prepared, Process process, Path out, Path err, long startedNanos) {}
 
     static Path directory(String id) throws IOException {
-        Path root = Path.of("target", "job-evidence", id + "-" + UUID.randomUUID())
-                .toAbsolutePath().normalize();
+        return directory(id, Mode.SCRIPT);
+    }
+
+    static Path directory(String id, Mode mode) throws IOException {
+        Path base = Path.of("target", "job-evidence");
+        if (mode == Mode.IMAGE) {
+            String workspace = System.getProperty("gretl.test.imageWorkspace");
+            if (workspace == null || !Files.isDirectory(Path.of(workspace)))
+                throw new IOException("IMAGE requires the private workspace created by scripts/verify-runtime.sh");
+            base = Path.of(workspace);
+        }
+        Path root = base.resolve(id + "-" + UUID.randomUUID()).toAbsolutePath().normalize();
         Files.createDirectories(root);
         privateDirectory(root);
         Files.createDirectories(root.resolve("output"));
@@ -159,7 +157,7 @@ final class ArtifactJobRunner {
     }
 
     static Prepared prepare(Request request) throws Exception {
-        return prepare(request, Mode.configured());
+        return prepare(request, Mode.SCRIPT);
     }
 
     /** Explicit JAR selection is used only by tests of the packager artifact itself. */
@@ -218,9 +216,8 @@ final class ArtifactJobRunner {
                 ScriptExecutionAdapter.appendOptions(command, request, prepared.report(), true);
             }
             Files.writeString(request.directory().resolve("command.json"), Json.write(command));
-            Instant started = Instant.now();
             long nanos = System.nanoTime();
-            JobExecutionEvidence.started(prepared, started);
+            JobExecutionEvidence.recordImageInput(prepared);
             Process process;
             if (prepared.image() != null) process = prepared.image().start(request.directory());
             else {
@@ -229,7 +226,7 @@ final class ArtifactJobRunner {
                 process = builder.start();
             }
             return new Running(prepared, process, request.directory().resolve("job.stdout.log"),
-                    request.directory().resolve("job.stderr.log"), started, nanos);
+                    request.directory().resolve("job.stderr.log"), nanos);
         } catch (IOException e) {
             JobExecutionEvidence.failure(request, prepared.mode(), "LAUNCH_FAILED", e);
             if (prepared.image() != null) try { prepared.image().remove(); } catch (Exception cleanup) { e.addSuppressed(cleanup); }
@@ -238,7 +235,7 @@ final class ArtifactJobRunner {
     }
 
     static Result run(Request request) throws Exception {
-        return run(request, Mode.configured());
+        return run(request, Mode.SCRIPT);
     }
 
     static Result run(Request request, Mode mode) throws Exception {
@@ -294,7 +291,8 @@ final class ArtifactJobRunner {
         Result result = new Result(process.exitValue(), out, err, running.prepared().report(), request.directory(),
                 Duration.ofNanos(System.nanoTime() - running.startedNanos()), timedOut, aborted, identity,
                 running.prepared().mode().name(), forced);
-        JobExecutionEvidence.completed(running, result);
+        ScriptOperationCoverage.record(request.invocation(), result);
+        JobExecutionEvidence.completed(running.prepared(), result);
         return result;
     }
 
