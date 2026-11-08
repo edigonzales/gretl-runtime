@@ -61,29 +61,22 @@ jobs:
             gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip
             gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz
             gretl-dist/target/distribution.sha256
-      - name: Summarize test failures
+      - name: Prepare failure diagnostics if verification could not export them
         if: failure()
         run: |
-          python3.12 - <<'PY' > "$RUNNER_TEMP/gretl-test-summary.txt"
-          from pathlib import Path
-          from xml.etree import ElementTree
-
-          reports = sorted(Path(".").glob("*/target/*-reports/TEST-*.xml"))
-          print(f"Found {len(reports)} Maven test reports. See the job log for failure details.")
-          for path in reports[:250]:
-              suite = ElementTree.parse(path).getroot()
-              counts = [int(suite.get(key, "0")) for key in ("tests", "failures", "errors", "skipped")]
-              print(str(path)[:200], *counts)
-          PY
-      - name: Preserve test summary
+          output="$RUNNER_TEMP/gretl-failure-diagnostics"
+          if [[ ! -f "$output/index.txt" ]]; then
+            python3.12 scripts/failure_diagnostics.py --output "$output"
+          fi
+      - name: Preserve failure diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-summary-${{ github.sha }}
+          name: failure-diagnostics-${{ github.sha }}
           retention-days: 7
           overwrite: true
-          path: ${{ runner.temp }}/gretl-test-summary.txt
-          if-no-files-found: error
+          path: ${{ runner.temp }}/gretl-failure-diagnostics/
+          if-no-files-found: warn
 
   publish:
     name: publish snapshot artefacts

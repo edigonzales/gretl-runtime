@@ -17,6 +17,7 @@ RUN_COORDINATOR = """
 import importlib.util
 from pathlib import Path
 import sys
+sys.path.insert(0, str(Path(sys.argv[1]).parent))
 spec = importlib.util.spec_from_file_location("verify_runtime", sys.argv[1])
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
@@ -101,6 +102,14 @@ else:
         "pid": os.getpid(), "pgid": os.getpgrp(), "sid": os.getsid(0),
     }
     (root / "maven.json").write_text(json.dumps(info))
+    if mode == "term-resistant":
+        workspace_arg = next(a for a in sys.argv if a.startswith("-Dgretl.test.imageWorkspace="))
+        workspace = Path(workspace_arg.split("=", 1)[1])
+        scenario = workspace / "fixture-00000000-0000-0000-0000-000000000001"
+        scenario.mkdir()
+        (scenario / "job.stdout.log").write_text("interrupted process output")
+        (scenario / "job.stderr.log").write_text("password=interrupted-canary")
+        (scenario / "runtime.json").write_text("forbidden image configuration")
     if mode in {"term-resistant", "orphan"}:
         signal.signal(signal.SIGTERM, lambda *_: (root / "term-seen").touch())
         subprocess.Popen([sys.executable, __file__, "child"])
@@ -131,6 +140,7 @@ class VerifyRuntimeTest(unittest.TestCase):
             "PATH": f"{self.root}:{os.environ['PATH']}",
             "TEST_ROOT": str(self.root),
             "TEST_MODE": mode,
+            "RUNNER_TEMP": str(self.root / "runner-temp"),
         }
         process = subprocess.Popen(
             [sys.executable, "-c", RUN_COORDINATOR, str(SCRIPT), str(self.root)],
@@ -195,6 +205,7 @@ class VerifyRuntimeTest(unittest.TestCase):
 
     def test_success_keeps_the_reactor_arguments_and_cleans_only_owned_resources(self):
         self.finish(self.start("success"), 0)
+        self.assertFalse((self.root / "runner-temp" / "gretl-failure-diagnostics").exists())
         info = self.assert_clean_workspace()
         self.assertEqual(info["pid"], info["pgid"])
         self.assertEqual(info["pid"], info["sid"])
@@ -221,6 +232,17 @@ class VerifyRuntimeTest(unittest.TestCase):
 
     def test_maven_failure_is_preserved(self):
         self.finish(self.start("maven-error"), 19)
+        self.assert_clean_workspace()
+        self.assertTrue((self.root / "runner-temp" / "gretl-failure-diagnostics" / "index.txt").exists())
+
+    def test_diagnostics_failure_does_not_replace_maven_failure(self):
+        output = self.root / "runner-temp" / "gretl-failure-diagnostics"
+        output.mkdir(parents=True)
+        sentinel = output / "keep.txt"
+        sentinel.write_text("do not replace")
+        err = self.finish(self.start("maven-error"), 19)
+        self.assertIn("diagnostics could not be exported", err)
+        self.assertEqual("do not replace", sentinel.read_text())
         self.assert_clean_workspace()
 
     def test_maven_failure_survives_a_cleanup_failure(self):
@@ -264,6 +286,14 @@ class VerifyRuntimeTest(unittest.TestCase):
         self.finish(process, 143)
         self.assertTrue((self.root / "term-seen").exists())
         self.assert_clean_workspace()
+        artifact = self.root / "runner-temp" / "gretl-failure-diagnostics"
+        index = (artifact / "index.txt").read_text()
+        self.assertIn("Interrupted IMAGE scenarios", index)
+        self.assertIn("test attribution incomplete", index)
+        exported = "\n".join(path.read_text() for path in artifact.iterdir())
+        self.assertIn("interrupted process output", exported)
+        self.assertNotIn("interrupted-canary", exported)
+        self.assertNotIn("forbidden image configuration", exported)
         for name in ("child", "grandchild"):
             self.assertFalse(self.alive(int((self.root / name).read_text())), name)
 

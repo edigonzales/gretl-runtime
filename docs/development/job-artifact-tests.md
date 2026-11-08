@@ -107,8 +107,8 @@ in einem privaten temporären Verzeichnis, das der Wrapper nach dem Lauf
 entfernt. JUnit-Reports bleiben im Maven-Modul. Die Tests prüfen die Unveränderlichkeit
 der staged SCRIPT- und IMAGE-Eingaben, die Distributionsbytes und die
 tatsächlich ausgewählte Image-ID. Der CI-Upload umfasst bei Erfolg die
-Bindist und deren SHA-256-Liste. Bei Fehlern ist ein kleiner
-JUnit-Überblick verfügbar. Detaildiagnosen stehen im Joblog.
+Bindist und deren SHA-256-Liste. Bei Fehlern enthält das Diagnoseartefakt
+betroffene JUnit-Fälle und begrenzte Logauszüge der zugehörigen Produktprozesse.
 
 ## CI und Aussagegrenzen
 

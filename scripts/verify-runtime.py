@@ -76,7 +76,8 @@ def stop_maven_group(process: subprocess.Popen, deadline: float) -> None:
         raise RuntimeError(f"Maven process group {group} survived TERM and KILL")
 
 
-def cleanup(process: subprocess.Popen | None, label: str | None, workspace: Path | None) -> bool:
+def cleanup(process: subprocess.Popen | None, label: str | None, workspace: Path | None,
+            diagnose) -> bool:
     deadline = time.monotonic() + CLEANUP_TIMEOUT
     errors = []
 
@@ -89,6 +90,7 @@ def cleanup(process: subprocess.Popen | None, label: str | None, workspace: Path
 
     if process is not None:
         attempt(stop_maven_group, process, deadline)
+    diagnose()
     if label is not None:
         containers = attempt(docker, "container", "ls", "--all", "--quiet", "--filter",
                              f"label={label}", deadline=deadline)
@@ -117,6 +119,25 @@ def verify(repo: Path) -> int:
     previous_handlers = {sig: signal.signal(sig, record_signal) for sig in (signal.SIGINT, signal.SIGTERM)}
     process = label = workspace = None
     result = 1
+    run_id = str(uuid.uuid4())
+    started_at = time.time()
+
+    def diagnose() -> None:
+        interrupted = received_signal or (process is not None and (process.returncode or 0) < 0)
+        if result == 0 and not interrupted:
+            return
+        try:
+            from failure_diagnostics import collect
+
+            runner_temp = os.environ.get("RUNNER_TEMP")
+            output = (Path(runner_temp) / "gretl-failure-diagnostics" if runner_temp
+                      else repo / "target" / "failure-diagnostics" / run_id)
+            collect(repo, output, run_id=run_id, workspace=workspace if interrupted else None,
+                    since=started_at)
+            print(f"Verification diagnostics: {output}", file=sys.stderr)
+        except Exception as error:
+            print(f"Verification diagnostics could not be exported: {error}", file=sys.stderr)
+
     try:
         uid, gid = os.getuid(), os.getgid()
         if uid == 0:
@@ -124,7 +145,6 @@ def verify(repo: Path) -> int:
             return 2
         print(docker("info", "--format", "Docker server {{.ServerVersion}}"), flush=True)
         if not received_signal:
-            run_id = str(uuid.uuid4())
             label = f"gretl.verification.run={run_id}"
             network = docker("network", "create", "--label", label, f"gretl-verify-{run_id}")
             if not network:
@@ -157,7 +177,7 @@ def verify(repo: Path) -> int:
         print(f"Verification: {error}", file=sys.stderr)
     finally:
         try:
-            clean = cleanup(process, label, workspace)
+            clean = cleanup(process, label, workspace, diagnose)
         finally:
             for sig, handler in previous_handlers.items():
                 signal.signal(sig, handler)

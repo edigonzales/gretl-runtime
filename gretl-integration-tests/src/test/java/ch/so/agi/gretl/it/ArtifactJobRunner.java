@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Process boundary: actual distribution SCRIPT by default, optional JAR or IMAGE.
  * Capture uses OS file redirection: no pipe can deadlock or remain undrained.
- * Workspaces and process diagnostics stay under target/job-evidence.
+ * Workspaces retain raw process files. FailedProcessDiagnostics stages bounded excerpts.
  */
 final class ArtifactJobRunner {
     enum Mode { SCRIPT, IMAGE, JAR }
@@ -162,6 +162,7 @@ final class ArtifactJobRunner {
 
     /** Explicit JAR selection is used only by tests of the packager artifact itself. */
     static Prepared prepare(Request request, Mode mode) throws Exception {
+        FailedProcessDiagnostics.register(request, mode);
         try { return prepareInWorkspace(request, mode); }
         catch (Exception e) {
             JobExecutionEvidence.failure(request, mode, "PREPARE_FAILED", e);
@@ -199,6 +200,7 @@ final class ArtifactJobRunner {
 
     static Running start(Prepared prepared) throws IOException {
         Request request = prepared.request();
+        FailedProcessDiagnostics.register(request, prepared.mode());
         try {
             if (prepared.launch().distribution() != null) prepared.launch().distribution().verifyFiles();
             if (prepared.mode() != Mode.JAR) prepared.inputSnapshot().verifyUnchanged(prepared.source());
@@ -262,26 +264,7 @@ final class ArtifactJobRunner {
         }
         // waitFor/stop has reaped the process; redirected streams are now complete.
         Request request = running.prepared().request();
-        var registry = new ch.so.agi.gretl.runtime.runner.SecretRegistry();
-        if (request.config().get("secrets") instanceof Map<?, ?> secrets) {
-            for (Object value : secrets.values()) {
-                if (value instanceof Map<?, ?> secret) {
-                    String clear = null;
-                    if (secret.get("file") instanceof String file) {
-                        clear = Files.readString(request.directory().resolve(file));
-                        if (clear.endsWith("\r\n")) clear = clear.substring(0, clear.length() - 2);
-                        else if (clear.endsWith("\n")) clear = clear.substring(0, clear.length() - 1);
-                    } else if (secret.get("plaintext") instanceof String plaintext) {
-                        clear = plaintext;
-                    } else if (secret.get("environment") instanceof String key) {
-                        Object environmentValue = request.environment().get(key);
-                        clear = environmentValue == null ? System.getenv(key) : environmentValue.toString();
-                    }
-                    if (clear != null) registry.register(clear);
-                }
-            }
-        }
-        var redactor = new ch.so.agi.gretl.runtime.logging.Redactor(registry);
+        var redactor = redactor(request);
         String out = redactor.redact(Files.readString(running.out()));
         String err = redactor.redact(Files.readString(running.err()));
         Files.writeString(running.out(), out);
@@ -294,6 +277,34 @@ final class ArtifactJobRunner {
         ScriptOperationCoverage.record(request.invocation(), result);
         JobExecutionEvidence.completed(running.prepared(), result);
         return result;
+    }
+
+    static ch.so.agi.gretl.runtime.logging.Redactor redactor(Request request) throws IOException {
+        var registry = new ch.so.agi.gretl.runtime.runner.SecretRegistry();
+        if (request.config().get("secrets") instanceof Map<?, ?> secrets) {
+            for (Object value : secrets.values()) {
+                if (value instanceof Map<?, ?> secret) {
+                    String clear = null;
+                    if (secret.get("file") instanceof String file) {
+                        try (var input = Files.newInputStream(request.directory().resolve(file))) {
+                            byte[] bytes = input.readNBytes(64 * 1024 + 1);
+                            if (bytes.length > 64 * 1024) throw new IOException("Oversized test secret file");
+                            clear = java.nio.charset.StandardCharsets.UTF_8.newDecoder()
+                                    .decode(java.nio.ByteBuffer.wrap(bytes)).toString();
+                        }
+                        if (clear.endsWith("\r\n")) clear = clear.substring(0, clear.length() - 2);
+                        else if (clear.endsWith("\n")) clear = clear.substring(0, clear.length() - 1);
+                    } else if (secret.get("plaintext") instanceof String plaintext) {
+                        clear = plaintext;
+                    } else if (secret.get("environment") instanceof String key) {
+                        Object environmentValue = request.environment().get(key);
+                        clear = environmentValue == null ? System.getenv(key) : environmentValue.toString();
+                    }
+                    if (clear != null) registry.register(clear);
+                }
+            }
+        }
+        return new ch.so.agi.gretl.runtime.logging.Redactor(registry);
     }
 
     static void cancel(Running running) throws Exception {
