@@ -8,10 +8,10 @@ Die direkten `GretlCli.run`-Tests prüfen CLI-Komponenten im Testprozess.
 
 ## Einstieg und Pflichtumfang
 
-Starte den folgenden Befehl mit JDK 25, Node 22 und Docker im Repository-Root.
+Starte den folgenden Befehl mit JDK 25, Node 22, Docker und Python 3.12 im Repository-Root.
 
 ```sh
-scripts/verify-runtime.sh
+python3.12 scripts/verify-runtime.py
 ```
 
 Der Aufruf startet einen Maven-Reaktor mit Dienst-, GeoTools- und
@@ -112,7 +112,7 @@ JUnit-Überblick verfügbar. Detaildiagnosen stehen im Joblog.
 
 ## CI und Aussagegrenzen
 
-`publish-snapshots.yml` führt `scripts/verify-runtime.sh` bei Push auf
+`publish-snapshots.yml` führt `python3.12 scripts/verify-runtime.py` bei Push auf
 `main`, bei Pull Requests gegen `main` und bei manuellem Start aus.
 Der Reaktor prüft alle 44 Standardoperationen in SCRIPT und führt
 gezielte JAR- und IMAGE-Prozesse aus. Der Publish-Job hängt vom

@@ -34,13 +34,17 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: vscode/gretl-vscode/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Check documentation and snapshot smoke tooling
         run: |
-          python3 scripts/check-docs.py
-          python3 -m unittest discover -s tests/docs -v
-          python3 -m unittest discover -s tests/publication -v
+          python3.12 scripts/check-docs.py
+          python3.12 -m unittest discover -s tests/docs -v
+          python3.12 -m unittest discover -s tests/publication -v
+          python3.12 -m unittest discover -s tests/ci -v
       - name: Verify SCRIPT, detached JAR and targeted IMAGE processes
-        run: scripts/verify-runtime.sh
+        run: python3.12 scripts/verify-runtime.py
       - name: Record qualified distribution hashes
         working-directory: gretl-dist/target
         run: |
@@ -60,7 +64,7 @@ jobs:
       - name: Summarize test failures
         if: failure()
         run: |
-          python3 - <<'PY' > "$RUNNER_TEMP/gretl-test-summary.txt"
+          python3.12 - <<'PY' > "$RUNNER_TEMP/gretl-test-summary.txt"
           from pathlib import Path
           from xml.etree import ElementTree
 
@@ -99,6 +103,9 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: vscode/gretl-vscode/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: actions/download-artifact@v4
         with:
           name: verified-runtime-${{ github.sha }}
@@ -133,7 +140,7 @@ jobs:
         run: sha256sum --strict --check "$RUNNER_TEMP/gretl-verified-runtime/distribution.sha256"
       - name: Download published runtime and execute an external Groovy job
         run: |
-          python3 scripts/verify-published-runtime.py \
+          python3.12 scripts/verify-published-runtime.py \
             --repository https://jars.interlis.guru/snapshots \
             --version 6.0.0-SNAPSHOT --source "$GITHUB_SHA" \
             --checksums "$RUNNER_TEMP/gretl-verified-runtime/distribution.sha256" \

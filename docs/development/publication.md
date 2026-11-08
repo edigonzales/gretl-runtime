@@ -150,7 +150,7 @@ aus dem qualifizierten Build):
 SOURCE_SHA=$(git rev-parse HEAD)
 OUTPUT=/tmp/gretl-snapshot-check
 CHECKSUMS=/pfad/zur/qualifizierten/distribution.sha256
-python3 scripts/verify-published-runtime.py \
+python3.12 scripts/verify-published-runtime.py \
   --repository https://jars.interlis.guru/snapshots \
   --version 6.0.0-SNAPSHOT --source "$SOURCE_SHA" \
   --checksums "$CHECKSUMS" --output "$OUTPUT"
@@ -168,7 +168,7 @@ Ein lokaler Vorbereitungstest deployt mit `-DaltDeploymentRepository=id::file://
 in ein privates Dateirepository und stellt es per lokalem HTTP-Server bereit.
 Er benötigt keine echten Repository-Credentials und veröffentlicht nichts remote.
 Die regulären Download-Kontrolltests laufen mit
-`python3 -m unittest discover -s tests/publication -v`; ihre kleinen ausführbaren
+`python3.12 -m unittest discover -s tests/publication -v`; ihre kleinen ausführbaren
 Fixtures prüfen den Kontrollfluss, während die Abnahme zusätzlich eine echte
 Distribution nach lokalem Maven-Deploy herunterlädt und ausführt.
 

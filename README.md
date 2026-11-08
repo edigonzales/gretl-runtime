@@ -22,7 +22,7 @@ SCRIPT-Prozesse. Die vollständige Qualifikation aller Auslieferungswege
 läuft am sauberen Commit mit dem folgenden Befehl.
 
 ```sh
-scripts/verify-runtime.sh
+python3.12 scripts/verify-runtime.py
 ```
 
 SCRIPT prüft alle 44 Standardoperationen. JAR und IMAGE werden mit

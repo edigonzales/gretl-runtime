@@ -142,7 +142,7 @@ final class ArtifactJobRunner {
         if (mode == Mode.IMAGE) {
             String workspace = System.getProperty("gretl.test.imageWorkspace");
             if (workspace == null || !Files.isDirectory(Path.of(workspace)))
-                throw new IOException("IMAGE requires the private workspace created by scripts/verify-runtime.sh");
+                throw new IOException("IMAGE requires the private workspace created by python3.12 scripts/verify-runtime.py");
             base = Path.of(workspace);
         }
         Path root = base.resolve(id + "-" + UUID.randomUUID()).toAbsolutePath().normalize();

@@ -10,10 +10,10 @@ vollständige Qualifikation. Dafür gelten vom Repository-Root mit JDK 25:
 ./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
 
-Der folgende Befehl startet die konsolidierte Prüfung mit JDK 25, Node und Docker.
+Der folgende Befehl startet die konsolidierte Prüfung mit JDK 25, Node 22, Docker und Python 3.12.
 
 ```sh
-scripts/verify-runtime.sh
+python3.12 scripts/verify-runtime.py
 ```
 
 Das Skript legt ein eigenes Docker-Netz an und startet genau einen
@@ -22,7 +22,10 @@ Der Reactor prüft die vollständige SCRIPT-Fachsuite mit 44
 Standardoperationen, explizite selbständige JAR-Prozesse und ausgewählte
 IMAGE-Prozesse mit externen Jobs. Das Image verwendet dasselbe Testnetz
 wie PostgreSQL/PostGIS und S3. Der Aufruf benötigt einen non-root
-Hostbenutzer für die privaten Bindmounts.
+Hostbenutzer für die privaten Bindmounts. Bei SIGINT oder SIGTERM beendet das
+Skript seine Maven-Prozessgruppe mit Fristen für TERM und KILL. Es entfernt
+die anhand der Laufkennung zugeordneten Docker-Ressourcen und das private
+IMAGE-Arbeitsverzeichnis.
 
 Der normale Reactor enthält Unit-, Komponenten-, Distributions- und lokale
 fachliche SCRIPT-Prozesse (`*JobIT`) plus ausdrücklich erhaltene JAR-Paketverträge. Das Dienstprofil ergänzt die vollständigen
