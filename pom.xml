@@ -44,6 +44,7 @@
     <gretl.sourceRevision></gretl.sourceRevision>
     <!-- Product baseline, spec 07. The wrapper pins Maven 3.10.0 separately. -->
     <java.version>25</java.version>
+    <skipTests>false</skipTests>
     <gretl.test.includes>**/*JobIT.java</gretl.test.includes>
     <maven.build.timestamp.format>yyyyMMddHHmmssSSS</maven.build.timestamp.format>
     <gretl.test.runId>${maven.build.timestamp}</gretl.test.runId>

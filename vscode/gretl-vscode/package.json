@@ -139,7 +139,8 @@
     "build": "node scripts/build.mjs",
     "check": "tsc --noEmit",
     "test": "node --test test/*.test.mjs",
-    "package": "npm run check && npm run build && vsce package --no-dependencies --out dist/gretl-runtime.vsix && node scripts/inventory.mjs && node --test test/package/*.test.mjs"
+    "package": "npm run check && npm run build && vsce package --no-dependencies --out dist/gretl-runtime.vsix && node scripts/inventory.mjs",
+    "test:package": "node --test test/package/*.test.mjs"
   },
   "dependencies": {
     "@xyflow/react": "12.12.1",

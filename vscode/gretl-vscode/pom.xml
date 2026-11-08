@@ -8,8 +8,21 @@
     <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-clean-plugin</artifactId><configuration><filesets><fileset><directory>dist</directory></fileset><fileset><directory>server</directory></fileset></filesets></configuration></plugin>
     <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-antrun-plugin</artifactId><executions>
       <execution><id>extension-locked-dependencies</id><phase>generate-resources</phase><goals><goal>run</goal></goals><configuration><target><exec executable="npm" dir="${project.basedir}" failonerror="true"><arg value="ci"/><arg value="--ignore-scripts"/></exec></target></configuration></execution>
-      <execution><id>extension-host-tests</id><phase>test</phase><goals><goal>run</goal></goals><configuration><target><exec executable="npm" dir="${project.basedir}" failonerror="true"><arg value="test"/></exec></target></configuration></execution>
+      <execution>
+        <id>extension-host-tests</id><phase>test</phase><goals><goal>run</goal></goals>
+        <configuration>
+          <skip>${skipTests}</skip>
+          <target><exec executable="npm" dir="${project.basedir}" failonerror="true"><arg value="test"/></exec></target>
+        </configuration>
+      </execution>
       <execution><id>installed-extension-package</id><phase>package</phase><goals><goal>run</goal></goals><configuration><target><exec executable="npm" dir="${project.basedir}" failonerror="true"><arg value="run"/><arg value="package"/></exec></target></configuration></execution>
+      <execution>
+        <id>extension-package-tests</id><phase>verify</phase><goals><goal>run</goal></goals>
+        <configuration>
+          <skip>${skipTests}</skip>
+          <target><exec executable="npm" dir="${project.basedir}" failonerror="true"><arg value="run"/><arg value="test:package"/></exec></target>
+        </configuration>
+      </execution>
     </executions></plugin>
   </plugins></build>
 </project>

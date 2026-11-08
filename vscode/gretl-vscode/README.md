@@ -105,10 +105,12 @@ session and press **F5** again.
 
 Build from the repository root with JDK 25, Node 22 or newer, and the local `zip`/`unzip` tools using `./mvnw -B
 clean verify`. This includes the server build, locked npm installation, host
-tests, type checking and local VSIX packaging. The VSIX is written to
-`vscode/gretl-vscode/dist/gretl-runtime.vsix`. During extension development, run
-`npm run check`, `npm test`, and `npm run package` in this directory after building
-the matching server. `npm run package` refuses mismatching protocol resources.
+tests, type checking, local VSIX packaging and package tests. The VSIX is
+written to `vscode/gretl-vscode/dist/gretl-runtime.vsix`. During extension
+development, run `npm test` for host tests and `npm run package` to build the
+VSIX and inventory after building the matching server. Then run
+`npm run test:package` to test those files. The package build checks types and
+refuses mismatching protocol resources.
 
 To prepare an isolated installed workbench, run `node scripts/workbench.mjs
 /absolute/fresh/evidence-directory` in this directory. It installs the actual

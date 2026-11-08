@@ -52,6 +52,14 @@ Compilerisolation erklärt der [Paketierungsvertrag](../guides/packaging.md).
 Projekt-JARs und Einzeljob-Schemas 1/2 bleiben getrennt im Deskriptor, verwenden
 aber dieselbe Runtime. GeoTools wird nicht in die Standarddistribution aufgenommen.
 
+## VS Code Extension
+
+Maven führt bei `verify` die Hosttests und nach der Paketierung die VSIX-Tests
+aus. In `vscode/gretl-vscode` baut `npm run package` die VSIX samt Inventar.
+`npm test` prüft den Extension-Host, `npm run test:package` die gebaute VSIX.
+Mit `-DskipTests` überspringt Maven beide Testschritte. Typprüfung, Build und
+Paketierung laufen weiterhin.
+
 ## Dokumentationsprüfung
 
 Nach einem aktuellen Distributionsbuild, aus dem Repository-Root:
