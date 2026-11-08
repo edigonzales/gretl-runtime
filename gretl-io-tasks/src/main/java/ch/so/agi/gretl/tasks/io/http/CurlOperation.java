@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -310,9 +311,7 @@ public final class CurlOperation {
                 throw new IllegalArgumentException("formData field name must be text");
             }
             String name = nameText.toString();
-            if (!name.matches("[A-Za-z0-9_.-]+")) {
-                throw new IllegalArgumentException("Invalid formData field name: " + name);
-            }
+            requireFormFieldName(name);
             Object raw = entry.getValue();
             if (raw instanceof Path path) {
                 result.put(name, FormValue.ofFile(path.normalize()));
@@ -332,6 +331,12 @@ public final class CurlOperation {
         return headers.keySet().stream().anyMatch(key -> key.equalsIgnoreCase(name));
     }
 
+    private static void requireFormFieldName(String name) {
+        if (!name.matches("[A-Za-z0-9_.-]+")) {
+            throw new IllegalArgumentException("Invalid formData field name");
+        }
+    }
+
     public record CurlRequest(
             URI serverUrl, String method, int expectedStatusCode, String expectedBody,
             Map<String, HeaderValue> headers, Map<String, FormValue> formData,
@@ -342,6 +347,7 @@ public final class CurlOperation {
             Objects.requireNonNull(method, "method");
             headers = Map.copyOf(headers);
             formData = Map.copyOf(formData);
+            formData.keySet().forEach(CurlOperation::requireFormFieldName);
             if (expectedStatusCode < 100 || expectedStatusCode > 599) {
                 throw new IllegalArgumentException(
                         "expectedStatusCode must be between 100 and 599");
@@ -499,7 +505,6 @@ public final class CurlOperation {
             if (remaining != null) {
                 clientBuilder.connectTimeout(remaining);
             }
-            HttpClient client = clientBuilder.build();
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(request.serverUrl());
             if (remaining != null) {
                 requestBuilder.timeout(remaining);
@@ -532,7 +537,7 @@ public final class CurlOperation {
             }
 
             Path temporary = null;
-            try {
+            try (HttpClient client = clientBuilder.build()) {
                 HttpResponse<InputStream> response;
                 try {
                     response = client.send(httpRequest,
@@ -657,31 +662,35 @@ public final class CurlOperation {
         private static Body multipartBody(Map<String, FormValue> formData)
                 throws IOException {
             String boundary = "gretl-" + UUID.randomUUID();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            List<HttpRequest.BodyPublisher> parts = new ArrayList<>();
             for (Map.Entry<String, FormValue> entry : formData.entrySet()) {
-                out.write(("--" + boundary + "\r\n").getBytes(StandardCharsets.UTF_8));
+                String header = "--" + boundary + "\r\nContent-Disposition: form-data; name=\""
+                        + entry.getKey() + "\"";
                 FormValue value = entry.getValue();
                 if (value.isFile()) {
-                    String fileName = value.file().getFileName().toString()
-                            .replace("\"", "_");
-                    out.write(("Content-Disposition: form-data; name=\""
-                            + entry.getKey() + "\"; filename=\"" + fileName + "\"\r\n")
-                            .getBytes(StandardCharsets.UTF_8));
-                    out.write("Content-Type: application/octet-stream\r\n\r\n"
-                            .getBytes(StandardCharsets.UTF_8));
-                    Files.copy(value.file(), out);
-                    out.write("\r\n".getBytes(StandardCharsets.UTF_8));
+                    String fileName = multipartFilename(value.file());
+                    parts.add(HttpRequest.BodyPublishers.ofString(header
+                            + "; filename=\"" + fileName + "\"\r\n"
+                            + "Content-Type: application/octet-stream\r\n\r\n"));
+                    parts.add(HttpRequest.BodyPublishers.ofFile(value.file()));
                 } else {
-                    out.write(("Content-Disposition: form-data; name=\""
-                            + entry.getKey() + "\"\r\n\r\n")
-                            .getBytes(StandardCharsets.UTF_8));
-                    out.write(value.text().getBytes(StandardCharsets.UTF_8));
-                    out.write("\r\n".getBytes(StandardCharsets.UTF_8));
+                    parts.add(HttpRequest.BodyPublishers.ofString(header + "\r\n\r\n"));
+                    parts.add(HttpRequest.BodyPublishers.ofString(value.text()));
                 }
+                parts.add(HttpRequest.BodyPublishers.ofString("\r\n"));
             }
-            out.write(("--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8));
-            return new Body(HttpRequest.BodyPublishers.ofByteArray(out.toByteArray()),
+            parts.add(HttpRequest.BodyPublishers.ofString("--" + boundary + "--\r\n"));
+            return new Body(HttpRequest.BodyPublishers.concat(
+                    parts.toArray(HttpRequest.BodyPublisher[]::new)),
                     Map.of("Content-Type", "multipart/form-data; boundary=" + boundary));
+        }
+
+        private static String multipartFilename(Path path) throws IOException {
+            String name = path.getFileName().toString();
+            if (name.indexOf('\r') >= 0 || name.indexOf('\n') >= 0 || name.indexOf('\0') >= 0) {
+                throw new IOException("Multipart filename contains a forbidden control character");
+            }
+            return name.replace("\"", "_").replace("\\", "\\\\");
         }
 
         private static void prepareTarget(Path target, boolean overwrite,

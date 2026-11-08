@@ -74,6 +74,13 @@ abgeleiteten Unterverzeichnissen führen zu einem Pfadfehler. Dies schützt
 gegen vorhandene Links zum Prüfzeitpunkt. Gleichzeitige lokale Änderungen
 am Verzeichnisbaum liegen ausserhalb dieses Schutzes.
 
+## Curl-Formularuploads
+
+Curl streamt Multipart-Dateiteile direkt aus den angegebenen Dateien. Die
+Dateien müssen während der Anfrage stabil bleiben. Dateinamen mit CR, LF
+oder NUL werden vor der Anfrage abgewiesen. `maxBytes` begrenzt weiterhin die
+Antwort.
+
 ## Logging und Runbericht
 
 - Konsole: Text (Default) oder JSON auf **stderr**; Hilfe/Plan auf stdout.

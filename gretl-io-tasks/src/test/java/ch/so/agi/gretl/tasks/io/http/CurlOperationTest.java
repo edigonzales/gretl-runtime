@@ -25,6 +25,10 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,30 +105,65 @@ class CurlOperationTest {
     }
 
     @Test
-    void sendsMultipartFormDataWithTextAndFile() throws Exception {
-        Path upload = tempDir.resolve("upload.txt");
-        Files.writeString(upload, "file-content", StandardCharsets.UTF_8);
+    void sendsExactMultipartPartsWithSafeFilenameParameters() throws Exception {
+        Path upload = Files.writeString(tempDir.resolve("über \"test\"\\.txt"), "file-content");
+        Path empty = Files.createFile(tempDir.resolve("empty.bin"));
+        AtomicReference<String> contentType = new AtomicReference<>();
+        AtomicReference<String> payload = new AtomicReference<>();
         server.createContext("/form", exchange -> {
-            String contentType = exchange.getRequestHeaders().getFirst("Content-Type");
-            assertTrue(contentType.startsWith("multipart/form-data; boundary="), contentType);
-            String body = new String(exchange.getRequestBody().readAllBytes(),
-                    StandardCharsets.UTF_8);
-            assertTrue(body.contains("name=\"topic\""), body);
-            assertTrue(body.contains("npl"), body);
-            assertTrue(body.contains("filename=\"upload.txt\""), body);
-            assertTrue(body.contains("file-content"), body);
+            contentType.set(exchange.getRequestHeaders().getFirst("Content-Type"));
+            payload.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
             respond(exchange, 200, "ok");
         });
 
         CurlOperation.CurlRequest request = request("/form", 200)
                 .setFormData(Map.of(
                         "topic", CurlOperation.FormValue.ofText("npl"),
-                        "file", CurlOperation.FormValue.ofFile(upload)))
+                        "file", CurlOperation.FormValue.ofFile(upload),
+                        "empty", CurlOperation.FormValue.ofFile(empty)))
                 .build();
         CurlOperation.CurlResult result = new CurlOperation.CurlHandler()
                 .execute(request, context());
 
         assertEquals(200, result.status());
+        String prefix = "multipart/form-data; boundary=";
+        assertTrue(contentType.get().startsWith(prefix));
+        String delimiter = "--" + contentType.get().substring(prefix.length());
+        String[] parts = payload.get().split(Pattern.quote(delimiter), -1);
+        assertEquals(5, parts.length);
+        assertEquals("", parts[0]);
+        assertEquals("--\r\n", parts[4]);
+        assertEquals(Set.of(
+                "\r\nContent-Disposition: form-data; name=\"topic\"\r\n\r\nnpl\r\n",
+                "\r\nContent-Disposition: form-data; name=\"file\"; filename=\"über _test_\\\\.txt\"\r\n"
+                        + "Content-Type: application/octet-stream\r\n\r\nfile-content\r\n",
+                "\r\nContent-Disposition: form-data; name=\"empty\"; filename=\"empty.bin\"\r\n"
+                        + "Content-Type: application/octet-stream\r\n\r\n\r\n"),
+                Set.of(parts[1], parts[2], parts[3]));
+    }
+
+    @Test
+    void rejectsFilenameAndFieldHeaderInjectionBeforeSending() throws Exception {
+        AtomicInteger requests = new AtomicInteger();
+        server.createContext("/form", exchange -> {
+            requests.incrementAndGet();
+            respond(exchange, 200, "ok");
+        });
+        for (String name : List.of("file\r.txt", "file\n.txt", "file\r\nX-Injected: yes.txt")) {
+            Path upload = Files.writeString(tempDir.resolve(name), "payload");
+            CurlTaskException failure = assertThrows(CurlTaskException.class,
+                    () -> new CurlOperation.CurlHandler().execute(request("/form", 200)
+                            .setFormData(Map.of("file", CurlOperation.FormValue.ofFile(upload)))
+                            .build(), context()));
+            assertEquals("CURL_FILE", failure.code());
+            assertEquals("prepare", failure.phase());
+            assertEquals("Multipart filename contains a forbidden control character",
+                    failure.getCause().getMessage());
+        }
+        assertThrows(IllegalArgumentException.class, () -> request("/form", 200)
+                .setFormData(Map.of("field\r\nX-Injected", CurlOperation.FormValue.ofText("x")))
+                .build());
+        assertEquals(0, requests.get());
     }
 
     @Test
