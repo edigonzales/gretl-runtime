@@ -156,5 +156,6 @@ checked with this version. Bundled licence texts are included in the VSIX.
 The bundle manifest records the commit (and dirty state), Maven/artifact/Java/
 Groovy/extension versions, catalogue and protocol identity, and hashes for every
 shipped payload. The manifest itself and generated VSIX container metadata are
-covered by the external `dist/distribution-inventory.json`. Packaging verifies
-that inventory and tests a deliberately tampered copy of the real VSIX.
+covered by the external `dist/distribution-inventory.json`. The package
+tests verify that inventory and reject a deliberately tampered copy of the
+real VSIX.
