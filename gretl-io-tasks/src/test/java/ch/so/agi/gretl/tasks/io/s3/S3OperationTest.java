@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tasks.io.s3;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,6 +57,54 @@ class S3OperationTest {
             }
         } finally {
             server.stop(0);
+        }
+    }
+
+    @Test
+    void acceptsAConfiguredRootSymlinkAndRejectsTraversalDuringMapping() throws Exception {
+        Path actual = Files.createDirectory(root.resolve("actual")).toRealPath();
+        Path configured = Files.createSymbolicLink(root.resolve("configured"), actual);
+        Path realRoot = S3Support.prepareDownloadRoot(configured);
+        assertEquals(actual, realRoot);
+        assertEquals(actual.resolve("nested/file.txt"),
+                S3Support.downloadTarget(realRoot, "./nested/file.txt", false));
+        assertEquals(actual.resolve("file.txt"),
+                S3Support.downloadTarget(realRoot, "nested/file.txt", true));
+        for (String invalid : List.of("nested/../file.txt", "/absolute/file.txt",
+                "nested/", "nested/.", "nul\0file")) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> S3Support.downloadTarget(realRoot, invalid, false), invalid);
+        }
+    }
+
+    @Test
+    void directDownloadRejectsExistingUnsafeParentsBeforeOpeningTheObject() throws Exception {
+        Path realRoot = S3Support.prepareDownloadRoot(root.resolve("downloads"));
+        Path outside = Files.createDirectory(root.resolve("outside"));
+        Path empty = Files.createDirectory(outside.resolve("empty"));
+        Path sentinel = Files.writeString(outside.resolve("sentinel.txt"), "keep");
+        Path deep = Files.createDirectory(realRoot.resolve("deep"));
+        Path first = Files.createSymbolicLink(realRoot.resolve("first"), outside);
+        Path nested = Files.createSymbolicLink(deep.resolve("nested"), empty);
+        Path dangling = Files.createSymbolicLink(realRoot.resolve("dangling"), root.resolve("missing"));
+        Path file = Files.writeString(realRoot.resolve("file"), "regular file");
+        var context = new TestOperationContext(root, Map.of(), Map.of(), Map.of());
+
+        for (Path target : List.of(first.resolve("sentinel.txt"), nested.resolve("new/file.txt"),
+                dangling.resolve("file.txt"), file.resolve("file.txt"), outside.resolve("other.txt"))) {
+            S3TaskException failure = assertThrows(S3TaskException.class,
+                    () -> S3Support.download(null, "bucket", "key", realRoot, target, true, context));
+            assertEquals("S3_LOCAL_PATH", failure.code());
+            assertEquals("prepare", failure.phase());
+        }
+        assertEquals("keep", Files.readString(sentinel));
+        assertEquals("regular file", Files.readString(file));
+        assertFalse(Files.exists(root.resolve("missing")));
+        try (var entries = Files.list(empty)) {
+            assertEquals(List.of(), entries.toList());
+        }
+        try (var entries = Files.list(outside)) {
+            assertEquals(java.util.Set.of(empty, sentinel), new java.util.HashSet<>(entries.toList()));
         }
     }
 

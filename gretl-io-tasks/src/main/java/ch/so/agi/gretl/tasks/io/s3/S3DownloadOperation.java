@@ -10,8 +10,6 @@ import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.OutputField;
 import ch.so.agi.gretl.runtime.api.Progress;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,22 +126,22 @@ public final class S3DownloadOperation {
         @Override
         public S3DownloadResult execute(S3DownloadRequest request,
                                         OperationContext context) throws Exception {
-            if (Files.exists(request.downloadDir(), LinkOption.NOFOLLOW_LINKS)
-                    && !Files.isDirectory(request.downloadDir())) {
+            Path realRoot;
+            try {
+                realRoot = S3Support.prepareDownloadRoot(request.downloadDir());
+            } catch (IOException exception) {
                 throw new S3TaskException("S3_LOCAL_DIR",
-                        msg(context, "task.s3.localDir"), "prepare", null);
+                        msg(context, "task.s3.localDir"), "prepare", exception);
             }
-            Files.createDirectories(request.downloadDir());
             try (var client = S3Support.open(request.connection(), context)) {
                 List<Path> files = new ArrayList<>();
                 long bytes = 0;
                 int count = 0;
                 if (request.key() != null) {
                     S3Support.checkKey(request.key());
-                    Path target = resolveTarget(request.downloadDir(), request.key(), true, context);
-                    prepareTarget(target, request.overwrite(), context);
+                    Path target = resolveTarget(realRoot, request.key(), true, context);
                     bytes += S3Support.download(client, request.bucketName(), request.key(),
-                            target, request.overwrite(), context);
+                            realRoot, target, request.overwrite(), context);
                     files.add(target);
                     count = 1;
                 } else {
@@ -152,10 +150,9 @@ public final class S3DownloadOperation {
                         if (key.endsWith("/")) {
                             continue;
                         }
-                        Path target = resolveTarget(request.downloadDir(), key, false, context);
-                        prepareTarget(target, request.overwrite(), context);
+                        Path target = resolveTarget(realRoot, key, false, context);
                         bytes += S3Support.download(client, request.bucketName(), key,
-                                target, request.overwrite(), context);
+                                realRoot, target, request.overwrite(), context);
                         files.add(target);
                         count++;
                         context.progress(new Progress("s3-download", count,
@@ -178,27 +175,13 @@ public final class S3DownloadOperation {
             }
         }
 
-        private static Path resolveTarget(Path downloadDir, String key, boolean explicit,
+        private static Path resolveTarget(Path realRoot, String key, boolean explicit,
                                           OperationContext context) {
             try {
-                return S3Support.downloadTarget(downloadDir, key, explicit);
+                return S3Support.downloadTarget(realRoot, key, explicit);
             } catch (IllegalArgumentException exception) {
                 throw new S3TaskException("S3_LOCAL_PATH",
                         msg(context, "task.s3.localPath"), "prepare", exception);
-            }
-        }
-
-        private static void prepareTarget(Path target, boolean overwrite,
-                                          OperationContext context) {
-            if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
-                if (!overwrite) {
-                    throw new S3TaskException("S3_TARGET_EXISTS",
-                            msg(context, "task.s3.targetExists"), "prepare", null);
-                }
-                if (!Files.isRegularFile(target, LinkOption.NOFOLLOW_LINKS)) {
-                    throw new S3TaskException("S3_TARGET_UNSAFE",
-                            msg(context, "task.s3.targetUnsafe"), "prepare", null);
-                }
             }
         }
 

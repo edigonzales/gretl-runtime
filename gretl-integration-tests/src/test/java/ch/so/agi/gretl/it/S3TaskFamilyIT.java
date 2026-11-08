@@ -155,6 +155,43 @@ class S3TaskFamilyIT {
     }
 
     @Test
+    void downloadsThroughConfiguredRootSymlinkButRefusesChildSymlink() throws Exception {
+        lease = fixture.lease();
+        lease.put(lease.sourceBucket(), "normal/nested.txt", "nested");
+        lease.put(lease.sourceBucket(), "marker/", "");
+        Path actual = Files.createDirectory(root.resolve("actual-downloads"));
+        Files.createSymbolicLink(root.resolve("configured-downloads"), actual);
+        String download = "    bucketName = '" + lease.sourceBucket() + "'\n"
+                + "    downloadDir = path('configured-downloads')\n";
+        Map<String, Object> config = config();
+
+        JobRunner.Result allowed = JobRunner.run(root,
+                s3Job("linkedRoot", "S3Download", download), config);
+        assertEquals(0, allowed.code(), allowed.err());
+        assertEquals("nested", Files.readString(actual.resolve("normal/nested.txt")));
+        assertFalse(Files.exists(actual.resolve("marker")));
+
+        Path outside = Files.createDirectory(root.resolve("outside"));
+        Path sentinel = Files.writeString(outside.resolve("sentinel.txt"), "keep");
+        Path empty = Files.createDirectory(outside.resolve("empty"));
+        Path parent = Files.createDirectory(actual.resolve("deep"));
+        Files.createSymbolicLink(parent.resolve("escape"), outside);
+        lease.put(lease.sourceBucket(), "deep/escape/empty/new/payload.txt", "must not escape");
+
+        JobRunner.Result denied = JobRunner.run(root,
+                s3Job("linkedChild", "S3Download", download), config);
+        assertEquals(10, denied.code(), denied.err());
+        String report = Files.readString(denied.report());
+        assertTrue(report.contains("S3TaskException"), report);
+        assertTrue(report.contains("Download parent must be a directory and cannot be a symbolic link"),
+                report);
+        assertEquals("keep", Files.readString(sentinel));
+        try (var entries = Files.list(empty)) {
+            assertEquals(List.of(), entries.toList());
+        }
+    }
+
+    @Test
     void bucketCopyPreservesSpecialKeysAndMetadata() throws Exception {
         lease = fixture.lease();
         Files.writeString(root.resolve("räumlich.txt"), "special", StandardCharsets.UTF_8);
