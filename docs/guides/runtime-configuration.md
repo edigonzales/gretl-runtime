@@ -59,6 +59,15 @@ Leerzeichen und Zeilenumbrüche unverändert; keine Variablenersetzung.
 die Laufzeitmaskierung verschlüsselt diese Datei nicht. Alle Quellen verwenden
 dieselbe Registrierung und dieselben Maskierungsgrenzen beim Zugriff.
 
+## Ausgabedateien mit `overwrite = false`
+
+HTTP-, Curl-, S3- und FTP-Downloads sowie Gzip und XSLT veröffentlichen erst
+die fertige Datei. Bei `overwrite = false` bleiben vorhandene Ziele erhalten,
+auch wenn ein anderer Prozess sie während der Verarbeitung anlegt. Für diese
+Publikation muss der Dateisystemprovider einen Hardlink im Zielverzeichnis
+anlegen können. Falls das Dateisystem oder die Berechtigungen dies verhindern,
+meldet der Task einen Publikationsfehler.
+
 ## Logging und Runbericht
 
 - Konsole: Text (Default) oder JSON auf **stderr**; Hilfe/Plan auf stdout.

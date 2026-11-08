@@ -25,6 +25,29 @@ class GzipOperationTest {
     Path tempDir;
 
     @Test
+    void refusesTargetCreatedDuringCompression() throws Exception {
+        Path source = Files.writeString(tempDir.resolve("source.txt"), "payload");
+        Path target = tempDir.resolve("result.gz");
+        TestOperationContext context = context();
+        context.onProgress(update -> {
+            try {
+                Files.writeString(target, "foreign");
+            } catch (java.io.IOException exception) {
+                throw new java.io.UncheckedIOException(exception);
+            }
+        });
+
+        GzipTaskException failure = assertThrows(GzipTaskException.class,
+                () -> new GzipOperation.GzipHandler().execute(request(source, target, false), context));
+        assertEquals("GZIP_TARGET_EXISTS", failure.code());
+        assertEquals("publish", failure.phase());
+        assertEquals("foreign", Files.readString(target));
+        try (var entries = Files.list(tempDir)) {
+            assertEquals(java.util.Set.of(source, target), new java.util.HashSet<>(entries.toList()));
+        }
+    }
+
+    @Test
     void compressesAndReturnsFileAndBytes() throws Exception {
         Path source = tempDir.resolve("input.xml");
         Files.writeString(source, "hello gzip", StandardCharsets.UTF_8);

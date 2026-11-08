@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tasks.io.s3;
 
+import ch.so.agi.gretl.tasks.io.internal.CompletedFilePublisher;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.CancellationToken;
 import ch.so.agi.gretl.runtime.api.OperationContext;
@@ -10,7 +11,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -93,7 +93,15 @@ final class S3Support {
                 bytes = copy(input, output, total < 0 ? OptionalLong.empty()
                         : OptionalLong.of(total), context, "s3-download");
             }
-            moveIntoPlace(temporary, target, overwrite);
+            try {
+                CompletedFilePublisher.publish(temporary, target, overwrite);
+            } catch (java.nio.file.FileAlreadyExistsException exception) {
+                throw new S3TaskException("S3_TARGET_EXISTS",
+                        Messages.format(context.locale(), "task.s3.targetExists"), "publish", exception);
+            } catch (IOException exception) {
+                throw new S3TaskException("S3_DOWNLOAD",
+                        Messages.format(context.locale(), "task.s3.download.failed"), "publish", exception);
+            }
             return bytes;
         } catch (IOException | RuntimeException exception) {
             try {
@@ -194,23 +202,6 @@ final class S3Support {
             output.write(buffer, 0, read);
             copied += read;
             context.progress(new Progress(phase, copied, total, "bytes"));
-        }
-    }
-
-    private static void moveIntoPlace(Path temporary, Path target, boolean overwrite)
-            throws IOException {
-        StandardCopyOption[] atomic = overwrite
-                ? new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE,
-                    StandardCopyOption.REPLACE_EXISTING}
-                : new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE};
-        try {
-            Files.move(temporary, target, atomic);
-        } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
-            if (overwrite) {
-                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                Files.move(temporary, target);
-            }
         }
     }
 

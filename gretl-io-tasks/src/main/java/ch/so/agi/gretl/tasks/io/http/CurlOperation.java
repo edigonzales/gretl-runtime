@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tasks.io.http;
 
+import ch.so.agi.gretl.tasks.io.internal.CompletedFilePublisher;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.CancellationToken;
 import ch.so.agi.gretl.runtime.api.ConfigBuilder;
@@ -23,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.LinkedHashMap;
@@ -566,7 +566,15 @@ public final class CurlOperation {
                     temporary = Files.createTempFile(target.getParent(),
                             "." + target.getFileName() + ".", ".part");
                     Files.write(temporary, responseBytes);
-                    moveIntoPlace(temporary, target, request.overwrite());
+                    try {
+                        CompletedFilePublisher.publish(temporary, target, request.overwrite());
+                    } catch (java.nio.file.FileAlreadyExistsException exception) {
+                        throw new CurlTaskException("CURL_TARGET_EXISTS",
+                                msg(context, "task.curl.targetExists"), status, bytes, "publish", exception);
+                    } catch (IOException exception) {
+                        throw new CurlTaskException("CURL_IO",
+                                msg(context, "task.curl.io"), status, bytes, "publish", exception);
+                    }
                 }
                 context.log().log(LogLevel.INFO, "gretl.curl.finished",
                         msg(context, "task.curl.finished"),
@@ -714,23 +722,6 @@ public final class CurlOperation {
             if (!Files.isRegularFile(path) || !Files.isReadable(path)) {
                 throw new CurlTaskException("CURL_FILE",
                         msg(context, "task.curl.file"), 0, 0, "prepare", null);
-            }
-        }
-
-        private static void moveIntoPlace(Path temporary, Path target, boolean overwrite)
-                throws IOException {
-            StandardCopyOption[] atomic = overwrite
-                    ? new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE,
-                        StandardCopyOption.REPLACE_EXISTING}
-                    : new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE};
-            try {
-                Files.move(temporary, target, atomic);
-            } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
-                if (overwrite) {
-                    Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-                } else {
-                    Files.move(temporary, target);
-                }
             }
         }
 

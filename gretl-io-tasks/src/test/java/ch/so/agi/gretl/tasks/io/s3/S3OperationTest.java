@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.so.agi.gretl.runtime.api.SecretValue;
+import ch.so.agi.gretl.tasks.io.TestOperationContext;
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +23,40 @@ class S3OperationTest {
 
     private static SecretValue secret() {
         return SecretValue.deferred(() -> "secret-key");
+    }
+
+
+    @Test
+    void refusesTargetCreatedDuringDownload() throws Exception {
+        Path local = Files.createDirectory(root.resolve("download"));
+        Path target = local.resolve("a.txt");
+        var context = new TestOperationContext(root, Map.of(), Map.of(), Map.of());
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/bucket/a.txt", exchange -> {
+            try (exchange) {
+                Files.writeString(target, "foreign");
+                byte[] payload = "remote".getBytes(StandardCharsets.UTF_8);
+                exchange.sendResponseHeaders(200, payload.length);
+                exchange.getResponseBody().write(payload);
+            }
+        });
+        server.start();
+        try {
+            var builder = new S3DownloadOperation.S3DownloadBuilder();
+            configure(builder);
+            builder.setEndpoint("http://127.0.0.1:" + server.getAddress().getPort());
+            builder.setBucketName("bucket").setDownloadDir(local).setKey("a.txt").setOverwrite(false);
+            S3TaskException failure = assertThrows(S3TaskException.class,
+                    () -> new S3DownloadOperation.S3DownloadHandler().execute(builder.build(), context));
+            assertEquals("S3_TARGET_EXISTS", failure.code());
+            assertEquals("publish", failure.phase());
+            assertEquals("foreign", Files.readString(target));
+            try (var entries = Files.list(local)) {
+                assertEquals(List.of(target), entries.toList());
+            }
+        } finally {
+            server.stop(0);
+        }
     }
 
     @Test

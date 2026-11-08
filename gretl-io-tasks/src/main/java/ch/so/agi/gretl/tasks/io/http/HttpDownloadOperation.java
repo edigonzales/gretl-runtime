@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tasks.io.http;
 
+import ch.so.agi.gretl.tasks.io.internal.CompletedFilePublisher;
 import ch.so.agi.gretl.runtime.api.CancellationToken;
 import ch.so.agi.gretl.runtime.api.ConfigBuilder;
 import ch.so.agi.gretl.runtime.api.Fields;
@@ -21,7 +22,6 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -412,10 +412,13 @@ public final class HttpDownloadOperation {
                     }
                 }
                 try {
-                    moveIntoPlace(temporary, target, request.overwrite());
+                    CompletedFilePublisher.publish(temporary, target, request.overwrite());
                 } catch (java.nio.file.FileAlreadyExistsException exception) {
                     throw new HttpTaskException("HTTP_TARGET_EXISTS",
                             msg(context, "task.http.targetCreated"),
+                            request.method(), request.url(), status, bytes, "publish", exception);
+                } catch (IOException exception) {
+                    throw new HttpTaskException("HTTP_IO", msg(context, "task.http.io"),
                             request.method(), request.url(), status, bytes, "publish", exception);
                 }
                 String sha = HexFormat.of().formatHex(digest.digest());
@@ -446,23 +449,6 @@ public final class HttpDownloadOperation {
             } catch (RuntimeException exception) {
                 deleteQuietly(temporary, exception);
                 throw exception;
-            }
-        }
-
-        private static void moveIntoPlace(Path temporary, Path target, boolean overwrite)
-                throws IOException {
-            StandardCopyOption[] atomic = overwrite
-                    ? new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE,
-                        StandardCopyOption.REPLACE_EXISTING}
-                    : new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE};
-            try {
-                Files.move(temporary, target, atomic);
-            } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
-                if (overwrite) {
-                    Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-                } else {
-                    Files.move(temporary, target);
-                }
             }
         }
 

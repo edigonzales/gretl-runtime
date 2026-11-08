@@ -16,6 +16,37 @@ class XslTransformerOperationTest {
     Path tempDir;
 
     @Test
+    void refusesSecondTargetCreatedAfterFirstTransformation() throws Exception {
+        Path first = writeXml("first.xml", "one");
+        Path second = writeXml("second.xml", "two");
+        Path stylesheet = writeStylesheet("simple.xsl");
+        Path output = tempDir.resolve("out");
+        Path completed = output.resolve("first.xtf");
+        Path target = output.resolve("second.xtf");
+        var context = new ch.so.agi.gretl.tasks.io.TestOperationContext(
+                tempDir, java.util.Map.of(), java.util.Map.of(), java.util.Map.of());
+        context.onProgress(update -> {
+            try {
+                Files.writeString(target, "foreign");
+            } catch (java.io.IOException exception) {
+                throw new java.io.UncheckedIOException(exception);
+            }
+        });
+
+        XsltTaskException failure = assertThrows(XsltTaskException.class,
+                () -> new XslTransformerOperation.XslTransformerHandler().execute(
+                        request(List.of(first, second), output).setXslFile(stylesheet)
+                                .setOverwrite(false).build(), context));
+        assertEquals("XSLT_TARGET_EXISTS", failure.code());
+        assertEquals("publish", failure.phase());
+        assertEquals("foreign", Files.readString(target));
+        assertTrue(Files.readString(completed).contains("<result>one</result>"));
+        try (var entries = Files.list(output)) {
+            assertEquals(java.util.Set.of(completed, target), new java.util.HashSet<>(entries.toList()));
+        }
+    }
+
+    @Test
     void transformsOneFileWithALocalStylesheet() throws Exception {
         Path input = writeXml("input.xml", "hello");
         Path stylesheet = writeStylesheet("simple.xsl");

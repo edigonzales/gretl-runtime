@@ -50,6 +50,25 @@ class CurlOperationTest {
     }
 
     @Test
+    void refusesTargetCreatedDuringResponse() throws Exception {
+        Path target = tempDir.resolve("response.txt");
+        server.createContext("/late", exchange -> {
+            Files.writeString(target, "foreign");
+            respond(exchange, 200, "payload");
+        });
+
+        CurlTaskException failure = assertThrows(CurlTaskException.class,
+                () -> new CurlOperation.CurlHandler().execute(
+                        request("/late", 200).setOutputFile(target).build(), context()));
+        assertEquals("CURL_TARGET_EXISTS", failure.code());
+        assertEquals("publish", failure.phase());
+        assertEquals("foreign", Files.readString(target));
+        try (var entries = Files.list(tempDir)) {
+            assertEquals(List.of(target), entries.toList());
+        }
+    }
+
+    @Test
     void getWithoutBodyReturnsStatusAndBytes() throws Exception {
         server.createContext("/hello", exchange -> respond(exchange, 200, "hello"));
 
