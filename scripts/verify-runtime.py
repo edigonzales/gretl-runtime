@@ -132,8 +132,7 @@ def verify(repo: Path) -> int:
             runner_temp = os.environ.get("RUNNER_TEMP")
             output = (Path(runner_temp) / "gretl-failure-diagnostics" if runner_temp
                       else repo / "target" / "failure-diagnostics" / run_id)
-            collect(repo, output, run_id=run_id, workspace=workspace if interrupted else None,
-                    since=started_at)
+            collect(repo, output, run_id=run_id, workspace=workspace, since=started_at)
             print(f"Verification diagnostics: {output}", file=sys.stderr)
         except Exception as error:
             print(f"Verification diagnostics could not be exported: {error}", file=sys.stderr)

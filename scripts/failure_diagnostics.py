@@ -60,6 +60,13 @@ def directory(path: Path) -> bool:
         return False
 
 
+def regular(path: Path) -> bool:
+    try:
+        return stat.S_ISREG(path.lstat().st_mode)
+    except OSError:
+        return False
+
+
 def entries(path: Path, index: list[str]):
     if not directory(path):
         if path.is_symlink():
@@ -253,14 +260,25 @@ class Export:
     def interrupted_image(self, workspace: Path | None) -> None:
         if workspace is None:
             return
-        self.index.append("Interrupted IMAGE scenarios · test attribution incomplete.")
+        found = False
         for count, entry in enumerate(entries(workspace, self.index)):
             if count >= MAX_CASES:
                 self.index.append("Interrupted IMAGE scenario limit reached; remaining scenarios omitted.")
                 break
-            if SCENARIO.fullmatch(entry.name) and entry.is_dir(follow_symlinks=False):
-                for stream in ("stdout", "stderr"):
-                    self.log(Path(entry.path) / f"job.{stream}.log", f"Interrupted IMAGE scenario {count + 1} · {stream}")
+            if not SCENARIO.fullmatch(entry.name) or not entry.is_dir(follow_symlinks=False):
+                continue
+            scenario = Path(entry.path)
+            # The harness writes a completion record even for expected nonzero exits.
+            if regular(scenario / "execution.json"):
+                continue
+            logs = {stream: scenario / f"job.{stream}.log" for stream in ("stdout", "stderr")}
+            if not any(regular(path) for path in logs.values()):
+                continue
+            if not found:
+                self.index.append("Interrupted IMAGE scenarios · test attribution incomplete.")
+                found = True
+            for stream, path in logs.items():
+                self.log(path, f"Interrupted IMAGE scenario {count + 1} · {stream}")
 
     def write_index(self) -> None:
         content = ("\n".join(self.index) + "\n").encode("utf-8")

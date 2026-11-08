@@ -102,6 +102,22 @@ else:
         "pid": os.getpid(), "pgid": os.getpgrp(), "sid": os.getsid(0),
     }
     (root / "maven.json").write_text(json.dumps(info))
+    if mode == "test-jvm-crash":
+        workspace_arg = next(a for a in sys.argv if a.startswith("-Dgretl.test.imageWorkspace="))
+        workspace = Path(workspace_arg.split("=", 1)[1])
+        finished = workspace / "finished-00000000-0000-0000-0000-000000000001"
+        unfinished = workspace / "unfinished-00000000-0000-0000-0000-000000000002"
+        finished.mkdir()
+        unfinished.mkdir()
+        (finished / "execution.json").write_text('{"process":{"state":"EXITED","exitCode":19}}')
+        (finished / "job.stdout.log").write_text("expected negative output")
+        child = subprocess.run([sys.executable, "-c",
+            "from pathlib import Path; import os, signal, sys; "
+            "Path(sys.argv[1]).write_text('crashed fork output'); "
+            "os.kill(os.getpid(), signal.SIGKILL)",
+            str(unfinished / "job.stdout.log")], timeout=5)
+        assert child.returncode == -signal.SIGKILL
+        sys.exit(19)
     if mode == "term-resistant":
         workspace_arg = next(a for a in sys.argv if a.startswith("-Dgretl.test.imageWorkspace="))
         workspace = Path(workspace_arg.split("=", 1)[1])
@@ -296,6 +312,17 @@ class VerifyRuntimeTest(unittest.TestCase):
         self.assertNotIn("forbidden image configuration", exported)
         for name in ("child", "grandchild"):
             self.assertFalse(self.alive(int((self.root / name).read_text())), name)
+
+    def test_crashed_test_jvm_logs_survive_normal_maven_error_exit(self):
+        self.finish(self.start("test-jvm-crash"), 19)
+        self.assert_clean_workspace()
+        artifact = self.root / "runner-temp" / "gretl-failure-diagnostics"
+        index = (artifact / "index.txt").read_text()
+        self.assertIn("test attribution incomplete", index)
+        exported = "\n".join(path.read_text() for path in artifact.iterdir())
+        self.assertIn("crashed fork output", exported)
+        self.assertNotIn("expected negative output", exported)
+        self.assertNotIn("execution.json", exported)
 
     def test_cleans_live_child_after_group_leader_exits(self):
         self.finish(self.start("orphan"), 0)
