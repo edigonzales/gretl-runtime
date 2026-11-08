@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tasks.io.http;
 
+import ch.so.agi.gretl.tasks.io.internal.CompletedFilePublisher;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.CancellationToken;
 import ch.so.agi.gretl.runtime.api.ConfigBuilder;
@@ -23,8 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -310,9 +311,7 @@ public final class CurlOperation {
                 throw new IllegalArgumentException("formData field name must be text");
             }
             String name = nameText.toString();
-            if (!name.matches("[A-Za-z0-9_.-]+")) {
-                throw new IllegalArgumentException("Invalid formData field name: " + name);
-            }
+            requireFormFieldName(name);
             Object raw = entry.getValue();
             if (raw instanceof Path path) {
                 result.put(name, FormValue.ofFile(path.normalize()));
@@ -332,6 +331,12 @@ public final class CurlOperation {
         return headers.keySet().stream().anyMatch(key -> key.equalsIgnoreCase(name));
     }
 
+    private static void requireFormFieldName(String name) {
+        if (!name.matches("[A-Za-z0-9_.-]+")) {
+            throw new IllegalArgumentException("Invalid formData field name");
+        }
+    }
+
     public record CurlRequest(
             URI serverUrl, String method, int expectedStatusCode, String expectedBody,
             Map<String, HeaderValue> headers, Map<String, FormValue> formData,
@@ -342,6 +347,7 @@ public final class CurlOperation {
             Objects.requireNonNull(method, "method");
             headers = Map.copyOf(headers);
             formData = Map.copyOf(formData);
+            formData.keySet().forEach(CurlOperation::requireFormFieldName);
             if (expectedStatusCode < 100 || expectedStatusCode > 599) {
                 throw new IllegalArgumentException(
                         "expectedStatusCode must be between 100 and 599");
@@ -499,7 +505,6 @@ public final class CurlOperation {
             if (remaining != null) {
                 clientBuilder.connectTimeout(remaining);
             }
-            HttpClient client = clientBuilder.build();
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(request.serverUrl());
             if (remaining != null) {
                 requestBuilder.timeout(remaining);
@@ -532,7 +537,7 @@ public final class CurlOperation {
             }
 
             Path temporary = null;
-            try {
+            try (HttpClient client = clientBuilder.build()) {
                 HttpResponse<InputStream> response;
                 try {
                     response = client.send(httpRequest,
@@ -566,7 +571,15 @@ public final class CurlOperation {
                     temporary = Files.createTempFile(target.getParent(),
                             "." + target.getFileName() + ".", ".part");
                     Files.write(temporary, responseBytes);
-                    moveIntoPlace(temporary, target, request.overwrite());
+                    try {
+                        CompletedFilePublisher.publish(temporary, target, request.overwrite());
+                    } catch (java.nio.file.FileAlreadyExistsException exception) {
+                        throw new CurlTaskException("CURL_TARGET_EXISTS",
+                                msg(context, "task.curl.targetExists"), status, bytes, "publish", exception);
+                    } catch (IOException exception) {
+                        throw new CurlTaskException("CURL_IO",
+                                msg(context, "task.curl.io"), status, bytes, "publish", exception);
+                    }
                 }
                 context.log().log(LogLevel.INFO, "gretl.curl.finished",
                         msg(context, "task.curl.finished"),
@@ -649,31 +662,35 @@ public final class CurlOperation {
         private static Body multipartBody(Map<String, FormValue> formData)
                 throws IOException {
             String boundary = "gretl-" + UUID.randomUUID();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            List<HttpRequest.BodyPublisher> parts = new ArrayList<>();
             for (Map.Entry<String, FormValue> entry : formData.entrySet()) {
-                out.write(("--" + boundary + "\r\n").getBytes(StandardCharsets.UTF_8));
+                String header = "--" + boundary + "\r\nContent-Disposition: form-data; name=\""
+                        + entry.getKey() + "\"";
                 FormValue value = entry.getValue();
                 if (value.isFile()) {
-                    String fileName = value.file().getFileName().toString()
-                            .replace("\"", "_");
-                    out.write(("Content-Disposition: form-data; name=\""
-                            + entry.getKey() + "\"; filename=\"" + fileName + "\"\r\n")
-                            .getBytes(StandardCharsets.UTF_8));
-                    out.write("Content-Type: application/octet-stream\r\n\r\n"
-                            .getBytes(StandardCharsets.UTF_8));
-                    Files.copy(value.file(), out);
-                    out.write("\r\n".getBytes(StandardCharsets.UTF_8));
+                    String fileName = multipartFilename(value.file());
+                    parts.add(HttpRequest.BodyPublishers.ofString(header
+                            + "; filename=\"" + fileName + "\"\r\n"
+                            + "Content-Type: application/octet-stream\r\n\r\n"));
+                    parts.add(HttpRequest.BodyPublishers.ofFile(value.file()));
                 } else {
-                    out.write(("Content-Disposition: form-data; name=\""
-                            + entry.getKey() + "\"\r\n\r\n")
-                            .getBytes(StandardCharsets.UTF_8));
-                    out.write(value.text().getBytes(StandardCharsets.UTF_8));
-                    out.write("\r\n".getBytes(StandardCharsets.UTF_8));
+                    parts.add(HttpRequest.BodyPublishers.ofString(header + "\r\n\r\n"));
+                    parts.add(HttpRequest.BodyPublishers.ofString(value.text()));
                 }
+                parts.add(HttpRequest.BodyPublishers.ofString("\r\n"));
             }
-            out.write(("--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8));
-            return new Body(HttpRequest.BodyPublishers.ofByteArray(out.toByteArray()),
+            parts.add(HttpRequest.BodyPublishers.ofString("--" + boundary + "--\r\n"));
+            return new Body(HttpRequest.BodyPublishers.concat(
+                    parts.toArray(HttpRequest.BodyPublisher[]::new)),
                     Map.of("Content-Type", "multipart/form-data; boundary=" + boundary));
+        }
+
+        private static String multipartFilename(Path path) throws IOException {
+            String name = path.getFileName().toString();
+            if (name.indexOf('\r') >= 0 || name.indexOf('\n') >= 0 || name.indexOf('\0') >= 0) {
+                throw new IOException("Multipart filename contains a forbidden control character");
+            }
+            return name.replace("\"", "_").replace("\\", "\\\\");
         }
 
         private static void prepareTarget(Path target, boolean overwrite,
@@ -714,23 +731,6 @@ public final class CurlOperation {
             if (!Files.isRegularFile(path) || !Files.isReadable(path)) {
                 throw new CurlTaskException("CURL_FILE",
                         msg(context, "task.curl.file"), 0, 0, "prepare", null);
-            }
-        }
-
-        private static void moveIntoPlace(Path temporary, Path target, boolean overwrite)
-                throws IOException {
-            StandardCopyOption[] atomic = overwrite
-                    ? new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE,
-                        StandardCopyOption.REPLACE_EXISTING}
-                    : new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE};
-            try {
-                Files.move(temporary, target, atomic);
-            } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
-                if (overwrite) {
-                    Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-                } else {
-                    Files.move(temporary, target);
-                }
             }
         }
 

@@ -7,15 +7,15 @@ DSL-, Paket- und Fehlerverträge bleiben erhalten.
 
 Die [Dokumentation](docs/README.md) beschreibt den aktuellen Stand. Wähle
 lokale Tests nach dem betroffenen Verhalten und seinen Verbrauchern. Prüfe
-Dokumentationslinks mit `python3 scripts/check-docs.py`; bei geänderten
+Dokumentationslinks mit `python3.12 scripts/check-docs.py`; bei geänderten
 Beispielen oder Renderpfaden führe die betroffenen Wege gemäss
 [Buildanleitung](docs/development/build.md) aus.
 
 Die [vollständige Qualifikation](docs/development/testing.md) verwendet JDK 25,
-Node 22 und Docker. Starte den folgenden Befehl im Repository-Root.
+Node 22, Docker und Python 3.12. Starte den folgenden Befehl im Repository-Root.
 
 ```sh
-scripts/verify-runtime.sh
+python3.12 scripts/verify-runtime.py
 ```
 
 Ein Reaktorlauf prüft die SCRIPT-Fachsuite mit 44 Standardoperationen und

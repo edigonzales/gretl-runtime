@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tasks.io.s3;
 
+import ch.so.agi.gretl.tasks.io.internal.CompletedFilePublisher;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.CancellationToken;
 import ch.so.agi.gretl.runtime.api.OperationContext;
@@ -8,9 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -76,9 +80,10 @@ final class S3Support {
         return List.copyOf(keys);
     }
 
-    static long download(S3Client client, String bucket, String key, Path target,
+    static long download(S3Client client, String bucket, String key, Path realRoot, Path target,
                          boolean overwrite, OperationContext context) throws IOException {
-        Files.createDirectories(target.getParent());
+        checkDownloadParent(realRoot, target, true, "prepare", context);
+        prepareTarget(target, overwrite, context);
         Path temporary = Files.createTempFile(target.getParent(),
                 "." + target.getFileName() + ".", ".part");
         try {
@@ -93,7 +98,16 @@ final class S3Support {
                 bytes = copy(input, output, total < 0 ? OptionalLong.empty()
                         : OptionalLong.of(total), context, "s3-download");
             }
-            moveIntoPlace(temporary, target, overwrite);
+            checkDownloadParent(realRoot, target, false, "publish", context);
+            try {
+                CompletedFilePublisher.publish(temporary, target, overwrite);
+            } catch (FileAlreadyExistsException exception) {
+                throw new S3TaskException("S3_TARGET_EXISTS",
+                        Messages.format(context.locale(), "task.s3.targetExists"), "publish", exception);
+            } catch (IOException exception) {
+                throw new S3TaskException("S3_DOWNLOAD",
+                        Messages.format(context.locale(), "task.s3.download.failed"), "publish", exception);
+            }
             return bytes;
         } catch (IOException | RuntimeException exception) {
             try {
@@ -145,20 +159,94 @@ final class S3Support {
         return 0;
     }
 
-    static Path downloadTarget(Path downloadDir, String key, boolean explicit) {
-        Path root = downloadDir.toAbsolutePath().normalize();
-        String relative = explicit
-                ? key.substring(key.lastIndexOf('/') + 1)
-                : key;
-        if (relative.isBlank() || relative.indexOf('\0') >= 0) {
+    static Path prepareDownloadRoot(Path configuredRoot) throws IOException {
+        Path realRoot;
+        try {
+            realRoot = configuredRoot.toRealPath();
+        } catch (NoSuchFileException missing) {
+            Files.createDirectories(configuredRoot);
+            realRoot = configuredRoot.toRealPath();
+        }
+        requireDirectory(realRoot);
+        return realRoot;
+    }
+
+    static Path downloadTarget(Path realRoot, String key, boolean explicit) {
+        String relative = explicit ? key.substring(key.lastIndexOf('/') + 1) : key;
+        if (relative.isBlank() || relative.indexOf('\0') >= 0 || relative.endsWith("/")) {
             throw new IllegalArgumentException("S3 key cannot be mapped to a local file");
         }
-        Path target = root.resolve(relative).normalize();
-        if (!target.startsWith(root) || target.equals(root)) {
-            throw new IllegalArgumentException(
-                    "S3 key would escape the download directory: " + key);
+        Path keyPath = realRoot.getFileSystem().getPath(relative);
+        if (keyPath.getRoot() != null || keyPath.getFileName().toString().equals(".")) {
+            throw new IllegalArgumentException("S3 key cannot be mapped to a relative local file");
         }
-        return target;
+        for (Path component : keyPath) {
+            if (component.toString().equals("..")) {
+                throw new IllegalArgumentException("S3 key contains a parent traversal segment");
+            }
+        }
+        return realRoot.resolve(keyPath).normalize();
+    }
+
+    private static void checkDownloadParent(Path realRoot, Path target, boolean create,
+                                            String phase, OperationContext context) {
+        try {
+            if (!target.startsWith(realRoot) || target.equals(realRoot)
+                    || !target.equals(target.normalize())) {
+                throw new IOException("Download target must be below the real download root");
+            }
+            requireDirectory(realRoot);
+            Path parent = target.getParent();
+            if (parent.equals(realRoot)) {
+                return;
+            }
+            Path directory = realRoot;
+            for (Path component : realRoot.relativize(parent)) {
+                directory = directory.resolve(component);
+                try {
+                    requireDirectory(directory);
+                } catch (NoSuchFileException missing) {
+                    if (!create) {
+                        throw missing;
+                    }
+                    try {
+                        Files.createDirectory(directory);
+                    } catch (FileAlreadyExistsException concurrentCreation) {
+                        requireDirectory(directory);
+                    }
+                }
+            }
+        } catch (IOException exception) {
+            throw new S3TaskException("S3_LOCAL_PATH",
+                    Messages.format(context.locale(), "task.s3.localPath"), phase, exception);
+        }
+    }
+
+    private static void requireDirectory(Path path) throws IOException {
+        if (!Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS)
+                .isDirectory()) {
+            throw new IOException("Download parent must be a directory and cannot be a symbolic link: " + path);
+        }
+    }
+
+    private static void prepareTarget(Path target, boolean overwrite, OperationContext context) {
+        BasicFileAttributes attributes;
+        try {
+            attributes = Files.readAttributes(target, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+        } catch (NoSuchFileException absent) {
+            return;
+        } catch (IOException exception) {
+            throw new S3TaskException("S3_LOCAL_PATH",
+                    Messages.format(context.locale(), "task.s3.localPath"), "prepare", exception);
+        }
+        if (!overwrite) {
+            throw new S3TaskException("S3_TARGET_EXISTS",
+                    Messages.format(context.locale(), "task.s3.targetExists"), "prepare", null);
+        }
+        if (!attributes.isRegularFile()) {
+            throw new S3TaskException("S3_TARGET_UNSAFE",
+                    Messages.format(context.locale(), "task.s3.targetUnsafe"), "prepare", null);
+        }
     }
 
     static void checkBudget(OperationContext context) {
@@ -194,23 +282,6 @@ final class S3Support {
             output.write(buffer, 0, read);
             copied += read;
             context.progress(new Progress(phase, copied, total, "bytes"));
-        }
-    }
-
-    private static void moveIntoPlace(Path temporary, Path target, boolean overwrite)
-            throws IOException {
-        StandardCopyOption[] atomic = overwrite
-                ? new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE,
-                    StandardCopyOption.REPLACE_EXISTING}
-                : new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE};
-        try {
-            Files.move(temporary, target, atomic);
-        } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
-            if (overwrite) {
-                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                Files.move(temporary, target);
-            }
         }
     }
 

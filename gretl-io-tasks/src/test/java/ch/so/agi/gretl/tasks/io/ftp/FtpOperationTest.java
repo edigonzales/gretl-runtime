@@ -56,6 +56,51 @@ class FtpOperationTest {
     }
 
     @Test
+    void refusesTargetCreatedDuringTransfer() throws Exception {
+        Path localDir = Files.createDirectory(tempDir.resolve("late"));
+        Path target = localDir.resolve("a.txt");
+        var downloadContext = new ch.so.agi.gretl.tasks.io.TestOperationContext(
+                tempDir, Map.of(), Map.of(), Map.of());
+        downloadContext.onProgress(update -> {
+            try {
+                Files.writeString(target, "foreign");
+            } catch (java.io.IOException exception) {
+                throw new java.io.UncheckedIOException(exception);
+            }
+        });
+
+        FtpTaskException failure = assertThrows(FtpTaskException.class,
+                () -> new FtpDownloadOperation.FtpDownloadHandler().execute(
+                        downloadRequest(localDir).setRemoteFiles(List.of("a.txt"))
+                                .setOverwrite(false).build(), downloadContext));
+        assertEquals("FTP_TARGET_EXISTS", failure.code());
+        assertEquals("publish", failure.phase());
+        assertEquals("foreign", Files.readString(target));
+        try (var entries = Files.list(localDir)) {
+            assertEquals(List.of(target), entries.toList());
+        }
+    }
+
+    @Test
+    void cancellationDuringTransferRemovesTemporaryFile() throws Exception {
+        Path localDir = Files.createDirectory(tempDir.resolve("cancel"));
+        Path target = Files.writeString(localDir.resolve("a.txt"), "keep");
+        var downloadContext = new ch.so.agi.gretl.tasks.io.TestOperationContext(
+                tempDir, Map.of(), Map.of(), Map.of());
+        downloadContext.onProgress(update -> downloadContext.cancel());
+
+        var failure = assertThrows(ch.so.agi.gretl.runtime.api.TaskCancelledException.class,
+                () -> new FtpDownloadOperation.FtpDownloadHandler().execute(
+                        downloadRequest(localDir).setRemoteFiles(List.of("a.txt"))
+                                .setOverwrite(true).build(), downloadContext));
+        assertEquals(ch.so.agi.gretl.runtime.api.CancelReason.REQUESTED, failure.reason());
+        assertEquals("keep", Files.readString(target));
+        try (var entries = Files.list(localDir)) {
+            assertEquals(List.of(target), entries.toList());
+        }
+    }
+
+    @Test
     void listsRemoteFiles() throws Exception {
         FtpListOperation.FtpListResult result =
                 new FtpListOperation.FtpListHandler().execute(

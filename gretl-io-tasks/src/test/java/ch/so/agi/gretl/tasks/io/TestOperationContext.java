@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public final class TestOperationContext implements OperationContext {
     private final Path root;
@@ -40,6 +41,7 @@ public final class TestOperationContext implements OperationContext {
         }
     };
     private boolean cancelled;
+    private Consumer<Progress> onProgress = update -> { };
 
     public TestOperationContext(Path root, Map<String, Object> parameters,
                          Map<String, Map<String, Object>> config,
@@ -188,6 +190,15 @@ public final class TestOperationContext implements OperationContext {
     @Override
     public void progress(Progress update) {
         progress.add(update);
+        onProgress.accept(update);
+    }
+
+    public void onProgress(Consumer<Progress> callback) {
+        onProgress = callback;
+    }
+
+    public void cancel() {
+        cancelled = true;
     }
 
     public List<String> sensitive() { return sensitive; }

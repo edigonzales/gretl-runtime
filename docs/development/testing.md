@@ -10,10 +10,10 @@ vollständige Qualifikation. Dafür gelten vom Repository-Root mit JDK 25:
 ./mvnw -B -Pgeotools-probe,backing-services clean verify
 ```
 
-Der folgende Befehl startet die konsolidierte Prüfung mit JDK 25, Node und Docker.
+Der folgende Befehl startet die konsolidierte Prüfung mit JDK 25, Node 22, Docker und Python 3.12.
 
 ```sh
-scripts/verify-runtime.sh
+python3.12 scripts/verify-runtime.py
 ```
 
 Das Skript legt ein eigenes Docker-Netz an und startet genau einen
@@ -22,7 +22,10 @@ Der Reactor prüft die vollständige SCRIPT-Fachsuite mit 44
 Standardoperationen, explizite selbständige JAR-Prozesse und ausgewählte
 IMAGE-Prozesse mit externen Jobs. Das Image verwendet dasselbe Testnetz
 wie PostgreSQL/PostGIS und S3. Der Aufruf benötigt einen non-root
-Hostbenutzer für die privaten Bindmounts.
+Hostbenutzer für die privaten Bindmounts. Bei SIGINT oder SIGTERM beendet das
+Skript seine Maven-Prozessgruppe mit Fristen für TERM und KILL. Es entfernt
+die anhand der Laufkennung zugeordneten Docker-Ressourcen und das private
+IMAGE-Arbeitsverzeichnis.
 
 Der normale Reactor enthält Unit-, Komponenten-, Distributions- und lokale
 fachliche SCRIPT-Prozesse (`*JobIT`) plus ausdrücklich erhaltene JAR-Paketverträge. Das Dienstprofil ergänzt die vollständigen
@@ -82,7 +85,14 @@ verlangt zusätzlich einen frischen Report von `ImageRuntimeIT`.
 Der reguläre Workflow `publish-snapshots.yml` verwendet die konsolidierte
 Prüfung bei Push auf `main`, bei Pull Requests gegen `main` und bei manuellem
 Start. Bei Erfolg enthält das CI-Artefakt die ZIP- und TAR-Distribution mit
-SHA-256. Bei Fehlern bleibt ein kompakter Testüberblick verfügbar.
+SHA-256. Bei Fehlern enthält das Diagnoseartefakt einen Index mit JUnit-Fällen
+und begrenzten Logauszügen der zugeordneten SCRIPT-, JAR- und IMAGE-Prozesse.
+Bei einem Abbruch werden IMAGE-Auszüge vor dem Löschen des Workspaces
+gesichert und als unvollständig zugeordnet markiert. Bekannte Test-Secrets
+werden beim Staging maskiert. Der Export lässt verdächtige Zeilen,
+Symlinks und ganze Workspaces aus und kennzeichnet Kürzungen.
+Lokal schreibt der Verify-Einstieg Diagnosen nach
+`target/failure-diagnostics/<Laufkennung>/`. CI bewahrt das Artefakt sieben Tage auf.
 
 JaCoCo misst Test-JVMs und aktive Produktmodule. Separate Launcher-,
 Job-JAR- und Containerprozesse liefern fachliche Nachweise, keine erfundene

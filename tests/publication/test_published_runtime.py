@@ -226,7 +226,7 @@ class WorkflowCredentials(unittest.TestCase):
         self.assertIn('\n  push:\n    branches: [main]\n', verify)
         self.assertIn('\n  pull_request:\n    branches: [main]\n', verify)
         self.assertIn('\n  workflow_dispatch:\n', verify)
-        self.assertIn('run: scripts/verify-runtime.sh', verify)
+        self.assertIn('run: python3.12 scripts/verify-runtime.py', verify)
         self.assertNotIn('secrets.', verify)
         self.assertNotIn(' deploy', verify)
         self.assertIn('needs: verify', publish)

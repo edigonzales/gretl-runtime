@@ -121,7 +121,7 @@ HOME ist leer, PATH enthält keine Buildwerkzeuge, CWD liegt ausserhalb des
 Checkouts. Fachliche HTTP-/DB-Dienste bleiben ausdrücklich erreichbar.
 
 Der [Qualifikationsweg](../development/job-artifact-tests.md) verwendet
-`scripts/verify-runtime.sh` für einen Maven-Reaktor. SCRIPT prüft alle
+`python3.12 scripts/verify-runtime.py` für einen Maven-Reaktor. SCRIPT prüft alle
 44 Standardoperationen. Gezielte JAR-Tests starten eigenständige Pakete
 aus einem fremden Arbeitsverzeichnis. IMAGE prüft externe Scripts und
 Projekte im generischen Runtime-Container.

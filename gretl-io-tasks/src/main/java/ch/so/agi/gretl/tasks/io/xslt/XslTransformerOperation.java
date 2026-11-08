@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tasks.io.xslt;
 
+import ch.so.agi.gretl.tasks.io.internal.CompletedFilePublisher;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.CancellationToken;
 import ch.so.agi.gretl.runtime.api.ConfigBuilder;
@@ -16,7 +17,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -259,7 +259,15 @@ public final class XslTransformerOperation {
                         "." + target.getFileName() + ".", ".part");
                 try {
                     transform(processor, executable, input, temporary, context);
-                    moveIntoPlace(temporary, target, request.overwrite());
+                    try {
+                        CompletedFilePublisher.publish(temporary, target, request.overwrite());
+                    } catch (java.nio.file.FileAlreadyExistsException exception) {
+                        throw new XsltTaskException("XSLT_TARGET_EXISTS",
+                                msg(context, "task.xslt.targetExists"), "publish", exception);
+                    } catch (IOException exception) {
+                        throw new XsltTaskException("XSLT_IO",
+                                msg(context, "task.xslt.io"), "publish", exception);
+                    }
                     written.add(target);
                     context.progress(new Progress("xslt", index,
                             OptionalLong.of(request.xmlFiles().size()), "files"));
@@ -267,12 +275,6 @@ public final class XslTransformerOperation {
                     deleteQuietly(temporary, exception);
                     logFailure(context, request, exception);
                     throw exception;
-                } catch (IOException exception) {
-                    deleteQuietly(temporary, exception);
-                    XsltTaskException wrapped = new XsltTaskException("XSLT_IO",
-                            msg(context, "task.xslt.io"), "output", exception);
-                    logFailure(context, request, wrapped);
-                    throw wrapped;
                 } catch (RuntimeException exception) {
                     deleteQuietly(temporary, exception);
                     throw exception;
@@ -402,23 +404,6 @@ public final class XslTransformerOperation {
                 throw new IllegalArgumentException("XML file has no usable name: " + input);
             }
             return base;
-        }
-
-        private static void moveIntoPlace(Path temporary, Path target, boolean overwrite)
-                throws IOException {
-            StandardCopyOption[] atomic = overwrite
-                    ? new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE,
-                        StandardCopyOption.REPLACE_EXISTING}
-                    : new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE};
-            try {
-                Files.move(temporary, target, atomic);
-            } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
-                if (overwrite) {
-                    Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-                } else {
-                    Files.move(temporary, target);
-                }
-            }
         }
 
         private static void logFailure(OperationContext context,

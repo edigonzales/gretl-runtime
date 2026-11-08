@@ -59,6 +59,28 @@ Leerzeichen und Zeilenumbrüche unverändert; keine Variablenersetzung.
 die Laufzeitmaskierung verschlüsselt diese Datei nicht. Alle Quellen verwenden
 dieselbe Registrierung und dieselben Maskierungsgrenzen beim Zugriff.
 
+## Ausgabedateien mit `overwrite = false`
+
+HTTP-, Curl-, S3- und FTP-Downloads sowie Gzip und XSLT veröffentlichen erst
+die fertige Datei. Bei `overwrite = false` bleiben vorhandene Ziele erhalten,
+auch wenn ein anderer Prozess sie während der Verarbeitung anlegt. Für diese
+Publikation muss der Dateisystemprovider einen Hardlink im Zielverzeichnis
+anlegen können. Falls das Dateisystem oder die Berechtigungen dies verhindern,
+meldet der Task einen Publikationsfehler.
+
+S3 löst den konfigurierten Downloadordner einmal auf. Der Einstieg darf ein
+Symlink sein. Bereits vorhandene Symlinks in den aus Objektschlüsseln
+abgeleiteten Unterverzeichnissen führen zu einem Pfadfehler. Dies schützt
+gegen vorhandene Links zum Prüfzeitpunkt. Gleichzeitige lokale Änderungen
+am Verzeichnisbaum liegen ausserhalb dieses Schutzes.
+
+## Curl-Formularuploads
+
+Curl streamt Multipart-Dateiteile direkt aus den angegebenen Dateien. Die
+Dateien müssen während der Anfrage stabil bleiben. Dateinamen mit CR, LF
+oder NUL werden vor der Anfrage abgewiesen. `maxBytes` begrenzt weiterhin die
+Antwort.
+
 ## Logging und Runbericht
 
 - Konsole: Text (Default) oder JSON auf **stderr**; Hilfe/Plan auf stdout.

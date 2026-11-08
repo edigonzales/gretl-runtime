@@ -34,13 +34,17 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: vscode/gretl-vscode/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Check documentation and snapshot smoke tooling
         run: |
-          python3 scripts/check-docs.py
-          python3 -m unittest discover -s tests/docs -v
-          python3 -m unittest discover -s tests/publication -v
+          python3.12 scripts/check-docs.py
+          python3.12 -m unittest discover -s tests/docs -v
+          python3.12 -m unittest discover -s tests/publication -v
+          python3.12 -m unittest discover -s tests/ci -v
       - name: Verify SCRIPT, detached JAR and targeted IMAGE processes
-        run: scripts/verify-runtime.sh
+        run: python3.12 scripts/verify-runtime.py
       - name: Record qualified distribution hashes
         working-directory: gretl-dist/target
         run: |
@@ -57,29 +61,22 @@ jobs:
             gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip
             gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz
             gretl-dist/target/distribution.sha256
-      - name: Summarize test failures
+      - name: Prepare failure diagnostics if verification could not export them
         if: failure()
         run: |
-          python3 - <<'PY' > "$RUNNER_TEMP/gretl-test-summary.txt"
-          from pathlib import Path
-          from xml.etree import ElementTree
-
-          reports = sorted(Path(".").glob("*/target/*-reports/TEST-*.xml"))
-          print(f"Found {len(reports)} Maven test reports. See the job log for failure details.")
-          for path in reports[:250]:
-              suite = ElementTree.parse(path).getroot()
-              counts = [int(suite.get(key, "0")) for key in ("tests", "failures", "errors", "skipped")]
-              print(str(path)[:200], *counts)
-          PY
-      - name: Preserve test summary
+          output="$RUNNER_TEMP/gretl-failure-diagnostics"
+          if [[ ! -f "$output/index.txt" ]]; then
+            python3.12 scripts/failure_diagnostics.py --output "$output"
+          fi
+      - name: Preserve failure diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-summary-${{ github.sha }}
+          name: failure-diagnostics-${{ github.sha }}
           retention-days: 7
           overwrite: true
-          path: ${{ runner.temp }}/gretl-test-summary.txt
-          if-no-files-found: error
+          path: ${{ runner.temp }}/gretl-failure-diagnostics/
+          if-no-files-found: warn
 
   publish:
     name: publish snapshot artefacts
@@ -99,6 +96,9 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: vscode/gretl-vscode/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: actions/download-artifact@v4
         with:
           name: verified-runtime-${{ github.sha }}
@@ -133,7 +133,7 @@ jobs:
         run: sha256sum --strict --check "$RUNNER_TEMP/gretl-verified-runtime/distribution.sha256"
       - name: Download published runtime and execute an external Groovy job
         run: |
-          python3 scripts/verify-published-runtime.py \
+          python3.12 scripts/verify-published-runtime.py \
             --repository https://jars.interlis.guru/snapshots \
             --version 6.0.0-SNAPSHOT --source "$GITHUB_SHA" \
             --checksums "$RUNNER_TEMP/gretl-verified-runtime/distribution.sha256" \

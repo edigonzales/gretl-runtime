@@ -23,7 +23,7 @@ und vor den Integrationstests aus. Der Standardbuild benötigt kein Docker.
 Der folgende Befehl startet die konsolidierte Qualifikation am sauberen Kandidaten.
 
 ```sh
-scripts/verify-runtime.sh
+python3.12 scripts/verify-runtime.py
 ```
 
 Sie benötigt Docker und einen non-root Hostbenutzer für private

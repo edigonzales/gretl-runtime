@@ -18,6 +18,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -80,6 +81,30 @@ class HttpDownloadOperationTest {
     @AfterEach
     void stop() {
         server.stop(0);
+    }
+
+    @Test
+    void refusesTargetCreatedDuringResponse() throws Exception {
+        Path target = tempDir.resolve("response.txt");
+        server.createContext("/late", exchange -> {
+            try (exchange) {
+                exchange.sendResponseHeaders(200, 7);
+                exchange.getResponseBody().write('p');
+                exchange.getResponseBody().flush();
+                Files.writeString(target, "foreign");
+                exchange.getResponseBody().write("ayload".getBytes(StandardCharsets.UTF_8));
+            }
+        });
+
+        HttpTaskException failure = assertThrows(HttpTaskException.class,
+                () -> new HttpDownloadOperation.HttpDownloadHandler().execute(
+                        builder(base + "/late", target).build(), context(Map.of())));
+        assertEquals("HTTP_TARGET_EXISTS", failure.code());
+        assertEquals("publish", failure.phase());
+        assertEquals("foreign", Files.readString(target));
+        try (var entries = Files.list(tempDir)) {
+            assertEquals(List.of(target), entries.toList());
+        }
     }
 
     @Test

@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tasks.io.ftp;
 
+import ch.so.agi.gretl.tasks.io.internal.CompletedFilePublisher;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.api.Fields;
 import ch.so.agi.gretl.runtime.api.InputField;
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +156,15 @@ public final class FtpDownloadOperation {
                         bytes += FtpSupport.retrieve(session.client(),
                                 FtpSupport.join(request.remoteDir(), name,
                                         session.separator()), temporary, context);
-                        moveIntoPlace(temporary, target, request.overwrite());
+                        try {
+                            CompletedFilePublisher.publish(temporary, target, request.overwrite());
+                        } catch (java.nio.file.FileAlreadyExistsException exception) {
+                            throw new FtpTaskException("FTP_TARGET_EXISTS",
+                                    msg(context, "task.ftp.targetExists"), "publish", exception);
+                        } catch (IOException exception) {
+                            throw new FtpTaskException("FTP_IO",
+                                    msg(context, "task.ftp.io"), "publish", exception);
+                        }
                         files.add(target);
                         index++;
                         context.progress(new ch.so.agi.gretl.runtime.api.Progress(
@@ -169,6 +177,9 @@ public final class FtpDownloadOperation {
                         deleteQuietly(temporary, exception);
                         throw new FtpTaskException("FTP_IO",
                                 msg(context, "task.ftp.io"), "download", exception);
+                    } catch (RuntimeException exception) {
+                        deleteQuietly(temporary, exception);
+                        throw exception;
                     }
                 }
                 context.log().log(LogLevel.INFO, "gretl.ftp.download.finished",
@@ -197,23 +208,6 @@ public final class FtpDownloadOperation {
                 if (!Files.isRegularFile(target, LinkOption.NOFOLLOW_LINKS)) {
                     throw new FtpTaskException("FTP_TARGET_UNSAFE",
                             msg(context, "task.ftp.targetUnsafe"), "prepare", null);
-                }
-            }
-        }
-
-        private static void moveIntoPlace(Path temporary, Path target, boolean overwrite)
-                throws IOException {
-            StandardCopyOption[] atomic = overwrite
-                    ? new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE,
-                        StandardCopyOption.REPLACE_EXISTING}
-                    : new StandardCopyOption[] {StandardCopyOption.ATOMIC_MOVE};
-            try {
-                Files.move(temporary, target, atomic);
-            } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
-                if (overwrite) {
-                    Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-                } else {
-                    Files.move(temporary, target);
                 }
             }
         }
