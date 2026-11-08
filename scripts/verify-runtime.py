@@ -26,15 +26,28 @@ def docker(*args: str, deadline: float | None = None, missing: str | None = None
     description = "docker " + " ".join(args)
     if timeout <= 0:
         raise RuntimeError(f"Cleanup deadline elapsed before {description}")
+    process = subprocess.Popen(["docker", *args], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               text=True, errors="replace")
     try:
-        result = subprocess.run(["docker", *args], capture_output=True, text=True, timeout=timeout)
+        stdout, stderr = process.communicate(timeout=timeout)
     except subprocess.TimeoutExpired as error:
+        process.kill()
+        reap_timeout = POLL_INTERVAL
+        if deadline is not None:
+            reap_timeout = max(0, min(reap_timeout, deadline - time.monotonic()))
+        try:
+            process.wait(timeout=reap_timeout)
+        except subprocess.TimeoutExpired:
+            raise RuntimeError(f"{description} timed out and its client did not exit after KILL") from error
+        finally:
+            process.stdout.close()
+            process.stderr.close()
         raise RuntimeError(f"{description} timed out after {timeout:.1f}s") from error
-    if result.returncode:
-        detail = result.stderr.strip()
+    if process.returncode:
+        detail = stderr.strip()
         if missing is None or missing not in detail.lower():
-            raise RuntimeError(f"{description} exited {result.returncode}: {detail}")
-    return result.stdout.strip()
+            raise RuntimeError(f"{description} exited {process.returncode}: {detail}")
+    return stdout.strip()
 
 
 def stop_maven_group(process: subprocess.Popen, deadline: float) -> None:
