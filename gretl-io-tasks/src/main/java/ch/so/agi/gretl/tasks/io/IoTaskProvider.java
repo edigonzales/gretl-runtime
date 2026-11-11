@@ -4,6 +4,7 @@ import ch.so.agi.gretl.runtime.api.*;
 import java.util.*;
 import ch.so.agi.gretl.tasks.io.http.HttpDownloadOperation;
 import ch.so.agi.gretl.tasks.io.http.CurlOperation;
+import ch.so.agi.gretl.tasks.io.json.JsonReadOperation;
 import ch.so.agi.gretl.tasks.io.archive.GzipOperation;
 import ch.so.agi.gretl.tasks.io.archive.ExtractOperation;
 import ch.so.agi.gretl.tasks.io.ftp.FtpListOperation;
@@ -21,6 +22,7 @@ public final class IoTaskProvider implements OperationProvider {
     @Override public Collection<OperationType<?, ?>> operations() {
         return List.of(HttpDownloadOperation.type(),
                 CurlOperation.type(),
+                JsonReadOperation.type(),
                 GzipOperation.type(),
                 ExtractOperation.type(),
                 FtpListOperation.type(),
