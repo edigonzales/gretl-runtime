@@ -1,0 +1,13 @@
+INTERLIS 2.4;
+
+MODEL SnapshotMinimum (de) AT "mailto:test@example.org" VERSION "2026-11-11" =
+  TOPIC Data =
+    CLASS Observation =
+      BFS_Nr : MANDATORY 1 .. 9999;
+      Jahr : MANDATORY 2000 .. 2100;
+      Anzahl : MANDATORY 0 .. 999999;
+      UNIQUE BFS_Nr, Jahr;
+      SET CONSTRAINT (BASKET) Minimum: INTERLIS.objectCount(ALL) > 0;
+    END Observation;
+  END Data;
+END SnapshotMinimum.
