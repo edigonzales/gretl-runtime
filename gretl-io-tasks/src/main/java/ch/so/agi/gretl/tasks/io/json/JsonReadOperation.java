@@ -66,14 +66,22 @@ public final class JsonReadOperation {
     }
 
     private static int byteLimit(Object value) {
-        return switch (value) {
-            case Byte n -> n.intValue();
-            case Short n -> n.intValue();
-            case Integer n -> n;
-            case Long n -> Math.toIntExact(n);
-            case BigInteger n -> n.intValueExact();
-            default -> throw new IllegalArgumentException("maxBytes must be an integer");
-        };
+        try {
+            return switch (value) {
+                case Byte n -> n.intValue();
+                case Short n -> n.intValue();
+                case Integer n -> n;
+                case Long n -> Math.toIntExact(n);
+                case BigInteger n -> n.intValueExact();
+                default -> throw new IllegalArgumentException("maxBytes must be an integer");
+            };
+        } catch (ArithmeticException e) {
+            throw invalidByteLimit();
+        }
+    }
+
+    private static IllegalArgumentException invalidByteLimit() {
+        return new IllegalArgumentException("maxBytes must be between 1 and " + MAX_BYTES);
     }
 
     public record Request(Path sourceFile, String pointer, boolean required, int maxBytes) {
@@ -87,7 +95,7 @@ public final class JsonReadOperation {
                 throw new IllegalArgumentException("pointer must be an RFC 6901 JSON Pointer");
             }
             if (maxBytes < 1 || maxBytes > MAX_BYTES) {
-                throw new IllegalArgumentException("maxBytes must be between 1 and " + MAX_BYTES);
+                throw invalidByteLimit();
             }
         }
     }

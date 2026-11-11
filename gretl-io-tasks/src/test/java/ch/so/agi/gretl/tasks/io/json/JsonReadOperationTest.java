@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import ch.so.agi.gretl.tasks.io.TestOperationContext;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -67,6 +68,16 @@ class JsonReadOperationTest {
                 () -> read(directory, "", true, 1024)).diagnostic().code());
         assertThrows(IllegalArgumentException.class, () -> read(file, "", true, 0));
         assertThrows(IllegalArgumentException.class, () -> read(file, "", true, 16 * 1024 * 1024 + 1));
+    }
+
+    @Test
+    void oversizedIntegerConfigurationUsesTheRangeError() {
+        var convert = JsonReadOperation.type().inputs().stream()
+                .filter(field -> field.name().equals("maxBytes")).findFirst().orElseThrow().convert();
+        for (var number : java.util.List.of(Long.MAX_VALUE, BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE))) {
+            var failure = assertThrows(IllegalArgumentException.class, () -> convert.apply(number));
+            assertEquals("maxBytes must be between 1 and 16777216", failure.getMessage());
+        }
     }
 
     private JsonReadOperation.Result read(Path file, String pointer, boolean required, int maxBytes) throws Exception {
