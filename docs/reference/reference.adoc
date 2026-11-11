@@ -1026,6 +1026,31 @@ Die CSV-Header werden den Zielspalten zugeordnet; ohne Header werden die
 Spalten positional übernommen. [.config-key]#`schemaName`#, [.config-key]#`encoding`#, [.config-key]#`valueDelimiter`#,
 [.config-key]#`valueSeparator`# und [.config-key]#`batchSize`# sind optional. Ergebnis ist [.dsl-method]#`file`#.
 
+==== ClickHouse über JDBC
+
+Geprüft mit ClickHouse 26.8.36.3 und dem JDBC-Treiber 0.9.8 (V2).
+Lege `clickhouse-jdbc-0.9.8-all.jar` unter `lib/extensions/` ab und verwende
+im Datenbankalias eine JDBC-URL mit `jdbc_ignore_unsupported_values=true`.
+Der Treiber akzeptiert damit die Transaktionsaufrufe des Importers als
+No-ops und bleibt im Autocommit-Modus. Ein Fehler in einem späteren Batch
+lässt zuvor geschriebene Zeilen in der Zieltabelle. Verwende für die
+Veröffentlichung eines vollständigen Snapshots eine leere, vorab angelegte
+Zieltabelle und prüfe den Importerfolg vor ihrer Weiterverwendung.
+https://clickhouse.com/docs/integrations/language-clients/java/jdbc[ClickHouse-JDBC-Dokumentation]
+
+Im Test wurden UTF-8, Semikolon, doppelte Anführungszeichen und ein Header
+verwendet. Leere Felder wurden in `Nullable(String)` als SQL-NULL importiert.
+Datumswerte verwenden `yyyy-MM-dd`. Zeitstempel verwenden
+`yyyy-MM-dd'T'HH:mm:ss.SSS`. Für eine UTC-Zieltabelle lief der Import mit
+`-Duser.timezone=UTC`. Der Test umfasste zudem Text, Integer, Dezimalzahlen und
+Boolean.
+
+Der Importer ordnet bekannte Header unabhängig von Gross-/Kleinschreibung
+und Reihenfolge zu. Unbekannte Header werden ignoriert. Für ausgelassene
+Zielspalten gelten die ClickHouse-Standardwerte. Validiere den vollständigen
+Snapshot vor dem Import und gleiche Header und Zieltabelle aufeinander ab.
+Die geschriebene Zeilenzahl lässt sich auf der Zieltabelle mit `count()` prüfen.
+
 .Ergebnisfelder
 [cols="2,5,1",options="header",role="gretl-task-results"]
 |===
