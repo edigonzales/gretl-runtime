@@ -1,0 +1,27 @@
+[cols="4,6,1", options="header", role="gretl-task-properties"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*sourceFile* = path#
+| Lokale [.acronym]#JSON#-Datei +
+Beispiel: [.code-fragment]#`sourceFile = file('response.json')`#
+| [.required]#ja#
+
+| [.dsl-signature]#*pointer* = text#
+| [.acronym]#JSON# Pointer nach RFC 6901 (leer für das Wurzelelement) +
+Beispiel: [.code-fragment]#`pointer = '/name'`#
+| [.required]#ja#
+
+| [.dsl-signature]#*required* = boolean#
+| Fehlschlagen, wenn der Pointer keinen Wert findet +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`required = false`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*maxBytes* = integer#
+| Dateigrössenlimit in Bytes (1 bis 16777216) +
+Vorgabe: [.code-fragment]#`1048576`# +
+Beispiel: [.code-fragment]#`maxBytes = 65536`#
+| [.optional]#nein#
+
+|===

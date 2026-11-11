@@ -11,9 +11,13 @@
   <artifactId>gretl-io-tasks</artifactId>
   <packaging>jar</packaging>
   <name>GRETL IO Tasks</name>
-  <description>HTTP, archives, XSLT, FTP and S3 task library.</description>
+  <description>HTTP, JSON, archives, XSLT, FTP and S3 task library.</description>
 
   <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>

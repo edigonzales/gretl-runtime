@@ -12,7 +12,7 @@ Ein Job verbindet benannte Tasks zu einem gerichteten azyklischen Graphen
 einer JVM aus. Ein Job wird als Groovy-Script geschrieben; die mitgelieferte
 Groovy-Laufzeit kompiliert es beim Start automatisch.
 
-Die Standarddistribution stellt 44 Taskarten bereit. Dazu gehören HTTP-,
+Die Standarddistribution stellt 45 Taskarten bereit. Dazu gehören HTTP-,
 FTP- und S3-Transfers, SQL und Datenbanktransfers, CSV/JSON/Excel,
 GeoPackage/Shapefile sowie INTERLIS- und AV-Werkzeuge. Deklarierte Parameter,
 explizite Abhängigkeiten und dokumentierte Ergebnisfelder verbinden diese
@@ -849,7 +849,7 @@ installierten Pakets wird mit [.command]#`gretl operations`# angezeigt.
 | Datenbanken
 | <<task-sqlexecutor,SqlExecutor>>, <<task-db2db,Db2Db>>, <<task-duckdbsqlexecutor,DuckDbSqlExecutor>>
 | Tabellen und JSON
-| <<task-csv2excel,Csv2Excel>>, <<task-csvimport,CsvImport>>, <<task-csvexport,CsvExport>>, <<task-jsonimport,JsonImport>>, <<task-csvvalidator,CsvValidator>>, <<task-jsonvalidator,JsonValidator>>
+| <<task-csv2excel,Csv2Excel>>, <<task-csvimport,CsvImport>>, <<task-csvexport,CsvExport>>, <<task-jsonimport,JsonImport>>, <<task-jsonread,JsonRead>>, <<task-csvvalidator,CsvValidator>>, <<task-jsonvalidator,JsonValidator>>
 | Geodaten
 | <<task-gpkg2shp,Gpkg2Shp>>, <<task-gpkg2dxf,Gpkg2Dxf>>, <<task-gpkgimport,GpkgImport>>, <<task-gpkgexport,GpkgExport>>, <<task-shpimport,ShpImport>>, <<task-shpexport,ShpExport>>, <<task-gpkgvalidator,GpkgValidator>>, <<task-shpvalidator,ShpValidator>>
 | INTERLIS und AV
@@ -2189,6 +2189,46 @@ defaults 'import'
 
 .Property-Tabelle
 include::generated/task-jsonimport.adoc[]
+
+[[task-jsonread]]
+=== JsonRead
+
+[.task-type]#`JsonRead`# liest einen Wert aus einer lokalen JSON-Datei.
+Ein JSON Pointer nach RFC 6901 adressiert Objektschlüssel und nullbasierte
+Arraypositionen. Der leere Pointer wählt das ganze Dokument.
+`~1` steht für `/`, `~0` für `~`.
+
+Das Beispiel liest den Schlüssel `name` aus einer HTTP-Antwort und sendet den
+Wert in einer weiteren HTTP-Anfrage. Der Parameter `url` bezeichnet den Dienst.
+
+[source,groovy]
+----
+include::../../gretl-integration-tests/src/test/resources/jobs/json-read/job.groovy[]
+----
+
+Die Eingabe ist eine reguläre Datei. Die Dateigrenze beträgt standardmässig
+1 MiB und kann bis 16 MiB erhöht werden. Ungültiges JSON, doppelte
+Objektschlüssel und zusätzliche Werte nach dem Dokument führen zu einem Fehler.
+Ein fehlender Wert führt bei `required = true` zu einem Fehler. Ein vorhandenes
+JSON-`null` ergibt `found = true` und den Typ `null`.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header",role="gretl-task-results"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| [.config-key]#`found`# / [.config-key]#`boolean`#
+| Der Pointer hat einen Wert gefunden
+| nein
+| [.config-key]#`kind`# / [.config-key]#`text`#
+| `string`, `number`, `boolean`, `null`, `object`, `array` oder `missing`
+| nein
+| [.config-key]#`value`# / [.config-key]#`text`#
+| Stringinhalt, Zahl oder Boolean als Text oder kompaktes JSON mit sortierten Objektschlüsseln. Bei `null` und `missing` ist der Ergebniswert null.
+| ja
+|===
+
+.Property-Tabelle
+include::generated/task-jsonread.adoc[]
 
 [[task-jsonvalidator]]
 === JsonValidator
