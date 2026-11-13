@@ -2556,26 +2556,38 @@ include::generated/task-shpvalidator.adoc[]
 [[task-sqlexecutor]]
 === SqlExecutor
 
-[.task-type]#`SqlExecutor`# führt SQL-Scripts oder vorbereitete Statements gegen eine
-vorbereitete PostgreSQL-Verbindung aus. Die Verbindung wird im Job nicht mit
-URL und Passwort konfiguriert, sondern über einen Alias aus der
-Runtimekonfiguration ([.config-key]#`taskConfig`#).
+[.task-type]#`SqlExecutor`# führt SQL-Dateien oder vorbereitete Statements gegen
+eine JDBC-Verbindung aus. `database` verweist auf einen Alias aus der
+Runtimekonfiguration (`taskConfig`).
 
 [source,groovy]
 ----
 task('update', SqlExecutor) {
     database = 'edit'
-    scripts = [file('sql/update.sql')]
+    sqlFiles = [file('sql/update.sql')]
+    sqlParameters = [[schema: 'edit_nord'], [schema: 'edit_sued']]
 }
 
 defaults 'update'
 ----
 
-Genau eine der Listen [.config-key]#`scripts`# oder [.config-key]#`statements`# muss nicht leer sein. Die
-Reihenfolge der Einträge ist die Ausführungsreihenfolge. Ein Script wird als
-vollständige UTF-8-Datei an den Treiber übergeben; die Runtime zerlegt es nicht
-mit einem Regex in Einzelstatements. [.config-key]#`statements`# verwendet Maps mit genau den
-Feldern [.config-key]#`sql`# und [.config-key]#`parameters`#.
+Für Dateien genau eines von `scripts` und `sqlFiles` setzen. Die UTF-8-Dateien
+müssen auf `.sql` enden, unabhängig von der Schreibweise der Endung.
+Die Runtime verarbeitet einzelne SQL-Anweisungen und berücksichtigt dabei
+Zeichenketten, Kommentare und PostgreSQL-Dollarquotes. Dateireihenfolge und
+wiederholte Dateipfade bleiben erhalten.
+
+`sqlParameters` nimmt eine Map oder eine Liste von Maps an. Alternativ akzeptiert
+`sqlParameterSets` eine Liste von Maps. Ohne Parameterfeld läuft die Dateiliste
+einmal ohne Ersetzung. `[:]` und `[[:]]` führen sie einmal mit leerer Map aus.
+`[]` führt keine Dateien aus und öffnet keine Verbindung.
+
+Ersetzungen für `${name}` sind SQL-Text, auch innerhalb von SQL-Zeichenketten.
+Die Vorlage bestimmt das Quoting. Fehlende Parameter stoppen den Satz vor der
+betroffenen Anweisung. Zusätzliche Schlüssel sind erlaubt.
+
+Für JDBC-Parameter stattdessen `statements` mit Maps aus `sql` und `parameters`
+verwenden.
 
 [source,groovy]
 ----
@@ -2590,11 +2602,17 @@ task('kennzeichnen', SqlExecutor) {
 defaults 'kennzeichnen'
 ----
 
-Alle Einträge eines Aufrufs laufen in einer Transaktion mit deaktiviertem
-Auto-commit. Ein normaler Abschluss führt zu einem Commit; bei einem Fehler
-wird ein Rollback versucht. Ein zusätzlicher Rollbackfehler bleibt sichtbar.
-Der Task führt keinen automatischen Vollretry aus und garantiert nicht, dass
-bereits erfolgte externe Wirkungen verschwinden.
+Jeder Parametersatz verwendet eine eigene Verbindung und eine Transaktion über
+alle seine Dateien. Ein Fehler bricht den Satz ab und stoppt die weiteren Sätze.
+Bereits committete Sätze bleiben bestehen. Vorbereitete Statements verwenden
+gemeinsam eine Transaktion. Explizite Transaktionsbefehle in den SQL-Dateien
+können die Rollback-Grenzen des Treibers verändern.
+
+SELECT-Ergebnisse werden zeilenweise protokolliert. `maxLoggedRows` begrenzt
+die Ausgabe je Resultset (Vorgabe 1000), mit sichtbarer Meldung bei Kürzung.
+`0` hebt das Zeilenlimit auf. Die üblichen Logging-Grenzen und die Maskierung
+bekannter Secrets gelten weiterhin. Vertrauliche Abfragen mit `logResults = false`
+ausführen. Beliebige Datenbankwerte werden nicht automatisch als Secret erkannt.
 
 Ergebnisse sind [.config-key]#`executionCount`# und [.config-key]#`executions`#. [.config-key]#`executionCount`# zählt die
 übergebenen Script-/Statementeinträge, nicht einzelne SQL-Befehle.

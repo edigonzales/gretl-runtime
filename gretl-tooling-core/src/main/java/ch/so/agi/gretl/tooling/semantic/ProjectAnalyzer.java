@@ -1140,6 +1140,9 @@ public final class ProjectAnalyzer {
     }
 
     private static boolean compatible(ValueShape shape, Object value) {
+        if (shape.runtimeType().equals("map-or-list")) {
+            return false;
+        }
         return switch (shape.kind()) {
             case "Text", "Path" -> value instanceof String;
             case "Boolean" ->

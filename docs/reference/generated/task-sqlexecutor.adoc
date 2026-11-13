@@ -3,20 +3,46 @@
 | Feld | Beschreibung | Erforderlich
 
 | [.dsl-signature]#*database* = text#
-| Alias einer vorbereiteten PostgreSQL-Verbindung +
+| Alias einer konfigurierten [.acronym]#JDBC#-Verbindung +
 Beispiel: [.code-fragment]#`database = 'edit'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*scripts* = list#
-| Geordnete UTF-8-SQL-Dateien; jede Datei wird vollständig an den Treiber übergeben. Genau eine der Listen scripts oder statements befüllen. +
-Vorgabe: [.code-fragment]#`[]`# +
+| Geordnete UTF-8-SQL-Dateien +
 Beispiel: [.code-fragment]#`scripts = [file('sql/update.sql')]`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*sqlFiles* = list#
+| Alternative Schreibweise für scripts +
+Beispiel: [.code-fragment]#`sqlFiles = [file('sql/update.sql')]`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*statements* = list#
 | Geordnete Maps mit sql und parameters; Werte werden positionsbezogen an [.acronym]#JDBC#-Fragezeichen gebunden. Genau eine der Listen statements oder scripts befüllen. +
 Vorgabe: [.code-fragment]#`[]`# +
 Beispiel: [.code-fragment]#`statements = [[sql: 'UPDATE t SET x=?', parameters: [1]]]`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*sqlParameters* = map-or-list#
+| Vorlagenparameter als Map oder geordnete Liste von Maps +
+Beispiel: [.code-fragment]#`sqlParameters = [schema: 'edit']`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*sqlParameterSets* = list#
+| Alternative zu sqlParameters als geordnete Liste von Maps +
+Beispiel: [.code-fragment]#`sqlParameterSets = [[schema: 'edit']]`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*logResults* = boolean#
+| Ergebniszeilen protokollieren +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`logResults = false`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*maxLoggedRows* = integer#
+| Pro Resultset protokollierte Zeilen (0 für unbegrenzt) +
+Vorgabe: [.code-fragment]#`1000`# +
+Beispiel: [.code-fragment]#`maxLoggedRows = 100`#
 | [.optional]#nein#
 
 |===
