@@ -57,6 +57,15 @@ match args:
         if label == "label=" + (root / "network").read_text():
             print("owned-container")
     case ["container", "rm", "--force", "owned-container"]:
+        if mode == "concurrent-removal":
+            removing = root / "removal-started"
+            if not removing.exists():
+                removing.touch()
+                print("Error response from daemon: removal of container owned-container is already in progress",
+                      file=sys.stderr)
+            else:
+                print("Error response from daemon: No such container: owned-container", file=sys.stderr)
+            sys.exit(1)
         if mode in {"cleanup-error", "maven-and-cleanup-error"}:
             print("permission denied", file=sys.stderr)
             sys.exit(10)
@@ -245,6 +254,16 @@ class VerifyRuntimeTest(unittest.TestCase):
             ["network", "ls", "--quiet", "--filter", f"label={label}"],
             ["network", "rm", "owned-network"],
         ], self.calls())
+
+    def test_waits_for_concurrent_container_removal_before_removing_network(self):
+        err = self.finish(self.start("concurrent-removal"), 0)
+        self.assertNotIn("Verification cleanup:", err)
+        self.assert_clean_workspace()
+        self.assertEqual([
+            ["container", "rm", "--force", "owned-container"],
+            ["container", "rm", "--force", "owned-container"],
+            ["network", "rm", "owned-network"],
+        ], [args for args in self.calls() if args[1] == "rm"])
 
     def test_maven_failure_is_preserved(self):
         self.finish(self.start("maven-error"), 19)
