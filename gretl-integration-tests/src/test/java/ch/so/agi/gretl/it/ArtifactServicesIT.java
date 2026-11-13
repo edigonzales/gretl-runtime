@@ -81,6 +81,25 @@ class ArtifactServicesIT {
         assertEquals("one", lease.read(lease.sourceBucket(), "one.txt"));
         assertEquals("test", lease.head(lease.sourceBucket(), "one.txt").metadata().get("source"));
         assertEquals("text/plain", lease.head(lease.sourceBucket(), "one.txt").contentType());
+
+        String key = "downloads/delivery/snapshot.csv";
+        var explicit = new LinkedHashMap<>(params);
+        explicit.put("selection", "key");
+        explicit.put("key", key);
+        var nested = run("s3-upload-key-result", explicit, "s3SecretKey", lease.secretKey(), endpoints, mode);
+        assertEquals(0, nested.code(), nested.err());
+        assertEquals("one", lease.read(lease.sourceBucket(), key));
+        assertFalse(Files.readString(nested.report()).contains(lease.secretKey()));
+        assertFalse(nested.out().contains(lease.secretKey()));
+        assertFalse(nested.err().contains(lease.secretKey()));
+
+        explicit.put("targetBucket", lease.sourceBucket());
+        var download = run("s3-download", explicit, "s3SecretKey", lease.secretKey(), endpoints, mode);
+        assertEquals(0, download.code(), download.err());
+        assertEquals("one", Files.readString(download.directory().resolve("output/snapshot.csv")));
+        try (var client = lease.client()) {
+            client.deleteObject(request -> request.bucket(lease.sourceBucket()).key(key));
+        }
     }
 
     private static ArtifactJobRunner.Result run(String target, Map<String, String> values, String secret, String password,

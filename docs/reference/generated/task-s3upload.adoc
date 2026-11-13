@@ -45,6 +45,11 @@ Vorgabe: [.code-fragment]#`[]`# +
 Beispiel: [.code-fragment]#`sourceFiles = [file('a.txt')]`#
 | [.optional]#nein#
 
+| [.dsl-signature]#*key* = text#
+| Objekt-Schluessel fuer eine einzelne sourceFile +
+Beispiel: [.code-fragment]#`key = 'downloads/export.zip'`#
+| [.optional]#nein#
+
 | [.dsl-signature]#*acl* = text#
 | [.acronym]#S3#-Canned-ACL +
 Vorgabe: [.code-fragment]#`'private'`# +

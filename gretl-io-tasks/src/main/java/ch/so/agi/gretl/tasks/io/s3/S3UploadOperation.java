@@ -54,6 +54,11 @@ public final class S3UploadOperation {
                 (builder, value) -> ((S3UploadBuilder) builder).setSourceFiles(value));
         inputs.add(sourceFiles);
         inputs.add(new InputField<>(
+                "key", "text", "Object key for a single sourceFile", false,
+                Optional.empty(), List.of(), "key = 'downloads/export.zip'",
+                S3Fields::text,
+                (builder, value) -> ((S3UploadBuilder) builder).setKey(value)));
+        inputs.add(new InputField<>(
                 "acl", "text", "S3 canned ACL", false,
                 Optional.of(S3Fields.DEFAULT_ACL), List.of(),
                 "acl = 'private'", S3Fields::acl,
@@ -94,7 +99,7 @@ public final class S3UploadOperation {
 
     public record S3UploadRequest(
             S3Connection connection, String bucketName, List<Path> sourceFiles,
-            String acl, String contentType, Map<String, String> metadata) {
+            String key, String acl, String contentType, Map<String, String> metadata) {
         public S3UploadRequest {
             sourceFiles = List.copyOf(sourceFiles);
             metadata = Map.copyOf(metadata);
@@ -113,6 +118,7 @@ public final class S3UploadOperation {
         private Path sourceFile;
         private Path sourceDir;
         private List<Path> sourceFiles = List.of();
+        private String key;
         private String acl = S3Fields.DEFAULT_ACL;
         private String contentType;
         private Map<String, String> metadata = Map.of();
@@ -137,6 +143,11 @@ public final class S3UploadOperation {
             return this;
         }
 
+        public S3UploadBuilder setKey(String value) {
+            key = value;
+            return this;
+        }
+
         public S3UploadBuilder setAcl(String value) {
             acl = value;
             return this;
@@ -154,6 +165,12 @@ public final class S3UploadOperation {
 
         @Override
         public S3UploadRequest build() {
+            if (key != null) {
+                if (sourceFile == null || sourceDir != null || !sourceFiles.isEmpty()) {
+                    throw new IllegalArgumentException("key requires sourceFile as the only source");
+                }
+                S3Support.checkKey(key);
+            }
             List<Path> sources = new ArrayList<>();
             if (sourceFile != null) {
                 sources.add(sourceFile.toAbsolutePath().normalize());
@@ -194,7 +211,7 @@ public final class S3UploadOperation {
                 }
             }
             return new S3UploadRequest(connection(), requiredBucket(bucketName),
-                    List.copyOf(unique), S3Fields.acl(acl),
+                    List.copyOf(unique), key, S3Fields.acl(acl),
                     contentType == null || contentType.isBlank() ? null : contentType,
                     metadata);
         }
@@ -210,7 +227,7 @@ public final class S3UploadOperation {
                 long bytes = 0;
                 int count = 0;
                 for (Path source : request.sourceFiles()) {
-                    String key = source.getFileName().toString();
+                    String key = request.key() == null ? source.getFileName().toString() : request.key();
                     S3Support.checkKey(key);
                     bytes += S3Support.upload(client, request.bucketName(), key, source,
                             request.acl(), request.contentType(), request.metadata(), context);
