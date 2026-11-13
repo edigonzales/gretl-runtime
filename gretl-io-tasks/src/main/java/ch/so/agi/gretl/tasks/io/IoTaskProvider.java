@@ -16,6 +16,10 @@ import ch.so.agi.gretl.tasks.io.s3.S3DownloadOperation;
 import ch.so.agi.gretl.tasks.io.s3.S3UploadOperation;
 import ch.so.agi.gretl.tasks.io.s3.S3DeleteOperation;
 import ch.so.agi.gretl.tasks.io.s3.S3Bucket2BucketOperation;
+import ch.so.agi.gretl.tasks.io.sftp.SftpListOperation;
+import ch.so.agi.gretl.tasks.io.sftp.SftpDownloadOperation;
+import ch.so.agi.gretl.tasks.io.sftp.SftpUploadOperation;
+import ch.so.agi.gretl.tasks.io.sftp.SftpDeleteOperation;
 import ch.so.agi.gretl.tasks.io.xslt.XslTransformerOperation;
 
 /** Complete io operation catalog. */
@@ -27,6 +31,10 @@ public final class IoTaskProvider implements OperationProvider {
                 GzipOperation.type(),
                 ExtractOperation.type(),
                 ZipOperation.type(),
+                SftpDeleteOperation.type(),
+                SftpUploadOperation.type(),
+                SftpDownloadOperation.type(),
+                SftpListOperation.type(),
                 FtpListOperation.type(),
                 FtpDownloadOperation.type(),
                 FtpUploadOperation.type(),

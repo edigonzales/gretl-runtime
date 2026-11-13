@@ -87,6 +87,7 @@
     <poi.version>5.2.5</poi.version>
     <jackson.version>2.17.2</jackson.version>
     <sqlite-jdbc.version>3.53.2.0</sqlite-jdbc.version>
+    <sshd.version>2.20.1</sshd.version>
     <commons-compress.version>1.27.1</commons-compress.version>
   </properties>
 

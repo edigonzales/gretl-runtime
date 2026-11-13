@@ -63,7 +63,7 @@ try{
  const small="// Controlled nonexecution probe. 😀\r\nnew File('"+marker.replaceAll('\\','\\\\').replaceAll("'","\\'")+"').text = 'MUST_NOT_EXECUTE'\r\n"+fs.readFileSync(repo+'/gretl-integration-tests/src/test/resources/jobs/modeler-created/job.groovy','utf8');
  const before=hash(Buffer.from(small));await open('job.groovy',small);
  await measure('small','job.groovy',g=>assert.equal(g.payload.nodes.filter(n=>n.kind==='TASK').length,2));
- const catalog=await request('gretl/catalog',{protocolVersion:1,catalogSchemaVersion:1});assert.equal(catalog.state,'AVAILABLE');assert.equal(catalog.catalog.catalogId,bundle.catalogId);assert.equal(catalog.catalog.operations.length,46);
+ const catalog=await request('gretl/catalog',{protocolVersion:1,catalogSchemaVersion:1});assert.equal(catalog.state,'AVAILABLE');assert.equal(catalog.catalog.catalogId,bundle.catalogId);assert.equal(catalog.catalog.operations.length,50);
  const offset=small.indexOf('HttpDownload')+3,lines=small.slice(0,offset).split('\n');const hover=await request('textDocument/hover',{textDocument:{uri:uri('job.groovy')},position:{line:lines.length-1,character:lines.at(-1).length}});assert(JSON.stringify(hover).includes('HttpDownload'));
  for(const [label,count]of[['medium',200],['large',1200]]){const text=Array.from({length:count},(_,i)=>"action('"+label+i+"') {}\n").join('');await open(label+'/job.groovy',text);await measure(label,label+'/job.groovy',g=>assert.equal(g.payload.nodes.filter(n=>n.kind==='ACTION').length,count));}
  await open('broken/job.groovy',"action('safe') {}\ntask('broken', HttpDownload) { url = \"unterminated ${\n");await measure('broken-recovery','broken/job.groovy',g=>{assert(g.payload.diagnostics.length>0);assert(g.payload.nodes.some(n=>n.title==='safe'));});

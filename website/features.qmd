@@ -8,7 +8,7 @@ run sequentially; explicit data dependencies determine which predecessors run.
 
 ## Data processing
 
-The distribution provides 46 operations for HTTP, FTP, S3, ZIP/GZIP, SQL,
+The distribution provides 50 operations for HTTP, FTP, S3, ZIP/GZIP, SQL,
 DuckDB, INTERLIS validation and import/export, CSV, JSON, Excel, GeoPackage,
 Shapefile, AV transformations and DXF. Inspect fields with `gretl operations`.
 DuckDB supports configured file and PostgreSQL sources and export targets.

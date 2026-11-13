@@ -3,7 +3,7 @@
 `reference.adoc` ist die redaktionelle Single-Page-Referenz für Jobautoren und
 Betrieb. Sie enthält Einstieg, Installation, Job-DSL, CLI, Betrieb,
 Taskbeschreibungen, Beispiele und Ergebnisfelder. Die thematische Übersicht
-verlinkt auf 46 alphabetisch geordnete Taskkapitel.
+verlinkt auf 50 alphabetisch geordnete Taskkapitel.
 
 ## Quellen und Zuständigkeiten
 
@@ -140,7 +140,7 @@ nicht eingecheckt.
    Dafür werden Docker sowie PostgreSQL/PostGIS-, FTP- und S3-Testcontainer benötigt.
 3. Den aktuellen Working Tree mit Thoth rendern. Keine ungelösten Includes,
    fehlenden Anker oder defekten lokalen Ressourcen akzeptieren.
-4. Bei 1440px, 1024px und 390px Breite alle 46 Taskkapitel kontrollieren:
+4. Bei 1440px, 1024px und 390px Breite alle 50 Taskkapitel kontrollieren:
    Property- und Ergebnisfeldtabellen sowie Codebeispiele haben dieselbe Breite;
    Statusüberschriften und -werte sind einzeilig. Lauftext und Code ausserhalb
    der Taskkapitel bleiben auf `72ch` begrenzt. Kein horizontaler Seitenüberlauf,

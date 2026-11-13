@@ -2,7 +2,7 @@
 
 GRETL Runtime führt Groovy-Jobs mit einem sequenziellen Taskgraphen auf Java 25 aus.
 Der aktuelle Entwicklungsstand ist `6.0.0-SNAPSHOT`. Die Standarddistribution
-enthält 46 Operationen für HTTP, FTP, S3, Archive, SQL, DuckDB, INTERLIS und
+enthält 50 Operationen für HTTP, FTP, S3, Archive, SQL, DuckDB, INTERLIS und
 Dateiformate. Eigene Actions und Java-Operationen verwenden denselben Runner.
 SCRIPT ist der Hauptweg; ein Job kann zusätzlich als vorkompiliertes Job-JAR
 oder als externes Script im generischen Runtime-Image laufen.
@@ -25,7 +25,7 @@ läuft am sauberen Commit mit dem folgenden Befehl.
 python3.12 scripts/verify-runtime.py
 ```
 
-SCRIPT prüft alle 46 Standardoperationen. JAR und IMAGE werden mit
+SCRIPT prüft alle 50 Standardoperationen. JAR und IMAGE werden mit
 ausgewählten eigenständigen Prozessen geprüft. Das
 [generische Image](gretl-dist/src/main/docker/README.md) führt externe
 Groovy-Dateien oder Projekte aus und unterstützt die OpenShift-UID-/

@@ -52,11 +52,11 @@ public final class ScriptOperationCoverage implements BeforeEachCallback, AfterE
         var baseline = (List<?>) Json.parseFile(Path.of(args[0]), 1L << 20);
         var expected = new TreeSet<String>();
         for (Object item : baseline) expected.add((String) ((Map<?, ?>) item).get("id"));
-        if (expected.size() != 46 || baseline.size() != 46)
-            throw new IllegalStateException("Expected 46 unique standard operations");
+        if (expected.size() != 50 || baseline.size() != 50)
+            throw new IllegalStateException("Expected 50 unique standard operations");
         Path observations = Path.of(args[1]);
         if (Files.isRegularFile(observations)) expected.removeAll(Files.readAllLines(observations));
         if (!expected.isEmpty()) throw new IllegalStateException("Missing successful SCRIPT operations: " + expected);
-        System.out.println("SCRIPT coverage: 46/46 standard operations succeeded");
+        System.out.println("SCRIPT coverage: 50/50 standard operations succeeded");
     }
 }

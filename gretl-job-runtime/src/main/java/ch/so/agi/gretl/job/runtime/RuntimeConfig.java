@@ -142,7 +142,7 @@ public final class RuntimeConfig {
         Map<String, String> params = params(optionalObject(root, "params"));
         Map<String, SecretSource> secrets = secrets(optionalObject(root, "secrets"), configDir);
         Map<String, Map<String, Object>> taskConfig = taskConfig(
-                optionalObject(root, "taskConfig"));
+                optionalObject(root, "taskConfig"), configDir);
         return new RuntimeConfig(Optional.of(absolute), configDir, workRoot, reportRoot,
                 keepWork, timeout, jobName, correlationId, language, logging, params,
                 secrets, taskConfig);
@@ -290,13 +290,19 @@ public final class RuntimeConfig {
         return result;
     }
 
-    private static Map<String, Map<String, Object>> taskConfig(Map<String, Object> taskConfig) {
+    private static Map<String, Map<String, Object>> taskConfig(Map<String, Object> taskConfig, Path directory) {
         Map<String, Map<String, Object>> result = new LinkedHashMap<>();
         for (Map.Entry<String, Object> entry : taskConfig.entrySet()) {
             if (entry.getKey().isBlank()) {
                 throw new StartException(2, msg("cli.error.config.taskConfigEmptyAlias"));
             }
-            result.put(entry.getKey(), object(entry.getValue(), "taskConfig." + entry.getKey()));
+            var fields = new java.util.LinkedHashMap<>(object(entry.getValue(), "taskConfig." + entry.getKey()));
+            for (String key : List.of("knownHostsFile", "privateKeyFile")) {
+                if (fields.containsKey("knownHostsFile") && fields.get(key) instanceof String path && !path.isBlank()) {
+                    fields.put(key, resolve(directory, path).toString());
+                }
+            }
+            result.put(entry.getKey(), java.util.Collections.unmodifiableMap(fields));
         }
         return result;
     }

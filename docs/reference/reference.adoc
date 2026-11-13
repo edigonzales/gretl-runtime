@@ -12,7 +12,7 @@ Ein Job verbindet benannte Tasks zu einem gerichteten azyklischen Graphen
 einer JVM aus. Ein Job wird als Groovy-Script geschrieben; die mitgelieferte
 Groovy-Laufzeit kompiliert es beim Start automatisch.
 
-Die Standarddistribution stellt 46 Taskarten bereit. Dazu gehören HTTP-,
+Die Standarddistribution stellt 50 Taskarten bereit. Dazu gehören HTTP-,
 FTP- und S3-Transfers, SQL und Datenbanktransfers, CSV/JSON/Excel,
 GeoPackage/Shapefile sowie INTERLIS- und AV-Werkzeuge. Deklarierte Parameter,
 explizite Abhängigkeiten und dokumentierte Ergebnisfelder verbinden diese
@@ -843,7 +843,7 @@ installierten Pakets wird mit [.command]#`gretl operations`# angezeigt.
 |===
 | Bereich | Taskarten
 | Dateien und HTTP
-| <<task-httpdownload,HttpDownload>>, <<task-curl,Curl>>, <<task-extract,Extract>>, <<task-gzip,Gzip>>, <<task-zip,Zip>>, <<task-xsltransformer,XslTransformer>>
+| <<task-httpdownload,HttpDownload>>, <<task-curl,Curl>>, <<task-extract,Extract>>, <<task-gzip,Gzip>>, <<task-zip,Zip>>, <<task-sftplist,SftpList>>, <<task-sftpdownload,SftpDownload>>, <<task-sftpupload,SftpUpload>>, <<task-sftpdelete,SftpDelete>>, <<task-xsltransformer,XslTransformer>>
 | FTP und S3
 | <<task-ftplist,FtpList>>, <<task-ftpdownload,FtpDownload>>, <<task-ftpupload,FtpUpload>>, <<task-ftpdelete,FtpDelete>>, <<task-s3download,S3Download>>, <<task-s3upload,S3Upload>>, <<task-s3delete,S3Delete>>, <<task-s3bucket2bucket,S3Bucket2Bucket>>
 | Datenbanken
@@ -2564,6 +2564,125 @@ Es wird genau eine Datei akzeptiert. Ergebnisse sind [.config-key]#`valid`# und 
 
 .Property-Tabelle
 include::generated/task-shpvalidator.adoc[]
+
+[[task-sftpdelete]]
+=== SftpDelete
+
+[.task-type]#`SftpDelete`# verwendet den Verbindungsalias `connection` aus der
+Runtimekonfiguration. Relative Remote-Pfade gelten ab dem Login-Verzeichnis.
+Löscht genau die angegebenen regulären Remote-Dateien. Eine leere Liste öffnet keine Verbindung. `ignoreMissing` toleriert ausschliesslich fehlende Pfade. Verwende die Download-Ergebnisse nach erfolgreicher Verarbeitung. Der Lieferant kann eine Datei unter demselben Pfad zwischen Download und Löschung ersetzen.
+
+[source,groovy]
+----
+task('exchange', SftpDelete) {
+    connection = 'exchange'
+    remotePaths = ['incoming/data.csv']
+}
+
+defaults 'exchange'
+----
+
+.Ergebnisfelder
+[cols="2,5,1",options="header",role="gretl-task-results"]
+|===
+| Feld | Bedeutung | Nullable
+| `deletedPaths` | Gelöschte Pfade | nein
+| `missingPaths` | Fehlende Pfade | nein
+|===
+
+.Property-Tabelle
+include::generated/task-sftpdelete.adoc[]
+
+[[task-sftpdownload]]
+=== SftpDownload
+
+[.task-type]#`SftpDownload`# verwendet den Verbindungsalias `connection` aus der
+Runtimekonfiguration. Relative Remote-Pfade gelten ab dem Login-Verzeichnis.
+Lädt eine Einzeldatei mit `outputFile` oder ein Verzeichnis mit `outputDirectory` herunter. Das Verzeichnis behält die relative Struktur. Eine leere Auswahl ist erfolgreich. Bei späteren Fehlern können bereits veröffentlichte Dateien bestehen bleiben.
+
+[source,groovy]
+----
+task('exchange', SftpDownload) {
+    connection = 'exchange'
+    remotePath = 'incoming'
+    outputDirectory = workPath('download')
+    recursive = true
+    includes = ['**/*.csv']
+}
+
+defaults 'exchange'
+----
+
+.Ergebnisfelder
+[cols="2,5,1",options="header",role="gretl-task-results"]
+|===
+| Feld | Bedeutung | Nullable
+| `files` | Veröffentlichte lokale Pfade | nein
+| `remotePaths` | Zugehörige Remote-Pfade | nein
+| `entries` | Zuordnungen mit Bytezahl | nein
+| `bytes` | Gesamte Bytezahl | nein
+|===
+
+.Property-Tabelle
+include::generated/task-sftpdownload.adoc[]
+
+[[task-sftplist]]
+=== SftpList
+
+[.task-type]#`SftpList`# verwendet den Verbindungsalias `connection` aus der
+Runtimekonfiguration. Relative Remote-Pfade gelten ab dem Login-Verzeichnis.
+Listet Dateien, Verzeichnisse, Links und sonstige Einträge nach relativem Pfad. Fehlende Grösse oder Änderungszeit sind null. Rekursion folgt keinen symbolischen Links. Muster gelten relativ zur Wurzel nach den Regeln von <<task-extract,Extract>>. `caseSensitive = false` schaltet den Vergleich ohne Beachtung der Gross- und Kleinschreibung ein.
+
+[source,groovy]
+----
+task('exchange', SftpList) {
+    connection = 'exchange'
+    remoteDirectory = 'incoming'
+    recursive = true
+    includes = ['**/*.csv']
+}
+
+defaults 'exchange'
+----
+
+.Ergebnisfelder
+[cols="2,5,1",options="header",role="gretl-task-results"]
+|===
+| Feld | Bedeutung | Nullable
+| `entries` | Einträge mit Namen, Pfaden, Typ und Servermetadaten | nein
+|===
+
+.Property-Tabelle
+include::generated/task-sftplist.adoc[]
+
+[[task-sftpupload]]
+=== SftpUpload
+
+[.task-type]#`SftpUpload`# verwendet den Verbindungsalias `connection` aus der
+Runtimekonfiguration. Relative Remote-Pfade gelten ab dem Login-Verzeichnis.
+Lädt eine lokale Datei unter einem temporären Namen hoch und veröffentlicht sie im selben Remote-Verzeichnis. `remotePath` enthält den endgültigen Dateinamen. Das Ersetzen einer bestehenden Datei erfordert eine unterstützte Rename-Operation. Ein Fehler kann eine temporäre Remote-Datei hinterlassen, wenn die Verbindung abbricht.
+
+[source,groovy]
+----
+task('exchange', SftpUpload) {
+    connection = 'exchange'
+    sourceFile = file('data.csv')
+    remotePath = 'outgoing/data.csv'
+}
+
+defaults 'exchange'
+----
+
+.Ergebnisfelder
+[cols="2,5,1",options="header",role="gretl-task-results"]
+|===
+| Feld | Bedeutung | Nullable
+| `remotePath` | Veröffentlichter Remote-Pfad | nein
+| `bytes` | Übertragene Bytezahl | nein
+|===
+
+.Property-Tabelle
+include::generated/task-sftpupload.adoc[]
 
 [[task-sqlexecutor]]
 === SqlExecutor

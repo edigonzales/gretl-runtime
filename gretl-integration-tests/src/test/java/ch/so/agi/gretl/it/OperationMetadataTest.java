@@ -43,7 +43,7 @@ class OperationMetadataTest {
     @Test void entireCatalogMatchesVersionedIdentityAndResultContracts() throws Exception {
         var registry = OperationRegistry.load(getClass().getClassLoader());
         var expected = (List<?>) Json.parseFile(Path.of("../tests/contracts/operation-baseline.json"), 1_000_000);
-        assertEquals(46, registry.all().size());
+        assertEquals(50, registry.all().size());
         var actual = new ArrayList<Object>();
         for (var registered : registry.registered()) {
             var op = registered.operation();

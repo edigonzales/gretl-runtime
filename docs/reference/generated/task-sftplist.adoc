@@ -1,0 +1,39 @@
+[cols="4,6,1", options="header", role="gretl-task-properties"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*connection* = text#
+| Verbindungsalias +
+Beispiel: [.code-fragment]#`connection = 'exchange'`#
+| [.required]#ja#
+
+| [.dsl-signature]#*remoteDirectory* = text#
+| Remote-Verzeichnis +
+Beispiel: [.code-fragment]#`remoteDirectory = 'incoming'`#
+| [.required]#ja#
+
+| [.dsl-signature]#*recursive* = boolean#
+| Unterverzeichnisse einbeziehen +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`recursive = true`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*includes* = list#
+| Einschlussmuster +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`includes = ['**/*.csv']`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*excludes* = list#
+| Ausschlussmuster +
+Vorgabe: [.code-fragment]#`[]`# +
+Beispiel: [.code-fragment]#`excludes = ['backup/**']`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*caseSensitive* = boolean#
+| Gross- und Kleinschreibung beachten +
+Vorgabe: [.code-fragment]#`true`# +
+Beispiel: [.code-fragment]#`caseSensitive = false`#
+| [.optional]#nein#
+
+|===

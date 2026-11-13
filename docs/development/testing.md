@@ -18,7 +18,7 @@ python3.12 scripts/verify-runtime.py
 
 Das Skript legt ein eigenes Docker-Netz an und startet genau einen
 `./mvnw -B -Pgeotools-probe,backing-services,job-image clean verify`-Lauf.
-Der Reactor prüft die vollständige SCRIPT-Fachsuite mit 46
+Der Reactor prüft die vollständige SCRIPT-Fachsuite mit 50
 Standardoperationen, explizite selbständige JAR-Prozesse und ausgewählte
 IMAGE-Prozesse mit externen Jobs. Das Image verwendet dasselbe Testnetz
 wie PostgreSQL/PostGIS und S3. Der Aufruf benötigt einen non-root
