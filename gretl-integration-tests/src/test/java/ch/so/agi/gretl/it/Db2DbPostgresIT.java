@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.it;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -77,40 +79,71 @@ class Db2DbPostgresIT {
     }
 
     @Test
-    void convertsWktIntoPostgisGeometry() throws Exception {
-        try (Connection connection = connection();
-             Statement statement = connection.createStatement()) {
-            statement.execute("create table geo_source (id int primary key, wkt text)");
-            statement.execute("create table geo_target (id int primary key, "
-                    + "geom geometry(Point,4326))");
-            statement.execute("insert into geo_source values (1, 'POINT (8 47)')");
+    void transfersPostgisAndDuckDbWktWithCoordinatesSridAndNull() throws Exception {
+        try (Connection connection = connection(); Statement statement = connection.createStatement()) {
+            statement.execute("create table geo_source (id int primary key, geom geometry(Point,4326))");
+            statement.execute("create table geo_target (id int primary key, geom geometry(Point,4326))");
+            statement.execute("create table duck_target (id int primary key, geom geometry(Point,4326))");
         }
-        Files.writeString(root.resolve("select-geo.sql"),
-                "SELECT id, wkt AS geom FROM geo_source", StandardCharsets.UTF_8);
+        Path duckDb = root.resolve("geo.duckdb");
+        try (var db = DriverManager.getConnection("jdbc:duckdb:" + duckDb);
+             var stmt = db.createStatement()) {
+            stmt.execute("create table sightings(id integer, wkt varchar)");
+            stmt.execute("insert into sightings values (1, 'POINT (8 47)'), (2, NULL)");
+        }
+        Files.writeString(root.resolve("create-geo.sql"), """
+                insert into geo_source values (1, ST_SetSRID(ST_MakePoint(8.0001, 47),4326)), (2, NULL);
+                """);
+        Files.writeString(root.resolve("fix-geo.sql"), """
+                update geo_source set geom = ST_ReducePrecision(geom, 0.001) where geom is not null;
+                """);
+        Files.writeString(root.resolve("select-geo.sql"), "SELECT id, geom FROM geo_source");
+        Files.writeString(root.resolve("select-duck.sql"), "SELECT id, wkt AS geom FROM sightings");
+        var config = config();
+        JobRunner.taskConfig(config, "duck", Map.of("jdbcUrl", "jdbc:duckdb:" + duckDb));
         JobRunner.Result result = JobRunner.run(root, """
-                task('copy', Db2Db) {
+                task('createGeometry', SqlExecutor) {
+                    database = 'db'
+                    scripts = [file('create-geo.sql')]
+                }
+                task('fixGeometry', SqlExecutor, dependsOn: 'createGeometry') {
+                    database = 'db'
+                    scripts = [file('fix-geo.sql')]
+                }
+                task('copyPostgis', Db2Db, dependsOn: 'fixGeometry') {
                     sourceDatabase = 'db'
                     targetDatabase = 'db'
-                    transfers = [[
-                        sqlFile: file('select-geo.sql'),
-                        targetTable: 'geo_target',
-                        deleteAllRows: true,
-                        geometryColumns: ['geom:WKT:4326']
-                    ]]
+                    transfers = [[sqlFile: file('select-geo.sql'), targetTable: 'geo_target', deleteAllRows: true]]
                 }
-                defaults 'copy'
-                """, config());
+                task('copyDuck', Db2Db) {
+                    sourceDatabase = 'duck'
+                    targetDatabase = 'db'
+                    transfers = [[sqlFile: file('select-duck.sql'), targetTable: 'duck_target',
+                        deleteAllRows: true, geometryColumns: ['geom:WKT:4326']]]
+                }
+                defaults 'copyPostgis', 'copyDuck'
+                """, config);
 
         assertEquals(0, result.code(), result.err());
-        try (Connection connection = connection();
-             Statement statement = connection.createStatement();
-             ResultSet rows = statement.executeQuery(
-                     "SELECT ST_AsText(geom) FROM geo_target WHERE id=1")) {
-            rows.next();
-            assertEquals("POINT(8 47)", rows.getString(1));
+        try (Connection connection = connection(); Statement statement = connection.createStatement()) {
+            for (String table : java.util.List.of("geo_target", "duck_target")) {
+                try (ResultSet rows = statement.executeQuery(
+                        "select id, GeometryType(geom), ST_SRID(geom), ST_X(geom), ST_Y(geom) from "
+                                + table + " order by id")) {
+                    assertTrue(rows.next());
+                    assertEquals(1, rows.getInt(1));
+                    assertEquals("POINT", rows.getString(2));
+                    assertEquals(4326, rows.getInt(3));
+                    assertEquals(8, rows.getDouble(4), 0.000000001);
+                    assertEquals(47, rows.getDouble(5), 0.000000001);
+                    assertTrue(rows.next());
+                    assertEquals(2, rows.getInt(1));
+                    assertEquals(null, rows.getObject(2));
+                    assertFalse(rows.next());
+                }
+            }
         }
     }
-
 
     @Test
     void copiesBetweenIndependentPostgresConnections() throws Exception {

@@ -298,7 +298,7 @@ public final class RuntimeConfig {
             }
             var fields = new java.util.LinkedHashMap<>(object(entry.getValue(), "taskConfig." + entry.getKey()));
             for (String key : List.of("knownHostsFile", "privateKeyFile")) {
-                if (fields.containsKey("knownHostsFile") && fields.get(key) instanceof String path && !path.isBlank()) {
+                if (fields.get(key) instanceof String path && !path.isBlank()) {
                     fields.put(key, resolve(directory, path).toString());
                 }
             }

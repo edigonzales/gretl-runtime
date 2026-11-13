@@ -52,12 +52,13 @@ class PackagedSqlJobPostgresIT {
                 "Distribution launcher is missing; run the reactor build first: " + launcher);
 
         Files.writeString(root.resolve("insert.sql"),
-                "INSERT INTO packaged_demo(id, name) VALUES (1, 'packaged')",
+                "INSERT INTO packaged_demo(id, name) VALUES (${id}, '${name}')",
                 StandardCharsets.UTF_8);
         Files.writeString(root.resolve("job.groovy"), """
                 task('insert', SqlExecutor) {
                     database = 'db'
-                    scripts = [file('insert.sql')]
+                    sqlFiles = [file('insert.sql')]
+                    sqlParameters = [[id: '1', name: 'packaged'], [id: '2', name: 'second']]
                 }
                 defaults 'insert'
                 """);
@@ -105,9 +106,14 @@ class PackagedSqlJobPostgresIT {
         try (Connection connection = connection();
              Statement statement = connection.createStatement();
              ResultSet rows = statement.executeQuery(
-                     "select name from packaged_demo where id=1")) {
-            rows.next();
-            assertEquals("packaged", rows.getString(1));
+                     "select id,name from packaged_demo order by id")) {
+            assertTrue(rows.next());
+            assertEquals(1, rows.getInt(1));
+            assertEquals("packaged", rows.getString(2));
+            assertTrue(rows.next());
+            assertEquals(2, rows.getInt(1));
+            assertEquals("second", rows.getString(2));
+            assertTrue(!rows.next());
         }
     }
 

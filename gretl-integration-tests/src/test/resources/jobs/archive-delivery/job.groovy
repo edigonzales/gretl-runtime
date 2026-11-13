@@ -24,19 +24,35 @@ task('bundle', Zip, dependsOn: 'prepare') {
     sources = [[file: result('prepare').xtf], [file: result('prepare').toml]]
 }
 
-action('moreArchives', dependsOn: 'bundle') {
+action('moreArchives') {
     def input = parameter('input')
-    for (String name : ['region-a', 'region-b']) {
+    def archives
+    Files.list(input).withCloseable { paths ->
+        archives = paths.filter { it.fileName.toString().startsWith('region-') &&
+            it.fileName.toString().endsWith('.zip') }.sorted().toList()
+    }
+    def outputs = []
+    for (def archivePath : archives) {
+        def name = archivePath.fileName.toString().replaceFirst(/\.zip$/, '')
         def result = ctx.run(Extract) {
-            archive = input.resolve(name + '.zip')
+            archive = archivePath
             compression = 'ZIP'
             outputDirectory = workPath(name)
             includes = ['**/*.xtf']
         }
         assert result.files().size() == 1
-        Files.copy(result.files().first(), parameter('output').resolve(name + '.xtf'))
+        outputs.add(Files.copy(result.files().first(), parameter('output').resolve(name + '.xtf')))
     }
+    outputs
+}
+
+task('regionalBundle', Zip, dependsOn: 'moreArchives') {
+    outputFile = parameter('output').resolve('regional.zip')
+    sources = result('moreArchives').collect { [file: it] }
+}
+
+action('finishDelivery', dependsOn: ['bundle', 'regionalBundle']) {
     Files.deleteIfExists(parameter('output').resolve('previous.xtf'))
 }
 
-defaults 'moreArchives'
+defaults 'finishDelivery'

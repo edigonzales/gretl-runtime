@@ -2,10 +2,14 @@
 
 GRETL Runtime führt Groovy-Jobs mit einem sequenziellen Taskgraphen auf Java 25 aus.
 Der aktuelle Entwicklungsstand ist `6.0.0-SNAPSHOT`. Die Standarddistribution
-enthält 50 Operationen für HTTP, FTP, S3, Archive, SQL, DuckDB, INTERLIS und
+enthält 50 Operationen für HTTP, FTP, SFTP, S3, Archive, SQL, DuckDB, INTERLIS und
 Dateiformate. Eigene Actions und Java-Operationen verwenden denselben Runner.
 SCRIPT ist der Hauptweg; ein Job kann zusätzlich als vorkompiliertes Job-JAR
 oder als externes Script im generischen Runtime-Image laufen.
+
+
+Der [Migrationsleitfaden](docs/guides/gradle-migration.md) zeigt die Übertragung
+von Gradle-Jobs mit SQL, Archiven, SFTP und Groovy-Taskfamilien.
 
 ## Aus dem Git-Checkout starten
 

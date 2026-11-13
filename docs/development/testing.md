@@ -101,6 +101,11 @@ Prozessstart, Eingaben, Reports und Cleanup.
 Testzahlen gelten für den jeweiligen SHA. Tatsächliche Plattform und
 nicht ausgeführte Cluster-/Architekturprüfungen gehören in den jeweiligen Prüfbeleg.
 
+`SftpOperationsTest` nutzt einen lokalen MINA-Server. `SftpExchangeIT` prüft
+SCRIPT und ein eigenständiges IO-JAR gegen einen digestgepinnten OpenSSH-Server.
+Die Tests prüfen die übertragenen Dateibytes, Formatanzahlen und die Löschung
+erst nach erfolgreicher Verarbeitung.
+
 ## Beispielquellen und Drift
 
 Bei gemeinsamen Pfaden ist `examples/` die kanonische Quelle. Die Distribution

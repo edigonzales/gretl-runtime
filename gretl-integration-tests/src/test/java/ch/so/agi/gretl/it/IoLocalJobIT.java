@@ -44,6 +44,65 @@ class IoLocalJobIT {
         assertEquals("<region id='a'/>", Files.readString(output.resolve("region-a.xtf")));
         assertEquals("<region id='b'/>", Files.readString(output.resolve("region-b.xtf")));
         assertFalse(Files.exists(output.resolve("previous.xtf")));
+        try (var archive = new java.util.zip.ZipFile(output.resolve("regional.zip").toFile())) {
+            assertEquals(List.of("region-a.xtf", "region-b.xtf"),
+                    archive.stream().map(java.util.zip.ZipEntry::getName).toList());
+        }
+
+        Files.writeString(input.resolve("region-b.zip"), "invalid archive");
+        Path failedRoot = ArtifactJobRunner.directory("archive-delivery-failure");
+        Path failedOutput = failedRoot.resolve("output");
+        Files.writeString(failedOutput.resolve("previous.xtf"), "still needed");
+        var failure = ArtifactJobRunner.run(new ArtifactJobRunner.Request(
+                "archive-delivery-failure", ArtifactJobRunner.fixture("archive-delivery"), failedRoot, List.of(),
+                Map.of("input", input, "output", failedOutput), Map.of(), JobRunner.baseConfig(failedRoot),
+                Map.of(), Duration.ofSeconds(60)));
+        assertEquals(10, failure.code(), failure.err());
+        assertEquals("<region id='a'/>", Files.readString(failedOutput.resolve("region-a.xtf")));
+        assertFalse(Files.exists(failedOutput.resolve("regional.zip")));
+        assertEquals("still needed", Files.readString(failedOutput.resolve("previous.xtf")));
+    }
+
+    @Test void exportStatus200ProcessesDataAnd204EndsWithoutProcessing() throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/", exchange -> {
+            try (exchange) {
+                if (!"Bearer local-export-token".equals(exchange.getRequestHeaders().getFirst("Authorization"))) {
+                    exchange.sendResponseHeaders(401, -1);
+                } else if (exchange.getRequestURI().getPath().equals("/200")) {
+                    byte[] body = "<TRANSFER/>".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                    exchange.sendResponseHeaders(200, body.length);
+                    exchange.getResponseBody().write(body);
+                } else {
+                    exchange.sendResponseHeaders(Integer.parseInt(exchange.getRequestURI().getPath().substring(1)), -1);
+                }
+            }
+        });
+        server.start();
+        try {
+            for (int status : List.of(200, 204, 403)) {
+                Path root = ArtifactJobRunner.directory("http-export-" + status);
+                var config = JobRunner.baseConfig(root);
+                JobRunner.secret(root, config, "exportToken", "local-export-token");
+                String url = "http://127.0.0.1:" + server.getAddress().getPort() + "/" + status;
+                var result = ArtifactJobRunner.run(new ArtifactJobRunner.Request(
+                        "http-export", ArtifactJobRunner.fixture("http-export"), root, List.of(),
+                        Map.of("url", url, "output", root.resolve("output")), Map.of(), config, Map.of(),
+                        Duration.ofSeconds(40)));
+                assertEquals(status == 403 ? 10 : 0, result.code(), result.err());
+                String expected = status == 200 ? "SUCCEEDED" : status == 204 ? "NO_DATA" : "FAILED";
+                assertEquals(expected, JobTestJson.execution(JobTestJson.read(result.report())).get("status"));
+                Path processed = root.resolve("output/processed.xtf");
+                if (status == 200) {
+                    assertEquals("<TRANSFER/>", Files.readString(processed));
+                } else {
+                    assertFalse(Files.exists(processed));
+                }
+                assertFalse((result.err() + Files.readString(result.report())).contains("local-export-token"));
+            }
+        } finally {
+            server.stop(0);
+        }
     }
 
     private static void writeZip(Path file, Map<String, String> entries) throws Exception {

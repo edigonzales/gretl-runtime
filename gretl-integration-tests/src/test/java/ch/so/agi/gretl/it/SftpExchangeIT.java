@@ -76,6 +76,14 @@ class SftpExchangeIT {
     private static void assertExchange(GenericContainer<?> server, ArtifactJobRunner.Result result) throws Exception {
         assertEquals(0, result.code(), result.err());
         assertEquals("first\nsecond\n", Files.readString(result.directory().resolve("output/processed.csv")));
+        assertEquals(List.of(".:csv=1", "nested:csv=2"),
+                Files.readAllLines(result.directory().resolve("output/formats.txt")));
+        try (var zip = new java.util.zip.ZipFile(result.directory().resolve("output/processed.zip").toFile())) {
+            assertEquals(List.of("processed.csv"), zip.stream().map(java.util.zip.ZipEntry::getName).toList());
+            try (var file = zip.getInputStream(zip.getEntry("processed.csv"))) {
+                assertArrayEquals("first\nsecond\n".getBytes(java.nio.charset.StandardCharsets.UTF_8), file.readAllBytes());
+            }
+        }
         assertEquals("first\nsecond\n", command(server, "cat", "/home/fixture/exchange/upload.csv"));
         assertEquals("keep\n", command(server, "cat", "/home/fixture/exchange/nested/keep.csv"));
         command(server, "sh", "-ec", """
