@@ -16,7 +16,7 @@ class IoTaskProviderTest {
     @Test
     void serviceLoaderExposesTheSupportedIoOperations() {
         OperationRegistry registry = OperationRegistry.load(getClass().getClassLoader());
-        var expected = List.of("HttpDownload", "Curl", "JsonRead", "Gzip", "Extract",
+        var expected = List.of("HttpDownload", "Curl", "OAuth2ClientCredentials", "JsonRead", "Gzip", "Extract",
                 "FtpList", "FtpDownload", "FtpUpload", "FtpDelete",
                 "S3Download", "S3Upload", "S3Delete", "S3Bucket2Bucket", "XslTransformer");
         assertEquals(expected.stream().sorted().toList(),
