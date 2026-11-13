@@ -48,7 +48,7 @@ public final class CurlOperation {
         InputField<CurlRequest, URI> serverUrl = new InputField<>(
                 "serverUrl", "uri", "Absolute HTTP/HTTPS URL", true, Optional.empty(),
                 List.of("http", "https"),
-                "serverUrl = 'https://example.invalid/token'",
+                "serverUrl = 'https://example.invalid/status'",
                 CurlOperation::uri,
                 (builder, value) -> ((CurlBuilder) builder).setServerUrl(value));
         InputField<CurlRequest, String> method = new InputField<>(
@@ -80,7 +80,7 @@ public final class CurlOperation {
                 (builder, value) -> ((CurlBuilder) builder).setFormData(value));
         InputField<CurlRequest, String> data = new InputField<>(
                 "data", "text", "Optional UTF-8 text request body", false,
-                Optional.empty(), List.of(), "data = 'grant_type=client_credentials'",
+                Optional.empty(), List.of(), "data = '{\"probe\":true}'",
                 CurlOperation::text,
                 (builder, value) -> ((CurlBuilder) builder).setData(value));
         InputField<CurlRequest, Path> dataBinary = new InputField<>(
@@ -128,12 +128,13 @@ public final class CurlOperation {
                         maxBytes),
                 List.of(status, bytes, output),
                 """
-                task('token', Curl) {
-                    serverUrl = 'https://example.invalid/token'
+                task('probe', Curl) {
+                    serverUrl = 'https://example.invalid/status'
                     method = 'POST'
                     expectedStatusCode = 200
-                    data = 'grant_type=client_credentials'
-                    outputFile = workPath('token.json')
+                    headers = ['Content-Type': 'application/json']
+                    data = '{"probe":true}'
+                    outputFile = workPath('response.json')
                 }
                 """);
     }
