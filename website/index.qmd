@@ -78,7 +78,7 @@ Query PostgreSQL, GeoPackage and CSV through one prepared DuckDB session.
 :::
 ::: {.benefit-copy}
 ### Task reference
-Explore 45 operation chapters and generated field tables.
+Explore 46 operation chapters and generated field tables.
 :::
 :::
 

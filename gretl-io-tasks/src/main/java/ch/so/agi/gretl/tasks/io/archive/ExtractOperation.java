@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.tasks.io.archive;
 
+import ch.so.agi.gretl.tasks.io.internal.LocalFilePaths;
+import ch.so.agi.gretl.tasks.io.internal.RelativePathSelection;
 import ch.so.agi.gretl.runtime.api.ConfigBuilder;
 import ch.so.agi.gretl.runtime.api.Fields;
 import ch.so.agi.gretl.runtime.api.InputField;
@@ -62,6 +64,14 @@ public final class ExtractOperation {
                 "maxEntries", "integer", "Maximum number of ZIP entries", false,
                 Optional.of(DEFAULT_MAX_ENTRIES), List.of(), "maxEntries = 10000",
                 ExtractOperation::positiveInt, (builder, value) -> ((ExtractBuilder) builder).setMaxEntries(value));
+        InputField<ExtractRequest, List<String>> includes = new InputField<>(
+                "includes", "list", "ZIP entry include globs", false, Optional.empty(), List.of(),
+                "includes = ['**/*.xtf']", RelativePathSelection::patterns,
+                (builder, value) -> ((ExtractBuilder) builder).setIncludes(value));
+        InputField<ExtractRequest, List<String>> excludes = new InputField<>(
+                "excludes", "list", "ZIP entry exclude globs", false, Optional.empty(), List.of(),
+                "excludes = ['backup/**']", RelativePathSelection::patterns,
+                (builder, value) -> ((ExtractBuilder) builder).setExcludes(value));
         OutputField<ExtractResult, Path> file = Fields.output(
                 "file", "path", "Single GZIP file, otherwise null", true,
                 ExtractResult::file);
@@ -79,7 +89,7 @@ public final class ExtractOperation {
                 ExtractRequest.class, ExtractResult.class,
                 ExtractBuilder::new, ExtractHandler::new,
                 List.of(archive, compression, outputDirectory, outputFile,
-                        maxExpandedBytes, maxEntries),
+                        maxExpandedBytes, maxEntries, includes, excludes),
                 List.of(file, files, directory, bytes),
                 """
                 task('extract', Extract, dependsOn: 'download') {
@@ -158,10 +168,22 @@ public final class ExtractOperation {
 
     public record ExtractRequest(
             Path archive, String compression, Path outputDirectory,
-            Path outputFile, long maxExpandedBytes, int maxEntries) {
+            Path outputFile, long maxExpandedBytes, int maxEntries,
+            List<String> includes, List<String> excludes) {
+        public ExtractRequest(Path archive, String compression, Path outputDirectory,
+                              Path outputFile, long maxExpandedBytes, int maxEntries) {
+            this(archive, compression, outputDirectory, outputFile, maxExpandedBytes, maxEntries, null, null);
+        }
+
         public ExtractRequest {
             java.util.Objects.requireNonNull(archive, "archive");
             java.util.Objects.requireNonNull(compression, "compression");
+            if (compression.equals("GZIP") && (includes != null || excludes != null)) {
+                throw new IllegalArgumentException("ZIP filters are only supported for ZIP extraction");
+            }
+            includes = includes == null ? List.of() : List.copyOf(includes);
+            excludes = excludes == null ? List.of() : List.copyOf(excludes);
+            RelativePathSelection.compile(includes, excludes, true);
             if (maxExpandedBytes <= 0 || maxEntries <= 0) {
                 throw new IllegalArgumentException("limits must be positive");
             }
@@ -175,6 +197,8 @@ public final class ExtractOperation {
         private Path outputFile;
         private long maxExpandedBytes = DEFAULT_MAX_EXPANDED_BYTES;
         private int maxEntries = DEFAULT_MAX_ENTRIES;
+        private List<String> includes;
+        private List<String> excludes;
 
         public void setArchive(Path value) { archive = value; }
         public void setCompression(String value) { compression = value; }
@@ -182,6 +206,9 @@ public final class ExtractOperation {
         public void setOutputFile(Path value) { outputFile = value; }
         public void setMaxExpandedBytes(Long value) { maxExpandedBytes = value; }
         public void setMaxEntries(Integer value) { maxEntries = value; }
+
+        public void setIncludes(List<String> value) { includes = List.copyOf(value); }
+        public void setExcludes(List<String> value) { excludes = List.copyOf(value); }
 
         @Override
         public ExtractRequest build() {
@@ -201,7 +228,7 @@ public final class ExtractOperation {
                         "GZIP verlangt outputFile und kein outputDirectory");
             }
             return new ExtractRequest(archive, compression, outputDirectory,
-                    outputFile, maxExpandedBytes, maxEntries);
+                    outputFile, maxExpandedBytes, maxEntries, includes, excludes);
         }
     }
 
@@ -238,8 +265,10 @@ public final class ExtractOperation {
         private static ExtractResult unzip(
                 Path archive, ExtractRequest request, OperationContext context) {
             Path root = request.outputDirectory().toAbsolutePath().normalize();
+            boolean filtered = !request.includes().isEmpty() || !request.excludes().isEmpty();
+            var selection = RelativePathSelection.compile(request.includes(), request.excludes(), true);
             try {
-                Files.createDirectories(root);
+                LocalFilePaths.createDirectories(root);
             } catch (IOException exception) {
                 throw new ExtractTaskException("OUTPUT_NOT_WRITABLE",
                         msg(context, "task.extract.outputNotWritable"), exception);
@@ -273,12 +302,16 @@ public final class ExtractOperation {
                         throw new ExtractTaskException("ARCHIVE_INVALID_ENTRY",
                                 msg(context, "task.extract.invalidPath"), exception);
                     }
-                    if (relative.isAbsolute() || name.startsWith("/")) {
+                    if (relative.isAbsolute() || name.startsWith("/") || name.matches("^[A-Za-z]:.*")) {
                         throw new ExtractTaskException("ARCHIVE_TRAVERSAL",
                                 msg(context, "task.extract.absoluteEntry"), null);
                     }
                     Path target = root.resolve(relative).normalize();
-                    if (!target.startsWith(root)) {
+                    boolean parentSegment = false;
+                    for (Path segment : relative) {
+                        parentSegment |= segment.toString().equals("..");
+                    }
+                    if (parentSegment || !target.startsWith(root)) {
                         throw new ExtractTaskException("ARCHIVE_TRAVERSAL",
                                 msg(context, "task.extract.traversal"), null);
                     }
@@ -294,21 +327,33 @@ public final class ExtractOperation {
                         throw new ExtractTaskException("ARCHIVE_COLLISION",
                                 msg(context, "task.extract.collision"), null);
                     }
+                    try {
+                        LocalFilePaths.rejectSymbolicLinks(target);
+                    } catch (IOException exception) {
+                        throw new ExtractTaskException("ARCHIVE_SYMLINK",
+                                msg(context, "task.extract.symlink"), exception);
+                    }
                     if (entry.isDirectory()) {
+                        if (filtered) {
+                            continue;
+                        }
                         try {
-                            Files.createDirectories(target);
+                            LocalFilePaths.createDirectories(target);
                         } catch (IOException exception) {
                             throw new ExtractTaskException("OUTPUT_NOT_WRITABLE",
                                     msg(context, "task.extract.outputNotWritable"), exception);
                         }
                         continue;
                     }
-                    if (Files.exists(target)) {
+                    if (!selection.matches(normalized)) {
+                        continue;
+                    }
+                    if (Files.exists(target, java.nio.file.LinkOption.NOFOLLOW_LINKS)) {
                         throw new ExtractTaskException("OUTPUT_EXISTS",
                                 msg(context, "task.extract.outputExists"), null);
                     }
                     try {
-                        Files.createDirectories(target.getParent());
+                        LocalFilePaths.createDirectories(target.getParent());
                     } catch (IOException exception) {
                         throw new ExtractTaskException("OUTPUT_NOT_WRITABLE",
                                 msg(context, "task.extract.parentNotWritable"), exception);
@@ -370,7 +415,7 @@ public final class ExtractOperation {
                         msg(context, "task.extract.outputExists"), null);
             }
             try {
-                Files.createDirectories(target.getParent());
+                LocalFilePaths.createDirectories(target.getParent());
             } catch (IOException exception) {
                 throw new ExtractTaskException("OUTPUT_NOT_WRITABLE",
                         msg(context, "task.extract.parentNotWritable"), exception);

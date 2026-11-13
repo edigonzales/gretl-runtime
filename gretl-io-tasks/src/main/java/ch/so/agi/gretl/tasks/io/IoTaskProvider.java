@@ -7,6 +7,7 @@ import ch.so.agi.gretl.tasks.io.http.CurlOperation;
 import ch.so.agi.gretl.tasks.io.json.JsonReadOperation;
 import ch.so.agi.gretl.tasks.io.archive.GzipOperation;
 import ch.so.agi.gretl.tasks.io.archive.ExtractOperation;
+import ch.so.agi.gretl.tasks.io.archive.ZipOperation;
 import ch.so.agi.gretl.tasks.io.ftp.FtpListOperation;
 import ch.so.agi.gretl.tasks.io.ftp.FtpDownloadOperation;
 import ch.so.agi.gretl.tasks.io.ftp.FtpUploadOperation;
@@ -25,6 +26,7 @@ public final class IoTaskProvider implements OperationProvider {
                 JsonReadOperation.type(),
                 GzipOperation.type(),
                 ExtractOperation.type(),
+                ZipOperation.type(),
                 FtpListOperation.type(),
                 FtpDownloadOperation.type(),
                 FtpUploadOperation.type(),

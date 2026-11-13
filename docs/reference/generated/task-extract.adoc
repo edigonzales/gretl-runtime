@@ -35,4 +35,14 @@ Vorgabe: [.code-fragment]#`10000`# +
 Beispiel: [.code-fragment]#`maxEntries = 10000`#
 | [.optional]#nein#
 
+| [.dsl-signature]#*includes* = list#
+| Glob-Muster für einzuschliessende ZIP-Einträge +
+Beispiel: [.code-fragment]#`includes = ['**/*.xtf']`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*excludes* = list#
+| Glob-Muster für auszuschliessende ZIP-Einträge +
+Beispiel: [.code-fragment]#`excludes = ['backup/**']`#
+| [.optional]#nein#
+
 |===

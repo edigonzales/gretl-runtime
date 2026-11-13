@@ -1,0 +1,27 @@
+[cols="4,6,1", options="header", role="gretl-task-properties"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*outputFile* = path#
+| ZIP-Zieldatei +
+Beispiel: [.code-fragment]#`outputFile = workPath('delivery.zip')`#
+| [.required]#ja#
+
+| [.dsl-signature]#*sources* = list#
+| Geordnete Dateien und Verzeichnisauswahlen +
+Beispiel: [.code-fragment]#`sources = [[file: file('data.xtf')]]`#
+| [.required]#ja#
+
+| [.dsl-signature]#*overwrite* = boolean#
+| Bestehende ZIP-Datei ersetzen +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`overwrite = true`#
+| [.optional]#nein#
+
+| [.dsl-signature]#*allowEmpty* = boolean#
+| ZIP ohne Einträge zulassen +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`allowEmpty = true`#
+| [.optional]#nein#
+
+|===

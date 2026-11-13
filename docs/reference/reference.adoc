@@ -12,7 +12,7 @@ Ein Job verbindet benannte Tasks zu einem gerichteten azyklischen Graphen
 einer JVM aus. Ein Job wird als Groovy-Script geschrieben; die mitgelieferte
 Groovy-Laufzeit kompiliert es beim Start automatisch.
 
-Die Standarddistribution stellt 45 Taskarten bereit. Dazu gehören HTTP-,
+Die Standarddistribution stellt 46 Taskarten bereit. Dazu gehören HTTP-,
 FTP- und S3-Transfers, SQL und Datenbanktransfers, CSV/JSON/Excel,
 GeoPackage/Shapefile sowie INTERLIS- und AV-Werkzeuge. Deklarierte Parameter,
 explizite Abhängigkeiten und dokumentierte Ergebnisfelder verbinden diese
@@ -843,7 +843,7 @@ installierten Pakets wird mit [.command]#`gretl operations`# angezeigt.
 |===
 | Bereich | Taskarten
 | Dateien und HTTP
-| <<task-httpdownload,HttpDownload>>, <<task-curl,Curl>>, <<task-extract,Extract>>, <<task-gzip,Gzip>>, <<task-xsltransformer,XslTransformer>>
+| <<task-httpdownload,HttpDownload>>, <<task-curl,Curl>>, <<task-extract,Extract>>, <<task-gzip,Gzip>>, <<task-zip,Zip>>, <<task-xsltransformer,XslTransformer>>
 | FTP und S3
 | <<task-ftplist,FtpList>>, <<task-ftpdownload,FtpDownload>>, <<task-ftpupload,FtpUpload>>, <<task-ftpdelete,FtpDelete>>, <<task-s3download,S3Download>>, <<task-s3upload,S3Upload>>, <<task-s3delete,S3Delete>>, <<task-s3bucket2bucket,S3Bucket2Bucket>>
 | Datenbanken
@@ -1329,6 +1329,18 @@ Der Task schützt vor Pfad-Traversal, absoluten Einträgen, Symlinks und
 kollidierenden Dateinamen. Vorhandene Zieldateien werden nicht still
 überschrieben. Die Standardgrenzen liegen bei 4 GiB entpackten Daten und
 10'000 ZIP-Einträgen; beide Werte sind konfigurierbar.
+
+ZIP kann Dateien mit `includes` und `excludes` auswählen. Die Muster sind
+case-sensitive und beziehen sich auf relative Pfade mit `/`. `*` und `?`
+bleiben innerhalb eines Segments. Ein eigenes Segment `**` umfasst null oder
+mehr Verzeichnisebenen. `**/*.xtf` trifft `a.xtf` und `a/b.xtf`. Leere
+`includes` wählen alle Dateien, `excludes` haben Vorrang. Absolute Muster
+und `..`-Segmente sind unzulässig.
+
+Die Eintragsprüfung und die Eintragsgrenze gelten auch für ausgeblendete
+Einträge. Die Byte-Grenze zählt entpackte Inhalte. Eine leere Auswahl ist
+erfolgreich. Bei Fehlern können zuvor geschriebene Dateien bestehen bleiben.
+GZIP akzeptiert keine ZIP-Filter.
 
 Ergebnisse sind [.dsl-method]#`file`#, [.config-key]#`files`#, [.config-key]#`directory`# und [.config-key]#`bytes`#. Bei GZIP ist [.dsl-method]#`file`#
 die einzelne Ausgabedatei und [.config-key]#`directory`# ist [.literal]#`null`#; bei ZIP ist [.config-key]#`directory`#
@@ -2584,7 +2596,7 @@ führt keine Anweisung aus.
 einmal ohne Ersetzung. `[:]` und `[[:]]` führen sie einmal mit leerer Map aus.
 `[]` führt keine Dateien aus und öffnet keine Verbindung.
 
-Ersetzungen für `${name}` sind SQL-Text, auch innerhalb von SQL-Zeichenketten.
+Ersetzungen für `${name}` sind SQL-Text, auch in Kommentaren und SQL-Zeichenketten.
 Die Vorlage bestimmt das Quoting. Fehlende Parameter stoppen den Satz vor der
 betroffenen Anweisung. Zusätzliche Schlüssel sind erlaubt.
 
@@ -2680,6 +2692,50 @@ Ergebnisse sind [.config-key]#`files`# (geschriebene Dateien in Eingabereihenfol
 
 .Property-Tabelle
 include::generated/task-xsltransformer.adoc[]
+
+[[task-zip]]
+=== Zip
+
+[.task-type]#`Zip`# bündelt einzelne Dateien und ausgewählte Dateien aus
+Verzeichnissen. Die Quellen werden in Listenreihenfolge verarbeitet.
+Verzeichnisquellen liefern ihre Einträge sortiert nach relativem Pfad.
+
+[source,groovy]
+----
+task('bundle', Zip) {
+    outputFile = workPath('delivery.zip')
+    sources = [
+        [file: file('survey.xtf'), entryName: 'data.xtf'],
+        [file: file('delivery.toml')],
+        [directory: file('logs'), includes: ['**/*.log'], prefix: 'logs']
+    ]
+}
+
+defaults 'bundle'
+----
+
+Eine Dateiquelle hat `file` und optional `entryName`. Ohne eigenen Namen
+wird der Dateiname verwendet. Eine Verzeichnisquelle hat `directory` und
+optional `includes`, `excludes` und `prefix`. Sie verwendet die relativen
+Globs von <<task-extract,Extract>> und erhält die Verzeichnisstruktur.
+Doppelte Eintragsnamen, symbolische Links und eine Ausgabe innerhalb eines
+Quellverzeichnisses führen zu einem Fehler.
+
+`allowEmpty` erlaubt ein Archiv ohne Einträge. `overwrite` erlaubt das
+Ersetzen einer vorhandenen Datei nach erfolgreichem Aufbau des Archivs.
+
+.Ergebnisfelder
+[cols="2,5,1",options="header",role="gretl-task-results"]
+|===
+| Feld / Typ | Bedeutung | Nullable
+| `file` / `path` | Veröffentlichtes ZIP | nein
+| `filesCount` / `integer` | Anzahl archivierter Dateien | nein
+| `bytes` / `integer` | Grösse der ZIP-Datei | nein
+|===
+
+.Property-Tabelle
+include::generated/task-zip.adoc[]
+
 
 == Erweiterungen und Job-JARs
 

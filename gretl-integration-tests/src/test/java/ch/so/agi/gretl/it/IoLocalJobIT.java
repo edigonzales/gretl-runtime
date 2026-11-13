@@ -18,6 +18,44 @@ class IoLocalJobIT {
         var result = run("extract", "file", "http://unused.invalid", Map.of()); assertEquals(0, result.code(), result.err());
         assertArrayEquals(Files.readAllBytes(ArtifactJobRunner.fixture("io").resolve("payload.txt")), Files.readAllBytes(result.directory().resolve("output/nested/payload.txt")));
     }
+    @Test void filtersRenamesBundlesAndProcessesSeveralArchives() throws Exception {
+        Path root = ArtifactJobRunner.directory("archive-delivery", ArtifactJobRunner.Mode.SCRIPT);
+        Path input = Files.createDirectory(root.resolve("input"));
+        Path output = root.resolve("output");
+        writeZip(input.resolve("survey.zip"), Map.of(
+                "nested/survey.xtf", "<survey/>", "backup/old.xtf", "<old/>", "note.txt", "exclude"));
+        writeZip(input.resolve("region-a.zip"), Map.of("region.xtf", "<region id='a'/>"));
+        writeZip(input.resolve("region-b.zip"), Map.of("nested/region.xtf", "<region id='b'/>"));
+        Files.writeString(output.resolve("previous.xtf"), "obsolete");
+        var result = ArtifactJobRunner.run(new ArtifactJobRunner.Request(
+                "archive-delivery", ArtifactJobRunner.fixture("archive-delivery"), root, List.of(),
+                Map.of("input", input, "output", output), Map.of(), JobRunner.baseConfig(root),
+                Map.of(), Duration.ofSeconds(60)));
+        assertEquals(0, result.code(), result.out() + result.err());
+        try (var archive = new java.util.zip.ZipFile(output.resolve("delivery.zip").toFile())) {
+            assertEquals(List.of("data.xtf", "delivery.toml"), archive.stream().map(java.util.zip.ZipEntry::getName).toList());
+            try (var xtf = archive.getInputStream(archive.getEntry("data.xtf"));
+                 var toml = archive.getInputStream(archive.getEntry("delivery.toml"))) {
+                assertArrayEquals("<survey/>".getBytes(java.nio.charset.StandardCharsets.UTF_8), xtf.readAllBytes());
+                assertArrayEquals(Files.readAllBytes(ArtifactJobRunner.fixture("archive-delivery").resolve("delivery.toml")),
+                        toml.readAllBytes());
+            }
+        }
+        assertEquals("<region id='a'/>", Files.readString(output.resolve("region-a.xtf")));
+        assertEquals("<region id='b'/>", Files.readString(output.resolve("region-b.xtf")));
+        assertFalse(Files.exists(output.resolve("previous.xtf")));
+    }
+
+    private static void writeZip(Path file, Map<String, String> entries) throws Exception {
+        try (var zip = new java.util.zip.ZipOutputStream(Files.newOutputStream(file))) {
+            for (var entry : entries.entrySet()) {
+                zip.putNextEntry(new java.util.zip.ZipEntry(entry.getKey()));
+                zip.write(entry.getValue().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                zip.closeEntry();
+            }
+        }
+    }
+
     @ParameterizedTest @ValueSource(strings = {"file", "resource", "set"})
     void originalXsltVariantsAndBusinessContent(String variant) throws Exception {
         var result = run("xsl", variant, "http://unused.invalid", Map.of()); assertEquals(0, result.code(), result.err());
