@@ -101,7 +101,7 @@ def run(root,evidence,thoth=None):
     before={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'docs/reference/generated').glob('task-*.adoc')}
     command('reference-generate',[str(dist/'bin/gretl'),'operations','--format','adoc','--lang','de','--output',str(root/'docs/reference/generated')],root)
     after={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'docs/reference/generated').glob('task-*.adoc')}
-    if len(after)!=45 or before!=after:raise RuntimeError('Generated 45-task reference drift')
+    if len(after)!=46 or before!=after:raise RuntimeError('Generated 46-task reference drift')
     site=evidence/'rendered-website'
     command('quarto',['quarto','render','website/','--output-dir',str(site)],root)
     for name in ['index','features','getting-started','docs']:

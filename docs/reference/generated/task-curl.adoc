@@ -5,7 +5,7 @@
 | [.dsl-signature]#*serverUrl* = uri#
 | Absolute [.acronym]#HTTP#-/[.acronym]#HTTPS#-Adresse +
 Erlaubte Werte: [.code-fragment]#`http`#, [.code-fragment]#`https`# +
-Beispiel: [.code-fragment]#`serverUrl = 'https://example.invalid/token'`#
+Beispiel: [.code-fragment]#`serverUrl = 'https://example.invalid/status'`#
 | [.required]#ja#
 
 | [.dsl-signature]#*method* = text#
@@ -38,7 +38,7 @@ Beispiel: [.code-fragment]#`formData = [topic: 'npl', file: file('data.xtf.zip')
 
 | [.dsl-signature]#*data* = text#
 | Optionaler UTF-8-Text-Body +
-Beispiel: [.code-fragment]#`data = 'grant_type=client_credentials'`#
+Beispiel: [.code-fragment]#`data = '{"probe":true}'`#
 | [.optional]#nein#
 
 | [.dsl-signature]#*dataBinary* = path#
