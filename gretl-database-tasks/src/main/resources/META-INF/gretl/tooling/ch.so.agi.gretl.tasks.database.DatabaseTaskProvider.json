@@ -17,7 +17,26 @@
       },
       "pathRole": "JOB_RESOURCE",
       "hints": {
-        "sqlMode": "complete-scripts"
+        "sqlMode": "sql-templates"
+      }
+    },
+    {
+      "operationId": "gretl.sql-executor",
+      "field": "sqlFiles",
+      "shape": {
+        "kind": "ListOf",
+        "runtimeType": "list",
+        "children": [
+          {
+            "kind": "Path",
+            "runtimeType": "path",
+            "children": []
+          }
+        ]
+      },
+      "pathRole": "JOB_RESOURCE",
+      "hints": {
+        "sqlMode": "sql-templates"
       }
     },
     {

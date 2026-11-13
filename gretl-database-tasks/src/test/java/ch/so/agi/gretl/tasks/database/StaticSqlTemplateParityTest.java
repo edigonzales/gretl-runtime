@@ -30,10 +30,9 @@ class StaticSqlTemplateParityTest {
     }
     @Test void sqlSourceRulesMatchCurrentProviderInputsAndDb2dbTransferConversion(){
         var duck=DuckDbSqlExecutorOperation.type();var db2db=Db2DbOperation.type();
-        for(var operation:List.of(duck,db2db)){
+        for(var operation:List.of(duck,db2db,SqlExecutorOperation.type())){
             assertTrue(ch.so.agi.gretl.tooling.syntax.SqlSourceSyntax.templated(operation.symbol()));assertTrue(operation.inputs().stream().anyMatch(f->f.name().equals("sqlParameters")));assertTrue(operation.inputs().stream().anyMatch(f->f.name().equals("sqlParameterSets")));
         }
-        assertFalse(ch.so.agi.gretl.tooling.syntax.SqlSourceSyntax.templated(SqlExecutorOperation.type().symbol()));
         var parsed=new ch.so.agi.gretl.tooling.syntax.GretlDocumentParser().parse(ch.so.agi.gretl.tooling.source.SourceText.job("task('copy', Db2Db) { transfers=[[sqlFile:file('query'),targetTable:'t']] }"));
         var paths=ch.so.agi.gretl.tooling.syntax.SqlSourceSyntax.files(db2db.symbol(),parsed.declarations().getFirst().fields());assertEquals(1,paths.size());
         var call=assertInstanceOf(ch.so.agi.gretl.tooling.syntax.SyntaxModel.CallValue.class,paths.getFirst());var literal=assertInstanceOf(ch.so.agi.gretl.tooling.syntax.SyntaxModel.LiteralValue.class,call.arguments().getFirst());

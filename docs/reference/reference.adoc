@@ -2575,7 +2575,9 @@ Für Dateien genau eines von `scripts` und `sqlFiles` setzen. Die UTF-8-Dateien
 müssen auf `.sql` enden, unabhängig von der Schreibweise der Endung.
 Die Runtime verarbeitet einzelne SQL-Anweisungen und berücksichtigt dabei
 Zeichenketten, Kommentare und PostgreSQL-Dollarquotes. Dateireihenfolge und
-wiederholte Dateipfade bleiben erhalten.
+wiederholte Dateipfade bleiben erhalten. Eine führende UTF-8-BOM wird entfernt.
+Eine leere oder ausschliesslich kommentierte Datei zählt als Dateieintrag und
+führt keine Anweisung aus.
 
 `sqlParameters` nimmt eine Map oder eine Liste von Maps an. Alternativ akzeptiert
 `sqlParameterSets` eine Liste von Maps. Ohne Parameterfeld läuft die Dateiliste
