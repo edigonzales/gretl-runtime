@@ -35,9 +35,13 @@ task('s3-upload', S3Upload) {
     bucketName = parameter('sourceBucket')
     if (parameter('selection') == 'directory') sourceDir = file('original/S3UploadDirectory/docs')
     else if (parameter('selection') == 'tree') sourceFiles = [file('original/S3UploadFileTree/docs/foo.csv'), file('original/S3UploadFileTree/docs/bar.csv')]
+    else if (parameter('selection') == 'key') { sourceFile = file('one.txt'); key = parameter('key') }
     else if (parameter('selection') == 'file') sourceFile = file('original/S3UploadFile/docs/bar.txt')
     else { sourceFile = file('one.txt'); sourceDir = file('dir'); sourceFiles = [file('tree/three.csv')] }
     acl = 'private'; contentType = 'text/plain'; metadata = [source: 'test']
+}
+action('s3-upload-key-result', dependsOn: 's3-upload') {
+    assert result('s3-upload').keys == [parameter('key')]
 }
 task('s3-copy', S3Bucket2Bucket) {
     accessKey = parameter('accessKey'); secretKey = secret('s3SecretKey'); endpoint = parameter('endpoint'); region = parameter('region')
