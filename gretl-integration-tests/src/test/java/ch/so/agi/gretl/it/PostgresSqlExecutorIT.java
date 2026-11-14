@@ -109,6 +109,63 @@ class PostgresSqlExecutorIT {
         }
     }
 
+    @Test
+    void commitsEachParameterSetAndStopsAfterFailure() throws Exception {
+        Files.writeString(root.resolve("first.SQL"), """
+                /* Outer ; /* nested ; */ end */
+                INSERT INTO ${schema}.demo(id, txt) VALUES (${first}, '${label};first');
+                DO $body$ BEGIN
+                    UPDATE ${schema}.demo SET txt = txt || ';do' WHERE id = ${first};
+                END $body$;
+                """);
+        Files.writeString(root.resolve("second.sql"),
+                "INSERT INTO ${schema}.demo(id, txt) VALUES (${second}, '${label};second');");
+        JobRunner.Result run = JobRunner.run(root, """
+                task('execute', SqlExecutor) {
+                    database = 'db'
+                    sqlFiles = [file('first.SQL'), file('second.sql')]
+                    sqlParameters = [
+                        [schema: '%1$s', first: '1', second: '2', label: 'one$1'],
+                        [schema: '%1$s', first: '3', second: '2', label: 'two'],
+                        [schema: '%1$s', first: '4', second: '5', label: 'three']
+                    ]
+                }
+                defaults 'execute'
+                """.formatted(lease.schema()), config());
+        assertEquals(10, run.code(), run.out() + run.err());
+        String diagnostics = run.out() + run.err() + Files.readString(run.report());
+        assertTrue(diagnostics.contains("second.sql"), diagnostics);
+        assertTrue(diagnostics.contains("23505"), diagnostics);
+        try (Connection connection = connection();
+             Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery("SELECT id, txt FROM demo ORDER BY id")) {
+            assertTrue(rows.next());
+            assertEquals(1, rows.getInt(1));
+            assertEquals("one$1;first;do", rows.getString(2));
+            assertTrue(rows.next());
+            assertEquals(2, rows.getInt(1));
+            assertEquals("one$1;second", rows.getString(2));
+            assertFalse(rows.next());
+        }
+    }
+
+    @Test
+    void masksKnownDatabaseSecretInResultRows() throws Exception {
+        Files.writeString(root.resolve("diagnose.sql"),
+                "SELECT '" + lease.password().replace("'", "''") + "' || '-diagnose';");
+        JobRunner.Result run = JobRunner.run(root, """
+                task('execute', SqlExecutor) {
+                    database = 'db'
+                    scripts = [file('diagnose.sql')]
+                }
+                defaults 'execute'
+                """, config());
+        assertEquals(0, run.code());
+        String logs = run.out() + run.err();
+        assertTrue(logs.contains("-diagnose"));
+        assertFalse(logs.contains(lease.password()));
+    }
+
     private Map<String, Object> config() throws Exception {
         Map<String, Object> config = JobRunner.baseConfig(root);
         JobRunner.secret(root, config, "dbPassword", lease.password());

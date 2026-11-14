@@ -63,6 +63,40 @@ class CliSqlIntegrationTest {
         assertFalse(Files.readString(report).contains("O''Brien"));
     }
 
+    @Test
+    void sqlFilesAndParameterListsWorkThroughTheCli() throws Exception {
+        String db = "jdbc:duckdb:" + tempDir.resolve("demo.duckdb");
+        Files.writeString(tempDir.resolve("change.sql"), """
+                CREATE TABLE IF NOT EXISTS demo (id INTEGER);
+                INSERT INTO demo VALUES (${id});
+                """);
+        Path job = tempDir.resolve("job.groovy");
+        Files.writeString(job, """
+                task('insert', SqlExecutor) {
+                    database = 'db'
+                    sqlFiles = [file('change.sql')]
+                    sqlParameters = [[id: '7'], [id: '9']]
+                }
+                defaults 'insert'
+                """);
+        Path config = tempDir.resolve("config.json");
+        Files.writeString(config, Json.write(Map.of("schemaVersion", 1,
+                "taskConfig", Map.of("db", Map.of("jdbcUrl", db)),
+                "runtime", Map.of("workRoot", tempDir.resolve("work").toString(),
+                        "reportRoot", tempDir.resolve("reports").toString()))));
+        Result result = run("run", job.toString(), "--config", config.toString());
+        assertEquals(0, result.code(), result.out() + result.err());
+        try (Connection connection = DriverManager.getConnection(db);
+             Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery("SELECT id FROM demo ORDER BY id")) {
+            assertTrue(rows.next());
+            assertEquals(7, rows.getInt(1));
+            assertTrue(rows.next());
+            assertEquals(9, rows.getInt(1));
+            assertFalse(rows.next());
+        }
+    }
+
     private Result run(String... args) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();

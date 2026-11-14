@@ -71,7 +71,7 @@ python3 scripts/check-docs.py
 quarto render website/
 ```
 
-Die 46 generierten Tasktabellen werden gegen die Distribution und die Includes
+Die 51 generierten Tasktabellen werden gegen die Distribution und die Includes
 in `reference.adoc` geprüft. Die [Referenzanleitung](../reference/README.md)
 beschreibt den tatsächlichen Thoth-Biblios-Build. Quarto rendert die Website
 nach `website/_site/`; [Website-Pflege](../../website/README.md) beschreibt die

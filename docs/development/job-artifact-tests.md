@@ -96,7 +96,7 @@ das eigene markierte Netz werden entfernt.
 ## Operationsabdeckung und Diagnose
 
 Die [Soll-Liste](../../tests/contracts/operation-baseline.json) enthält
-46 Standardoperationen. Nach erfolgreichen JUnit-Assertions sammelt die
+51 Standardoperationen. Nach erfolgreichen JUnit-Assertions sammelt die
 Testsuite die in echten SCRIPT-Reports erfolgreich ausgeführten IDs.
 Maven prüft die Liste bei `verify` im Dienstprofil. Fehlende IDs oder
 ein leeres Ergebnis schlagen den Build fehl.
@@ -114,7 +114,7 @@ betroffene JUnit-Fälle und begrenzte Logauszüge der zugehörigen Produktprozes
 
 `publish-snapshots.yml` führt `python3.12 scripts/verify-runtime.py` bei Push auf
 `main`, bei Pull Requests gegen `main` und bei manuellem Start aus.
-Der Reaktor prüft alle 46 Standardoperationen in SCRIPT und führt
+Der Reaktor prüft alle 51 Standardoperationen in SCRIPT und führt
 gezielte JAR- und IMAGE-Prozesse aus. Der Publish-Job hängt vom
 erfolgreichen Verify-Job ab und läuft auf `main`.
 

@@ -15,7 +15,7 @@ description: "Current source documentation and executable examples."
 - [Projects and subprojects](https://github.com/edigonzales/gretl-runtime/blob/main/docs/guides/projects.md)
 - [Tests and service requirements](https://github.com/edigonzales/gretl-runtime/blob/main/docs/development/testing.md)
 
-The reference contains all 46 operation chapters. Field tables are generated
+The reference contains all 51 operation chapters. Field tables are generated
 from the distribution; examples and task descriptions are maintained alongside
 the tested sources. The [documentation index](https://github.com/edigonzales/gretl-runtime/blob/main/docs/README.md)
 also links to runtime configuration, static includes and the editor.

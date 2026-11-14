@@ -169,6 +169,36 @@ class ExtractOperationTest {
         assertThrows(IllegalArgumentException.class, gzip::build);
     }
 
+    @Test
+    void filtersRootAndNestedFilesWithoutSkippingEntryValidation() throws Exception {
+        Path archive = tempDir.resolve("filter.zip");
+        Path target = tempDir.resolve("filtered");
+        byte[] payload = {1};
+        writeZip(archive, Map.of("one.xtf", payload, "nested/two.xtf", payload,
+                "backup/old.xtf", payload, "ignored/three.XTF", payload));
+        var request = new ExtractOperation.ExtractRequest(archive, "ZIP", target, null, 2, 4,
+                List.of("**/*.xtf"), List.of("backup/**"));
+        var result = new ExtractOperation.ExtractHandler().execute(request, context());
+        assertEquals(List.of(target.resolve("nested/two.xtf"), target.resolve("one.xtf")), result.files());
+        assertEquals(2, result.bytes());
+        assertFalse(Files.exists(target.resolve("backup")));
+        assertFalse(Files.exists(target.resolve("ignored")));
+
+        Path bad = tempDir.resolve("excluded-traversal.zip");
+        writeZip(bad, Map.of("../bad.txt", payload));
+        var traversal = new ExtractOperation.ExtractRequest(bad, "ZIP", tempDir.resolve("bad-output"),
+                null, 1, 1, List.of("**/*.xtf"), List.of());
+        assertThrows(ExtractTaskException.class,
+                () -> new ExtractOperation.ExtractHandler().execute(traversal, context()));
+
+        var limit = new ExtractOperation.ExtractRequest(archive, "ZIP", tempDir.resolve("limited"),
+                null, 8, 3, List.of("no-match"), List.of());
+        assertThrows(ExtractTaskException.class,
+                () -> new ExtractOperation.ExtractHandler().execute(limit, context()));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ExtractOperation.ExtractRequest(archive, "GZIP", null, target, 2, 4, List.of(), null));
+    }
+
     private ExtractOperation.ExtractRequest zipRequest(Path zip, Path out) {
         ExtractOperation.ExtractBuilder builder = new ExtractOperation.ExtractBuilder();
         builder.setArchive(zip);

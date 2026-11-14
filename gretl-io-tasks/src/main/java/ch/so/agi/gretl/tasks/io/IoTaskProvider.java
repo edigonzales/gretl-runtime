@@ -8,6 +8,7 @@ import ch.so.agi.gretl.tasks.io.auth.OAuth2ClientCredentialsOperation;
 import ch.so.agi.gretl.tasks.io.json.JsonReadOperation;
 import ch.so.agi.gretl.tasks.io.archive.GzipOperation;
 import ch.so.agi.gretl.tasks.io.archive.ExtractOperation;
+import ch.so.agi.gretl.tasks.io.archive.ZipOperation;
 import ch.so.agi.gretl.tasks.io.ftp.FtpListOperation;
 import ch.so.agi.gretl.tasks.io.ftp.FtpDownloadOperation;
 import ch.so.agi.gretl.tasks.io.ftp.FtpUploadOperation;
@@ -16,6 +17,10 @@ import ch.so.agi.gretl.tasks.io.s3.S3DownloadOperation;
 import ch.so.agi.gretl.tasks.io.s3.S3UploadOperation;
 import ch.so.agi.gretl.tasks.io.s3.S3DeleteOperation;
 import ch.so.agi.gretl.tasks.io.s3.S3Bucket2BucketOperation;
+import ch.so.agi.gretl.tasks.io.sftp.SftpListOperation;
+import ch.so.agi.gretl.tasks.io.sftp.SftpDownloadOperation;
+import ch.so.agi.gretl.tasks.io.sftp.SftpUploadOperation;
+import ch.so.agi.gretl.tasks.io.sftp.SftpDeleteOperation;
 import ch.so.agi.gretl.tasks.io.xslt.XslTransformerOperation;
 
 /** Complete io operation catalog. */
@@ -27,6 +32,11 @@ public final class IoTaskProvider implements OperationProvider {
                 JsonReadOperation.type(),
                 GzipOperation.type(),
                 ExtractOperation.type(),
+                ZipOperation.type(),
+                SftpDeleteOperation.type(),
+                SftpUploadOperation.type(),
+                SftpDownloadOperation.type(),
+                SftpListOperation.type(),
                 FtpListOperation.type(),
                 FtpDownloadOperation.type(),
                 FtpUploadOperation.type(),

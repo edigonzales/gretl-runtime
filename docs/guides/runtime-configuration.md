@@ -74,6 +74,25 @@ abgeleiteten Unterverzeichnissen führen zu einem Pfadfehler. Dies schützt
 gegen vorhandene Links zum Prüfzeitpunkt. Gleichzeitige lokale Änderungen
 am Verzeichnisbaum liegen ausserhalb dieses Schutzes.
 
+## SFTP-Verbindungen
+
+Alle SFTP-Operationen beziehen ihre Verbindung über einen Alias in `taskConfig`.
+`host`, `user` und `knownHostsFile` sind erforderlich. Der Port ist standardmässig
+22. Der Hostkey muss für Host und Port in der Datei eingetragen sein. Für einen
+abweichenden Port gilt die OpenSSH-Schreibweise `[host]:port`.
+
+Genau eine Authentisierung konfigurieren. Für Passwortzugriff ist
+`passwordSecret` ein Secretalias. Für Schlüsselzugriff dient `privateKeyFile`
+mit optionalem `privateKeyPassphraseSecret`. Schlüssel und known_hosts bleiben
+ausserhalb von Job und Image. Relative Dateipfade werden ab dem Ordner der
+Runtimekonfiguration aufgelöst.
+
+`connectTimeout` und `ioTimeout` verwenden ISO-8601-Dauern und sind
+standardmässig `PT20S` und `PT60S`. `connectRetries` zählt zusätzliche
+Verbindungsversuche bei einem vorübergehenden Verbindungsfehler. Der Standard
+ist null zusätzliche Versuche. Authentisierungs- und Hostkeyfehler beenden den
+Aufruf. Dateioperationen werden einmal ausgeführt.
+
 ## Curl-Formularuploads
 
 Curl streamt Multipart-Dateiteile direkt aus den angegebenen Dateien. Die

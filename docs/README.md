@@ -7,6 +7,7 @@ verfügbare Operationen und ihre Felder.
 ## Jobs schreiben und betreiben
 
 - [Projekte und Subprojekte](guides/projects.md)
+- [Gradle-Jobs migrieren](guides/gradle-migration.md)
 - [Scriptfragmente mit `apply from:`](guides/script-includes.md)
 - [Taskgebundene Finalizer und globales Cleanup](guides/task-finalizers.md)
 - [Job-JARs, Paketformate und Validatorfunktionen](guides/packaging.md)

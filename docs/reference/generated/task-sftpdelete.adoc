@@ -1,0 +1,21 @@
+[cols="4,6,1", options="header", role="gretl-task-properties"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*connection* = text#
+| Verbindungsalias +
+Beispiel: [.code-fragment]#`connection = 'exchange'`#
+| [.required]#ja#
+
+| [.dsl-signature]#*remotePaths* = list#
+| Exakte Remote-Dateipfade +
+Beispiel: [.code-fragment]#`remotePaths = ['incoming/data.xtf']`#
+| [.required]#ja#
+
+| [.dsl-signature]#*ignoreMissing* = boolean#
+| Fehlende Dateien zulassen +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`ignoreMissing = true`#
+| [.optional]#nein#
+
+|===

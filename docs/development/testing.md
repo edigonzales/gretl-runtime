@@ -18,7 +18,7 @@ python3.12 scripts/verify-runtime.py
 
 Das Skript legt ein eigenes Docker-Netz an und startet genau einen
 `./mvnw -B -Pgeotools-probe,backing-services,job-image clean verify`-Lauf.
-Der Reactor prüft die vollständige SCRIPT-Fachsuite mit 46
+Der Reactor prüft die vollständige SCRIPT-Fachsuite mit 51
 Standardoperationen, explizite selbständige JAR-Prozesse und ausgewählte
 IMAGE-Prozesse mit externen Jobs. Das Image verwendet dasselbe Testnetz
 wie PostgreSQL/PostGIS und S3. Der Aufruf benötigt einen non-root
@@ -100,6 +100,11 @@ Codecoverage. Die [Jobtest-Verträge](job-artifact-tests.md) erklären
 Prozessstart, Eingaben, Reports und Cleanup.
 Testzahlen gelten für den jeweiligen SHA. Tatsächliche Plattform und
 nicht ausgeführte Cluster-/Architekturprüfungen gehören in den jeweiligen Prüfbeleg.
+
+`SftpOperationsTest` nutzt einen lokalen MINA-Server. `SftpExchangeIT` prüft
+SCRIPT und ein eigenständiges IO-JAR gegen einen digestgepinnten OpenSSH-Server.
+Die Tests prüfen die übertragenen Dateibytes, Formatanzahlen und die Löschung
+erst nach erfolgreicher Verarbeitung.
 
 ## Beispielquellen und Drift
 

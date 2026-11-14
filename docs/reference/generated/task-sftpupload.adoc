@@ -1,0 +1,26 @@
+[cols="4,6,1", options="header", role="gretl-task-properties"]
+|===
+| Feld | Beschreibung | Erforderlich
+
+| [.dsl-signature]#*connection* = text#
+| Verbindungsalias +
+Beispiel: [.code-fragment]#`connection = 'exchange'`#
+| [.required]#ja#
+
+| [.dsl-signature]#*sourceFile* = path#
+| Lokale Quelldatei +
+Beispiel: [.code-fragment]#`sourceFile = file('data.xtf')`#
+| [.required]#ja#
+
+| [.dsl-signature]#*remotePath* = text#
+| Remote-Pfad +
+Beispiel: [.code-fragment]#`remotePath = 'incoming/data.xtf'`#
+| [.required]#ja#
+
+| [.dsl-signature]#*overwrite* = boolean#
+| Vorhandene Datei ersetzen +
+Vorgabe: [.code-fragment]#`false`# +
+Beispiel: [.code-fragment]#`overwrite = true`#
+| [.optional]#nein#
+
+|===

@@ -27,10 +27,14 @@ public final class SqlTemplateAnalyzer {
     }
     private static Reporter guarded(Reporter reporter,boolean conditional){return (code,severity,anchor)->reporter.report(code,conditional&&severity==Severity.ERROR?Severity.WARNING:severity,anchor);}
     private static void validateFields(WorkspaceCapture capture,java.net.URI resourceBase,Anchor owner,String operation,List<FieldAssignment> fields,Reporter reporter,CancellationToken cancellation){
-        // SqlExecutor.scripts are plain SQL; its prepared statements use JDBC ?, not named templates.
         if(!SqlSourceSyntax.templated(operation))return;
         var assignments=SqlSourceSyntax.assignments(fields);var values=SqlSourceSyntax.files(operation,fields);
-        var sets=parameterSets(assignments);int inspected=0;
+        boolean sqlExecutor = operation.equals("SqlExecutor");
+        if (sqlExecutor && !assignments.containsKey("sqlParameters")
+                && !assignments.containsKey("sqlParameterSets")) return;
+        var sets=sqlExecutor ? executorParameterSets(assignments) : parameterSets(assignments);
+        if (sets != null && sets.isEmpty()) return;
+        int inspected=0;
         for(var file:values){cancellation.check();if(++inspected>512){reporter.report("SEMANTIC_LIMIT",Severity.INFORMATION,owner);return;}
             if(!(file instanceof CallValue call&&call.name().equals("file")&&call.arguments().size()==1&&text(call.arguments().getFirst())!=null)){
                 reporter.report("PATH_DYNAMIC",Severity.INFORMATION,new Anchor(owner.documentId(),file.span()));continue;
@@ -44,6 +48,23 @@ public final class SqlTemplateAnalyzer {
             for(var placeholder:scan.placeholders())for(var set:sets){cancellation.check();if(!set.containsKey(placeholder.name())||Boolean.FALSE.equals(set.get(placeholder.name())))reporter.report("SQL_PARAMETER_MISSING",Severity.ERROR,new Anchor(resource,new ch.so.agi.gretl.tooling.source.TextSpan(placeholder.startUtf16(),placeholder.endUtf16())));else if(set.get(placeholder.name())==null)reporter.report("SQL_PARAMETERS_DYNAMIC",Severity.INFORMATION,new Anchor(resource,new ch.so.agi.gretl.tooling.source.TextSpan(placeholder.startUtf16(),placeholder.endUtf16())));}
         }
     }
+    private static List<Map<String,Boolean>> executorParameterSets(Map<String,ValueExpression> fields) {
+        var explicitSets = fields.get("sqlParameterSets");
+        var base = fields.get("sqlParameters");
+        if (explicitSets != null && base != null) return null;
+        var value = explicitSets == null ? base : explicitSets;
+        if (explicitSets == null && value instanceof MapValue) return oneMap(value);
+        if (!(value instanceof ListValue list)) return null;
+        var result = new ArrayList<Map<String,Boolean>>();
+        for (var item : list.items()) {
+            if (!(item instanceof MapValue)) return null;
+            var single = oneMap(item);
+            if (single == null) return null;
+            result.add(single.getFirst());
+        }
+        return result;
+    }
+
     /** null map means dynamic structure; null value means a known key with unknown nullness. */
     private static List<Map<String,Boolean>> parameterSets(Map<String,ValueExpression> fields){
         var sets=fields.get("sqlParameterSets");var base=fields.get("sqlParameters");

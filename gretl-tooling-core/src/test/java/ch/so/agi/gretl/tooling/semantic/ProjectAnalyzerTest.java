@@ -21,7 +21,8 @@ class ProjectAnalyzerTest {
         new OperationDescriptor("test.echo","Echo","Test","fixture",List.of(input("input","text",true,List.of()),input("mode","text",false,List.of("COPY","MOVE"))),List.of(new OutputDescriptor("file","File",ValueShape.fromMetadata("path"),false)),"example",false),
         new OperationDescriptor("test.duckdb","DuckDbSqlExecutor","Test","fixture",List.of(input("sqlFiles","list",true,List.of()),input("sqlParameters","map",false,List.of()),input("sqlParameterSets","list",false,List.of())),List.of(),"example",true),
         new OperationDescriptor("test.db2db","Db2Db","Test","fixture",List.of(input("transfers","list",true,List.of()),input("sqlParameters","map",false,List.of()),input("sqlParameterSets","list",false,List.of())),List.of(),"example",true),
-        new OperationDescriptor("test.sql","SqlExecutor","Test","fixture",List.of(input("scripts","list",false,List.of())),List.of(),"example",true));
+        new OperationDescriptor("test.sql","SqlExecutor","Test","fixture",List.of(input("scripts","list",false,List.of()),input("sqlFiles","list",false,List.of()),
+                input("sqlParameters","map-or-list",false,List.of()),input("sqlParameterSets","list",false,List.of())),List.of(),"example",true));
         var load=repository.loadBundled(codec.encodeCanonical(codec.identify(new OperationCatalog(1,"test","test","",List.of("fixture"),operations,"COMPLETE"))),null);assertEquals(CatalogJsonCodec.State.AVAILABLE,load.result().state());return repository;}
     static Analysis analyze(String text){return analyze(Map.of(JOB,text),JOB,new DocumentStore(),catalog(),"en");}
     static Analysis analyze(Map<URI,String> files,URI document,DocumentStore store,CatalogRepository catalogs,String language){
@@ -97,6 +98,24 @@ class ProjectAnalyzerTest {
         var analysis=analyze("parameter('external',description:'P',type:'path'); action('a') { file('sql/input.sql'); workPath('output'); parameter('external'); path('raw-relative') }");
         assertEquals(List.of(PathKind.JOB_RESOURCE,PathKind.WORK,PathKind.EXTERNAL_PARAMETER,PathKind.DYNAMIC),analysis.paths().stream().map(PathReference::kind).toList());assertEquals(URI.create("file:/work/sql/input.sql"),analysis.paths().getFirst().resourceId());assertNull(analysis.paths().get(1).resourceId());assertNull(analysis.paths().get(2).resourceId());
     }
+    @Test void sqlExecutorAcceptsMapsAndListsAndChecksOnlyExecutedTemplates() {
+        var sql = URI.create("file:/work/query.sql");
+        for (String fields : List.of(
+                "scripts=[file('query.sql')]; sqlParameters=[name:'one']",
+                "sqlFiles=[file('query.sql')]; sqlParameters=[[name:'one'], [name:'two']]",
+                "sqlFiles=[file('query.sql')]; sqlParameterSets=[]",
+                "scripts=[file('query.sql')]")) {
+            var analysis = analyze(Map.of(JOB, "task('sql', SqlExecutor) {" + fields + "}",
+                    sql, "select '${name}'"), JOB, new DocumentStore(), catalog(), "en");
+            assertFalse(codes(analysis).contains("SQL_PARAMETER_MISSING"), analysis.diagnostics().toString());
+            assertFalse(codes(analysis).contains("INPUT_TYPE"), analysis.diagnostics().toString());
+        }
+        var missing = analyze(Map.of(JOB,
+                "task('sql', SqlExecutor) {sqlFiles=[file('query.sql')]; sqlParameters=[[:]]}",
+                sql, "select '${name}'"), JOB, new DocumentStore(), catalog(), "en");
+        assertTrue(codes(missing).contains("SQL_PARAMETER_MISSING"), missing.diagnostics().toString());
+    }
+
     @Test void sqlSourcesWithEqualNamesStayInTheirSubprojectsAndMissingMapsRemainErrors(){
         var settings=URI.create("file:/work/settings.gretl");var a=URI.create("file:/work/a/job.groovy");var b=URI.create("file:/work/b/job.groovy");var sqlA=URI.create("file:/work/a/sql/update.sql");var sqlB=URI.create("file:/work/b/sql/update.sql");
         String job="task('sql', DuckDbSqlExecutor) { sqlFiles=[file('sql/update.sql')] }";

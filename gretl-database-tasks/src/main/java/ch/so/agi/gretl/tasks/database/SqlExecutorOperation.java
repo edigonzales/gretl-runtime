@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 
-/** PostgreSQL-focused bounded SqlExecutor with scripts or prepared statements. */
+/** JDBC SqlExecutor with scripts or prepared statements. */
 public final class SqlExecutorOperation {
     public static final String ID = "gretl.sql-executor";
     public static final String SYMBOL = "SqlExecutor";
@@ -44,14 +44,36 @@ public final class SqlExecutorOperation {
 
     public static OperationType<SqlRequest, SqlResult> type() {
         InputField<SqlRequest, String> database = new InputField<>(
-                "database", "text", "Alias of a prepared PostgreSQL connection",
+                "database", "text", "Alias of a configured JDBC connection",
                 true, Optional.empty(), List.of(), "database = 'edit'",
                 SqlExecutorOperation::text, (builder, value) -> ((SqlBuilder) builder).setDatabase(value));
         InputField<SqlRequest, List<Path>> scripts = new InputField<>(
-                "scripts", "list", "Ordered complete UTF-8 SQL script files", false,
-                Optional.of(List.of()), List.of(),
+                "scripts", "list", "Ordered UTF-8 SQL script files", false,
+                Optional.empty(), List.of(),
                 "scripts = [file('sql/update.sql')]",
                 SqlExecutorOperation::paths, (builder, value) -> ((SqlBuilder) builder).setScripts(value));
+        InputField<SqlRequest, List<Path>> sqlFiles = new InputField<>(
+                "sqlFiles", "list", "Alias for scripts", false, Optional.empty(), List.of(),
+                "sqlFiles = [file('sql/update.sql')]",
+                SqlExecutorOperation::paths, (builder, value) -> ((SqlBuilder) builder).setSqlFiles(value));
+        InputField<SqlRequest, List<Map<String, String>>> sqlParameters = new InputField<>(
+                "sqlParameters", "map-or-list", "SQL template parameters as a map or list of maps",
+                false, Optional.empty(), List.of(), "sqlParameters = [schema: 'edit']",
+                value -> value instanceof Map<?, ?> map ? List.of(parameterMap(map)) : parameterSets(value),
+                (builder, value) -> ((SqlBuilder) builder).sqlParameters = value);
+        InputField<SqlRequest, List<Map<String, String>>> sqlParameterSets = new InputField<>(
+                "sqlParameterSets", "list", "Ordered maps of SQL template parameters",
+                false, Optional.empty(), List.of(), "sqlParameterSets = [[schema: 'edit']]",
+                SqlExecutorOperation::parameterSets,
+                (builder, value) -> ((SqlBuilder) builder).sqlParameterSets = value);
+        InputField<SqlRequest, Boolean> logResults = new InputField<>(
+                "logResults", "boolean", "Log result rows", false, Optional.of(true), List.of(),
+                "logResults = false", SqlExecutorOperation::booleanValue,
+                (builder, value) -> ((SqlBuilder) builder).logResults = value);
+        InputField<SqlRequest, Integer> maxLoggedRows = new InputField<>(
+                "maxLoggedRows", "integer", "Logged rows per result set (0 for unlimited)", false,
+                Optional.of(1000), List.of(), "maxLoggedRows = 100",
+                SqlExecutorOperation::rowLimit, (builder, value) -> ((SqlBuilder) builder).maxLoggedRows = value);
         InputField<SqlRequest, List<PreparedStatementSpec>> statements = new InputField<>(
                 "statements", "list", "Ordered prepared statements", false,
                 Optional.of(List.of()), List.of(),
@@ -67,7 +89,8 @@ public final class SqlExecutorOperation {
                 ID, SYMBOL, "Execute SQL scripts or prepared statements",
                 SqlRequest.class, SqlResult.class,
                 SqlBuilder::new, SqlHandler::new,
-                List.of(database, scripts, statements),
+                List.of(database, scripts, sqlFiles, statements, sqlParameters, sqlParameterSets,
+                        logResults, maxLoggedRows),
                 List.of(executionCount, executions),
                 """
                 task('update', SqlExecutor) {
@@ -156,37 +179,105 @@ public final class SqlExecutorOperation {
         return result;
     }
 
+    private static Boolean booleanValue(Object value) {
+        if (value instanceof Boolean flag) {
+            return flag;
+        }
+        throw new IllegalArgumentException("logResults must be boolean");
+    }
+
+    private static Integer rowLimit(Object value) {
+        if (value instanceof Byte || value instanceof Short || value instanceof Integer
+                || value instanceof Long || value instanceof java.math.BigInteger) {
+            try {
+                int limit = Integer.parseInt(value.toString());
+                if (limit >= 0) {
+                    return limit;
+                }
+            } catch (NumberFormatException ignored) {
+                // Out of range.
+            }
+        }
+        throw new IllegalArgumentException("maxLoggedRows must be a non-negative integer");
+    }
+
+    private static List<Map<String, String>> parameterSets(Object value) {
+        if (!(value instanceof List<?> sets)) {
+            throw new IllegalArgumentException("SQL parameter sets must be a list of maps");
+        }
+        return sets.stream().map(SqlExecutorOperation::parameterMap).toList();
+    }
+
+    private static Map<String, String> parameterMap(Object value) {
+        if (!(value instanceof Map<?, ?> map)) {
+            throw new IllegalArgumentException("Each SQL parameter set must be a map");
+        }
+        Map<String, String> normalized = new LinkedHashMap<>();
+        map.forEach((key, entry) -> {
+            if (!(key instanceof CharSequence name) || !(entry instanceof CharSequence replacement)) {
+                throw new IllegalArgumentException("SQL parameter names and values must be text");
+            }
+            if (normalized.putIfAbsent(name.toString(), replacement.toString()) != null) {
+                throw new IllegalArgumentException("Duplicate SQL parameter name");
+            }
+        });
+        return Map.copyOf(normalized);
+    }
+
     public record SqlRequest(
-            String database, List<Path> scripts,
-            List<PreparedStatementSpec> statements) {
+            String database, List<Path> scripts, List<PreparedStatementSpec> statements,
+            Optional<List<Map<String, String>>> parameterSets, boolean logResults, int maxLoggedRows) {
+        public SqlRequest(String database, List<Path> scripts, List<PreparedStatementSpec> statements) {
+            this(database, scripts, statements, Optional.empty(), true, 1000);
+        }
+
         public SqlRequest {
             java.util.Objects.requireNonNull(database, "database");
             scripts = List.copyOf(scripts);
             statements = List.copyOf(statements);
+            parameterSets = parameterSets.map(sets -> sets.stream().map(Map::copyOf).toList());
+            if (maxLoggedRows < 0) {
+                throw new IllegalArgumentException("maxLoggedRows must be non-negative");
+            }
         }
     }
 
     public static final class SqlBuilder implements ConfigBuilder<SqlRequest> {
         private String database;
-        private List<Path> scripts = List.of();
+        private List<Path> scripts;
+        private List<Path> sqlFiles;
         private List<PreparedStatementSpec> statements = List.of();
+        private List<Map<String, String>> sqlParameters;
+        private List<Map<String, String>> sqlParameterSets;
+        private boolean logResults = true;
+        private int maxLoggedRows = 1000;
 
         public void setDatabase(String value) { database = value; }
-        public void setScripts(List<Path> value) { scripts = value; }
-        public void setStatements(List<PreparedStatementSpec> value) { statements = value; }
+        public void setScripts(List<Path> value) { scripts = List.copyOf(value); }
+        public void setSqlFiles(List<Path> value) { sqlFiles = List.copyOf(value); }
+        public void setStatements(List<PreparedStatementSpec> value) { statements = List.copyOf(value); }
 
         @Override
         public SqlRequest build() {
             if (database == null || database.isBlank()) {
                 throw new IllegalArgumentException("database is missing");
             }
-            boolean hasScripts = !scripts.isEmpty();
-            boolean hasStatements = !statements.isEmpty();
-            if (hasScripts == hasStatements) {
+            if (scripts != null && sqlFiles != null) {
+                throw new IllegalArgumentException("scripts and sqlFiles are mutually exclusive");
+            }
+            if (sqlParameters != null && sqlParameterSets != null) {
+                throw new IllegalArgumentException("sqlParameters and sqlParameterSets are mutually exclusive");
+            }
+            List<Path> files = scripts != null ? scripts : sqlFiles != null ? sqlFiles : List.of();
+            if (files.isEmpty() == statements.isEmpty()) {
                 throw new IllegalArgumentException(
                         "Exactly one of scripts or statements must be non-empty");
             }
-            return new SqlRequest(database, scripts, statements);
+            var sets = Optional.ofNullable(sqlParameters != null ? sqlParameters : sqlParameterSets);
+            if (!statements.isEmpty() && sets.isPresent()) {
+                throw new IllegalArgumentException("SQL template parameters require SQL files");
+            }
+            return new SqlRequest(database, files, statements, sets, logResults, maxLoggedRows);
         }
     }
 
@@ -194,6 +285,9 @@ public final class SqlExecutorOperation {
             implements ch.so.agi.gretl.runtime.api.OperationHandler<SqlRequest, SqlResult> {
         @Override
         public SqlResult execute(SqlRequest request, OperationContext context) {
+            if (request.parameterSets().filter(List::isEmpty).isPresent()) {
+                return new SqlResult(0, List.of());
+            }
             Map<String, Object> config = context.config(request.database());
             String jdbcUrl = requiredText(config, "jdbcUrl", context);
             String user = optionalText(config, "user", context);
@@ -215,57 +309,67 @@ public final class SqlExecutorOperation {
                 }
             }
             long started = System.nanoTime();
+            List<SqlExecutionResult> results = new ArrayList<>();
+            List<Map<String, String>> sets = request.parameterSets().orElseGet(() -> List.of(Map.of()));
+            for (int set = 0; set < sets.size(); set++) {
+                context.cancellation().throwIfCancellationRequested();
+                executeParameterSet(request, context, jdbcUrl, user, password, sets.get(set), set, results);
+            }
+            context.log().log(LogLevel.INFO, "gretl.sql.finished",
+                    msg(context, "task.sql.finished"),
+                    Map.of("db.alias", request.database(),
+                            "sql.execution_count", Integer.toString(results.size()),
+                            "duration_ms", Long.toString((System.nanoTime() - started) / 1_000_000)), null);
+            return new SqlResult(results.size(), results);
+        }
+
+        private static void executeParameterSet(SqlRequest request, OperationContext context,
+                                                String jdbcUrl, String user, String password,
+                                                Map<String, String> parameters, int set,
+                                                List<SqlExecutionResult> results) {
             Connection connection = null;
-            SqlTaskException primary = null;
+            RuntimeException primary = null;
             try {
                 connection = DriverManager.getConnection(jdbcUrl, user, password);
                 connection.setAutoCommit(false);
-                List<SqlExecutionResult> results = new ArrayList<>();
-                if (!request.scripts().isEmpty()) {
-                    for (int index = 0; index < request.scripts().size(); index++) {
-                        context.cancellation().throwIfCancellationRequested();
-                        results.add(executeScript(connection, request.scripts().get(index),
-                                index, request.database(), context));
-                        context.progress(new Progress("sql", index + 1,
-                                OptionalLong.of(request.scripts().size()), "entries"));
-                    }
-                } else {
-                    for (int index = 0; index < request.statements().size(); index++) {
-                        context.cancellation().throwIfCancellationRequested();
-                        results.add(executeStatement(connection,
-                                request.statements().get(index), index,
-                                request.database(), context));
-                        context.progress(new Progress("sql", index + 1,
-                                OptionalLong.of(request.statements().size()), "entries"));
-                    }
+                boolean scriptMode = !request.scripts().isEmpty();
+                boolean fetchInBatches = jdbcUrl.startsWith("jdbc:postgresql:");
+                int size = scriptMode ? request.scripts().size() : request.statements().size();
+                long total = (long) size * request.parameterSets().map(List::size).orElse(1);
+                for (int entry = 0; entry < size; entry++) {
+                    context.cancellation().throwIfCancellationRequested();
+                    int index = results.size();
+                    results.add(scriptMode
+                            ? executeScript(connection, request.scripts().get(entry), index,
+                                    request, parameters, set, fetchInBatches, context)
+                            : executeStatement(connection, request.statements().get(entry), index, request,
+                                    fetchInBatches, context));
+                    context.progress(new Progress("sql", index + 1, OptionalLong.of(total), "entries"));
                 }
+                context.cancellation().throwIfCancellationRequested();
                 try {
                     connection.commit();
                 } catch (SQLException exception) {
-                    primary = sqlError("SQL_COMMIT_UNKNOWN",
-                            msg(context, "task.sql.commitUnknown"), request.database(), null,
-                            results.size(), "commit", exception);
-                    rollbackQuietly(connection, primary);
-                    throw primary;
+                    throw sqlError("SQL_COMMIT_UNKNOWN", msg(context, "task.sql.commitUnknown"),
+                            request.database(), null, results.size(), "commit", exception);
                 }
-                context.log().log(LogLevel.INFO, "gretl.sql.finished",
-                        msg(context, "task.sql.finished"),
-                        Map.of("db.alias", request.database(),
-                                "sql.execution_count", Integer.toString(results.size()),
-                                "duration_ms", Long.toString(
-                                        (System.nanoTime() - started) / 1_000_000)), null);
-                return new SqlResult(results.size(), results);
             } catch (SqlTaskException exception) {
                 primary = exception;
+                rollbackQuietly(connection, primary);
                 logFailure(context, exception);
                 throw exception;
             } catch (SQLException exception) {
-                primary = sqlError("SQL_EXECUTION",
+                SqlTaskException failure = sqlError("SQL_EXECUTION",
                         msg(context, "task.sql.executionFailed"),
                         request.database(), null, 0, "connect", exception);
+                primary = failure;
                 rollbackQuietly(connection, primary);
-                logFailure(context, primary);
-                throw primary;
+                logFailure(context, failure);
+                throw failure;
+            } catch (RuntimeException exception) {
+                primary = exception;
+                rollbackQuietly(connection, primary);
+                throw exception;
             } finally {
                 if (connection != null) {
                     try {
@@ -307,49 +411,81 @@ public final class SqlExecutorOperation {
         }
 
         private static SqlExecutionResult executeScript(
-                Connection connection, Path script, int index, String alias,
-                OperationContext context) {
+                Connection connection, Path script, int index, SqlRequest request,
+                Map<String, String> parameters, int set, boolean fetchInBatches, OperationContext context) {
+            String alias = request.database();
+            String name = script.getFileName() == null ? script.toString() : script.getFileName().toString();
+            if (!name.toLowerCase(Locale.ROOT).endsWith(".sql")) {
+                throw new SqlTaskException("SQL_SCRIPT_READ", msg(context, "task.sql.scriptExtension", name),
+                        alias, name, index, "read", null, 0, null);
+            }
             String sql;
             try {
                 sql = Files.readString(script, StandardCharsets.UTF_8);
             } catch (IOException exception) {
                 throw new SqlTaskException("SQL_SCRIPT_READ",
-                        msg(context, "task.sql.scriptRead"), alias,
-                        script.getFileName().toString(), index, "read", null, 0, exception);
+                        msg(context, "task.sql.scriptReadPosition", name, set + 1), alias,
+                        name, index, "read", null, 0, exception);
             }
             String hash = sha256(sql);
             context.log().log(LogLevel.DEBUG, "gretl.sql.script",
                     "SQL script is being executed",
                     Map.of("db.alias", alias,
-                            "sql.script", script.getFileName().toString(),
+                            "sql.script", name,
                             "sql.entry", Integer.toString(index),
                             "sql.sha256", hash), null);
-            try (Statement statement = connection.createStatement()) {
-                applyTimeout(statement, context);
-                boolean hasResult = statement.execute(sql);
-                return collect(statement, hasResult, index);
-            } catch (SQLException exception) {
-                throw sqlError("SQL_SCRIPT", msg(context, "task.sql.scriptFailed"), alias,
-                        script.getFileName().toString(), index, "execute", exception);
+            var reader = new SqlScriptReader(sql);
+            List<Long> updates = new ArrayList<>();
+            int resultSets = 0;
+            int position = 0;
+            String entry;
+            while ((entry = reader.next()) != null) {
+                context.cancellation().throwIfCancellationRequested();
+                int statementPosition = ++position;
+                if (request.parameterSets().isPresent()) {
+                    entry = SqlScriptReader.substitute(entry, parameters, missing -> new SqlTaskException(
+                            "SQL_PARAMETER_MISSING", msg(context, "task.sql.parameterMissing",
+                                    name, set + 1, statementPosition, missing),
+                            alias, name, index, "template", null, 0, null));
+                }
+                try (Statement statement = connection.createStatement()) {
+                    applyTimeout(statement, context);
+                    if (fetchInBatches) {
+                        statement.setFetchSize(256);
+                    }
+                    var result = collect(statement, statement.execute(entry), index, request, context);
+                    updates.addAll(result.updateCounts());
+                    resultSets += result.resultSetCount();
+                } catch (SQLException exception) {
+                    // JDBC errors can quote the submitted SQL or data values.
+                    SQLException safe = new SQLException(null, exception.getSQLState(), exception.getErrorCode());
+                    throw sqlError("SQL_SCRIPT", msg(context, "task.sql.scriptPositionFailed",
+                                    name, set + 1, statementPosition, safe.getSQLState()), alias,
+                            name, index, "execute", safe);
+                }
             }
+            return new SqlExecutionResult(index, updates, resultSets);
         }
 
         private static SqlExecutionResult executeStatement(
                 Connection connection, PreparedStatementSpec spec, int index,
-                String alias, OperationContext context) {
+                SqlRequest request, boolean fetchInBatches, OperationContext context) {
             try (PreparedStatement statement = connection.prepareStatement(spec.sql())) {
                 applyTimeout(statement, context);
+                if (fetchInBatches) {
+                    statement.setFetchSize(256);
+                }
                 bind(statement, spec.parameters());
-                boolean hasResult = statement.execute();
-                return collect(statement, hasResult, index);
+                return collect(statement, statement.execute(), index, request, context);
             } catch (SQLException exception) {
-                throw sqlError("SQL_STATEMENT", msg(context, "task.sql.statementFailed"), alias,
+                throw sqlError("SQL_STATEMENT", msg(context, "task.sql.statementFailed"), request.database(),
                         null, index, "execute", exception);
             }
         }
 
         private static SqlExecutionResult collect(
-                Statement statement, boolean hasResult, int index) throws SQLException {
+                Statement statement, boolean hasResult, int index, SqlRequest request,
+                OperationContext context) throws SQLException {
             List<Long> updateCounts = new ArrayList<>();
             int resultSets = 0;
             boolean current = hasResult;
@@ -358,9 +494,7 @@ public final class SqlExecutorOperation {
                     try (ResultSet resultSet = statement.getResultSet()) {
                         if (resultSet != null) {
                             resultSets++;
-                            while (resultSet.next()) {
-                                // Results are discarded but consumed and closed.
-                            }
+                            consumeRows(resultSet, request, context);
                         }
                     }
                 } else {
@@ -373,6 +507,30 @@ public final class SqlExecutorOperation {
                 current = statement.getMoreResults();
             }
             return new SqlExecutionResult(index, updateCounts, resultSets);
+        }
+
+        private static void consumeRows(ResultSet rows, SqlRequest request, OperationContext context)
+                throws SQLException {
+            long count = 0;
+            int limit = request.maxLoggedRows();
+            int columns = request.logResults() ? rows.getMetaData().getColumnCount() : 0;
+            while (rows.next()) {
+                context.cancellation().throwIfCancellationRequested();
+                if (!request.logResults()) {
+                    continue;
+                }
+                count++;
+                if (limit == 0 || count <= limit) {
+                    List<String> values = new ArrayList<>(columns);
+                    for (int column = 1; column <= columns; column++) {
+                        values.add(String.valueOf(rows.getString(column)));
+                    }
+                    context.log().log(LogLevel.INFO, "gretl.sql.row", String.join(" | ", values), Map.of(), null);
+                } else if (count == (long) limit + 1) {
+                    context.log().log(LogLevel.INFO, "gretl.sql.rowsTruncated",
+                            msg(context, "task.sql.rowsTruncated", limit), Map.of(), null);
+                }
+            }
         }
 
         private static void bind(PreparedStatement statement, List<Object> parameters)
@@ -449,7 +607,7 @@ public final class SqlExecutorOperation {
                     null, 0, exception);
         }
 
-        private static void rollbackQuietly(Connection connection, SqlTaskException primary) {
+        private static void rollbackQuietly(Connection connection, RuntimeException primary) {
             if (connection == null) {
                 return;
             }

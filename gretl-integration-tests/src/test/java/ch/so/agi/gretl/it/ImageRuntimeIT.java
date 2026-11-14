@@ -10,6 +10,10 @@ import org.junit.jupiter.api.Test;
 
 /** Real product containers; selected by job-image, never skipped by a JUnit assumption. */
 class ImageRuntimeIT {
+    @Test void runsGeneratedTaskFamilyFromExternalReadOnlySources() throws Exception {
+        TaskFamilyLocalJobIT.run(ArtifactJobRunner.Mode.IMAGE, List.of());
+    }
+
     @Test void runsAnExternalProjectWithoutPackaging() throws Exception {
         ProjectProcessLocalJobIT.externalProjectNeedsNoPackageDescriptor(ArtifactJobRunner.Mode.IMAGE);
     }
