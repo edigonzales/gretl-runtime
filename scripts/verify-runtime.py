@@ -75,18 +75,31 @@ def remove_container(container: str, deadline: float) -> None:
 
 
 def stop_gradle_group(process: subprocess.Popen, deadline: float) -> None:
-    # start_new_session makes the child's PID its session ID and process group ID.
-    group = process.pid
-    if group <= 0 or group == os.getpgrp():
-        raise RuntimeError(f"Refusing to signal unowned process group {group}")
+    # Gradle may fork a single-use daemon into a separate process group.
+    rows = subprocess.check_output(["ps", "-axo", "pid=,ppid=,pgid="], text=True, timeout=5)
+    children = {}
+    for line in rows.splitlines():
+        pid, parent, group = map(int, line.split())
+        children.setdefault(parent, []).append((pid, group))
+    pending = [(process.pid, process.pid)]
+    groups = set()
+    while pending:
+        pid, group = pending.pop()
+        if group <= 0 or group == os.getpgrp():
+            raise RuntimeError(f"Refusing to signal unowned process group {group}")
+        groups.add(group)
+        pending.extend(children.get(pid, ()))
 
     def signal_group(sig: int) -> bool:
         process.poll()  # Reap the group leader even when children remain in the group.
-        try:
-            os.killpg(group, sig)
-        except ProcessLookupError:
-            return False
-        return True
+        remaining = False
+        for group in groups:
+            try:
+                os.killpg(group, sig)
+                remaining = True
+            except ProcessLookupError:
+                continue
+        return remaining
 
     for sig, grace in ((signal.SIGTERM, TERM_TIMEOUT), (signal.SIGKILL, KILL_TIMEOUT)):
         if not signal_group(sig):
@@ -97,18 +110,17 @@ def stop_gradle_group(process: subprocess.Popen, deadline: float) -> None:
                 return
             time.sleep(min(POLL_INTERVAL, max(0, until - time.monotonic())))
     if signal_group(0):
-        raise RuntimeError(f"Gradle process group {group} survived TERM and KILL")
+        raise RuntimeError(f"Gradle process groups {groups} survived TERM and KILL")
 
 
-def cleanup(process: subprocess.Popen | None, label: str | None, workspace: Path | None,
-            ) -> bool:
+def cleanup(process: subprocess.Popen | None, label: str | None, workspace: Path | None) -> bool:
     deadline = time.monotonic() + CLEANUP_TIMEOUT
     errors = []
 
     def attempt(operation, *args, **kwargs):
         try:
             return operation(*args, **kwargs)
-        except (OSError, RuntimeError) as error:
+        except (OSError, RuntimeError, subprocess.SubprocessError) as error:
             errors.append(str(error))
             return None
 
@@ -178,7 +190,7 @@ def verify(repo: Path) -> int:
                     break
                 except subprocess.TimeoutExpired:
                     continue
-    except (OSError, RuntimeError) as error:
+    except (OSError, RuntimeError, subprocess.SubprocessError) as error:
         print(f"Verification: {error}", file=sys.stderr)
     finally:
         try:
