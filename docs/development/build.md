@@ -22,8 +22,15 @@ Die Installation liegt in `gretl-cli/build/install/gretl-runtime` und enthält
 
 `dockerBuild` erzeugt das lokale Image `gretl-runtime:local`.
 Für die Referenz erzeugt `scripts/generate-task-docs.sh` die Taskdokumentation.
-Die ausführbaren Beispiele und Renderpfade prüft
-`python3.12 scripts/check-doc-examples.py --help` mit Quarto und Biblios.
+Für die ausführbaren Beispiele und Renderpfade werden Python 3.12, Quarto
+im `PATH` und ein ausführbares Biblios-JAR benötigt. Verwende für
+`--evidence` ein noch nicht existierendes Ausgabeverzeichnis.
+
+```sh
+./gradlew installDist
+python3.12 scripts/check-doc-examples.py \
+  --thoth /pfad/zum/thoth-biblios-all.jar --evidence /tmp/gretl-docs-check
+```
 
 Gradle veröffentlicht Bibliotheken und die beiden Distributionsarchive mit
 `maven-publish`. Mit `./gradlew publishToMavenLocal` lässt sich die lokale
