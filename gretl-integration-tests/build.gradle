@@ -1,5 +1,4 @@
 dependencies {
-    testImplementation 'org.junit.platform:junit-platform-launcher'
     api project(':gretl-api')
     api project(':gretl-runner')
     api project(':gretl-groovy')
@@ -39,7 +38,6 @@ tasks.withType(Test).configureEach {
     dependsOn distribution, archive
     systemProperty 'gretl.test.reactorDistribution', distribution.get().destinationDir
     systemProperty 'gretl.test.distributionArchive', archive.get().archiveFile.get().asFile
-    systemProperty 'junit.jupiter.extensions.autodetection.enabled', true
 }
 
 ['jarTest': 'jar', 'serviceTest': 'docker', 'imageTest': 'image'].each { taskName, tag ->

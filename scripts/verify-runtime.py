@@ -74,7 +74,7 @@ def remove_container(container: str, deadline: float) -> None:
             time.sleep(min(POLL_INTERVAL, remaining))
 
 
-def stop_maven_group(process: subprocess.Popen, deadline: float) -> None:
+def stop_gradle_group(process: subprocess.Popen, deadline: float) -> None:
     # start_new_session makes the child's PID its session ID and process group ID.
     group = process.pid
     if group <= 0 or group == os.getpgrp():
@@ -97,11 +97,11 @@ def stop_maven_group(process: subprocess.Popen, deadline: float) -> None:
                 return
             time.sleep(min(POLL_INTERVAL, max(0, until - time.monotonic())))
     if signal_group(0):
-        raise RuntimeError(f"Maven process group {group} survived TERM and KILL")
+        raise RuntimeError(f"Gradle process group {group} survived TERM and KILL")
 
 
 def cleanup(process: subprocess.Popen | None, label: str | None, workspace: Path | None,
-            diagnose) -> bool:
+            ) -> bool:
     deadline = time.monotonic() + CLEANUP_TIMEOUT
     errors = []
 
@@ -113,8 +113,7 @@ def cleanup(process: subprocess.Popen | None, label: str | None, workspace: Path
             return None
 
     if process is not None:
-        attempt(stop_maven_group, process, deadline)
-    diagnose()
+        attempt(stop_gradle_group, process, deadline)
     if label is not None:
         containers = attempt(docker, "container", "ls", "--all", "--quiet", "--filter",
                              f"label={label}", deadline=deadline)
@@ -143,22 +142,6 @@ def verify(repo: Path) -> int:
     process = label = workspace = None
     result = 1
     run_id = str(uuid.uuid4())
-    started_at = time.time()
-
-    def diagnose() -> None:
-        interrupted = received_signal or (process is not None and (process.returncode or 0) < 0)
-        if result == 0 and not interrupted:
-            return
-        try:
-            from failure_diagnostics import collect
-
-            runner_temp = os.environ.get("RUNNER_TEMP")
-            output = (Path(runner_temp) / "gretl-failure-diagnostics" if runner_temp
-                      else repo / "target" / "failure-diagnostics" / run_id)
-            collect(repo, output, run_id=run_id, workspace=workspace, since=started_at)
-            print(f"Verification diagnostics: {output}", file=sys.stderr)
-        except Exception as error:
-            print(f"Verification diagnostics could not be exported: {error}", file=sys.stderr)
 
     try:
         uid, gid = os.getuid(), os.getgid()
@@ -172,7 +155,7 @@ def verify(repo: Path) -> int:
             if not network:
                 raise RuntimeError("Docker returned no ID for the verification network")
         if not received_signal:
-            # Maven clean can recreate target directories while Docker still holds bind sources.
+            # Keep Docker bind sources outside Gradle build directories.
             workspace = Path(tempfile.mkdtemp(prefix="gretl-image-jobs.", dir="/tmp"))
             http_host, extra_host = (
                 ("host.docker.internal", "") if sys.platform == "darwin"
@@ -183,7 +166,7 @@ def verify(repo: Path) -> int:
                 "GRETL_PYTHON": sys.executable,
             }
             process = subprocess.Popen([
-                "./gradlew", "-PgeotoolsProbe", "fullCheck",
+                "./gradlew", "--no-daemon", "-PgeotoolsProbe", "fullCheck",
                 f"-Dgretl.test.runId={run_id}", f"-Dgretl.test.imageNetwork={network}",
                 f"-Dgretl.test.imageWorkspace={workspace}", f"-Dgretl.test.imageUser={uid}:{gid}",
                 f"-Dgretl.test.httpImageHost={http_host}", f"-Dgretl.test.imageExtraHost={extra_host}",
@@ -199,7 +182,7 @@ def verify(repo: Path) -> int:
         print(f"Verification: {error}", file=sys.stderr)
     finally:
         try:
-            clean = cleanup(process, label, workspace, diagnose)
+            clean = cleanup(process, label, workspace)
         finally:
             for sig, handler in previous_handlers.items():
                 signal.signal(sig, handler)

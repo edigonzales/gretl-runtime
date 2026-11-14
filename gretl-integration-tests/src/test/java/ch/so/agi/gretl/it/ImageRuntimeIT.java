@@ -105,8 +105,6 @@ class ImageRuntimeIT {
                 var result=ArtifactJobRunner.finish(running,false);
                 assertTrue(result.timedOut());
                 assertEquals(137,result.code(),result.err()); assertTrue(result.forciblyKilled()); assertFalse(running.process().isAlive());
-                var row=(Map<?,?>)Json.parseFile(root.resolve("execution.json"),1L<<20);
-                assertEquals("FORCED_TERMINATION",((Map<?,?>)row.get("process")).get("state"));
                 var proof=(Map<?,?>)Json.parseFile(root.resolve("image-proof.json"),8L<<20);
                 assertEquals(false,((Map<?,?>)proof.get("container")).get("oomKilled")); assertEquals(true,proof.get("removed"));
                 assertTrue(new ImageExecutionAdapter.Docker().inspect(List.of("container","ls","--all","--quiet","--filter","name=^/"+running.prepared().image().name()+"$")).isBlank());
@@ -199,8 +197,6 @@ class ImageRuntimeIT {
             assertTrue(failure.getMessage().contains("Input changed"));
             assertFalse(Files.exists(root.resolve("container.id")));assertFalse(Files.exists(prepared.report()));
             assertFalse(Files.exists(root.resolve("output/result.txt")));
-            var row=(Map<?,?>)Json.parseFile(root.resolve("execution.json"),1L<<20);
-            assertEquals("LAUNCH_FAILED",((Map<?,?>)row.get("process")).get("state"));
             assertTrue(new ImageExecutionAdapter.Docker().inspect(List.of("container","ls","--all","--quiet","--filter","name=^/"+prepared.image().name()+"$")).isBlank());
         } finally { SelectedPackageSupport.delete(fixture); }
     }

@@ -25,9 +25,6 @@ public record ResolvedArtifact(PackageDescriptor.Dependency identity, Path file,
     public static ResolvedArtifact read(PackageDescriptor.Dependency identity, Path file) throws PackageException {
         return new ResolvedArtifact(identity, file, hash(file));
     }
-    public void verify() throws PackageException {
-        if (!sha256.equals(hash(file))) throw new PackageException("PACKAGE_ARTIFACT_CHECKSUM", "Artifact bytes differ from the qualified catalog: " + identity.coordinate());
-    }
     public static String hash(Path file) throws PackageException {
         try (var input = Files.newInputStream(file)) {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

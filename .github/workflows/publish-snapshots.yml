@@ -47,6 +47,7 @@ jobs:
           path: |
             **/build/reports/tests/
             **/build/test-results/
+            gretl-integration-tests/build/job-processes/*/job.*.log
             vscode/gretl-vscode/dist/*.vsix
             gretl-lsp/build/libs/*-jar-with-dependencies.jar
 
