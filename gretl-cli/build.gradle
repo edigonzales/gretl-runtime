@@ -38,7 +38,6 @@ dependencies {
     runtimeOnly project(':gretl-io-tasks')
     runtimeOnly project(':gretl-ilivalidator')
     runtimeOnly project(':gretl-interlis-tasks')
-    runtimeOnly project(':file-size-extension')
 }
 
 application {
