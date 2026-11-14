@@ -141,9 +141,9 @@ final class ImageExecutionAdapter {
         String entrypoint = engine.inspect(List.of("image", "inspect", "--format", "{{json .Config.Entrypoint}}", imageId));
         if (!Json.write(List.of(settings.launcher())).equals(entrypoint)) throw new IOException("IMAGE default entrypoint differs from the verified launcher");
         Path proofFile = null;
-        if (settings.metadata() != null) {
+        if (engine instanceof Docker) {
             proofFile = request.directory().resolve("image-proof.json");
-            Files.copy(settings.metadata(), proofFile);
+            Files.writeString(proofFile, Json.write(Map.of("id", imageId)));
         }
         String name = "gretl-job-" + UUID.randomUUID();
         var args = new ArrayList<>(List.of("run", "--pull=never", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--init", "--read-only", "--tmpfs", "/tmp:rw,exec,nosuid,size=256m", "--sig-proxy=true", "--name", name,
