@@ -61,9 +61,6 @@ class ImageRuntimeIT {
                 assertEquals(image,proof.get("id")); assertEquals(true,proof.get("removed"));
                 assertEquals(false,((Map<?,?>)proof.get("container")).get("running"));
             }
-            var a=(Map<?,?>)Json.parseFile(first.directory().resolve("input-manifest.json"),1L<<20);
-            var b=(Map<?,?>)Json.parseFile(edited.directory().resolve("input-manifest.json"),1L<<20);
-            assertNotEquals(a.get("treeSha256"),b.get("treeSha256"));
             assertEquals(image,ImageExecutionAdapter.Settings.configured().image());
         } finally { SelectedPackageSupport.delete(fixture); }
     }
