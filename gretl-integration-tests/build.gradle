@@ -30,6 +30,7 @@ dependencies {
     testImplementation 'software.amazon.awssdk:url-connection-client:2.15.64'
 }
 
+test { exclude '**/FailedProcessDiagnosticsFixture.class' }
 def cli = project(':gretl-cli')
 evaluationDependsOn(cli.path)
 def distribution = cli.tasks.named('installDist')
