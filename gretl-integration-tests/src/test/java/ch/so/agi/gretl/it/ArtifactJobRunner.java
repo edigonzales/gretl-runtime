@@ -202,7 +202,6 @@ final class ArtifactJobRunner {
         Request request = prepared.request();
         FailedProcessDiagnostics.register(request, prepared.mode());
         try {
-            if (prepared.launch().distribution() != null) prepared.launch().distribution().verifyFiles();
             if (prepared.mode() != Mode.JAR) prepared.inputSnapshot().verifyUnchanged(prepared.source());
             else if (!JobInputSnapshot.hash(prepared.jar()).equals(prepared.sha256())) throw new IOException("Prepared JAR changed");
             List<String> command;

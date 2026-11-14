@@ -1,0 +1,133 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    api project(':gretl-job-runtime')
+    api project(':gretl-api')
+    api project(':gretl-runner')
+    api project(':gretl-groovy')
+    api project(':gretl-logging')
+    api project(':gretl-packager')
+    testImplementation project(':gretl-io-tasks')
+    testImplementation project(':gretl-database-tasks')
+    testImplementation 'com.h2database:h2:2.3.232'
+}
+
+jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.cli')
+
+dependencies {
+    runtimeOnly('io.github.sogis:ilivalidator-custom-functions:1.1.50') {
+        exclude group: 'javax.activation', module: 'activation'
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
+    }
+    runtimeOnly('io.github.sogis:ilivalidator-custom-functions-geometries:0.0.8') {
+        exclude group: 'javax.activation', module: 'activation'
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
+    }
+    runtimeOnly('ch.geowerkstatt.ilivalidator.extensions.functions:geow-interlis-functions:0.2.1') {
+        exclude group: 'javax.activation', module: 'activation'
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
+    }
+    runtimeOnly('ch.geowerkstatt.ilivalidator.extensions.functions:interlis-functions-ngk-so:1.0.3') {
+        exclude group: 'javax.activation', module: 'activation'
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
+    }
+    runtimeOnly project(path: ':gretl-interlis-tasks', configuration: 'standardFunctionsElements')
+    runtimeOnly project(':gretl-database-tasks')
+    runtimeOnly project(':gretl-io-tasks')
+    runtimeOnly project(':gretl-ilivalidator')
+    runtimeOnly project(':gretl-interlis-tasks')
+    runtimeOnly project(':file-size-extension')
+}
+
+application {
+    applicationName = 'gretl'
+    mainClass = 'ch.so.agi.gretl.cli.Main'
+    applicationDefaultJvmArgs = ['-Dfile.encoding=UTF-8']
+}
+
+distributions {
+    main {
+        distributionBaseName = 'gretl-runtime'
+        contents {
+            from(rootProject.file('gretl-dist/src/main/dist/examples')) {
+                into 'examples'
+            }
+        }
+    }
+}
+
+distTar {
+    compression = Compression.GZIP
+    archiveExtension = 'tar.gz'
+}
+
+tasks.register('stageDockerContext', Sync) {
+    from rootProject.file('gretl-dist/src/main/docker/Dockerfile')
+    into layout.buildDirectory.dir('docker')
+    into('dist') {
+        from installDist
+    }
+}
+
+tasks.register('dockerBuild', Exec) {
+    dependsOn stageDockerContext
+    commandLine 'docker', 'build', '-t', 'gretl-runtime:local', stageDockerContext.destinationDir
+}
+
+// JAXB 2.3 already brings javax.activation-api. The old implementation
+// shipped by ili2c duplicates the same classes.
+configurations.runtimeClasspath {
+    exclude group: 'javax.activation', module: 'activation'
+    exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
+}
+
+startScripts {
+    optsEnvironmentVar = 'GRETL_JAVA_OPTS'
+    doLast {
+        // Explicit extension directory stays outside the standard package inputs.
+        unixScript.text = unixScript.readLines().collect { line ->
+            line.startsWith('CLASSPATH=') ? line + ':$APP_HOME/lib/extensions/*' : line
+        }.join('\n') + '\n'
+        windowsScript.text = windowsScript.readLines().collect { line ->
+            line.startsWith('set CLASSPATH=') ? line + ';%APP_HOME%\\lib\\extensions\\*' : line
+        }.join('\r\n') + '\r\n'
+    }
+}
+
+publishing.publications {
+    distribution(MavenPublication) {
+        artifactId = 'gretl-dist'
+        def qualifiedDirectory = providers.gradleProperty('qualifiedDistribution')
+        if (qualifiedDirectory.isPresent()) {
+            artifact(file("${qualifiedDirectory.get()}/gretl-runtime-${version}.zip")) { classifier = 'bin' }
+            artifact(file("${qualifiedDirectory.get()}/gretl-runtime-${version}.tar.gz")) {
+                classifier = 'bin-tar-gz'
+                extension = 'tar.gz'
+            }
+        } else {
+            artifact(distZip) { classifier = 'bin' }
+            artifact(distTar) {
+                classifier = 'bin-tar-gz'
+                extension = 'tar.gz'
+            }
+        }
+    }
+}
+
+
+test {
+    dependsOn installDist
+    systemProperty 'gretl.test.distributionLib', new File(installDist.destinationDir, 'lib')
+}
+
+publishing.publications.library.pom.withXml {
+    def dependencies = asNode().dependencies[0]
+    def functions = dependencies.appendNode('dependency')
+    functions.appendNode('groupId', project.group)
+    functions.appendNode('artifactId', 'gretl-interlis-tasks')
+    functions.appendNode('version', project.version)
+    functions.appendNode('classifier', 'standard-functions')
+    functions.appendNode('scope', 'runtime')
+}

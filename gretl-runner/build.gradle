@@ -1,0 +1,7 @@
+dependencies {
+    api project(':gretl-language-contract')
+    api project(':gretl-api')
+    api project(':gretl-i18n')
+}
+
+jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.runtime.runner')

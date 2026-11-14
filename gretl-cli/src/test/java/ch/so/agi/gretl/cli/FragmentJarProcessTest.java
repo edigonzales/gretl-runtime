@@ -68,8 +68,16 @@ class FragmentJarProcessTest {
             delete(root);Path cwd=Files.createDirectory(temp.resolve(project?"old-project-cwd":"old-single-cwd"));process(jar,cwd,List.of());assertEquals("legacy",Files.readString(cwd.resolve("legacy-result")));
         }
     }
-    private Map<String,Object> descriptor(int schema){var m=new LinkedHashMap<String,Object>();m.put("schemaVersion",schema);m.put("name","fragment-test");m.put("version","1");m.put("runtimeVersion","6.0.0-SNAPSHOT");m.put("sources",List.of());m.put("dependencies",List.of());if(schema>1)m.put("taskModules",List.of("io"));return m;}
-    private List<Path> classpath(){return JobPackager.currentClasspath().stream().filter(p->!p.toString().contains("test-classes")&&!p.toString().contains("gretl-tooling-core")&&!p.toString().contains("gretl-packager/target")&&!p.toString().contains("gretl-cli/target")).toList();}
+    private Map<String,Object> descriptor(int schema){var m=new LinkedHashMap<String,Object>();m.put("schemaVersion",schema);m.put("name","fragment-test");m.put("version","1");m.put("runtimeVersion","6.0.0-SNAPSHOT");m.put("sources",List.of());m.put("dependencies",List.of());return m;}
+    private List<Path> classpath() throws Exception {
+        try (var files = Files.list(Path.of(System.getProperty("gretl.test.distributionLib")))) {
+            return files.filter(path -> path.getFileName().toString().endsWith(".jar"))
+                    .filter(path -> !path.getFileName().toString().startsWith("gretl-cli-"))
+                    .filter(path -> !path.getFileName().toString().startsWith("gretl-packager-"))
+                    .filter(path -> !path.getFileName().toString().startsWith("file-size-extension-"))
+                    .sorted().toList();
+        }
+    }
     private void write(Path root,String file,String text)throws Exception{Path path=root.resolve(file);Files.createDirectories(path.getParent());Files.writeString(path,text);}
     private void delete(Path root)throws Exception{try(var files=Files.walk(root)){for(Path path:files.sorted(Comparator.reverseOrder()).toList())Files.delete(path);}}
     private Path compilerGuard()throws Exception{

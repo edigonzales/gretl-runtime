@@ -198,7 +198,7 @@ public final class JobPackageBuilder {
             // av2geobau embeds a private copy of the generated INTERLIS model
             // classes. Prefer the canonical iox-ili copy in the runtime image.
             if (normalized.startsWith("ch/interlis/models/") && canonicalModelPair(previous.origin(), origin)) {
-                if (origin.startsWith("ch.interlis:iox-ili:")) entries.put(normalized, new Entry(bytes, origin));
+                if (isIoxIli(origin)) entries.put(normalized, new Entry(bytes, origin));
                 return;
             }
             throw new PackageException("PACKAGE_CLASS_CONFLICT",
@@ -217,8 +217,16 @@ public final class JobPackageBuilder {
     }
 
     private static boolean canonicalModelPair(String first, String second) {
-        return (first.startsWith("ch.interlis:iox-ili:") && second.startsWith("ch.interlis:av2geobau:"))
-                || (second.startsWith("ch.interlis:iox-ili:") && first.startsWith("ch.interlis:av2geobau:"));
+        return (isIoxIli(first) && isAv2geobau(second))
+                || (isIoxIli(second) && isAv2geobau(first));
+    }
+
+    private static boolean isIoxIli(String origin) {
+        return origin.startsWith("ch.interlis:iox-ili:") || origin.matches("iox-ili-[0-9].*\\.jar");
+    }
+
+    private static boolean isAv2geobau(String origin) {
+        return origin.startsWith("ch.interlis:av2geobau:") || origin.matches("av2geobau-[0-9].*\\.jar");
     }
 
     private void addCompiled(Map<String, byte[]> classes, List<JobCompiler.SourceFile> sources) throws PackageException {
@@ -299,8 +307,6 @@ public final class JobPackageBuilder {
         Map<String, Object> dependencies = new LinkedHashMap<>();
         dependencies.put("schemaVersion", 2);
         dependencies.put("descriptorSchemaVersion", descriptor.schemaVersion());
-        dependencies.put("taskModules", descriptor.schemaVersion() == 1 ? List.of("io", "database", "interlis", "ilivalidator") : descriptor.taskModules());
-        dependencies.put("standardFunctions", descriptor.schemaVersion() == 1 || descriptor.standardFunctions());
         dependencies.put("declared", descriptor.dependencies().stream()
                 .map(PackageDescriptor.Dependency::coordinate).toList());
         List<Map<String, String>> included = new ArrayList<>();

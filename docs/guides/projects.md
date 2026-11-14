@@ -111,9 +111,9 @@ lokalen Tasks heissen `run` und lesen die eigene `input.txt`. Nach dem Build,
 aus dem Repository-Root:
 
 ```sh
-gretl-dist/target/dist/bin/gretl check examples/project-subprojects
-gretl-dist/target/dist/bin/gretl run examples/project-subprojects --target :source:run
-gretl-dist/target/dist/bin/gretl run examples/project-subprojects --target :checks:local:run
+gretl-cli/build/install/gretl-runtime/bin/gretl check examples/project-subprojects
+gretl-cli/build/install/gretl-runtime/bin/gretl run examples/project-subprojects --target :source:run
+gretl-cli/build/install/gretl-runtime/bin/gretl run examples/project-subprojects --target :checks:local:run
 ```
 
 Die Prozessprüfung führt beide Ziele aus und kontrolliert die unterschiedlichen

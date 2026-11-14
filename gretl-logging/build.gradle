@@ -1,0 +1,9 @@
+dependencies {
+    api project(':gretl-runner')
+    api project(':gretl-i18n')
+    api 'org.slf4j:slf4j-api:2.0.20'
+    api 'ch.qos.logback:logback-classic:1.6.5'
+    api 'org.slf4j:jul-to-slf4j:2.0.20'
+}
+
+jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.runtime.logging')

@@ -32,14 +32,14 @@ Voraussetzung ist JDK 25 mit passendem `JAVA_HOME`. Vom Repository-Root:
 
 ```sh
 ./scripts/generate-task-docs.sh
-./mvnw verify
+./gradlew test
 ```
 
 Der erste Befehl baut die Scriptdistribution und erzeugt jede Tabelle neu.
 Alternativ nach einem aktuellen Distributionsbuild:
 
 ```sh
-./gretl-dist/target/dist/bin/gretl operations \
+./gretl-cli/build/install/gretl-runtime/bin/gretl operations \
   --format adoc --lang de --output docs/reference/generated
 ```
 
@@ -135,8 +135,8 @@ nicht eingecheckt.
 
 ## Abnahme und Pflege
 
-1. Tabellen generieren und `./mvnw verify` ausführen.
-2. Dienstabhängige Rezepte mit `./mvnw -Pbacking-services verify` prüfen.
+1. Tabellen generieren und `./gradlew test` ausführen.
+2. Dienstabhängige Rezepte mit `./gradlew serviceTest` prüfen.
    Dafür werden Docker sowie PostgreSQL/PostGIS-, FTP- und S3-Testcontainer benötigt.
 3. Den aktuellen Working Tree mit Thoth rendern. Keine ungelösten Includes,
    fehlenden Anker oder defekten lokalen Ressourcen akzeptieren.

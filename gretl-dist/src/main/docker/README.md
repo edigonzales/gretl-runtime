@@ -9,16 +9,11 @@ bleiben Teil der regulären Distribution.
 Der lokale Authoring-Aufruf aus dem Repository-Root ist:
 
 ```sh
-scripts/build-runtime-image.sh \
-  --distribution gretl-dist/target/dist --output gretl-dist/target/image
+./gradlew :gretl-cli:dockerBuild
 ```
 
-Der Builder prüft alle Distributionsbytes, baut ohne Push, ermittelt die
-unveränderliche Image-ID und liest `/opt/gretl` aus dem tatsächlichen Image
-zur unabhängigen Byteprüfung aus. `candidate.json` enthält Quelle,
-Manifesthash, Image-ID, Plattform, Basisdigest und Buildkommando.
-Das Maven-Profil `job-image` führt diesen Schritt nach dem Distributionsbuild
-und vor den Integrationstests aus. Der Standardbuild benötigt kein Docker.
+Gradle übernimmt die installierte Distribution in den Docker-Kontext und
+baut lokal `gretl-runtime:local`.
 
 Der folgende Befehl startet die konsolidierte Qualifikation am sauberen Kandidaten.
 

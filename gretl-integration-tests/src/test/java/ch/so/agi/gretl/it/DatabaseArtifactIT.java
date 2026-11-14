@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 import org.junit.jupiter.api.Test;
 
+@org.junit.jupiter.api.Tag("docker")
 class DatabaseArtifactIT {
     @Test void realDatabaseChainAndCancellationRollback() throws Exception {
         realDatabaseChainAndCancellationRollback(ArtifactJobRunner.Mode.SCRIPT);

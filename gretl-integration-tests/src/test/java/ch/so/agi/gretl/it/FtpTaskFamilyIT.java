@@ -18,6 +18,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Timeout(300)
+@org.junit.jupiter.api.Tag("docker")
 class FtpTaskFamilyIT {
     @TempDir
     Path root;

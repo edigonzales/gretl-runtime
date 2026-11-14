@@ -30,7 +30,7 @@ final class SelectedPackageSupport {
                 .map(p -> p.getFileName().toString()).sorted().toList(); }
         Files.writeString(source.resolve("job-package.json"), Json.write(Map.of("schemaVersion", 2, "name", "selected-package", "version", "1",
                 "runtimeVersion", "6.0.0-SNAPSHOT", "entryScript", "job.groovy", "resources", resources,
-                "taskModules", modules, "standardFunctions", functions, "dependencies", dependencies)));
+                "dependencies", dependencies)));
     }
     static ArtifactJobRunner.Result detached(ArtifactJobRunner.Request request) throws Exception {
         return detached(ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.JAR));

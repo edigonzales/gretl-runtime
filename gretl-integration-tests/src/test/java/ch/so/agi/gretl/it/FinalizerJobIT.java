@@ -48,7 +48,7 @@ class FinalizerJobIT {
                 }
                 """);
         write(root,"job-package.json",Json.write(Map.of("schemaVersion",3,"name","finalizer-project","version","1","runtimeVersion","6.0.0-SNAPSHOT",
-                "settingsFile","settings.gretl","sources",List.of(),"resources",List.of("a/input.txt","b/input.txt"),"taskModules",List.of("io"),"dependencies",List.of())));
+                "settingsFile","settings.gretl","sources",List.of(),"resources",List.of("a/input.txt","b/input.txt"),"dependencies",List.of())));
     }
     @SuppressWarnings("unchecked") private Map<String,Object> object(Object value){return (Map<String,Object>)value;}
     private Map<String,Object> execution(ArtifactJobRunner.Result result)throws Exception{return object(object(Json.parseFile(result.report(),16L<<20)).get("execution"));}

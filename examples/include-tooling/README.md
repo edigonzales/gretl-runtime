@@ -5,8 +5,8 @@ Mit Java 25 und der gebauten Distribution vom Repositoryroot:
 ```sh
 include_demo_dir="$(mktemp -d)"
 python3 -c 'import json,sys; print(json.dumps({"schemaVersion":1,"runtime":{"reportRoot":sys.argv[1]}}))' "$include_demo_dir/reports" > "$include_demo_dir/runtime.json"
-./gretl-dist/target/dist/bin/gretl plan examples/include-tooling/job.groovy
-./gretl-dist/target/dist/bin/gretl run examples/include-tooling/job.groovy --work-dir "$include_demo_dir/work" --keep-work always --config "$include_demo_dir/runtime.json" --report "$include_demo_dir/report.json"
+./gretl-cli/build/install/gretl-runtime/bin/gretl plan examples/include-tooling/job.groovy
+./gretl-cli/build/install/gretl-runtime/bin/gretl run examples/include-tooling/job.groovy --work-dir "$include_demo_dir/work" --keep-work always --config "$include_demo_dir/runtime.json" --report "$include_demo_dir/report.json"
 python3 examples/include-tooling/verify.py "$include_demo_dir/work"
 ```
 

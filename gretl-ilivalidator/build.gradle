@@ -1,0 +1,13 @@
+dependencies {
+    api project(':gretl-api')
+    api project(':gretl-i18n')
+    api('ch.interlis:ilivalidator:1.15.0') {
+        exclude group: 'javax.activation', module: 'activation'
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
+    }
+    api 'ch.ehi:ehibasics:1.4.1'
+    api 'ch.interlis:iox-ili:1.24.4'
+    testImplementation project(':gretl-runner')
+}
+
+jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.tasks.ilivalidator')

@@ -8,9 +8,5 @@
   "resources": [
     "prepare/data"
   ],
-  "taskModules": [
-    "io"
-  ],
-  "standardFunctions": false,
   "dependencies": []
 }

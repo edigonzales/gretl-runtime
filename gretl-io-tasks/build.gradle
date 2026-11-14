@@ -1,0 +1,20 @@
+dependencies {
+    api 'org.apache.sshd:sshd-core:2.20.1'
+    api 'org.apache.sshd:sshd-sftp:2.20.1'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+    api 'org.apache.commons:commons-compress:1.27.1'
+    api project(':gretl-api')
+    api project(':gretl-i18n')
+    api 'net.sf.saxon:Saxon-HE:11.4'
+    runtimeOnly 'org.xmlresolver:xmlresolver:4.4.3'
+    api 'commons-net:commons-net:3.6'
+    api('software.amazon.awssdk:s3:2.15.64') {
+        exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
+        exclude group: 'software.amazon.awssdk', module: 'apache-client'
+    }
+    api 'software.amazon.awssdk:url-connection-client:2.15.64'
+    testImplementation project(':gretl-runner')
+    testImplementation 'org.mockftpserver:MockFtpServer:2.7.1'
+}
+
+jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.tasks.io')

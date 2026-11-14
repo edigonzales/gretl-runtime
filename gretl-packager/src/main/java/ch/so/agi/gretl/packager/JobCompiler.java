@@ -18,8 +18,9 @@ import org.codehaus.groovy.control.Phases;
 /** Compiles a job and declared helper sources without running the script. */
 public final class JobCompiler {
     public CompiledJob compile(PackageDescriptor descriptor) throws PackageException {
-        return compile(descriptor, new PackageCatalog(JobPackager.catalogFile(), descriptor.runtimeVersion())
-                .select(descriptor).stream().map(ResolvedArtifact::file).toList());
+        var classpath = new ArrayList<>(JobPackager.runtimeJars());
+        classpath.addAll(new MavenArtifactResolver().resolve(descriptor.dependencies()));
+        return compile(descriptor, classpath);
     }
 
     public CompiledJob compile(PackageDescriptor descriptor, List<Path> classpath) throws PackageException {

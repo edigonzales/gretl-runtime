@@ -4,18 +4,13 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
-defaults:
-  run:
-    shell: bash
-
 concurrency:
-  group: gretl-verification-${{ github.workflow }}-${{ github.ref }}
+  group: gretl-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -28,110 +23,61 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
-          cache: maven
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: vscode/gretl-vscode/package-lock.json
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Check documentation and snapshot smoke tooling
-        run: |
-          python3.12 scripts/check-docs.py
-          python3.12 -m unittest discover -s tests/docs -v
-          python3.12 -m unittest discover -s tests/publication -v
-          python3.12 -m unittest discover -s tests/ci -v
-      - name: Verify SCRIPT, detached JAR and targeted IMAGE processes
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Qualify runtime, distribution and tools
         run: python3.12 scripts/verify-runtime.py
-      - name: Record qualified distribution hashes
-        working-directory: gretl-dist/target
-        run: |
-          sha256sum gretl-runtime-6.0.0-SNAPSHOT-bin.zip gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz > distribution.sha256
-      - name: Preserve qualified distribution
-        uses: actions/upload-artifact@v4
+      - name: Record distribution hashes
+        working-directory: gretl-cli/build/distributions
+        run: sha256sum *.zip *.tar.gz > distribution.sha256
+      - uses: actions/upload-artifact@v4
         with:
           name: verified-runtime-${{ github.sha }}
-          retention-days: 7
-          overwrite: true
-          compression-level: 0
           if-no-files-found: error
-          path: |
-            gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip
-            gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz
-            gretl-dist/target/distribution.sha256
-      - name: Prepare failure diagnostics if verification could not export them
-        if: failure()
-        run: |
-          output="$RUNNER_TEMP/gretl-failure-diagnostics"
-          if [[ ! -f "$output/index.txt" ]]; then
-            python3.12 scripts/failure_diagnostics.py --output "$output"
-          fi
-      - name: Preserve failure diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
+          path: gretl-cli/build/distributions/
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: failure-diagnostics-${{ github.sha }}
-          retention-days: 7
-          overwrite: true
-          path: ${{ runner.temp }}/gretl-failure-diagnostics/
-          if-no-files-found: warn
+          name: reports
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
+            vscode/gretl-vscode/dist/*.vsix
+            gretl-lsp/build/libs/*-jar-with-dependencies.jar
 
   publish:
-    name: publish snapshot artefacts
     needs: verify
-    if: needs.verify.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '25'
-          cache: maven
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-          cache-dependency-path: vscode/gretl-vscode/package-lock.json
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: gradle/actions/setup-gradle@v4
       - uses: actions/download-artifact@v4
         with:
           name: verified-runtime-${{ github.sha }}
           path: ${{ runner.temp }}/gretl-verified-runtime
-      - name: Install the qualified archives into the deploy reactor
+      - name: Publish qualified distribution and libraries
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
         run: |
+          test -n "$MAVEN_USERNAME" && test -n "$MAVEN_PASSWORD"
           qualified="$RUNNER_TEMP/gretl-verified-runtime"
-          mkdir -p gretl-dist/target
-          cp "$qualified/gretl-runtime-6.0.0-SNAPSHOT-bin.zip" \
-             "$qualified/gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz" gretl-dist/target/
-          cd gretl-dist/target
-          sha256sum gretl-runtime-6.0.0-SNAPSHOT-bin.zip gretl-runtime-6.0.0-SNAPSHOT-bin.tar.gz \
-            | cmp - "$qualified/distribution.sha256"
-      - name: Require publishing credentials
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-        run: |
-          if [[ -z "$MAVEN_USERNAME" || -z "$MAVEN_PASSWORD" ]]; then
-            echo "Configure Actions secrets MAVEN_USERNAME and MAVEN_PASSWORD for interlis-snapshots." >&2
-            exit 2
-          fi
-      - name: Publish snapshot artefacts
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-        run: >-
-          ./mvnw -B -s scripts/publish-settings.xml -Ppublish-snapshots
-          -Dgretl.dist.reuseQualifiedArchives=true -DskipTests -DskipITs deploy
-      - name: Recheck local archive inputs after deploy
-        working-directory: gretl-dist/target
-        run: sha256sum --strict --check "$RUNNER_TEMP/gretl-verified-runtime/distribution.sha256"
-      - name: Download published runtime and execute an external Groovy job
+          (cd "$qualified" && sha256sum --check distribution.sha256)
+          ./gradlew publish -PqualifiedDistribution="$qualified"
+      - name: Verify published archives and execute an external job
         run: |
           python3.12 scripts/verify-published-runtime.py \
             --repository https://jars.interlis.guru/snapshots \

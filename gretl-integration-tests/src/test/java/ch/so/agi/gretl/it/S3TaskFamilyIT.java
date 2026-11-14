@@ -21,6 +21,7 @@ import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Timeout(300)
+@org.junit.jupiter.api.Tag("docker")
 class S3TaskFamilyIT {
     @TempDir
     Path root;

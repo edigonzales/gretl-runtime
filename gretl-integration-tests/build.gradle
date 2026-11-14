@@ -1,0 +1,61 @@
+dependencies {
+    testImplementation 'org.junit.platform:junit-platform-launcher'
+    api project(':gretl-api')
+    api project(':gretl-runner')
+    api project(':gretl-groovy')
+    api project(':gretl-i18n')
+    api project(':gretl-logging')
+    api project(':gretl-packager')
+    api project(':gretl-job-runtime')
+    api project(':gretl-cli')
+    api project(':gretl-database-tasks')
+    api project(':gretl-io-tasks')
+    api project(':gretl-ilivalidator')
+    api project(':gretl-interlis-tasks')
+    testImplementation('org.testcontainers:testcontainers:1.21.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    testImplementation('org.testcontainers:postgresql:1.21.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    testImplementation 'org.postgresql:postgresql:42.7.14'
+    testImplementation 'commons-net:commons-net:3.6'
+    testImplementation('io.floci:testcontainers-floci:1.10.0') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    testImplementation('software.amazon.awssdk:s3:2.15.64') {
+        exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
+        exclude group: 'software.amazon.awssdk', module: 'apache-client'
+    }
+    testImplementation 'software.amazon.awssdk:url-connection-client:2.15.64'
+}
+
+def cli = project(':gretl-cli')
+evaluationDependsOn(cli.path)
+def distribution = cli.tasks.named('installDist')
+def archive = cli.tasks.named('distZip')
+
+tasks.withType(Test).configureEach {
+    dependsOn distribution, archive
+    systemProperty 'gretl.test.reactorDistribution', distribution.get().destinationDir
+    systemProperty 'gretl.test.distributionArchive', archive.get().archiveFile.get().asFile
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', true
+}
+
+['jarTest': 'jar', 'serviceTest': 'docker', 'imageTest': 'image'].each { taskName, tag ->
+    tasks.register(taskName, Test) {
+        testClassesDirs = sourceSets.test.output.classesDirs
+        classpath = sourceSets.test.runtimeClasspath
+        useJUnitPlatform { includeTags tag }
+        if (tag == 'image') {
+            dependsOn ':gretl-cli:dockerBuild'
+            systemProperty 'gretl.test.image', 'gretl-runtime:local'
+            ['runId', 'imageNetwork', 'imageWorkspace', 'imageUser', 'httpImageHost', 'imageExtraHost'].each { name ->
+                def property = "gretl.test.${name}"
+                def value = providers.systemProperty(property)
+                if (value.isPresent()) systemProperty property, value.get()
+            }
+            outputs.upToDateWhen { false }
+        }
+    }
+}

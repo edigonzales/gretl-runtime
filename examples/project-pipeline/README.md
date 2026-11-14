@@ -9,11 +9,11 @@ verwendet genau diesen Bestand aus einem fremden CWD mit Leerzeichen im Pfad.
 Vom Repository-Root:
 
 ```sh
-./mvnw -B clean verify
-./gretl-dist/target/dist/bin/gretl run examples/project-pipeline --help
-./gretl-dist/target/dist/bin/gretl check examples/project-pipeline
-./gretl-dist/target/dist/bin/gretl plan examples/project-pipeline --graph mermaid
-./gretl-dist/target/dist/bin/gretl run examples/project-pipeline --param :output=target/project-output.txt
+./gradlew test installDist
+./gretl-cli/build/install/gretl-runtime/bin/gretl run examples/project-pipeline --help
+./gretl-cli/build/install/gretl-runtime/bin/gretl check examples/project-pipeline
+./gretl-cli/build/install/gretl-runtime/bin/gretl plan examples/project-pipeline --graph mermaid
+./gretl-cli/build/install/gretl-runtime/bin/gretl run examples/project-pipeline --param :output=target/project-output.txt
 cmp examples/project-pipeline/prepare/data/input.txt target/project-output.txt
 ```
 
@@ -25,7 +25,7 @@ sich einen Run, dessen Ereignisse und Bericht unter `gretl-reports/` entstehen.
 Beide lokalen Cleanups `release` werden im gemeinsamen Abschluss einmal ausgeführt.
 
 ```sh
-./gretl-dist/target/dist/bin/gretl run examples/project-pipeline --target :checks:local:run --param :output=target/unused.txt
+./gretl-cli/build/install/gretl-runtime/bin/gretl run examples/project-pipeline --target :checks:local:run --param :output=target/unused.txt
 ```
 
 Dieser Aufruf führt nur Kompression und Prüfung aus, keine Publikation. Der
@@ -41,7 +41,7 @@ Das mitgelieferte `job-package.json` verwendet Schema 3 und wählt nur das
 IO-Modul. Aus dem Repository-Root:
 
 ```sh
-./gretl-dist/target/dist/bin/gretl package examples/project-pipeline/job-package.json --output target/project-pipeline.jar
+./gretl-cli/build/install/gretl-runtime/bin/gretl package examples/project-pipeline/job-package.json --output target/project-pipeline.jar
 java -jar target/project-pipeline.jar --help
 java -jar target/project-pipeline.jar --plan
 java -jar target/project-pipeline.jar --param :output=target/packaged-output.txt

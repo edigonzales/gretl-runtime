@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.*;
 import org.junit.jupiter.api.Test;
 
+@org.junit.jupiter.api.Tag("jar")
 class ProjectArtifactLocalJobIT {
     private static final List<String> ORDER=List.of(":download:run",":validation:nested:run",":import:run");
     private Path fixture() throws Exception { return Path.of(getClass().getResource("/projects/pipeline").toURI()); }

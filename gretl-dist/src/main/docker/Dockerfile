@@ -1,9 +1,5 @@
 # Verified 2026-11-01: Java 25.0.5, Ubuntu 24.04; index includes amd64 and arm64.
 FROM eclipse-temurin:25-jre-noble@sha256:a98128a57de944a72bd31fbc79b898edd5a5864d3652071d5bbd2160ab7d7dce
-ARG SOURCE_REVISION
-ARG DISTRIBUTION_MANIFEST_SHA256
-LABEL org.opencontainers.image.revision=$SOURCE_REVISION \
-      ch.so.agi.gretl.distribution-manifest-sha256=$DISTRIBUTION_MANIFEST_SHA256
 RUN apt-get update && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 COPY dist/ /opt/gretl/
