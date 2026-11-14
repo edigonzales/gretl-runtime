@@ -122,7 +122,7 @@ Checkouts. Fachliche HTTP-/DB-Dienste bleiben ausdrücklich erreichbar.
 
 Der [Qualifikationsweg](../development/job-artifact-tests.md) verwendet
 `python3.12 scripts/verify-runtime.py` für einen Maven-Reaktor. SCRIPT prüft alle
-50 Standardoperationen. Gezielte JAR-Tests starten eigenständige Pakete
+51 Standardoperationen. Gezielte JAR-Tests starten eigenständige Pakete
 aus einem fremden Arbeitsverzeichnis. IMAGE prüft externe Scripts und
 Projekte im generischen Runtime-Container.
 

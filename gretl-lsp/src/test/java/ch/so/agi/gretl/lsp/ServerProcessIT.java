@@ -174,7 +174,7 @@ class ServerProcessIT {
             var rename=new HashMap<String,Object>(position(uri,1,6));rename.put("newName","producer");var edit=wire.call("textDocument/rename",rename).getAsJsonObject();assertTrue(edit.has("documentChanges"));assertEquals(1,edit.getAsJsonArray("documentChanges").get(0).getAsJsonObject().getAsJsonObject("textDocument").get("version").getAsInt());
             assertTrue(wire.call("textDocument/documentLink",Map.of("textDocument",Map.of("uri",uri))).isJsonArray());
             assertTrue(wire.call("textDocument/foldingRange",Map.of("textDocument",Map.of("uri",uri))).isJsonArray());
-            var catalog=wire.call("gretl/catalog",Map.of("protocolVersion",1,"catalogSchemaVersion",1)).getAsJsonObject();assertEquals("AVAILABLE",catalog.get("state").getAsString());assertEquals(50,catalog.getAsJsonObject("catalog").getAsJsonArray("operations").size());
+            var catalog=wire.call("gretl/catalog",Map.of("protocolVersion",1,"catalogSchemaVersion",1)).getAsJsonObject();assertEquals("AVAILABLE",catalog.get("state").getAsString());assertEquals(51,catalog.getAsJsonObject("catalog").getAsJsonArray("operations").size());
             var graph=graph(wire,uri);String snapshot=graph.getAsJsonObject("context").get("snapshotId").getAsString();
             assertEquals(2,graph.getAsJsonObject("payload").getAsJsonArray("nodes").size());
             var planned=wire.call("gretl/planEdit",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",snapshot,"requireOpenDocuments",true,

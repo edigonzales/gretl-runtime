@@ -18,7 +18,7 @@ Node 22, Docker und Python 3.12. Starte den folgenden Befehl im Repository-Root.
 python3.12 scripts/verify-runtime.py
 ```
 
-Ein Reaktorlauf prüft die SCRIPT-Fachsuite mit 50 Standardoperationen und
+Ein Reaktorlauf prüft die SCRIPT-Fachsuite mit 51 Standardoperationen und
 echten Diensten sowie gezielte eigenständige JAR- und IMAGE-Prozesse. IMAGE
 startet externe Groovy-Jobs mit read-only Quellen. Ersetze Pflichtprüfungen
 nicht durch Teiltests, Skips oder schwächere Assertions. Sichere notwendige

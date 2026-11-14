@@ -26,6 +26,10 @@ class ImageRuntimeIT {
         ArtifactServicesIT.imageS3Upload();
     }
 
+    @Test void obtainsAnOAuth2TokenAndUsesItFromTheNonRootImage() throws Exception {
+        OAuth2ClientCredentialsLocalJobIT.verify(200, ArtifactJobRunner.Mode.IMAGE);
+    }
+
     @Test void reachesHttpAndReportsAnExpectedFailure() throws Exception {
         IoLocalJobIT.imageHttpDownloadAndFailure();
     }

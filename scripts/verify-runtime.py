@@ -21,6 +21,12 @@ CLEANUP_TIMEOUT = 60.0
 POLL_INTERVAL = 0.1
 
 
+class DockerCommandError(RuntimeError):
+    def __init__(self, description: str, returncode: int, detail: str):
+        super().__init__(f"{description} exited {returncode}: {detail}")
+        self.detail = detail
+
+
 def docker(*args: str, deadline: float | None = None, missing: str | None = None) -> str:
     timeout = DOCKER_TIMEOUT if deadline is None else min(DOCKER_TIMEOUT, deadline - time.monotonic())
     description = "docker " + " ".join(args)
@@ -46,8 +52,26 @@ def docker(*args: str, deadline: float | None = None, missing: str | None = None
     if process.returncode:
         detail = stderr.strip()
         if missing is None or missing not in detail.lower():
-            raise RuntimeError(f"{description} exited {process.returncode}: {detail}")
+            raise DockerCommandError(description, process.returncode, detail)
     return stdout.strip()
+
+
+def remove_container(container: str, deadline: float) -> None:
+    removing = f"error response from daemon: removal of container {container.lower()} is already in progress"
+    while True:
+        try:
+            docker("container", "rm", "--force", container, deadline=deadline,
+                   missing=f"no such container: {container.lower()}")
+            return
+        except DockerCommandError as error:
+            if error.detail.lower() != removing:
+                raise
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise RuntimeError(f"Cleanup deadline elapsed while removing container {container}") from error
+            # Testcontainers may be removing this same container. Wait for rm
+            # to succeed or report it missing before removing its network.
+            time.sleep(min(POLL_INTERVAL, remaining))
 
 
 def stop_maven_group(process: subprocess.Popen, deadline: float) -> None:
@@ -95,8 +119,7 @@ def cleanup(process: subprocess.Popen | None, label: str | None, workspace: Path
         containers = attempt(docker, "container", "ls", "--all", "--quiet", "--filter",
                              f"label={label}", deadline=deadline)
         for container in (containers or "").splitlines():
-            attempt(docker, "container", "rm", "--force", container, deadline=deadline,
-                    missing=f"no such container: {container.lower()}")
+            attempt(remove_container, container, deadline)
         networks = attempt(docker, "network", "ls", "--quiet", "--filter",
                            f"label={label}", deadline=deadline)
         for network in (networks or "").splitlines():

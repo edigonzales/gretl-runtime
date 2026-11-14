@@ -40,7 +40,8 @@ public final class TestOperationContext implements OperationContext {
             return resource;
         }
     };
-    private boolean cancelled;
+    private volatile boolean cancelled;
+    private Long deadline;
     private Consumer<Progress> onProgress = update -> { };
 
     public TestOperationContext(Path root, Map<String, Object> parameters,
@@ -172,12 +173,13 @@ public final class TestOperationContext implements OperationContext {
         return new TimeBudget() {
             @Override
             public Optional<Duration> remaining() {
-                return Optional.empty();
+                return Optional.ofNullable(deadline)
+                        .map(end -> Duration.ofNanos(Math.max(0, end - System.nanoTime())));
             }
 
             @Override
             public boolean expired() {
-                return false;
+                return remaining().filter(Duration::isZero).isPresent();
             }
         };
     }
@@ -195,6 +197,10 @@ public final class TestOperationContext implements OperationContext {
 
     public void onProgress(Consumer<Progress> callback) {
         onProgress = callback;
+    }
+
+    public void limit(Duration duration) {
+        deadline = System.nanoTime() + duration.toNanos();
     }
 
     public void cancel() {
