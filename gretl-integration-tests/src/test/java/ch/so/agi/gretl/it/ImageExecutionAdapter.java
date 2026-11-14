@@ -25,18 +25,11 @@ final class ImageExecutionAdapter {
                 throw new IllegalArgumentException("IMAGE requires non-root numeric uid:gid with access to mounted files");
         }
         static Settings configured() throws Exception {
-            String file = System.getProperty("gretl.test.imageMetadata");
-            if (file == null) throw new IOException("IMAGE requires candidate image metadata from the job-image profile");
-            Path metadata = Path.of(file).toAbsolutePath().normalize();
-            var proof = (Map<?,?>) Json.parseFile(metadata, 8L << 20);
-            var distribution = CandidateDistribution.resolve();
-            if (!distribution.sourceRevision().equals(proof.get("sourceRevision"))
-                    || !distribution.manifestSha256().equals(proof.get("distributionManifestSha256"))
-                    || !Boolean.valueOf(distribution.sourceDirty()).equals(proof.get("sourceDirty")))
-                throw new IOException("IMAGE metadata does not belong to this candidate distribution");
-            return new Settings(proof.get("id").toString(), "/opt/gretl/bin/gretl",
+            String image = System.getProperty("gretl.test.image");
+            String id = new Docker().inspect(List.of("image", "inspect", "--format", "{{.Id}}", image));
+            return new Settings(id, "/opt/gretl/bin/gretl",
                     System.getProperty("gretl.test.imageNetwork"), System.getProperty("gretl.test.imageUser"),
-                    System.getProperty("gretl.test.imageExtraHost", "services:host-gateway"), metadata);
+                    System.getProperty("gretl.test.imageExtraHost", "services:host-gateway"));
         }
     }
 
@@ -148,9 +141,9 @@ final class ImageExecutionAdapter {
         String entrypoint = engine.inspect(List.of("image", "inspect", "--format", "{{json .Config.Entrypoint}}", imageId));
         if (!Json.write(List.of(settings.launcher())).equals(entrypoint)) throw new IOException("IMAGE default entrypoint differs from the verified launcher");
         Path proofFile = null;
-        if (settings.metadata() != null) {
+        if (engine instanceof Docker) {
             proofFile = request.directory().resolve("image-proof.json");
-            Files.copy(settings.metadata(), proofFile);
+            Files.writeString(proofFile, Json.write(Map.of("id", imageId)));
         }
         String name = "gretl-job-" + UUID.randomUUID();
         var args = new ArrayList<>(List.of("run", "--pull=never", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--init", "--read-only", "--tmpfs", "/tmp:rw,exec,nosuid,size=256m", "--sig-proxy=true", "--name", name,

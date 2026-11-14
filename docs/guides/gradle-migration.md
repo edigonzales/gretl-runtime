@@ -41,8 +41,8 @@ Nach dem [Distributionsbuild](../development/build.md) aus dem Repository-Root:
 ```sh
 output=$(mktemp -d)
 job=gretl-integration-tests/src/test/resources/jobs/task-family/job.groovy
-gretl-dist/target/dist/bin/gretl run "$job" --param output="$output" --target write_b
-gretl-dist/target/dist/bin/gretl run "$job" --param output="$output"
+gretl-cli/build/install/gretl-runtime/bin/gretl run "$job" --param output="$output" --target write_b
+gretl-cli/build/install/gretl-runtime/bin/gretl run "$job" --param output="$output"
 ```
 
 Die Integrationsfixtures erzeugen ihre Archive, Datenbanken und

@@ -1,0 +1,15 @@
+dependencies {
+    testImplementation platform('org.geotools:gt-bom:35.2')
+    testImplementation project(':gretl-api')
+    testImplementation 'org.apache.groovy:groovy:6.0.0'
+    testImplementation 'org.geotools:gt-main'
+    testImplementation 'org.geotools:gt-referencing'
+    testImplementation 'org.geotools:gt-shapefile'
+    testImplementation 'org.geotools:gt-epsg-hsql'
+}
+
+repositories {
+    maven {
+        url = uri('https://repo.osgeo.org/repository/release/')
+    }
+}

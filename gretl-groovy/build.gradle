@@ -1,0 +1,12 @@
+dependencies {
+    api project(':gretl-script-syntax')
+    testImplementation project(':gretl-tooling-core')
+    api project(':gretl-language-contract')
+    api project(':gretl-api')
+    api project(':gretl-runner')
+    api project(':gretl-i18n')
+    api 'org.apache.groovy:groovy:6.0.0'
+    api 'org.apache.groovy:groovy-json:6.0.0'
+}
+
+jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.runtime.groovy')

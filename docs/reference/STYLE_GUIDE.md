@@ -114,7 +114,7 @@ Vor Abschluss prüfen:
 - Beispiele und Tabellen entsprechen dem ausgelieferten Taskkatalog.
 - Vollständige Beispiele verwenden dieselben Quellen wie die Prüfungen.
 - Deutsche und englische Katalogtexte existieren ohne Sprachfallback.
-- `./mvnw verify` und erforderliche Dienstprüfungen wurden ausgeführt.
+- `./gradlew test` und erforderliche Dienstprüfungen wurden ausgeführt.
 - Der Thoth-Build hat keine ungelösten Includes oder defekten lokalen Links.
 - In allen Taskkapiteln sind Ergebnisfelder, Property-Tabellen und Code gleich breit.
 - Die Statusüberschriften und -werte bleiben auch auf schmalen Viewports einzeilig.

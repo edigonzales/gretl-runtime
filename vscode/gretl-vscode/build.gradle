@@ -1,0 +1,38 @@
+plugins {
+    id 'base'
+}
+
+tasks.register('npmCi', Exec) {
+    commandLine 'npm', 'ci', '--ignore-scripts'
+    inputs.files('package.json', 'package-lock.json')
+    outputs.dir 'node_modules'
+}
+
+tasks.register('extensionTest', Exec) {
+    dependsOn npmCi
+    commandLine 'npm', 'test'
+}
+
+tasks.register('vsix', Exec) {
+    dependsOn npmCi, ':gretl-lsp:shadowJar'
+    commandLine 'npm', 'run', 'package'
+}
+
+tasks.register('extensionPackageTest', Exec) {
+    dependsOn vsix
+    commandLine 'npm', 'run', 'test:package'
+}
+
+check.dependsOn extensionTest, extensionPackageTest
+assemble.dependsOn vsix
+
+evaluationDependsOn(':gretl-lsp')
+def lsp = project(':gretl-lsp').tasks.named('shadowJar')
+tasks.named('vsix', Exec) {
+    environment 'GRETL_LSP_JAR', lsp.get().archiveFile.get().asFile
+    environment 'GRETL_GRADLE_VERSION', gradle.gradleVersion
+    environment 'GRETL_VERSION', project.version
+    environment 'GRETL_JAVA_VERSION', project(':gretl-lsp').javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(25)
+    }.get().metadata.javaRuntimeVersion
+}

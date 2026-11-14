@@ -11,11 +11,9 @@ import org.junit.jupiter.api.Test;
 
 class TaskFamilyLocalJobIT {
     @Test
-    void singleTargetAndAggregateRunInScriptAndDetachedJar() throws Exception {
+    void singleTargetAndAggregateRunInScript() throws Exception {
         run(ArtifactJobRunner.Mode.SCRIPT, List.of("write_b"));
         run(ArtifactJobRunner.Mode.SCRIPT, List.of());
-        run(ArtifactJobRunner.Mode.JAR, List.of("write_b"));
-        run(ArtifactJobRunner.Mode.JAR, List.of());
     }
 
     static void run(ArtifactJobRunner.Mode mode, List<String> targets) throws Exception {

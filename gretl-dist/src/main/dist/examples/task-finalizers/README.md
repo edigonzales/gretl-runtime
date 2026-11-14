@@ -6,7 +6,7 @@ oder vom entpackten Distributionsroot:
 ```sh
 GRETL="$(pwd)/bin/gretl"
 if [ ! -x "$GRETL" ]; then
-  GRETL="$(pwd)/gretl-dist/target/dist/bin/gretl"
+  GRETL="$(pwd)/gretl-cli/build/install/gretl-runtime/bin/gretl"
 fi
 WORK="$(mktemp -d)"
 "$GRETL" check examples/task-finalizers/job.groovy

@@ -6,22 +6,22 @@ keine Jobs, Provider, Builder oder Workspace-Plugins aus.
 Vom Repository-Root bauen:
 
 ```sh
-./mvnw -B -pl gretl-lsp -am verify
+./gradlew :gretl-lsp:check
 ```
 
 Das eigenstaendige Artefakt ist
-`gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar`.
+`gretl-lsp/build/libs/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar`.
 Es enthaelt den Java-Core, LSP4J und den validierten Katalog als Daten, keine
 ausfuehrenden Task-/Runnerbibliotheken. Kopieren dieses JARs genuegt zum Start;
 ein anderer GRETL-Checkout oder ein Katalogdownload ist nicht erforderlich.
 
-Die [Distributionsprüfung](../docs/development/build.md#tooling-distributionsqualifikation)
+Die [Distributionsprüfung](../docs/development/build.md)
 startet das tatsächlich ausgelieferte JAR. Der optionale Linux-Container
 bekommt das JAR und kontrollierte Quellen als schreibgeschützte Mounts;
 sein Netzwerk ist deaktiviert. Der Beleg gilt für die ausgeführte Plattform.
 
 ```sh
-java -jar gretl-lsp/target/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar --stdio
+java -jar gretl-lsp/build/libs/gretl-lsp-6.0.0-SNAPSHOT-jar-with-dependencies.jar --stdio
 ```
 
 Dieser Befehl wartet auf einen LSP-Client. stdout enthaelt ausschliesslich

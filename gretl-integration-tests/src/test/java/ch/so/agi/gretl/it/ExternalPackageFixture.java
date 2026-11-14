@@ -18,7 +18,7 @@ final class ExternalPackageFixture {
         Path helperClasses = compile("external/dependency/ProbeHelper.java", "package external.dependency; public final class ProbeHelper { public static String marker() { return \"" + nonce + "\"; } public static String stamp(String self) { return self + \"-" + nonce + "\"; } }", "");
         helper = publish("helper", helperClasses, Map.of("META-INF/groovy/org.codehaus.groovy.runtime.ExtensionModule",
                 "moduleName=external-fixture\nmoduleVersion=1.0\nextensionClasses=external.dependency.ProbeHelper\n"), "");
-        Path api = Path.of("../gretl-api/target/gretl-api-6.0.0-SNAPSHOT.jar").toAbsolutePath().normalize();
+        Path api = CandidateDistribution.resolve().root().resolve("lib/gretl-api-6.0.0-SNAPSHOT.jar");
         assertTrue(Files.isRegularFile(api));
         String source = Files.readString(Path.of("../examples/file-size-extension/src/main/java/example/ExampleProvider.java"))
                 .replace("package example;", "package external.probe;")
@@ -30,8 +30,8 @@ final class ExternalPackageFixture {
                 + "<dependency><groupId>ch.so.agi.gretl</groupId><artifactId>gretl-api</artifactId><version>6.0.0-SNAPSHOT</version><scope>provided</scope></dependency>");
     }
     Path loggingProvider() throws Exception {
-        Path runtime = Path.of("../gretl-dist/target/dist/lib/runtime").toAbsolutePath().normalize();
-        Path api = Path.of("../gretl-api/target/gretl-api-6.0.0-SNAPSHOT.jar").toAbsolutePath().normalize();
+        Path runtime = CandidateDistribution.resolve().root().resolve("lib");
+        Path api = CandidateDistribution.resolve().root().resolve("lib/gretl-api-6.0.0-SNAPSHOT.jar");
         String classpath;
         try (var files = Files.list(runtime)) {
             classpath = files.filter(p -> p.toString().endsWith(".jar")).map(Path::toString)
@@ -84,14 +84,12 @@ final class ExternalPackageFixture {
     }
     record Command(int code, String out, String err) { }
     Command pack(Path descriptor, Path output, String label, List<Path> pollution, boolean offline) throws Exception {
-        Path distribution = Path.of("../gretl-dist/target/dist").toAbsolutePath().normalize();
-        String classpath = List.of(distribution.resolve("lib/runtime/*"), distribution.resolve("lib/tasks/*"), distribution.resolve("lib/extensions/*"))
+        Path distribution = CandidateDistribution.resolve().root();
+        String classpath = List.of(distribution.resolve("lib/*"))
                 .stream().map(Path::toString).collect(java.util.stream.Collectors.joining(java.io.File.pathSeparator));
         for (Path extra : pollution) classpath += java.io.File.pathSeparator + extra;
         var command = List.of(Path.of(System.getProperty("java.home"), "bin/java").toString(),
                 "-Dexternal.marker=" + root.resolve("must-not-execute"),
-                "-Dgretl.packager.catalog=" + distribution.resolve("package-catalog.json"),
-                "-Dgretl.packager.maven=" + Path.of("../mvnw").toAbsolutePath().normalize(),
                 "-Dgretl.packager.repositories=" + repository.toUri(), "-Dgretl.packager.offline=" + offline,
                 "-cp", classpath, "ch.so.agi.gretl.cli.Main", "package", descriptor.toString(), "--output", output.toString());
         Files.writeString(root.resolve(label + "-command.json"), ch.so.agi.gretl.runtime.logging.Json.write(command));

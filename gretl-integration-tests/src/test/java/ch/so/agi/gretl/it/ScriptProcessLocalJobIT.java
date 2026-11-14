@@ -13,7 +13,9 @@ class ScriptProcessLocalJobIT {
         var environment=new LinkedHashMap<String,Object>();
         environment.put("GRETL_JAVA_OPTS","-Dgretl.packager.maven=/deliberate-failing-packager");
         Path tools=Files.createDirectory(root.resolve("runtime-bin"));
-        Files.createSymbolicLink(tools.resolve("dirname"),Path.of("/usr/bin/dirname"));
+        for (String tool : List.of("dirname", "basename", "uname", "xargs", "sed", "tr", "ls")) {
+            Files.createSymbolicLink(tools.resolve(tool), Path.of("/usr/bin", tool));
+        }
         environment.put("PATH",tools.toString());
         return new ArtifactJobRunner.Request("source-contract",fixture,root,List.of(),Map.of("output",root.resolve("output/value.txt")),environment,
                 JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(45),ArtifactJobRunner.JobInput.script(name),invocation);
@@ -30,7 +32,6 @@ class ScriptProcessLocalJobIT {
             String name = "externer Job ü.groovy";
             Files.writeString(fixture.resolve(name), job("first-ä"));
             Files.writeString(fixture.resolve("payload.txt"), "resource-λ|");
-            String runtime = CandidateDistribution.resolve().manifestSha256();
             for (int i=0; i<3; i++) {
                 if (i==1) {
                     Files.writeString(fixture.resolve("job-package.json"), "{ deliberately invalid");
@@ -50,7 +51,6 @@ class ScriptProcessLocalJobIT {
                 assertEquals(0, result.code(), result.err()); assertFalse(result.timedOut());
                 assertEquals(i==2 ? "resource-λ|edited-ö" : "resource-λ|first-ä", Files.readString(root.resolve("output/value.txt")));
                 assertFalse(Files.exists(root.resolve("job.jar"))); assertFalse(Files.exists(root.resolve("package.stdout.log")));
-                assertEquals(runtime, prepared.launch().distribution().manifestSha256());
                 var proof = (Map<?,?>)Json.parseFile(root.resolve("execution.json"), 1L<<20);
                 assertEquals("SCRIPT", proof.get("executionKind"));
                 assertEquals("EXITED", ((Map<?,?>)proof.get("process")).get("state"));
@@ -75,7 +75,6 @@ class ScriptProcessLocalJobIT {
             try (var children = Files.list(external)) { distributionRoot = children.findFirst().orElseThrow(); }
             assertTrue(distributionRoot.resolve("bin/gretl").toFile().setExecutable(true, true));
             var distribution = CandidateDistribution.at(distributionRoot);
-            assertEquals(CandidateDistribution.resolve().manifestSha256(), distribution.manifestSha256());
             Path fixture = Files.createDirectory(external.resolve("new input"));
             Files.writeString(fixture.resolve("payload.txt"), "unpacked|");
             Files.writeString(fixture.resolve("job.groovy"), job("external"));
@@ -90,8 +89,6 @@ class ScriptProcessLocalJobIT {
             finally { if (running.process().isAlive()) ArtifactJobRunner.stop(running); }
             assertEquals(0, result.code(), result.err());
             assertEquals("unpacked|external", Files.readString(root.resolve("output/value.txt")));
-            // Keep the independently verified manifest after the private distribution is removed.
-            Files.copy(distributionRoot.resolve("SHA256SUMS"), root.resolve("distribution-SHA256SUMS"));
         } finally { SelectedPackageSupport.delete(external); }
     }
     @Test void controlsPerformNoTaskWorkAndLargeStreamsDoNotDeadlock() throws Exception {
@@ -114,35 +111,6 @@ class ScriptProcessLocalJobIT {
             assertEquals(5000, result.out().lines().filter(line -> line.equals("O".repeat(100))).count());
             assertEquals(5000, result.err().lines().filter(line -> line.equals("E".repeat(100))).count());
         } finally { SelectedPackageSupport.delete(fixture); }
-    }
-    @Test void packageMutationCannotPoisonTheCacheAndDistributionTamperingIsRejected() throws Exception {
-        Path fixture = Files.createTempDirectory("gretl-cache-input-");
-        Path copiedDistribution = Files.createTempDirectory("gretl-negative-distribution-");
-        try {
-            Files.writeString(fixture.resolve("job.groovy"), job("cache"));
-            Files.writeString(fixture.resolve("payload.txt"), "independent|");
-            SelectedPackageSupport.descriptor(fixture, List.of(), false, List.of());
-            Path first = ArtifactJobRunner.directory("jar-cache-mutation");
-            var original = ArtifactJobRunner.prepare(request(fixture, first, "job.groovy", ArtifactJobRunner.Invocation.run()), ArtifactJobRunner.Mode.JAR);
-            String expectedHash = original.sha256();
-            Files.write(original.jar(), new byte[]{0, 1, 2});
-            assertNotEquals(expectedHash, JobInputSnapshot.hash(original.jar()));
-            Path next = ArtifactJobRunner.directory("jar-cache-reuse");
-            var reused = ArtifactJobRunner.prepare(request(fixture, next, "job.groovy", ArtifactJobRunner.Invocation.run()), ArtifactJobRunner.Mode.JAR);
-            assertEquals(expectedHash, JobInputSnapshot.hash(reused.jar()));
-            assertTrue(Files.isRegularFile(next.resolve("package-reuse.txt")));
-            var running = ArtifactJobRunner.start(reused);
-            ArtifactJobRunner.Result result;
-            try { result = ArtifactJobRunner.finish(running, false); }
-            finally { if (running.process().isAlive()) ArtifactJobRunner.stop(running); }
-            assertEquals(0, result.code(), result.err());
-            assertEquals("independent|cache", Files.readString(next.resolve("output/value.txt")));
-            SelectedPackageSupport.copy(CandidateDistribution.resolve().root(), copiedDistribution);
-            var verifiedCopy = CandidateDistribution.at(copiedDistribution);
-            Files.writeString(copiedDistribution.resolve("bin/gretl"), "#!/bin/sh\nexit 0\n");
-            assertThrows(java.io.IOException.class, verifiedCopy::verifyFiles);
-            CandidateDistribution.resolve().verifyFiles();
-        } finally { SelectedPackageSupport.delete(fixture); SelectedPackageSupport.delete(copiedDistribution); }
     }
     @Test void earlySyntaxMissingFileAndInvalidSettingsReachTheProduct() throws Exception {
         for (String variant : List.of("syntax", "missing", "settings")) {

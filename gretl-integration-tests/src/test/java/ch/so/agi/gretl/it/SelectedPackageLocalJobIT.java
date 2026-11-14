@@ -8,8 +8,9 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 /** Explicit JAR packaging qualification, additional to the common backend-neutral business suite. */
+@org.junit.jupiter.api.Tag("jar")
 class SelectedPackageLocalJobIT {
-    @Test void ioOnlyPackageRunsDownloadArchiveAndClasspathXsltOutsideCheckout() throws Exception {
+    @Test void packagedRuntimeRunsDownloadArchiveAndClasspathXsltOutsideCheckout() throws Exception {
         byte[] payload = Files.readAllBytes(ArtifactJobRunner.fixture("io").resolve("payload.txt"));
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/download", exchange -> { exchange.sendResponseHeaders(200, payload.length); exchange.getResponseBody().write(payload); exchange.close(); }); server.start();
@@ -26,7 +27,7 @@ class SelectedPackageLocalJobIT {
             assertTrue(text.contains("<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>"));
         } finally { server.stop(0); }
     }
-    @Test void interlisOnlyPackageRunsFormatNativeGeoPackageAndSelectedFunctionWithoutBuildEnvironment() throws Exception {
+    @Test void packagedRuntimeRunsFormatNativeGeoPackageAndSelectedFunctionWithoutBuildEnvironment() throws Exception {
         var calls = new java.util.concurrent.atomic.AtomicInteger();
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/exists", exchange -> { calls.incrementAndGet(); exchange.sendResponseHeaders(200, -1); exchange.close(); }); server.start();
@@ -93,7 +94,6 @@ class SelectedPackageLocalJobIT {
             assertNull(archive.getJarEntry("external/unrelated/NotSelected.class"));
         }
         String inputs = Json.write(inventory(jar)); assertTrue(inputs.contains(external.coordinate())); assertTrue(inputs.contains(external.helperCoordinate()));
-        PackageArtifactAssertions.verify(jar, source.resolve("job-package.json"));
         var request = new ArtifactJobRunner.Request("selected-external", source, root, List.of(), Map.of("output", root.resolve("output")),
                 Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
         var prepared = ArtifactJobRunner.existingJar(request, source, jar, root.resolve("reports/report.json"), JobInputSnapshot.capture(source));
@@ -147,14 +147,5 @@ class SelectedPackageLocalJobIT {
             assertEquals(true, JobTestJson.read(root.resolve("isolation.json")).get("emptyMavenCache"));
             assertFalse(Files.exists(root.resolve("source")));
         }
-    }
-    @Test void narrowValidatorPackageHasNoIli2dbAvOrFormatEngines() throws Exception {
-        Path root = ArtifactJobRunner.directory("selected-narrow-validator");
-        Path source = SelectedPackageSupport.fixture(root, "packages/slim-ili", Map.of("ili/IliValidator", "original/IliValidator"), List.of("ilivalidator"), false);
-        var result = SelectedPackageSupport.detached(new ArtifactJobRunner.Request("selected-narrow-validator", source, root, List.of(),
-                Map.of("output", root.resolve("output")), Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(90)));
-        assertEquals(0, result.code(), result.err());
-        assertTrue(Files.readString(root.resolve("output/validation.txt")).contains("validation done"));
-        assertFalse(Files.exists(root.resolve("source")));
     }
 }

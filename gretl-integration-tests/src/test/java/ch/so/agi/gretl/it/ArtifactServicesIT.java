@@ -10,6 +10,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /** The same fixtures and independent FTP/S3 clients are used in either transport. */
+@org.junit.jupiter.api.Tag("docker")
 class ArtifactServicesIT {
     @Test void ftpRoundTripListOverwriteDeleteAndRejectedLogin() throws Exception {
         try (var fixture = new FtpFixture(); var lease = fixture.lease()) {

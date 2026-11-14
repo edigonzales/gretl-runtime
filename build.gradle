@@ -1,0 +1,82 @@
+plugins {
+    id 'base'
+    id 'com.gradleup.shadow' version '9.6.1' apply false
+}
+
+allprojects {
+    group = name == 'file-size-extension' ? 'ch.so.agi.gretl.examples' : 'ch.so.agi.gretl'
+    version = '6.0.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+        maven {
+            url = uri('https://jars.interlis.ch')
+            content { includeGroupByRegex('ch\\.interlis.*|ch\\.ehi.*|ch\\.so\\.agi.*') }
+        }
+    }
+}
+
+configure(subprojects.findAll { it.name != 'gretl-vscode' }) {
+    apply plugin: 'java-library'
+
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(25)
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.compilerArgs.add('-Xlint:all')
+    }
+
+    dependencies {
+        testImplementation platform('org.junit:junit-bom:5.14.4')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+    test {
+        useJUnitPlatform { excludeTags 'docker', 'jar', 'image' }
+    }
+}
+
+tasks.register('fullCheck') {
+    group = 'verification'
+    dependsOn subprojects.collect { "${it.path}:check" },
+            ':gretl-integration-tests:jarTest', ':gretl-integration-tests:serviceTest',
+            ':gretl-integration-tests:imageTest', ':gretl-cli:distTar', 'docsCheck'
+}
+
+tasks.register('docsCheck', Exec) {
+    group = 'verification'
+    commandLine providers.environmentVariable('GRETL_PYTHON').getOrElse('python3.12'), 'scripts/check-docs.py'
+}
+
+configure(subprojects.findAll { !['gretl-vscode', 'gretl-integration-tests', 'gretl-geotools-probe'].contains(it.name) }) {
+    apply plugin: 'maven-publish'
+    publishing {
+        publications {
+            library(MavenPublication) {
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                name = 'snapshots'
+                url = uri('https://jars.interlis.guru/snapshots')
+                mavenContent { snapshotsOnly() }
+                credentials {
+                    username = providers.environmentVariable('MAVEN_USERNAME').orNull
+                    password = providers.environmentVariable('MAVEN_PASSWORD').orNull
+                }
+            }
+        }
+    }
+}
+
+tasks.register('docsBuild', Exec) {
+    dependsOn ':gretl-cli:installDist'
+    commandLine 'quarto', 'render', 'website/'
+}

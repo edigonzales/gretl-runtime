@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
+@org.junit.jupiter.api.Tag("docker")
 class FormatArtifactPostgresIT {
     @Test void originalTypedCsvBothBatchSizesAndExactExport() throws Exception {
         try (var lease = PostgresFixture.lease(); var db = connection(lease); var statement = db.createStatement()) {

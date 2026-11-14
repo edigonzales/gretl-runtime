@@ -4,8 +4,6 @@
   "version": "6.0.0-SNAPSHOT",
   "runtimeVersion": "6.0.0-SNAPSHOT",
   "entryScript": "job.groovy",
-  "taskModules": [],
-  "standardFunctions": false,
   "sources": [],
   "resources": ["message.txt"],
   "dependencies": []

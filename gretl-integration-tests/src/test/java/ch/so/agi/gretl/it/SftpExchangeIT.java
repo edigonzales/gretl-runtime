@@ -12,11 +12,12 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
+@org.junit.jupiter.api.Tag("docker")
 class SftpExchangeIT {
     private static final String IMAGE = "atmoz/sftp:alpine@sha256:c5fb9e4beb8b7054a4c0b65c5e11df47cc20da95ad6002e88aecff62bab06372";
 
     @Test
-    void scriptAndDetachedIoJarExchangeFilesWithOpenSsh() throws Exception {
+    void scriptExchangesFilesWithOpenSsh() throws Exception {
         try (var server = new GenericContainer<>(DockerImageName.parse(IMAGE))
                 .withLabel("gretl.verification.run", System.getProperty("gretl.test.runId", "development"))
                 .withExposedPorts(22)
@@ -45,9 +46,6 @@ class SftpExchangeIT {
             assertExchange(server, result);
 
             seed(server);
-            Path jar = ArtifactJobRunner.directory("sftp-jar");
-            Path source = SelectedPackageSupport.fixture(jar, "sftp-exchange", Map.of(), List.of("io"), false);
-            assertExchange(server, SelectedPackageSupport.detached(request(jar, source, host, port, knownHosts, "no")));
         }
     }
 

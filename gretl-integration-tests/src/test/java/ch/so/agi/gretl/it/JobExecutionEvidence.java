@@ -18,7 +18,6 @@ final class JobExecutionEvidence {
         row.put("mode", result.mode());
         row.put("executionKind", prepared.mode() == ArtifactJobRunner.Mode.JAR ? "PRECOMPILED_JOB" : "SCRIPT");
         var dist = prepared.launch().distribution();
-        if (dist != null) row.put("sourceRevision", dist.sourceRevision());
         row.put("exitCode", result.code());
         row.put("timedOut", result.timedOut());
         row.put("process", Map.of("state", state(result), "exitCode", result.code()));
