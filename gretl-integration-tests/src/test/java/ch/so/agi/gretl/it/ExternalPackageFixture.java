@@ -18,7 +18,7 @@ final class ExternalPackageFixture {
         Path helperClasses = compile("external/dependency/ProbeHelper.java", "package external.dependency; public final class ProbeHelper { public static String marker() { return \"" + nonce + "\"; } public static String stamp(String self) { return self + \"-" + nonce + "\"; } }", "");
         helper = publish("helper", helperClasses, Map.of("META-INF/groovy/org.codehaus.groovy.runtime.ExtensionModule",
                 "moduleName=external-fixture\nmoduleVersion=1.0\nextensionClasses=external.dependency.ProbeHelper\n"), "");
-        Path api = Path.of("../gretl-api/target/gretl-api-6.0.0-SNAPSHOT.jar").toAbsolutePath().normalize();
+        Path api = CandidateDistribution.resolve().root().resolve("lib/gretl-api-6.0.0-SNAPSHOT.jar");
         assertTrue(Files.isRegularFile(api));
         String source = Files.readString(Path.of("../examples/file-size-extension/src/main/java/example/ExampleProvider.java"))
                 .replace("package example;", "package external.probe;")
@@ -31,7 +31,7 @@ final class ExternalPackageFixture {
     }
     Path loggingProvider() throws Exception {
         Path runtime = CandidateDistribution.resolve().root().resolve("lib");
-        Path api = Path.of("../gretl-api/target/gretl-api-6.0.0-SNAPSHOT.jar").toAbsolutePath().normalize();
+        Path api = CandidateDistribution.resolve().root().resolve("lib/gretl-api-6.0.0-SNAPSHOT.jar");
         String classpath;
         try (var files = Files.list(runtime)) {
             classpath = files.filter(p -> p.toString().endsWith(".jar")).map(Path::toString)

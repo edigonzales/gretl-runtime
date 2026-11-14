@@ -58,3 +58,14 @@ tasks.withType(Test).configureEach {
         }
     }
 }
+
+// Exercise the deployed component against its own dependencies.
+def validator = project(':gretl-interlis-tasks')
+evaluationDependsOn(validator.path)
+def validatorClasspath = files(validator.tasks.named('jar'), validator.configurations.runtimeClasspath)
+test {
+    inputs.files(validatorClasspath)
+    doFirst {
+        systemProperty 'gretl.test.validatorClasspath', validatorClasspath.asPath
+    }
+}
