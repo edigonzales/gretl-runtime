@@ -1,5 +1,4 @@
 dependencies {
-    testImplementation 'org.junit.platform:junit-platform-launcher'
     api project(':gretl-api')
     api project(':gretl-runner')
     api project(':gretl-groovy')
@@ -30,7 +29,6 @@ dependencies {
     testImplementation 'software.amazon.awssdk:url-connection-client:2.15.64'
 }
 
-test { exclude '**/FailedProcessDiagnosticsFixture.class' }
 def cli = project(':gretl-cli')
 evaluationDependsOn(cli.path)
 def distribution = cli.tasks.named('installDist')
@@ -38,9 +36,9 @@ def archive = cli.tasks.named('distZip')
 
 tasks.withType(Test).configureEach {
     dependsOn distribution, archive
+    providers.systemProperty('gretl.test.runId').orNull?.with { systemProperty 'gretl.test.runId', it }
     systemProperty 'gretl.test.reactorDistribution', distribution.get().destinationDir
     systemProperty 'gretl.test.distributionArchive', archive.get().archiveFile.get().asFile
-    systemProperty 'junit.jupiter.extensions.autodetection.enabled', true
 }
 
 ['jarTest': 'jar', 'serviceTest': 'docker', 'imageTest': 'image'].each { taskName, tag ->
@@ -51,7 +49,7 @@ tasks.withType(Test).configureEach {
         if (tag == 'image') {
             dependsOn ':gretl-cli:dockerBuild'
             systemProperty 'gretl.test.image', 'gretl-runtime:local'
-            ['runId', 'imageNetwork', 'imageWorkspace', 'imageUser', 'httpImageHost', 'imageExtraHost'].each { name ->
+            ['imageNetwork', 'imageWorkspace', 'imageUser', 'httpImageHost', 'imageExtraHost'].each { name ->
                 def property = "gretl.test.${name}"
                 def value = providers.systemProperty(property)
                 if (value.isPresent()) systemProperty property, value.get()
