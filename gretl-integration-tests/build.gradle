@@ -36,6 +36,7 @@ def archive = cli.tasks.named('distZip')
 
 tasks.withType(Test).configureEach {
     dependsOn distribution, archive
+    providers.systemProperty('gretl.test.runId').orNull?.with { systemProperty 'gretl.test.runId', it }
     systemProperty 'gretl.test.reactorDistribution', distribution.get().destinationDir
     systemProperty 'gretl.test.distributionArchive', archive.get().archiveFile.get().asFile
 }
@@ -48,7 +49,7 @@ tasks.withType(Test).configureEach {
         if (tag == 'image') {
             dependsOn ':gretl-cli:dockerBuild'
             systemProperty 'gretl.test.image', 'gretl-runtime:local'
-            ['runId', 'imageNetwork', 'imageWorkspace', 'imageUser', 'httpImageHost', 'imageExtraHost'].each { name ->
+            ['imageNetwork', 'imageWorkspace', 'imageUser', 'httpImageHost', 'imageExtraHost'].each { name ->
                 def property = "gretl.test.${name}"
                 def value = providers.systemProperty(property)
                 if (value.isPresent()) systemProperty property, value.get()

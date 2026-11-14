@@ -35,6 +35,7 @@ final class FtpFixture implements AutoCloseable {
             int passive = freePort();
             FixedHostPortGenericContainer<?> candidate = new FixedHostPortGenericContainer<>(
                     DockerImageName.parse(IMAGE).toString())
+                    .withLabel("gretl.verification.run", System.getProperty("gretl.test.runId", "development"))
                     .withExposedPorts(21)
                     .withFixedExposedPort(passive, passive)
                     .withEnv("USERS", USER + "|" + PASSWORD + "|/home/gretl")
