@@ -2455,8 +2455,11 @@ include::generated/task-s3download.adoc[]
 === S3Upload
 
 [.task-type]#`S3Upload`# lädt eine Datei, die direkten Dateien eines Verzeichnisses oder eine
-Dateiliste hoch. Der Objekt-Schlüssel ist jeweils der Dateiname; doppelte
-Dateinamen werden abgewiesen.
+Dateiliste hoch. Standardmässig dient der Dateiname als Objekt-Schlüssel.
+Doppelte Dateinamen werden abgewiesen. Bei einem einzelnen
+[.config-key]#`sourceFile`# kann [.config-key]#`key`# den genauen Objekt-Schlüssel
+vorgeben, inklusive eines Präfixes wie `downloads/`.
+[.config-key]#`sourceDir`# und Einträge in [.config-key]#`sourceFiles`# sind dabei unzulässig.
 
 [source,groovy]
 ----
@@ -2465,6 +2468,7 @@ task('upload', S3Upload) {
     secretKey = secret('s3SecretKey')
     bucketName = 'my-bucket'
     sourceFile = file('data/export.zip')
+    key = 'downloads/export.zip'
     acl = 'private'
 }
 

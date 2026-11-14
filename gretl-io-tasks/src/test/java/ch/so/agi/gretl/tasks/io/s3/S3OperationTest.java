@@ -164,6 +164,26 @@ class S3OperationTest {
     }
 
     @Test
+    void explicitUploadKeyRequiresOneSourceFileAndRejectsInvalidKeys() throws Exception {
+        Path file = Files.writeString(root.resolve("one.txt"), "one");
+        Path other = Files.writeString(root.resolve("two.txt"), "two");
+        var builder = new S3UploadOperation.S3UploadBuilder();
+        configure(builder);
+        builder.setBucketName("bucket").setKey("downloads/snapshot.csv");
+
+        assertThrows(IllegalArgumentException.class, () -> builder.setSourceDir(root).build());
+        builder.setSourceDir(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> builder.setSourceFiles(List.of(file)).build());
+        assertThrows(IllegalArgumentException.class,
+                () -> builder.setSourceFile(file).setSourceFiles(List.of(file, other)).build());
+        builder.setSourceFiles(List.of());
+        assertEquals("downloads/snapshot.csv", builder.build().key());
+        assertThrows(IllegalArgumentException.class, () -> builder.setKey(" ").build());
+        assertThrows(IllegalArgumentException.class, () -> builder.setKey("bad\0key").build());
+    }
+
+    @Test
     void uploadRequiresAtLeastOneSource() {
         S3UploadOperation.S3UploadBuilder builder = new S3UploadOperation.S3UploadBuilder();
         configure(builder);
