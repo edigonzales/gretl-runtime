@@ -65,8 +65,7 @@ class FinalizerJobIT {
     }
     @Test void singleSuccessAndOwnerFailureExecuteFinalizersInScript()throws Exception {
         for(String mode:List.of("success","fail")) {
-            var artifact = ArtifactJobRunner.Mode.SCRIPT;
-            var request=request("finalizer-single-"+mode+"-"+artifact,false,mode,ArtifactJobRunner.Invocation.run());var result=execute(request,artifact);
+            var request=request("finalizer-single-"+mode,false,mode,ArtifactJobRunner.Invocation.run());var result=execute(request,ArtifactJobRunner.Mode.SCRIPT);
             assertEquals(mode.equals("success")?0:10,result.code(),result.err());assertFalse(result.timedOut());assertFalse(result.forciblyKilled());assertTrue(result.hasValidArtifactIdentity());
             gzip(request.directory().resolve("output/finalized.gz"),Files.readString(Path.of("../examples/task-finalizers/input.txt")));
             assertEquals(mode.equals("success")?List.of("importData","secondOwner","prepareFinalizer","release","record","cleanup"):List.of("importData","prepareFinalizer","release","record","cleanup"),Files.readAllLines(request.directory().resolve("output/trace.txt")));
@@ -78,8 +77,7 @@ class FinalizerJobIT {
     }
     @Test void projectScopesResourcesAndSharedOwnerBarrierWorkInScript()throws Exception {
         for(String mode:List.of("success","fail")) {
-            var artifact = ArtifactJobRunner.Mode.SCRIPT;
-            var request=request("finalizer-project-"+mode+"-"+artifact,true,mode,ArtifactJobRunner.Invocation.run());var result=execute(request,artifact);
+            var request=request("finalizer-project-"+mode,true,mode,ArtifactJobRunner.Invocation.run());var result=execute(request,ArtifactJobRunner.Mode.SCRIPT);
             assertEquals(mode.equals("success")?0:10,result.code(),result.err());gzip(request.directory().resolve("output/A.gz"),"A");
             if(mode.equals("success"))gzip(request.directory().resolve("output/B.gz"),"B");else assertFalse(Files.exists(request.directory().resolve("output/B.gz")));
             var e=execution(result);var shared=object(task(e,":shared").get("finalization"));assertEquals(List.of(":a:work",":b:work"),shared.get("declaredOwners"));assertEquals(mode.equals("success")?List.of(":a:work",":b:work"):List.of(":a:work"),shared.get("activatingOwners"));
@@ -175,22 +173,20 @@ class FinalizerJobIT {
         var e=object(report.get("execution"));assertEquals(object(errors.getFirst()).get("id"),e.get("primaryErrorRef"));assertTrue(((List<?>)e.get("secondaryErrorRefs")).contains(failure.get("id")));assertEquals("FAILED",task(e,"record").get("status"));assertEquals("SUCCEEDED",task(e,"release").get("status"));assertEquals("global",Files.readString(request.directory().resolve("output/cleanup.txt")));
     }
     @Test void sigtermAfterObservedOwnerStartCompletesTypedFinalizerAndGlobalCleanupInScript()throws Exception {
-        {
-            var request=request("finalizer-sigterm",false,"wait",ArtifactJobRunner.Invocation.run());var prepared=ArtifactJobRunner.prepare(request);
-            try(var watch=FileSystems.getDefault().newWatchService()) {
-                request.directory().resolve("output").register(watch,StandardWatchEventKinds.ENTRY_CREATE);
-                var running=ArtifactJobRunner.start(prepared);
-                try {
-                    long deadline=System.nanoTime()+Duration.ofSeconds(15).toNanos();var ready=request.directory().resolve("output/started");
-                    while(!Files.exists(ready)) {assertTrue(running.process().isAlive(),"Owner process ended before handshake");assertTrue(System.nanoTime()<deadline,"Owner handshake deadline");var key=watch.poll(100,TimeUnit.MILLISECONDS);if(key!=null){key.pollEvents();key.reset();}}
-                    ArtifactJobRunner.cancel(running);var result=ArtifactJobRunner.finish(running,true);
-                    assertTrue(result.code()==143||result.code()==20,result.err());assertFalse(result.timedOut());assertFalse(result.forciblyKilled());
-                    var e=execution(result);assertEquals("CANCELLED",e.get("status"));assertEquals("REQUESTED",e.get("cancelReason"));assertEquals("CANCELLED",task(e,"importData").get("status"));assertEquals("SUCCEEDED",task(e,"release").get("status"));assertEquals("NOT_RUN",task(e,"secondOwner").get("status"));
-                    assertEquals(List.of("importData","prepareFinalizer","release","record","cleanup"),Files.readAllLines(request.directory().resolve("output/trace.txt")));
-                    gzip(request.directory().resolve("output/finalized.gz"),Files.readString(Path.of("../examples/task-finalizers/input.txt")));
-                    assertEquals(1,JobTestJson.events(result.err(), "gretl.run.finished").count());
-                }finally{if(running.process().isAlive())ArtifactJobRunner.stop(running);}
-            }
+        var request=request("finalizer-sigterm",false,"wait",ArtifactJobRunner.Invocation.run());var prepared=ArtifactJobRunner.prepare(request);
+        try(var watch=FileSystems.getDefault().newWatchService()) {
+            request.directory().resolve("output").register(watch,StandardWatchEventKinds.ENTRY_CREATE);
+            var running=ArtifactJobRunner.start(prepared);
+            try {
+                long deadline=System.nanoTime()+Duration.ofSeconds(15).toNanos();var ready=request.directory().resolve("output/started");
+                while(!Files.exists(ready)) {assertTrue(running.process().isAlive(),"Owner process ended before handshake");assertTrue(System.nanoTime()<deadline,"Owner handshake deadline");var key=watch.poll(100,TimeUnit.MILLISECONDS);if(key!=null){key.pollEvents();key.reset();}}
+                ArtifactJobRunner.cancel(running);var result=ArtifactJobRunner.finish(running,true);
+                assertTrue(result.code()==143||result.code()==20,result.err());assertFalse(result.timedOut());assertFalse(result.forciblyKilled());
+                var e=execution(result);assertEquals("CANCELLED",e.get("status"));assertEquals("REQUESTED",e.get("cancelReason"));assertEquals("CANCELLED",task(e,"importData").get("status"));assertEquals("SUCCEEDED",task(e,"release").get("status"));assertEquals("NOT_RUN",task(e,"secondOwner").get("status"));
+                assertEquals(List.of("importData","prepareFinalizer","release","record","cleanup"),Files.readAllLines(request.directory().resolve("output/trace.txt")));
+                gzip(request.directory().resolve("output/finalized.gz"),Files.readString(Path.of("../examples/task-finalizers/input.txt")));
+                assertEquals(1,JobTestJson.events(result.err(), "gretl.run.finished").count());
+            }finally{if(running.process().isAlive())ArtifactJobRunner.stop(running);}
         }
     }
 }

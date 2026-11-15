@@ -15,7 +15,7 @@ class SelectedPackageLocalJobIT {
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/download", exchange -> { exchange.sendResponseHeaders(200, payload.length); exchange.getResponseBody().write(payload); exchange.close(); }); server.start();
         try {
-            Path root = ArtifactJobRunner.directory("selected-io"); Path source = SelectedPackageSupport.fixture(root, "io", Map.of(), List.of("io"), false);
+            Path root = ArtifactJobRunner.directory("selected-io"); Path source = SelectedPackageSupport.fixture(root, "io", Map.of());
             var result = SelectedPackageSupport.detached(new ArtifactJobRunner.Request("selected-io", source, root, List.of("download", "extract", "xsl"),
                     Map.of("output", root.resolve("output"), "variant", "resource", "url", "http://127.0.0.1:" + server.getAddress().getPort() + "/download"),
                     Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(90)));
@@ -35,7 +35,7 @@ class SelectedPackageLocalJobIT {
             Path root = ArtifactJobRunner.directory("selected-interlis");
             Path source = SelectedPackageSupport.fixture(root, "packages/interlis", Map.of(
                     "ili/Ili2gpkgImport", "original-gpkg", "ili/models", "models", "formats/Csv2Excel", "original-csv",
-                    "functions/FunctionProbe.ili", "FunctionProbe.ili", "functions/SO_FunctionsExt.ili", "SO_FunctionsExt.ili"), List.of("interlis"), true);
+                    "functions/FunctionProbe.ili", "FunctionProbe.ili", "functions/SO_FunctionsExt.ili", "SO_FunctionsExt.ili"));
             var result = SelectedPackageSupport.detached(new ArtifactJobRunner.Request("selected-interlis", source, root, List.of(),
                     Map.of("output", root.resolve("output"), "url", "http://127.0.0.1:" + server.getAddress().getPort() + "/exists"),
                     Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(120)));
@@ -72,14 +72,14 @@ class SelectedPackageLocalJobIT {
                 }
                 defaults 'record'
                 """);
-        SelectedPackageSupport.descriptor(source, List.of(), false, List.of());
+        SelectedPackageSupport.descriptor(source, List.of());
         var missing = external.pack(source.resolve("job-package.json"), root.resolve("missing.jar"), "missing-declaration",
                 List.of(external.provider, external.helper, pollution), false);
         assertEquals(2, missing.code(), missing.err());
         assertTrue(missing.err().contains("PACKAGE_COMPILE_FAILED"), missing.err());
         assertTrue(missing.err().contains("external.probe.ExampleProvider.Result"), missing.err());
         assertFalse(Files.exists(root.resolve("missing.jar"))); assertFalse(Files.exists(root.resolve("must-not-execute")));
-        SelectedPackageSupport.descriptor(source, List.of(), false, List.of(external.coordinate()));
+        SelectedPackageSupport.descriptor(source, List.of(external.coordinate()));
         Path jar = root.resolve("job.jar");
         var clean = external.pack(source.resolve("job-package.json"), jar, "clean", List.of(), false);
         assertEquals(0, clean.code(), clean.err());
@@ -105,17 +105,17 @@ class SelectedPackageLocalJobIT {
 
     @Test void unknownArtifactsVersionConflictsAndResourceConflictsHavePackagingDiagnostics() throws Exception {
         Path root = ArtifactJobRunner.directory("selected-packaging-errors"); var external = new ExternalPackageFixture(root);
-        Path source = SelectedPackageSupport.fixture(root, "packages/action", Map.of(), List.of(), false);
+        Path source = SelectedPackageSupport.fixture(root, "packages/action", Map.of());
         for (var entry : Map.of("ch.so.agi.gretl:gretl-api:99.0", "PACKAGE_DEPENDENCY_CONFLICT",
                 external.group + ":missing-artifact:9.9", "PACKAGE_DEPENDENCY_RESOLVE").entrySet()) {
-            SelectedPackageSupport.descriptor(source, List.of(), false, List.of(entry.getKey()));
+            SelectedPackageSupport.descriptor(source, List.of(entry.getKey()));
             var result = external.pack(source.resolve("job-package.json"), root.resolve("failed.jar"), entry.getValue(), List.of(), true);
             assertEquals(2, result.code(), result.err()); assertTrue(result.err().contains(entry.getValue()), result.err());
             assertFalse(Files.exists(root.resolve("failed.jar")));
         }
         external.publish("resource-collision", Files.createDirectories(root.resolve("empty-classes")),
                 Map.of("ch/so/agi/gretl/i18n/messages.properties", "conflicting-resource"), "");
-        SelectedPackageSupport.descriptor(source, List.of(), false, List.of(external.group + ":resource-collision:1.0"));
+        SelectedPackageSupport.descriptor(source, List.of(external.group + ":resource-collision:1.0"));
         var conflict = external.pack(source.resolve("job-package.json"), root.resolve("conflict.jar"), "resource-conflict", List.of(), false);
         assertEquals(2, conflict.code(), conflict.err()); assertTrue(conflict.err().contains("PACKAGE_RESOURCE_CONFLICT"), conflict.err());
         assertTrue(conflict.err().contains("messages.properties"), conflict.err()); assertTrue(conflict.err().contains(external.group), conflict.err());
@@ -126,17 +126,10 @@ class SelectedPackageLocalJobIT {
             return Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/dependencies.json")).readAllBytes(), java.nio.charset.StandardCharsets.UTF_8));
         }
     }
-    private static String hash(Path file) throws Exception {
-        try (var stream = Files.newInputStream(file)) {
-            var digest = java.security.MessageDigest.getInstance("SHA-256"); byte[] buffer = new byte[65536]; int count;
-            while ((count = stream.read(buffer)) >= 0) digest.update(buffer, 0, count);
-            return java.util.HexFormat.of().formatHex(digest.digest());
-        }
-    }
     @Test void minimalActionSuccessAndFailureRunWithoutSourceCheckoutOrBuildTools() throws Exception {
         for (String target : List.of("success", "failure")) {
             Path root = ArtifactJobRunner.directory("selected-minimal-" + target);
-            Path source = SelectedPackageSupport.fixture(root, "packages/action", Map.of(), List.of(), false);
+            Path source = SelectedPackageSupport.fixture(root, "packages/action", Map.of());
             var result = SelectedPackageSupport.detached(new ArtifactJobRunner.Request("selected-minimal-" + target, source, root, List.of(target),
                     Map.of("output", root.resolve("output")), Map.of("GRETL_CORRELATION_ID", "/packages/minimal/42"), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45)));
             assertEquals(target.equals("success") ? 0 : 10, result.code(), result.err());

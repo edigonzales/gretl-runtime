@@ -45,7 +45,7 @@ configure(subprojects.findAll { it.name != 'gretl-vscode' }) {
 tasks.register('fullCheck') {
     group = 'verification'
     dependsOn subprojects.collect { "${it.path}:check" },
-            ':gretl-integration-tests:jarTest', ':gretl-integration-tests:serviceTest',
+            ':gretl-cli:jarTest', ':gretl-integration-tests:jarTest', ':gretl-integration-tests:serviceTest',
             ':gretl-integration-tests:imageTest', ':gretl-cli:distTar', 'docsCheck'
 }
 

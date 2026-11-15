@@ -13,6 +13,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+@org.junit.jupiter.api.Tag("jar")
 class FragmentJarProcessTest {
     @TempDir Path temp;
     @ParameterizedTest @ValueSource(ints={1,2})

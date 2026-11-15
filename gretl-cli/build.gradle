@@ -116,9 +116,13 @@ publishing.publications {
 }
 
 
-test {
-    dependsOn installDist
-    systemProperty 'gretl.test.distributionLib', new File(installDist.destinationDir, 'lib')
+def installedLibraries = tasks.named('installDist').map { new File(it.destinationDir, 'lib') }
+tasks.register('jarTest', Test) {
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform { includeTags 'jar' }
+    inputs.dir(installedLibraries).withPathSensitivity(PathSensitivity.RELATIVE)
+    systemProperty 'gretl.test.distributionLib', installedLibraries.get()
 }
 
 publishing.publications.library.pom.withXml {
