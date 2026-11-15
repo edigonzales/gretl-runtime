@@ -12,7 +12,7 @@ benötigt.
 
 Gradle übernimmt die ausgelieferten Jobs und Ressourcen aus `examples/`.
 Die Anleitungen für den entpackten Distributionsroot liegen unter
-`gretl-dist/src/main/dist/examples/`.
+`gretl-cli/src/dist/examples/`.
 
 Die Installation liegt in `gretl-cli/build/install/gretl-runtime` und enthält
 `bin/`, `lib/` und `examples/`. ZIP und TAR liegen in

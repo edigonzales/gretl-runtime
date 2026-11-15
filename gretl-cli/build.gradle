@@ -66,9 +66,6 @@ distributions {
                         'task-finalizers/job.groovy', 'task-finalizers/job-package.json', 'task-finalizers/README.md',
                         'task-finalizers/tasks/*.groovy', 'task-finalizers/input.txt', 'token-catalog/job.groovy'
             }
-            from(rootProject.file('gretl-dist/src/main/dist/examples')) {
-                into 'examples'
-            }
         }
     }
 }
@@ -79,7 +76,7 @@ distTar {
 }
 
 tasks.register('stageDockerContext', Sync) {
-    from rootProject.file('gretl-dist/src/main/docker/Dockerfile')
+    from 'src/docker/Dockerfile'
     into layout.buildDirectory.dir('docker')
     into('dist') {
         from installDist

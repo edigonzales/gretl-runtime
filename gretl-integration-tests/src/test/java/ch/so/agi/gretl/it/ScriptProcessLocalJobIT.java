@@ -57,8 +57,7 @@ class ScriptProcessLocalJobIT {
     @Test void launchesTheUnpackedZipOutsideTheCheckout() throws Exception {
         Path external = Files.createTempDirectory("gretl-unpacked-");
         try {
-            Path archive = Path.of(System.getProperty("gretl.test.distributionArchive",
-                    "../gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip"));
+            Path archive = Path.of(System.getProperty("gretl.test.distributionArchive"));
             try (var zip = new java.util.zip.ZipInputStream(Files.newInputStream(archive))) {
                 for (java.util.zip.ZipEntry entry; (entry = zip.getNextEntry()) != null;) {
                     Path target = external.resolve(entry.getName()).normalize();
