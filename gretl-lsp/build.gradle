@@ -23,8 +23,6 @@ test {
     systemProperty 'gretl.test.serverJar', shadowJar.archiveFile.get().asFile
 }
 
-publishing.publications.library.artifact(shadowJar)
-
 publishing.publications.library.pom.withXml {
     def catalogDependency = asNode().dependencies.dependency.find {
         it.artifactId.text() == 'gretl-tooling-catalog'
