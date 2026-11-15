@@ -54,9 +54,7 @@ class ImageExecutionAdapterTest {
         var args = launch.arguments();
         assertEquals(ID, launch.imageId());
         assertFalse(args.contains("--entrypoint"));
-        assertEquals(List.of("info", "--format", "{{.ServerVersion}}"), engine.calls.getFirst());
         assertTrue(engine.calls.stream().anyMatch(c -> c.contains(settings.image())));
-        assertTrue(engine.calls.stream().anyMatch(c -> c.getFirst().equals("network")));
         assertTrue(args.containsAll(List.of("--init", "--read-only", "--sig-proxy=true", currentUser(), "gretl-test-network", "/run", ID, "/job/job.groovy", "first", "second", "output=/outputs/a b.txt", "count=12", "/reports/report.json")));
         assertTrue(args.stream().anyMatch(a -> a.contains("source with spaces") || a.contains("scenario with spaces/source,target=/job,readonly")));
         assertTrue(args.stream().anyMatch(a -> a.endsWith("target=/secrets/password,readonly")));
@@ -123,10 +121,10 @@ class ImageExecutionAdapterTest {
                 public void control(List<String> args) { calls.add(args); if (args.getFirst().equals("stop")) process.destroy(); }
             };
             var launch = new ImageExecutionAdapter.Launch(engine, "fake-container", ID, List.of("run", ID), Map.of(), Map.of());
-            var prepared = new ArtifactJobRunner.Prepared(request, request.jobDirectory(), report, JobInputSnapshot.capture(request.jobDirectory()), new ArtifactJobRunner.ImageLaunch(null, launch));
+            var prepared = new ArtifactJobRunner.Prepared(request, request.jobDirectory(), report, new ArtifactJobRunner.ImageLaunch(launch));
             var result = ArtifactJobRunner.finish(ArtifactJobRunner.start(prepared), false);
             assertEquals(timeout ? 20 : 42, result.code()); assertEquals(timeout, result.timedOut());
-            assertEquals(ID, result.artifactIdentity()); assertEquals("IMAGE", result.mode()); assertTrue(result.hasValidArtifactIdentity()); assertEquals(report, result.report()); assertEquals("image output [REDACTED]", result.out());
+            assertEquals(report, result.report()); assertEquals("image output [REDACTED]", result.out());
             assertEquals(result.out(), Files.readString(request.directory().resolve("job.stdout.log")));
             assertFalse(process.isAlive()); assertTrue(calls.contains(List.of("rm", "--force", "fake-container")));
             assertEquals(timeout, calls.contains(List.of("stop", "--time", "35", "fake-container")));

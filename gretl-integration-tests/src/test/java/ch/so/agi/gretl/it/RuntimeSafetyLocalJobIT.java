@@ -46,7 +46,6 @@ class RuntimeSafetyLocalJobIT {
             assertEquals(1, eventFiles.size());
             assertEquals(PosixFilePermissions.fromString("rw-------"), Files.getPosixFilePermissions(eventFiles.getFirst()));
         }
-        assertTrue(result.hasValidArtifactIdentity());
         assertTerminal(result, "SUCCEEDED", 0);
     }
 

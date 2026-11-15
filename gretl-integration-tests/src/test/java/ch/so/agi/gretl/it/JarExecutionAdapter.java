@@ -3,7 +3,6 @@ package ch.so.agi.gretl.it;
 import ch.so.agi.gretl.runtime.logging.Json;
 import java.io.IOException;
 import java.nio.file.*;
-import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -48,16 +47,7 @@ final class JarExecutionAdapter {
         if (packaging.exitValue() != 0 || !Files.isRegularFile(jar)) {
             throw new IOException("Packaging failed: " + Files.readString(request.directory().resolve("package.stderr.log")));
         }
-        String hash;
-        try (var input = Files.newInputStream(jar)) {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] buffer = new byte[65536];
-            int count;
-            while ((count = input.read(buffer)) >= 0) digest.update(buffer, 0, count);
-            hash = HexFormat.of().formatHex(digest.digest());
-        }
-        Files.writeString(request.directory().resolve("runtime.json"), Json.write(ArtifactJobRunner.jsonValue(request.config())));
-        return new ArtifactJobRunner.JarLaunch(distribution, jar, hash);
+        return new ArtifactJobRunner.JarLaunch(jar);
     }
 
 }

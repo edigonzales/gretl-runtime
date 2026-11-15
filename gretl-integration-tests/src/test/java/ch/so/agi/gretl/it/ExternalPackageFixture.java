@@ -91,7 +91,6 @@ final class ExternalPackageFixture {
                 "-Dexternal.marker=" + root.resolve("must-not-execute"),
                 "-Dgretl.packager.repositories=" + repository.toUri(), "-Dgretl.packager.offline=" + offline,
                 "-cp", classpath, "ch.so.agi.gretl.cli.Main", "package", descriptor.toString(), "--output", output.toString());
-        Files.writeString(root.resolve(label + "-command.json"), ch.so.agi.gretl.runtime.logging.Json.write(command));
         Process process = ArtifactJobRunner.process(command, root, Map.of(), label).start();
         try { assertTrue(process.waitFor(240, TimeUnit.SECONDS), "packager timed out"); }
         finally { if (process.isAlive()) ArtifactJobRunner.stop(process); }
