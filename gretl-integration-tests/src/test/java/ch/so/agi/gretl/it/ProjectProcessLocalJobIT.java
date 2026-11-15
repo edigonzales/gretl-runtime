@@ -93,7 +93,7 @@ class ProjectProcessLocalJobIT {
     static void externalProjectNeedsNoPackageDescriptor(ArtifactJobRunner.Mode mode) throws Exception {
         var original = request("success", "never", List.of(), mode);
         Path fixture = original.directory().resolve("without-descriptor");
-        SelectedPackageSupport.copy(original.jobDirectory(), fixture);
+        JobJarSupport.copy(original.jobDirectory(), fixture);
         Files.delete(fixture.resolve("job-package.json"));
         var request = new ArtifactJobRunner.Request(original.id(),fixture,original.directory(),original.targets(),original.parameters(),original.environment(),original.config(),original.endpoints(),original.timeout(),original.input(),original.invocation());
         var result = ArtifactJobRunner.run(request, mode);

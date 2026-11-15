@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FinalizerJobIT {
     private ArtifactJobRunner.Request request(String id,boolean project,String mode,ArtifactJobRunner.Invocation invocation)throws Exception {
         Path root=ArtifactJobRunner.directory(id);Path source=Files.createDirectory(root.resolve("input"));
-        if(project) project(source);else SelectedPackageSupport.copy(Path.of("../examples/task-finalizers").toRealPath(),source);
+        if(project) project(source);else JobJarSupport.copy(Path.of("../examples/task-finalizers").toRealPath(),source);
         return new ArtifactJobRunner.Request(id,source,root,List.of(),
                 Map.of(project?":output":"output",root.resolve("output"),project?":mode":"mode",mode),Map.of(),
                 JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(45),project?ArtifactJobRunner.JobInput.project("."):ArtifactJobRunner.JobInput.script("job.groovy"),invocation);
@@ -57,9 +57,8 @@ class FinalizerJobIT {
     private ArtifactJobRunner.Result execute(ArtifactJobRunner.Request request,ArtifactJobRunner.Mode mode)throws Exception {
         var prepared=ArtifactJobRunner.prepare(request,mode);
         if(mode==ArtifactJobRunner.Mode.JAR) {
-            SelectedPackageSupport.delete(request.jobDirectory());
-            var result=SelectedPackageSupport.detached(prepared);assertFalse(Files.exists(prepared.source()));
-            var isolation=object(Json.parseFile(request.directory().resolve("isolation.json"),1L<<20));assertEquals(true,isolation.get("sourceDeleted"));assertEquals(true,isolation.get("emptyMavenCache"));return result;
+            JobJarSupport.delete(request.jobDirectory());
+            return JobJarSupport.detached(prepared);
         }
         var running=ArtifactJobRunner.start(prepared);try{return ArtifactJobRunner.finish(running,false);}finally{if(running.process().isAlive())ArtifactJobRunner.stop(running);}
     }
@@ -129,7 +128,7 @@ class FinalizerJobIT {
         for (var scenario : scenarios) {
             var request = request("finalizer-jar-controls-" + scenario.name(), false, "fail", scenario.invocation());
             var prepared = ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.JAR);
-            SelectedPackageSupport.delete(request.jobDirectory());SelectedPackageSupport.delete(prepared.source());
+            JobJarSupport.delete(request.jobDirectory());JobJarSupport.delete(prepared.source());
             var running=ArtifactJobRunner.start(prepared);
             try {
                 var result=ArtifactJobRunner.finish(running,false);assertEquals(0,result.code(),result.err());scenario.assertOutput(result.out());assertFalse(Files.exists(result.report()));
@@ -141,7 +140,7 @@ class FinalizerJobIT {
     @org.junit.jupiter.api.Tag("jar")
     @Test void missingCompiledFinalizerFragmentIsRejectedBeforeRunWithoutSourceFallback()throws Exception {
         var request=request("finalizer-missing-class",false,"success",ArtifactJobRunner.Invocation.run());var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.JAR);
-        SelectedPackageSupport.delete(request.jobDirectory());SelectedPackageSupport.delete(prepared.source());
+        JobJarSupport.delete(request.jobDirectory());JobJarSupport.delete(prepared.source());
         Path changed=request.directory().resolve("missing-finalizer.jar");String missingClass;
         try(var in=new JarFile(prepared.jar().toFile());var out=new JarOutputStream(Files.newOutputStream(changed))) {
             var metadata=object(Json.parse(new String(in.getInputStream(in.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),java.nio.charset.StandardCharsets.UTF_8)));

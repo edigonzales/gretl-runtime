@@ -1,12 +1,11 @@
 dependencies {
-    api project(':gretl-language-contract')
-    api 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
     api project(':gretl-tooling-core')
     api project(':gretl-api')
-    api project(':gretl-io-tasks')
-    api project(':gretl-database-tasks')
-    api project(':gretl-interlis-tasks')
-    api project(':gretl-ilivalidator')
+    runtimeOnly project(':gretl-io-tasks')
+    runtimeOnly project(':gretl-database-tasks')
+    runtimeOnly project(':gretl-interlis-tasks')
+    runtimeOnly project(':gretl-ilivalidator')
 }
 
 def catalogDirectory = layout.buildDirectory.dir('catalog')
@@ -28,6 +27,8 @@ tasks.register('catalogJar', Jar) {
 configurations {
     catalogElements {
         canBeResolved = false
+        attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+        outgoing.capability("${project.group}:${project.name}-catalog:${project.version}")
     }
 }
 
@@ -35,4 +36,6 @@ artifacts {
     catalogElements catalogJar
 }
 
-publishing.publications.library.artifact(catalogJar)
+components.java.addVariantsFromConfiguration(configurations.catalogElements) {
+    mapToMavenScope('runtime')
+}

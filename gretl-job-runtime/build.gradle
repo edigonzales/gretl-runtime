@@ -1,6 +1,6 @@
 dependencies {
     api project(':gretl-api')
-    api project(':gretl-i18n')
+    implementation project(':gretl-i18n')
     api project(':gretl-runner')
     api project(':gretl-groovy')
     api project(':gretl-logging')

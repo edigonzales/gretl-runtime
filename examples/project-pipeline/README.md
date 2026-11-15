@@ -37,8 +37,8 @@ Groovy-Code geladen; Top-Level-Code kann bereits bei Hilfe und Planung laufen.
 
 Ein ausdrücklich übergebener Dateipfad startet weiterhin den Einzeldateimodus.
 
-Das mitgelieferte `job-package.json` verwendet Schema 3 und wählt nur das
-IO-Modul. Aus dem Repository-Root:
+Das mitgelieferte `job-package.json` verwendet Schema 3. Das Job-JAR enthält
+die vollständige Standardruntime. Aus dem Repository-Root:
 
 ```sh
 ./gretl-cli/build/install/gretl-runtime/bin/gretl package examples/project-pipeline/job-package.json --output target/project-pipeline.jar

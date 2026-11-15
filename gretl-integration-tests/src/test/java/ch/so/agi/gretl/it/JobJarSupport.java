@@ -1,13 +1,14 @@
 package ch.so.agi.gretl.it;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import ch.so.agi.gretl.runtime.logging.Json;
 import java.nio.file.*;
-import java.time.Duration;
 import java.util.*;
 
 /** Packaging-only qualification. Its test object is explicitly a JAR, independently of the common IMAGE job suite. */
-final class SelectedPackageSupport {
-    private SelectedPackageSupport() { }
+final class JobJarSupport {
+    private JobJarSupport() { }
     static void copy(Path source, Path target) throws Exception {
         try (var paths = Files.walk(source)) {
             for (Path path : paths.toList()) {
@@ -38,7 +39,7 @@ final class SelectedPackageSupport {
     @SuppressWarnings("unchecked")
     static ArtifactJobRunner.Result detached(ArtifactJobRunner.Prepared prepared) throws Exception {
         var original = prepared.request();
-        Path foreign = Files.createTempDirectory("gretl-selected-package with spaces-");
+        Path foreign = Files.createTempDirectory("gretl-job-jar with spaces-");
         try {
             for (String directory : List.of("cwd", "output", "work", "reports", "home", "tmp")) Files.createDirectories(foreign.resolve(directory));
             Files.copy(prepared.jar(), foreign.resolve("job.jar"));
@@ -74,8 +75,7 @@ final class SelectedPackageSupport {
             }
             for (String file : List.of("command.json", "job.stdout.log", "job.stderr.log"))
                 Files.copy(foreign.resolve(file), original.directory().resolve(file), StandardCopyOption.REPLACE_EXISTING);
-            Files.writeString(original.directory().resolve("isolation.json"), Json.write(Map.of("foreignCwd", foreign.toString(),
-                    "sourceDeleted", !Files.exists(prepared.source()), "path", environment.get("PATH"), "emptyMavenCache", !Files.exists(foreign.resolve("home/.m2")))));
+            assertFalse(Files.exists(prepared.source()));
             return new ArtifactJobRunner.Result(result.code(), result.out(), result.err(), original.directory().resolve("reports/report.json"),
                     original.directory(), result.duration(), result.timedOut(), result.aborted(), result.artifactIdentity(), "JAR", result.forciblyKilled());
         } finally { delete(foreign); }

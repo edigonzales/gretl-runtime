@@ -62,7 +62,7 @@ class ImageRuntimeIT {
                 assertEquals(false,((Map<?,?>)proof.get("container")).get("running"));
             }
             assertEquals(image,ImageExecutionAdapter.Settings.configured().image());
-        } finally { SelectedPackageSupport.delete(fixture); }
+        } finally { JobJarSupport.delete(fixture); }
     }
     @Test void nonRootReadOnlyRuntimeExecutesRealSqliteAndDuckdbNativeLibraries() throws Exception {
         Path fixture=Files.createTempDirectory("gretl-image-native-");
@@ -77,7 +77,7 @@ class ImageRuntimeIT {
                 try (var db=DriverManager.getConnection("jdbc:"+engine+":"+root.resolve("output/native."+engine));var statement=db.createStatement();var rows=statement.executeQuery("select value from probe")) {
                     assertTrue(rows.next()); assertEquals("native-ü",rows.getString(1)); assertFalse(rows.next());
                 }
-        } finally { SelectedPackageSupport.delete(fixture); }
+        } finally { JobJarSupport.delete(fixture); }
     }
     @Test void uncooperativeContainerIsForcedAndRemovedWithoutClaimingControlledCancellation() throws Exception {
         Path fixture=Files.createTempDirectory("gretl-image-force-");
@@ -106,7 +106,7 @@ class ImageRuntimeIT {
                 assertEquals(false,((Map<?,?>)proof.get("container")).get("oomKilled")); assertEquals(true,proof.get("removed"));
                 assertTrue(new ImageExecutionAdapter.Docker().inspect(List.of("container","ls","--all","--quiet","--filter","name=^/"+running.prepared().image().name()+"$")).isBlank());
             } finally { if(running.process().isAlive()) ArtifactJobRunner.stop(running); else running.prepared().image().remove(); }
-        } finally { SelectedPackageSupport.delete(fixture); }
+        } finally { JobJarSupport.delete(fixture); }
     }
     @Test void openShiftArbitraryUidAndRootGroupNeedNoPrivilegeOrPasswdChange() throws Exception {
         final long assignedUid=1001234567L;
@@ -180,7 +180,7 @@ class ImageRuntimeIT {
                 assertEquals(assignedUid+":0",((Map<?,?>)proof.get("container")).get("user"));
                 assertEquals(true,((Map<?,?>)proof.get("container")).get("readOnlyRoot"));assertEquals(true,proof.get("removed"));
             } finally { if(running.process().isAlive()) ArtifactJobRunner.stop(running); else launch.remove(); }
-        } finally { SelectedPackageSupport.delete(fixture); }
+        } finally { JobJarSupport.delete(fixture); }
     }
     @Test void changedPreparedSourceIsRejectedBeforeAnyContainerStarts() throws Exception {
         Path fixture=Files.createTempDirectory("gretl-image-changed-source-");
@@ -195,7 +195,7 @@ class ImageRuntimeIT {
             assertFalse(Files.exists(root.resolve("container.id")));assertFalse(Files.exists(prepared.report()));
             assertFalse(Files.exists(root.resolve("output/result.txt")));
             assertTrue(new ImageExecutionAdapter.Docker().inspect(List.of("container","ls","--all","--quiet","--filter","name=^/"+prepared.image().name()+"$")).isBlank());
-        } finally { SelectedPackageSupport.delete(fixture); }
+        } finally { JobJarSupport.delete(fixture); }
     }
     private void copyLiveVolume(String container,String source,Path destination) throws Exception {
         Files.createDirectories(destination);

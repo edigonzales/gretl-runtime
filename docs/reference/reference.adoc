@@ -101,7 +101,7 @@ unter [.code-fragment]#`examples/ili-validator/`#. Der zugehörige Job lautet:
 
 [source,groovy]
 ----
-include::../../gretl-dist/src/main/dist/examples/ili-validator/job.groovy[]
+include::../../examples/ili-validator/job.groovy[]
 ----
 
 Im entpackten Distributionsverzeichnis:
@@ -127,7 +127,7 @@ Dieser Job ist unverändert in der Beispieldistribution enthalten:
 
 [source,groovy]
 ----
-include::../../gretl-dist/src/main/dist/examples/download-extract/job.groovy[]
+include::../../examples/download-extract/job.groovy[]
 ----
 
 Die Parameter werden beim Start übergeben. Ein URL- und Zielwechsel benötigt
@@ -213,7 +213,7 @@ Der folgende vollständige lokale Beispieljob wird mit der Distribution geliefer
 
 [source,groovy]
 ----
-include::../../gretl-dist/src/main/dist/examples/task-finalizers/job.groovy[]
+include::../../examples/task-finalizers/job.groovy[]
 ----
 
 Der Includeabschluss und die tatsächlich geprüften Startbefehle stehen unter
@@ -336,7 +336,7 @@ Dieses vollständige lokale Beispiel beendet den Job bewusst ohne Daten:
 
 [source,groovy]
 ----
-include::../../gretl-dist/src/main/dist/examples/action-nodata/nodata.groovy[]
+include::../../examples/action-nodata/nodata.groovy[]
 ----
 
 Ein solches Ende ergibt nach erfolgreichem Cleanup [.literal]#`NO_DATA`# und Exitcode 0.
@@ -2926,7 +2926,7 @@ Die Beispieldistribution liefert diesen Deskriptor für den lokalen Validator:
 
 [source,json]
 ----
-include::../../gretl-dist/src/main/dist/examples/ili-validator/job-package.json[]
+include::../../examples/ili-validator/job-package.json[]
 ----
 
 [.config-key]#`entryScript`#, [.config-key]#`sources`# und [.config-key]#`resources`# sind relativ zum Deskriptor.

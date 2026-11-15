@@ -85,8 +85,7 @@ final class ExternalPackageFixture {
     record Command(int code, String out, String err) { }
     Command pack(Path descriptor, Path output, String label, List<Path> pollution, boolean offline) throws Exception {
         Path distribution = CandidateDistribution.resolve().root();
-        String classpath = List.of(distribution.resolve("lib/*"))
-                .stream().map(Path::toString).collect(java.util.stream.Collectors.joining(java.io.File.pathSeparator));
+        String classpath = distribution.resolve("lib/*").toString();
         for (Path extra : pollution) classpath += java.io.File.pathSeparator + extra;
         var command = List.of(Path.of(System.getProperty("java.home"), "bin/java").toString(),
                 "-Dexternal.marker=" + root.resolve("must-not-execute"),

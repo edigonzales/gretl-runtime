@@ -40,9 +40,10 @@ den Einzeldateimodus, ein Verzeichnis erfordert eine `settings.gretl` unmittelba
 darin. Bestehende Schema-1/2-JARs verwenden denselben bisherigen Startpfad;
 Schema-3-Projektpakete kompilieren den gesamten expliziten Bestand in ein JAR.
 `settingsFile: "settings.gretl"` ist darin Pflicht, `entryScript` verboten.
-Die Auswahl `taskModules`, `standardFunctions` und explizite Dependencies folgt
-dem bestehenden Schema-2-Auswahlvertrag. `sources` ergänzt ausschliesslich
-Helper, `resources` explizite statische Jobdateien mit ihren Projektpfaden.
+Job-JARs enthalten die vollständige Standardruntime. Zusätzliche externe
+Bibliotheken werden in `dependencies` deklariert. `sources` ergänzt
+ausschliesslich Helper, `resources` explizite statische Jobdateien mit ihren
+Projektpfaden.
 Keine automatische Aufnahme ganzer Repositorys oder Tagesdaten.
 
 ```sh

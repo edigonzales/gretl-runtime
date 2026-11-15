@@ -6,12 +6,11 @@ dependencies {
     api project(':gretl-job-runtime')
     api project(':gretl-api')
     api project(':gretl-runner')
-    api project(':gretl-groovy')
+    implementation project(':gretl-groovy')
     api project(':gretl-logging')
-    api project(':gretl-packager')
-    testImplementation project(':gretl-io-tasks')
-    testImplementation project(':gretl-database-tasks')
-    testImplementation 'com.h2database:h2:2.3.232'
+    implementation project(':gretl-packager')
+    implementation project(':gretl-i18n')
+    testRuntimeOnly 'com.h2database:h2:2.3.232'
 }
 
 jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.cli')
@@ -33,7 +32,9 @@ dependencies {
         exclude group: 'javax.activation', module: 'activation'
         exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
     }
-    runtimeOnly project(path: ':gretl-interlis-tasks', configuration: 'standardFunctionsElements')
+    runtimeOnly(project(':gretl-interlis-tasks')) {
+        capabilities { requireCapability('ch.so.agi.gretl:gretl-interlis-tasks-standard-functions') }
+    }
     runtimeOnly project(':gretl-database-tasks')
     runtimeOnly project(':gretl-io-tasks')
     runtimeOnly project(':gretl-ilivalidator')
@@ -50,6 +51,21 @@ distributions {
     main {
         distributionBaseName = 'gretl-runtime'
         contents {
+            from(rootProject.file('examples')) {
+                into 'examples'
+                include 'action-nodata/*.groovy', 'download-extract/job.groovy', 'download-extract/data.*',
+                        'ili-validator/job.groovy', 'ili-validator/job-package.json',
+                        'ili-validator/models/*.ili', 'ili-validator/data/*.xtf',
+                        'minimal-action/job.groovy', 'minimal-action/job-package.json', 'minimal-action/message.txt',
+                        'project-pipeline/job.groovy', 'project-pipeline/settings.gretl',
+                        'project-pipeline/job-package.json', 'project-pipeline/*/job.groovy',
+                        'project-pipeline/checks/local/job.groovy', 'project-pipeline/prepare/data/input.txt',
+                        'script-includes/job.groovy', 'script-includes/job-package.json', 'script-includes/README.md',
+                        'script-includes/tasks/**/*.groovy', 'script-includes/data/input.txt',
+                        'sql/job.groovy', 'sql/job-package.json', 'sql/runtime.json.example', 'sql/sql/*.sql',
+                        'task-finalizers/job.groovy', 'task-finalizers/job-package.json', 'task-finalizers/README.md',
+                        'task-finalizers/tasks/*.groovy', 'task-finalizers/input.txt', 'token-catalog/job.groovy'
+            }
             from(rootProject.file('gretl-dist/src/main/dist/examples')) {
                 into 'examples'
             }

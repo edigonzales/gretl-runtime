@@ -101,7 +101,7 @@ public final class JobPackager {
         }
     }
 
-    /** Diagnostic utility only; never used to select a package. */
+    /** Returns the current JVM classpath for diagnostics. */
     public static List<Path> currentClasspath() {
         String value = System.getProperty("java.class.path", "");
         List<Path> result = new ArrayList<>();

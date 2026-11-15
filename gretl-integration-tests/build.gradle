@@ -1,23 +1,17 @@
 dependencies {
-    api project(':gretl-api')
-    api project(':gretl-runner')
-    api project(':gretl-groovy')
-    api project(':gretl-i18n')
-    api project(':gretl-logging')
-    api project(':gretl-packager')
-    api project(':gretl-job-runtime')
-    api project(':gretl-cli')
-    api project(':gretl-database-tasks')
-    api project(':gretl-io-tasks')
-    api project(':gretl-ilivalidator')
-    api project(':gretl-interlis-tasks')
+    testImplementation project(':gretl-api')
+    testImplementation project(':gretl-runner')
+    testImplementation project(':gretl-logging')
+    testImplementation project(':gretl-cli')
+    testImplementation 'ch.interlis:iox-ili:1.24.4'
+    testImplementation 'org.apache.poi:poi-ooxml:5.2.5'
     testImplementation('org.testcontainers:testcontainers:1.21.4') {
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
     testImplementation('org.testcontainers:postgresql:1.21.4') {
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
-    testImplementation 'org.postgresql:postgresql:42.7.14'
+    testRuntimeOnly 'org.postgresql:postgresql:42.7.14'
     testImplementation 'commons-net:commons-net:3.6'
     testImplementation('io.floci:testcontainers-floci:1.10.0') {
         exclude group: 'org.slf4j', module: 'slf4j-api'

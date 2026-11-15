@@ -1,9 +1,9 @@
 dependencies {
     testImplementation project(':gretl-tooling-core')
     api project(':gretl-api')
-    api project(':gretl-i18n')
+    implementation project(':gretl-i18n')
     runtimeOnly 'org.postgresql:postgresql:42.7.14'
-    api 'org.duckdb:duckdb_jdbc:1.5.2.0'
+    runtimeOnly 'org.duckdb:duckdb_jdbc:1.5.2.0'
     testImplementation project(':gretl-runner')
     testImplementation 'com.h2database:h2:2.3.232'
 }

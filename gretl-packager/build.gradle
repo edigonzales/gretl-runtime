@@ -1,8 +1,7 @@
 dependencies {
-    api project(':gretl-api')
     api project(':gretl-groovy')
-    api project(':gretl-i18n')
-    api project(':gretl-logging')
+    implementation project(':gretl-i18n')
+    implementation project(':gretl-logging')
 }
 
 jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.packager')

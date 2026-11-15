@@ -10,6 +10,10 @@ benötigt.
 ./gradlew :gretl-lsp:shadowJar :gretl-vscode:vsix
 ```
 
+Gradle übernimmt die ausgelieferten Jobs und Ressourcen aus `examples/`.
+Die Anleitungen für den entpackten Distributionsroot liegen unter
+`gretl-dist/src/main/dist/examples/`.
+
 Die Installation liegt in `gretl-cli/build/install/gretl-runtime` und enthält
 `bin/`, `lib/` und `examples/`. ZIP und TAR liegen in
 `gretl-cli/build/distributions`. Eigene SCRIPT-Erweiterungen können unter

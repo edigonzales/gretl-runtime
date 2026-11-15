@@ -182,7 +182,7 @@ final class ArtifactJobRunner {
         request.input().resolveAgainst(source);
         JobLaunch launch = switch (mode) {
             case SCRIPT -> ScriptExecutionAdapter.prepare(request, source, report, distribution);
-            case JAR -> JarExecutionAdapter.prepare(request, source, report, distribution);
+            case JAR -> JarExecutionAdapter.prepare(request, source, distribution);
             case IMAGE -> new ImageLaunch(distribution, ImageExecutionAdapter.prepare(request, source,
                     ImageExecutionAdapter.Settings.configured(), new ImageExecutionAdapter.Docker()));
         };
