@@ -34,8 +34,9 @@ python3.12 scripts/check-doc-examples.py \
 
 Gradle veröffentlicht Bibliotheken und die beiden Distributionsarchive mit
 `maven-publish`. Mit `./gradlew publishToMavenLocal` lässt sich die lokale
-Publikation prüfen. CI veröffentlicht auf `main` die qualifizierten Archive
-unter `ch.so.agi.gretl:gretl-dist` und vergleicht die per HTTP geladenen
+Publikation prüfen. Bei einem manuellen Workflow-Start auf `main`
+veröffentlicht CI die qualifizierten Archive unter
+`ch.so.agi.gretl:gretl-dist` und vergleicht die per HTTP geladenen
 Archivbytes mit ihren SHA-256-Werten.
 
 Weitere Befehle stehen in der [Testanleitung](testing.md).

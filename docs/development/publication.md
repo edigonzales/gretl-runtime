@@ -1,10 +1,11 @@
 # Snapshot-Publikation
 
 Die GitHub Action qualifiziert GRETL mit denselben Gradle-Tasks wie lokal.
-Sie sichert ZIP und TAR samt SHA-256. Auf `main` übernimmt Gradle diese
-Archive in die Maven-Publikation. Nach dem Upload lädt der Smoke-Test beide
-Archive per HTTP und vergleicht ihre SHA-256-Werte. Aus dem ZIP startet er
-einen externen Groovy-Job.
+Sie sichert ZIP und TAR samt SHA-256. Die Maven-Publikation startet nach
+erfolgreicher Qualifikation bei einem manuellen Workflow-Start auf dem
+Branch `main`. Pushes und Merges auf `main` starten nur die Qualifikation.
+Nach dem Upload lädt der Smoke-Test beide Archive per HTTP und vergleicht
+ihre SHA-256-Werte. Aus dem ZIP startet er einen externen Groovy-Job.
 
 Das Ziel ist `https://jars.interlis.guru/snapshots`. Die Action bezieht
 `MAVEN_USERNAME` und `MAVEN_PASSWORD` aus GitHub Secrets. Die Distribution
