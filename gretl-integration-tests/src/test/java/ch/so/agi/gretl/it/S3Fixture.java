@@ -19,15 +19,21 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 final class S3Fixture implements AutoCloseable {
     private static FlociContainer container;
 
+    static synchronized void stop() {
+        if (container != null) {
+            try {
+                container.stop();
+            } finally {
+                container = null;
+            }
+        }
+    }
+
     static synchronized FlociContainer container() {
         if (container == null) {
             FlociContainer candidate = new FlociContainer().withRegion("us-east-1");
-            String network = System.getProperty("gretl.test.imageNetwork");
-            candidate.withLabel("gretl.verification.run", System.getProperty("gretl.test.runId", "development"));
-            if (network != null) {
-                candidate.withNetworkMode(network);
-                candidate.withCreateContainerCmdModifier(command -> command.withHostName("s3").withAliases("s3"));
-            }
+            var network = ImageTestEnvironment.network();
+            if (network != null) candidate.withNetwork(network).withNetworkAliases("s3");
             candidate.start();
             container = candidate;
         }

@@ -46,7 +46,7 @@ tasks.register('fullCheck') {
     group = 'verification'
     dependsOn subprojects.collect { "${it.path}:check" },
             ':gretl-cli:jarTest', ':gretl-integration-tests:jarTest', ':gretl-integration-tests:serviceTest',
-            ':gretl-integration-tests:imageTest', ':gretl-cli:distTar', 'docsCheck'
+            ':gretl-integration-tests:imageTest', ':gretl-cli:distTar'
 }
 
 tasks.register('docsCheck', Exec) {

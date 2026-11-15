@@ -11,6 +11,16 @@ import org.junit.jupiter.api.Test;
 /** Real product containers; selected by job-image, never skipped by a JUnit assumption. */
 @org.junit.jupiter.api.Tag("image")
 class ImageRuntimeIT {
+    @org.junit.jupiter.api.BeforeAll
+    static void startImageEnvironment() throws Exception {
+        ImageTestEnvironment.start();
+    }
+
+    @org.junit.jupiter.api.AfterAll
+    static void stopImageEnvironment() throws Exception {
+        ImageTestEnvironment.stop();
+    }
+
     @Test void runsGeneratedTaskFamilyFromExternalReadOnlySources() throws Exception {
         TaskFamilyLocalJobIT.run(ArtifactJobRunner.Mode.IMAGE, List.of());
     }

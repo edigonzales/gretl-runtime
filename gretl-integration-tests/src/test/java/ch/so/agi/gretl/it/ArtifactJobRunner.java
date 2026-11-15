@@ -138,13 +138,7 @@ final class ArtifactJobRunner {
     }
 
     static Path directory(String id, Mode mode) throws IOException {
-        Path base = Path.of("build", "job-processes");
-        if (mode == Mode.IMAGE) {
-            String workspace = System.getProperty("gretl.test.imageWorkspace");
-            if (workspace == null || !Files.isDirectory(Path.of(workspace)))
-                throw new IOException("IMAGE requires the private workspace created by python3.12 scripts/verify-runtime.py");
-            base = Path.of(workspace);
-        }
+        Path base = mode == Mode.IMAGE ? ImageTestEnvironment.workspace() : Path.of("build", "job-processes");
         Path root = base.resolve(id + "-" + UUID.randomUUID()).toAbsolutePath().normalize();
         Files.createDirectories(root);
         privateDirectory(root);
@@ -239,15 +233,23 @@ final class ArtifactJobRunner {
     static Result finish(Running running, boolean aborted) throws Exception {
         Process process = running.process();
         long remaining = running.prepared().request().timeout().toNanos() - (System.nanoTime() - running.startedNanos());
-        boolean timedOut = !process.waitFor(Math.max(1, remaining), TimeUnit.NANOSECONDS);
+        boolean timedOut;
         boolean forced = false;
-        if (timedOut) {
-            if (running.prepared().image() != null) forced = stopImage(running);
-            else { cancel(running); forced = stop(process); }
-        }
-        if (running.prepared().image() != null) {
-            try { forced |= running.prepared().image().completed(); }
-            finally { running.prepared().image().remove(); }
+        try {
+            timedOut = !process.waitFor(Math.max(1, remaining), TimeUnit.NANOSECONDS);
+            if (timedOut) {
+                if (running.prepared().image() != null) forced = stopImage(running);
+                else { cancel(running); forced = stop(process); }
+            }
+            if (running.prepared().image() != null) forced |= running.prepared().image().completed();
+        } finally {
+            if (running.prepared().image() != null) {
+                try {
+                    if (process.isAlive()) stopImage(running);
+                } finally {
+                    running.prepared().image().remove();
+                }
+            }
         }
         // waitFor/stop has reaped the process; redirected streams are now complete.
         Request request = running.prepared().request();

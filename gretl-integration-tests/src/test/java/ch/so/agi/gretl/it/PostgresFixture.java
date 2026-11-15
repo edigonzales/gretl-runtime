@@ -17,6 +17,16 @@ final class PostgresFixture {
     private PostgresFixture() {
     }
 
+    static synchronized void stop() {
+        if (container != null) {
+            try {
+                container.stop();
+            } finally {
+                container = null;
+            }
+        }
+    }
+
     static synchronized PostgreSQLContainer<?> container() {
         if (container == null) {
             PostgreSQLContainer<?> candidate = new PostgreSQLContainer<>(
@@ -24,12 +34,8 @@ final class PostgresFixture {
                     .withDatabaseName("gretl")
                     .withUsername("gretl_user")
                     .withPassword("gretl_password");
-            String network = System.getProperty("gretl.test.imageNetwork");
-            candidate.withLabel("gretl.verification.run", System.getProperty("gretl.test.runId", "development"));
-            if (network != null) {
-                candidate.withNetworkMode(network);
-                candidate.withCreateContainerCmdModifier(command -> command.withHostName("postgres").withAliases("postgres"));
-            }
+            var network = ImageTestEnvironment.network();
+            if (network != null) candidate.withNetwork(network).withNetworkAliases("postgres");
             candidate.start();
             try (Connection connection = DriverManager.getConnection(
                     candidate.getJdbcUrl(), candidate.getUsername(),

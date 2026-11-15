@@ -7,7 +7,7 @@ produktive Jobs benötigen einen ausdrücklichen Auftrag.
 Gradle Groovy DSL baut mit JDK 25. GRETL-Jobs laufen mit Groovy 6.
 Nutze `./gradlew test`, `installDist`, `jarTest` und `serviceTest`.
 Die vollständige Qualifikation einschliesslich IMAGE läuft mit
-`python3.12 scripts/verify-runtime.py`. Prüfe Links mit `./gradlew docsCheck`
+`./gradlew fullCheck`. Prüfe Links mit `./gradlew docsCheck`
 und betroffene Beispiele und Renderpfade nach der [Buildanleitung](docs/development/build.md).
 
 Die [Modulübersicht](docs/architecture/module-boundaries.md) beschreibt die

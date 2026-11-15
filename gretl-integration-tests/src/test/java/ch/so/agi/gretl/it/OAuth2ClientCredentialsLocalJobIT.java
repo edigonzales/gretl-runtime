@@ -71,7 +71,7 @@ class OAuth2ClientCredentialsLocalJobIT {
             String id = "oauth2-client-credentials-" + status;
             Path root = ArtifactJobRunner.directory(id, mode);
             String url = "http://127.0.0.1:" + server.getAddress().getPort();
-            String imageUrl = "http://" + System.getProperty("gretl.test.httpImageHost", "services")
+            String imageUrl = "http://" + ImageTestEnvironment.httpHost()
                     + ":" + server.getAddress().getPort();
             var endpoints = Map.of("oauth", new ArtifactJobRunner.Endpoint(url, imageUrl));
             var config = JobRunner.baseConfig(root);

@@ -8,7 +8,7 @@ Exitcodes und Berichte. Die Diensttests verwenden echte Backing-Services.
 ./gradlew test
 ./gradlew serviceTest
 ./gradlew jarTest
-python3.12 scripts/verify-runtime.py
+./gradlew fullCheck
 ```
 
 JAR-Tests paketieren ausgewählte Jobs und starten sie in einem separaten
