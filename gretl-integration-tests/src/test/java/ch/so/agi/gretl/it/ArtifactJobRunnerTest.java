@@ -99,6 +99,6 @@ class ArtifactJobRunnerTest {
         Files.delete(root.resolve("job-package.json"));
         var project = new ArtifactJobRunner.Request(request.id(), root, root, request.targets(), request.parameters(), request.environment(),
                 request.config(), request.endpoints(), request.timeout(), ArtifactJobRunner.JobInput.project("."), request.invocation());
-        assertThrows(java.io.IOException.class, () -> JarExecutionAdapter.prepare(project, root, root.resolve("report.json"), null));
+        assertThrows(java.io.IOException.class, () -> JarExecutionAdapter.prepare(project, root, null));
     }
 }

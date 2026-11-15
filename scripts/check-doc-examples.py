@@ -67,7 +67,7 @@ def run(root,evidence,thoth=None):
         expected=(root/'examples/project-subprojects'/project/'input.txt').read_text().strip()
         if expected not in (evidence/(label+'.stderr')).read_text()+(evidence/(label+'.stdout')).read_text():
             raise RuntimeError('Subproject example did not read its own input: '+label)
-    # Both copies execute in their documented CWD. Only a loopback HTTP fixture
+    # Exercise the checkout and installed examples in their documented CWD. Only a loopback HTTP fixture
     # is served; use the actual published ZIP and compare every extracted byte.
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self,*args,**kwargs):super().__init__(*args,directory=str(root/'examples/download-extract'),**kwargs)

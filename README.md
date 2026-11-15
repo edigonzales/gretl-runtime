@@ -39,8 +39,8 @@ defaults 'write'
 ```sh
 gretl_demo_dir="$(mktemp -d)"
 printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
-./gretl-cli/build/install/gretl-runtime/bin/gretl run gretl-dist/src/main/dist/examples/minimal-action/job.groovy --param output="$gretl_demo_dir/message.txt" --config "$gretl_demo_dir/runtime.json" --work-dir "$gretl_demo_dir/work" --report "$gretl_demo_dir/script-report.json"
-cmp gretl-dist/src/main/dist/examples/minimal-action/message.txt "$gretl_demo_dir/message.txt"
+./gretl-cli/build/install/gretl-runtime/bin/gretl run examples/minimal-action/job.groovy --param output="$gretl_demo_dir/message.txt" --config "$gretl_demo_dir/runtime.json" --work-dir "$gretl_demo_dir/work" --report "$gretl_demo_dir/script-report.json"
+cmp examples/minimal-action/message.txt "$gretl_demo_dir/message.txt"
 ```
 
 `file('message.txt')` ist relativ zum Jobverzeichnis. Ein `path`-Parameter

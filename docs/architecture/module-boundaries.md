@@ -16,8 +16,8 @@ den aktuellen Zuschnitt.
 | gretl-groovy | Groovy-6-DSL und Kompilierkonfiguration | API, Runner, i18n, Language-Contract, Script-Syntax |
 | gretl-logging | Logging, Telemetrie und Report | API, Runner, i18n |
 | gretl-job-runtime | Jobquelle, Parameter, Konfiguration, Ausführung und Abschluss für Skript und JAR | API, Runner, Groovy, Logging, i18n |
-| gretl-packager | Authoring: Descriptor, Kompilierung, Ressourcen und JAR | API, Groovy, Logging, i18n |
-| gretl-cli | Authoring-Kommandos und Übersetzung von Startargumenten | Job-Runtime, Packager und deren Voraussetzungen |
+| gretl-packager | Authoring: Descriptor, Kompilierung, Ressourcen und JAR | Groovy, Logging, i18n |
+| gretl-cli | Authoring-Kommandos und Übersetzung von Startargumenten | Job-Runtime, Packager, API, Runner, Groovy, Logging, i18n und Standard-Taskbibliotheken zur Laufzeit |
 | gretl-io-tasks | 13 HTTP-, Archiv-, XSLT-, FTP- und S3-Operationen | API, i18n |
 | gretl-database-tasks | SqlExecutor, Db2Db, DuckDbSqlExecutor | API, i18n |
 | gretl-interlis-tasks | 27 Format-, Validierungs-, ili2db- und AV-Operationen | API, i18n |

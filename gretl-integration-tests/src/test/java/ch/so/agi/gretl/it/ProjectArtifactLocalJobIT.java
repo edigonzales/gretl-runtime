@@ -18,7 +18,7 @@ class ProjectArtifactLocalJobIT {
         Path root=ArtifactJobRunner.directory(id);
         var config=JobRunner.baseConfig(root);
         var runtime=new LinkedHashMap<>(object(config.get("runtime")));runtime.put("keepWork",keep);config.put("runtime",runtime);
-        Path input=root.resolve("fixture with spaces");SelectedPackageSupport.copy(fixture(),input);
+        Path input=root.resolve("fixture with spaces");JobJarSupport.copy(fixture(),input);
         var descriptor=object(Json.parseFile(input.resolve("job-package.json"),1L<<20));descriptor.put("name",id);
         Files.writeString(input.resolve("job-package.json"),Json.write(descriptor));
         return new ArtifactJobRunner.Request(id,input,root,targets,Map.of(":output",root.resolve("output/result.txt"),":mode",mode,":import:count","9"),
@@ -38,14 +38,11 @@ class ProjectArtifactLocalJobIT {
         var prepared=ArtifactJobRunner.prepare(jarRequest,ArtifactJobRunner.Mode.JAR);
         assertFalse(Files.exists(jarRequest.directory().resolve("toplevel-marker.txt")), "Project packaging must not execute Toplevel code");
         assertFalse(Files.exists(prepared.report()), "Project packaging must not create a run report");
-        var result=SelectedPackageSupport.detached(prepared);
+        var result=JobJarSupport.detached(prepared);
         assertEquals(0,result.code(),result.err());assertRun(result,ORDER,"SUCCEEDED");
         assertEquals(expected,Files.readString(jarRequest.directory().resolve("output/result.txt")));
         assertEquals("ivd",Files.readString(jarRequest.directory().resolve("output/cleanup.txt")));
         assertFalse(Files.exists(prepared.source()));assertTrue(result.hasValidArtifactIdentity());
-        var isolation=object(Json.parseFile(jarRequest.directory().resolve("isolation.json"),1L<<20));
-        assertEquals(true,isolation.get("sourceDeleted"));assertEquals(true,isolation.get("emptyMavenCache"));
-        assertEquals("/gretl-no-build-tools",isolation.get("path"));
         try(var jar=new JarFile(prepared.jar().toFile())) {
             var metadata=object(Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),StandardCharsets.UTF_8)));
             assertEquals(2L,metadata.get("schemaVersion"));

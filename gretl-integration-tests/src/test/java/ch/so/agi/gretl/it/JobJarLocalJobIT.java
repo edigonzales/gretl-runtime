@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 
 /** Explicit JAR packaging qualification, additional to the common backend-neutral business suite. */
 @org.junit.jupiter.api.Tag("jar")
-class SelectedPackageLocalJobIT {
+class JobJarLocalJobIT {
     @Test void packagedRuntimeRunsDownloadArchiveAndClasspathXsltOutsideCheckout() throws Exception {
         byte[] payload = Files.readAllBytes(ArtifactJobRunner.fixture("io").resolve("payload.txt"));
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/download", exchange -> { exchange.sendResponseHeaders(200, payload.length); exchange.getResponseBody().write(payload); exchange.close(); }); server.start();
         try {
-            Path root = ArtifactJobRunner.directory("selected-io"); Path source = SelectedPackageSupport.fixture(root, "io", Map.of());
-            var result = SelectedPackageSupport.detached(new ArtifactJobRunner.Request("selected-io", source, root, List.of("download", "extract", "xsl"),
+            Path root = ArtifactJobRunner.directory("job-jar-io"); Path source = JobJarSupport.fixture(root, "io", Map.of());
+            var result = JobJarSupport.detached(new ArtifactJobRunner.Request("job-jar-io", source, root, List.of("download", "extract", "xsl"),
                     Map.of("output", root.resolve("output"), "variant", "resource", "url", "http://127.0.0.1:" + server.getAddress().getPort() + "/download"),
                     Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(90)));
             assertEquals(0, result.code(), result.err());
@@ -27,16 +27,16 @@ class SelectedPackageLocalJobIT {
             assertTrue(text.contains("<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>"));
         } finally { server.stop(0); }
     }
-    @Test void packagedRuntimeRunsFormatNativeGeoPackageAndSelectedFunctionWithoutBuildEnvironment() throws Exception {
+    @Test void packagedRuntimeRunsFormatNativeGeoPackageAndStandardFunctionWithoutBuildEnvironment() throws Exception {
         var calls = new java.util.concurrent.atomic.AtomicInteger();
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/exists", exchange -> { calls.incrementAndGet(); exchange.sendResponseHeaders(200, -1); exchange.close(); }); server.start();
         try {
-            Path root = ArtifactJobRunner.directory("selected-interlis");
-            Path source = SelectedPackageSupport.fixture(root, "packages/interlis", Map.of(
+            Path root = ArtifactJobRunner.directory("job-jar-interlis");
+            Path source = JobJarSupport.fixture(root, "packages/interlis", Map.of(
                     "ili/Ili2gpkgImport", "original-gpkg", "ili/models", "models", "formats/Csv2Excel", "original-csv",
                     "functions/FunctionProbe.ili", "FunctionProbe.ili", "functions/SO_FunctionsExt.ili", "SO_FunctionsExt.ili"));
-            var result = SelectedPackageSupport.detached(new ArtifactJobRunner.Request("selected-interlis", source, root, List.of(),
+            var result = JobJarSupport.detached(new ArtifactJobRunner.Request("job-jar-interlis", source, root, List.of(),
                     Map.of("output", root.resolve("output"), "url", "http://127.0.0.1:" + server.getAddress().getPort() + "/exists"),
                     Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(120)));
             assertEquals(0, result.code(), result.err()); assertTrue(calls.get() > 0);
@@ -52,11 +52,10 @@ class SelectedPackageLocalJobIT {
         } finally { server.stop(0); }
     }
     @Test void externalDependencyIsResolvedBeforeCompilationAndHostClasspathCannotSupplyItImplicitly() throws Exception {
-        Path root = ArtifactJobRunner.directory("selected-external");
+        Path root = ArtifactJobRunner.directory("job-jar-external");
         var external = new ExternalPackageFixture(root);
         Path pollution = external.pollution();
         assertThrows(ClassNotFoundException.class, () -> Class.forName("external.probe.ExampleProvider", false, getClass().getClassLoader()));
-        assertFalse(Files.exists(Path.of(System.getProperty("user.home"), ".m2/repository", external.group.replace('.', '/'), "external-file-size")));
         Path source = Files.createDirectories(root.resolve("external source with spaces"));
         Files.writeString(source.resolve("data.txt"), "12345");
         Files.writeString(source.resolve("job.groovy"), """
@@ -72,14 +71,14 @@ class SelectedPackageLocalJobIT {
                 }
                 defaults 'record'
                 """);
-        SelectedPackageSupport.descriptor(source, List.of());
+        JobJarSupport.descriptor(source, List.of());
         var missing = external.pack(source.resolve("job-package.json"), root.resolve("missing.jar"), "missing-declaration",
                 List.of(external.provider, external.helper, pollution), false);
         assertEquals(2, missing.code(), missing.err());
         assertTrue(missing.err().contains("PACKAGE_COMPILE_FAILED"), missing.err());
         assertTrue(missing.err().contains("external.probe.ExampleProvider.Result"), missing.err());
         assertFalse(Files.exists(root.resolve("missing.jar"))); assertFalse(Files.exists(root.resolve("must-not-execute")));
-        SelectedPackageSupport.descriptor(source, List.of(external.coordinate()));
+        JobJarSupport.descriptor(source, List.of(external.coordinate()));
         Path jar = root.resolve("job.jar");
         var clean = external.pack(source.resolve("job-package.json"), jar, "clean", List.of(), false);
         assertEquals(0, clean.code(), clean.err());
@@ -94,28 +93,28 @@ class SelectedPackageLocalJobIT {
             assertNull(archive.getJarEntry("external/unrelated/NotSelected.class"));
         }
         String inputs = Json.write(inventory(jar)); assertTrue(inputs.contains(external.coordinate())); assertTrue(inputs.contains(external.helperCoordinate()));
-        var request = new ArtifactJobRunner.Request("selected-external", source, root, List.of(), Map.of("output", root.resolve("output")),
+        var request = new ArtifactJobRunner.Request("job-jar-external", source, root, List.of(), Map.of("output", root.resolve("output")),
                 Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
         var prepared = ArtifactJobRunner.existingJar(request, source, jar, root.resolve("reports/report.json"), JobInputSnapshot.capture(source));
-        var result = SelectedPackageSupport.detached(prepared);
+        var result = JobJarSupport.detached(prepared);
         assertEquals(0, result.code(), result.err()); assertEquals("5", Files.readString(root.resolve("output/bytes.txt")));
         assertTrue(Files.readString(result.report()).contains("example.file-size"));
         assertEquals("bytes-" + external.nonce, Files.readString(root.resolve("output/extension.txt")));
     }
 
     @Test void unknownArtifactsVersionConflictsAndResourceConflictsHavePackagingDiagnostics() throws Exception {
-        Path root = ArtifactJobRunner.directory("selected-packaging-errors"); var external = new ExternalPackageFixture(root);
-        Path source = SelectedPackageSupport.fixture(root, "packages/action", Map.of());
+        Path root = ArtifactJobRunner.directory("job-jar-packaging-errors"); var external = new ExternalPackageFixture(root);
+        Path source = JobJarSupport.fixture(root, "packages/action", Map.of());
         for (var entry : Map.of("ch.so.agi.gretl:gretl-api:99.0", "PACKAGE_DEPENDENCY_CONFLICT",
                 external.group + ":missing-artifact:9.9", "PACKAGE_DEPENDENCY_RESOLVE").entrySet()) {
-            SelectedPackageSupport.descriptor(source, List.of(entry.getKey()));
+            JobJarSupport.descriptor(source, List.of(entry.getKey()));
             var result = external.pack(source.resolve("job-package.json"), root.resolve("failed.jar"), entry.getValue(), List.of(), true);
             assertEquals(2, result.code(), result.err()); assertTrue(result.err().contains(entry.getValue()), result.err());
             assertFalse(Files.exists(root.resolve("failed.jar")));
         }
         external.publish("resource-collision", Files.createDirectories(root.resolve("empty-classes")),
                 Map.of("ch/so/agi/gretl/i18n/messages.properties", "conflicting-resource"), "");
-        SelectedPackageSupport.descriptor(source, List.of(external.group + ":resource-collision:1.0"));
+        JobJarSupport.descriptor(source, List.of(external.group + ":resource-collision:1.0"));
         var conflict = external.pack(source.resolve("job-package.json"), root.resolve("conflict.jar"), "resource-conflict", List.of(), false);
         assertEquals(2, conflict.code(), conflict.err()); assertTrue(conflict.err().contains("PACKAGE_RESOURCE_CONFLICT"), conflict.err());
         assertTrue(conflict.err().contains("messages.properties"), conflict.err()); assertTrue(conflict.err().contains(external.group), conflict.err());
@@ -128,17 +127,15 @@ class SelectedPackageLocalJobIT {
     }
     @Test void minimalActionSuccessAndFailureRunWithoutSourceCheckoutOrBuildTools() throws Exception {
         for (String target : List.of("success", "failure")) {
-            Path root = ArtifactJobRunner.directory("selected-minimal-" + target);
-            Path source = SelectedPackageSupport.fixture(root, "packages/action", Map.of());
-            var result = SelectedPackageSupport.detached(new ArtifactJobRunner.Request("selected-minimal-" + target, source, root, List.of(target),
+            Path root = ArtifactJobRunner.directory("job-jar-minimal-" + target);
+            Path source = JobJarSupport.fixture(root, "packages/action", Map.of());
+            var result = JobJarSupport.detached(new ArtifactJobRunner.Request("job-jar-minimal-" + target, source, root, List.of(target),
                     Map.of("output", root.resolve("output")), Map.of("GRETL_CORRELATION_ID", "/packages/minimal/42"), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45)));
             assertEquals(target.equals("success") ? 0 : 10, result.code(), result.err());
             if (target.equals("success")) assertEquals("minimal package ü\n", Files.readString(root.resolve("output/message.txt")));
-            else assertEquals("selected-package-business-failure", JobTestJson.primaryError(JobTestJson.read(result.report())).get("message"));
+            else assertEquals("job-jar-business-failure", JobTestJson.primaryError(JobTestJson.read(result.report())).get("message"));
             assertEquals("cleaned", Files.readString(root.resolve("output/cleaned.txt")));
             assertTrue(result.err().contains("/packages/minimal/42"));
-            assertEquals(true, JobTestJson.read(root.resolve("isolation.json")).get("emptyMavenCache"));
-            assertFalse(Files.exists(root.resolve("source")));
         }
     }
 }

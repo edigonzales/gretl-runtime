@@ -52,7 +52,7 @@ class ScriptProcessLocalJobIT {
                 assertEquals(i==2 ? "resource-λ|edited-ö" : "resource-λ|first-ä", Files.readString(root.resolve("output/value.txt")));
                 assertFalse(Files.exists(root.resolve("job.jar"))); assertFalse(Files.exists(root.resolve("package.stdout.log")));
             }
-        } finally { SelectedPackageSupport.delete(fixture); }
+        } finally { JobJarSupport.delete(fixture); }
     }
     @Test void launchesTheUnpackedZipOutsideTheCheckout() throws Exception {
         Path external = Files.createTempDirectory("gretl-unpacked-");
@@ -85,7 +85,7 @@ class ScriptProcessLocalJobIT {
             finally { if (running.process().isAlive()) ArtifactJobRunner.stop(running); }
             assertEquals(0, result.code(), result.err());
             assertEquals("unpacked|external", Files.readString(root.resolve("output/value.txt")));
-        } finally { SelectedPackageSupport.delete(external); }
+        } finally { JobJarSupport.delete(external); }
     }
     @Test void controlsPerformNoTaskWorkAndLargeStreamsDoNotDeadlock() throws Exception {
         Path fixture = Files.createTempDirectory("gretl-controls-");
@@ -106,7 +106,7 @@ class ScriptProcessLocalJobIT {
             assertEquals(0, result.code(), result.err()); assertFalse(result.timedOut());
             assertEquals(5000, result.out().lines().filter(line -> line.equals("O".repeat(100))).count());
             assertEquals(5000, result.err().lines().filter(line -> line.equals("E".repeat(100))).count());
-        } finally { SelectedPackageSupport.delete(fixture); }
+        } finally { JobJarSupport.delete(fixture); }
     }
     @Test void earlySyntaxMissingFileAndInvalidSettingsReachTheProduct() throws Exception {
         for (String variant : List.of("syntax", "missing", "settings")) {
@@ -126,7 +126,7 @@ class ScriptProcessLocalJobIT {
                 if (variant.equals("syntax")) assertTrue(result.err().contains("bad.groovy: 1:"), result.err());
                 assertFalse(Files.exists(result.report()));
                 assertFalse(Files.exists(root.resolve("package.stdout.log")));
-            } finally { SelectedPackageSupport.delete(fixture); }
+            } finally { JobJarSupport.delete(fixture); }
         }
     }
     @Test void launchFailureIsRecordedSeparatelyAndSourceChangesAreRejected() throws Exception {
@@ -142,6 +142,6 @@ class ScriptProcessLocalJobIT {
             Files.writeString(prepared.source().resolve("job.groovy"), job("changed"));
             assertThrows(java.io.IOException.class, () -> ArtifactJobRunner.start(prepared));
             assertFalse(Files.exists(root.resolve("output/value.txt")));
-        } finally { SelectedPackageSupport.delete(fixture); }
+        } finally { JobJarSupport.delete(fixture); }
     }
 }

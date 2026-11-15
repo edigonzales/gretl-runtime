@@ -1,6 +1,6 @@
 dependencies {
     api project(':gretl-api')
-    api project(':gretl-i18n')
+    implementation project(':gretl-i18n')
     api('ch.interlis:iox-wkf:2.0.1-20250417.084407-2') {
         exclude group: 'org.geotools'
         exclude group: 'ch.interlis', module: 'ili2pg'
@@ -9,36 +9,36 @@ dependencies {
         exclude group: 'ch.interlis', module: 'ili2c-core'
         exclude group: 'ch.interlis', module: 'iox-ili'
     }
-    api('io.github.sogis:iox-formats:1.0.3') {
+    implementation('io.github.sogis:iox-formats:1.0.3') {
         exclude group: 'org.geotools'
         exclude group: 'ch.interlis', module: 'iox-wkf'
     }
     api 'ch.interlis:ili2c-core:5.6.8'
-    api('ch.interlis:ili2c-tool:5.6.8') {
+    implementation('ch.interlis:ili2c-tool:5.6.8') {
         exclude group: 'javax.activation', module: 'activation'
         exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
     }
     api 'ch.interlis:iox-ili:1.24.4'
-    api('ch.interlis:ili2pg:5.5.1') {
+    implementation('ch.interlis:ili2pg:5.5.1') {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
         exclude group: 'ch.interlis', module: 'iox-ili'
     }
-    api 'ch.ehi:ehisqlgen:1.16.3'
-    api('ch.interlis:ili2duckdb:5.5.1') {
+    runtimeOnly 'ch.ehi:ehisqlgen:1.16.3'
+    implementation('ch.interlis:ili2duckdb:5.5.1') {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
         exclude group: 'ch.interlis', module: 'iox-ili'
     }
-    api('io.github.sogis:av2ch:1.1.8') {
+    implementation('io.github.sogis:av2ch:1.1.8') {
         exclude group: 'ch.qos.logback', module: 'logback-classic'
     }
-    api('ch.interlis:av2geobau:1.4.2') {
+    implementation('ch.interlis:av2geobau:1.4.2') {
         exclude group: 'org.slf4j', module: 'slf4j-simple'
     }
-    api('ch.interlis:ili2gpkg:5.5.1') {
+    implementation('ch.interlis:ili2gpkg:5.5.1') {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
         exclude group: 'ch.interlis', module: 'iox-ili'
     }
-    api('ch.interlis:ilivalidator:1.15.0') {
+    implementation('ch.interlis:ilivalidator:1.15.0') {
         exclude group: 'javax.activation', module: 'activation'
         exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
     }
@@ -46,7 +46,7 @@ dependencies {
     testImplementation 'io.github.sogis:ilivalidator-custom-functions-geometries:0.0.8'
     testImplementation 'ch.geowerkstatt.ilivalidator.extensions.functions:geow-interlis-functions:0.2.1'
     testImplementation 'ch.geowerkstatt.ilivalidator.extensions.functions:interlis-functions-ngk-so:1.0.3'
-    api 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
     runtimeOnly 'org.postgresql:postgresql:42.7.14'
     runtimeOnly 'org.duckdb:duckdb_jdbc:1.5.2.0'
     runtimeOnly 'org.xerial:sqlite-jdbc:3.53.2.0'
@@ -56,6 +56,8 @@ dependencies {
 configurations {
     standardFunctionsElements {
         canBeResolved = false
+        attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+        outgoing.capability("${project.group}:${project.name}-standard-functions:${project.version}")
     }
 }
 
@@ -70,7 +72,9 @@ artifacts {
 
 sourceSets.test.resources.srcDir 'src/standard-functions/resources'
 
-publishing.publications.library.artifact(standardFunctionsJar)
+components.java.addVariantsFromConfiguration(configurations.standardFunctionsElements) {
+    mapToMavenScope('runtime')
+}
 
 dependencies {
     constraints {
