@@ -1,0 +1,33 @@
+plugins {
+    id 'com.gradleup.shadow'
+}
+
+dependencies {
+    api project(':gretl-tooling-core')
+    api 'org.eclipse.lsp4j:org.eclipse.lsp4j:1.0.0'
+    api 'com.google.code.gson:gson:2.15.0'
+    api(project(path: ':gretl-tooling-catalog', configuration: 'catalogElements')) {
+        transitive = false
+    }
+}
+
+shadowJar {
+    archiveClassifier = 'jar-with-dependencies'
+    manifest.attributes('Main-Class': 'ch.so.agi.gretl.lsp.GretlServerLauncher')
+    mergeServiceFiles()
+    filesMatching('META-INF/services/**') { duplicatesStrategy = DuplicatesStrategy.INCLUDE }
+}
+
+test {
+    dependsOn shadowJar
+    systemProperty 'gretl.test.serverJar', shadowJar.archiveFile.get().asFile
+}
+
+publishing.publications.library.artifact(shadowJar)
+
+publishing.publications.library.pom.withXml {
+    def catalogDependency = asNode().dependencies.dependency.find {
+        it.artifactId.text() == 'gretl-tooling-catalog'
+    }
+    catalogDependency.appendNode('classifier', 'catalog')
+}

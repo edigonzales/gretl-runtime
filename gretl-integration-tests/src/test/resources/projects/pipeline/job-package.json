@@ -12,9 +12,5 @@
     "validation/nested/sql",
     "import/sql"
   ],
-  "taskModules": [
-    "io"
-  ],
-  "standardFunctions": false,
   "dependencies": []
 }

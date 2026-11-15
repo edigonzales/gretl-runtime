@@ -8,7 +8,7 @@ if [[ -z "${JAVA_HOME:-}" ]]; then
   exit 2
 fi
 
-"$ROOT_DIR/mvnw" -q -pl gretl-dist -am package -DskipTests
-"$ROOT_DIR/gretl-dist/target/dist/bin/gretl" \
+"$ROOT_DIR/gradlew" -q installDist
+"$ROOT_DIR/gretl-cli/build/install/gretl-runtime/bin/gretl" \
   operations --format adoc --lang de \
   --output "$ROOT_DIR/docs/reference/generated"

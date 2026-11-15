@@ -1,0 +1,9 @@
+dependencies {
+    api project(':gretl-api')
+    api project(':gretl-i18n')
+    api project(':gretl-runner')
+    api project(':gretl-groovy')
+    api project(':gretl-logging')
+}
+
+jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.job')

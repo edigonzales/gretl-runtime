@@ -183,7 +183,7 @@ def verify(repo: Path) -> int:
                 "GRETL_PYTHON": sys.executable,
             }
             process = subprocess.Popen([
-                "./mvnw", "-B", "-Pgeotools-probe,backing-services,job-image", "clean", "verify",
+                "./gradlew", "-PgeotoolsProbe", "fullCheck",
                 f"-Dgretl.test.runId={run_id}", f"-Dgretl.test.imageNetwork={network}",
                 f"-Dgretl.test.imageWorkspace={workspace}", f"-Dgretl.test.imageUser={uid}:{gid}",
                 f"-Dgretl.test.httpImageHost={http_host}", f"-Dgretl.test.imageExtraHost={extra_host}",

@@ -1,0 +1,5 @@
+dependencies {
+    compileOnly project(':gretl-api')
+}
+
+jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.examples.file_size')

@@ -17,10 +17,7 @@ class ValidatorClasspathLocalJobIT {
         Path root = ArtifactJobRunner.directory("minimal-validator-compiler");
         classes = root.resolve("probe classes with spaces");
         Files.createDirectories(classes);
-        Path artifact = Path.of("../gretl-interlis-tasks/target/gretl-interlis-tasks-6.0.0-SNAPSHOT.jar").toAbsolutePath().normalize();
-        String dependencies = Files.readString(Path.of("../gretl-interlis-tasks/target/runtime-classpath.txt")).strip();
-        // This is the module's own resolved runtime graph, not a filtered full distribution.
-        classpath = artifact + java.io.File.pathSeparator + dependencies;
+        classpath = System.getProperty("gretl.test.validatorClasspath");
         assertFalse(classpath.contains("custom-functions"));
         assertFalse(classpath.contains("geow-interlis-functions"));
         assertFalse(classpath.contains("interlis-functions-ngk"));

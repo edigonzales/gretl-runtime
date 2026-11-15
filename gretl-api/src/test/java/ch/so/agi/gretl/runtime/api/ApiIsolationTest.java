@@ -25,7 +25,7 @@ class ApiIsolationTest {
 
     @Test
     void compiledApiDoesNotReferenceForbiddenLibraries() throws IOException {
-        Path classes = Path.of("target", "classes");
+        Path classes = Path.of(System.getProperty("gretl.test.apiClasses"));
         assertTrue(Files.isDirectory(classes), "compiled API classes exist at " + classes);
         try (Stream<Path> files = Files.walk(classes)) {
             List<Path> classFiles = files

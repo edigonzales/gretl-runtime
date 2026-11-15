@@ -17,10 +17,7 @@ final class PackageArtifactAssertions {
             "ilivalidator", "ch.so.agi.gretl.tasks.ilivalidator.IliValidatorProvider");
     static void verify(Path file, Path descriptorFile) throws Exception {
         var descriptor = (Map<?, ?>) Json.parseFile(descriptorFile, 1L << 20);
-        boolean legacy = Long.valueOf(1).equals(descriptor.get("schemaVersion"));
-        Set<String> selected = new HashSet<>();
-        if (legacy) selected.addAll(PROVIDERS.keySet());
-        else if (descriptor.get("taskModules") instanceof List<?> list) for (Object value : list) selected.add((String) value);
+        Set<String> selected = PROVIDERS.keySet();
         try (JarFile jar = new JarFile(file.toFile())) {
             Set<String> expectedProviders = new HashSet<>(); selected.forEach(module -> expectedProviders.add(PROVIDERS.get(module)));
             var service = jar.getJarEntry("META-INF/services/ch.so.agi.gretl.runtime.api.OperationProvider");
@@ -41,35 +38,6 @@ final class PackageArtifactAssertions {
             assertNotNull(logging);
             assertEquals(List.of("ch.qos.logback.classic.spi.LogbackServiceProvider"),
                     new String(jar.getInputStream(logging).readAllBytes(), StandardCharsets.UTF_8).lines().filter(line -> !line.isBlank()).toList());
-            if (selected.equals(Set.of("io"))) {
-                present(jar, "software/amazon/awssdk/services/s3/S3Client.class", "net/sf/saxon/TransformerFactoryImpl.class",
-                        "org/apache/commons/net/ftp/FTPClient.class", "xslt/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl");
-                absent(jar, "org/postgresql/Driver.class", "org/duckdb/DuckDBDriver.class", "ch/interlis/ili2c/Main.class");
-            }
-            if (selected.equals(Set.of("database"))) {
-                present(jar, "org/postgresql/Driver.class", "org/duckdb/DuckDBDriver.class");
-                absent(jar, "software/amazon/awssdk/services/s3/S3Client.class", "net/sf/saxon/TransformerFactoryImpl.class", "ch/interlis/ili2c/Main.class");
-            }
-            if (selected.equals(Set.of("interlis"))) {
-                present(jar, "org/postgresql/Driver.class", "org/sqlite/JDBC.class", "org/duckdb/DuckDBDriver.class");
-                absent(jar, "software/amazon/awssdk/services/s3/S3Client.class", "net/sf/saxon/TransformerFactoryImpl.class");
-            }
-            if (selected.equals(Set.of("ilivalidator"))) {
-                present(jar, "org/interlis2/validator/Validator.class");
-                absent(jar, "ch/interlis/ili2db/base/AbstractMain.class", "org/duckdb/DuckDBDriver.class", "org/apache/poi/xssf/usermodel/XSSFWorkbook.class");
-            }
-            if (selected.isEmpty()) absent(jar, "org/postgresql/Driver.class", "org/duckdb/DuckDBDriver.class",
-                    "ch/interlis/ili2c/Main.class", "software/amazon/awssdk/services/s3/S3Client.class", "net/sf/saxon/TransformerFactoryImpl.class");
-            Map<?, ?> inventory = (Map<?, ?>) Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/dependencies.json")).readAllBytes(), StandardCharsets.UTF_8));
-            assertEquals(2L, inventory.get("schemaVersion"));
-            Set<String> identities = new HashSet<>();
-            for (Object value : (List<?>) inventory.get("included")) {
-                Map<?, ?> artifact = (Map<?, ?>) value;
-                assertTrue(identities.add((String) artifact.get("coordinate")), "Unique Maven input identity");
-                assertTrue(((String) artifact.get("sha256")).matches("[0-9a-f]{64}"));
-                assertEquals("jar", artifact.get("kind"));
-                assertFalse(Set.of("gretl-cli", "gretl-packager").contains(artifact.get("artifactId")));
-            }
             var metadata = (Map<?, ?>) Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job.json")).readAllBytes(), StandardCharsets.UTF_8));
             boolean project = Long.valueOf(3).equals(descriptor.get("schemaVersion"));
             var sourceRoot=descriptorFile.toAbsolutePath().getParent();

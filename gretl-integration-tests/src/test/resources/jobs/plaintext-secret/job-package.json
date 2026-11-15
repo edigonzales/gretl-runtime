@@ -4,8 +4,6 @@
   "version": "1",
   "runtimeVersion": "6.0.0-SNAPSHOT",
   "entryScript": "job.groovy",
-  "taskModules": ["database"],
-  "standardFunctions": false,
   "sources": [],
   "resources": [],
   "dependencies": ["org.xerial:sqlite-jdbc:3.53.2.0"]

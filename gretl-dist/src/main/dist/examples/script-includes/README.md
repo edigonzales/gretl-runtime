@@ -6,7 +6,7 @@ vom entpackten Distributionsroot:
 ```sh
 GRETL="$(pwd)/bin/gretl"
 if [ ! -x "$GRETL" ]; then
-  GRETL="$(pwd)/gretl-dist/target/dist/bin/gretl"
+  GRETL="$(pwd)/gretl-cli/build/install/gretl-runtime/bin/gretl"
 fi
 "$GRETL" run examples/script-includes/job.groovy --help
 "$GRETL" check examples/script-includes/job.groovy
@@ -33,7 +33,7 @@ bleiben ausdrücklich im Deskriptor ausgewählt. Zum isolierten Start ohne Quell
 ```sh
 GRETL="$(pwd)/bin/gretl"
 if [ ! -x "$GRETL" ]; then
-  GRETL="$(pwd)/gretl-dist/target/dist/bin/gretl"
+  GRETL="$(pwd)/gretl-cli/build/install/gretl-runtime/bin/gretl"
 fi
 INPUT="$(pwd)/examples/script-includes/data/input.txt"
 WORK="$(mktemp -d)"

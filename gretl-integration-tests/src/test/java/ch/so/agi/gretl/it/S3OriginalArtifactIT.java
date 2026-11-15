@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
+@org.junit.jupiter.api.Tag("docker")
 class S3OriginalArtifactIT {
     @Test void originalDirectoryFileTreeFileCopyAndDownloadDeleteValues() throws Exception {
         try (var fixture = new S3Fixture(); var lease = fixture.lease()) {

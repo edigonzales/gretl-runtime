@@ -3,15 +3,9 @@ title: "Getting Started"
 description: "Run a local file job with GRETL Runtime."
 ---
 
-Start in a Git checkout with JDK 25. Build the distribution using the Maven
-wrapper; Docker is required for the full service gate:
+Start in a Git checkout with JDK 25 and run `./gradlew installDist`.
 
-```sh
-./mvnw -B clean verify
-./mvnw -B -Pgeotools-probe,backing-services clean verify
-```
-
-Change into `gretl-dist/target/dist/`. This is the distribution root, containing
+Change into `gretl-cli/build/install/gretl-runtime/`. This is the distribution root, containing
 `bin/`, `lib/` and `examples/`. An unpacked distribution has the same layout.
 The bundled minimal action copies a local synthetic text file:
 

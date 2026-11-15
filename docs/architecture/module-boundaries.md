@@ -1,6 +1,6 @@
 # Module und produktive Grenzen
 
-Die aufgelösten Maven-Abhängigkeiten und die vorhandenen Grenztests bestimmen
+Die Gradle-Projektabhängigkeiten bestimmen
 den aktuellen Zuschnitt.
 
 | Artefakt (`ch.so.agi.gretl`, Version `6.0.0-SNAPSHOT`) | Verantwortung | Erlaubte interne Produktionsabhängigkeiten |
@@ -22,7 +22,6 @@ den aktuellen Zuschnitt.
 | gretl-database-tasks | SqlExecutor, Db2Db, DuckDbSqlExecutor | API, i18n |
 | gretl-interlis-tasks | 27 Format-, Validierungs-, ili2db- und AV-Operationen | API, i18n |
 | gretl-ilivalidator | Schmaler INTERLIS-Validator mit drei Eingabefeldern | API, i18n |
-| gretl-dist | Vollständige Standarddistribution, Launcher, Katalog | Produktartefakte und ausdrücklich gewählte Standardfunktionen |
 
 Taskbibliotheken besitzen ihre Fachbibliotheken selbst. Sie verwenden weder
 Runner noch Groovy, CLI, Packager oder Logging-Backend. Der Runner besitzt
@@ -30,12 +29,6 @@ keine Taskbibliothek. Die Job-Runtime besitzt weder direkt noch transitiv CLI
 oder Packager. `GretlCli` übersetzt seine Jobkommandos in `JobOptions`;
 `JobJarMain` verwendet `JobRuntime.executePackaged` unmittelbar. Beide verwenden
 dieselbe Konfiguration, Planung, Cancellation, Shutdown- und Abschlusslogik.
-
-Die Enforcer-Ausführung `production-module-boundary` prüft die **aufgelösten**
-transitiven Produktionsabhängigkeiten (compile/runtime/provided) von API,
-Runner, vier Taskmodulen und Job-Runtime. Testdependencies bleiben ausserhalb
-dieser Verbote. Maven weist Reactorzyklen vor der Ausführung zurück. Die
-Abhängigkeitsbäume und unabhängige Prüfung ergänzen diese wenigen Regeln.
 
 Die vier organisationsspezifischen Funktionsbibliotheken liegen ausdrücklich
 in der Standarddistribution. Das zusätzliche klassifizierte Ressourcenartefakt
@@ -46,10 +39,8 @@ Siehe [Validator-Erweiterungen](../guides/packaging.md#validatorfunktionen).
 
 [Jobtest-Verträge](../development/job-artifact-tests.md) beschreiben Verbraucher und Nachweise.
 
-Der [Paketierungsvertrag](../guides/packaging.md) macht die vier Taskmodule auch als
-Auslieferungsauswahl nutzbar. Die vollständige Standarddistribution bleibt
-erhalten. Die Compilerisolation ist auf den Authoring-Schritt begrenzt; sie
-führt keinen allgemeinen Plugincontainer in die Runtime ein.
+Die CLI liefert die Standarddistribution. Der [Packager](../guides/packaging.md)
+verwendet dieselbe Standardlaufzeit und isoliert den Jobcompiler vom Host.
 
 Der statische Tooling-Core besitzt keine Produktionsabhaengigkeit auf Runner,
 Groovyadapter, Taskprovider oder Exporter. Die gemeinsame `PlanSemantics` arbeitet

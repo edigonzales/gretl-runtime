@@ -58,28 +58,21 @@ class PackageDescriptorTest {
         assertTrue(unknownError.getMessage().contains("extra"));
     }
     @Test
-    void versionTwoHasExplicitEmptySelectionAndSupportsClassifiedArtifacts() throws Exception {
+    void versionTwoSupportsClassifiedArtifacts() throws Exception {
         Files.writeString(tempDir.resolve("job.groovy"), "action('run') { }\ndefaults 'run'\n");
-        for (String selection : java.util.List.of("", ",\"taskModules\":[]", ",\"taskModules\":[\"io\",\"ilivalidator\"],\"standardFunctions\":true")) {
-            PackageDescriptor value = loadSelection(2, selection,
-                    "[\"example:provider:1.2.3\",\"example:functions:jar:standard:4.5.6\"]");
-            assertEquals(selection.contains("io") ? java.util.List.of("io", "ilivalidator") : java.util.List.of(), value.taskModules());
-            assertEquals(selection.contains("true"), value.standardFunctions());
-            assertEquals("example:functions:jar:standard:4.5.6", value.dependencies().get(1).coordinate());
-        }
+        PackageDescriptor value = loadDescriptor(2, "",
+                "[\"example:provider:1.2.3\",\"example:functions:jar:standard:4.5.6\"]");
+        assertEquals("example:functions:jar:standard:4.5.6", value.dependencies().get(1).coordinate());
     }
 
     @Test
-    void rejectsAmbiguousSelectionAndUnpinnedDependencyDeclarations() throws Exception {
+    void rejectsRemovedSelectionFieldsAndUnpinnedDependencyDeclarations() throws Exception {
         Files.writeString(tempDir.resolve("job.groovy"), "action('run') { }\ndefaults 'run'\n");
-        for (String selection : java.util.List.of(
-                ",\"taskModules\":[\"unknown\"]", ",\"taskModules\":[\"io\",\"io\"]",
-                ",\"taskModules\":\"io\"", ",\"standardFunctions\":\"true\"")) {
-            assertThrows(PackageException.class, () -> loadSelection(2, selection, "[]"), selection);
-        }
-        for (String selection : java.util.List.of(",\"taskModules\":[]", ",\"standardFunctions\":false")) {
-            assertEquals("PACKAGE_SELECTION_VERSION", assertThrows(PackageException.class,
-                    () -> loadSelection(1, selection, "[]")).code());
+        for (int schemaVersion : java.util.List.of(1, 2, 3)) {
+            for (String selection : java.util.List.of(",\"taskModules\":[]", ",\"standardFunctions\":false")) {
+                assertEquals("PACKAGE_SELECTION_REMOVED", assertThrows(PackageException.class,
+                        () -> loadDescriptor(schemaVersion, selection, "[]")).code());
+            }
         }
         Path overflow = tempDir.resolve("overflow.json");
         Files.writeString(overflow, "{\"schemaVersion\":4294967297}");
@@ -88,11 +81,11 @@ class PackageDescriptorTest {
                 "[\"g:a\"]", "[\"g:a:[]\"]", "[\"g:a:LATEST\"]", "[\"g:a:RELEASE\"]",
                 "[\"g:a:1.*\"]", "[\"g:a:1-SNAPSHOT\"]", "[\"g:a:war:classifier:1\"]",
                 "[\"g:a:1\",\"g:a:2\"]")) {
-            assertThrows(PackageException.class, () -> loadSelection(2, "", dependencies), dependencies);
+            assertThrows(PackageException.class, () -> loadDescriptor(2, "", dependencies), dependencies);
         }
     }
 
-    private PackageDescriptor loadSelection(int schemaVersion, String selection, String dependencies) throws Exception {
+    private PackageDescriptor loadDescriptor(int schemaVersion, String selection, String dependencies) throws Exception {
         Path descriptor = tempDir.resolve("selection.json");
         Files.writeString(descriptor, "{\"schemaVersion\":" + schemaVersion
                 + ",\"name\":\"selection\",\"version\":\"1\",\"runtimeVersion\":\"1\","

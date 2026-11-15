@@ -32,7 +32,7 @@ def run(root,evidence,thoth=None):
                  stdoutSha256=hashlib.sha256(out.read_bytes()).hexdigest(),stderrSha256=hashlib.sha256(err.read_bytes()).hexdigest())
         results.append(row)
         if p.returncode:raise RuntimeError('Documentation check failed: '+name+'; see '+str(evidence))
-    dist=root/'gretl-dist/target/dist'
+    dist=root/'gretl-cli/build/install/gretl-runtime'
     if not (dist/'bin/gretl').is_file():raise RuntimeError('Build the standard distribution first')
     minimal=(dist/'examples/minimal-action/job.groovy').read_text().strip()
     if minimal not in (root/'README.md').read_text():raise RuntimeError('README Groovy example drifted from executed minimal action')
@@ -107,7 +107,7 @@ def run(root,evidence,thoth=None):
     for name in ['index','features','getting-started','docs']:
         page=site/(name+'.html')
         if not page.is_file():raise RuntimeError('Missing Quarto page: '+name)
-        if any(bad in page.read_text() for bad in ['Lorem ipsum','tasks.register','./gradlew','Lightweight control plane']):raise RuntimeError('Obsolete website content: '+name)
+        if any(bad in page.read_text() for bad in ['Lorem ipsum','tasks.register','Lightweight control plane']):raise RuntimeError('Obsolete website content: '+name)
     thoth=thoth or os.environ.get('GRETL_THOTH_JAR')
     if not thoth or not Path(thoth).is_file():raise RuntimeError('Provide the existing Thoth Biblios JAR via GRETL_THOTH_JAR')
     # JGit cannot reliably clone a linked detached worktree. Materialize the

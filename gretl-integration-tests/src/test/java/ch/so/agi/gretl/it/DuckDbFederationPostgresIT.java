@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(300)
+@org.junit.jupiter.api.Tag("docker")
 class DuckDbFederationPostgresIT {
     @TempDir
     Path root;

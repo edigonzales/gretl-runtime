@@ -58,7 +58,7 @@ class ProjectProcessLocalJobIT {
         Files.writeString(input.resolve("job.groovy"), "action('a', dependsOn: ':" + (kind.equals("cycle") ? "b" : "absent")
                 + "') { throw new AssertionError('task executed') }\n" + (kind.equals("cycle") ? "action('b', dependsOn: ':a') { }\n" : ""));
         Files.writeString(input.resolve("job-package.json"), Json.write(Map.of("schemaVersion",3,"name","invalid-project","version","1",
-                "runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl","sources",List.of(),"resources",List.of(),"taskModules",List.of(),"standardFunctions",false,"dependencies",List.of())));
+                "runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl","sources",List.of(),"resources",List.of(),"dependencies",List.of())));
         var result = ArtifactJobRunner.run(new ArtifactJobRunner.Request("project-invalid-" + kind, input, root, List.of(), Map.of(), Map.of(),
                 JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45), ArtifactJobRunner.JobInput.project("."), ArtifactJobRunner.Invocation.run()));
         assertEquals(2, result.code(), result.err()); assertFalse(result.timedOut());
@@ -77,7 +77,7 @@ class ProjectProcessLocalJobIT {
         Files.writeString(input.resolve("a/job.groovy"), "parameter('value', required: true, description: 'A value')\naction('run') { def v = parameter(':value') + '/' + parameter('value'); java.nio.file.Files.writeString(parameter(':output').resolve('a.txt'), v); v }\n");
         Files.writeString(input.resolve("b/job.groovy"), "parameter('value', required: true, description: 'B value')\naction('run', dependsOn: ':a:run') { java.nio.file.Files.writeString(parameter(':output').resolve('b.txt'), result(':a:run') + '/' + parameter('value')) }\n");
         Files.writeString(input.resolve("job-package.json"), Json.write(Map.of("schemaVersion",3,"name","parameter-project","version","1",
-                "runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl","sources",List.of(),"resources",List.of(),"taskModules",List.of(),"standardFunctions",false,"dependencies",List.of())));
+                "runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl","sources",List.of(),"resources",List.of(),"dependencies",List.of())));
         var result = ArtifactJobRunner.run(new ArtifactJobRunner.Request("project-parameter-namespaces", input, root, List.of(target),
                 Map.of(":value","ROOT",":a:value","A",":b:value","B",":output",root.resolve("output")),Map.of(),JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(45),
                 ArtifactJobRunner.JobInput.project("."),ArtifactJobRunner.Invocation.run()));

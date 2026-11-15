@@ -4,8 +4,8 @@
     {
       "label": "Build GRETL Extension",
       "type": "process",
-      "command": "${workspaceFolder}/mvnw",
-      "args": ["-B", "-pl", "vscode/gretl-vscode", "-am", "package"],
+      "command": "${workspaceFolder}/gradlew",
+      "args": [":gretl-vscode:vsix"],
       "options": {
         "cwd": "${workspaceFolder}"
       },

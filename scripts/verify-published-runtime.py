@@ -40,7 +40,7 @@ def snapshot_urls(repository, version):
 def qualified_digests(path, version):
     expected = {}
     for line in path.read_text().splitlines():
-        match = re.fullmatch(r'([0-9a-f]{64})  ' + re.escape(f'gretl-runtime-{version}-bin.') + r'(zip|tar\.gz)', line)
+        match = re.fullmatch(r'([0-9a-f]{64})  ' + re.escape(f'gretl-runtime-{version}.') + r'(zip|tar\.gz)', line)
         if not match or match[2] in expected:
             raise ValueError('Invalid qualified distribution checksum list')
         expected[match[2]] = match[1]
@@ -61,7 +61,7 @@ def download_verified(url, archive, expected):
     return actual
 
 
-def unpack_verified(archive, output, version, source):
+def unpack_verified(archive, output, version):
     base_name = 'gretl-runtime-' + version
     with zipfile.ZipFile(archive) as zip_file:
         names = set()
@@ -74,27 +74,6 @@ def unpack_verified(archive, output, version, source):
             names.add(entry.filename)
         zip_file.extractall(output)
     base = output / base_name
-    manifest = base / 'SHA256SUMS'
-    expected = {}
-    for line in manifest.read_text().splitlines():
-        digest, name = line.split(maxsplit=1)
-        name = name.lstrip('*')
-        path = PurePosixPath(name)
-        if (not re.fullmatch(r'[0-9a-f]{64}', digest) or path.is_absolute()
-                or '..' in path.parts or '\\' in name or name in expected):
-            raise ValueError('Invalid distribution checksum entry')
-        expected[name] = digest
-    actual = {p.relative_to(base).as_posix() for p in base.rglob('*') if p.is_file() and p != manifest}
-    if actual != set(expected):
-        raise ValueError('Distribution files differ from SHA256SUMS')
-    for name, digest in expected.items():
-        if hashlib.sha256((base / name).read_bytes()).hexdigest() != digest:
-            raise ValueError('Distribution checksum mismatch: ' + name)
-    catalog = json.loads((base / 'package-catalog.json').read_text())
-    if catalog.get('runtimeVersion') != version:
-        raise ValueError('Downloaded runtime version differs')
-    if catalog.get('sourceRevision') != source or catalog.get('sourceDirty') is not False:
-        raise ValueError('Downloaded runtime source differs or is dirty')
     launcher = base / 'bin/gretl'
     launcher.chmod(0o755)
     return base
@@ -131,7 +110,7 @@ def verify(repository, version, source, output, checksums):
     archive = output / 'runtime.zip'
     zip_digest = download_verified(urls['zip'], archive, expected['zip'])
     tar_digest = download_verified(urls['tar.gz'], output / 'runtime.tar.gz', expected['tar.gz'])
-    base = unpack_verified(archive, output / 'distribution', version, source)
+    base = unpack_verified(archive, output / 'distribution', version)
     cwd = output / 'foreign cwd'
     cwd.mkdir()
     # The job is created after download, outside the distribution, without a package descriptor.

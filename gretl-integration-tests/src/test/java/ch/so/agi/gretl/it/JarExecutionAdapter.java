@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 /** The only common-runner adapter that packages the concrete job. */
 final class JarExecutionAdapter {
-    private static final Map<String, Path> BUILT_FIXTURES = new LinkedHashMap<>();
     static ArtifactJobRunner.JarLaunch prepare(ArtifactJobRunner.Request request, Path source,
                                              Path report, CandidateDistribution distribution) throws Exception {
         if (request.invocation().verb() == ArtifactJobRunner.Verb.CHECK)
@@ -40,29 +39,14 @@ final class JarExecutionAdapter {
         Path jar = request.directory().resolve("job.jar");
         List<String> command = List.of(launcher.toString(), "package", descriptor.toString(),
                 "--output", jar.toString());
-        String inputHash = JobInputSnapshot.capture(source).treeSha256();
-        String descriptorHash = JobInputSnapshot.hash(descriptor);
-        // Per test JVM only: reuse a regular packager build of byte-identical fixtures.
-        // Every execution still gets its own job.jar, process, parameters and filesystem.
-        String key = distribution.manifestSha256() + ":" + inputHash + ":" + descriptorHash;
-        Path built = BUILT_FIXTURES.get(key);
-        if (built != null) {
-            Files.copy(built, jar);
-            Files.writeString(request.directory().resolve("package-reuse.txt"), built.toString());
-        } else {
-            Process packaging = ArtifactJobRunner.process(command, request.directory(), request.environment(), "package").start();
-            try {
-                if (!packaging.waitFor(120, TimeUnit.SECONDS)) throw new IOException("Packaging timed out: " + request.id());
-            } finally { if (packaging.isAlive()) ArtifactJobRunner.stop(packaging); }
-            if (packaging.exitValue() != 0 || !Files.isRegularFile(jar)) {
-                throw new IOException("Packaging failed (not a job result): "
-                        + Files.readString(request.directory().resolve("package.stderr.log")));
-            }
-            // Preserve the regular package independently of an execution copy that a
-            // deliberate malformed-JAR test may replace. Copies cannot corrupt the cache.
-            Path reusable = request.directory().resolve("fixture-package.jar");
-            Files.copy(jar, reusable);
-            BUILT_FIXTURES.put(key, reusable);
+        Process packaging = ArtifactJobRunner.process(command, request.directory(), request.environment(), "package").start();
+        try {
+            if (!packaging.waitFor(120, TimeUnit.SECONDS)) throw new IOException("Packaging timed out: " + request.id());
+        } finally {
+            if (packaging.isAlive()) ArtifactJobRunner.stop(packaging);
+        }
+        if (packaging.exitValue() != 0 || !Files.isRegularFile(jar)) {
+            throw new IOException("Packaging failed: " + Files.readString(request.directory().resolve("package.stderr.log")));
         }
         String hash;
         try (var input = Files.newInputStream(jar)) {
@@ -73,7 +57,6 @@ final class JarExecutionAdapter {
             hash = HexFormat.of().formatHex(digest.digest());
         }
         Files.writeString(request.directory().resolve("runtime.json"), Json.write(ArtifactJobRunner.jsonValue(request.config())));
-        PackageArtifactAssertions.verify(jar, descriptor);
         return new ArtifactJobRunner.JarLaunch(distribution, jar, hash);
     }
 

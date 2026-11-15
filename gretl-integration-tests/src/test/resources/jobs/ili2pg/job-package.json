@@ -4,10 +4,6 @@
   "version": "1",
   "runtimeVersion": "6.0.0-SNAPSHOT",
   "entryScript": "job.groovy",
-  "taskModules": [
-    "interlis"
-  ],
-  "standardFunctions": false,
   "resources": [
     "A_Dataset.txt",
     "B_Dataset.txt",

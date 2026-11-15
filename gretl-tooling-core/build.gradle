@@ -1,0 +1,6 @@
+dependencies {
+    api project(':gretl-script-syntax')
+    api 'org.apache.groovy:groovy:6.0.0'
+    api project(':gretl-language-contract')
+    api 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+}

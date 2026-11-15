@@ -6,7 +6,5 @@
   "entryScript": "job.groovy",
   "sources": [],
   "resources": ["data/input.txt"],
-  "dependencies": [],
-  "taskModules": ["io"],
-  "standardFunctions": false
+  "dependencies": []
 }

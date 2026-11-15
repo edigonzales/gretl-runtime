@@ -17,20 +17,20 @@ final class SelectedPackageSupport {
             }
         }
     }
-    static Path fixture(Path root, String job, Map<String, String> resources, List<String> modules, boolean functions) throws Exception {
+    static Path fixture(Path root, String job, Map<String, String> resources) throws Exception {
         Path source = root.resolve("package input with spaces");
         copy(ArtifactJobRunner.fixture(job), source);
         for (var resource : resources.entrySet()) copy(ArtifactJobRunner.fixture(resource.getKey()), source.resolve(resource.getValue()));
-        descriptor(source, modules, functions, List.of());
+        descriptor(source, List.of());
         return source;
     }
-    static void descriptor(Path source, List<String> modules, boolean functions, List<String> dependencies) throws Exception {
+    static void descriptor(Path source, List<String> dependencies) throws Exception {
         List<String> resources;
         try (var files = Files.list(source)) { resources = files.filter(p -> !Set.of("job.groovy", "job-package.json").contains(p.getFileName().toString()))
                 .map(p -> p.getFileName().toString()).sorted().toList(); }
-        Files.writeString(source.resolve("job-package.json"), Json.write(Map.of("schemaVersion", 2, "name", "selected-package", "version", "1",
+        Files.writeString(source.resolve("job-package.json"), Json.write(Map.of("schemaVersion", 2, "name", "job-package", "version", "1",
                 "runtimeVersion", "6.0.0-SNAPSHOT", "entryScript", "job.groovy", "resources", resources,
-                "taskModules", modules, "standardFunctions", functions, "dependencies", dependencies)));
+                "dependencies", dependencies)));
     }
     static ArtifactJobRunner.Result detached(ArtifactJobRunner.Request request) throws Exception {
         return detached(ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.JAR));

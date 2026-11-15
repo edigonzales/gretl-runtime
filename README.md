@@ -13,29 +13,16 @@ von Gradle-Jobs mit SQL, Archiven, SFTP und Groovy-Taskfamilien.
 
 ## Aus dem Git-Checkout starten
 
-JDK 25 und der Maven-Wrapper werden für den Build benötigt. Docker wird für
-das vollständige Dienstprofil benötigt. Vom Repository-Root:
+Mit JDK 25 baut der Gradle-Wrapper die Standarddistribution.
 
 ```sh
-./mvnw -B clean verify
-./mvnw -B -Pgeotools-probe,backing-services clean verify
+./gradlew installDist
+./gradlew test
 ```
 
-Der Standardweg benötigt kein Docker und startet lokale Fachjobs als
-SCRIPT-Prozesse. Die vollständige Qualifikation aller Auslieferungswege
-läuft am sauberen Commit mit dem folgenden Befehl.
-
-```sh
-python3.12 scripts/verify-runtime.py
-```
-
-SCRIPT prüft alle 51 Standardoperationen. JAR und IMAGE werden mit
-ausgewählten eigenständigen Prozessen geprüft. Das
-[generische Image](gretl-dist/src/main/docker/README.md) führt externe
-Groovy-Dateien oder Projekte aus und unterstützt die OpenShift-UID-/
-Volume-Bedingungen; konkrete Jobs werden nicht ins Image eingebaut.
-
-Der Build erzeugt `gretl-dist/target/dist/` und ZIP-/TAR-Distributionen.
+Die Installation liegt unter `gretl-cli/build/install/gretl-runtime/`.
+Die vollständige Qualifikation mit Docker und Node 22 startet über
+`python3.12 scripts/verify-runtime.py`.
 Das mitgelieferte Minimalbeispiel kopiert eine synthetische Textdatei:
 
 ```groovy
@@ -52,7 +39,7 @@ defaults 'write'
 ```sh
 gretl_demo_dir="$(mktemp -d)"
 printf '{"schemaVersion":1,"runtime":{"reportRoot":"%s"}}\n' "$gretl_demo_dir/reports" > "$gretl_demo_dir/runtime.json"
-./gretl-dist/target/dist/bin/gretl run gretl-dist/src/main/dist/examples/minimal-action/job.groovy --param output="$gretl_demo_dir/message.txt" --config "$gretl_demo_dir/runtime.json" --work-dir "$gretl_demo_dir/work" --report "$gretl_demo_dir/script-report.json"
+./gretl-cli/build/install/gretl-runtime/bin/gretl run gretl-dist/src/main/dist/examples/minimal-action/job.groovy --param output="$gretl_demo_dir/message.txt" --config "$gretl_demo_dir/runtime.json" --work-dir "$gretl_demo_dir/work" --report "$gretl_demo_dir/script-report.json"
 cmp gretl-dist/src/main/dist/examples/minimal-action/message.txt "$gretl_demo_dir/message.txt"
 ```
 
@@ -63,7 +50,7 @@ bezieht sich auf das ursprüngliche Startverzeichnis; hier ist er absolut.
 
 Die folgenden Befehle gelten **im Distributionsroot**, der `bin/`, `lib/` und
 `examples/` enthält. Im Checkout ist dies nach dem Build auch
-`gretl-dist/target/dist/`.
+`gretl-cli/build/install/gretl-runtime/`.
 
 <!-- checked-example: distribution -->
 ```sh
@@ -79,8 +66,7 @@ Scriptdateipfad startet einen Einzeljob. Ein Projektverzeichnis benötigt eine
 
 ## Job-JAR bauen und starten
 
-Auch diese Paketierbefehle gelten im Distributionsroot. Das Minimalpaket wählt
-mit Deskriptorschema 2 keine Standardtaskmodule aus.
+Auch diese Paketierbefehle gelten im Distributionsroot. Jedes Job-JAR enthält die vollständige Standardlaufzeit.
 
 <!-- checked-example: jar -->
 ```sh

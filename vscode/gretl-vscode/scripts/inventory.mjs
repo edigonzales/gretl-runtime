@@ -17,7 +17,7 @@ assert.equal(manifest.extensionVersion,pkg.version);assert.equal(typeof manifest
 const identity=read('extension.vsixmanifest').toString().match(/<Identity\b[^>]*>/)?.[0];assert.ok(identity,'Missing VSIX identity');
 for(const [attribute,expected]of [['Id',pkg.name],['Publisher',pkg.publisher],['Version',pkg.version]])assert.equal(identity.match(new RegExp('\\b'+attribute+'="([^"]+)"'))?.[1],expected,'VSIX '+attribute);
 assert.deepEqual(manifest.inventoryExcludes,['server/bundle-manifest.json']);
-assert.equal(manifest.javaRelease,25);assert.equal(manifest.wireSchemaVersion,1);assert.ok(manifest.mavenVersion&&manifest.groovyVersion&&manifest.mavenArtifactVersion);
+assert.equal(manifest.javaRelease,25);assert.equal(manifest.wireSchemaVersion,1);assert.ok(manifest.gradleVersion&&manifest.groovyVersion&&manifest.runtimeVersion);
 const expected=['[Content_Types].xml','extension.vsixmanifest','extension/server/bundle-manifest.json',...Object.keys(manifest.payloadSha256).map(name=>'extension/'+name)].sort();
 assert.deepEqual(names.toSorted(),expected,'Missing or unexpected delivered payload');
 const entries=[];

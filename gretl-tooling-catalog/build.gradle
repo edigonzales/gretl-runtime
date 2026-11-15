@@ -1,0 +1,38 @@
+dependencies {
+    api project(':gretl-language-contract')
+    api 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+    api project(':gretl-tooling-core')
+    api project(':gretl-api')
+    api project(':gretl-io-tasks')
+    api project(':gretl-database-tasks')
+    api project(':gretl-interlis-tasks')
+    api project(':gretl-ilivalidator')
+}
+
+def catalogDirectory = layout.buildDirectory.dir('catalog')
+
+tasks.register('generateCatalog', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'ch.so.agi.gretl.tooling.catalog.RuntimeCatalogBootstrap'
+    args catalogDirectory.get().asFile, project.version
+    inputs.property('runtimeVersion', project.version)
+    outputs.dir catalogDirectory
+}
+
+tasks.register('catalogJar', Jar) {
+    archiveClassifier = 'catalog'
+    dependsOn generateCatalog
+    from catalogDirectory
+}
+
+configurations {
+    catalogElements {
+        canBeResolved = false
+    }
+}
+
+artifacts {
+    catalogElements catalogJar
+}
+
+publishing.publications.library.artifact(catalogJar)

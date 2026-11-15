@@ -18,28 +18,20 @@ public record PackageDescriptor(
         Path descriptorFile, Path baseDirectory, int schemaVersion,
         String name, String version, String runtimeVersion, String entryScript,
         List<String> sources, List<String> resources, List<Dependency> dependencies,
-        List<String> taskModules, boolean standardFunctions, String settingsFile) {
+        String settingsFile) {
 
     private static final long MAX_DESCRIPTOR_BYTES = 1L << 20;
     private static final Pattern NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]{0,127}");
     private static final Pattern VERSION = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._+\\-]{0,127}");
     private static final Set<String> FIELDS = Set.of(
             "schemaVersion", "name", "version", "runtimeVersion", "entryScript",
-            "sources", "resources", "dependencies", "taskModules", "standardFunctions", "settingsFile");
+            "sources", "resources", "dependencies", "settingsFile");
 
     public PackageDescriptor(Path descriptorFile, Path baseDirectory, int schemaVersion,
             String name, String version, String runtimeVersion, String entryScript,
             List<String> sources, List<String> resources, List<Dependency> dependencies) {
         this(descriptorFile, baseDirectory, schemaVersion, name, version, runtimeVersion,
-                entryScript, sources, resources, dependencies, List.of(), false);
-    }
-
-    public PackageDescriptor(Path descriptorFile, Path baseDirectory, int schemaVersion,
-            String name, String version, String runtimeVersion, String entryScript,
-            List<String> sources, List<String> resources, List<Dependency> dependencies,
-            List<String> taskModules, boolean standardFunctions) {
-        this(descriptorFile, baseDirectory, schemaVersion, name, version, runtimeVersion,
-                entryScript, sources, resources, dependencies, taskModules, standardFunctions, null);
+                entryScript, sources, resources, dependencies, null);
     }
 
     public record Dependency(String groupId, String artifactId, String version, String classifier) {
@@ -58,7 +50,6 @@ public record PackageDescriptor(
         sources = List.copyOf(sources);
         resources = List.copyOf(resources);
         dependencies = List.copyOf(dependencies);
-        taskModules = List.copyOf(taskModules);
     }
 
     public static PackageDescriptor load(Path descriptor) throws PackageException {
@@ -84,6 +75,10 @@ public record PackageDescriptor(
                     PackagerMessages.get("package.descriptorObject"));
         }
         Map<String, Object> object = stringKeys(raw);
+        if (object.containsKey("taskModules") || object.containsKey("standardFunctions")) {
+            throw new PackageException("PACKAGE_SELECTION_REMOVED",
+                    "Remove taskModules and standardFunctions. Job JARs include the full standard runtime.");
+        }
         rejectUnknown(object);
         int schemaVersion = integer(object, "schemaVersion");
         if (schemaVersion != 1 && schemaVersion != 2 && schemaVersion != 3) {
@@ -112,17 +107,9 @@ public record PackageDescriptor(
         List<String> sources = textList(object, "sources");
         List<String> resources = textList(object, "resources");
         List<Dependency> dependencies = dependencies(object, allowSnapshots);
-        if (schemaVersion == 1 && (object.containsKey("taskModules") || object.containsKey("standardFunctions")))
-            throw new PackageException("PACKAGE_SELECTION_VERSION", "taskModules/standardFunctions require schemaVersion 2");
-        List<String> taskModules = textList(object, "taskModules");
-        if (!Set.of("io", "database", "interlis", "ilivalidator").containsAll(taskModules))
-            throw new PackageException("PACKAGE_MODULE_UNKNOWN", "Unknown taskModules selection: " + taskModules);
-        Object functions = object.getOrDefault("standardFunctions", false);
-        if (!(functions instanceof Boolean)) throw new PackageException("PACKAGE_FIELD_TYPE", "standardFunctions must be boolean");
-
         Path base = file.getParent().toAbsolutePath().normalize();
         PackageDescriptor value = new PackageDescriptor(file, base, schemaVersion,
-                name, version, runtimeVersion, entryScript, sources, resources, dependencies, taskModules, (Boolean) functions, settingsFile);
+                name, version, runtimeVersion, entryScript, sources, resources, dependencies, settingsFile);
         value.validate();
         return value;
     }

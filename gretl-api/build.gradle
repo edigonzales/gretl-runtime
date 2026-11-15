@@ -1,0 +1,5 @@
+jar.manifest.attributes('Automatic-Module-Name': 'ch.so.agi.gretl.runtime.api')
+
+test {
+    systemProperty 'gretl.test.apiClasses', compileJava.destinationDirectory.get().asFile
+}
