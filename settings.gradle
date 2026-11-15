@@ -22,4 +22,4 @@ include 'gretl-interlis-tasks'
 include 'file-size-extension'
 project(':file-size-extension').projectDir = file('examples/file-size-extension')
 include 'gretl-integration-tests'
-if (providers.gradleProperty('geotoolsProbe').isPresent()) include 'gretl-geotools-probe'
+include 'gretl-geotools-probe'

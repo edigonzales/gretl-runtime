@@ -33,7 +33,9 @@ jobs:
       - name: Test snapshot archive verification
         run: python3.12 -m unittest discover -s tests/publication
       - name: Qualify runtime, distribution and tools
-        run: python3.12 scripts/verify-runtime.py
+        run: ./gradlew fullCheck
+      - name: Check documentation links
+        run: ./gradlew docsCheck
       - name: Record distribution hashes
         working-directory: gretl-cli/build/distributions
         run: sha256sum *.zip *.tar.gz > distribution.sha256

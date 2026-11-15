@@ -18,12 +18,12 @@ baut lokal `gretl-runtime:local`.
 Der folgende Befehl startet die konsolidierte Qualifikation am sauberen Kandidaten.
 
 ```sh
-python3.12 scripts/verify-runtime.py
+./gradlew fullCheck
 ```
 
 Sie benötigt Docker und einen non-root Hostbenutzer für private
-Bindmounts. Der Starter baut Runtime und Image, legt ein eigenes
-Testnetz an und prüft ausgewählte IMAGE-Prozesse mit externen Jobs.
+Bind-Mounts. Gradle baut Runtime und Image. JUnit legt ein eigenes Testnetz
+an und prüft ausgewählte IMAGE-Prozesse mit externen Jobs.
 Die vollständige SCRIPT-Suite verwendet im selben Reaktor echte Dienste.
 
 Die Basis ist Java 25 auf Ubuntu 24.04, mit einem am 01.11.2026 tatsächlich

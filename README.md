@@ -21,8 +21,8 @@ Mit JDK 25 baut der Gradle-Wrapper die Standarddistribution.
 ```
 
 Die Installation liegt unter `gretl-cli/build/install/gretl-runtime/`.
-Die vollständige Qualifikation mit Docker und Node 22 startet über
-`python3.12 scripts/verify-runtime.py`.
+Die vollständige Qualifikation mit Docker und Node 22 startet mit
+`./gradlew fullCheck`.
 Das mitgelieferte Minimalbeispiel kopiert eine synthetische Textdatei:
 
 ```groovy

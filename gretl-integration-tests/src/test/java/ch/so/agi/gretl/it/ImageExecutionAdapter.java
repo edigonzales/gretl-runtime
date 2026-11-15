@@ -27,9 +27,11 @@ final class ImageExecutionAdapter {
         static Settings configured() throws Exception {
             String image = System.getProperty("gretl.test.image");
             String id = new Docker().inspect(List.of("image", "inspect", "--format", "{{.Id}}", image));
-            return new Settings(id, "/opt/gretl/bin/gretl",
-                    System.getProperty("gretl.test.imageNetwork"), System.getProperty("gretl.test.imageUser"),
-                    System.getProperty("gretl.test.imageExtraHost", "services:host-gateway"));
+            Path directory = ImageTestEnvironment.workspace();
+            int uid = ((Number) Files.getAttribute(directory, "unix:uid")).intValue();
+            int gid = ((Number) Files.getAttribute(directory, "unix:gid")).intValue();
+            return new Settings(id, "/opt/gretl/bin/gretl", ImageTestEnvironment.network().getId(),
+                    uid + ":" + gid, ImageTestEnvironment.extraHost());
         }
     }
 
@@ -148,8 +150,11 @@ final class ImageExecutionAdapter {
         String name = "gretl-job-" + UUID.randomUUID();
         var args = new ArrayList<>(List.of("run", "--pull=never", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--init", "--read-only", "--tmpfs", "/tmp:rw,exec,nosuid,size=256m", "--sig-proxy=true", "--name", name,
                 "--user", settings.user(), "--network", settings.network(), "--workdir", "/run",
-                "--label", "gretl.verification.run=" + System.getProperty("gretl.test.runId", "development"),
                 "--cidfile", request.directory().resolve("container.id").toString()));
+        if (engine instanceof Docker) {
+            ImageTestEnvironment.jobLabels().forEach((key, value) ->
+                    args.addAll(List.of("--label", key + "=" + value)));
+        }
         if (!settings.extraHost().isBlank()) args.addAll(List.of("--add-host", settings.extraHost()));
         Map<Path, String> paths = new LinkedHashMap<>();
         mount(args, paths, source, "/job", true);

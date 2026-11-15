@@ -19,7 +19,6 @@ class SftpExchangeIT {
     @Test
     void scriptExchangesFilesWithOpenSsh() throws Exception {
         try (var server = new GenericContainer<>(DockerImageName.parse(IMAGE))
-                .withLabel("gretl.verification.run", System.getProperty("gretl.test.runId", "development"))
                 .withExposedPorts(22)
                 .withCommand("fixture:test-sftp-password:1001:1001:exchange")
                 .waitingFor(Wait.forListeningPort())) {

@@ -20,7 +20,7 @@ class FunctionLocalJobIT {
         server.start();
         try {
             String host = "http://127.0.0.1:" + server.getAddress().getPort();
-            String image = "http://" + System.getProperty("gretl.test.httpImageHost", "services") + ":" + server.getAddress().getPort();
+            String image = "http://" + ImageTestEnvironment.httpHost() + ":" + server.getAddress().getPort();
             var endpoints = Map.of("http", new ArtifactJobRunner.Endpoint(host, image));
             for (String target : List.of("validate", "ili-function")) {
                 int beforeValid = calls.get();

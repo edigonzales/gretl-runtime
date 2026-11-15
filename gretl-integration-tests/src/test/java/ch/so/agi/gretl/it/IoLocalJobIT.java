@@ -135,7 +135,7 @@ class IoLocalJobIT {
         server.start();
         try {
             String host = "http://127.0.0.1:" + server.getAddress().getPort();
-            String image = "http://" + System.getProperty("gretl.test.httpImageHost", "services") + ":" + server.getAddress().getPort();
+            String image = "http://" + ImageTestEnvironment.httpHost() + ":" + server.getAddress().getPort();
             var endpoints = Map.of("http", new ArtifactJobRunner.Endpoint(host, image));
             var download = run("download", "file", host + "/download", endpoints, ArtifactJobRunner.Mode.IMAGE);
             assertEquals(0, download.code(), download.err());
@@ -157,7 +157,7 @@ class IoLocalJobIT {
         server.createContext("/failure", exchange -> { exchange.sendResponseHeaders(401, -1); exchange.close(); }); server.start();
         try {
             String host = "http://127.0.0.1:" + server.getAddress().getPort();
-            var endpoints = Map.of("http", new ArtifactJobRunner.Endpoint(host, "http://" + System.getProperty("gretl.test.httpImageHost", "services") + ":" + server.getAddress().getPort()));
+            var endpoints = Map.of("http", new ArtifactJobRunner.Endpoint(host, "http://" + ImageTestEnvironment.httpHost() + ":" + server.getAddress().getPort()));
             var download = run("download", "file", host + "/download", endpoints); assertEquals(0, download.code(), download.err());
             assertArrayEquals(payload, Files.readAllBytes(download.directory().resolve("output/download.bin")));
             for (String variant : List.of("get", "data", "form", "binary")) {
@@ -184,7 +184,7 @@ class IoLocalJobIT {
         }); server.start();
         try {
             String host = "http://127.0.0.1:" + server.getAddress().getPort();
-            var endpoints = Map.of("http", new ArtifactJobRunner.Endpoint(host, "http://" + System.getProperty("gretl.test.httpImageHost", "services") + ":" + server.getAddress().getPort()));
+            var endpoints = Map.of("http", new ArtifactJobRunner.Endpoint(host, "http://" + ImageTestEnvironment.httpHost() + ":" + server.getAddress().getPort()));
             var form = run("curl-original", "form", host + "/data_agg/interlis/import", endpoints); assertEquals(0, form.code(), form.err());
             var received = requests.getLast(); assertEquals("/data_agg/interlis/import", received.path());
             assertEquals("Basic " + java.util.Base64.getEncoder().encodeToString("fooUser:barPwd".getBytes(java.nio.charset.StandardCharsets.UTF_8)), received.authorization());
