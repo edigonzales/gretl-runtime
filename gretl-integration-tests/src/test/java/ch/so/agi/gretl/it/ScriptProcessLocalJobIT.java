@@ -51,10 +51,6 @@ class ScriptProcessLocalJobIT {
                 assertEquals(0, result.code(), result.err()); assertFalse(result.timedOut());
                 assertEquals(i==2 ? "resource-λ|edited-ö" : "resource-λ|first-ä", Files.readString(root.resolve("output/value.txt")));
                 assertFalse(Files.exists(root.resolve("job.jar"))); assertFalse(Files.exists(root.resolve("package.stdout.log")));
-                var proof = (Map<?,?>)Json.parseFile(root.resolve("execution.json"), 1L<<20);
-                assertEquals("SCRIPT", proof.get("executionKind"));
-                assertEquals("EXITED", ((Map<?,?>)proof.get("process")).get("state"));
-                assertEquals(0L, ((Map<?,?>)proof.get("process")).get("exitCode"));
             }
         } finally { SelectedPackageSupport.delete(fixture); }
     }
@@ -141,8 +137,6 @@ class ScriptProcessLocalJobIT {
             var prepared = ArtifactJobRunner.prepare(request(fixture, root, "job.groovy", ArtifactJobRunner.Invocation.run()));
             Files.delete(root.resolve("cwd"));
             assertThrows(java.io.IOException.class, () -> ArtifactJobRunner.start(prepared));
-            var proof = (Map<?,?>)Json.parseFile(root.resolve("execution.json"),1L<<20);
-            assertEquals("LAUNCH_FAILED", ((Map<?,?>)proof.get("process")).get("state"));
             assertFalse(Files.exists(prepared.report()));
             Files.createDirectory(root.resolve("cwd"));
             Files.writeString(prepared.source().resolve("job.groovy"), job("changed"));

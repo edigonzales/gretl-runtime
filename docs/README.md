@@ -22,4 +22,3 @@ verfügbare Operationen und ihre Felder.
 - [Teststrategie und Backing-Services](development/testing.md)
 - [Taskreferenz generieren und rendern](reference/README.md)
 - [Artefakte prüfen und veröffentlichen](development/publication.md)
-- [Unabhängige Kandidatenprüfung](development/review.md)

@@ -72,7 +72,7 @@ final class SelectedPackageSupport {
             for (String directory : List.of("reports", "output")) {
                 delete(original.directory().resolve(directory)); copy(foreign.resolve(directory), original.directory().resolve(directory));
             }
-            for (String file : List.of("execution.json", "command.json", "job.stdout.log", "job.stderr.log"))
+            for (String file : List.of("command.json", "job.stdout.log", "job.stderr.log"))
                 Files.copy(foreign.resolve(file), original.directory().resolve(file), StandardCopyOption.REPLACE_EXISTING);
             Files.writeString(original.directory().resolve("isolation.json"), Json.write(Map.of("foreignCwd", foreign.toString(),
                     "sourceDeleted", !Files.exists(prepared.source()), "path", environment.get("PATH"), "emptyMavenCache", !Files.exists(foreign.resolve("home/.m2")))));

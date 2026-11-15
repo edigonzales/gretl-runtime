@@ -64,3 +64,13 @@ Fehler ab. Der Toolingparser behält Platform-Classloader, deaktivierte
 Transformationen, Recovery und Budgets. Das Syntaxmodul besitzt keine
 Quellen-IO und keine Runtime- oder Tooling-Core-Abhängigkeit. Includeerkennung
 allein verspricht noch keine vollständige Closure oder Mehrdateien-Editfähigkeit.
+
+## Beurteilung der Modulgrenzen
+
+| Kandidat | Mögliche Vereinfachung und Auswirkung |
+| --- | --- |
+| `gretl-i18n` und Runner | Der Meldungskatalog wird auch direkt von unabhängigen Taskbibliotheken verwendet. Eine Zusammenlegung mit dem Runner würde die Tasks an dessen Planung und Ausführung koppeln. |
+| `gretl-language-contract` und `gretl-script-syntax` | Beide werden von Runtime und Tooling genutzt. Eine Zusammenlegung der Quellparser würde die reine Java-Vertragsbibliothek an Groovy koppeln. Die gemeinsam genutzten Namens- und Graphregeln bleiben separat. |
+| `gretl-tooling-catalog` und Tooling-Core | Der Kataloggenerator lädt Taskprovider und Fachbibliotheken. Eine Zusammenlegung würde diese in die Tooling-Abhängigkeiten ziehen. Der LSP bezieht die exportierten Daten über den Katalog-Classifier. |
+| `gretl-logging` und Job-Runtime | Logging bindet Logback und den JUL-Adapter ein. Der Packager nutzt auch JSON aus diesem Modul. Als Folgeschritt lässt sich diese direkte Abhängigkeit durch eine vorhandene JSON-Bibliothek ersetzen und danach die Logging-Grenze neu bewerten. |
+| `gretl-ilivalidator` und INTERLIS-Tasks | Der schmale Validator ist separat nutzbar. Die übrigen INTERLIS-Operationen benötigen zusätzlich ili2db, GeoPackage und Formatbibliotheken. Eine Zusammenlegung vergrössert den Abhängigkeitsumfang für Java-Verbraucher. |

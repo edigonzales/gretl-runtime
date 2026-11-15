@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Process boundary: actual distribution SCRIPT by default, optional JAR or IMAGE.
  * Capture uses OS file redirection: no pipe can deadlock or remain undrained.
- * Workspaces retain raw process files. FailedProcessDiagnostics stages bounded excerpts.
+ * Workspaces retain stdout, stderr and runtime reports.
  */
 final class ArtifactJobRunner {
     enum Mode { SCRIPT, IMAGE, JAR }
@@ -138,7 +138,7 @@ final class ArtifactJobRunner {
     }
 
     static Path directory(String id, Mode mode) throws IOException {
-        Path base = Path.of("target", "job-evidence");
+        Path base = Path.of("build", "job-processes");
         if (mode == Mode.IMAGE) {
             String workspace = System.getProperty("gretl.test.imageWorkspace");
             if (workspace == null || !Files.isDirectory(Path.of(workspace)))
@@ -162,15 +162,6 @@ final class ArtifactJobRunner {
 
     /** Explicit JAR selection is used only by tests of the packager artifact itself. */
     static Prepared prepare(Request request, Mode mode) throws Exception {
-        FailedProcessDiagnostics.register(request, mode);
-        try { return prepareInWorkspace(request, mode); }
-        catch (Exception e) {
-            JobExecutionEvidence.failure(request, mode, "PREPARE_FAILED", e);
-            throw e;
-        }
-    }
-
-    private static Prepared prepareInWorkspace(Request request, Mode mode) throws Exception {
         Path source = request.directory().resolve("source");
         if (Files.exists(source)) throw new IOException("Scenario work copy already exists: " + source);
         try (var paths = Files.walk(request.jobDirectory())) {
@@ -200,7 +191,6 @@ final class ArtifactJobRunner {
 
     static Running start(Prepared prepared) throws IOException {
         Request request = prepared.request();
-        FailedProcessDiagnostics.register(request, prepared.mode());
         try {
             if (prepared.mode() != Mode.JAR) prepared.inputSnapshot().verifyUnchanged(prepared.source());
             else if (!JobInputSnapshot.hash(prepared.jar()).equals(prepared.sha256())) throw new IOException("Prepared JAR changed");
@@ -218,7 +208,6 @@ final class ArtifactJobRunner {
             }
             Files.writeString(request.directory().resolve("command.json"), Json.write(command));
             long nanos = System.nanoTime();
-            JobExecutionEvidence.recordImageInput(prepared);
             Process process;
             if (prepared.image() != null) process = prepared.image().start(request.directory());
             else {
@@ -229,7 +218,6 @@ final class ArtifactJobRunner {
             return new Running(prepared, process, request.directory().resolve("job.stdout.log"),
                     request.directory().resolve("job.stderr.log"), nanos);
         } catch (IOException e) {
-            JobExecutionEvidence.failure(request, prepared.mode(), "LAUNCH_FAILED", e);
             if (prepared.image() != null) try { prepared.image().remove(); } catch (Exception cleanup) { e.addSuppressed(cleanup); }
             throw e;
         }
@@ -273,8 +261,6 @@ final class ArtifactJobRunner {
         Result result = new Result(process.exitValue(), out, err, running.prepared().report(), request.directory(),
                 Duration.ofNanos(System.nanoTime() - running.startedNanos()), timedOut, aborted, identity,
                 running.prepared().mode().name(), forced);
-        ScriptOperationCoverage.record(request.invocation(), result);
-        JobExecutionEvidence.completed(running.prepared(), result);
         return result;
     }
 

@@ -130,7 +130,6 @@ class ImageExecutionAdapterTest {
             assertEquals(result.out(), Files.readString(request.directory().resolve("job.stdout.log")));
             assertFalse(process.isAlive()); assertTrue(calls.contains(List.of("rm", "--force", "fake-container")));
             assertEquals(timeout, calls.contains(List.of("stop", "--time", "35", "fake-container")));
-            assertEquals("IMAGE", JobTestJson.read(request.directory().resolve("execution.json")).get("mode"));
         }
     }
 

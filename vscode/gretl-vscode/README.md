@@ -151,7 +151,7 @@ All npm dependencies are locked. `minimatch` is pinned through an override to
 11.0.1 to include the glob amplification fix; client and packaging behaviour are
 checked with this version. Bundled licence texts are included in the VSIX.
 
-The bundle manifest records the commit (and dirty state), Maven/artifact/Java/
+The bundle manifest records the commit (and dirty state), Gradle/artifact/Java/
 Groovy/extension versions, catalogue and protocol identity, and hashes for every
 shipped payload. The manifest itself and generated VSIX container metadata are
 covered by the external `dist/distribution-inventory.json`. The package

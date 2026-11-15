@@ -31,3 +31,19 @@ publishing.publications.library.pom.withXml {
     }
     catalogDependency.appendNode('classifier', 'catalog')
 }
+
+def protocolTools = rootProject.file('tools/gretl-tooling')
+tasks.register('protocolDependencies', Exec) {
+    workingDir protocolTools
+    commandLine 'npm', 'ci', '--ignore-scripts'
+    inputs.files(new File(protocolTools, 'package.json'), new File(protocolTools, 'package-lock.json'))
+    outputs.dir new File(protocolTools, 'node_modules')
+}
+
+tasks.register('protocolTest', Exec) {
+    dependsOn protocolDependencies
+    workingDir protocolTools
+    commandLine 'node', '--test', 'protocol.test.mjs'
+}
+
+check.dependsOn protocolTest
