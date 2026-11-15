@@ -34,18 +34,22 @@ test { exclude '**/FailedProcessDiagnosticsFixture.class' }
 def cli = project(':gretl-cli')
 evaluationDependsOn(cli.path)
 def distribution = cli.tasks.named('installDist')
-def installedDirectory = distribution.map { it.destinationDir }
 def archive = cli.tasks.named('distZip')
+def installedDirectory = distribution.map { it.destinationDir }
 
 tasks.withType(Test).configureEach {
     inputs.dir(installedDirectory).withPathSensitivity(PathSensitivity.RELATIVE)
-    systemProperty 'gretl.test.reactorDistribution', installedDirectory.get()
-    systemProperty 'junit.jupiter.extensions.autodetection.enabled', true
 }
 
 test {
     inputs.file(archive.flatMap { it.archiveFile }).withPathSensitivity(PathSensitivity.NONE)
+}
+
+tasks.withType(Test).configureEach {
+    dependsOn distribution, archive
+    systemProperty 'gretl.test.reactorDistribution', distribution.get().destinationDir
     systemProperty 'gretl.test.distributionArchive', archive.get().archiveFile.get().asFile
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', true
 }
 
 ['jarTest': 'jar', 'serviceTest': 'docker', 'imageTest': 'image'].each { taskName, tag ->
