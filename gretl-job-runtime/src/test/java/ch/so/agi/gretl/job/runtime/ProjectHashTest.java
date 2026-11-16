@@ -12,22 +12,22 @@ class ProjectHashTest {
     @Test
     void hashesOnlyFramedDefinitionSourcesAndIsIndependentOfAbsoluteRoot() throws Exception {
         Path first = tree(temp.resolve("one")); Path second = tree(temp.resolve("two"));
-        var source = new ProjectJobSource(first, Locale.ENGLISH);
-        String initial = source.sha256();
+        var source = new ProjectJobSource(first);
+        String initial = source.sha256(Locale.ENGLISH);
         assertTrue(initial.matches("[a-f0-9]{64}"));
-        assertEquals(initial, source.sha256());
-        assertEquals(initial, new ProjectJobSource(second, Locale.ENGLISH).sha256());
+        assertEquals(initial, source.sha256(Locale.ENGLISH));
+        assertEquals(initial, new ProjectJobSource(second).sha256(Locale.ENGLISH));
         Files.writeString(first.resolve("a/data.txt"), "changed data");
         Files.writeString(first.resolve("a/settings.gretl"), "ignored nested settings");
         Files.createDirectories(first.resolve("notIncluded"));
         Files.writeString(first.resolve("notIncluded/job.groovy"), "ignored job");
-        assertEquals(initial, source.sha256());
+        assertEquals(initial, source.sha256(Locale.ENGLISH));
         Files.writeString(first.resolve("a/job.groovy"), "action('run') { 'changed' }\n");
-        String changed = source.sha256(); assertNotEquals(initial, changed);
+        String changed = source.sha256(Locale.ENGLISH); assertNotEquals(initial, changed);
         Files.writeString(first.resolve("settings.gretl"), "// changed\ninclude 'a'\ndefaults ':a:run'\n");
-        assertNotEquals(changed, source.sha256());
+        assertNotEquals(changed, source.sha256(Locale.ENGLISH));
         assertEquals(first.toRealPath(), source.jobRoot());
-        assertEquals(first.toRealPath(), source.prepareRun(temp.resolve("unused")));
+        assertEquals(first.toRealPath(), source.prepareRun(temp.resolve("unused"), Locale.ENGLISH));
         assertFalse(Files.exists(temp.resolve("unused")));
         assertEquals("one", source.jobName());
     }

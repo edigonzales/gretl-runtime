@@ -1,25 +1,19 @@
 package ch.so.agi.gretl.cli;
 
 import ch.so.agi.gretl.job.runtime.JobRuntime;
+import ch.so.agi.gretl.job.runtime.JobOptions;
 import ch.so.agi.gretl.job.runtime.RuntimeInfo;
 import ch.so.agi.gretl.job.runtime.StartException;
 
-import ch.so.agi.gretl.runtime.groovy.GroovyDslException;
 import ch.so.agi.gretl.i18n.LocaleSelection;
 import ch.so.agi.gretl.i18n.Messages;
-import ch.so.agi.gretl.runtime.logging.Json;
-import ch.so.agi.gretl.runtime.logging.LoggingConfig;
-import ch.so.agi.gretl.runtime.logging.TextFormatter;
 import ch.so.agi.gretl.packager.JobPackager;
 import ch.so.agi.gretl.packager.PackageException;
-import ch.so.agi.gretl.runtime.runner.DefinitionException;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
-import ch.so.agi.gretl.runtime.runner.ParameterException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.time.Clock;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +27,6 @@ public final class GretlCli {
     private final ClassLoader classLoader;
     private final Clock clock;
     private final String commandId = UUID.randomUUID().toString();
-    private Locale locale = Locale.GERMAN;
 
     public GretlCli(PrintStream out, PrintStream err, Map<String, String> environment,
                     Path startCwd, ClassLoader classLoader) {
@@ -51,82 +44,52 @@ public final class GretlCli {
     }
 
     public int run(String[] args) {
-        locale = LocaleSelection.resolve(requestedLanguage(args),
-                environment.get("GRETL_LANGUAGE"), null, Locale.getDefault());
-        CliOptions options;
+        String language = JobOptions.requestedLanguage(args);
+        Locale locale = LocaleSelection.resolve(language, environment.get("GRETL_LANGUAGE"), null, Locale.getDefault());
         try {
-            options = CliOptions.parse(args, startCwd, locale);
-        } catch (StartException exception) {
-            error(exception, jsonRequested(args));
-            return exception.code();
-        }
-        String explicitLanguage = options.language() == null
-                ? requestedLanguage(args) : options.language();
-        locale = LocaleSelection.resolve(explicitLanguage,
-                environment.get("GRETL_LANGUAGE"), null, locale);
-        return execute(options);
-    }
-
-    private int execute(CliOptions options) {
-        try {
-            return dispatch(options);
-        } catch (StartException exception) {
-            error(exception, options.logFormat() == LoggingConfig.Format.JSON);
-            return exception.code();
-        } catch (ParameterException exception) {
-            error(new StartException(2, safeMessage(exception), exception,
-                            exception.code(), exception.parameterName(), null, null),
-                    options.logFormat() == LoggingConfig.Format.JSON);
-            return 2;
-        } catch (DefinitionException exception) {
-            error(new StartException(2, safeMessage(exception), exception,
-                            exception.code(), null, null, null),
-                    options.logFormat() == LoggingConfig.Format.JSON);
-            return 2;
-        } catch (GroovyDslException exception) {
-            error(new StartException(2, safeMessage(exception), exception,
-                            exception.code(), exception.fieldName(), exception.taskId(),
-                            exception.source() == null ? null : exception.source().file()
-                                    + ":" + exception.source().line()),
-                    options.logFormat() == LoggingConfig.Format.JSON);
-            return 2;
-        } catch (Throwable throwable) {
-            error(new StartException(40, "Interner Runnerfehler: " + safeMessage(throwable),
-                            throwable, "INTERNAL_ERROR", null, null, null),
-                    options.logFormat() == LoggingConfig.Format.JSON);
-            return 40;
-        }
-    }
-
-    private int dispatch(CliOptions options) {
-        return switch (options.command()) {
-            case HELP, COMMAND_HELP -> {
-                if (options.command() == CliOptions.Command.COMMAND_HELP) {
-                    commandHelp();
-                } else {
-                    new HelpPrinter(out, locale).global();
+            JobOptions.Command jobCommand = args.length == 0 ? null : switch (args[0]) {
+                case "run" -> JobOptions.Command.RUN;
+                case "check" -> JobOptions.Command.CHECK;
+                case "plan" -> JobOptions.Command.PLAN;
+                default -> null;
+            };
+            if (jobCommand != null) {
+                JobOptions options = JobOptions.parse(jobCommand, args, startCwd, locale);
+                if (options.command() == JobOptions.Command.COMMAND_HELP) {
+                    out.println(Messages.get(locale, "cli.commandHelp"));
+                    return 0;
                 }
-                yield 0;
+                return new JobRuntime(out, err, environment, startCwd, classLoader, clock).executeScript(options);
             }
-            case VERSION -> {
-                new HelpPrinter(out, locale).version();
-                yield 0;
+            CliOptions options = CliOptions.parse(args, startCwd, locale);
+            if (options.language() != null) {
+                locale = LocaleSelection.resolve(options.language(), environment.get("GRETL_LANGUAGE"), null, locale);
             }
-            case OPERATIONS -> operations(options);
-            case PACKAGE -> packageCommand(options);
-            case RUN, CHECK, PLAN -> new JobRuntime(out, err, environment, startCwd, classLoader, clock)
-                    .executeScript(options.jobOptions());
-        };
+            return switch (options.command()) {
+                case HELP -> {
+                    new HelpPrinter(out, locale).global();
+                    yield 0;
+                }
+                case VERSION -> {
+                    new HelpPrinter(out, locale).version();
+                    yield 0;
+                }
+                case OPERATIONS -> operations(options, locale);
+                case PACKAGE -> packageCommand(options, locale);
+            };
+        } catch (Throwable failure) {
+            return StartException.report(failure, err, clock.instant(), commandId, locale, JobOptions.jsonRequested(args));
+        }
     }
 
-    private int packageCommand(CliOptions options) {
+    private int packageCommand(CliOptions options, Locale locale) {
         if (options.help()) {
             out.println(Messages.get(locale, "cli.package.help"));
             return 0;
         }
         try {
             var result = new JobPackager(RuntimeInfo.VERSION, locale)
-                    .packageJob(options.job(), options.output());
+                    .packageJob(options.descriptor(), options.output());
             out.println(Messages.format(locale, "cli.package.created", result.output()));
             out.println(Messages.format(locale, "cli.package.job", result.name(),
                     result.version()));
@@ -136,35 +99,29 @@ public final class GretlCli {
                     result.classCount(), result.resourceCount()));
             return 0;
         } catch (PackageException exception) {
-            throw new StartException(2, safeMessage(exception), exception,
+            throw new StartException(2, StartException.message(exception), exception,
                     exception.code(), null, null, null);
         }
     }
 
-    private int operations(CliOptions options) {
-        OperationRegistry registry = loadRegistry();
+    private int operations(CliOptions options, Locale locale) {
+        OperationRegistry registry = OperationRegistry.load(classLoader, locale);
         if (options.docFormat() == DocFormat.ADOC) {
-            return asciiDocOperations(registry, options);
+            return asciiDocOperations(registry, options, locale);
         }
         HelpPrinter help = new HelpPrinter(out, locale);
         if (options.operationSymbol() == null) {
             help.operations(registry);
             return 0;
         }
-        try {
-            help.operation(registry.registered().stream()
-                    .filter(entry -> entry.operation().symbol()
-                            .equals(options.operationSymbol()))
-                    .findFirst()
-                    .orElseThrow(() -> new StartException(2,
-                            unknownSymbol(registry, options.operationSymbol()))));
-            return 0;
-        } catch (DefinitionException exception) {
-            throw new StartException(2, safeMessage(exception), exception);
-        }
+        help.operation(registry.registered().stream()
+                .filter(entry -> entry.operation().symbol().equals(options.operationSymbol()))
+                .findFirst()
+                .orElseThrow(() -> new StartException(2, unknownSymbol(registry, options.operationSymbol(), locale))));
+        return 0;
     }
 
-    private int asciiDocOperations(OperationRegistry registry, CliOptions options) {
+    private int asciiDocOperations(OperationRegistry registry, CliOptions options, Locale locale) {
         AsciiDocTaskRenderer renderer = new AsciiDocTaskRenderer();
         try {
             if (options.operationSymbol() == null) {
@@ -176,7 +133,7 @@ public final class GretlCli {
                     .filter(entry -> entry.symbol().equals(options.operationSymbol()))
                     .findFirst()
                     .orElseThrow(() -> new StartException(2,
-                            unknownSymbol(registry, options.operationSymbol())));
+                            unknownSymbol(registry, options.operationSymbol(), locale)));
             if (options.output() == null) {
                 out.print(renderer.renderTaskTable(operation, locale));
             } else {
@@ -185,23 +142,11 @@ public final class GretlCli {
             return 0;
         } catch (IOException exception) {
             throw new StartException(2, Messages.format(locale,
-                    "cli.error.operations.write", safeMessage(exception)), exception);
+                    "cli.error.operations.write", StartException.message(exception)), exception);
         }
     }
 
-    private OperationRegistry loadRegistry() {
-        try {
-            return OperationRegistry.load(classLoader, locale);
-        } catch (DefinitionException exception) {
-            throw new StartException(2, safeMessage(exception), exception);
-        }
-    }
-
-    private void commandHelp() {
-        out.println(Messages.get(locale, "cli.commandHelp"));
-    }
-
-    private String unknownSymbol(OperationRegistry registry, String symbol) {
+    private String unknownSymbol(OperationRegistry registry, String symbol, Locale locale) {
         String suggestion = registry.all().stream()
                 .map(operation -> operation.symbol())
                 .filter(candidate -> candidate.equalsIgnoreCase(symbol)
@@ -211,60 +156,4 @@ public final class GretlCli {
                 : Messages.format(locale, "cli.error.unknownOperation.suggestion", suggestion);
         return Messages.format(locale, "cli.error.unknownOperation", symbol, hint);
     }
-
-    private void error(StartException exception, boolean json) {
-        String message = safeMessage(exception);
-        if (json) {
-            Map<String, Object> event = new LinkedHashMap<>();
-            event.put("schema_version", 1);
-            event.put("timestamp", clock.instant().toString());
-            event.put("sequence", 1);
-            event.put("event_id", commandId + ":1");
-            event.put("level", "ERROR");
-            event.put("event_name", "gretl.cli.error");
-            event.put("message", message);
-            event.put("command_id", commandId);
-            event.put("exit_code", exception.code());
-            err.println(Json.write(event));
-        } else {
-            Map<String, String> details = new LinkedHashMap<>();
-            if (exception.field() != null && !exception.field().isBlank()) {
-                details.put(Messages.get(locale, "log.field.field"), exception.field());
-            }
-            if (exception.task() != null && !exception.task().isBlank()) {
-                details.put(Messages.get(locale, "log.field.task"), exception.task());
-            }
-            if (exception.source() != null && !exception.source().isBlank()) {
-                details.put(Messages.get(locale, "log.field.source"), exception.source());
-            }
-            err.println(new TextFormatter(locale).formatProblem(clock.instant(),
-                    exception.diagnosticCode(), null, message, details));
-        }
-    }
-
-    private static String requestedLanguage(String[] args) {
-        for (int index = 0; index < args.length - 1; index++) {
-            if (args[index].equals("--lang")) {
-                return args[index + 1];
-            }
-        }
-        return null;
-    }
-
-    private static boolean jsonRequested(String[] args) {
-        for (int index = 0; index < args.length - 1; index++) {
-            if (args[index].equals("--log-format")
-                    && args[index + 1].equalsIgnoreCase("json")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static String safeMessage(Throwable throwable) {
-        String message = throwable.getMessage();
-        return message == null || message.isBlank()
-                ? throwable.getClass().getName() : message;
-    }
-
 }

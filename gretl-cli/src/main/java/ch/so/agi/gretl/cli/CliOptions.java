@@ -1,35 +1,17 @@
 package ch.so.agi.gretl.cli;
 
-import ch.so.agi.gretl.job.runtime.JobOptions;
-import ch.so.agi.gretl.job.runtime.PlanGraphFormat;
 import ch.so.agi.gretl.job.runtime.StartException;
 
 import ch.so.agi.gretl.i18n.Messages;
-import ch.so.agi.gretl.runtime.api.LogLevel;
-import ch.so.agi.gretl.runtime.logging.LoggingConfig;
-import ch.so.agi.gretl.runtime.runner.KeepWork;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /** Parsed command-line options; no job/provider is loaded here. */
 public record CliOptions(
-        Command command, Path job, boolean help, List<String> targets,
-        Path config, Path parameterFile, Map<String, String> parameters,
-        Path workDir, Path report, Duration timeout,
-        LoggingConfig.Format logFormat, LogLevel logLevel, KeepWork keepWork,
-        String operationSymbol, Path output, String language,
-        PlanGraphFormat graphFormat, DocFormat docFormat) {
+        Command command, Path descriptor, boolean help,
+        String operationSymbol, Path output, String language, DocFormat docFormat) {
 
-    public enum Command { HELP, VERSION, OPERATIONS, RUN, CHECK, PLAN, PACKAGE, COMMAND_HELP }
-
-    public CliOptions {
-        java.util.Objects.requireNonNull(command, "command");
-        targets = List.copyOf(targets);
-        parameters = Map.copyOf(parameters);
-    }
+    public enum Command { HELP, VERSION, OPERATIONS, PACKAGE }
 
     public static CliOptions parse(String[] args, Path startCwd) {
         return parse(args, startCwd, Locale.GERMAN);
@@ -91,22 +73,12 @@ public record CliOptions(
                 throw new StartException(2, msg(locale,
                         "cli.error.operations.adocOutputMissing"));
             }
-            return new CliOptions(Command.OPERATIONS, null, false, List.of(), null,
-                    null, Map.of(), null, null, null, null, null, null, symbol, output,
-                    language, null, docFormat);
+            return new CliOptions(Command.OPERATIONS, null, false, symbol, output, language, docFormat);
         }
-        Command command = switch (first) {
-            case "run" -> Command.RUN;
-            case "check" -> Command.CHECK;
-            case "plan" -> Command.PLAN;
-            case "package" -> Command.PACKAGE;
-            default -> throw new StartException(2,
-                    msg(locale, "cli.error.unknownCommand", first));
-        };
-        if (command == Command.PACKAGE) {
+        if (first.equals("package")) {
             return parsePackageCommand(args, startCwd, locale);
         }
-        return parseJobCommand(command, args, startCwd, locale);
+        throw new StartException(2, msg(locale, "cli.error.unknownCommand", first));
     }
 
     private static CliOptions parsePackageCommand(String[] args, Path startCwd,
@@ -139,55 +111,17 @@ public record CliOptions(
                 index++;
             }
         }
-        if (help) {
-            return new CliOptions(Command.PACKAGE, descriptor, true, List.of(), null,
-                    null, Map.of(), null, null, null, null, null, null, null, output,
-                    language, null, DocFormat.TEXT);
+        if (!help && descriptor == null) {
+            throw new StartException(2, msg(locale, "cli.error.package.descriptorMissing"));
         }
-        if (descriptor == null) {
-            throw new StartException(2, msg(locale,
-                    "cli.error.package.descriptorMissing"));
+        if (!help && output == null) {
+            throw new StartException(2, msg(locale, "cli.error.package.outputMissing"));
         }
-        if (output == null) {
-            throw new StartException(2, msg(locale,
-                    "cli.error.package.outputMissing"));
-        }
-        return new CliOptions(Command.PACKAGE, descriptor, false, List.of(), null,
-                null, Map.of(), null, null, null, null, null, null, null, output, language,
-                null, DocFormat.TEXT);
-    }
-
-    /** Parse options for a fixed packaged job (no job path or command). */
-    public static CliOptions parsePackaged(String[] args, Path startCwd) {
-        return parsePackaged(args, startCwd, Locale.GERMAN);
-    }
-
-    public static CliOptions parsePackaged(String[] args, Path startCwd, Locale locale) {
-        return fromJob(JobOptions.parsePackaged(args, startCwd, locale));
+        return new CliOptions(Command.PACKAGE, descriptor, help, null, output, language, DocFormat.TEXT);
     }
 
     private static CliOptions command(Command command) {
-        return new CliOptions(command, null, false, List.of(), null, null,
-                Map.of(), null, null, null, null, null, null, null, null, null, null,
-                DocFormat.TEXT);
-    }
-
-    private static CliOptions parseJobCommand(Command command, String[] args, Path startCwd,
-                                               Locale locale) {
-        return fromJob(JobOptions.parse(JobOptions.Command.valueOf(command.name()), args, startCwd, locale));
-    }
-
-    private static CliOptions fromJob(JobOptions value) {
-        return new CliOptions(Command.valueOf(value.command().name()), value.job(), value.help(),
-                value.targets(), value.config(), value.parameterFile(), value.parameters(), value.workDir(),
-                value.report(), value.timeout(), value.logFormat(), value.logLevel(), value.keepWork(),
-                null, value.output(), value.language(), value.graphFormat(), DocFormat.TEXT);
-    }
-
-    public JobOptions jobOptions() {
-        return new JobOptions(JobOptions.Command.valueOf(command.name()), job, help, targets, config,
-                parameterFile, parameters, workDir, report, timeout, logFormat, logLevel, keepWork,
-                output, language, graphFormat);
+        return new CliOptions(command, null, false, null, null, null, DocFormat.TEXT);
     }
 
     private static String requireValue(String[] args, int index, String option,

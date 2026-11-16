@@ -5,11 +5,9 @@ import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
 import ch.so.agi.gretl.runtime.api.LogLevel;
 import ch.so.agi.gretl.i18n.LocaleSelection;
 import ch.so.agi.gretl.i18n.Messages;
-import ch.so.agi.gretl.runtime.logging.Json;
 import ch.so.agi.gretl.runtime.logging.LogContext;
 import ch.so.agi.gretl.runtime.logging.LogbackBridge;
 import ch.so.agi.gretl.runtime.logging.LoggingConfig;
-import ch.so.agi.gretl.runtime.logging.TextFormatter;
 import ch.so.agi.gretl.runtime.logging.LoggingPipeline;
 import ch.so.agi.gretl.runtime.logging.LoggingState;
 import ch.so.agi.gretl.runtime.logging.ProviderInventory;
@@ -42,7 +40,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Clock;
-import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -89,12 +86,11 @@ public final class JobRuntime {
     }
 
     public int executePackaged(JobSource source, String[] args) {
-        locale = LocaleSelection.resolve(requestedLanguage(args), environment.get("GRETL_LANGUAGE"), null, Locale.getDefault());
+        locale = LocaleSelection.resolve(JobOptions.requestedLanguage(args), environment.get("GRETL_LANGUAGE"), null, Locale.getDefault());
         try {
             return executePackaged(source, JobOptions.parsePackaged(args, startCwd, locale));
-        } catch (StartException exception) {
-            error(exception, jsonRequested(args));
-            return exception.code();
+        } catch (StartException failure) {
+            return StartException.report(failure, err, clock.instant(), commandId, locale, JobOptions.jsonRequested(args));
         }
     }
 
@@ -105,57 +101,29 @@ public final class JobRuntime {
     }
 
     private int execute(JobOptions options, JobSource source) {
+        boolean json = options.logFormat() == LoggingConfig.Format.JSON;
         try {
-            return source == null ? jobCommand(options) : jobCommand(source, options);
-        } catch (StartException exception) {
-            error(exception, options.logFormat() == LoggingConfig.Format.JSON);
-            return exception.code();
-        } catch (ParameterException exception) {
-            error(new StartException(2, safeMessage(exception), exception,
-                            exception.code(), exception.parameterName(), null, null),
-                    options.logFormat() == LoggingConfig.Format.JSON);
-            return 2;
-        } catch (DefinitionException exception) {
-            error(new StartException(2, safeMessage(exception), exception,
-                            exception.code(), null, null, exception.failureSource().map(position->position.file()+":"+position.line()).orElse(null)),
-                    options.logFormat() == LoggingConfig.Format.JSON);
-            return 2;
-        } catch (GroovyDslException exception) {
-            error(new StartException(2, safeMessage(exception), exception,
-                            exception.code(), exception.fieldName(), exception.taskId(),
-                            exception.source() == null ? null : exception.source().file()
-                                    + ":" + exception.source().line()),
-                    options.logFormat() == LoggingConfig.Format.JSON);
-            return 2;
-        } catch (Throwable throwable) {
-            error(new StartException(40, "Interner Runnerfehler: " + safeMessage(throwable),
-                            throwable, "INTERNAL_ERROR", null, null, null),
-                    options.logFormat() == LoggingConfig.Format.JSON);
-            return 40;
+            JobSource selected = source == null ? sourceFor(options.job(), locale) : source;
+            RuntimeConfig config = options.config() == null
+                    ? RuntimeConfig.defaults(startCwd)
+                    : RuntimeConfig.load(options.config(), startCwd, locale);
+            locale = LocaleSelection.resolve(options.language(), environment.get("GRETL_LANGUAGE"),
+                    config.language().orElse(null), locale);
+            LoggingConfig logging = config.logging().withOverrides(options.logFormat(), options.logLevel());
+            json = logging.format() == LoggingConfig.Format.JSON;
+            return jobCommand(selected, options, config, logging);
+        } catch (Throwable failure) {
+            return StartException.report(failure, err, clock.instant(), commandId, locale, json);
         }
-    }
-
-    private int jobCommand(JobOptions options) {
-        Path job = options.job();
-        return jobCommand(sourceFor(job, locale), options);
     }
 
     private JobSource sourceFor(Path input, Locale language) {
-        if (input != null && Files.isRegularFile(input)) return new ScriptJobSource(input, language);
-        if (input != null && Files.isDirectory(input)) return new ProjectJobSource(input, language);
+        if (input != null && Files.isRegularFile(input)) return new ScriptJobSource(input);
+        if (input != null && Files.isDirectory(input)) return new ProjectJobSource(input);
         throw new StartException(2, Messages.format(language, "cli.error.jobNotFound", input));
     }
 
-    private int jobCommand(JobSource source, JobOptions options) {
-        RuntimeConfig config = options.config() == null
-                ? RuntimeConfig.defaults(startCwd)
-                : RuntimeConfig.load(options.config(), startCwd, locale);
-        locale = LocaleSelection.resolve(options.language(),
-                environment.get("GRETL_LANGUAGE"),
-                config.language().orElse(null), locale);
-        if (source instanceof ProjectJobSource project) {
-            source = project.withLocale(locale);
-        }
+    private int jobCommand(JobSource source, JobOptions options, RuntimeConfig config, LoggingConfig logging) {
         if (source.projectMode()) {
             for (String target : options.targets()) {
                 try {
@@ -183,11 +151,9 @@ public final class JobRuntime {
             }
         });
         config = config.withCorrelationId(correlationId);
-        LoggingConfig logging = config.logging().withOverrides(
-                options.logFormat(), options.logLevel());
         config = config.withOverrides(options.workDir(), null,
                 options.keepWork(), options.timeout(), logging, Optional.of(jobName));
-        OperationRegistry registry = loadRegistry();
+        OperationRegistry registry = OperationRegistry.load(classLoader, locale);
 
         if (options.help()) {
             MutableSink sink = new MutableSink();
@@ -242,17 +208,16 @@ public final class JobRuntime {
             }
             return 0;
         }
-        return run(source, definition, plan, parameters, config, registry, sink,
+        return run(source, definition, plan, parameters, config, sink,
                 options.report());
     }
 
     private int run(JobSource source, JobDefinition definition, ExecutionPlan plan,
                     ResolvedParameters parameters, RuntimeConfig config,
-                    OperationRegistry registry, MutableSink userSink,
+                    MutableSink userSink,
                     Path explicitReport) {
-        String sourceHash = source.sha256();
+        String sourceHash = source.sha256(locale);
         UUID runId = runIds.get();
-        Instant commandStarted = clock.instant();
         prepareDirectory(config.workRoot(), "workRoot");
         prepareDirectory(config.reportRoot(), "reportRoot");
         Path report = explicitReport != null
@@ -262,7 +227,7 @@ public final class JobRuntime {
 
         SecretRegistry secrets = new SecretRegistry();
         Redactor redactor = new Redactor(secrets);
-        SecretResolver secretResolver = config.secretResolver(environment, secrets);
+        SecretResolver secretResolver = config.secretResolver(environment, secrets, locale);
         LogContext context = new LogContext(commandId, runId,
                 config.jobName().orElseGet(source::jobName), RuntimeInfo.VERSION,
                 Optional.ofNullable(environment.get("GRETL_DEPLOYMENT_ENVIRONMENT"))
@@ -274,7 +239,7 @@ public final class JobRuntime {
                     config.logging().eventFile() ? eventFile : null, clock);
         } catch (IOException exception) {
             throw new StartException(2, Messages.format(locale,
-                    "cli.error.eventFile", safeMessage(exception)), exception);
+                    "cli.error.eventFile", StartException.message(exception)), exception);
         }
         LogbackBridge bridge = null;
         RunControl control = new RunControl(SystemMonotonicClock.INSTANCE,
@@ -299,14 +264,14 @@ public final class JobRuntime {
                 bridge = LogbackBridge.install(logging, config.logging());
             } catch (RuntimeException exception) {
                 throw new StartException(2, Messages.format(locale,
-                        "cli.error.loggingProvider", safeMessage(exception)), exception);
+                        "cli.error.loggingProvider", StartException.message(exception)), exception);
             }
             Runtime.getRuntime().addShutdownHook(hook);
             RunInput input = RunInput.builder()
                     .parameters(parameters)
                     .taskConfig(config.taskConfig())
                     .jobRoot(source.jobRoot())
-                    .workspacePreparation(source::prepareRun)
+                    .workspacePreparation(root -> source.prepareRun(root, locale))
                     .locale(locale)
                     .startCwd(startCwd)
                     .workRoot(config.workRoot())
@@ -336,7 +301,7 @@ public final class JobRuntime {
             try {
                 outcome = new SequentialJobRunner().run(definition, plan, input);
             } catch (ch.so.agi.gretl.runtime.runner.RunStartException failure) {
-                throw new StartException(2, redactor.redact(safeMessage(failure)), failure);
+                throw new StartException(2, redactor.redact(StartException.message(failure)), failure);
             }
             restoreInterrupt = Thread.interrupted();
             LoggingState loggingState = logging.state();
@@ -347,12 +312,10 @@ public final class JobRuntime {
             try {
                 new RunReportWriter(redactor).write(new RunReportInput(
                         context, outcome, definition, plan, source.displayFile(),
-                        sourceHash, revision,
-                        RuntimeInfo.inventoryHash(registry), loggingState,
-                        commandStarted, context.deploymentEnvironment()), report);
+                        sourceHash, revision, loggingState), report);
             } catch (IOException | SecurityException exception) {
                 String message = Messages.format(locale,
-                        "cli.error.reportWrite", redactor.redact(safeMessage(exception)));
+                        "cli.error.reportWrite", redactor.redact(StartException.message(exception)));
                 reportFailure = FailureInfo.from(exception);
                 logging.emit(new RunEvent("gretl.report.write_failed", message, clock.instant(),
                         LogLevel.ERROR, Optional.of(runId), Optional.of(context.jobName()),
@@ -368,7 +331,7 @@ public final class JobRuntime {
                     TerminationMessage.write(startCwd.resolve(terminationPath), outcome, exitCode);
                 } catch (IOException | SecurityException exception) {
                     err.println(Messages.format(locale,
-                            "cli.warning.terminationMessage", redactor.redact(safeMessage(exception))));
+                            "cli.warning.terminationMessage", redactor.redact(StartException.message(exception))));
                 }
             }
             RunEvent finished = java.util.Objects.requireNonNull(terminal[0], "run terminal event");
@@ -404,20 +367,12 @@ public final class JobRuntime {
     private JobDefinition loadDefinition(JobSource source, OperationRegistry registry,
                                          UserMessageSink sink) {
         try {
-            return source.load(registry, startCwd, sink);
+            return source.load(registry, startCwd, sink, locale);
         } catch (DefinitionException | ParameterException | GroovyDslException exception) {
             throw exception;
         } catch (RuntimeException exception) {
             throw new StartException(2, Messages.format(locale,
-                    "cli.error.jobDefinition", safeMessage(exception)), exception);
-        }
-    }
-
-    private OperationRegistry loadRegistry() {
-        try {
-            return OperationRegistry.load(classLoader, locale);
-        } catch (DefinitionException exception) {
-            throw new StartException(2, safeMessage(exception), exception);
+                    "cli.error.jobDefinition", StartException.message(exception)), exception);
         }
     }
 
@@ -454,42 +409,6 @@ public final class JobRuntime {
         return value;
     }
 
-    private void error(StartException exception, boolean json) {
-        String message = safeMessage(exception);
-        if (json) {
-            Map<String, Object> event = new LinkedHashMap<>();
-            event.put("schema_version", 1);
-            event.put("timestamp", clock.instant().toString());
-            event.put("sequence", 1);
-            event.put("event_id", commandId + ":1");
-            event.put("level", "ERROR");
-            event.put("event_name", "gretl.cli.error");
-            event.put("message", message);
-            event.put("command_id", commandId);
-            event.put("exit_code", exception.code());
-            err.println(Json.write(event));
-        } else {
-            Map<String, String> details = new LinkedHashMap<>();
-            if (exception.field() != null && !exception.field().isBlank()) {
-                details.put(Messages.get(locale, "log.field.field"), exception.field());
-            }
-            if (exception.task() != null && !exception.task().isBlank()) {
-                details.put(Messages.get(locale, "log.field.task"), exception.task());
-            }
-            if (exception.source() != null && !exception.source().isBlank()) {
-                details.put(Messages.get(locale, "log.field.source"), exception.source());
-            }
-            err.println(new TextFormatter(locale).formatProblem(clock.instant(),
-                    exception.diagnosticCode(), null, message, details));
-        }
-    }
-
-    private static String safeMessage(Throwable throwable) {
-        String message = throwable.getMessage();
-        return message == null || message.isBlank()
-                ? throwable.getClass().getName() : message;
-    }
-
     private static final class MutableSink implements UserMessageSink {
         private final java.util.List<String> buffered = new java.util.ArrayList<>();
         private UserMessageSink delegate;
@@ -517,18 +436,5 @@ public final class JobRuntime {
                 delegate.println(message);
             }
         }
-    }
-    private static String requestedLanguage(String[] args) {
-        for (int index = 0; index < args.length - 1; index++) {
-            if (args[index].equals("--lang")) return args[index + 1];
-        }
-        return null;
-    }
-
-    private static boolean jsonRequested(String[] args) {
-        for (int index = 0; index < args.length - 1; index++) {
-            if (args[index].equals("--log-format") && args[index + 1].equalsIgnoreCase("json")) return true;
-        }
-        return false;
     }
 }

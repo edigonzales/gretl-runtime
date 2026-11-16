@@ -119,9 +119,9 @@ class SetupCompletionTest {
             @Override public Path displayFile() { return tempDir.resolve("fixture.groovy"); }
             @Override public Path jobRoot() { return tempDir; }
             @Override public String jobName() { return "setup-fixture"; }
-            @Override public String sha256() { return "a".repeat(64); }
+            @Override public String sha256(java.util.Locale locale) { return "a".repeat(64); }
             @Override
-            public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink) {
+            public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink, java.util.Locale locale) {
                 JobDefinitionBuilder builder = new JobDefinitionBuilder(tempDir);
                 builder.register(TaskRegistration.builder("work", Object.class).body(context -> {
                     taskCalls.incrementAndGet();

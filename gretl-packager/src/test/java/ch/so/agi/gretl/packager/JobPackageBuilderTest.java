@@ -39,7 +39,7 @@ class JobPackageBuilderTest {
 
         var compiled = BundleCompiler.compile(descriptor, JobPackager.currentClasspath(), java.util.Locale.GERMAN);
         Path output = tempDir.resolve("out/job.jar");
-        var result = new JobPackageBuilder(List.of(first, second))
+        var result = new JobPackageBuilder(List.of(first, second), Map.of(), java.util.Locale.GERMAN)
                 .build(descriptor, compiled, output);
 
         assertEquals(compiled.bundle().sources().getFirst().className(), result.entryClass());
@@ -82,7 +82,7 @@ class JobPackageBuilderTest {
         var compiled = BundleCompiler.compile(descriptor, JobPackager.currentClasspath(), java.util.Locale.GERMAN);
 
         PackageException error = assertThrows(PackageException.class,
-                () -> new JobPackageBuilder(List.of(first, second))
+                () -> new JobPackageBuilder(List.of(first, second), Map.of(), java.util.Locale.GERMAN)
                         .build(descriptor, compiled, tempDir.resolve("conflict.jar")));
         assertEquals("PACKAGE_CLASS_CONFLICT", error.code());
         assertTrue(error.getMessage().contains("conflict-a"));
@@ -110,7 +110,7 @@ class JobPackageBuilderTest {
         Path output = tempDir.resolve("model-copy.jar");
         new JobPackageBuilder(List.of(canonical, embedded), Map.of(
                 canonical, new PackageDescriptor.Dependency("ch.interlis", "iox-ili", "1.24.4"),
-                embedded, new PackageDescriptor.Dependency("ch.interlis", "av2geobau", "1.4.2")))
+                embedded, new PackageDescriptor.Dependency("ch.interlis", "av2geobau", "1.4.2")), java.util.Locale.GERMAN)
                 .build(descriptor, compiled, output);
         try (JarFile jar = new JarFile(output.toFile())) {
             String value = new String(jar.getInputStream(jar.getEntry(

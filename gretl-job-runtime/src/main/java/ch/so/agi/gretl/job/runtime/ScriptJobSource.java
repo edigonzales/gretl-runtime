@@ -11,17 +11,11 @@ import java.util.Locale;
 /** Normal Groovy script source. */
 public final class ScriptJobSource implements JobSource {
     private final Path file;
-    private final Locale locale;
     private ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.Snapshot loadedSnapshot;
     private boolean loaded;
 
     public ScriptJobSource(Path file) {
-        this(file, Locale.GERMAN);
-    }
-
-    public ScriptJobSource(Path file, Locale locale) {
         this.file = file.toAbsolutePath().normalize();
-        this.locale = java.util.Objects.requireNonNull(locale, "locale");
     }
 
     @Override
@@ -42,7 +36,7 @@ public final class ScriptJobSource implements JobSource {
     }
 
     @Override
-    public String sha256() {
+    public String sha256(Locale locale) {
         if(loadedSnapshot!=null)return loadedSnapshot.bundle().sha256();
         if(!loaded)try {
             var current=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.single(file,locale);
@@ -52,7 +46,7 @@ public final class ScriptJobSource implements JobSource {
     }
 
     @Override
-    public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink) {
+    public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink, Locale locale) {
         DefinitionEnvironment environment = new DefinitionEnvironment(
                 registry, jobRoot(), startCwd, sink, locale);
         try {

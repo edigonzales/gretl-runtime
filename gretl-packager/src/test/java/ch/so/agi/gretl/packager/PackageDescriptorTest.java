@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -93,4 +94,20 @@ class PackageDescriptorTest {
         return PackageDescriptor.load(descriptor);
     }
 
+
+    @Test
+    void packagerAndDirectDescriptorErrorsKeepTheirRequestedLocale() {
+        Path missing = tempDir.resolve("missing.json");
+        Path output = tempDir.resolve("job.jar");
+        for (Locale locale : java.util.List.of(Locale.GERMAN, Locale.ENGLISH, Locale.GERMAN)) {
+            var error = assertThrows(PackageException.class, () -> new JobPackager("6.0.0-SNAPSHOT", locale)
+                    .packageJob(missing, output));
+            assertEquals("PACKAGE_DESCRIPTOR_MISSING: "
+                            + ch.so.agi.gretl.i18n.Messages.format(locale, "package.descriptorMissing", missing),
+                    error.getMessage());
+            assertEquals("PACKAGE_DESCRIPTOR_MISSING: "
+                            + ch.so.agi.gretl.i18n.Messages.format(Locale.GERMAN, "package.descriptorMissing", missing),
+                    assertThrows(PackageException.class, () -> PackageDescriptor.load(missing)).getMessage());
+        }
+    }
 }

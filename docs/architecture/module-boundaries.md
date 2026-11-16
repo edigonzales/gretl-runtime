@@ -14,7 +14,7 @@ den aktuellen Zuschnitt.
 | gretl-i18n | Meldungskataloge | keine |
 | gretl-runner | Planung, sequenzielle Ausführung, Lebensdauer | API, i18n, Language-Contract |
 | gretl-groovy | Groovy-6-DSL und Kompilierkonfiguration | API, Runner, i18n, Language-Contract, Script-Syntax |
-| gretl-logging | Logging, Telemetrie und Report | API, Runner, i18n |
+| gretl-logging | Logging und Runreports | API, Runner, i18n |
 | gretl-job-runtime | Jobquelle, Parameter, Konfiguration, Ausführung und Abschluss für Skript und JAR | API, Runner, Groovy, Logging, i18n |
 | gretl-packager | Authoring: Descriptor, Kompilierung, Ressourcen und JAR | Groovy, Logging, i18n |
 | gretl-cli | Authoring-Kommandos und Übersetzung von Startargumenten | Job-Runtime, Packager, API, Runner, Groovy, Logging, i18n und Standard-Taskbibliotheken zur Laufzeit |
@@ -26,9 +26,9 @@ den aktuellen Zuschnitt.
 Taskbibliotheken besitzen ihre Fachbibliotheken selbst. Sie verwenden weder
 Runner noch Groovy, CLI, Packager oder Logging-Backend. Der Runner besitzt
 keine Taskbibliothek. Die Job-Runtime besitzt weder direkt noch transitiv CLI
-oder Packager. `GretlCli` übersetzt seine Jobkommandos in `JobOptions`;
-`JobJarMain` verwendet `JobRuntime.executePackaged` unmittelbar. Beide verwenden
-dieselbe Konfiguration, Planung, Cancellation, Shutdown- und Abschlusslogik.
+oder Packager. `GretlCli` übergibt `JobOptions` direkt an die Job-Runtime. `JobJarMain`
+verwendet denselben Optionsvertrag. Beide Einstiegspunkte verwenden dieselbe
+Startdiagnostik, Konfiguration, Planung, Cancellation, Shutdown- und Abschlusslogik.
 
 Die vier organisationsspezifischen Funktionsbibliotheken liegen ausdrücklich
 in der Standarddistribution. Das zusätzliche klassifizierte Ressourcenartefakt

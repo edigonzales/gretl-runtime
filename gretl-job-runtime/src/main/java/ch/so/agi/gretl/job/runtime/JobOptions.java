@@ -31,6 +31,11 @@ public record JobOptions(
 
     public static JobOptions parse(Command command, String[] args, Path startCwd,
                                                Locale locale) {
+        return parse(command, args, 1, false, startCwd, locale);
+    }
+
+    private static JobOptions parse(Command command, String[] args, int index, boolean packaged,
+                                    Path startCwd, Locale locale) {
         Path job = null;
         boolean help = false;
         List<String> targets = new ArrayList<>();
@@ -47,10 +52,12 @@ public record JobOptions(
         String language = null;
         PlanGraphFormat graphFormat = null;
 
-        int index = 1;
         while (index < args.length) {
             String argument = args[index];
             if (!argument.startsWith("-")) {
+                if (packaged) {
+                    throw new StartException(2, msg(locale, "cli.error.job.packagedPositional", argument));
+                }
                 if (job != null) {
                     throw new StartException(2, msg(locale,
                             "cli.error.job.multipleFiles", argument));
@@ -174,7 +181,7 @@ public record JobOptions(
         if (output != null && graphFormat == null) {
             throw new StartException(2, msg(locale, "cli.error.planOutputRequiresGraph"));
         }
-        if (job == null) {
+        if (!packaged && job == null) {
             if (help) {
                 return new JobOptions(Command.COMMAND_HELP, null, true, List.of(), null,
                         null, Map.of(), null, null, null, null, null, null, null, null, null);
@@ -188,15 +195,8 @@ public record JobOptions(
     }
 
     public static JobOptions parsePackaged(String[] args, Path startCwd, Locale locale) {
-        List<String> expanded = new ArrayList<>();
         boolean plan = args.length > 0 && args[0].equals("--plan");
-        expanded.add(plan ? "plan" : "run");
-        expanded.add("<packaged>");
-        int start = plan ? 1 : 0;
-        for (int index = start; index < args.length; index++) {
-            expanded.add(args[index]);
-        }
-        return parse(plan ? Command.PLAN : Command.RUN, expanded.toArray(String[]::new), startCwd, locale);
+        return parse(plan ? Command.PLAN : Command.RUN, args, plan ? 1 : 0, true, startCwd, locale);
     }
 
     private static String requireValue(String[] args, int index, String option,
@@ -232,5 +232,19 @@ public record JobOptions(
         } catch (RuntimeException exception) {
             throw new StartException(2, msg(locale, "cli.error.timeout"));
         }
+    }
+
+    public static String requestedLanguage(String[] args) {
+        for (int index = 0; index < args.length - 1; index++) {
+            if (args[index].equals("--lang")) return args[index + 1];
+        }
+        return null;
+    }
+
+    public static boolean jsonRequested(String[] args) {
+        for (int index = 0; index < args.length - 1; index++) {
+            if (args[index].equals("--log-format") && args[index + 1].equalsIgnoreCase("json")) return true;
+        }
+        return false;
     }
 }

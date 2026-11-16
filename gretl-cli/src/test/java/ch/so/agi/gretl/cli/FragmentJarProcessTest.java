@@ -23,7 +23,7 @@ class FragmentJarProcessTest {
         var data=descriptor();data.put("entryScript","job.groovy");data.put("resources",List.of("input.txt"));
         Path descriptor=root.resolve("package.json");Files.writeString(descriptor,Json.write(data));
         var d=PackageDescriptor.load(descriptor);var cp=classpath();var compiled=BundleCompiler.compile(d,cp,Locale.ENGLISH);
-        Path jar=temp.resolve("job.jar");new JobPackageBuilder(cp).build(d,compiled,jar);assertFalse(Files.exists(marker));
+        Path jar=temp.resolve("job.jar");new JobPackageBuilder(cp, Map.of(), Locale.ENGLISH).build(d,compiled,jar);assertFalse(Files.exists(marker));
         try(var file=new JarFile(jar.toFile())){var metadata=(Map<?,?>)Json.parse(new String(file.getInputStream(file.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));assertEquals(1L,metadata.get("schemaVersion"));assertNull(((Map<?,?>)metadata.get("bundle")).get("settingsId"));}
         delete(root);Path cwd=Files.createDirectory(temp.resolve("foreign"));
         {
@@ -49,7 +49,7 @@ class FragmentJarProcessTest {
         write(root,"a/input.txt","A");write(root,"b/input.txt","B");write(root,"shared/input.txt","wrong");
         var data=descriptor();data.put("settingsFile","settings.gretl");data.put("resources",List.of("a/input.txt","b/input.txt"));
         Path descriptor=root.resolve("package.json");Files.writeString(descriptor,Json.write(data));var d=PackageDescriptor.load(descriptor);var cp=classpath();
-        var compiled=BundleCompiler.compile(d,cp,Locale.ENGLISH);Path jar=temp.resolve("project.jar");new JobPackageBuilder(cp).build(d,compiled,jar);
+        var compiled=BundleCompiler.compile(d,cp,Locale.ENGLISH);Path jar=temp.resolve("project.jar");new JobPackageBuilder(cp, Map.of(), Locale.ENGLISH).build(d,compiled,jar);
         delete(root);Path cwd=Files.createDirectory(temp.resolve("foreign"));process(jar,cwd,List.of("--plan"));assertFalse(Files.exists(cwd.resolve("verified.txt")));
         process(jar,cwd,List.of());assertEquals("scopes",Files.readString(cwd.resolve("verified.txt")));for(String name:List.of("A","B"))assertEquals("done",Files.readString(cwd.resolve("cleanup-"+name)));
     }
@@ -60,7 +60,7 @@ class FragmentJarProcessTest {
             if(project)write(root,"settings.gretl","include 'a'\ndefaults ':a:run'");
             var data=descriptor();data.put(project?"settingsFile":"entryScript",project?"settings.gretl":"job.groovy");
             Path descriptor=root.resolve("package.json");Files.writeString(descriptor,Json.write(data));var d=PackageDescriptor.load(descriptor);var cp=classpath();Path jar=temp.resolve(project?"plain-project.jar":"plain-single.jar");
-            var builder=new JobPackageBuilder(cp);
+            var builder=new JobPackageBuilder(cp, Map.of(), Locale.ENGLISH);
             builder.build(d,BundleCompiler.compile(d,cp,Locale.ENGLISH),jar);
             try(var file=new JarFile(jar.toFile())){var metadata=(Map<?,?>)Json.parse(new String(file.getInputStream(file.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));assertEquals(1L,metadata.get("schemaVersion"));assertEquals(List.of(),((Map<?,?>)metadata.get("bundle")).get("edges"));}
             delete(root);Path cwd=Files.createDirectory(temp.resolve(project?"plain-project-cwd":"plain-single-cwd"));process(jar,cwd,List.of());assertEquals("plain",Files.readString(cwd.resolve("plain-result")));
