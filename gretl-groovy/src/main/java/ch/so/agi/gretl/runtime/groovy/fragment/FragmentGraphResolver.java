@@ -67,7 +67,16 @@ public final class FragmentGraphResolver {
             if(previous!=null)throw error("APPLY_DUPLICATE",id,List.of(String.join(" -> ",previous),String.join(" -> ",chain)),null);
             if(stack.size()>=MAX_DEPTH)throw error("APPLY_LIMIT",id,chain,null);
             var source=read(id,!stack.isEmpty());
-            var directives=parsed.computeIfAbsent(id,k->new ApplyDirectiveReader().read(id,source.text(),!stack.isEmpty()).requireValid(access.locale()));
+            var directives = parsed.computeIfAbsent(id, key -> {
+                boolean fragment = !stack.isEmpty();
+                var result = new ApplyDirectiveReader().read(key, source.text(), fragment);
+                if (!fragment && !result.applySeen()
+                        && result.problems().stream().allMatch(problem -> problem.code().equals("APPLY_SYNTAX"))) {
+                    // A Groovy parse failure in an entry gets the compiler's full diagnostic.
+                    return List.of();
+                }
+                return result.requireValid(access.locale());
+            });
             active.put(id,true);
             for(var directive:directives) {
                 try {

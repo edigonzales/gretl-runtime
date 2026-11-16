@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 /** Strict package descriptor; all paths stay below the descriptor directory. */
 public record PackageDescriptor(
-        Path descriptorFile, Path baseDirectory, int schemaVersion,
+        Path baseDirectory,
         String name, String version, String runtimeVersion, String entryScript,
         List<String> sources, List<String> resources, List<Dependency> dependencies,
         String settingsFile) {
@@ -26,13 +26,6 @@ public record PackageDescriptor(
     private static final Set<String> FIELDS = Set.of(
             "schemaVersion", "name", "version", "runtimeVersion", "entryScript",
             "sources", "resources", "dependencies", "settingsFile");
-
-    public PackageDescriptor(Path descriptorFile, Path baseDirectory, int schemaVersion,
-            String name, String version, String runtimeVersion, String entryScript,
-            List<String> sources, List<String> resources, List<Dependency> dependencies) {
-        this(descriptorFile, baseDirectory, schemaVersion, name, version, runtimeVersion,
-                entryScript, sources, resources, dependencies, null);
-    }
 
     public record Dependency(String groupId, String artifactId, String version, String classifier) {
         public Dependency(String groupId, String artifactId, String version) { this(groupId, artifactId, version, ""); }
@@ -45,7 +38,6 @@ public record PackageDescriptor(
     }
 
     public PackageDescriptor {
-        java.util.Objects.requireNonNull(descriptorFile, "descriptorFile");
         java.util.Objects.requireNonNull(baseDirectory, "baseDirectory");
         sources = List.copyOf(sources);
         resources = List.copyOf(resources);
@@ -75,13 +67,9 @@ public record PackageDescriptor(
                     PackagerMessages.get("package.descriptorObject"));
         }
         Map<String, Object> object = stringKeys(raw);
-        if (object.containsKey("taskModules") || object.containsKey("standardFunctions")) {
-            throw new PackageException("PACKAGE_SELECTION_REMOVED",
-                    "Remove taskModules and standardFunctions. Job JARs include the full standard runtime.");
-        }
         rejectUnknown(object);
         int schemaVersion = integer(object, "schemaVersion");
-        if (schemaVersion != 1 && schemaVersion != 2 && schemaVersion != 3) {
+        if (schemaVersion != 1) {
             throw new PackageException("PACKAGE_DESCRIPTOR_VERSION",
                     PackagerMessages.format("package.descriptorVersion", schemaVersion));
         }
@@ -96,30 +84,26 @@ public record PackageDescriptor(
             throw new PackageException("PACKAGE_VERSION_INVALID",
                     PackagerMessages.get("package.versionInvalid"));
         }
-        if (schemaVersion == 3 ? object.containsKey("entryScript") : object.containsKey("settingsFile")) {
+        boolean project = object.containsKey("settingsFile");
+        if (project == object.containsKey("entryScript")) {
             throw new PackageException("PACKAGE_DESCRIPTOR_SCHEMA", PackagerMessages.get("package.project.schema"));
         }
-        String entryScript = schemaVersion == 3 ? null : text(object, "entryScript");
-        String settingsFile = schemaVersion == 3 ? text(object, "settingsFile") : null;
-        if (schemaVersion == 3 && !"settings.gretl".equals(settingsFile)) {
+        String entryScript = project ? null : text(object, "entryScript");
+        String settingsFile = project ? text(object, "settingsFile") : null;
+        if (project && !"settings.gretl".equals(settingsFile)) {
             throw new PackageException("PACKAGE_SETTINGS_INVALID", PackagerMessages.get("package.project.settings"));
         }
         List<String> sources = textList(object, "sources");
         List<String> resources = textList(object, "resources");
         List<Dependency> dependencies = dependencies(object, allowSnapshots);
         Path base = file.getParent().toAbsolutePath().normalize();
-        PackageDescriptor value = new PackageDescriptor(file, base, schemaVersion,
+        PackageDescriptor value = new PackageDescriptor(base,
                 name, version, runtimeVersion, entryScript, sources, resources, dependencies, settingsFile);
         value.validate();
         return value;
     }
 
-    public boolean projectPackage() { return schemaVersion == 3; }
-
-    public Path settingsPath() {
-        if (!projectPackage()) throw new IllegalStateException("Single jobs have no settingsFile");
-        return baseDirectory.resolve(settingsFile);
-    }
+    public boolean projectPackage() { return settingsFile != null; }
 
     public Path entryPath() {
         if (projectPackage()) throw new IllegalStateException("Projects have no single entryScript");
@@ -203,9 +187,10 @@ public record PackageDescriptor(
             throw new PackageException("PACKAGE_PATH_INVALID",
                     PackagerMessages.format("package.pathInvalid", field, raw), exception);
         }
-        if (relative.isAbsolute() || relative.toString().isBlank()
+        if (raw.contains("\\") || raw.contains(":") || raw.chars().anyMatch(Character::isISOControl)
+                || relative.isAbsolute() || relative.toString().isBlank()
                 || relative.normalize().startsWith("..")
-                || !relative.normalize().toString().equals(relative.toString())) {
+                || !relative.normalize().toString().replace('\\', '/').equals(raw)) {
             throw new PackageException("PACKAGE_PATH_INVALID",
                     PackagerMessages.format("package.pathNotNormalized", field, raw));
         }

@@ -1,8 +1,6 @@
 package ch.so.agi.gretl.runtime.groovy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -39,72 +37,22 @@ class LegacyGroovyLoaderTest {
         assertUnknownDefault(failure, language);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"en", "de"})
-    void legacyCompiledEntryUsesTheRequestedLocaleForBuilderErrors(String language) throws Exception {
-        var environment = environment(language);
-        try (var classes = compiler()) {
-            Class<?> entry = classes.parseClass(MISSING_DEFAULT, "legacy.groovy");
-            Path label = environment.jobRoot().resolve("legacy.groovy");
-            assertFalse(Files.exists(label), "This fixture must load from bytecode alone");
-
-            var failure = assertThrows(DefinitionException.class,
-                    () -> new GroovyJobLoader().loadCompiled(entry.getName(), label, environment, classes));
-            assertUnknownDefault(failure, language);
-        }
-    }
-
     @Test
-    void invalidCompiledEntryIsRejectedBeforeItsStaticInitializerRuns() throws Exception {
+    void compiledBundleKeepsParameterFieldAndSourceForRegistrationErrors() throws Exception {
         var environment = environment("en");
-        Path marker = temp.resolve("invalid-initialized.txt");
-        try (var classes = compiler()) {
-            Class<?> entry = classes.parseClass("""
-                    class InvalidEntry {
-                        static { new File(new URI('%s')).text = 'initialized' }
-                    }
-                    """.formatted(marker.toUri()), "InvalidEntry.groovy");
-            assertFalse(Files.exists(marker), "Compiling the fixture must not initialize it");
-
-            Path label = environment.jobRoot().resolve("invalid.groovy");
+        String text = "parameter('name', description: 'first')\nparameter('name', description: 'second')\n";
+        Path source = Files.writeString(environment.jobRoot().resolve("job.groovy"), text);
+        var bundle = ScriptBundleSources.single(source, environment.locale(), false).bundle();
+        try (var classes = new GroovyClassLoader(getClass().getClassLoader(), CompilerSettings.create())) {
+            var entry = classes.parseClass(text, bundle.virtualName("job.groovy"));
+            var metadata = ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle.from(
+                    bundle, java.util.Map.of("job.groovy", entry.getName()), List.of());
+            Files.delete(source);
             var failure = assertThrows(GroovyDslException.class,
-                    () -> new GroovyJobLoader().loadCompiled(entry.getName(), label, environment, classes));
-            assertEquals("INVALID_SCRIPT_BASE", failure.code());
-            assertEquals(new SourceLocation("invalid.groovy", 0, 0), failure.source());
-            assertFalse(Files.exists(marker), "Rejecting the invalid entry must not initialize it");
-
-            Class.forName(entry.getName(), true, classes);
-            assertEquals("initialized", Files.readString(marker), "The initializer is observable");
-        }
-    }
-
-    @Test
-    void validCompiledEntryInitializesAndEachLoadReceivesAFreshBinding() throws Exception {
-        var environment = environment("en");
-        Path marker = temp.resolve("valid-initialized.txt");
-        try (var classes = compiler()) {
-            Class<?> entry = classes.parseClass("""
-                    @groovy.transform.Field static final String initialized = initialize()
-                    static String initialize() {
-                        new File(new URI('%s')).text = 'initialized'
-                        'ready'
-                    }
-                    assert initialized == 'ready'
-                    assert !binding.hasVariable('loadMarker')
-                    loadMarker = 'assigned by this script instance'
-                    task('echo', Echo) { text = 'ok' }
-                    defaults 'echo'
-                    """.formatted(marker.toUri()), "legacy.groovy");
-            assertFalse(Files.exists(marker));
-
-            Path label = environment.jobRoot().resolve("legacy.groovy");
-            var loader = new GroovyJobLoader();
-            var first = loader.loadCompiled(entry.getName(), label, environment, classes);
-            assertEquals("initialized", Files.readString(marker));
-            var second = loader.loadCompiled(entry.getName(), label, environment, classes);
-            assertNotEquals(first.definitionId(), second.definitionId());
-            assertEquals(List.of("echo"), first.defaultTargets());
-            assertEquals(first.defaultTargets(), second.defaultTargets());
+                    () -> new GroovyJobLoader().loadCompiledBundle(metadata, environment, classes));
+            assertEquals("DUPLICATE_PARAMETER", failure.code());
+            assertEquals("name", failure.fieldName());
+            assertEquals(2, failure.source().line());
         }
     }
 

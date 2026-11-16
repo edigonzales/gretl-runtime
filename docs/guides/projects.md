@@ -1,7 +1,7 @@
 # GRETL-Job-Subprojekte
 
 Projekte verbinden mehrere explizit eingebundene Jobskripte zu einem gemeinsamen
-Taskgraphen. Scriptlauf und Schema-3-Projekt-JAR verwenden dieselben Verträge.
+Taskgraphen. Scriptlauf und Projekt-JAR verwenden dieselben Verträge.
 
 Eine `settings.gretl` enthält nur konstante, einfach oder doppelt zitierte
 Stringargumente an `include` und `defaults`, jeweils höchstens eine Anweisung:
@@ -37,8 +37,7 @@ zeigt Includes und lokale Namensräume. Das
 [Pipelinebeispiel](../../examples/project-pipeline/README.md) läuft als ein
 Projekt mit echten lokalen Operationen. Ein direkter Dateipfad startet weiterhin
 den Einzeldateimodus, ein Verzeichnis erfordert eine `settings.gretl` unmittelbar
-darin. Bestehende Schema-1/2-JARs verwenden denselben bisherigen Startpfad;
-Schema-3-Projektpakete kompilieren den gesamten expliziten Bestand in ein JAR.
+darin. Projektpakete kompilieren den gesamten expliziten Bestand in ein JAR.
 `settingsFile: "settings.gretl"` ist darin Pflicht, `entryScript` verboten.
 Job-JARs enthalten die vollständige Standardruntime. Zusätzliche externe
 Bibliotheken werden in `dependencies` deklariert. `sources` ergänzt
@@ -53,9 +52,8 @@ java -jar project.jar --param :output=output.txt
 
 Der Compiler führt keine Settings, Scriptbodies oder Tasks aus. Alle Einträge
 teilen dieselbe selektierte Compiler-/Dependencyhülle und erhalten eigene
-Klassen und Bindings. Im JAR stehen interne Jobmetadaten Schema 2 mit Entries,
-Defaults und Quellidentität; Einzeljob-JARs behalten interne Metadaten Schema 1.
-Das Dependencyinventar behält seine bisherige Schemafassung. Beim Start werden
+Klassen und Bindings. Das kompilierte Bundle enthält Einstiege, Default-Ziele
+und die Quellidentität. Beim Start werden
 keine Quellen erneut kompiliert oder Settings evaluiert. Materialisierung läuft
 erst nach gültigen Parametern und Plan im eigenen Runworkspace und behält die
 vorhandenen keepWork-Regeln. Der JAR-Weg braucht Java 25 und Laufzeitwerte,

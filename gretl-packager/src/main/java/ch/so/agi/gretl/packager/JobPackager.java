@@ -55,12 +55,8 @@ public final class JobPackager {
                 identities.put(installed, artifact.identity());
             }
         }
-        var builder = new JobPackageBuilder(classpath, packagerVersion, identities);
-        if (descriptor.projectPackage()) {
-            var project = new ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser(locale).parse(descriptor.baseDirectory());
-            return builder.buildProject(descriptor, new ProjectCompiler().compile(project, descriptor, classpath), output);
-        }
-        return builder.build(descriptor, new JobCompiler().compile(descriptor, classpath), output);
+        var compiled = BundleCompiler.compile(descriptor, classpath, locale);
+        return new JobPackageBuilder(classpath, identities).build(descriptor, compiled, output);
     }
 
     private static Path installedArtifact(List<Path> standard, PackageDescriptor.Dependency dependency)

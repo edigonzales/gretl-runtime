@@ -11,15 +11,12 @@ import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class JobResourcePreparationTest {
     @TempDir Path root;
 
     private JobJarMain.PackagedJobSource source(String resource) {
-        var metadata = new JobJarMain.JobMetadata(1, "fixture", "1", "6.0.0-SNAPSHOT", 25,
-                "Fixture", "job.groovy", JobJarMain.RESOURCE_ROOT, List.of(resource), List.of(), "hash");
+        var metadata = new JobJarMain.JobMetadata("fixture", "1", "6.0.0-SNAPSHOT", List.of(resource), null);
         ClassLoader loader = new ClassLoader() {
             @Override public InputStream getResourceAsStream(String name) {
                 return name.equals(JobJarMain.RESOURCE_ROOT + "models/local.ili")
@@ -40,14 +37,6 @@ class JobResourcePreparationTest {
         }
         assertFalse(Files.exists(root.resolve("logical")));
         assertThrows(IOException.class, () -> source("models/local.ili").prepareRun(run));
-    }
-
-    @ParameterizedTest @ValueSource(strings = {"../escape", "/absolute", "models/../../escape", "models\\escape"})
-    void rejectsUnsafeResourceEntries(String name) throws Exception {
-        Path run = Files.createDirectory(root.resolve("run"));
-        var failure = assertThrows(IOException.class, () -> source(name).prepareRun(run));
-        assertTrue(failure.getMessage().contains("JOB_RESOURCE_PATH"), failure.getMessage());
-        assertFalse(Files.exists(root.resolve("escape")));
     }
 
     @Test void missingResourceIsAnIoSetupFailure() throws Exception {

@@ -28,6 +28,5 @@ java -jar "$gretl_demo_dir/job.jar" --param output="$gretl_demo_dir/jar-message.
 cmp examples/minimal-action/message.txt "$gretl_demo_dir/jar-message.txt"
 ```
 
-The executable JAR needs Java 25 and its runtime parameters. Project jobs use
-`settings.gretl` and descriptor schema 3; single-job schemas 1 and 2 remain
-supported. Follow the [documentation](docs.qmd) for configuration and projects.
+The executable JAR needs Java 25 and its runtime parameters. Both descriptor variants use schema 1. Set `entryScript` for a single
+script or `settingsFile` to `settings.gretl` for a project. Follow the [documentation](docs.qmd) for configuration and projects.

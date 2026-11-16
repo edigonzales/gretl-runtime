@@ -29,7 +29,7 @@ final class JobJarSupport {
         List<String> resources;
         try (var files = Files.list(source)) { resources = files.filter(p -> !Set.of("job.groovy", "job-package.json").contains(p.getFileName().toString()))
                 .map(p -> p.getFileName().toString()).sorted().toList(); }
-        Files.writeString(source.resolve("job-package.json"), Json.write(Map.of("schemaVersion", 2, "name", "job-package", "version", "1",
+        Files.writeString(source.resolve("job-package.json"), Json.write(Map.of("schemaVersion", 1, "name", "job-package", "version", "1",
                 "runtimeVersion", "6.0.0-SNAPSHOT", "entryScript", "job.groovy", "resources", resources,
                 "dependencies", dependencies)));
     }

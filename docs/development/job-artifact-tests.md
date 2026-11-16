@@ -12,7 +12,8 @@ Exitcodes und Berichte. Die Diensttests verwenden echte Backing-Services.
 ```
 
 JAR-Tests paketieren ausgewählte Jobs und starten sie in einem separaten
-Verzeichnis mit `java -jar`. Sie prüfen unter anderem Standardtasks,
+Verzeichnis mit `java -jar`. Sie prüfen das Bundleformat mit und ohne Includes,
+fehlerhafte Startmetadaten, Standardtasks,
 Validatorfunktionen und die Behandlung zusätzlicher Bibliotheken.
 
 IMAGE-Tests verwenden das mit Gradle gebaute generische Image. Sie prüfen

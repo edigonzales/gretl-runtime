@@ -1,7 +1,6 @@
 package ch.so.agi.gretl.it;
 
 import static org.junit.jupiter.api.Assertions.*;
-import ch.so.agi.gretl.runtime.logging.Json;
 import java.nio.file.*;
 import java.time.Duration;
 import java.util.*;
@@ -85,14 +84,13 @@ class JobJarLocalJobIT {
         var polluted = external.pack(source.resolve("job-package.json"), root.resolve("polluted.jar"), "polluted",
                 List.of(external.provider, external.helper, pollution), false);
         assertEquals(0, polluted.code(), polluted.err());
-        assertEquals(inventory(jar), inventory(root.resolve("polluted.jar")));
+        assertEquals(-1, Files.mismatch(jar, root.resolve("polluted.jar")));
         assertFalse(Files.exists(root.resolve("must-not-execute")));
         try (var archive = new java.util.jar.JarFile(jar.toFile())) {
             assertNotNull(archive.getJarEntry("external/probe/ExampleProvider.class"));
             assertNotNull(archive.getJarEntry("external/dependency/ProbeHelper.class"));
             assertNull(archive.getJarEntry("external/unrelated/NotSelected.class"));
         }
-        String inputs = Json.write(inventory(jar)); assertTrue(inputs.contains(external.coordinate())); assertTrue(inputs.contains(external.helperCoordinate()));
         var request = new ArtifactJobRunner.Request("job-jar-external", source, root, List.of(), Map.of("output", root.resolve("output")),
                 Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
         var prepared = new ArtifactJobRunner.Prepared(request, source, root.resolve("reports/report.json"), new ArtifactJobRunner.JarLaunch(jar));
@@ -120,11 +118,6 @@ class JobJarLocalJobIT {
         assertTrue(conflict.err().contains("messages.properties"), conflict.err()); assertTrue(conflict.err().contains(external.group), conflict.err());
     }
 
-    private static Object inventory(Path file) throws Exception {
-        try (var jar = new java.util.jar.JarFile(file.toFile())) {
-            return Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/dependencies.json")).readAllBytes(), java.nio.charset.StandardCharsets.UTF_8));
-        }
-    }
     @Test void minimalActionSuccessAndFailureRunWithoutSourceCheckoutOrBuildTools() throws Exception {
         for (String target : List.of("success", "failure")) {
             Path root = ArtifactJobRunner.directory("job-jar-minimal-" + target);

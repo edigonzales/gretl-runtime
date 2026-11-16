@@ -58,9 +58,9 @@ class PackageDescriptorTest {
         assertTrue(unknownError.getMessage().contains("extra"));
     }
     @Test
-    void versionTwoSupportsClassifiedArtifacts() throws Exception {
+    void supportsClassifiedArtifacts() throws Exception {
         Files.writeString(tempDir.resolve("job.groovy"), "action('run') { }\ndefaults 'run'\n");
-        PackageDescriptor value = loadDescriptor(2, "",
+        PackageDescriptor value = loadDescriptor(1, "",
                 "[\"example:provider:1.2.3\",\"example:functions:jar:standard:4.5.6\"]");
         assertEquals("example:functions:jar:standard:4.5.6", value.dependencies().get(1).coordinate());
     }
@@ -68,10 +68,10 @@ class PackageDescriptorTest {
     @Test
     void rejectsRemovedSelectionFieldsAndUnpinnedDependencyDeclarations() throws Exception {
         Files.writeString(tempDir.resolve("job.groovy"), "action('run') { }\ndefaults 'run'\n");
-        for (int schemaVersion : java.util.List.of(1, 2, 3)) {
+        {
             for (String selection : java.util.List.of(",\"taskModules\":[]", ",\"standardFunctions\":false")) {
-                assertEquals("PACKAGE_SELECTION_REMOVED", assertThrows(PackageException.class,
-                        () -> loadDescriptor(schemaVersion, selection, "[]")).code());
+                assertEquals("PACKAGE_DESCRIPTOR_UNKNOWN_FIELD", assertThrows(PackageException.class,
+                        () -> loadDescriptor(1, selection, "[]")).code());
             }
         }
         Path overflow = tempDir.resolve("overflow.json");
@@ -81,7 +81,7 @@ class PackageDescriptorTest {
                 "[\"g:a\"]", "[\"g:a:[]\"]", "[\"g:a:LATEST\"]", "[\"g:a:RELEASE\"]",
                 "[\"g:a:1.*\"]", "[\"g:a:1-SNAPSHOT\"]", "[\"g:a:war:classifier:1\"]",
                 "[\"g:a:1\",\"g:a:2\"]")) {
-            assertThrows(PackageException.class, () -> loadDescriptor(2, "", dependencies), dependencies);
+            assertThrows(PackageException.class, () -> loadDescriptor(1, "", dependencies), dependencies);
         }
     }
 

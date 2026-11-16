@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 1,
   "name": "local-project-pipeline",
   "version": "1",
   "runtimeVersion": "6.0.0-SNAPSHOT",

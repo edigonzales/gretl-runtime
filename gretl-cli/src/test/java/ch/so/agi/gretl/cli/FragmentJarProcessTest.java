@@ -2,7 +2,6 @@ package ch.so.agi.gretl.cli;
 
 import static org.junit.jupiter.api.Assertions.*;
 import ch.so.agi.gretl.packager.*;
-import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
 import ch.so.agi.gretl.runtime.logging.Json;
 import java.nio.file.*;
 import java.util.*;
@@ -10,26 +9,24 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 @org.junit.jupiter.api.Tag("jar")
 class FragmentJarProcessTest {
     @TempDir Path temp;
-    @ParameterizedTest @ValueSource(ints={1,2})
-    void singleIncludesAndLegacyDescriptorsRunFromForeignCwdWithoutSources(int schema)throws Exception{
+    @Test
+    void singleIncludesRunFromForeignCwdWithoutSources()throws Exception{
         Path root=Files.createDirectory(temp.resolve("sources"));Path marker=temp.resolve("packaging-marker");
         write(root,"job.groovy","new File('"+marker+"').text='loaded'\napply from:'tasks/prepare.groovy'\napply from:'tasks/check.groovy'\ndefaults 'verify'");
         write(root,"input.txt","payload äöü\n");
         write(root,"tasks/prepare.groovy","task('prepare',Gzip){new File('config-marker').text='yes';dataFile=file('input.txt');gzipFile=workPath('result.gz')}\ncleanup('end'){new File('cleanup-marker').text='yes'}");
         write(root,"tasks/check.groovy","action('verify',dependsOn:'prepare'){def text=new java.util.zip.GZIPInputStream(java.nio.file.Files.newInputStream(result('prepare').file)).getText('UTF-8');assert text=='payload äöü\\n';new File('verified.txt').text=text}\naction('bad'){\n throw new IllegalStateException('fragment-jar-failure')\n}\n");
-        var data=descriptor(schema);data.put("entryScript","job.groovy");data.put("resources",List.of("input.txt"));
+        var data=descriptor();data.put("entryScript","job.groovy");data.put("resources",List.of("input.txt"));
         Path descriptor=root.resolve("package.json");Files.writeString(descriptor,Json.write(data));
-        var d=PackageDescriptor.load(descriptor);var cp=classpath();var compiled=new JobCompiler().compile(d,cp);
-        Path jar=temp.resolve("job.jar");new JobPackageBuilder(cp,"test").build(d,compiled,jar);assertFalse(Files.exists(marker));
-        try(var file=new JarFile(jar.toFile())){var metadata=(Map<?,?>)Json.parse(new String(file.getInputStream(file.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));assertEquals(3,((Number)metadata.get("schemaVersion")).intValue());assertEquals("single",metadata.get("definitionMode"));}
+        var d=PackageDescriptor.load(descriptor);var cp=classpath();var compiled=BundleCompiler.compile(d,cp,Locale.ENGLISH);
+        Path jar=temp.resolve("job.jar");new JobPackageBuilder(cp).build(d,compiled,jar);assertFalse(Files.exists(marker));
+        try(var file=new JarFile(jar.toFile())){var metadata=(Map<?,?>)Json.parse(new String(file.getInputStream(file.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));assertEquals(1L,metadata.get("schemaVersion"));assertNull(((Map<?,?>)metadata.get("bundle")).get("settingsId"));}
         delete(root);Path cwd=Files.createDirectory(temp.resolve("foreign"));
-        if(schema==2){
+        {
             Path broken=temp.resolve("missing-fragment.jar");
             String missing=compiled.bundle().sources().getLast().className().replace('.','/')+".class";
             try(var in=new JarFile(jar.toFile());var out=new java.util.jar.JarOutputStream(Files.newOutputStream(broken))){
@@ -50,26 +47,26 @@ class FragmentJarProcessTest {
         write(root,"b/job.groovy","apply from:'../shared/tasks.groovy'\naction('verify',dependsOn:[':a:prepare',':b:prepare']){assert result(':a:prepare')=='A:1';assert result(':b:prepare')=='B:1';new File('verified.txt').text='scopes'}");
         write(root,"shared/tasks.groovy","def count=0\naction('prepare'){count++;java.nio.file.Files.readString(file('input.txt'))+':'+count}\ncleanup('end'){new File('cleanup-'+java.nio.file.Files.readString(file('input.txt'))).text='done'}");
         write(root,"a/input.txt","A");write(root,"b/input.txt","B");write(root,"shared/input.txt","wrong");
-        var data=descriptor(3);data.put("settingsFile","settings.gretl");data.put("resources",List.of("a/input.txt","b/input.txt"));
+        var data=descriptor();data.put("settingsFile","settings.gretl");data.put("resources",List.of("a/input.txt","b/input.txt"));
         Path descriptor=root.resolve("package.json");Files.writeString(descriptor,Json.write(data));var d=PackageDescriptor.load(descriptor);var cp=classpath();
-        var compiled=new ProjectCompiler().compile(new GretlProjectParser().parse(root),d,cp);Path jar=temp.resolve("project.jar");new JobPackageBuilder(cp,"test").buildProject(d,compiled,jar);
+        var compiled=BundleCompiler.compile(d,cp,Locale.ENGLISH);Path jar=temp.resolve("project.jar");new JobPackageBuilder(cp).build(d,compiled,jar);
         delete(root);Path cwd=Files.createDirectory(temp.resolve("foreign"));process(jar,cwd,List.of("--plan"));assertFalse(Files.exists(cwd.resolve("verified.txt")));
         process(jar,cwd,List.of());assertEquals("scopes",Files.readString(cwd.resolve("verified.txt")));for(String name:List.of("A","B"))assertEquals("done",Files.readString(cwd.resolve("cleanup-"+name)));
     }
-    @Test void oldSingleAndProjectMetadataStillRunFromBytecode()throws Exception{
+    @Test void singleAndProjectWithoutIncludesUseBundlesAndRunFromBytecode()throws Exception{
         for(boolean project:List.of(false,true)){
-            Path root=Files.createDirectory(temp.resolve(project?"legacy-project":"legacy-single"));
-            write(root,project?"a/job.groovy":"job.groovy","action('run'){new File('legacy-result').text='legacy'}\ndefaults 'run'");
+            Path root=Files.createDirectory(temp.resolve(project?"plain-project":"plain-single"));
+            write(root,project?"a/job.groovy":"job.groovy","action('run'){new File('plain-result').text='plain'}\ndefaults 'run'");
             if(project)write(root,"settings.gretl","include 'a'\ndefaults ':a:run'");
-            var data=descriptor(project?3:2);data.put(project?"settingsFile":"entryScript",project?"settings.gretl":"job.groovy");
-            Path descriptor=root.resolve("package.json");Files.writeString(descriptor,Json.write(data));var d=PackageDescriptor.load(descriptor);var cp=classpath();Path jar=temp.resolve(project?"legacy-project.jar":"legacy-single.jar");
-            var builder=new JobPackageBuilder(cp,"test");
-            if(project)builder.buildProject(d,new ProjectCompiler().compile(new GretlProjectParser().parse(root),d,cp),jar);else builder.build(d,new JobCompiler().compile(d,cp),jar);
-            try(var file=new JarFile(jar.toFile())){var metadata=(Map<?,?>)Json.parse(new String(file.getInputStream(file.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));assertEquals(project?2:1,((Number)metadata.get("schemaVersion")).intValue());}
-            delete(root);Path cwd=Files.createDirectory(temp.resolve(project?"old-project-cwd":"old-single-cwd"));process(jar,cwd,List.of());assertEquals("legacy",Files.readString(cwd.resolve("legacy-result")));
+            var data=descriptor();data.put(project?"settingsFile":"entryScript",project?"settings.gretl":"job.groovy");
+            Path descriptor=root.resolve("package.json");Files.writeString(descriptor,Json.write(data));var d=PackageDescriptor.load(descriptor);var cp=classpath();Path jar=temp.resolve(project?"plain-project.jar":"plain-single.jar");
+            var builder=new JobPackageBuilder(cp);
+            builder.build(d,BundleCompiler.compile(d,cp,Locale.ENGLISH),jar);
+            try(var file=new JarFile(jar.toFile())){var metadata=(Map<?,?>)Json.parse(new String(file.getInputStream(file.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));assertEquals(1L,metadata.get("schemaVersion"));assertEquals(List.of(),((Map<?,?>)metadata.get("bundle")).get("edges"));}
+            delete(root);Path cwd=Files.createDirectory(temp.resolve(project?"plain-project-cwd":"plain-single-cwd"));process(jar,cwd,List.of());assertEquals("plain",Files.readString(cwd.resolve("plain-result")));
         }
     }
-    private Map<String,Object> descriptor(int schema){var m=new LinkedHashMap<String,Object>();m.put("schemaVersion",schema);m.put("name","fragment-test");m.put("version","1");m.put("runtimeVersion","6.0.0-SNAPSHOT");m.put("sources",List.of());m.put("dependencies",List.of());return m;}
+    private Map<String,Object> descriptor(){var m=new LinkedHashMap<String,Object>();m.put("schemaVersion",1);m.put("name","fragment-test");m.put("version","1");m.put("runtimeVersion","6.0.0-SNAPSHOT");m.put("sources",List.of());m.put("dependencies",List.of());return m;}
     private List<Path> classpath() throws Exception {
         try (var files = Files.list(Path.of(System.getProperty("gretl.test.distributionLib")))) {
             return files.filter(path -> path.getFileName().toString().endsWith(".jar"))

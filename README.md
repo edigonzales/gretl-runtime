@@ -78,8 +78,7 @@ cmp examples/minimal-action/message.txt "$gretl_demo_dir/jar-message.txt"
 ```
 
 Das fertige JAR benötigt Java 25 und seine Laufzeitwerte. Paketieren führt
-keine Jobtasks aus. Schemas 1 und 2 bleiben für Einzeljobs unterstützt;
-Schema 3 bündelt Projekte mit `settings.gretl`. Details stehen im
+keine Jobtasks aus. Einzeljobs und Projekte verwenden dasselbe Deskriptorformat. Details stehen im
 [Paketierungsvertrag](docs/guides/packaging.md).
 
 ## Dokumentation und Grenzen
@@ -87,7 +86,7 @@ Schema 3 bündelt Projekte mit `settings.gretl`. Details stehen im
 Die [aktuelle Dokumentation](docs/README.md) führt zu Build, Tests, Modulen,
 Projekten und der [Taskreferenz](docs/reference/reference.adoc).
 Die [lokale Projektpipeline](examples/project-pipeline/README.md) zeigt einen
-gemeinsamen Taskgraphen und ein Schema-3-JAR ohne externe Dienste.
+gemeinsamen Taskgraphen und ein eigenständiges JAR ohne externe Dienste.
 
 Publisher, XtfToGpkg und Native Image sind nicht geliefert. Die Runtime enthält
 keinen Scheduler und keine Control Plane. Ausführbare Groovy-Jobs sind

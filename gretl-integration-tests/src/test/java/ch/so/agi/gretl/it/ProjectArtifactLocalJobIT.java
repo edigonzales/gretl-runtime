@@ -45,13 +45,14 @@ class ProjectArtifactLocalJobIT {
         assertFalse(Files.exists(prepared.source()));
         try(var jar=new JarFile(prepared.jar().toFile())) {
             var metadata=object(Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),StandardCharsets.UTF_8)));
-            assertEquals(2L,metadata.get("schemaVersion"));
-            assertEquals(5,((List<?>)metadata.get("entries")).size());
-            assertEquals(5,((List<?>)metadata.get("entries")).stream().map(e->object(e).get("entryClass")).distinct().count());
+            assertEquals(1L,metadata.get("schemaVersion"));
+            var bundle = object(metadata.get("bundle"));
+            assertEquals(5,((List<?>)bundle.get("entries")).size());
+            assertEquals(5,((List<?>)bundle.get("sources")).stream().map(e->object(e).get("className")).distinct().count());
             assertNotEquals(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job-resources/download/sql/update.sql")).readAllBytes(),StandardCharsets.UTF_8),
                     new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job-resources/validation/nested/sql/update.sql")).readAllBytes(),StandardCharsets.UTF_8));
-            assertEquals(object(report(script).get("source")).get("sha256"),metadata.get("projectSha256"));
-            assertEquals(metadata.get("projectSha256"),object(report(result).get("source")).get("sha256"));
+            assertEquals(object(report(script).get("source")).get("sha256"),bundle.get("sha256"));
+            assertEquals(bundle.get("sha256"),object(report(result).get("source")).get("sha256"));
         }
     }
     @Test void versionHelpPlanHaveNoMaterializationAndCompiledClassesNeedNoSourceTexts() throws Exception {
@@ -60,7 +61,15 @@ class ProjectArtifactLocalJobIT {
         // Remove provenance text after compilation: startup must never recompile or parse settings.
         Path stripped=request.directory().resolve("stripped.jar");rewrite(prepared.jar(),stripped,"META-INF/gretl/sources/",null);
         Path noEntry=request.directory().resolve("no-entry.jar");
-        rewrite(stripped,noEntry,ch.so.agi.gretl.runtime.groovy.project.ProjectSourceNames.entryClassName(ch.so.agi.gretl.runtime.groovy.project.ProjectPath.root())+".class",null);
+        String rootClass;
+        try (var jar = new JarFile(stripped.toFile())) {
+            var metadata = object(Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job.json"))
+                    .readAllBytes(), StandardCharsets.UTF_8)));
+            var sources = (List<?>) object(metadata.get("bundle")).get("sources");
+            rootClass = (String) sources.stream().map(source -> object(source))
+                    .filter(source -> "job.groovy".equals(source.get("sourceId"))).findFirst().orElseThrow().get("className");
+        }
+        rewrite(stripped, noEntry, rootClass.replace('.', '/') + ".class", null);
         assertEquals(0,control(request.directory(),noEntry,"version-no-class",List.of("--version")));
         assertEquals(0,control(request.directory(),stripped,"version",List.of("--version")));
         assertFalse(Files.exists(request.directory().resolve("controls/version/toplevel-marker.txt")));
@@ -85,7 +94,7 @@ class ProjectArtifactLocalJobIT {
         assertFalse(Files.exists(request.directory().resolve("output/result.txt")));
         var report=report(result);var execution=object(report.get("execution"));assertEquals(true,execution.get("workRetained"));
         String errors=Json.write(report.get("errors"));assertTrue(errors.contains("synthetic-project-failure"));assertTrue(errors.contains("original-cause"));
-        var failure=((List<?>)report.get("errors")).stream().map(ProjectArtifactLocalJobIT::object).filter(e->e.get("message").toString().contains("synthetic-project-failure")).findFirst().orElseThrow();
+        var failure=((List<?>)report.get("errors")).stream().map(source -> object(source)).filter(e->e.get("message").toString().contains("synthetic-project-failure")).findFirst().orElseThrow();
         assertTrue(object(failure.get("source")).get("file").toString().endsWith("import/job.groovy"));assertEquals(6L,object(failure.get("source")).get("line"));
         try(var paths=Files.walk(request.directory().resolve("work"))) {
             var resource=paths.filter(p->p.endsWith("job-resources/validation/nested/sql/update.sql")).findFirst().orElseThrow();assertEquals("validation-B\n",Files.readString(resource));
@@ -103,10 +112,10 @@ class ProjectArtifactLocalJobIT {
             assertEquals(!caught, object(report(result).get("execution")).get("workRetained"));
             var report = report(result);
             var invocation = ((List<?>) object(report.get("execution")).get("invocations")).stream()
-                    .map(ProjectArtifactLocalJobIT::object)
+                    .map(source -> object(source))
                     .filter(i -> ":import:run".equals(i.get("parentTaskId")) && "FAILED".equals(i.get("status")))
                     .findFirst().orElseThrow();
-            var failure = ((List<?>) report.get("errors")).stream().map(ProjectArtifactLocalJobIT::object)
+            var failure = ((List<?>) report.get("errors")).stream().map(source -> object(source))
                     .filter(e -> invocation.get("errorRef").equals(e.get("id"))).findFirst().orElseThrow();
             assertEquals("ch.so.agi.gretl.tasks.io.archive.GzipTaskException", failure.get("type"));
             assertOriginalInnerSource(object(failure.get("source")));
@@ -114,7 +123,7 @@ class ProjectArtifactLocalJobIT {
             List<Map<String, Object>> rows;
             try (var paths = Files.list(result.directory().resolve("reports"))) {
                 rows = Files.readAllLines(paths.filter(p -> p.toString().endsWith(".events.jsonl")).findFirst().orElseThrow())
-                        .stream().map(Json::parse).map(ProjectArtifactLocalJobIT::object).toList();
+                        .stream().map(Json::parse).map(source -> object(source)).toList();
             }
             var failed = rows.stream().filter(e -> "gretl.operation.failed".equals(e.get("event_name"))
                     && ":import:run".equals(e.get("task_id"))).findFirst().orElseThrow();
@@ -145,15 +154,21 @@ class ProjectArtifactLocalJobIT {
         }
     }
     @Test void tamperedMetadataAndMissingMaterializedResourceAreRealStartFailures() throws Exception {
-        for(String mode:List.of("metadata","syntax","resource")) {
+        for(String mode:List.of("metadata","missing","syntax","resource")) {
             var request=request("project-broken-"+mode,"success",List.of(),"always");var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.JAR);
             Path changed=request.directory().resolve("changed.jar");
             if(mode.equals("metadata")) rewrite(prepared.jar(),changed,"META-INF/gretl/job.json","{\"schemaVersion\":2,\"project\":true}");
+            else if(mode.equals("missing")) rewrite(prepared.jar(),changed,"META-INF/gretl/job.json",null);
             else if(mode.equals("syntax")) rewrite(prepared.jar(),changed,"META-INF/gretl/job.json","{");
             else rewrite(prepared.jar(),changed,"META-INF/gretl/job-resources/validation/nested/sql/update.sql",null);
             var altered=new ArtifactJobRunner.Prepared(request, prepared.source(), prepared.report(), new ArtifactJobRunner.JarLaunch(changed));
             var result=ArtifactJobRunner.finish(ArtifactJobRunner.start(altered),false);
-            assertEquals(2,result.code(),result.err()); assertTrue(result.err().contains(mode.equals("resource")?"JOB_RESOURCE_MISSING":"JOB_METADATA_INVALID"),result.err());
+            assertEquals(2,result.code(),result.err()); assertTrue(result.err().contains(switch (mode) {
+                case "resource" -> "JOB_RESOURCE_MISSING";
+                case "metadata" -> "JOB_METADATA_VERSION";
+                case "missing" -> "JOB_METADATA_MISSING";
+                default -> "JOB_METADATA_INVALID";
+            }),result.err());
             assertFalse(result.err().contains("gretl.run.started"));assertFalse(Files.exists(prepared.report()));
             assertFalse(Files.exists(request.directory().resolve("output/cleanup.txt")));
             if(Files.exists(request.directory().resolve("work")))try(var paths=Files.list(request.directory().resolve("work"))){assertEquals(0,paths.count());}
@@ -171,7 +186,7 @@ class ProjectArtifactLocalJobIT {
         var report=report(result);var execution=object(report.get("execution"));assertEquals(status,execution.get("status"));
         assertEquals(expected,((List<?>)execution.get("tasks")).stream().map(t->object(t).get("taskId")).toList());
         var eventFiles=Files.list(result.directory().resolve("reports"));List<Path> events;try(eventFiles){events=eventFiles.filter(p->p.toString().endsWith(".events.jsonl")).toList();}assertEquals(1,events.size());
-        var rows=Files.readAllLines(events.getFirst()).stream().map(Json::parse).map(ProjectArtifactLocalJobIT::object).toList();
+        var rows=Files.readAllLines(events.getFirst()).stream().map(Json::parse).map(source -> object(source)).toList();
         assertEquals(1,rows.stream().filter(e->"gretl.run.started".equals(e.get("event_name"))).count());assertEquals(1,rows.stream().filter(e->"gretl.run.finished".equals(e.get("event_name"))).count());
         String runId=object(report.get("identity")).get("runId").toString();assertTrue(rows.stream().allMatch(e->!e.containsKey("run_id")||runId.equals(e.get("run_id"))));
     }
