@@ -56,41 +56,38 @@ cd gretl-runtime-6.0.0-SNAPSHOT
 export JAVA_HOME=/pfad/zu/jdk-25
 export PATH="$JAVA_HOME/bin:$PWD/bin:$PATH"
 java -version
-shasum -a 256 -c SHA256SUMS
 gretl --version
 gretl operations
 ----
 
-Unter Linux kann statt [.code-fragment]#`shasum -a 256`# auch [.config-key]#`sha256sum`# verwendet werden.
 Ein TAR.GZ wird mit [.file-name]#`tar -xzf gretl-runtime.tar.gz`# entpackt. Für einen neuen
 Terminalstart [.env-var]#`JAVA_HOME`# und den absoluten Pfad zu [.config-key]#`bin`# dauerhaft setzen.
 
 [source,text]
 ----
 bin/gretl          Startprogramm
-lib/runtime/      Runtime, Groovy, Logging und CLI
-lib/tasks/        Mitgelieferte Taskbibliotheken und Dependencies
+bin/gretl.bat      Windows-Startprogramm
+lib/              Runtime, Standardtasks und Abhängigkeiten
 lib/extensions/   Zusätzlich bereitgestellte Bibliotheken
 examples/         Jobs mit lokalen Beispieldaten
-inventory.json    Ausgelieferte Artefakte und Versionen
-SHA256SUMS        Prüfsummen des Distributionsinhalts
+README.md         Anleitung zur Distribution
 ----
 
 === Aus dem Quellcode bauen
 
-Nur für Entwicklung oder eine selbst gebaute Distribution ist ein JDK 25
-nötig. Der eingecheckte Maven-Wrapper lädt Maven selbst:
+Der Gradle-Wrapper baut die Distribution mit JDK 25:
 
 [source,bash]
 ----
-./mvnw verify
-unzip gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip
+./gradlew :gretl-cli:installDist :gretl-cli:distZip :gretl-cli:distTar
+unzip gretl-cli/build/distributions/gretl-runtime-6.0.0-SNAPSHOT.zip
 ----
 
-Der Build benötigt Zugriff auf die im Projekt konfigurierten Maven-Repositories.
-Die normale Prüfung benötigt keine externen Datenbank-, FTP- oder S3-Dienste.
-Das zusätzliche Profil [.code-fragment]#`backing-services`# prüft diese Integrationen gegen
-lokale Dienstcontainer. Diese Buildaufgaben gehören nicht in ein Jobscript.
+Die lokale Installation liegt unter `gretl-cli/build/install/gretl-runtime`.
+`./gradlew fullCheck` prüft mit Docker auch reale Backing-Services sowie
+die JAR- und IMAGE-Ausführung. `./gradlew :gretl-cli:dockerBuild` baut das
+generische lokale Image. Die Docker- und OpenShift-Anleitung liegt im
+Repository unter `gretl-cli/src/docker/README.md`.
 
 == Schnellstart
 
@@ -2943,7 +2940,7 @@ java -jar ili-job.jar --report ./ili-run.json
 ----
 
 Bei einem noch nicht veröffentlichten Snapshot müssen die benötigten
-Artefakte zuerst bereitgestellt oder mit [.command]#`./mvnw install`# im lokalen
+Artefakte zuerst bereitgestellt oder mit [.command]#`./gradlew publishToMavenLocal`# im lokalen
 Maven-Repository installiert werden. Im Job-JAR gelten dieselben
 Parameterregeln und Pfadbasen wie beim Scriptstart. [.dsl-method]#`file('models')`# liest aus
 den erst beim Runstart materialisierten Paketressourcen im eigenen Runbereich.
@@ -2959,12 +2956,13 @@ Sie werden aus dem tatsächlich ausgelieferten Taskkatalog erzeugt:
 [source,bash]
 ----
 ./scripts/generate-task-docs.sh
-./mvnw verify
+./gradlew docsCheck
 ----
 
 Beschreibungstexte, Beispiele, Ergebnisfelder und Verweise in dieser Hauptdatei
 werden redaktionell gepflegt. Neue Taskarten benötigen ein vollständiges
-Kapitel und ein Include ihrer generierten Tabelle. Die Prüfung vergleicht die
-generierten Dateien mit der Distribution und prüft sämtliche Tabellen-Includes.
+Kapitel und ein Include ihrer generierten Tabelle. Der Generator liest den
+Taskkatalog aus der installierten Distribution. `docsCheck` prüft die lokalen
+Dokumentationsverweise und Includes.
 Die Autorenanleitung in [.code-fragment]#`docs/reference/README.md`# beschreibt den lokalen
 Thoth-Build und die Vorschau; [.code-fragment]#`STYLE_GUIDE.md`# legt Schreibweise und Gestaltung fest.

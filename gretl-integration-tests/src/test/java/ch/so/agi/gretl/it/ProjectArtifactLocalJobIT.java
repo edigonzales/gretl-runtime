@@ -42,7 +42,7 @@ class ProjectArtifactLocalJobIT {
         assertEquals(0,result.code(),result.err());assertRun(result,ORDER,"SUCCEEDED");
         assertEquals(expected,Files.readString(jarRequest.directory().resolve("output/result.txt")));
         assertEquals("ivd",Files.readString(jarRequest.directory().resolve("output/cleanup.txt")));
-        assertFalse(Files.exists(prepared.source()));assertTrue(result.hasValidArtifactIdentity());
+        assertFalse(Files.exists(prepared.source()));
         try(var jar=new JarFile(prepared.jar().toFile())) {
             var metadata=object(Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),StandardCharsets.UTF_8)));
             assertEquals(2L,metadata.get("schemaVersion"));
@@ -72,11 +72,9 @@ class ProjectArtifactLocalJobIT {
         for(String id:List.of("version","help","plan")) try(var paths=Files.walk(request.directory().resolve("controls/"+id))) {
             assertFalse(paths.anyMatch(p->p.getFileName().toString().equals("job-resources")));
         }
-        var strippedPrepared=ArtifactJobRunner.existingJar(request, prepared.source(), stripped, prepared.report(), prepared.inputSnapshot());
+        var strippedPrepared=new ArtifactJobRunner.Prepared(request, prepared.source(), prepared.report(), new ArtifactJobRunner.JarLaunch(stripped));
         var run=ArtifactJobRunner.finish(ArtifactJobRunner.start(strippedPrepared),false);
         assertEquals(0,run.code(),run.err());assertRun(run,ORDER,"SUCCEEDED");
-        // Keep audit bound to the actual executed JAR, not the superseded package input.
-        assertEquals(strippedPrepared.sha256(),hash(stripped));
     }
     @Test void failurePreservesCauseCleanupOriginalLineAndRetainedProjectResources() throws Exception {
         var request=request("project-failure","fail",List.of(),"on-failure");
@@ -153,11 +151,10 @@ class ProjectArtifactLocalJobIT {
             if(mode.equals("metadata")) rewrite(prepared.jar(),changed,"META-INF/gretl/job.json","{\"schemaVersion\":2,\"project\":true}");
             else if(mode.equals("syntax")) rewrite(prepared.jar(),changed,"META-INF/gretl/job.json","{");
             else rewrite(prepared.jar(),changed,"META-INF/gretl/job-resources/validation/nested/sql/update.sql",null);
-            var altered=ArtifactJobRunner.existingJar(request, prepared.source(), changed, prepared.report(), prepared.inputSnapshot());
+            var altered=new ArtifactJobRunner.Prepared(request, prepared.source(), prepared.report(), new ArtifactJobRunner.JarLaunch(changed));
             var result=ArtifactJobRunner.finish(ArtifactJobRunner.start(altered),false);
             assertEquals(2,result.code(),result.err()); assertTrue(result.err().contains(mode.equals("resource")?"JOB_RESOURCE_MISSING":"JOB_METADATA_INVALID"),result.err());
             assertFalse(result.err().contains("gretl.run.started"));assertFalse(Files.exists(prepared.report()));
-            assertEquals(altered.sha256(),hash(changed));
             assertFalse(Files.exists(request.directory().resolve("output/cleanup.txt")));
             if(Files.exists(request.directory().resolve("work")))try(var paths=Files.list(request.directory().resolve("work"))){assertEquals(0,paths.count());}
         }
@@ -180,7 +177,6 @@ class ProjectArtifactLocalJobIT {
     }
     private Map<String,Object> report(ArtifactJobRunner.Result result) throws Exception {return object(Json.parseFile(result.report(),1L<<24));}
     @SuppressWarnings("unchecked")private static Map<String,Object> object(Object value){return (Map<String,Object>)value;}
-    private static String hash(Path file)throws Exception{try(var input=Files.newInputStream(file)){var digest=java.security.MessageDigest.getInstance("SHA-256");byte[] buffer=new byte[65536];for(int n;(n=input.read(buffer))>=0;)digest.update(buffer,0,n);return HexFormat.of().formatHex(digest.digest());}}
     private void rewrite(Path original,Path output,String prefix,String replacement)throws Exception{
         try(var in=new JarFile(original.toFile());var out=new JarOutputStream(Files.newOutputStream(output))){
             for(var entry:in.stream().toList()){

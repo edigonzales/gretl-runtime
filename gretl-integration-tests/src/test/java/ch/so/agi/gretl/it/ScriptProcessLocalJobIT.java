@@ -57,8 +57,7 @@ class ScriptProcessLocalJobIT {
     @Test void launchesTheUnpackedZipOutsideTheCheckout() throws Exception {
         Path external = Files.createTempDirectory("gretl-unpacked-");
         try {
-            Path archive = Path.of(System.getProperty("gretl.test.distributionArchive",
-                    "../gretl-dist/target/gretl-runtime-6.0.0-SNAPSHOT-bin.zip"));
+            Path archive = Path.of(System.getProperty("gretl.test.distributionArchive"));
             try (var zip = new java.util.zip.ZipInputStream(Files.newInputStream(archive))) {
                 for (java.util.zip.ZipEntry entry; (entry = zip.getNextEntry()) != null;) {
                     Path target = external.resolve(entry.getName()).normalize();
@@ -77,7 +76,7 @@ class ScriptProcessLocalJobIT {
             Path root = ArtifactJobRunner.directory("unpacked-script");
             var request = request(fixture, root, "job.groovy", ArtifactJobRunner.Invocation.run());
             var canonical = ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.SCRIPT);
-            var prepared = new ArtifactJobRunner.Prepared(request, canonical.source(), canonical.report(), canonical.inputSnapshot(),
+            var prepared = new ArtifactJobRunner.Prepared(request, canonical.source(), canonical.report(),
                     ScriptExecutionAdapter.prepare(request, canonical.source(), canonical.report(), distribution));
             var running = ArtifactJobRunner.start(prepared);
             ArtifactJobRunner.Result result;
@@ -129,7 +128,7 @@ class ScriptProcessLocalJobIT {
             } finally { JobJarSupport.delete(fixture); }
         }
     }
-    @Test void launchFailureIsRecordedSeparatelyAndSourceChangesAreRejected() throws Exception {
+    @Test void launchRejectsMissingWorkingDirectoryAndStagedSymlinks() throws Exception {
         Path fixture = Files.createTempDirectory("gretl-launch-");
         try {
             Files.writeString(fixture.resolve("job.groovy"), job("never"));
@@ -139,8 +138,11 @@ class ScriptProcessLocalJobIT {
             assertThrows(java.io.IOException.class, () -> ArtifactJobRunner.start(prepared));
             assertFalse(Files.exists(prepared.report()));
             Files.createDirectory(root.resolve("cwd"));
-            Files.writeString(prepared.source().resolve("job.groovy"), job("changed"));
-            assertThrows(java.io.IOException.class, () -> ArtifactJobRunner.start(prepared));
+            Path stagedJob = prepared.source().resolve("job.groovy");
+            Files.delete(stagedJob);
+            Files.createSymbolicLink(stagedJob, fixture.resolve("job.groovy"));
+            var failure = assertThrows(java.io.IOException.class, () -> ArtifactJobRunner.start(prepared));
+            assertTrue(failure.getMessage().contains("Symlink in staged source"));
             assertFalse(Files.exists(root.resolve("output/value.txt")));
         } finally { JobJarSupport.delete(fixture); }
     }

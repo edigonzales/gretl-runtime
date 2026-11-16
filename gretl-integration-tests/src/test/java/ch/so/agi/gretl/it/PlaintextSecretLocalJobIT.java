@@ -62,7 +62,7 @@ class PlaintextSecretLocalJobIT {
                 assertTrue(contents.contains("plaintext-probe [REDACTED]"));
                 assertFalse(contents.contains(sentinel));
             }
-            assertFalse(Files.readString(root.resolve("command.json")).contains(sentinel));
+            assertFalse(ArtifactJobRunner.hostCommand(prepared).stream().anyMatch(argument -> argument.contains(sentinel)));
             assertFalse(Files.readString(prepared.source().resolve("job-package.json")).contains(sentinel));
         } finally {
             if (running.process().isAlive()) ArtifactJobRunner.stop(running);

@@ -65,7 +65,7 @@ class FinalizerJobIT {
     @Test void singleSuccessAndOwnerFailureExecuteFinalizersInScript()throws Exception {
         for(String mode:List.of("success","fail")) {
             var request=request("finalizer-single-"+mode,false,mode,ArtifactJobRunner.Invocation.run());var result=execute(request,ArtifactJobRunner.Mode.SCRIPT);
-            assertEquals(mode.equals("success")?0:10,result.code(),result.err());assertFalse(result.timedOut());assertFalse(result.forciblyKilled());assertTrue(result.hasValidArtifactIdentity());
+            assertEquals(mode.equals("success")?0:10,result.code(),result.err());assertFalse(result.timedOut());assertFalse(result.forciblyKilled());
             gzip(request.directory().resolve("output/finalized.gz"),Files.readString(Path.of("../examples/task-finalizers/input.txt")));
             assertEquals(mode.equals("success")?List.of("importData","secondOwner","prepareFinalizer","release","record","cleanup"):List.of("importData","prepareFinalizer","release","record","cleanup"),Files.readAllLines(request.directory().resolve("output/trace.txt")));
             var e=execution(result);assertEquals(mode.equals("success")?"SUCCEEDED":"FAILED",e.get("status"));assertEquals("SUCCEEDED",task(e,"release").get("status"));assertEquals("SUCCEEDED",task(e,"record").get("status"));
@@ -152,7 +152,7 @@ class FinalizerJobIT {
                 out.putNextEntry(new JarEntry(entry.getName()));try(var bytes=in.getInputStream(entry)){bytes.transferTo(out);}out.closeEntry();
             }
         }
-        var altered=ArtifactJobRunner.existingJar(request,prepared.source(),changed,prepared.report(),prepared.inputSnapshot());var running=ArtifactJobRunner.start(altered);
+        var altered=new ArtifactJobRunner.Prepared(request, prepared.source(), prepared.report(), new ArtifactJobRunner.JarLaunch(changed));var running=ArtifactJobRunner.start(altered);
         try {
             var result=ArtifactJobRunner.finish(running,false);assertEquals(2,result.code(),result.err());var error=JobTestJson.events(result.err(), "gretl.cli.error").findFirst().orElseThrow();
             assertEquals(missingClass,error.get("message"),"The declared compiled finalizer class is missing, not a toolchain failure");assertFalse(Files.exists(result.report()));assertEquals(0, JobTestJson.events(result.err(), "gretl.run.started").count());

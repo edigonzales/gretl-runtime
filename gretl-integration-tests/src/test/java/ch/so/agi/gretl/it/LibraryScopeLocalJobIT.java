@@ -45,7 +45,7 @@ class LibraryScopeLocalJobIT {
         config.put("logging", Map.of("libraryLevels", Map.of("fixture.scope", "INFO")));
         Files.writeString(root.resolve("runtime.json"), Json.write(config));
         var request = new ArtifactJobRunner.Request("library-scopes", source, root, List.of(), Map.of(), Map.of(), config, Map.of(), Duration.ofSeconds(45));
-        var prepared = new ArtifactJobRunner.Prepared(request, source, root.resolve("reports/report.json"), JobInputSnapshot.capture(source),
+        var prepared = new ArtifactJobRunner.Prepared(request, source, root.resolve("reports/report.json"),
                 ScriptExecutionAdapter.prepare(request, source, root.resolve("reports/report.json"), scriptDistribution));
         var running = ArtifactJobRunner.start(prepared);
         ArtifactJobRunner.Result result;

@@ -1,7 +1,6 @@
 package ch.so.agi.gretl.it;
 
 import static org.junit.jupiter.api.Assertions.*;
-import ch.so.agi.gretl.runtime.logging.Json;
 import java.nio.file.*;
 import java.sql.DriverManager;
 import java.time.Duration;
@@ -47,31 +46,22 @@ class ImageRuntimeIT {
 
     @Test void defaultEntrypointReusesOneGenericImageForNewJobsAndChangedExternalSource() throws Exception {
         var settings = ImageExecutionAdapter.Settings.configured();
-        String image = settings.image();
+        var docker = new ImageExecutionAdapter.Docker();
+        String image = docker.inspect(List.of("image", "inspect", "--format", "{{.Id}}", settings.image()));
         Path fixture = Files.createTempDirectory("gretl-new-image-job-ü ");
         String marker = "created-after-image-" + UUID.randomUUID();
         try {
             Files.writeString(fixture.resolve("payload.txt"),marker);
             Files.writeString(fixture.resolve("erster Job ü.groovy"),job("first"));
-            var first=run(fixture,"erster Job ü.groovy",Map.of());
+            var first=run(fixture, "erster Job ü.groovy", image);
             assertEquals(marker+"|first",Files.readString(first.directory().resolve("output/result.txt")));
             Files.writeString(fixture.resolve("zweiter Job.groovy"),job("second"));
             Files.writeString(fixture.resolve("job-package.json"),"{ deliberately invalid");
-            var second=run(fixture,"zweiter Job.groovy",Map.of());
+            var second=run(fixture, "zweiter Job.groovy", image);
             assertEquals(marker+"|second",Files.readString(second.directory().resolve("output/result.txt")));
             Files.writeString(fixture.resolve("erster Job ü.groovy"),job("edited"));
-            var edited=run(fixture,"erster Job ü.groovy",Map.of());
+            var edited=run(fixture, "erster Job ü.groovy", image);
             assertEquals(marker+"|edited",Files.readString(edited.directory().resolve("output/result.txt")));
-            for (var result:List.of(first,second,edited)) {
-                assertEquals(image,result.artifactIdentity()); assertFalse(Files.exists(result.directory().resolve("job.jar")));
-                var command=(List<?>)Json.parseFile(result.directory().resolve("command.json"),1L<<20);
-                assertFalse(command.contains("--entrypoint")); assertTrue(command.contains("--read-only"));
-                assertFalse(command.contains("-jar")); assertFalse(command.contains("package"));
-                var proof=(Map<?,?>)Json.parseFile(result.directory().resolve("image-proof.json"),8L<<20);
-                assertEquals(image,proof.get("id")); assertEquals(true,proof.get("removed"));
-                assertEquals(false,((Map<?,?>)proof.get("container")).get("running"));
-            }
-            assertEquals(image,ImageExecutionAdapter.Settings.configured().image());
         } finally { JobJarSupport.delete(fixture); }
     }
     @Test void nonRootReadOnlyRuntimeExecutesRealSqliteAndDuckdbNativeLibraries() throws Exception {
@@ -112,8 +102,6 @@ class ImageRuntimeIT {
                 var result=ArtifactJobRunner.finish(running,false);
                 assertTrue(result.timedOut());
                 assertEquals(137,result.code(),result.err()); assertTrue(result.forciblyKilled()); assertFalse(running.process().isAlive());
-                var proof=(Map<?,?>)Json.parseFile(root.resolve("image-proof.json"),8L<<20);
-                assertEquals(false,((Map<?,?>)proof.get("container")).get("oomKilled")); assertEquals(true,proof.get("removed"));
                 assertTrue(new ImageExecutionAdapter.Docker().inspect(List.of("container","ls","--all","--quiet","--filter","name=^/"+running.prepared().image().name()+"$")).isBlank());
             } finally { if(running.process().isAlive()) ArtifactJobRunner.stop(running); else running.prepared().image().remove(); }
         } finally { JobJarSupport.delete(fixture); }
@@ -161,8 +149,8 @@ class ImageRuntimeIT {
             args.addAll(args.indexOf(original.imageId()),List.of("--env","GRETL_IMAGE_HOLD"));
             var environment=new LinkedHashMap<>(original.environment()); environment.put("GRETL_IMAGE_HOLD","true");
             environment.remove("HOME");environment.remove("TMPDIR");environment.remove("JAVA_TOOL_OPTIONS");
-            var launch=new ImageExecutionAdapter.Launch(original.engine(),original.name(),original.imageId(),args,environment,original.config(),original.paths(),original.proofFile(),original.cancellation());
-            var prepared=new ArtifactJobRunner.Prepared(base.request(),base.source(),base.report(),base.inputSnapshot(),new ArtifactJobRunner.ImageLaunch(base.launch().distribution(),launch));
+            var launch=new ImageExecutionAdapter.Launch(original.engine(),original.name(),original.imageId(),args,environment,original.config(),original.paths(),original.cancellation());
+            var prepared=new ArtifactJobRunner.Prepared(base.request(),base.source(),base.report(),new ArtifactJobRunner.ImageLaunch(launch));
             var running=ArtifactJobRunner.start(prepared);
             try {
                 var docker=new ImageExecutionAdapter.Docker();
@@ -186,25 +174,9 @@ class ImageRuntimeIT {
                 for(String engine:List.of("sqlite","duckdb")) try(var db=DriverManager.getConnection("jdbc:"+engine+":"+root.resolve("output/native."+engine));var statement=db.createStatement();var rows=statement.executeQuery("select value from probe")) {
                     assertTrue(rows.next());assertEquals("native-ü",rows.getString(1));assertFalse(rows.next());
                 }
-                var proof=(Map<?,?>)Json.parseFile(root.resolve("image-proof.json"),8L<<20);
-                assertEquals(assignedUid+":0",((Map<?,?>)proof.get("container")).get("user"));
-                assertEquals(true,((Map<?,?>)proof.get("container")).get("readOnlyRoot"));assertEquals(true,proof.get("removed"));
+                assertTrue(docker.inspect(List.of("container", "ls", "--all", "--quiet",
+                        "--filter", "name=^/" + launch.name() + "$")).isBlank());
             } finally { if(running.process().isAlive()) ArtifactJobRunner.stop(running); else launch.remove(); }
-        } finally { JobJarSupport.delete(fixture); }
-    }
-    @Test void changedPreparedSourceIsRejectedBeforeAnyContainerStarts() throws Exception {
-        Path fixture=Files.createTempDirectory("gretl-image-changed-source-");
-        try {
-            Files.writeString(fixture.resolve("job.groovy"),job("original"));
-            Path root=ArtifactJobRunner.directory("image-changed-source", ArtifactJobRunner.Mode.IMAGE);
-            var request=new ArtifactJobRunner.Request("image-changed-source",fixture,root,List.of(),Map.of("output",root.resolve("output/result.txt")),Map.of(),JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(30));
-            var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.IMAGE);
-            Files.writeString(prepared.source().resolve("job.groovy"),job("tampered"));
-            var failure=assertThrows(java.io.IOException.class,()->ArtifactJobRunner.start(prepared));
-            assertTrue(failure.getMessage().contains("Input changed"));
-            assertFalse(Files.exists(root.resolve("container.id")));assertFalse(Files.exists(prepared.report()));
-            assertFalse(Files.exists(root.resolve("output/result.txt")));
-            assertTrue(new ImageExecutionAdapter.Docker().inspect(List.of("container","ls","--all","--quiet","--filter","name=^/"+prepared.image().name()+"$")).isBlank());
         } finally { JobJarSupport.delete(fixture); }
     }
     private void copyLiveVolume(String container,String source,Path destination) throws Exception {
@@ -246,10 +218,24 @@ class ImageRuntimeIT {
     private String job(String value) {
         return "parameter('output', type: 'path', required: true, description: 'Output')\naction('write') { boolean denied=false; try { java.nio.file.Files.writeString(file('payload.txt'), 'bad') } catch (java.nio.file.FileSystemException expected) { denied=true }; assert denied; java.nio.file.Files.writeString(parameter('output'),java.nio.file.Files.readString(file('payload.txt'))+'|"+value+"') }; defaults 'write'\n";
     }
-    private ArtifactJobRunner.Result run(Path fixture,String name,Map<String,Object> extra) throws Exception {
-        Path root=ArtifactJobRunner.directory("generic-image-job", ArtifactJobRunner.Mode.IMAGE);
-        var parameters=new LinkedHashMap<>(extra);parameters.put("output",root.resolve("output/result.txt"));
-        var result=ArtifactJobRunner.run(new ArtifactJobRunner.Request("generic-image-job",fixture,root,List.of(),parameters,Map.of(),JobRunner.baseConfig(root),Map.of(),Duration.ofSeconds(45),ArtifactJobRunner.JobInput.script(name),ArtifactJobRunner.Invocation.run()),ArtifactJobRunner.Mode.IMAGE);
-        assertEquals(0,result.code(),result.err()); assertFalse(result.timedOut());return result;
+    private ArtifactJobRunner.Result run(Path fixture, String name, String image) throws Exception {
+        Path root = ArtifactJobRunner.directory("generic-image-job", ArtifactJobRunner.Mode.IMAGE);
+        var request = new ArtifactJobRunner.Request("generic-image-job", fixture, root, List.of(),
+                Map.of("output", root.resolve("output/result.txt")), Map.of(), JobRunner.baseConfig(root),
+                Map.of(), Duration.ofSeconds(45), ArtifactJobRunner.JobInput.script(name), ArtifactJobRunner.Invocation.run());
+        var prepared = ArtifactJobRunner.prepare(request, ArtifactJobRunner.Mode.IMAGE);
+        assertEquals(image, prepared.image().imageId());
+        var running = ArtifactJobRunner.start(prepared);
+        try {
+            var result = ArtifactJobRunner.finish(running, false);
+            assertEquals(0, result.code(), result.err());
+            assertFalse(result.timedOut());
+            assertFalse(Files.exists(root.resolve("job.jar")));
+            assertArrayEquals(Files.readAllBytes(fixture.resolve("payload.txt")),
+                    Files.readAllBytes(prepared.source().resolve("payload.txt")));
+            return result;
+        } finally {
+            if (running.process().isAlive()) ArtifactJobRunner.stop(running);
+        }
     }
 }

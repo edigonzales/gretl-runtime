@@ -12,7 +12,7 @@ verfügbare Operationen und ihre Felder.
 - [Taskgebundene Finalizer und globales Cleanup](guides/task-finalizers.md)
 - [Job-JARs, Paketformate und Validatorfunktionen](guides/packaging.md)
 - [Konfiguration, Pfade, Secrets und Runberichte](guides/runtime-configuration.md)
-- [Generisches Runtime-Image und OpenShift](../gretl-dist/src/main/docker/README.md)
+- [Generisches Runtime-Image und OpenShift](../gretl-cli/src/docker/README.md)
 - [Texteditor und interaktiver Graph für VS Code](../vscode/gretl-vscode/README.md)
 
 ## Entwickeln und prüfen

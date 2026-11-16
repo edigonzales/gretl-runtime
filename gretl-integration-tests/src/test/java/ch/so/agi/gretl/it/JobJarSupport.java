@@ -65,7 +65,7 @@ final class JobJarSupport {
             Files.writeString(foreign.resolve("runtime.json"), Json.write(config));
             var request = new ArtifactJobRunner.Request(original.id(), original.jobDirectory(), foreign, original.targets(), parameters,
                     environment, config, original.endpoints(), original.timeout(), original.input(), original.invocation());
-            var isolated = ArtifactJobRunner.existingJar(request, prepared.source(), foreign.resolve("job.jar"), foreign.resolve("reports/report.json"), prepared.inputSnapshot());
+            var isolated = new ArtifactJobRunner.Prepared(request, prepared.source(), foreign.resolve("reports/report.json"), new ArtifactJobRunner.JarLaunch(foreign.resolve("job.jar")));
             var running = ArtifactJobRunner.start(isolated);
             ArtifactJobRunner.Result result;
             try { result = ArtifactJobRunner.finish(running, false); }
@@ -73,11 +73,11 @@ final class JobJarSupport {
             for (String directory : List.of("reports", "output")) {
                 delete(original.directory().resolve(directory)); copy(foreign.resolve(directory), original.directory().resolve(directory));
             }
-            for (String file : List.of("command.json", "job.stdout.log", "job.stderr.log"))
+            for (String file : List.of("job.stdout.log", "job.stderr.log"))
                 Files.copy(foreign.resolve(file), original.directory().resolve(file), StandardCopyOption.REPLACE_EXISTING);
             assertFalse(Files.exists(prepared.source()));
             return new ArtifactJobRunner.Result(result.code(), result.out(), result.err(), original.directory().resolve("reports/report.json"),
-                    original.directory(), result.duration(), result.timedOut(), result.aborted(), result.artifactIdentity(), "JAR", result.forciblyKilled());
+                    original.directory(), result.duration(), result.timedOut(), result.aborted(), result.forciblyKilled());
         } finally { delete(foreign); }
     }
     private static Object relocate(Object value, Path original, Path foreign) {

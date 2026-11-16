@@ -95,7 +95,7 @@ class JobJarLocalJobIT {
         String inputs = Json.write(inventory(jar)); assertTrue(inputs.contains(external.coordinate())); assertTrue(inputs.contains(external.helperCoordinate()));
         var request = new ArtifactJobRunner.Request("job-jar-external", source, root, List.of(), Map.of("output", root.resolve("output")),
                 Map.of(), JobRunner.baseConfig(root), Map.of(), Duration.ofSeconds(45));
-        var prepared = ArtifactJobRunner.existingJar(request, source, jar, root.resolve("reports/report.json"), JobInputSnapshot.capture(source));
+        var prepared = new ArtifactJobRunner.Prepared(request, source, root.resolve("reports/report.json"), new ArtifactJobRunner.JarLaunch(jar));
         var result = JobJarSupport.detached(prepared);
         assertEquals(0, result.code(), result.err()); assertEquals("5", Files.readString(root.resolve("output/bytes.txt")));
         assertTrue(Files.readString(result.report()).contains("example.file-size"));

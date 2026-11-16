@@ -26,20 +26,15 @@ class ArtifactJobRunnerTest {
         assertThrows(UnsupportedOperationException.class, () -> request.config().clear());
         assertFalse(request.toString().contains("private-sentinel"));
     }
-    @Test void inputInventoryDoesNotParseAndTracksEveryResource() throws Exception {
-        Files.writeString(root.resolve("settings.gretl"), "{ invalid settings");
-        Files.createDirectories(root.resolve("nested")); Files.writeString(root.resolve("nested/data.sql"), "select 1");
-        var before = JobInputSnapshot.capture(root);
-        Files.writeString(root.resolve("job-package.json"), "{ invalid descriptor");
-        assertEquals(before, JobInputSnapshot.capture(root));
-        Files.writeString(root.resolve("nested/data.sql"), "select 2");
-        assertNotEquals(before, JobInputSnapshot.capture(root));
-        assertThrows(java.io.IOException.class, () -> before.verifyUnchanged(root));
-        Path external = Files.createTempFile("gretl-symlink-probe", ".txt");
-        try {
-            Files.createSymbolicLink(root.resolve("link"), external);
-            assertThrows(java.io.IOException.class, () -> JobInputSnapshot.capture(root));
-        } finally { Files.deleteIfExists(external); }
+    @Test void stagingRejectsSymlinkFixtures() throws Exception {
+        Path fixture = Files.createDirectory(root.resolve("fixture"));
+        Path external = Files.writeString(root.resolve("external.groovy"), "outside the fixture");
+        Files.createSymbolicLink(fixture.resolve("job.groovy"), external);
+        var request = new ArtifactJobRunner.Request("symlink", fixture, root.resolve("scenario"),
+                List.of(), Map.of(), Map.of(), Map.of(), Map.of(), Duration.ofSeconds(1));
+        var failure = assertThrows(java.io.IOException.class, () -> ArtifactJobRunner.prepare(request));
+        assertTrue(failure.getMessage().contains("Symlink fixture"));
+        assertFalse(Files.exists(request.directory().resolve("source/job.groovy")));
     }
     @Test void forceTerminationNeverUsesUnboundedWait() throws Exception {
         var process = new Process() {

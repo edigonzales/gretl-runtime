@@ -14,8 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Test transport only. No GRETL image is started by its contract tests. */
 final class ImageExecutionAdapter {
-    record Settings(String image, String launcher, String network, String user, String extraHost, Path metadata) {
-        Settings(String image, String launcher, String network, String user, String extraHost) { this(image,launcher,network,user,extraHost,null); }
+    record Settings(String image, String launcher, String network, String user, String extraHost) {
         Settings {
             if (image == null || image.isBlank()) throw new IllegalArgumentException("IMAGE requires gretl.test.image; no fallback");
             if (launcher == null || !launcher.startsWith("/")) throw new IllegalArgumentException("IMAGE launcher must be absolute");
@@ -26,11 +25,10 @@ final class ImageExecutionAdapter {
         }
         static Settings configured() throws Exception {
             String image = System.getProperty("gretl.test.image");
-            String id = new Docker().inspect(List.of("image", "inspect", "--format", "{{.Id}}", image));
             Path directory = ImageTestEnvironment.workspace();
             int uid = ((Number) Files.getAttribute(directory, "unix:uid")).intValue();
             int gid = ((Number) Files.getAttribute(directory, "unix:gid")).intValue();
-            return new Settings(id, "/opt/gretl/bin/gretl", ImageTestEnvironment.network().getId(),
+            return new Settings(image, "/opt/gretl/bin/gretl", ImageTestEnvironment.network().getId(),
                     uid + ":" + gid, ImageTestEnvironment.extraHost());
         }
     }
@@ -74,8 +72,8 @@ final class ImageExecutionAdapter {
         }
     }
     record Launch(Engine engine, String name, String imageId, List<String> arguments,
-                  Map<String, String> environment, Map<String, Object> config, Map<Path,String> paths, Path proofFile, java.util.concurrent.atomic.AtomicBoolean cancellation) {
-        Launch(Engine engine,String name,String imageId,List<String> arguments,Map<String,String> environment,Map<String,Object> config) { this(engine,name,imageId,arguments,environment,config,Map.of(),null,new java.util.concurrent.atomic.AtomicBoolean()); }
+                  Map<String, String> environment, Map<String, Object> config, Map<Path,String> paths, java.util.concurrent.atomic.AtomicBoolean cancellation) {
+        Launch(Engine engine,String name,String imageId,List<String> arguments,Map<String,String> environment,Map<String,Object> config) { this(engine,name,imageId,arguments,environment,config,Map.of(),new java.util.concurrent.atomic.AtomicBoolean()); }
         Launch { arguments = List.copyOf(arguments); environment = Map.copyOf(environment); config = Map.copyOf(config); paths=Map.copyOf(paths); }
         @Override public String toString() { return "ImageLaunch[" + name + ", " + imageId + "]"; }
         Process start(Path directory) throws IOException { return engine.start(arguments, directory, environment); }
@@ -100,53 +98,36 @@ final class ImageExecutionAdapter {
             int option = changed.indexOf("--report");
             if (option < 0) throw new IllegalArgumentException("This IMAGE invocation has no run report");
             changed.set(option+1,target);
-            return new Launch(engine,name,imageId,changed,environment,config,mappings,proofFile,cancellation);
+            return new Launch(engine,name,imageId,changed,environment,config,mappings,cancellation);
         }
         boolean completed() throws Exception {
             int option = arguments.indexOf("--cidfile");
             if (option < 0) return false; // RecordingEngine component only.
             Path cidFile = Path.of(arguments.get(option+1));
-            if (!Files.isRegularFile(cidFile)) return false; // Failed docker run; no invented container proof.
+            if (!Files.isRegularFile(cidFile)) return false; // Docker failed before creating the container.
             String cid = Files.readString(cidFile).trim();
             if (!cid.matches("[a-f0-9]{64}")) throw new IOException("Invalid IMAGE container ID");
             String format = """
-                    {"id":{{json .Id}},"image":{{json .Image}},"user":{{json .Config.User}},"readOnlyRoot":{{json .HostConfig.ReadonlyRootfs}},"running":{{json .State.Running}},"exitCode":{{json .State.ExitCode}},"oomKilled":{{json .State.OOMKilled}},"startedAt":{{json .State.StartedAt}},"finishedAt":{{json .State.FinishedAt}}}
+                    {"image":{{json .Image}},"readOnlyRoot":{{json .HostConfig.ReadonlyRootfs}},"running":{{json .State.Running}},"exitCode":{{json .State.ExitCode}},"oomKilled":{{json .State.OOMKilled}}}
                     """.trim();
             var container = (Map<?,?>) Json.parse(engine.inspect(List.of("container","inspect","--format",format,cid)));
             if (!imageId.equals(container.get("image")) || !Boolean.FALSE.equals(container.get("running"))) throw new IOException("IMAGE container did not finish using the selected image");
-            if (proofFile != null) {
-                var proof = new LinkedHashMap<String,Object>();
-                ((Map<?,?>)Json.parseFile(proofFile,8L<<20)).forEach((k,v)->proof.put(k.toString(),v));
-                proof.put("container",container); proof.put("name",name); proof.put("removed",false);
-                Files.writeString(proofFile,Json.write(proof));
-            }
-            return cancellation.get() && Long.valueOf(137).equals(container.get("exitCode"));
+            if (!Boolean.TRUE.equals(container.get("readOnlyRoot"))) throw new IOException("IMAGE root filesystem was writable");
+            boolean killed = cancellation.get() && Long.valueOf(137).equals(container.get("exitCode"));
+            if (killed && !Boolean.FALSE.equals(container.get("oomKilled"))) throw new IOException("IMAGE container ran out of memory during cancellation");
+            return killed;
         }
         void remove() throws Exception {
-            if (!engine.inspect(List.of("container", "ls", "--all", "--quiet", "--filter", "name=^/" + name + "$")).isBlank())
-                engine.control(List.of("rm", "--force", name));
-            if (proofFile != null && Files.isRegularFile(proofFile)) {
-                if (!engine.inspect(List.of("container","ls","--all","--quiet","--filter","name=^/"+name+"$")).isBlank()) throw new IOException("Owned IMAGE container survived removal");
-                var proof = new LinkedHashMap<String,Object>();
-                ((Map<?,?>)Json.parseFile(proofFile,8L<<20)).forEach((k,v)->proof.put(k.toString(),v));
-                proof.put("removed",true); Files.writeString(proofFile,Json.write(proof));
-            }
+            engine.control(List.of("rm", "--force", name));
         }
     }
     static Launch prepare(ArtifactJobRunner.Request request, Path source, Settings settings, Engine engine) throws Exception {
         int uid = ((Number) Files.getAttribute(request.directory(), "unix:uid")).intValue();
         if (!settings.user().startsWith(uid + ":")) throw new IOException("IMAGE uid must own the private scenario directory (" + uid + ")");
-        engine.inspect(List.of("info", "--format", "{{.ServerVersion}}"));
         String imageId = engine.inspect(List.of("image", "inspect", "--format", "{{.Id}}", settings.image()));
         if (!imageId.matches("sha256:[0-9a-f]{64}")) throw new IOException("IMAGE inspect returned no immutable image identity");
-        engine.inspect(List.of("network", "inspect", "--format", "{{.Name}}", settings.network()));
         String entrypoint = engine.inspect(List.of("image", "inspect", "--format", "{{json .Config.Entrypoint}}", imageId));
         if (!Json.write(List.of(settings.launcher())).equals(entrypoint)) throw new IOException("IMAGE default entrypoint differs from the verified launcher");
-        Path proofFile = null;
-        if (engine instanceof Docker) {
-            proofFile = request.directory().resolve("image-proof.json");
-            Files.writeString(proofFile, Json.write(Map.of("id", imageId)));
-        }
         String name = "gretl-job-" + UUID.randomUUID();
         var args = new ArrayList<>(List.of("run", "--pull=never", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--init", "--read-only", "--tmpfs", "/tmp:rw,exec,nosuid,size=256m", "--sig-proxy=true", "--name", name,
                 "--user", settings.user(), "--network", settings.network(), "--workdir", "/run",
@@ -235,7 +216,7 @@ final class ImageExecutionAdapter {
         for (String target : request.targets()) args.addAll(List.of("--target", target));
         request.parameters().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e ->
                 args.addAll(List.of("--param", e.getKey() + "=" + translateValue(e.getValue(), paths, request.endpoints()))));
-        return new Launch(engine, name, imageId, List.copyOf(args), Map.copyOf(environment), config, paths, proofFile, new java.util.concurrent.atomic.AtomicBoolean());
+        return new Launch(engine, name, imageId, List.copyOf(args), Map.copyOf(environment), config, paths, new java.util.concurrent.atomic.AtomicBoolean());
     }
     private static Path runtimePath(ArtifactJobRunner.Request request, String key, String fallback) {
         Object value = request.config().get("runtime") instanceof Map<?,?> runtime ? runtime.get(key) : null;

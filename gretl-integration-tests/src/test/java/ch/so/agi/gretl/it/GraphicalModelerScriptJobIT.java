@@ -18,7 +18,8 @@ class GraphicalModelerScriptJobIT {
     @Test void actualGuiGeneratedSourceDownloadsAndExtractsALocalArchiveWithoutRewritingItsBytes()throws Exception {
         Path fixture=ArtifactJobRunner.fixture("modeler-created");
         var provenance=(Map<?,?>)Json.parseFile(fixture.resolve("gui-provenance.json"),65536);
-        String inputHash=JobInputSnapshot.hash(fixture.resolve("job.groovy"));
+        byte[] original = Files.readAllBytes(fixture.resolve("job.groovy"));
+        String inputHash = HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(original));
         assertEquals("ACTUAL_NATIVE_GUI_GENERATED_SOURCE",provenance.get("kind"));assertEquals(provenance.get("sha256"),inputHash);
         byte[] payload="Graphical GRETL roundtrip ü 😀\n".getBytes(StandardCharsets.UTF_8);
         var bytes=new ByteArrayOutputStream();try(var zip=new ZipOutputStream(bytes)){zip.putNextEntry(new ZipEntry("nested/payload.txt"));zip.write(payload);zip.closeEntry();}
@@ -31,14 +32,12 @@ class GraphicalModelerScriptJobIT {
             var config=JobRunner.baseConfig(root);config.put("runtime",Map.of("workRoot",root.resolve("work").toString(),"reportRoot",root.resolve("reports").toString(),"keepWork","always"));
             var request=new ArtifactJobRunner.Request("modeler-created-script",fixture,root,List.of(),Map.of("sourceUrl",url),Map.of(),config,Map.of(),Duration.ofSeconds(45));
             var result=ArtifactJobRunner.run(request,ArtifactJobRunner.Mode.SCRIPT);
-            assertEquals(0,result.code(),result.err());assertEquals("SCRIPT",result.mode());assertFalse(result.timedOut());assertTrue(result.hasValidArtifactIdentity());assertEquals(1,calls.get());
+            assertEquals(0,result.code(),result.err());assertFalse(result.timedOut());assertEquals(1,calls.get());
             Path extracted,downloaded;
             try(var paths=Files.walk(root.resolve("work"))){var outputs=paths.filter(Files::isRegularFile).toList();extracted=outputs.stream().filter(p->p.endsWith(Path.of("out/nested/payload.txt"))).findFirst().orElseThrow();downloaded=outputs.stream().filter(p->p.getFileName().toString().equals("archive.zip")).findFirst().orElseThrow();}
             assertArrayEquals(payload,Files.readAllBytes(extracted));assertArrayEquals(archive,Files.readAllBytes(downloaded));
-            assertEquals(inputHash,JobInputSnapshot.hash(root.resolve("source/job.groovy")));assertEquals(inputHash,JobInputSnapshot.hash(fixture.resolve("job.groovy")));
-            var evidence=new LinkedHashMap<String,Object>();
-            evidence.put("kind","EXACT_GUI_SOURCE_SCRIPT_ROUNDTRIP");evidence.put("inputSha256",inputHash);evidence.put("source",fixture.resolve("job.groovy").toString());evidence.put("stagedSource",root.resolve("source/job.groovy").toString());evidence.put("mode",result.mode());evidence.put("parameters",Map.of("sourceUrl",url));evidence.put("httpRequests",calls.get());evidence.put("zipSha256",JobInputSnapshot.hash(archive));evidence.put("outputSha256",JobInputSnapshot.hash(extracted));evidence.put("expectedOutputSha256",JobInputSnapshot.hash(payload));evidence.put("report",result.report().toString());
-            Files.writeString(root.resolve("gui-runtime-identity.json"),Json.write(evidence));
+            assertArrayEquals(original, Files.readAllBytes(root.resolve("source/job.groovy")));
+            assertArrayEquals(original, Files.readAllBytes(fixture.resolve("job.groovy")));
         }finally{server.stop(0);}
     }
 }

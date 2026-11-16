@@ -18,5 +18,5 @@ Validatorfunktionen und die Behandlung zusätzlicher Bibliotheken.
 IMAGE-Tests verwenden das mit Gradle gebaute generische Image. Sie prüfen
 externe read-only Jobquellen, schreibbare Ausgaben, Betrieb unter einer
 nicht privilegierten UID, Cancellation und echte Backing-Services. Die
-[Containeranleitung](../../gretl-dist/src/main/docker/README.md) enthält
+[Containeranleitung](../../gretl-cli/src/docker/README.md) enthält
 Startbeispiele und OpenShift-Hinweise.
