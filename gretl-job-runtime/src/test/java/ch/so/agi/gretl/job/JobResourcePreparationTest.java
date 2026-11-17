@@ -23,12 +23,12 @@ class JobResourcePreparationTest {
                         ? new ByteArrayInputStream("resource".getBytes(java.nio.charset.StandardCharsets.UTF_8)) : null;
             }
         };
-        return new JobJarMain.PackagedJobSource(metadata, root.resolve("logical"), loader, Locale.ENGLISH);
+        return new JobJarMain.PackagedJobSource(metadata, root.resolve("logical"), loader);
     }
 
     @Test void materializesInsideOwnedRunWithPrivateDirectories() throws Exception {
         Path run = Files.createDirectory(root.resolve("run"));
-        Path job = source("models/local.ili").prepareRun(run);
+        Path job = source("models/local.ili").prepareRun(run, Locale.ENGLISH);
         assertEquals(run.resolve("job-resources"), job);
         assertEquals("resource", Files.readString(job.resolve("models/local.ili")));
         if (Files.getFileStore(run).supportsFileAttributeView("posix")) {
@@ -36,12 +36,12 @@ class JobResourcePreparationTest {
             assertEquals(PosixFilePermissions.fromString("rwx------"), Files.getPosixFilePermissions(job.resolve("models")));
         }
         assertFalse(Files.exists(root.resolve("logical")));
-        assertThrows(IOException.class, () -> source("models/local.ili").prepareRun(run));
+        assertThrows(IOException.class, () -> source("models/local.ili").prepareRun(run, Locale.ENGLISH));
     }
 
     @Test void missingResourceIsAnIoSetupFailure() throws Exception {
         Path run = Files.createDirectory(root.resolve("run"));
-        var failure = assertThrows(IOException.class, () -> source("missing.txt").prepareRun(run));
+        var failure = assertThrows(IOException.class, () -> source("missing.txt").prepareRun(run, Locale.ENGLISH));
         assertTrue(failure.getMessage().contains("JOB_RESOURCE_MISSING"));
     }
 }

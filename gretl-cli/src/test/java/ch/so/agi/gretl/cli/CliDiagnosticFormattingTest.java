@@ -83,13 +83,18 @@ class CliDiagnosticFormattingTest {
                 defaults 'run'
                 """);
 
-        Result result = run("run", script.toString(), "--param", "quell=x",
-                "--log-format", "json");
+        Path config = tempDir.resolve("json-config.json");
+        Files.writeString(config, """
+                {"schemaVersion":1,"logging":{"format":"json"}}
+                """);
+        Result result = run("run", script.toString(), "--param", "quell=x", "--config", config.toString());
 
         assertEquals(2, result.code());
         var event = (Map<?, ?>) Json.parse(result.err().lines().findFirst().orElseThrow());
         assertEquals("gretl.cli.error", event.get("event_name"));
         assertEquals(2L, event.get("exit_code"));
+        assertEquals("UNKNOWN_PARAMETER", event.get("diagnostic_code"));
+        assertEquals("quell", event.get("field"));
         assertFalse(result.err().contains("ERROR Parameter unbekannt"));
     }
 
@@ -158,6 +163,20 @@ class CliDiagnosticFormattingTest {
         assertEquals(10, result.code());
         assertTrue(result.err().contains("ERROR Task failed [gretl.task.failed]"));
         assertTrue(result.err().contains("Message: Unknown configuration field"));
+    }
+
+    @Test
+    void runtimeConfigurationSelectsTheDefinitionLocaleOnSuccessiveCalls() throws Exception {
+        Path script = tempDir.resolve("bad-definition.groovy");
+        Files.writeString(script, "parameter('name', description: 'Name', bogus: 1)");
+        Path config = tempDir.resolve("runtime.json");
+        for (String language : java.util.List.of("de", "en")) {
+            Files.writeString(config, Json.write(Map.of("schemaVersion", 1, "language", language)));
+            Result result = run(Map.of(), "check", script.toString(), "--config", config.toString());
+            assertEquals(2, result.code());
+            assertTrue(result.err().contains(language.equals("en")
+                    ? "Unknown option bogus" : "Unbekannte Option bogus"), result.err());
+        }
     }
 
     private Result run(String... args) {

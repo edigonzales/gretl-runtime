@@ -42,8 +42,8 @@ class RunReportWriterTest {
         var input=RunInput.builder().jobRoot(tempDir).startCwd(tempDir).workRoot(tempDir.resolve("work")).build();
         var outcome=new SequentialJobRunner().run(definition,plan,input);
         var context=new LogContext("command",outcome.runId(),"finalizers","6.0.0-SNAPSHOT",Optional.empty());
-        var reportInput=new RunReportInput(context,outcome,definition,plan,tempDir.resolve("job.groovy"),"hash",Optional.empty(),"inventory",
-                new LoggingState(LoggingConfig.Format.TEXT,true,Optional.empty(),false,false,false,0),Instant.now(),Optional.empty());
+        var reportInput=new RunReportInput(context,outcome,definition,plan,tempDir.resolve("job.groovy"),"hash",Optional.empty(),
+                new LoggingState(LoggingConfig.Format.TEXT,true,Optional.empty(),false,false,false,0));
         var report=new RunReportWriter(new Redactor(input.secretRegistry())).report(reportInput);
         var execution=(Map<?,?>)report.get("execution");
         var tasks=(List<?>)execution.get("tasks");
@@ -82,10 +82,9 @@ class RunReportWriterTest {
         RunReportInput reportInput = new RunReportInput(
                 context, outcome, definition, plan, script,
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                Optional.of("revision-1"), "inventory-hash",
+                Optional.of("revision-1"),
                 new LoggingState(LoggingConfig.Format.TEXT, true, Optional.empty(),
-                        false, false, false, 0),
-                Instant.parse("2026-10-18T10:00:00Z"), Optional.of("test"));
+                        false, false, false, 0));
         Path report = tempDir.resolve("reports/run.json");
         Files.createDirectory(report.getParent());
         boolean posix = Files.getFileStore(tempDir).supportsFileAttributeView("posix");
@@ -105,7 +104,6 @@ class RunReportWriterTest {
         assertEquals("SUCCEEDED", execution.get("status"));
         assertTrue((Boolean) ((Map<?, ?>) ((List<?>) execution.get("tasks")).get(0))
                 .get("hasValue"));
-        assertEquals("none", ((Map<?, ?>) parsed.get("telemetry")).get("mode"));
         assertFalse(json.contains("do-not-serialize-this-value"));
         assertFalse(json.contains("password"));
         if (posix) {

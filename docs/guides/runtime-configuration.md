@@ -19,9 +19,7 @@ Details stehen in [Lokalisierungsvertrag](../architecture/runtime-contracts.md#l
     "level": "INFO",
     "eventFile": true,
     "maxRecordBytes": 16384,
-    "maxEventFileBytes": 134217728,
-    "progressInterval": "PT10S",
-    "heartbeatInterval": "PT30S"
+    "maxEventFileBytes": 134217728
   },
   "params": {"environment": "test"},
   "secrets": {
@@ -44,7 +42,7 @@ Secretdateien relativ zum Configordner; `file()` relativ zum Jobroot;
 `path`-Parameter relativ zum Start-CWD.
 
 Unbekannte Corefelder, doppelte JSON-Schlüssel, falsche Typen, ungültige
-Limits/Intervalle und widersprüchliche Secretquellen sind Code 2. Secrets werden
+Limits und widersprüchliche Secretquellen sind Code 2. Secrets werden
 erst beim Zugriff aufgelöst und vor Logger/Report maskiert.
 
 Pro Secretalias ist genau eine Quelle erlaubt: `{"environment":"GRETL_DB_PASSWORD"}`,
@@ -117,11 +115,11 @@ Antwort.
   Kubernetes-Beendigungsmeldung.
 - Frühe CLI-Fehler und Laufzeitfehler verwenden im Textmodus dieselbe Struktur:
   Zeitstempel, Level, Titel, technischer Code und eingerückte Felder wie
-  `Meldung`, `Feld`, `Task`, `Quelle` und `Ursache`. JSON/JSONL bleiben
-  schema-stabil.
+  `Meldung`, `Feld`, `Task`, `Quelle` und `Ursache`. Im JSON-Modus werden
+  Startfehler als `gretl.cli.error` mit `exit_code`, `diagnostic_code` und den
+  verfügbaren Angaben `field`, `task` und `source` ausgegeben.
 
-Bibliothekslogs werden über lexikalische Run-/Task-/Invocation-Scopes zugeordnet;
-`LibraryScopeLocalJobIT` prüft diesen Vertrag. Heartbeat-Timer und
-Progress-Koaleszenz sind nicht umgesetzt; akzeptierte Intervallfelder sind kein
-Nachweis für solche Timer. Die Maskierung gilt für verwaltete Log-/Reportsenken.
+Bibliothekslogs werden über lexikalische Run-/Task-/Invocation-Scopes zugeordnet.
+`LibraryScopeLocalJobIT` prüft diesen Vertrag. Die Maskierung gilt für verwaltete
+Log- und Reportsenken.
 Ausführbarer eigener Groovy-Code ist keine allgemeine Sandbox.

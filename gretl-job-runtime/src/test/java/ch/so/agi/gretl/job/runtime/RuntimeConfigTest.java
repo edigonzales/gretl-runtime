@@ -29,7 +29,6 @@ class RuntimeConfigTest {
         Files.writeString(config, "{\"schemaVersion\":1}");
         RuntimeConfig runtime = RuntimeConfig.load(config, tempDir);
         assertTrue(runtime.taskConfig().isEmpty());
-        assertEquals(10_000, runtime.logging().progressInterval().toMillis());
 
         Files.writeString(config, "{\"schemaVersion\":1,\"unknown\":true}");
         assertThrows(StartException.class, () -> RuntimeConfig.load(config, tempDir));
@@ -92,7 +91,7 @@ class RuntimeConfigTest {
         assertEquals(configDir.resolve("reports").toAbsolutePath().normalize(),
                 runtime.reportRoot());
         SecretRegistry registry = new SecretRegistry();
-        String value = runtime.secretResolver(Map.of(), registry).resolve("auth");
+        String value = runtime.secretResolver(Map.of(), registry, Locale.GERMAN).resolve("auth");
         assertEquals("secret-value", value);
         assertTrue(registry.values().contains("secret-value"));
         assertEquals(1L, runtime.taskConfig().get("db").get("nested") instanceof Map<?, ?> map
@@ -105,9 +104,9 @@ class RuntimeConfigTest {
         Files.writeString(config, "{\"schemaVersion\":1,\"secrets\":{\"s\":{\"environment\":\"SECRET_ENV\"}}}");
         RuntimeConfig runtime = RuntimeConfig.load(config, tempDir);
         assertEquals("from-env", runtime.secretResolver(Map.of("SECRET_ENV", "from-env"),
-                new SecretRegistry()).resolve("s"));
+                new SecretRegistry(), Locale.GERMAN).resolve("s"));
         IllegalArgumentException missing = assertThrows(IllegalArgumentException.class,
-                () -> runtime.secretResolver(Map.of(), new SecretRegistry()).resolve("s"));
+                () -> runtime.secretResolver(Map.of(), new SecretRegistry(), Locale.GERMAN).resolve("s"));
         assertTrue(missing.getMessage().contains("SECRET_ENV"));
         assertFalse(missing.getMessage().contains("from-env"));
     }
@@ -120,7 +119,7 @@ class RuntimeConfigTest {
                     "secrets", Map.of("s", Map.of("plaintext", value)))));
             RuntimeConfig runtime = RuntimeConfig.load(config, tempDir);
             SecretRegistry registry = new SecretRegistry();
-            var resolver = runtime.secretResolver(Map.of(), registry);
+            var resolver = runtime.secretResolver(Map.of(), registry, Locale.GERMAN);
             assertTrue(registry.values().isEmpty());
             assertEquals(value, resolver.resolve("s"));
             assertEquals(List.of(value), registry.values());
@@ -185,9 +184,32 @@ class RuntimeConfigTest {
                 "secrets", Map.of("s", Map.of("plaintext", "x".repeat(64 * 1024 + 1))))));
         RuntimeConfig runtime = RuntimeConfig.load(config, tempDir);
         SecretRegistry registry = new SecretRegistry();
-        var resolver = runtime.secretResolver(Map.of(), registry);
+        var resolver = runtime.secretResolver(Map.of(), registry, Locale.GERMAN);
         assertTrue(registry.values().isEmpty());
         assertThrows(ContextAccessException.class, () -> resolver.resolve("s"));
         assertTrue(registry.values().isEmpty());
+    }
+
+    @Test
+    void validationAndDeferredSecretErrorsUseTheirOwnLocale() throws Exception {
+        Path valid = tempDir.resolve("secret-file.json");
+        Files.writeString(valid, """
+                {"schemaVersion":1,"secrets":{"token":{"file":"missing.txt"}}}
+                """);
+        Path invalid = tempDir.resolve("invalid-config.json");
+        Files.writeString(invalid, """
+                {"schemaVersion":1,"logging":{"unknown":true}}
+                """);
+        for (Locale first : List.of(Locale.GERMAN, Locale.ENGLISH)) {
+            Locale second = first.equals(Locale.GERMAN) ? Locale.ENGLISH : Locale.GERMAN;
+            var resolver = RuntimeConfig.load(valid, tempDir, first)
+                    .secretResolver(Map.of(), new SecretRegistry(), first);
+            var error = assertThrows(StartException.class, () -> RuntimeConfig.load(invalid, tempDir, second));
+            assertEquals(ch.so.agi.gretl.i18n.Messages.format(second, "cli.error.config.unknownField", "logging", "unknown"),
+                    error.getMessage());
+            var missing = assertThrows(IllegalArgumentException.class, () -> resolver.resolve("token"));
+            assertEquals(ch.so.agi.gretl.i18n.Messages.format(first, "cli.error.config.secretFileNotFound", "token",
+                    tempDir.resolve("missing.txt")), missing.getMessage());
+        }
     }
 }

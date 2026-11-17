@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.packager;
 
+import ch.so.agi.gretl.i18n.Messages;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,12 +27,11 @@ public final class JobPackager {
 
     public JobPackageBuilder.PackageResult packageJob(Path descriptorFile, Path output)
             throws PackageException {
-        PackagerMessages.use(locale);
         PackageDescriptor descriptor = PackageDescriptor.load(descriptorFile,
-                packagerVersion.endsWith("-SNAPSHOT"));
+                packagerVersion.endsWith("-SNAPSHOT"), locale);
         if (!packagerVersion.equals(descriptor.runtimeVersion())) {
             throw new PackageException("PACKAGE_RUNTIME_VERSION",
-                    PackagerMessages.format("package.runtimeVersion",
+                    Messages.format(locale, "package.runtimeVersion",
                             descriptor.runtimeVersion(), packagerVersion));
         }
         var identities = new java.util.LinkedHashMap<Path, PackageDescriptor.Dependency>();
@@ -56,7 +56,7 @@ public final class JobPackager {
             }
         }
         var compiled = BundleCompiler.compile(descriptor, classpath, locale);
-        return new JobPackageBuilder(classpath, identities).build(descriptor, compiled, output);
+        return new JobPackageBuilder(classpath, identities, locale).build(descriptor, compiled, output);
     }
 
     private static Path installedArtifact(List<Path> standard, PackageDescriptor.Dependency dependency)

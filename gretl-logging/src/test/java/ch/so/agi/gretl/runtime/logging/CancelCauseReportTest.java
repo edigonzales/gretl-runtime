@@ -35,7 +35,7 @@ class CancelCauseReportTest {
             assertEquals(Optional.empty(), outcome.tasks().getFirst().cancelReason());
             Path report = root.resolve("report.json");
             new RunReportWriter(redactor).write(new RunReportInput(logContext, outcome, definition, plan, root.resolve("job.groovy"),
-                    "a".repeat(64), Optional.empty(), "inventory", logging.state(), Instant.now(), Optional.empty()), report);
+                    "a".repeat(64), Optional.empty(), logging.state()), report);
             Map<?,?> parsed = (Map<?,?>) Json.parseFile(report, 1L << 20);
             Map<?,?> execution = (Map<?,?>) parsed.get("execution");
             assertEquals(reason.name(), execution.get("cancelReason"));

@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.packager;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle;
 import ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources;
 import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
@@ -57,12 +58,12 @@ public final class BundleCompiler {
                 ids.put(virtualName, id);
             }
         }
-        var sources = sourceFiles(descriptor, captured);
+        var sources = sourceFiles(descriptor, captured, locale);
         var compilationSources = sources.stream()
                 .filter(source -> !source.relativePath().equals(bundle.settingsId())).toList();
         Compilation compiled;
         try {
-            compiled = compileSources(compilationSources, names, classpath, ids.keySet());
+            compiled = compileSources(compilationSources, names, classpath, ids.keySet(), locale);
         } catch (PackageException failure) {
             String message = failure.getMessage();
             for (var entry : ids.entrySet()) message = message.replace(entry.getKey(), entry.getValue());
@@ -73,27 +74,27 @@ public final class BundleCompiler {
             String id = ids.get(script.sourceName());
             if (id == null) {
                 throw new PackageException("PACKAGE_MULTIPLE_SCRIPTS",
-                        PackagerMessages.format("package.project.hiddenScript", script.sourceName()));
+                        Messages.format(locale, "package.project.hiddenScript", script.sourceName()));
             }
-            requireBase(script);
+            requireBase(script, locale);
             if (classes.putIfAbsent(id, script.name()) != null
                     || !compiled.classes().containsKey(script.name().replace('.', '/') + ".class")) {
                 throw new PackageException("PACKAGE_ENTRY_BYTECODE_MISSING", "Missing or duplicate bundle script: " + id);
             }
         }
         if (classes.size() != ids.size()) {
-            throw new PackageException("PACKAGE_NO_SCRIPT", PackagerMessages.get("package.noScript"));
+            throw new PackageException("PACKAGE_NO_SCRIPT", Messages.get(locale, "package.noScript"));
         }
         return new Result(compiled.classes(),sources,CompiledScriptBundle.from(bundle, classes, defaults));
     }
 
-    private static void requireBase(ScriptEntry script) throws PackageException {
+    private static void requireBase(ScriptEntry script, Locale locale) throws PackageException {
         if (!"ch.so.agi.gretl.runtime.groovy.GretlScript".equals(script.base()))
-            throw new PackageException("PACKAGE_WRONG_BASE_CLASS", PackagerMessages.format("package.wrongBaseClass", script.base()));
+            throw new PackageException("PACKAGE_WRONG_BASE_CLASS", Messages.format(locale, "package.wrongBaseClass", script.base()));
     }
 
     private static Compilation compileSources(List<SourceFile> sources, Map<Path, String> virtualNames,
-                                              List<Path> classpath, Set<String> allowedScripts) throws PackageException {
+                                              List<Path> classpath, Set<String> allowedScripts, Locale locale) throws PackageException {
         java.net.URL[] urls = classpath.stream().map(path -> {
             try { return path.toUri().toURL(); }
             catch (java.net.MalformedURLException exception) { throw new IllegalArgumentException(exception); }
@@ -124,7 +125,7 @@ public final class BundleCompiler {
                     // Groovy formats source diagnostics lazily. Materialize them while
                     // its selected loader is still open, retaining the original cause.
                     Throwable cause = exception.getCause();
-                    throw new PackageException("PACKAGE_COMPILE_FAILED", PackagerMessages.format("package.compileFailed", cause.getMessage()), cause);
+                    throw new PackageException("PACKAGE_COMPILE_FAILED", Messages.format(locale, "package.compileFailed", cause.getMessage()), cause);
                 }
                 List<ScriptEntry> scripts = new ArrayList<>();
                 Object ast = call(unit, "getAST");
@@ -144,7 +145,7 @@ public final class BundleCompiler {
             }
         } catch (java.lang.reflect.InvocationTargetException exception) {
             Throwable cause = exception.getCause();
-            throw new PackageException("PACKAGE_COMPILE_FAILED", PackagerMessages.format("package.compileFailed", cause.getMessage()), cause);
+            throw new PackageException("PACKAGE_COMPILE_FAILED", Messages.format(locale, "package.compileFailed", cause.getMessage()), cause);
         } catch (ReflectiveOperationException | IOException exception) {
             throw new PackageException("PACKAGE_COMPILE_CLASSPATH", "Selected compiler/runtime classpath is incomplete: " + exception.getMessage(), exception);
         }
@@ -154,7 +155,7 @@ public final class BundleCompiler {
         return target.getClass().getMethod(method).invoke(target);
     }
 
-    private static List<SourceFile> sourceFiles(PackageDescriptor descriptor, Map<Path, SourceFile> captured) throws PackageException {
+    private static List<SourceFile> sourceFiles(PackageDescriptor descriptor, Map<Path, SourceFile> captured, Locale locale) throws PackageException {
         Map<Path, SourceFile> result = new LinkedHashMap<>(captured);
         for (Path sourcePath : descriptor.sourcePaths()) {
             if (Files.isDirectory(sourcePath)) {
@@ -163,20 +164,20 @@ public final class BundleCompiler {
                             .filter(path -> path.toString().endsWith(".groovy"))
                             .sorted().toList();
                     for (Path file : files) {
-                        addSource(descriptor, file, result);
+                        addSource(descriptor, file, result, locale);
                     }
                 } catch (IOException exception) {
                     throw new PackageException("PACKAGE_SOURCE_READ",
-                            PackagerMessages.format("package.sourcesRead", sourcePath), exception);
+                            Messages.format(locale, "package.sourcesRead", sourcePath), exception);
                 }
             } else {
-                addSource(descriptor, sourcePath, result);
+                addSource(descriptor, sourcePath, result, locale);
             }
         }
         return List.copyOf(result.values());
     }
 
-    private static void addSource(PackageDescriptor descriptor, Path file, Map<Path, SourceFile> result)
+    private static void addSource(PackageDescriptor descriptor, Path file, Map<Path, SourceFile> result, Locale locale)
             throws PackageException {
         Path normalized = file.toAbsolutePath().normalize();
         if (result.containsKey(normalized)) {
@@ -189,7 +190,7 @@ public final class BundleCompiler {
                     Files.readString(normalized, StandardCharsets.UTF_8)));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_SOURCE_READ",
-                    PackagerMessages.format("package.sourceRead", file), exception);
+                    Messages.format(locale, "package.sourceRead", file), exception);
         }
     }
 

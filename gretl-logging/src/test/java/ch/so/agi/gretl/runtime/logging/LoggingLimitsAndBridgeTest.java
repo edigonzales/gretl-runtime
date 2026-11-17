@@ -35,8 +35,7 @@ class LoggingLimitsAndBridgeTest {
     void eventFileIsBoundedButKeepsTerminalReserve() throws Exception {
         Path file = tempDir.resolve("events.jsonl");
         LoggingConfig config = new LoggingConfig(LoggingConfig.Format.JSON, LogLevel.INFO,
-                Map.of(), true, 4096, 1024 * 1024,
-                java.time.Duration.ofSeconds(10), java.time.Duration.ofSeconds(30));
+                Map.of(), true, 4096, 1024 * 1024);
         ByteArrayOutputStream console = new ByteArrayOutputStream();
         LogContext context = context();
         try (LoggingPipeline pipeline = new LoggingPipeline(config, context,
@@ -108,12 +107,10 @@ class LoggingLimitsAndBridgeTest {
     void configAndJsonValidationRejectsOutOfRangeValues() {
         assertThrows(IllegalArgumentException.class, () -> new LoggingConfig(
                 LoggingConfig.Format.TEXT, LogLevel.INFO, Map.of(), true,
-                1024, 1024, java.time.Duration.ofSeconds(10),
-                java.time.Duration.ofSeconds(30)));
+                1024, 1024));
         assertThrows(IllegalArgumentException.class, () -> new LoggingConfig(
                 LoggingConfig.Format.TEXT, LogLevel.INFO, Map.of(), true,
-                16384, 1024 * 1024, java.time.Duration.ofMillis(1),
-                java.time.Duration.ofSeconds(30)));
+                16384, 1024));
     }
 
     private static LogContext context() {

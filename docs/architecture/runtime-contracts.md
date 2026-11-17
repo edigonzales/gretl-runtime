@@ -100,10 +100,6 @@ Fehlerdetails und begrenzte Dateien bleiben bestehen. Bekannte Secrets und
 `sensitive`-Werte werden registriert und sensible Feldnamen gefiltert.
 Das ist keine Garantie für beliebige selbst implementierte Ausgabekanäle eines Jobs.
 
-Heartbeat-/Progressintervalle werden konfiguriert und validiert; ein periodischer
-Heartbeat-Timer oder Progress-Koaleszenz ist nicht implementiert. Ein eigener
-OpenTelemetry-Export gehört nicht zum gelieferten Laufzeitumfang.
-
 Vorhandene Workspace-Roots und Eltern behalten ihre Rechte; neue Runbereiche
 werden exklusiv besessen, auf POSIX privat angelegt und vor Nutzung/Retention
 geprüft. Symlink-/Traversal- und Ownership-Regeln werden nicht durch kosmetische
@@ -171,7 +167,7 @@ Einbettungstests explizit deutsch, sofern kein Kontext übergeben wird.
   `Message`, `Source`, `Cause`),
 - die Meldung für unbekannte Task-Konfigurationsfelder
   (`Unknown configuration field ...`),
-- CLI-Options- und Aufruffehler (`CliOptions`),
+- CLI-Options- und Aufruffehler (`CliOptions`, `JobOptions`),
 - Top-Level-Fehler von Runtimekonfiguration und Parameterdatei,
 - Package-/Check-Ausgaben und weitere CLI-Laufzeitfehler,
 - Parameterfehler des Runners (`ParameterResolver`),

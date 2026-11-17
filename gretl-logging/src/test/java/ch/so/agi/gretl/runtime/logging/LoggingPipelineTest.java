@@ -37,8 +37,7 @@ class LoggingPipelineTest {
         PrintStream console = new PrintStream(consoleBytes, true, StandardCharsets.UTF_8);
         LoggingConfig config = new LoggingConfig(
                 LoggingConfig.Format.JSON, LogLevel.INFO, Map.of(), true,
-                16384, 1024 * 1024, java.time.Duration.ofSeconds(10),
-                java.time.Duration.ofSeconds(30));
+                16384, 1024 * 1024);
         try (LoggingPipeline pipeline = new LoggingPipeline(config, context,
                 new Redactor(secrets), console, eventFile,
                 Clock.fixed(Instant.parse("2026-10-18T10:00:00Z"), ZoneOffset.UTC))) {

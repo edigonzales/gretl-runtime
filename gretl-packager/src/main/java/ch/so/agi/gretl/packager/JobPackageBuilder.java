@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.packager;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.logging.Json;
 import ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle;
 import java.io.ByteArrayInputStream;
@@ -45,6 +46,7 @@ public final class JobPackageBuilder {
             "META-INF/sisu/javax.inject.Named");
 
     private final List<Path> classpath;
+    private final Locale locale;
     private final Map<Path, PackageDescriptor.Dependency> identities;
     private final Map<String, Entry> entries = new TreeMap<>();
     private final Map<String, Set<String>> services = new TreeMap<>();
@@ -52,11 +54,8 @@ public final class JobPackageBuilder {
     private final Set<PackageDescriptor.Dependency> includedDependencies = new java.util.HashSet<>();
     private final Set<String> resourceFiles = new TreeSet<>();
 
-    public JobPackageBuilder(List<Path> classpath) {
-        this(classpath, Map.of());
-    }
-
-    public JobPackageBuilder(List<Path> classpath, Map<Path, PackageDescriptor.Dependency> identities) {
+    public JobPackageBuilder(List<Path> classpath, Map<Path, PackageDescriptor.Dependency> identities, Locale locale) {
+        this.locale = locale;
         this.identities = Map.copyOf(identities);
         this.classpath = classpath.stream().map(path -> path.toAbsolutePath().normalize())
                 .distinct().toList();
@@ -71,7 +70,7 @@ public final class JobPackageBuilder {
         resourceFiles.clear();
         if (classpath.isEmpty()) {
             throw new PackageException("PACKAGE_CLASSPATH_EMPTY",
-                    PackagerMessages.get("package.classpathEmpty"));
+                    Messages.get(locale, "package.classpathEmpty"));
         }
         for (Path path : classpath) {
             if (!Files.exists(path)) {
@@ -85,7 +84,7 @@ public final class JobPackageBuilder {
         }
         if (!entries.containsKey(MAIN_CLASS.replace('.', '/') + ".class")) {
             throw new PackageException("PACKAGE_JOB_RUNTIME_MISSING",
-                    PackagerMessages.get("package.jobRuntimeMissing"));
+                    Messages.get(locale, "package.jobRuntimeMissing"));
         }
         validateDeclaredDependencies(descriptor);
         addCompiled(compiled.classes(), compiled.sources());
@@ -116,7 +115,7 @@ public final class JobPackageBuilder {
             if (identities.containsKey(path)) includedDependencies.add(identities.get(path));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_CLASSPATH_READ",
-                    PackagerMessages.format("package.jarRead", path.getFileName()), exception);
+                    Messages.format(locale, "package.jarRead", path.getFileName()), exception);
         }
     }
 
@@ -132,7 +131,7 @@ public final class JobPackageBuilder {
             if (identities.containsKey(root)) includedDependencies.add(identities.get(root));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_CLASSPATH_READ",
-                    PackagerMessages.format("package.classpathRead", root.getFileName()),
+                    Messages.format(locale, "package.classpathRead", root.getFileName()),
                     exception);
         }
     }
@@ -160,7 +159,7 @@ public final class JobPackageBuilder {
                 properties.load(new ByteArrayInputStream(bytes));
             } catch (IOException exception) {
                 throw new PackageException("PACKAGE_GROOVY_METADATA",
-                        PackagerMessages.format("package.groovyMetadata", origin), exception);
+                        Messages.format(locale, "package.groovyMetadata", origin), exception);
             }
             Map<String, String> values = groovyModules.computeIfAbsent(normalized,
                     key -> new TreeMap<>());
@@ -169,7 +168,7 @@ public final class JobPackageBuilder {
                 String previous = values.putIfAbsent(key, value);
                 if (previous != null && !previous.equals(value)) {
                     throw new PackageException("PACKAGE_RESOURCE_CONFLICT",
-                            PackagerMessages.format("package.groovyMetadataConflict", normalized, origin));
+                            Messages.format(locale, "package.groovyMetadataConflict", normalized, origin));
                 }
             }
             return;
@@ -190,7 +189,7 @@ public final class JobPackageBuilder {
                 return;
             }
             throw new PackageException("PACKAGE_CLASS_CONFLICT",
-                    PackagerMessages.format("package.classConflict", normalized, previous.origin(), origin));
+                    Messages.format(locale, "package.classConflict", normalized, previous.origin(), origin));
         }
         if (MERGED_METADATA.contains(normalized)) {
             ByteArrayOutputStream merged = new ByteArrayOutputStream();
@@ -201,7 +200,7 @@ public final class JobPackageBuilder {
             return;
         }
         throw new PackageException("PACKAGE_RESOURCE_CONFLICT",
-                PackagerMessages.format("package.resourceConflict", normalized, previous.origin(), origin));
+                Messages.format(locale, "package.resourceConflict", normalized, previous.origin(), origin));
     }
 
     private static boolean canonicalModelPair(String first, String second) {
@@ -239,7 +238,7 @@ public final class JobPackageBuilder {
                     }
                 } catch (IOException exception) {
                     throw new PackageException("PACKAGE_RESOURCE_READ",
-                            PackagerMessages.format("package.resourcesRead", resource), exception);
+                            Messages.format(locale, "package.resourcesRead", resource), exception);
                 }
             } else {
                 addResource(descriptor, resource);
@@ -256,7 +255,7 @@ public final class JobPackageBuilder {
             resourceFiles.add(relative);
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_RESOURCE_READ",
-                    PackagerMessages.format("package.resourceRead", relative), exception);
+                    Messages.format(locale, "package.resourceRead", relative), exception);
         }
     }
 
@@ -297,7 +296,7 @@ public final class JobPackageBuilder {
         Entry previous = entries.get(name);
         if (previous != null) {
             throw new PackageException("PACKAGE_RESOURCE_CONFLICT",
-                    PackagerMessages.format("package.metadataConflict", name, previous.origin()));
+                    Messages.format(locale, "package.metadataConflict", name, previous.origin()));
         }
         entries.put(name, new Entry(bytes, origin));
     }
@@ -306,7 +305,7 @@ public final class JobPackageBuilder {
         for (PackageDescriptor.Dependency dependency : descriptor.dependencies()) {
             if (!includedDependencies.contains(dependency)) {
                 throw new PackageException("PACKAGE_DEPENDENCY_MISSING",
-                        PackagerMessages.format("package.dependencyMissing", dependency.coordinate()));
+                        Messages.format(locale, "package.dependencyMissing", dependency.coordinate()));
             }
         }
     }
@@ -318,7 +317,7 @@ public final class JobPackageBuilder {
             Path parent = absolute.getParent();
             if (parent == null) {
                 throw new PackageException("PACKAGE_OUTPUT_INVALID",
-                        PackagerMessages.get("package.outputParent"));
+                        Messages.get(locale, "package.outputParent"));
             }
             Files.createDirectories(parent);
             Path temporary = parent.resolve(absolute.getFileName() + ".tmp-" + UUID.randomUUID());
@@ -331,7 +330,7 @@ public final class JobPackageBuilder {
                     total += bytes.length;
                     if (total > MAX_TOTAL_BYTES) {
                         throw new PackageException("PACKAGE_TOO_LARGE",
-                                PackagerMessages.get("package.tooLarge"));
+                                Messages.get(locale, "package.tooLarge"));
                     }
                     JarEntry jarEntry = new JarEntry(entry.getKey());
                     jarEntry.setTime(0L);
@@ -351,7 +350,7 @@ public final class JobPackageBuilder {
             }
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_WRITE_FAILED",
-                    PackagerMessages.format("package.writeFailed", output), exception);
+                    Messages.format(locale, "package.writeFailed", output), exception);
         }
         return new PackageResult(absolute, descriptor.name(), descriptor.version(),
                 entryClass, classCount,
@@ -371,11 +370,11 @@ public final class JobPackageBuilder {
         return manifest;
     }
 
-    private static String normalizeEntry(String name) throws PackageException {
+    private String normalizeEntry(String name) throws PackageException {
         String value = name.replace('\\', '/');
         if (value.startsWith("/") || value.contains("../") || value.equals("..")) {
             throw new PackageException("PACKAGE_ENTRY_UNSAFE",
-                    PackagerMessages.format("package.unsafeEntry", name));
+                    Messages.format(locale, "package.unsafeEntry", name));
         }
         return value;
     }
@@ -389,7 +388,7 @@ public final class JobPackageBuilder {
                 || upper.endsWith(".SF") || upper.endsWith(".RSA") || upper.endsWith(".DSA");
     }
 
-    private static byte[] readBounded(InputStream input, String name) throws IOException,
+    private byte[] readBounded(InputStream input, String name) throws IOException,
             PackageException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buffer = new byte[8192];
@@ -398,7 +397,7 @@ public final class JobPackageBuilder {
             out.write(buffer, 0, read);
             if (out.size() > MAX_ENTRY_BYTES) {
                 throw new PackageException("PACKAGE_ENTRY_TOO_LARGE",
-                        PackagerMessages.format("package.entryTooLarge", name));
+                        Messages.format(locale, "package.entryTooLarge", name));
             }
         }
         return out.toByteArray();

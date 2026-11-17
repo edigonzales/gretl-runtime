@@ -4,6 +4,7 @@ import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
 import java.nio.file.Path;
+import java.util.Locale;
 
 /** The job-definition source used by the script and packaged execution paths. */
 public interface JobSource {
@@ -13,7 +14,7 @@ public interface JobSource {
     Path jobRoot();
 
     /** Materialize resources only for an actual run, inside its owned workspace. */
-    default Path prepareRun(Path runRoot) throws java.io.IOException {
+    default Path prepareRun(Path runRoot, Locale locale) throws java.io.IOException {
         return jobRoot();
     }
 
@@ -21,7 +22,7 @@ public interface JobSource {
 
     String jobName();
 
-    String sha256();
+    String sha256(Locale locale);
 
-    JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink);
+    JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink, Locale locale);
 }

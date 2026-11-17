@@ -72,7 +72,6 @@ public final class RunReportWriter {
         report.put("errors", errors(outcome));
         report.put("diagnostics", diagnostics(outcome));
         report.put("logging", logging(input.logging()));
-        report.put("telemetry", Map.of("mode", "none"));
         return report;
     }
 
@@ -85,7 +84,6 @@ public final class RunReportWriter {
                 identity.put("correlationId", redactor.redact(value)));
         identity.put("runtimeVersion", input.context().runtimeVersion());
         identity.put("locale", input.context().locale().toLanguageTag());
-        identity.put("inventoryHash", input.inventoryHash());
         identity.put("definitionId", input.definition().definitionId().toString());
         return identity;
     }

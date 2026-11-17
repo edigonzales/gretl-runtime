@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.job;
 
 import ch.so.agi.gretl.job.runtime.JobSource;
+import ch.so.agi.gretl.job.runtime.JobOptions;
+import ch.so.agi.gretl.job.runtime.StartException;
 
 import ch.so.agi.gretl.job.runtime.JobRuntime;
 import ch.so.agi.gretl.i18n.LocaleSelection;
@@ -11,7 +13,6 @@ import ch.so.agi.gretl.runtime.groovy.GroovyJobLoader;
 import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
 import ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle;
 import ch.so.agi.gretl.runtime.logging.Json;
-import ch.so.agi.gretl.runtime.logging.TextFormatter;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
 import java.io.IOException;
@@ -36,20 +37,20 @@ public final class JobJarMain {
     }
 
     public static void main(String[] args) {
-        Locale locale = LocaleSelection.resolve(requestedLanguage(args),
+        Locale locale = LocaleSelection.resolve(JobOptions.requestedLanguage(args),
                 System.getenv("GRETL_LANGUAGE"), null, Locale.getDefault());
         JobMetadata metadata;
         try {
             metadata = JobMetadata.load(JobJarMain.class.getClassLoader(), locale);
         } catch (JobJarException exception) {
-            startupError(exception, locale);
+            startupError(exception, args, locale);
             System.exit(2);
             return;
         }
         if (!RuntimeInfo.VERSION.equals(metadata.runtimeVersion())) {
             startupError(new JobJarException("JOB_METADATA_RUNTIME",
                     Messages.format(locale, "job.error.runtime",
-                            metadata.runtimeVersion(), RuntimeInfo.VERSION)), locale);
+                            metadata.runtimeVersion(), RuntimeInfo.VERSION)), args, locale);
             System.exit(2);
             return;
         }
@@ -60,19 +61,10 @@ public final class JobJarMain {
         }
         // Registration needs a logical root; the runner prepares packaged resources.
         Path definitionRoot = Path.of("").toAbsolutePath().normalize();
-        JobSource source = new PackagedJobSource(metadata, definitionRoot, JobJarMain.class.getClassLoader(), locale);
+        JobSource source = new PackagedJobSource(metadata, definitionRoot, JobJarMain.class.getClassLoader());
         JobRuntime runtime = new JobRuntime(System.out, System.err, System.getenv(),
                 definitionRoot, JobJarMain.class.getClassLoader());
         System.exit(runtime.executePackaged(source, args));
-    }
-
-    private static String requestedLanguage(String[] args) {
-        for (int index = 0; index < args.length - 1; index++) {
-            if (args[index].equals("--lang")) {
-                return args[index + 1];
-            }
-        }
-        return null;
     }
 
     private static Path materialize(JobMetadata metadata, Locale locale, Path runRoot,
@@ -103,13 +95,13 @@ public final class JobJarMain {
             }
             return root;
         } catch (JobJarException exception) {
-            throw new IOException(exception.getMessage(), exception);
+            throw new IOException(exception.code + ": " + exception.getMessage(), exception);
         }
     }
 
-    private static void startupError(JobJarException exception, Locale locale) {
-        System.err.println(new TextFormatter(locale).formatProblem(Instant.now(),
-                "JOB_JAR_STARTUP", null, exception.getMessage(), Map.of()));
+    private static void startupError(JobJarException failure, String[] args, Locale locale) {
+        StartException.report(new StartException(2, failure.getMessage(), failure, failure.code, null, null, null),
+                System.err, Instant.now(), java.util.UUID.randomUUID().toString(), locale, JobOptions.jsonRequested(args));
     }
 
     record JobMetadata(String name, String version, String runtimeVersion,
@@ -210,14 +202,11 @@ public final class JobJarMain {
         final JobMetadata metadata;
         final Path jobRoot;
         final ClassLoader classLoader;
-        final Locale locale;
 
-        PackagedJobSource(JobMetadata metadata, Path jobRoot, ClassLoader classLoader,
-                          Locale locale) {
+        PackagedJobSource(JobMetadata metadata, Path jobRoot, ClassLoader classLoader) {
             this.metadata = metadata;
             this.jobRoot = jobRoot;
             this.classLoader = classLoader;
-            this.locale = locale;
         }
 
         @Override
@@ -232,7 +221,7 @@ public final class JobJarMain {
         }
 
         @Override
-        public Path prepareRun(Path runRoot) throws IOException {
+        public Path prepareRun(Path runRoot, Locale locale) throws IOException {
             return materialize(metadata, locale, runRoot, classLoader);
         }
 
@@ -242,13 +231,13 @@ public final class JobJarMain {
         }
 
         @Override
-        public String sha256() {
+        public String sha256(Locale locale) {
             return metadata.bundle().sha256();
         }
 
         @Override
         public JobDefinition load(OperationRegistry registry, Path startCwd,
-                                  UserMessageSink sink) {
+                                  UserMessageSink sink, Locale locale) {
             DefinitionEnvironment environment = new DefinitionEnvironment(
                     registry, jobRoot, startCwd, sink, locale);
             return new GroovyJobLoader().loadCompiledBundle(metadata.bundle(), environment, classLoader);
@@ -265,12 +254,12 @@ public final class JobJarMain {
         private final String code;
 
         JobJarException(String code, String message) {
-            super(code + ": " + message);
+            super(message);
             this.code = code;
         }
 
         JobJarException(String code, String message, Throwable cause) {
-            super(code + ": " + message, cause);
+            super(message, cause);
             this.code = code;
         }
     }

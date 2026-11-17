@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.packager;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.logging.Json;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -45,61 +47,61 @@ public record PackageDescriptor(
     }
 
     public static PackageDescriptor load(Path descriptor) throws PackageException {
-        return load(descriptor, false);
+        return load(descriptor, false, Locale.GERMAN);
     }
 
-    public static PackageDescriptor load(Path descriptor, boolean allowSnapshots)
+    public static PackageDescriptor load(Path descriptor, boolean allowSnapshots, Locale locale)
             throws PackageException {
         Path file = descriptor.toAbsolutePath().normalize();
         if (!Files.isRegularFile(file)) {
             throw new PackageException("PACKAGE_DESCRIPTOR_MISSING",
-                    PackagerMessages.format("package.descriptorMissing", file));
+                    Messages.format(locale, "package.descriptorMissing", file));
         }
         Object parsed;
         try {
             parsed = Json.parseFile(file, MAX_DESCRIPTOR_BYTES);
         } catch (IOException | RuntimeException exception) {
             throw new PackageException("PACKAGE_DESCRIPTOR_INVALID",
-                    PackagerMessages.format("package.descriptorInvalidJson", exception.getMessage()), exception);
+                    Messages.format(locale, "package.descriptorInvalidJson", exception.getMessage()), exception);
         }
         if (!(parsed instanceof Map<?, ?> raw)) {
             throw new PackageException("PACKAGE_DESCRIPTOR_INVALID",
-                    PackagerMessages.get("package.descriptorObject"));
+                    Messages.get(locale, "package.descriptorObject"));
         }
-        Map<String, Object> object = stringKeys(raw);
-        rejectUnknown(object);
-        int schemaVersion = integer(object, "schemaVersion");
+        Map<String, Object> object = stringKeys(locale, raw);
+        rejectUnknown(locale, object);
+        int schemaVersion = integer(locale, object, "schemaVersion");
         if (schemaVersion != 1) {
             throw new PackageException("PACKAGE_DESCRIPTOR_VERSION",
-                    PackagerMessages.format("package.descriptorVersion", schemaVersion));
+                    Messages.format(locale, "package.descriptorVersion", schemaVersion));
         }
-        String name = text(object, "name");
+        String name = text(locale, object, "name");
         if (!NAME.matcher(name).matches()) {
             throw new PackageException("PACKAGE_NAME_INVALID",
-                    PackagerMessages.format("package.nameInvalid", name));
+                    Messages.format(locale, "package.nameInvalid", name));
         }
-        String version = text(object, "version");
-        String runtimeVersion = text(object, "runtimeVersion");
+        String version = text(locale, object, "version");
+        String runtimeVersion = text(locale, object, "runtimeVersion");
         if (!VERSION.matcher(version).matches() || !VERSION.matcher(runtimeVersion).matches()) {
             throw new PackageException("PACKAGE_VERSION_INVALID",
-                    PackagerMessages.get("package.versionInvalid"));
+                    Messages.get(locale, "package.versionInvalid"));
         }
         boolean project = object.containsKey("settingsFile");
         if (project == object.containsKey("entryScript")) {
-            throw new PackageException("PACKAGE_DESCRIPTOR_SCHEMA", PackagerMessages.get("package.project.schema"));
+            throw new PackageException("PACKAGE_DESCRIPTOR_SCHEMA", Messages.get(locale, "package.project.schema"));
         }
-        String entryScript = project ? null : text(object, "entryScript");
-        String settingsFile = project ? text(object, "settingsFile") : null;
+        String entryScript = project ? null : text(locale, object, "entryScript");
+        String settingsFile = project ? text(locale, object, "settingsFile") : null;
         if (project && !"settings.gretl".equals(settingsFile)) {
-            throw new PackageException("PACKAGE_SETTINGS_INVALID", PackagerMessages.get("package.project.settings"));
+            throw new PackageException("PACKAGE_SETTINGS_INVALID", Messages.get(locale, "package.project.settings"));
         }
-        List<String> sources = textList(object, "sources");
-        List<String> resources = textList(object, "resources");
-        List<Dependency> dependencies = dependencies(object, allowSnapshots);
+        List<String> sources = textList(locale, object, "sources");
+        List<String> resources = textList(locale, object, "resources");
+        List<Dependency> dependencies = dependencies(locale, object, allowSnapshots);
         Path base = file.getParent().toAbsolutePath().normalize();
         PackageDescriptor value = new PackageDescriptor(base,
                 name, version, runtimeVersion, entryScript, sources, resources, dependencies, settingsFile);
-        value.validate();
+        value.validate(locale);
         return value;
     }
 
@@ -118,51 +120,51 @@ public record PackageDescriptor(
         return resources.stream().map(value -> baseDirectory.resolve(value).normalize()).toList();
     }
 
-    private void validate() throws PackageException {
+    private void validate(Locale locale) throws PackageException {
         if (projectPackage()) {
-            Path settings = safePath(settingsFile, "settingsFile");
+            Path settings = safePath(locale, settingsFile, "settingsFile");
             if (!Files.isRegularFile(settings, LinkOption.NOFOLLOW_LINKS)) {
-                throw new PackageException("PROJECT_SETTINGS_MISSING", PackagerMessages.format("package.project.settingsMissing", settings));
+                throw new PackageException("PROJECT_SETTINGS_MISSING", Messages.format(locale, "package.project.settingsMissing", settings));
             }
         } else {
-            Path entry = safePath(entryScript, "entryScript");
+            Path entry = safePath(locale, entryScript, "entryScript");
             if (!Files.isRegularFile(entry, LinkOption.NOFOLLOW_LINKS)) {
                 throw new PackageException("PACKAGE_ENTRY_MISSING",
-                        PackagerMessages.format("package.entryMissing", entryScript));
+                        Messages.format(locale, "package.entryMissing", entryScript));
             }
             if (!entry.getParent().equals(baseDirectory)) {
                 throw new PackageException("PACKAGE_ENTRY_LOCATION",
-                        PackagerMessages.get("package.entryLocation"));
+                        Messages.get(locale, "package.entryLocation"));
             }
             if (!entryScript.endsWith(".groovy")) {
                 throw new PackageException("PACKAGE_ENTRY_TYPE",
-                        PackagerMessages.get("package.entryType"));
+                        Messages.get(locale, "package.entryType"));
             }
         }
         for (String source : sources) {
-            Path path = safePath(source, "sources");
+            Path path = safePath(locale, source, "sources");
             if (!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
                 throw new PackageException("PACKAGE_SOURCE_MISSING",
-                        PackagerMessages.format("package.sourceMissing", source));
+                        Messages.format(locale, "package.sourceMissing", source));
             }
             if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)
                     && !source.endsWith(".groovy")) {
                 throw new PackageException("PACKAGE_SOURCE_TYPE",
-                        PackagerMessages.format("package.sourceType", source));
+                        Messages.format(locale, "package.sourceType", source));
             }
-            rejectNestedSymlinks(path, "sources");
+            rejectNestedSymlinks(locale, path, "sources");
         }
         for (String resource : resources) {
-            Path path = safePath(resource, "resources");
+            Path path = safePath(locale, resource, "resources");
             if (!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
                 throw new PackageException("PACKAGE_RESOURCE_MISSING",
-                        PackagerMessages.format("package.resourceMissing", resource));
+                        Messages.format(locale, "package.resourceMissing", resource));
             }
-            rejectNestedSymlinks(path, "resources");
+            rejectNestedSymlinks(locale, path, "resources");
         }
     }
 
-    private void rejectNestedSymlinks(Path root, String field) throws PackageException {
+    private void rejectNestedSymlinks(Locale locale, Path root, String field) throws PackageException {
         if (!Files.isDirectory(root, LinkOption.NOFOLLOW_LINKS)) {
             return;
         }
@@ -170,34 +172,34 @@ public record PackageDescriptor(
             for (Path path : walk.toList()) {
                 if (Files.isSymbolicLink(path)) {
                     throw new PackageException("PACKAGE_PATH_UNSAFE",
-                            PackagerMessages.format("package.pathSymlink", field, baseDirectory.relativize(path)));
+                            Messages.format(locale, "package.pathSymlink", field, baseDirectory.relativize(path)));
                 }
             }
         } catch (java.io.IOException exception) {
             throw new PackageException("PACKAGE_PATH_UNSAFE",
-                    PackagerMessages.format("package.pathCheckFailed", field, root), exception);
+                    Messages.format(locale, "package.pathCheckFailed", field, root), exception);
         }
     }
 
-    private Path safePath(String raw, String field) throws PackageException {
+    private Path safePath(Locale locale, String raw, String field) throws PackageException {
         Path relative;
         try {
             relative = Path.of(raw);
         } catch (RuntimeException exception) {
             throw new PackageException("PACKAGE_PATH_INVALID",
-                    PackagerMessages.format("package.pathInvalid", field, raw), exception);
+                    Messages.format(locale, "package.pathInvalid", field, raw), exception);
         }
         if (raw.contains("\\") || raw.contains(":") || raw.chars().anyMatch(Character::isISOControl)
                 || relative.isAbsolute() || relative.toString().isBlank()
                 || relative.normalize().startsWith("..")
                 || !relative.normalize().toString().replace('\\', '/').equals(raw)) {
             throw new PackageException("PACKAGE_PATH_INVALID",
-                    PackagerMessages.format("package.pathNotNormalized", field, raw));
+                    Messages.format(locale, "package.pathNotNormalized", field, raw));
         }
         Path resolved = baseDirectory.resolve(relative).normalize();
         if (!resolved.startsWith(baseDirectory) || hasSymlink(resolved)) {
             throw new PackageException("PACKAGE_PATH_UNSAFE",
-                    PackagerMessages.format("package.pathUnsafe", field, raw));
+                    Messages.format(locale, "package.pathUnsafe", field, raw));
         }
         return resolved;
     }
@@ -214,35 +216,35 @@ public record PackageDescriptor(
         return false;
     }
 
-    private static void rejectUnknown(Map<String, Object> object) throws PackageException {
+    private static void rejectUnknown(Locale locale, Map<String, Object> object) throws PackageException {
         for (String key : object.keySet()) {
             if (!FIELDS.contains(key)) {
                 throw new PackageException("PACKAGE_DESCRIPTOR_UNKNOWN_FIELD",
-                        PackagerMessages.format("package.unknownField", key));
+                        Messages.format(locale, "package.unknownField", key));
             }
         }
     }
 
-    private static int integer(Map<String, Object> object, String key) throws PackageException {
+    private static int integer(Locale locale, Map<String, Object> object, String key) throws PackageException {
         Object value = object.get(key);
         if (!(value instanceof Number number) || number.longValue() != number.doubleValue()
                 || number.longValue() < Integer.MIN_VALUE || number.longValue() > Integer.MAX_VALUE) {
             throw new PackageException("PACKAGE_FIELD_TYPE",
-                    PackagerMessages.format("package.fieldInteger", key));
+                    Messages.format(locale, "package.fieldInteger", key));
         }
         return number.intValue();
     }
 
-    private static String text(Map<String, Object> object, String key) throws PackageException {
+    private static String text(Locale locale, Map<String, Object> object, String key) throws PackageException {
         Object value = object.get(key);
         if (!(value instanceof String text) || text.isBlank()) {
             throw new PackageException("PACKAGE_FIELD_TYPE",
-                    PackagerMessages.format("package.fieldText", key));
+                    Messages.format(locale, "package.fieldText", key));
         }
         return text;
     }
 
-    private static List<String> textList(Map<String, Object> object, String key)
+    private static List<String> textList(Locale locale, Map<String, Object> object, String key)
             throws PackageException {
         Object value = object.get(key);
         if (value == null) {
@@ -250,25 +252,25 @@ public record PackageDescriptor(
         }
         if (!(value instanceof List<?> list)) {
             throw new PackageException("PACKAGE_FIELD_TYPE",
-                    PackagerMessages.format("package.fieldList", key));
+                    Messages.format(locale, "package.fieldList", key));
         }
         List<String> result = new ArrayList<>();
         Set<String> seen = new LinkedHashSet<>();
         for (Object element : list) {
             if (!(element instanceof String text) || text.isBlank()) {
                 throw new PackageException("PACKAGE_FIELD_TYPE",
-                        PackagerMessages.format("package.fieldTextList", key));
+                        Messages.format(locale, "package.fieldTextList", key));
             }
             if (!seen.add(text)) {
                 throw new PackageException("PACKAGE_FIELD_DUPLICATE",
-                        PackagerMessages.format("package.fieldDuplicate", key, text));
+                        Messages.format(locale, "package.fieldDuplicate", key, text));
             }
             result.add(text);
         }
         return result;
     }
 
-    private static List<Dependency> dependencies(Map<String, Object> object,
+    private static List<Dependency> dependencies(Locale locale, Map<String, Object> object,
                                                   boolean allowSnapshots)
             throws PackageException {
         Object value = object.get("dependencies");
@@ -277,20 +279,20 @@ public record PackageDescriptor(
         }
         if (!(value instanceof List<?> list)) {
             throw new PackageException("PACKAGE_FIELD_TYPE",
-                    PackagerMessages.get("package.dependenciesList"));
+                    Messages.get(locale, "package.dependenciesList"));
         }
         List<Dependency> result = new ArrayList<>();
         for (Object element : list) {
             if (!(element instanceof String text)) {
                 throw new PackageException("PACKAGE_DEPENDENCY_INVALID",
-                        PackagerMessages.get("package.dependenciesText"));
+                        Messages.get(locale, "package.dependenciesText"));
             }
             String[] parts = text.split(":", -1);
             if ((parts.length != 3 && parts.length != 5) || !parts[0].matches("[A-Za-z0-9_.-]+")
                     || !parts[1].matches("[A-Za-z0-9_.-]+") || (parts.length == 5 && (!parts[2].equals("jar")
                     || !parts[3].matches("[A-Za-z0-9_.-]+")))) {
                 throw new PackageException("PACKAGE_DEPENDENCY_INVALID",
-                        PackagerMessages.format("package.dependencyFormat", text));
+                        Messages.format(locale, "package.dependencyFormat", text));
             }
             String version = parts[parts.length - 1];
             if (!VERSION.matcher(version).matches() || version.startsWith("[") || version.startsWith("(")
@@ -299,7 +301,7 @@ public record PackageDescriptor(
                     .endsWith("-SNAPSHOT"))
                     || version.contains("*")) {
                 throw new PackageException("PACKAGE_DEPENDENCY_VERSION",
-                        PackagerMessages.format("package.dependencyVersion", text));
+                        Messages.format(locale, "package.dependencyVersion", text));
             }
             Dependency dependency = new Dependency(parts[0], parts[1], version, parts.length == 5 ? parts[3] : "");
             if (result.stream().anyMatch(previous -> previous.key().equals(dependency.key())))
@@ -309,12 +311,12 @@ public record PackageDescriptor(
         return result;
     }
 
-    private static Map<String, Object> stringKeys(Map<?, ?> raw) throws PackageException {
+    private static Map<String, Object> stringKeys(Locale locale, Map<?, ?> raw) throws PackageException {
         Map<String, Object> result = new LinkedHashMap<>();
         for (Map.Entry<?, ?> entry : raw.entrySet()) {
             if (!(entry.getKey() instanceof String key)) {
                 throw new PackageException("PACKAGE_DESCRIPTOR_INVALID",
-                        PackagerMessages.get("package.descriptorKeyText"));
+                        Messages.get(locale, "package.descriptorKeyText"));
             }
             result.put(key, entry.getValue());
         }
