@@ -69,8 +69,7 @@ final class FragmentLoadSession {
                 bundle.projectMode()?index:null,bundle.virtualName(source),sourceFiles);
         contexts.put(model,new Context(scope,source,fragment));model.fragments(this);
         try {
-            Binding binding=new Binding();binding.setVariable(JobDslModel.BINDING_NAME,model);
-            for(var operation:environment.registry().all())binding.setVariable(operation.symbol(),operation);
+            Binding binding = GroovyJobLoader.newScriptBinding(model);
             GretlScript script;
             try {script=classes.get(source).getDeclaredConstructor(Binding.class).newInstance(binding);}
             catch(NoSuchMethodException noBinding){script=classes.get(source).getDeclaredConstructor().newInstance();script.setBinding(binding);}
