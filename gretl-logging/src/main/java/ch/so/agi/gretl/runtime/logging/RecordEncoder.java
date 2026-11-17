@@ -28,21 +28,33 @@ final class RecordEncoder {
             }
         }
 
-        record.remove("error");
-        event.failure().ifPresent(failure -> record.put("error_ref", failure.id()));
+        boolean hasError = record.remove("error") != null;
+        if (hasError) {
+            record.put("error_ref", event.failure().orElseThrow().id());
+        }
         String message = event.message();
         int end = Math.min(512, message.length());
         if (end < message.length() && Character.isHighSurrogate(message.charAt(end - 1))) {
             end--;
         }
-        record.put("message", message.substring(0, end));
+        if (hasError || end < message.length()) {
+            record.put("message", message.substring(0, end));
+            bytes = line(record);
+            if (bytes.length <= maxBytes) {
+                return bytes;
+            }
+        }
+
+        // Prefer a message-free record with the original task and operation identity.
+        record.remove("resource");
+        record.remove("source");
+        record.put("message", "");
         bytes = line(record);
         if (bytes.length <= maxBytes) {
             return bytes;
         }
 
         record.keySet().retainAll(ENVELOPE);
-        record.put("message", "");
         bytes = line(record);
         return bytes.length <= maxBytes ? bytes : null;
     }

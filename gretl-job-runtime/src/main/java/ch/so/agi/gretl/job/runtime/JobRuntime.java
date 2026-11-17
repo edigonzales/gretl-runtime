@@ -55,7 +55,6 @@ public final class JobRuntime {
     private final ClassLoader classLoader;
     private final Clock clock;
     private final java.util.function.Supplier<UUID> runIds;
-    private final String commandId = UUID.randomUUID().toString();
     private Locale locale = Locale.GERMAN;
 
     public JobRuntime(PrintStream out, PrintStream err, Map<String, String> environment,
@@ -89,7 +88,8 @@ public final class JobRuntime {
         try {
             return executePackaged(source, JobOptions.parsePackaged(args, startCwd, locale));
         } catch (StartException failure) {
-            return StartException.report(failure, err, clock.instant(), commandId, locale, JobOptions.jsonRequested(args));
+            return StartException.report(failure, err, clock.instant(), UUID.randomUUID().toString(),
+                    locale, JobOptions.jsonRequested(args));
         }
     }
 
@@ -100,6 +100,7 @@ public final class JobRuntime {
     }
 
     private int execute(JobOptions options, JobSource source) {
+        String commandId = UUID.randomUUID().toString();
         boolean json = options.logFormat() == LoggingConfig.Format.JSON;
         try {
             JobSource selected = source == null ? sourceFor(options.job(), locale) : source;
@@ -110,7 +111,7 @@ public final class JobRuntime {
                     config.language().orElse(null), locale);
             LoggingConfig logging = config.logging().withOverrides(options.logFormat(), options.logLevel());
             json = logging.format() == LoggingConfig.Format.JSON;
-            return jobCommand(selected, options, config, logging);
+            return jobCommand(selected, options, config, logging, commandId);
         } catch (Throwable failure) {
             return StartException.report(failure, err, clock.instant(), commandId, locale, json);
         }
@@ -122,7 +123,8 @@ public final class JobRuntime {
         throw new StartException(2, Messages.format(language, "cli.error.jobNotFound", input));
     }
 
-    private int jobCommand(JobSource source, JobOptions options, RuntimeConfig config, LoggingConfig logging) {
+    private int jobCommand(JobSource source, JobOptions options, RuntimeConfig config,
+                           LoggingConfig logging, String commandId) {
         if (source.projectMode()) {
             for (String target : options.targets()) {
                 try {
@@ -208,17 +210,16 @@ public final class JobRuntime {
             return 0;
         }
         return run(source, definition, plan, parameters, config, sink,
-                options.report());
+                options.report(), commandId);
     }
 
     private int run(JobSource source, JobDefinition definition, ExecutionPlan plan,
                     ResolvedParameters parameters, RuntimeConfig config,
                     MutableSink userSink,
-                    Path explicitReport) {
+                    Path explicitReport, String commandId) {
         String sourceHash = source.sha256(locale);
         UUID runId = runIds.get();
         prepareDirectory(config.workRoot(), "workRoot");
-        prepareDirectory(config.reportRoot(), "reportRoot");
         Path report = explicitReport != null
                 ? explicitReport
                 : config.reportRoot().resolve(runId + ".json");
@@ -336,6 +337,12 @@ public final class JobRuntime {
                     attributes, finished.failure().isPresent() ? finished.failure()
                             : Optional.ofNullable(reportFailure)));
             return exitCode;
+        } catch (Throwable failure) {
+            // Buffered script or library events can precede a startup failure.
+            synchronized (logging) {
+                return StartException.report(failure, err, clock.instant(), commandId, locale,
+                        config.logging().format() == LoggingConfig.Format.JSON, logging.nextSequence());
+            }
         } finally {
             try {
                 if (bridge != null) {

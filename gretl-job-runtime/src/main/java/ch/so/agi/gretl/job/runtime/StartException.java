@@ -63,6 +63,11 @@ public final class StartException extends RuntimeException {
 
     public static int report(Throwable failure, PrintStream err, Instant timestamp, String commandId,
                              Locale locale, boolean json) {
+        return report(failure, err, timestamp, commandId, locale, json, 1);
+    }
+
+    static int report(Throwable failure, PrintStream err, Instant timestamp, String commandId,
+                      Locale locale, boolean json, long sequence) {
         StartException problem = switch (failure) {
             case StartException start -> start;
             case ParameterException parameter -> new StartException(2, message(parameter), parameter,
@@ -76,19 +81,19 @@ public final class StartException extends RuntimeException {
             default -> new StartException(40, Messages.format(locale, "cli.error.internal", message(failure)),
                     failure, "INTERNAL_ERROR", null, null, null);
         };
-        print(problem, err, timestamp, commandId, locale, json);
+        print(problem, err, timestamp, commandId, locale, json, sequence);
         return problem.code();
     }
 
     private static void print(StartException exception, PrintStream err, Instant timestamp, String commandId,
-                              Locale locale, boolean json) {
+                              Locale locale, boolean json, long sequence) {
         String message = message(exception);
         if (json) {
             Map<String, Object> event = new LinkedHashMap<>();
             event.put("schema_version", 1);
             event.put("timestamp", timestamp.toString());
-            event.put("sequence", 1);
-            event.put("event_id", commandId + ":1");
+            event.put("sequence", sequence);
+            event.put("event_id", commandId + ":" + sequence);
             event.put("level", "ERROR");
             event.put("event_name", "gretl.cli.error");
             event.put("message", message);

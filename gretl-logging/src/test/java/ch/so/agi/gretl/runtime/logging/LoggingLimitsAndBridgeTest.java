@@ -2,6 +2,7 @@ package ch.so.agi.gretl.runtime.logging;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -68,7 +69,7 @@ class LoggingLimitsAndBridgeTest {
             for (String line : console.toString(StandardCharsets.UTF_8).lines().toList()) {
                 var event = (Map<?, ?>) Json.parse(line);
                 assertEquals(++sequence, event.get("sequence"));
-                assertEquals(null, byId.put(event.get("event_id"), line));
+                assertNull(byId.put(event.get("event_id"), line));
             }
             var lines = Files.readAllLines(file);
             sequence = 0;
@@ -82,6 +83,33 @@ class LoggingLimitsAndBridgeTest {
             var terminal = (Map<?, ?>) Json.parse(lines.getLast());
             assertEquals("gretl.run.finished", terminal.get("event_name"));
         }
+    }
+
+    @Test
+    void shortenedJsonRetainsTaskAndOperationIdentity() throws Exception {
+        Path file = tempDir.resolve("events.jsonl");
+        ByteArrayOutputStream console = new ByteArrayOutputStream();
+        var context = new LogContext("command", UUID.randomUUID(), "job", "test",
+                Optional.of("d".repeat(3250)));
+        var config = new LoggingConfig(LoggingConfig.Format.JSON, LogLevel.INFO,
+                Map.of(), true, 4096, 1024 * 1024);
+        try (var pipeline = new LoggingPipeline(config, context, new Redactor(new SecretRegistry()),
+                new PrintStream(console, true, StandardCharsets.UTF_8), file, Clock.systemUTC())) {
+            pipeline.emit(new RunEvent("gretl.task.message", "\"".repeat(3500), Instant.now(),
+                    LogLevel.INFO, Optional.empty(), Optional.empty(), Optional.of("task"),
+                    Optional.of("invocation"), Optional.of("operation"), "task", "", 0,
+                    Map.of(), Optional.empty()));
+        }
+
+        assertTrue(Files.size(file) <= 4096);
+        String line = Files.readString(file);
+        assertEquals(line, console.toString(StandardCharsets.UTF_8));
+        var event = (Map<?, ?>) Json.parse(line);
+        assertEquals(true, event.get("truncated"));
+        assertEquals("command:1", event.get("event_id"));
+        assertEquals("task", event.get("task_id"));
+        assertEquals("invocation", event.get("invocation_id"));
+        assertEquals("operation", event.get("operation_id"));
     }
 
     @Test

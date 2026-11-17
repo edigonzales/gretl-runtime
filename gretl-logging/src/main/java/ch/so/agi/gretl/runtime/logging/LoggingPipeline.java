@@ -50,7 +50,7 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
     }
 
     private void write(RunEvent event) {
-        long number = ++sequence;
+        long number = nextSequence();
         LogEvent canonical = new LogEvent(
                 number,
                 context.commandId() + ":" + number,
@@ -151,6 +151,11 @@ public final class LoggingPipeline implements RunEventSink, AutoCloseable {
 
     public LogContext context() {
         return context;
+    }
+
+    /** Reserves an identity for a diagnostic written directly to stderr. */
+    public synchronized long nextSequence() {
+        return ++sequence;
     }
 
     @Override

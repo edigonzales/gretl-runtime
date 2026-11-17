@@ -26,7 +26,6 @@ public final class GretlCli {
     private final Path startCwd;
     private final ClassLoader classLoader;
     private final Clock clock;
-    private final String commandId = UUID.randomUUID().toString();
 
     public GretlCli(PrintStream out, PrintStream err, Map<String, String> environment,
                     Path startCwd, ClassLoader classLoader) {
@@ -78,7 +77,8 @@ public final class GretlCli {
                 case PACKAGE -> packageCommand(options, locale);
             };
         } catch (Throwable failure) {
-            return StartException.report(failure, err, clock.instant(), commandId, locale, JobOptions.jsonRequested(args));
+            return StartException.report(failure, err, clock.instant(), UUID.randomUUID().toString(),
+                    locale, JobOptions.jsonRequested(args));
         }
     }
 

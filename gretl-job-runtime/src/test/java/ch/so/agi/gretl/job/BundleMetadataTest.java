@@ -30,6 +30,15 @@ class BundleMetadataTest {
                 m->bundle(m).put("entries",List.of(Map.of("scopeId",":a","sourceId","job.groovy")))
         )){var value=valid();change.accept(value);assertThrows(JobJarMain.JobJarException.class,()->read(value),value.toString());}
     }
+    @Test
+    void rejectsOversizedMetadataAndMalformedUtf8() {
+        byte[] oversized = new byte[CompiledScriptBundle.MAX_METADATA_BYTES + 1];
+        byte[] malformedUtf8 = { '"', (byte) 0xc3, '"' };
+        for (byte[] bytes : List.of(oversized, malformedUtf8)) {
+            assertThrows(JobJarMain.JobJarException.class, () -> read(bytes));
+        }
+    }
+
     @SuppressWarnings("unchecked") private Map<String,Object> bundle(Map<String,Object> m){return (Map<String,Object>)m.get("bundle");}
     @SuppressWarnings("unchecked") private List<Map<String,Object>> sources(Map<String,Object> m){return (List<Map<String,Object>>)bundle(m).get("sources");}
     @SuppressWarnings("unchecked") private List<Map<String,Object>> edges(Map<String,Object> m){return (List<Map<String,Object>>)bundle(m).get("edges");}
@@ -43,7 +52,9 @@ class BundleMetadataTest {
         return (Map<String,Object>)Json.parse(Json.write(m));
     }
     private JobJarMain.JobMetadata read(Map<String,Object> metadata)throws Exception{
-        byte[] bytes=Json.write(metadata).getBytes(StandardCharsets.UTF_8);
+        return read(Json.write(metadata).getBytes(StandardCharsets.UTF_8));
+    }
+    private JobJarMain.JobMetadata read(byte[] bytes) throws JobJarMain.JobJarException {
         return JobJarMain.JobMetadata.load(new ClassLoader(null){@Override public InputStream getResourceAsStream(String name){return name.equals(JobJarMain.METADATA_RESOURCE)?new ByteArrayInputStream(bytes):null;}},Locale.ENGLISH);
     }
 }
