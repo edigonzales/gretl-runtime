@@ -46,7 +46,6 @@ final class ExternalPackageFixture {
                 + "<dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.6.5</version><scope>provided</scope></dependency>");
     }
     String coordinate() { return group + ":external-file-size:1.0"; }
-    String helperCoordinate() { return group + ":helper:1.0"; }
     Path pollution() throws Exception {
         return publish("unrelated", compile("external/unrelated/NotSelected.java",
                 "package external.unrelated; public final class NotSelected { }", ""), Map.of(), "");

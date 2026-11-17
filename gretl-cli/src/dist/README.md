@@ -17,4 +17,4 @@ Running a script requires Java alone.
 See [Examples](examples/README.md) for sample jobs and executable job JARs.
 The [local project pipeline](examples/project-pipeline/README.md) runs
 without backing services and demonstrates `check`, `plan`, `run` and
-schema-3 JAR packaging.
+JAR packaging.

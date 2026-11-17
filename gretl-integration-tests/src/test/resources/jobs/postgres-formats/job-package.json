@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 1,
   "name": "postgres-formats",
   "version": "1",
   "runtimeVersion": "6.0.0-SNAPSHOT",

@@ -27,3 +27,10 @@ Fehler verhindern, den vorhandene Mechanismen offenlassen. Fachliche Tests
 prüfen das Produkt direkt. Prüfe grössere Entwürfe mit
 [simplify-change](.agents/skills/simplify-change/SKILL.md) und beauftrage vor
 PR-Abschluss einen unabhängigen [Review](.agents/skills/review-change/SKILL.md).
+
+GRETL Runtime befindet sich vor der ersten öffentlichen Produktveröffentlichung.
+Interne APIs, Dateiformate und Schemas dürfen bei nachgewiesenem
+Vereinfachungsgewinn inkompatibel geändert werden. Keine
+Legacy-Kompatibilitätsschichten und keine Migrationswerkzeuge auf Vorrat.
+Alle aktiven Verbraucher, Beispiele und Tests sind im gleichen Änderungssatz
+anzupassen.

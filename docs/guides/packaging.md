@@ -10,20 +10,35 @@ java -jar /tmp/job.jar --param output=/tmp/message.txt
 
 Das Paket enthält die Standardlaufzeit, alle regulären Taskbibliotheken, die
 kompilierten Jobklassen, deklarierte Ressourcen und explizite zusätzliche
-Abhängigkeiten. Die Felder `taskModules` und `standardFunctions` wurden entfernt.
+Abhängigkeiten.
 Die Paketierung kompiliert den Job, ohne Jobtasks auszuführen.
 
 ## Einzelfile und Projekte
 
-Für ein Einzelscript verwenden Schemas 1 und 2 das Feld `entryScript`. Ein
-Projekt verwendet Schema 3 und `"settingsFile": "settings.gretl"`. Beide
-Formate erfordern `name`, `version` und `runtimeVersion`. Die optionalen
-Listen `sources` und `resources` geben Pfade relativ zum Deskriptor an.
-Includes und Ressourcen müssen innerhalb des Projektverzeichnisses liegen.
+Der Deskriptor verwendet `schemaVersion: 1` und genau eines der Felder
+`entryScript` oder `settingsFile`. `name`, `version` und `runtimeVersion`
+sind Pflicht. Die optionalen Listen `sources` und `resources` enthalten
+Pfade relativ zum Deskriptor. Includes und Ressourcen müssen innerhalb
+des Jobverzeichnisses liegen.
+
+```json
+{"schemaVersion":1,"name":"single","version":"1","runtimeVersion":"6.0.0-SNAPSHOT","entryScript":"job.groovy"}
+```
+
+```json
+{"schemaVersion":1,"name":"pipeline","version":"1","runtimeVersion":"6.0.0-SNAPSHOT","settingsFile":"settings.gretl","resources":["prepare/data"]}
+```
+
+`META-INF/gretl/job.json` enthält Schema 1, Jobname, Jobversion,
+Runtimeversion, die Paketressourcen und ein kompiliertes Bundle. Das
+Bundle enthält den Einstieg je Projektpfad, Klassen und Quellzuordnung,
+gegebenenfalls Apply-Kanten und Projekt-Default-Ziele.
+`java -jar` lädt die Klassen direkt aus dem JAR.
 
 ## Externe Abhängigkeiten
 
-`dependencies` akzeptiert genaue Maven-Koordinaten. Der Packager verwendet
+`dependencies` akzeptiert genaue Maven-Koordinaten, zum Beispiel
+`"dependencies": ["org.apache.commons:commons-text:1.14.0"]`. Der Packager verwendet
 für zusätzliche Bibliotheken beim Paketieren den Maven-Resolver über
 `mvn`. Das erzeugte Job-JAR läuft eigenständig mit Java 25. Zusätzliche
 Bibliotheken werden während der Paketierung auf Klassen- und

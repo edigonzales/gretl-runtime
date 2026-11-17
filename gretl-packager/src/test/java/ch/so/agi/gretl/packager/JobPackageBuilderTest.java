@@ -37,19 +37,15 @@ class JobPackageBuilderTest {
         write(first, "META-INF/groovy/org.codehaus.groovy.runtime.ExtensionModule",
                 "moduleName=one\nmoduleVersion=1\n");
 
-        JobCompiler.CompiledJob compiled = new JobCompiler.CompiledJob("job",
-                Map.of("job.class", new byte[] {1, 2, 3}),
-                List.of(new JobCompiler.SourceFile("job.groovy",
-                        tempDir.resolve("job.groovy"), "action('run') { }")), "a".repeat(64));
+        var compiled = BundleCompiler.compile(descriptor, JobPackager.currentClasspath(), java.util.Locale.GERMAN);
         Path output = tempDir.resolve("out/job.jar");
-        var result = new JobPackageBuilder(List.of(first, second), "6.0.0-SNAPSHOT")
+        var result = new JobPackageBuilder(List.of(first, second))
                 .build(descriptor, compiled, output);
 
-        assertEquals("job", result.entryClass());
+        assertEquals(compiled.bundle().sources().getFirst().className(), result.entryClass());
         assertTrue(Files.isRegularFile(output));
         try (JarFile jar = new JarFile(output.toFile())) {
             assertTrue(jar.getEntry("META-INF/gretl/job.json") != null);
-            assertTrue(jar.getEntry("META-INF/gretl/dependencies.json") != null);
             String services = new String(jar.getInputStream(
                     jar.getEntry("META-INF/services/example.Service")).readAllBytes(),
                     StandardCharsets.UTF_8);
@@ -83,11 +79,10 @@ class JobPackageBuilderTest {
         writeMainClass(second);
         write(first, "same/Thing.class", "first");
         write(second, "same/Thing.class", "second");
-        JobCompiler.CompiledJob compiled = new JobCompiler.CompiledJob("job",
-                Map.of("job.class", new byte[] {1}), List.of(), "a".repeat(64));
+        var compiled = BundleCompiler.compile(descriptor, JobPackager.currentClasspath(), java.util.Locale.GERMAN);
 
         PackageException error = assertThrows(PackageException.class,
-                () -> new JobPackageBuilder(List.of(first, second), "6.0.0-SNAPSHOT")
+                () -> new JobPackageBuilder(List.of(first, second))
                         .build(descriptor, compiled, tempDir.resolve("conflict.jar")));
         assertEquals("PACKAGE_CLASS_CONFLICT", error.code());
         assertTrue(error.getMessage().contains("conflict-a"));
@@ -111,10 +106,9 @@ class JobPackageBuilderTest {
         write(embedded, "ch/so/agi/gretl/job/JobJarMain.class", "main");
         write(canonical, "ch/interlis/models/INTERLIS/VALIGNMENT.class", "canonical");
         write(embedded, "ch/interlis/models/INTERLIS/VALIGNMENT.class", "embedded");
-        JobCompiler.CompiledJob compiled = new JobCompiler.CompiledJob("job",
-                Map.of("job.class", new byte[] {1}), List.of(), "a".repeat(64));
+        var compiled = BundleCompiler.compile(descriptor, JobPackager.currentClasspath(), java.util.Locale.GERMAN);
         Path output = tempDir.resolve("model-copy.jar");
-        new JobPackageBuilder(List.of(canonical, embedded), "6.0.0-SNAPSHOT", Map.of(
+        new JobPackageBuilder(List.of(canonical, embedded), Map.of(
                 canonical, new PackageDescriptor.Dependency("ch.interlis", "iox-ili", "1.24.4"),
                 embedded, new PackageDescriptor.Dependency("ch.interlis", "av2geobau", "1.4.2")))
                 .build(descriptor, compiled, output);

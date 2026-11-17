@@ -87,19 +87,16 @@ Filesystemsnapshot über mehrere Dateien. Ein neuer Ladevorgang erfasst neue Byt
 Kompilier-, Registrierungs-, Konfigurations-, Action- und Cleanupfehler nennen die
 wirkliche Quelle und Zeile; gleiche Basenames bleiben unterscheidbar.
 
-[Paketdeskriptoren](packaging.md) behalten ihre Schemata 1/2/3. Der Packager
+Der [Packager](packaging.md)
 kompiliert den vollständigen Includeabschluss, ohne Scriptbodies zu starten.
 `sources` bleibt die Auswahl zusätzlicher Helperquellen; ein nicht referenziertes
 zusätzliches Script bleibt ein Fehler. Datenressourcen werden ausdrücklich durch
 `resources` ausgewählt. Ein Include nimmt keine benachbarten Daten automatisch auf.
 
-Include-JARs verwenden intern `job.json`-Schema 3, `definitionMode: single|project`
-und Bundleversion 1. Validierte Rollen, Klassen, Quellidentitäten und Applykanten
-steuern die Bytecoderegistrierung. Zur Laufzeit werden keine Groovyquellen gelesen
-oder kompiliert. Alte interne Jobformate 1/2 bleiben lesbar. Dependencyinventar 2,
-Operationskatalog und LSP-Protokoll 1 sind davon unabhängig. Das generische IMAGE
-führt weiterhin externe Scripts/Projekte aus; es wird kein konkretes Job-JAR ins
-Image eingebaut.
+Die internen Jobmetadaten enthalten bei jedem Job ein kompiliertes Bundle.
+Validierte Klassen, Quellidentitäten und Apply-Kanten steuern die
+Bytecoderegistrierung. Zur Laufzeit werden keine Groovyquellen gelesen oder
+kompiliert. Das generische IMAGE führt weiterhin externe Scripts und Projekte aus.
 
 Hilfe, Check und Plan führen keine Taskkonfiguration, Tasks oder Cleanups aus.
 Vertrauenswürdiger Script-Toplevel kann beim Definitionsladen wie bisher laufen.

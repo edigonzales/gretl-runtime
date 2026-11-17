@@ -25,7 +25,7 @@ These examples contain no production credentials and no hidden test server.
 All job JARs include the standard runtime. Declare any additional external
 libraries as Maven coordinates in `dependencies`.
 
-`minimal-action/job-package.json` is an executable schema-2 example:
+`minimal-action/job-package.json` is an executable single-job example:
 
 ```sh
 ./bin/gretl package examples/minimal-action/job-package.json --output /tmp/minimal.jar
@@ -33,9 +33,8 @@ java -jar /tmp/minimal.jar --param output=/tmp/minimal-result.txt
 ```
 
 The packaged job needs Java 25; Maven is needed at packaging time when additional external dependencies must be resolved. Embedded
-`META-INF/gretl/dependencies.json` records actual Maven inputs and hashes.
 
-`project-pipeline/` is a complete local Gzip/Extract project with nested includes, qualified targets/parameters and one shared run. Its schema-3 descriptor uses `settingsFile: settings.gretl` and packages the explicit project resources. It runs as a directory or a standalone compiled project JAR; see `project-pipeline/README.md`.
+`project-pipeline/` is a complete local Gzip/Extract project with nested includes, qualified targets/parameters and one shared run. Its package descriptor uses `settingsFile: settings.gretl` and packages the explicit project resources. It runs as a directory or a standalone compiled project JAR; see `project-pipeline/README.md`.
 
 `task-finalizers/README.md` demonstrates local owner success/failure, a shared
 conditional finalizer, explicit prerequisite/order links and global cleanup.

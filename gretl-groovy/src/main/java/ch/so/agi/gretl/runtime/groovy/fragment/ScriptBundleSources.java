@@ -8,28 +8,37 @@ import java.nio.file.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-/** Per-definition capture; never a global cache. A null snapshot selects the untouched legacy loader. */
+/** Per-definition capture; never a global cache. SCRIPT callers can skip capturing definitions without includes. */
 public final class ScriptBundleSources {
     private ScriptBundleSources() { }
     public record Snapshot(Path root,FragmentGraphResolver.Bundle bundle) { }
     public static Snapshot single(Path file,Locale locale)throws IOException{
+        return single(file, locale, true);
+    }
+
+    public static Snapshot single(Path file, Locale locale, boolean includesOnly) throws IOException {
         file=file.toAbsolutePath().normalize();Path root=file.getParent();String id=file.getFileName().toString();
         byte[] bytes=Files.readAllBytes(file);
-        var result=new ApplyDirectiveReader().read(id,new String(bytes,StandardCharsets.UTF_8));
-        if(!result.applySeen())return null;
-        result.requireValid(locale);
+        if (includesOnly && !new ApplyDirectiveReader().read(id, new String(bytes, StandardCharsets.UTF_8)).applySeen()) {
+            return null;
+        }
         return resolve(root,List.of(new FragmentGraphResolver.Entry("",id)),false,null,Map.of(id,source(id,bytes,locale)),locale);
     }
     public static Snapshot project(GretlProject project,Locale locale)throws IOException{
+        return project(project, locale, true);
+    }
+
+    public static Snapshot project(GretlProject project, Locale locale, boolean includesOnly) throws IOException {
         var entries=project.entries().stream().map(e->new FragmentGraphResolver.Entry(e.projectPath().canonical(),
                 project.root().relativize(e.scriptFile()).toString().replace('\\','/'))).toList();
         Map<String,byte[]> raw=new LinkedHashMap<>();boolean includes=false;
         for(var entry:entries){
             byte[] bytes=Files.readAllBytes(project.root().resolve(entry.sourceId()));raw.put(entry.sourceId(),bytes);
-            var result=new ApplyDirectiveReader().read(entry.sourceId(),new String(bytes,StandardCharsets.UTF_8));
-            if(result.applySeen()){includes=true;result.requireValid(locale);}
+            if (includesOnly && !includes) {
+                includes = new ApplyDirectiveReader().read(entry.sourceId(), new String(bytes, StandardCharsets.UTF_8)).applySeen();
+            }
         }
-        if(!includes)return null;
+        if (includesOnly && !includes) return null;
         Map<String,FragmentSource> captured=new LinkedHashMap<>();raw.forEach((id,bytes)->captured.put(id,source(id,bytes,locale)));
         String settingsId=project.root().relativize(project.settingsFile()).toString().replace('\\','/');
         byte[] settings=project.settingsSource()==null?Files.readAllBytes(project.settingsFile()):project.settingsSource().getBytes(StandardCharsets.UTF_8);

@@ -11,14 +11,14 @@ import org.junit.jupiter.api.Test;
 
 class BundleMetadataTest {
     @Test void validVersionedBundleRoundTripsWithoutAnySourceParsingOrLoading()throws Exception{
-        var metadata=read(valid());assertEquals(3,metadata.schemaVersion());assertEquals(2,metadata.bundle().sources().size());assertFalse(metadata.bundle().projectMode());
+        var metadata=read(valid());assertEquals(2,metadata.bundle().sources().size());assertFalse(metadata.bundle().projectMode());
         assertThrows(UnsupportedOperationException.class,()->metadata.bundle().sources().clear());
     }
     @Test void malformedBundleAndMixedMetadataAreRejectedBeforeClassInitialization(){
         for(var change:List.<Consumer<Map<String,Object>>>of(
-                m->m.put("schemaVersion",4),m->m.put("schemaVersion",3.5),m->m.put("definitionMode","other"),
-                m->m.put("javaFeatureVersion",25.5),m->m.put("entryClass","legacy"),m->m.put("sourceFiles",List.of("job.groovy")),
-                m->m.put("resourceFiles",List.of("../escape")),m->m.put("defaultTargets",List.of("run")),
+                m->m.put("schemaVersion",3),m->m.put("schemaVersion",1.5),
+                m->m.put("entryClass","legacy"),m->m.put("sourceFiles",List.of("job.groovy")),
+                m->m.put("resourceFiles",List.of("../escape")),m->bundle(m).put("defaultTargets",List.of("run")),
                 m->bundle(m).put("version",2),m->bundle(m).put("settingsId","settings.gretl"),m->bundle(m).put("sha256","bad"),
                 m->bundle(m).put("entries",List.of()),m->bundle(m).put("edges",List.of()),
                 m->sources(m).add(sources(m).getFirst()),
@@ -37,7 +37,9 @@ class BundleMetadataTest {
         FragmentSourceAccess access=(id,fragment)->new FragmentSource(id,(id.equals("job.groovy")?"apply from:'tasks/f.groovy'":"action('run'){}").getBytes(StandardCharsets.UTF_8));
         var source=new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("","job.groovy")),false,null,access);
         var types=new LinkedHashMap<String,String>();source.sources().keySet().forEach(id->types.put(id,source.virtualName(id).replace(".groovy","")));
-        var m=new LinkedHashMap<String,Object>();m.put("schemaVersion",3);m.put("name","bundle");m.put("version","1");m.put("runtimeVersion","6.0.0-SNAPSHOT");m.put("javaFeatureVersion",25);m.put("definitionMode","single");m.put("bundle",CompiledScriptBundle.from(source,types).toMetadata());m.put("defaultTargets",List.of());m.put("resourceRoot",JobJarMain.RESOURCE_ROOT);m.put("resourceFiles",List.of());m.put("sourceFiles",List.of("job.groovy","tasks/f.groovy"));m.put("dependencyInventory","META-INF/gretl/dependencies.json");m.put("packagerVersion","test");
+        var m = Map.of("schemaVersion", 1, "name", "bundle", "version", "1",
+                "runtimeVersion", "6.0.0-SNAPSHOT", "resourceFiles", List.of(),
+                "bundle", CompiledScriptBundle.from(source, types, List.of()).toMetadata());
         return (Map<String,Object>)Json.parse(Json.write(m));
     }
     private JobJarMain.JobMetadata read(Map<String,Object> metadata)throws Exception{

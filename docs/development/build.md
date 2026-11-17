@@ -10,7 +10,7 @@ benötigt.
 ./gradlew :gretl-lsp:shadowJar :gretl-vscode:vsix
 ```
 
-Gradle übernimmt die ausgelieferten Jobs und Ressourcen aus `examples/`.
+Gradle übernimmt die ausgelieferten Jobs, Paketdeskriptoren und Ressourcen aus `examples/`.
 Die Anleitungen für den entpackten Distributionsroot liegen unter
 `gretl-cli/src/dist/examples/`.
 

@@ -14,7 +14,7 @@ cmp examples/project-pipeline/prepare/data/input.txt output/packaged.txt
 
 Gzip und Extract arbeiten ausschliesslich mit synthetischen lokalen Daten.
 Drei gleichnamige lokale Tasks bilden einen einzigen qualifizierten Graphen.
-Das Schema-3-JAR enthält die kompilierten Skripte und die ausgewählte statische
+Das Job-JAR enthält die kompilierten Skripte und die ausgewählte statische
 Datei und läuft ohne die Distribution oder den Quellbaum. Der Ausgabeparameter
 ist relativ zum ursprünglichen Start-CWD; file ist projektbezogen. Der gemeinsame
 Run erzeugt einen Bericht und Ereignislog unter gretl-reports. Hilfe und Planung

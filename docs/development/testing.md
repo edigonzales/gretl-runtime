@@ -10,7 +10,7 @@
 
 `test` führt lokale Tests aus. `serviceTest` wählt die mit `docker`
 markierten JUnit-Tests für echte Dienste. `jarTest` wählt unabhängige
-Job-JAR-Prozesse. `imageTest` baut das generische Image und führt die IMAGE-Suite
+Job-JAR-Prozesse für Einzeljobs und Projekte mit und ohne Includes. `imageTest` baut das generische Image und führt die IMAGE-Suite
 mit Docker aus. `fullCheck` umfasst alle Gradle-Prüfungen, die GeoTools-Probe,
 die drei spezialisierten Testtasks und die ZIP- und TAR-Distribution. Die
 separate Dokumentationsprüfung läuft mit `./gradlew docsCheck` und Python 3.12.

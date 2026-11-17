@@ -14,7 +14,7 @@ final class JarExecutionAdapter {
             throw new IllegalArgumentException("JAR has no CHECK command");
         Path descriptor = source.resolve("job-package.json");
         if (!Files.exists(descriptor)) {
-            if (request.input().kind() == ArtifactJobRunner.InputKind.PROJECT_DIRECTORY) throw new IOException("Project fixture requires a schema-3 descriptor");
+            if (request.input().kind() == ArtifactJobRunner.InputKind.PROJECT_DIRECTORY) throw new IOException("Project fixture requires a package descriptor");
             List<String> resources;
             try (var paths = Files.list(source)) {
                 resources = paths.map(p -> p.getFileName().toString())
@@ -31,8 +31,8 @@ final class JarExecutionAdapter {
                 && !request.input().relativePath().equals(metadata.get("entryScript")))
             throw new IOException("Requested JAR script does not match package descriptor");
         if (request.input().kind() == ArtifactJobRunner.InputKind.PROJECT_DIRECTORY
-                && (!request.input().relativePath().equals(".") || !Long.valueOf(3).equals(metadata.get("schemaVersion"))))
-            throw new IOException("Requested JAR project does not match schema-3 package root");
+                && (!request.input().relativePath().equals(".") || !metadata.containsKey("settingsFile")))
+            throw new IOException("Requested JAR project does not match package root");
         Path launcher = distribution.launcher();
         if (!Files.isRegularFile(launcher)) throw new IOException("Candidate distribution missing: " + launcher);
         Path jar = request.directory().resolve("job.jar");

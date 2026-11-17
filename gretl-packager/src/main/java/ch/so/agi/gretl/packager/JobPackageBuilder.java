@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.packager;
 
 import ch.so.agi.gretl.runtime.logging.Json;
+import ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,13 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HexFormat;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,38 +45,30 @@ public final class JobPackageBuilder {
             "META-INF/sisu/javax.inject.Named");
 
     private final List<Path> classpath;
-    private final String packagerVersion;
     private final Map<Path, PackageDescriptor.Dependency> identities;
     private final Map<String, Entry> entries = new TreeMap<>();
     private final Map<String, Set<String>> services = new TreeMap<>();
     private final Map<String, Map<String, String>> groovyModules = new TreeMap<>();
-    private final List<IncludedArtifact> includedArtifacts = new ArrayList<>();
+    private final Set<PackageDescriptor.Dependency> includedDependencies = new java.util.HashSet<>();
+    private final Set<String> resourceFiles = new TreeSet<>();
 
-    public JobPackageBuilder(List<Path> classpath, String packagerVersion) {
-        this(classpath, packagerVersion, Map.of());
+    public JobPackageBuilder(List<Path> classpath) {
+        this(classpath, Map.of());
     }
 
-    public JobPackageBuilder(List<Path> classpath, String packagerVersion, Map<Path, PackageDescriptor.Dependency> identities) {
+    public JobPackageBuilder(List<Path> classpath, Map<Path, PackageDescriptor.Dependency> identities) {
         this.identities = Map.copyOf(identities);
         this.classpath = classpath.stream().map(path -> path.toAbsolutePath().normalize())
                 .distinct().toList();
-        this.packagerVersion = packagerVersion;
     }
 
-    public PackageResult build(PackageDescriptor descriptor,
-                               JobCompiler.CompiledJob compiled,
-                               Path output) throws PackageException {
-        return buildInternal(descriptor, compiled, null, output);
-    }
-
-    public PackageResult buildProject(PackageDescriptor descriptor, CompiledProject project, Path output) throws PackageException {
-        if (!descriptor.projectPackage() || project.entries().isEmpty())
-            throw new PackageException("PACKAGE_DESCRIPTOR_SCHEMA", PackagerMessages.get("package.project.compilerSchema"));
-        return buildInternal(descriptor, null, project, output);
-    }
-
-    private PackageResult buildInternal(PackageDescriptor descriptor, JobCompiler.CompiledJob compiled,
-                                        CompiledProject project, Path output) throws PackageException {
+    public PackageResult build(PackageDescriptor descriptor, BundleCompiler.Result compiled, Path output)
+            throws PackageException {
+        entries.clear();
+        services.clear();
+        groovyModules.clear();
+        includedDependencies.clear();
+        resourceFiles.clear();
         if (classpath.isEmpty()) {
             throw new PackageException("PACKAGE_CLASSPATH_EMPTY",
                     PackagerMessages.get("package.classpathEmpty"));
@@ -99,14 +88,15 @@ public final class JobPackageBuilder {
                     PackagerMessages.get("package.jobRuntimeMissing"));
         }
         validateDeclaredDependencies(descriptor);
-        addCompiled(project == null ? compiled.classes() : project.classes(),
-                project == null ? compiled.sources() : project.sources());
+        addCompiled(compiled.classes(), compiled.sources());
         addResources(descriptor);
-        addMetadata(descriptor, compiled, project);
+        addMetadata(descriptor, compiled.bundle());
         addServices();
         addGroovyModules();
-        return write(output, descriptor, project == null ? compiled.entryClass() : project.entries().getFirst().entryClass(),
-                project == null ? compiled.classCount() : project.classes().size());
+        String entryId = compiled.bundle().entries().getFirst().sourceId();
+        String entryClass = compiled.bundle().sources().stream().filter(source -> source.sourceId().equals(entryId))
+                .findFirst().orElseThrow().className();
+        return write(output, descriptor, entryClass, compiled.classes().size());
     }
 
     private void addJar(Path path) throws PackageException {
@@ -123,8 +113,7 @@ public final class JobPackageBuilder {
                 }
                 addEntry(entry.getName(), bytes, identities.containsKey(path) ? identities.get(path).coordinate() : path.getFileName().toString());
             }
-            includedArtifacts.add(new IncludedArtifact(path.getFileName().toString(),
-                    sha256(path), "jar", identities.get(path)));
+            if (identities.containsKey(path)) includedDependencies.add(identities.get(path));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_CLASSPATH_READ",
                     PackagerMessages.format("package.jarRead", path.getFileName()), exception);
@@ -140,8 +129,7 @@ public final class JobPackageBuilder {
                 String name = root.relativize(file).toString().replace('\\', '/');
                 addEntry(name, Files.readAllBytes(file), identities.containsKey(root) ? identities.get(root).coordinate() : root.getFileName().toString());
             }
-            includedArtifacts.add(new IncludedArtifact(root.getFileName().toString(),
-                    hashDirectory(root), "classes", identities.get(root)));
+            if (identities.containsKey(root)) includedDependencies.add(identities.get(root));
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_CLASSPATH_READ",
                     PackagerMessages.format("package.classpathRead", root.getFileName()),
@@ -151,7 +139,7 @@ public final class JobPackageBuilder {
 
     private void addEntry(String name, byte[] bytes, String origin) throws PackageException {
         String normalized = normalizeEntry(name);
-        if (normalized == null || isIgnored(normalized)) {
+        if (!normalized.startsWith("META-INF/gretl/job-resources/") && isIgnored(normalized)) {
             return;
         }
         if (normalized.startsWith("META-INF/services/")) {
@@ -229,11 +217,11 @@ public final class JobPackageBuilder {
         return origin.startsWith("ch.interlis:av2geobau:") || origin.matches("av2geobau-[0-9].*\\.jar");
     }
 
-    private void addCompiled(Map<String, byte[]> classes, List<JobCompiler.SourceFile> sources) throws PackageException {
+    private void addCompiled(Map<String, byte[]> classes, List<BundleCompiler.SourceFile> sources) throws PackageException {
         for (Map.Entry<String, byte[]> entry : classes.entrySet()) {
             addEntry(entry.getKey(), entry.getValue(), "compiled job");
         }
-        for (JobCompiler.SourceFile source : sources) {
+        for (BundleCompiler.SourceFile source : sources) {
             addEntry("META-INF/gretl/sources/" + source.relativePath(),
                     source.text().getBytes(StandardCharsets.UTF_8), "job source");
         }
@@ -265,89 +253,22 @@ public final class JobPackageBuilder {
         try {
             addEntry("META-INF/gretl/job-resources/" + relative,
                     Files.readAllBytes(file), "job resource");
+            resourceFiles.add(relative);
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_RESOURCE_READ",
                     PackagerMessages.format("package.resourceRead", relative), exception);
         }
     }
 
-    private void addMetadata(PackageDescriptor descriptor, JobCompiler.CompiledJob compiled, CompiledProject project)
-            throws PackageException {
+    private void addMetadata(PackageDescriptor descriptor, CompiledScriptBundle bundle) throws PackageException {
         Map<String, Object> job = new LinkedHashMap<>();
-        var bundle=project==null?compiled.bundle():project.bundle();
-        job.put("schemaVersion", bundle!=null?3:project == null ? 1 : 2);
+        job.put("schemaVersion", 1);
         job.put("name", descriptor.name());
         job.put("version", descriptor.version());
         job.put("runtimeVersion", descriptor.runtimeVersion());
-        job.put("javaFeatureVersion", 25);
-        if(bundle!=null){
-            job.put("definitionMode",bundle.projectMode()?"project":"single");
-            job.put("bundle",bundle.toMetadata());
-            job.put("defaultTargets",project==null?List.of():project.defaultTargets());
-        } else if (project == null) {
-            job.put("entryClass", compiled.entryClass());
-            job.put("entryScript", descriptor.entryScript());
-            job.put("scriptSha256", compiled.scriptSha256());
-        } else {
-            job.put("project", true);
-            job.put("settingsFile", descriptor.settingsFile());
-            job.put("defaultTargets", project.defaultTargets());
-            job.put("entries", project.entries().stream().map(e -> Map.of(
-                    "projectPath", e.projectPath().canonical(), "entryScript", e.relativeScriptPath(), "entryClass", e.entryClass())).toList());
-            job.put("projectSha256", project.projectSha256());
-        }
-        job.put("resourceRoot", "META-INF/gretl/job-resources/");
-        job.put("resourceFiles", resourceNames(descriptor));
-        job.put("sourceFiles", (project == null ? compiled.sources() : project.sources()).stream()
-                .map(JobCompiler.SourceFile::relativePath).toList());
-        job.put("dependencyInventory", "META-INF/gretl/dependencies.json");
-        job.put("packagerVersion", packagerVersion);
+        job.put("bundle", bundle.toMetadata());
+        job.put("resourceFiles", List.copyOf(resourceFiles));
         addMetadataEntry("META-INF/gretl/job.json", Json.write(job));
-
-        Map<String, Object> dependencies = new LinkedHashMap<>();
-        dependencies.put("schemaVersion", 2);
-        dependencies.put("descriptorSchemaVersion", descriptor.schemaVersion());
-        dependencies.put("declared", descriptor.dependencies().stream()
-                .map(PackageDescriptor.Dependency::coordinate).toList());
-        List<Map<String, String>> included = new ArrayList<>();
-        for (IncludedArtifact artifact : includedArtifacts) {
-            Map<String, String> value = new LinkedHashMap<>();
-            value.put("name", artifact.name());
-            value.put("kind", artifact.kind());
-            value.put("sha256", artifact.sha256());
-            if (artifact.identity() != null) {
-                value.put("coordinate", artifact.identity().coordinate());
-                value.put("groupId", artifact.identity().groupId()); value.put("artifactId", artifact.identity().artifactId());
-                value.put("version", artifact.identity().version()); value.put("classifier", artifact.identity().classifier());
-            }
-            included.add(value);
-        }
-        dependencies.put("included", included);
-        addMetadataEntry("META-INF/gretl/dependencies.json", Json.write(dependencies));
-    }
-
-    private List<String> resourceNames(PackageDescriptor descriptor) throws PackageException {
-        List<String> result = new ArrayList<>();
-        for (Path resource : descriptor.resourcePaths()) {
-            if (Files.isDirectory(resource)) {
-                try (Stream<Path> walk = Files.walk(resource)) {
-                    walk.filter(Files::isRegularFile)
-                            .filter(path -> !Files.isSymbolicLink(path))
-                            .map(path -> descriptor.baseDirectory()
-                                    .relativize(path.toAbsolutePath().normalize())
-                                    .toString().replace('\\', '/'))
-                            .sorted().forEach(result::add);
-                } catch (IOException exception) {
-                    throw new PackageException("PACKAGE_RESOURCE_READ",
-                            PackagerMessages.get("package.resourceIndex"), exception);
-                }
-            } else {
-                result.add(descriptor.baseDirectory()
-                        .relativize(resource.toAbsolutePath().normalize())
-                        .toString().replace('\\', '/'));
-            }
-        }
-        return result.stream().distinct().sorted().toList();
     }
 
     private void addMetadataEntry(String name, String value) throws PackageException {
@@ -383,8 +304,7 @@ public final class JobPackageBuilder {
 
     private void validateDeclaredDependencies(PackageDescriptor descriptor) throws PackageException {
         for (PackageDescriptor.Dependency dependency : descriptor.dependencies()) {
-            boolean found = includedArtifacts.stream().anyMatch(artifact -> dependency.equals(artifact.identity()));
-            if (!found) {
+            if (!includedDependencies.contains(dependency)) {
                 throw new PackageException("PACKAGE_DEPENDENCY_MISSING",
                         PackagerMessages.format("package.dependencyMissing", dependency.coordinate()));
             }
@@ -435,15 +355,7 @@ public final class JobPackageBuilder {
         }
         return new PackageResult(absolute, descriptor.name(), descriptor.version(),
                 entryClass, classCount,
-                resourceNamesUnchecked(descriptor).size());
-    }
-
-    private List<String> resourceNamesUnchecked(PackageDescriptor descriptor) {
-        try {
-            return resourceNames(descriptor);
-        } catch (PackageException exception) {
-            return List.of();
-        }
+                resourceFiles.size());
     }
 
     private Manifest manifest(PackageDescriptor descriptor) {
@@ -492,37 +404,7 @@ public final class JobPackageBuilder {
         return out.toByteArray();
     }
 
-    private static String sha256(Path file) throws PackageException {
-        try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
-                    .digest(Files.readAllBytes(file)));
-        } catch (IOException | NoSuchAlgorithmException exception) {
-            throw new PackageException("PACKAGE_HASH_FAILED",
-                    PackagerMessages.format("package.hashFailed", file.getFileName()), exception);
-        }
-    }
-
-    private static String hashDirectory(Path root) throws IOException {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            try (Stream<Path> walk = Files.walk(root)) {
-                for (Path file : walk.filter(Files::isRegularFile).sorted().toList()) {
-                    digest.update(root.relativize(file).toString()
-                            .replace('\\', '/').getBytes(StandardCharsets.UTF_8));
-                    digest.update((byte) 0);
-                    digest.update(Files.readAllBytes(file));
-                }
-            }
-            return HexFormat.of().formatHex(digest.digest());
-        } catch (NoSuchAlgorithmException exception) {
-            throw new IllegalStateException("SHA-256 unavailable", exception);
-        }
-    }
-
     private record Entry(byte[] bytes, String origin) {
-    }
-
-    private record IncludedArtifact(String name, String sha256, String kind, PackageDescriptor.Dependency identity) {
     }
 
     public record PackageResult(Path output, String name, String version,

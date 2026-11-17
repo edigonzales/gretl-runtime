@@ -37,7 +37,7 @@ Groovy-Code geladen; Top-Level-Code kann bereits bei Hilfe und Planung laufen.
 
 Ein ausdrücklich übergebener Dateipfad startet weiterhin den Einzeldateimodus.
 
-Das mitgelieferte `job-package.json` verwendet Schema 3. Das Job-JAR enthält
+Das mitgelieferte `job-package.json` setzt `settingsFile` auf `settings.gretl`. Das Job-JAR enthält
 die vollständige Standardruntime. Aus dem Repository-Root:
 
 ```sh
@@ -56,5 +56,3 @@ Relative `path`-Parameter beziehen sich auch dort auf das Start-CWD. Statische
 Ressourcen werden erst beim Run im eigenen Workspace materialisiert; `--help`,
 `--version` und `--plan` erzeugen keinen Ressourcenbestand. Jobhilfe/Plan dürfen
 weiterhin den vertrauenswürdigen Script-Toplevel zur Registrierung ausführen.
-Schemen 1/2 bleiben der Paketweg für Einzeldateijobs; Schema 3 verlangt
-`settingsFile: settings.gretl` und verbietet `entryScript`.

@@ -32,10 +32,11 @@ final class FragmentLoadSession {
         classes.keySet().forEach(id->files.put(bundle.virtualName(id),root.resolve(id)));sourceFiles=Map.copyOf(files);
         builder.sourceFiles(sourceFiles);
     }
-    JobDefinition load(List<String> defaults,Map<String,SourceLocation> defaultSources){
+    JobDefinition load(Map<String, SourceLocation> defaultSources){
         try {
             for(var entry:bundle.entries())register(entry.scopeId(),entry.sourceId(),false);
             if(bundle.projectMode()) {
+                List<String> defaults = bundle.defaultTargets();
                 index.validateReferences();
                 for(String target:defaults)if(!index.taskIds().contains(target))throw new ch.so.agi.gretl.runtime.groovy.project.ProjectException(
                         "UNKNOWN_DEFAULT_TARGET",Messages.format(environment.locale(),"project.defaultUnknown",target),
@@ -82,9 +83,29 @@ final class FragmentLoadSession {
         catch(Error failure){model.remap(failure);throw failure;}
         catch(Throwable failure){throw failure(model,failure);}
     }
-    private GroovyDslException failure(JobDslModel model,Throwable cause){
-        String code=cause instanceof GroovyDslException d?d.code():cause instanceof DefinitionException d?d.code():cause instanceof ParameterException p?p.code():"JOB_LOAD_FAILED";
-        var source=model.failureSource(cause);model.remap(cause);
-        return new GroovyDslException(code,source+" ["+code+"] "+Objects.toString(cause.getMessage(),cause.getClass().getName()),null,null,source,List.of(),cause);
+    private GroovyDslException failure(JobDslModel model, Throwable cause) {
+        String code = "JOB_LOAD_FAILED";
+        String task = null;
+        String field = null;
+        List<String> available = List.of();
+        switch (cause) {
+            case GroovyDslException diagnostic -> {
+                code = diagnostic.code();
+                task = diagnostic.taskId();
+                field = diagnostic.fieldName();
+                available = diagnostic.available();
+            }
+            case DefinitionException definition -> code = definition.code();
+            case ParameterException parameter -> {
+                code = parameter.code();
+                field = parameter.parameterName();
+            }
+            default -> { }
+        }
+        var source = model.failureSource(cause);
+        model.remap(cause);
+        return new GroovyDslException(code, source + " [" + code + "] "
+                + Objects.toString(cause.getMessage(), cause.getClass().getName()),
+                task, field, source, available, cause);
     }
 }
