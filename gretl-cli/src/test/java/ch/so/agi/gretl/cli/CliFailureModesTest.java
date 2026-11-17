@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,10 +33,7 @@ class CliFailureModesTest {
                 "--report", report.toString());
         assertEquals(0, result.code(), result.err());
         assertTrue(Files.isRegularFile(report));
-        try (Stream<Path> files = Files.list(tempDir.resolve("reports"))) {
-            assertFalse(files.anyMatch(path -> path.getFileName().toString()
-                    .endsWith(".events.jsonl")));
-        }
+        assertFalse(Files.exists(tempDir.resolve("reports")));
     }
 
     @Test
