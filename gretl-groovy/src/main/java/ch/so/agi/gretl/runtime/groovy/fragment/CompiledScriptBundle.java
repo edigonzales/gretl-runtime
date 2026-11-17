@@ -8,6 +8,8 @@ import java.util.*;
 /** Validated bytecode registration metadata. Contains no source bodies or filesystem access. */
 public record CompiledScriptBundle(String settingsId,String sha256,List<String> defaultTargets,
         List<FragmentGraphResolver.Entry> entries,List<Source> sources,List<FragmentGraphResolver.Edge> edges) {
+    public static final int MAX_METADATA_BYTES = 16 << 20;
+
     public record Source(String sourceId,String className) { }
     public CompiledScriptBundle {
         defaultTargets = List.copyOf(defaultTargets);

@@ -77,7 +77,10 @@ final class MavenArtifactResolver {
                 if (Files.exists(path)) paths.add(path);
             }
             List<ResolvedArtifact> artifacts = new ArrayList<>();
-            collect((java.util.Map<?, ?>) ch.so.agi.gretl.runtime.logging.Json.parseFile(tree, 16L << 20), paths, artifacts, true);
+            if (!(PackageDescriptor.readJson(tree, 16 << 20) instanceof java.util.Map<?, ?> graph)) {
+                throw new PackageException("PACKAGE_DEPENDENCY_RESOLVE", "Maven dependency graph must be a JSON object");
+            }
+            collect(graph, paths, artifacts, true);
             if (artifacts.size() != paths.size()) throw new PackageException("PACKAGE_ARTIFACT_IDENTITY", "Maven graph and actual classpath disagree");
             for (var dependency : dependencies) {
                 if (artifacts.stream().noneMatch(artifact -> artifact.identity().equals(dependency)))
@@ -86,7 +89,7 @@ final class MavenArtifactResolver {
             return List.copyOf(artifacts);
         } catch (IOException exception) {
             throw new PackageException("PACKAGE_DEPENDENCY_RESOLVE",
-                    "Could not start Maven dependency resolution: " + exception.getMessage(),
+                    "Could not read or resolve Maven dependencies: " + exception.getMessage(),
                     exception);
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();

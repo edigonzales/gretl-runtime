@@ -59,6 +59,17 @@ class PackageDescriptorTest {
         assertTrue(unknownError.getMessage().contains("extra"));
     }
     @Test
+    void rejectsAmbiguousAndOversizedJsonBeforeValidatingFields() throws Exception {
+        Path file = tempDir.resolve("job-package.json");
+        for (String invalid : java.util.List.of("{\"name\":null,\"name\":\"demo\"}", "{} []",
+                "[".repeat(129) + "]".repeat(129), " ".repeat(1 << 20) + "{}")) {
+            Files.writeString(file, invalid);
+            assertEquals("PACKAGE_DESCRIPTOR_INVALID", assertThrows(PackageException.class,
+                    () -> PackageDescriptor.load(file)).code());
+        }
+    }
+
+    @Test
     void supportsClassifiedArtifacts() throws Exception {
         Files.writeString(tempDir.resolve("job.groovy"), "action('run') { }\ndefaults 'run'\n");
         PackageDescriptor value = loadDescriptor(1, "",

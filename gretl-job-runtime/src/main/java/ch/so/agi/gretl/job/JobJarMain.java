@@ -17,7 +17,6 @@ import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
@@ -114,8 +113,7 @@ public final class JobJarMain {
                             Messages.format(locale, "job.error.metadataMissing",
                                     METADATA_RESOURCE));
                 }
-                Object parsed = Json.parse(new String(input.readAllBytes(),
-                        StandardCharsets.UTF_8));
+                Object parsed = Json.parse(input, CompiledScriptBundle.MAX_METADATA_BYTES);
                 if (!(parsed instanceof Map<?, ?> raw)) {
                     throw new JobJarException("JOB_METADATA_INVALID",
                             Messages.get(locale, "job.error.metadataObject"));

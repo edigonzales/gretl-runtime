@@ -16,7 +16,8 @@ Die Anleitungen für den entpackten Distributionsroot liegen unter
 
 Die Installation liegt in `gretl-cli/build/install/gretl-runtime` und enthält
 `bin/`, `lib/` und `examples/`. ZIP und TAR liegen in
-`gretl-cli/build/distributions`. Eigene SCRIPT-Erweiterungen können unter
+`gretl-cli/build/distributions`. Jackson Databind, Core und Annotations liegen
+in `lib/` und stehen auch in den mit der Standardlaufzeit gebauten Job-JARs zur Verfügung. Eigene SCRIPT-Erweiterungen können unter
 `lib/extensions` installiert werden.
 
 ```sh

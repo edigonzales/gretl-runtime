@@ -16,7 +16,7 @@ den aktuellen Zuschnitt.
 | gretl-groovy | Groovy-6-DSL und Kompilierkonfiguration | API, Runner, i18n, Language-Contract, Script-Syntax |
 | gretl-logging | Logging und Runreports | API, Runner, i18n |
 | gretl-job-runtime | Jobquelle, Parameter, Konfiguration, Ausführung und Abschluss für Skript und JAR | API, Runner, Groovy, Logging, i18n |
-| gretl-packager | Authoring: Descriptor, Kompilierung, Ressourcen und JAR | Groovy, Logging, i18n |
+| gretl-packager | Authoring: Descriptor, Kompilierung, Ressourcen und JAR | Groovy, i18n |
 | gretl-cli | Authoring-Kommandos und Übersetzung von Startargumenten | Job-Runtime, Packager, API, Runner, Groovy, Logging, i18n und Standard-Taskbibliotheken zur Laufzeit |
 | gretl-io-tasks | 13 HTTP-, Archiv-, XSLT-, FTP- und S3-Operationen | API, i18n |
 | gretl-database-tasks | SqlExecutor, Db2Db, DuckDbSqlExecutor | API, i18n |
@@ -72,5 +72,5 @@ allein verspricht noch keine vollständige Closure oder Mehrdateien-Editfähigke
 | `gretl-i18n` und Runner | Der Meldungskatalog wird auch direkt von unabhängigen Taskbibliotheken verwendet. Eine Zusammenlegung mit dem Runner würde die Tasks an dessen Planung und Ausführung koppeln. |
 | `gretl-language-contract` und `gretl-script-syntax` | Beide werden von Runtime und Tooling genutzt. Eine Zusammenlegung der Quellparser würde die reine Java-Vertragsbibliothek an Groovy koppeln. Die gemeinsam genutzten Namens- und Graphregeln bleiben separat. |
 | `gretl-tooling-catalog` und Tooling-Core | Der Kataloggenerator lädt Taskprovider und Fachbibliotheken. Eine Zusammenlegung würde diese in die Tooling-Abhängigkeiten ziehen. Der LSP bezieht die exportierten Daten über den Katalog-Classifier. |
-| `gretl-logging` und Job-Runtime | Logging bindet Logback und den JUL-Adapter ein. Der Packager nutzt auch JSON aus diesem Modul. Als Folgeschritt lässt sich diese direkte Abhängigkeit durch eine vorhandene JSON-Bibliothek ersetzen und danach die Logging-Grenze neu bewerten. |
+| `gretl-logging` und Job-Runtime | Logging bindet Logback und den JUL-Adapter ein und verantwortet die Senken sowie Runberichte. Logging und Packager deklarieren Jackson Databind direkt. Der Packager liest Deskriptoren und Maven-Abhängigkeitsgraphen und schreibt Job-JAR-Metadaten ohne Kopplung an die Logging-Senken. |
 | `gretl-ilivalidator` und INTERLIS-Tasks | Der schmale Validator ist separat nutzbar. Die übrigen INTERLIS-Operationen benötigen zusätzlich ili2db, GeoPackage und Formatbibliotheken. Eine Zusammenlegung vergrössert den Abhängigkeitsumfang für Java-Verbraucher. |

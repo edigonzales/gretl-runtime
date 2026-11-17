@@ -1,8 +1,14 @@
 package ch.so.agi.gretl.packager;
 
 import ch.so.agi.gretl.i18n.Messages;
-import ch.so.agi.gretl.runtime.logging.Json;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.StreamReadConstraints;
+import com.fasterxml.jackson.core.StreamReadFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -22,7 +28,15 @@ public record PackageDescriptor(
         List<String> sources, List<String> resources, List<Dependency> dependencies,
         String settingsFile) {
 
-    private static final long MAX_DESCRIPTOR_BYTES = 1L << 20;
+    private static final int MAX_DESCRIPTOR_BYTES = 1 << 20;
+    private static final JsonMapper JSON = JsonMapper.builder(JsonFactory.builder()
+                    .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
+                    .streamReadConstraints(StreamReadConstraints.builder().maxNestingDepth(128).build())
+                    .build())
+            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+            .enable(DeserializationFeature.USE_LONG_FOR_INTS)
+            .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
+            .build();
     private static final Pattern NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]{0,127}");
     private static final Pattern VERSION = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._+\\-]{0,127}");
     private static final Set<String> FIELDS = Set.of(
@@ -59,7 +73,7 @@ public record PackageDescriptor(
         }
         Object parsed;
         try {
-            parsed = Json.parseFile(file, MAX_DESCRIPTOR_BYTES);
+            parsed = readJson(file, MAX_DESCRIPTOR_BYTES);
         } catch (IOException | RuntimeException exception) {
             throw new PackageException("PACKAGE_DESCRIPTOR_INVALID",
                     Messages.format(locale, "package.descriptorInvalidJson", exception.getMessage()), exception);
@@ -103,6 +117,17 @@ public record PackageDescriptor(
                 name, version, runtimeVersion, entryScript, sources, resources, dependencies, settingsFile);
         value.validate(locale);
         return value;
+    }
+
+    static Object readJson(Path file, int maxBytes) throws IOException {
+        try (var input = Files.newInputStream(file)) {
+            byte[] bytes = input.readNBytes(maxBytes + 1);
+            if (bytes.length > maxBytes) {
+                throw new IOException("JSON input exceeds limit of " + maxBytes + " bytes");
+            }
+            String text = StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(bytes)).toString();
+            return JSON.readValue(text, Object.class);
+        }
     }
 
     public boolean projectPackage() { return settingsFile != null; }
