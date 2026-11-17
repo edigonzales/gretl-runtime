@@ -45,7 +45,7 @@ public final class GroovyJobLoader {
             var configuration = CompilerSettings.create();
             GroovyClassLoader classLoader = new GroovyClassLoader(
                     GroovyJobLoader.class.getClassLoader(), configuration);
-            Binding binding = newScriptBinding(model, environment);
+            Binding binding = newScriptBinding(model);
             GroovyShell shell = new GroovyShell(classLoader, binding, configuration);
             Script scriptInstance = shell.parse(script.toFile());
             if (!(scriptInstance instanceof GretlScript gretlScript)) {
@@ -107,7 +107,7 @@ public final class GroovyJobLoader {
                     virtual, sourceMap);
             models.add(model);
             try {
-                Binding binding = newScriptBinding(model, environment);
+                Binding binding = newScriptBinding(model);
                 var shell = new GroovyShell(loader, binding, configuration);
                 Script script = shell.parse(Files.readString(entry.scriptFile(),
                         java.nio.charset.StandardCharsets.UTF_8), virtual);
@@ -209,10 +209,10 @@ public final class GroovyJobLoader {
         return new FragmentLoadSession(bundle,environment.jobRoot(),environment,scripts).load(Map.of());
     }
 
-    private static Binding newScriptBinding(JobDslModel model, DefinitionEnvironment environment) {
+    static Binding newScriptBinding(JobDslModel model) {
         Binding binding = new Binding();
         binding.setVariable(JobDslModel.BINDING_NAME, model);
-        for (OperationType<?, ?> operation : environment.registry().all()) {
+        for (OperationType<?, ?> operation : model.environment().registry().all()) {
             binding.setVariable(operation.symbol(), operation);
         }
         return binding;
