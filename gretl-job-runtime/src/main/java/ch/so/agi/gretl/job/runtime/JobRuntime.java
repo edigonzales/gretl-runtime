@@ -10,7 +10,6 @@ import ch.so.agi.gretl.runtime.logging.LogbackBridge;
 import ch.so.agi.gretl.runtime.logging.LoggingConfig;
 import ch.so.agi.gretl.runtime.logging.LoggingPipeline;
 import ch.so.agi.gretl.runtime.logging.LoggingState;
-import ch.so.agi.gretl.runtime.logging.ProviderInventory;
 import ch.so.agi.gretl.runtime.logging.Redactor;
 import ch.so.agi.gretl.runtime.logging.RunReportInput;
 import ch.so.agi.gretl.runtime.logging.RunReportWriter;
@@ -233,14 +232,7 @@ public final class JobRuntime {
                 Optional.ofNullable(environment.get("GRETL_DEPLOYMENT_ENVIRONMENT"))
                         .filter(value -> !value.isBlank()), locale, config.correlationId());
         Path eventFile = config.reportRoot().resolve(runId + ".events.jsonl");
-        LoggingPipeline logging;
-        try {
-            logging = new LoggingPipeline(config.logging(), context, redactor, err,
-                    config.logging().eventFile() ? eventFile : null, clock);
-        } catch (IOException exception) {
-            throw new StartException(2, Messages.format(locale,
-                    "cli.error.eventFile", StartException.message(exception)), exception);
-        }
+        LoggingPipeline logging = new LoggingPipeline(config.logging(), context, redactor, err, eventFile, clock);
         LogbackBridge bridge = null;
         RunControl control = new RunControl(SystemMonotonicClock.INSTANCE,
                 Optional.ofNullable(config.timeout()));
@@ -260,7 +252,6 @@ public final class JobRuntime {
         try {
             userSink.attach(logging::scriptMessage);
             try {
-                ProviderInventory.verify(classLoader);
                 bridge = LogbackBridge.install(logging, config.logging());
             } catch (RuntimeException exception) {
                 throw new StartException(2, Messages.format(locale,

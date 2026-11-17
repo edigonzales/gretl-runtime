@@ -1,72 +1,53 @@
 package ch.so.agi.gretl.runtime.logging;
 
-import ch.so.agi.gretl.runtime.runner.FailureInfo;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
-/** Encodes one event as a single valid JSON line within the configured limit. */
+/** Writes the richest candidate that fits the JSONL record limit. */
 final class RecordEncoder {
-    private final LogContext context;
+    private static final Set<String> ENVELOPE = Set.of("schema_version", "timestamp",
+            "sequence", "event_id", "level", "event_name", "message", "command_id", "run_id",
+            "truncated");
 
-    RecordEncoder(LogContext context) {
-        this.context = context;
+    private RecordEncoder() {
     }
 
-    Encoded encode(LogEvent event, int maxBytes, boolean includeFailureDetail) {
-        Map<String, Object> map = EventJson.encode(event, context, includeFailureDetail);
-        String json = Json.write(map);
-        byte[] bytes = (json + "\n").getBytes(StandardCharsets.UTF_8);
+    static byte[] encode(LogEvent event, LogContext context, int maxBytes) {
+        Map<String, Object> record = EventJson.encode(event, context);
+        byte[] bytes = line(record);
         if (bytes.length <= maxBytes) {
-            return new Encoded(bytes, false);
+            return bytes;
         }
 
-        map.remove("attributes");
-        if (Json.write(map).getBytes(StandardCharsets.UTF_8).length + 1 <= maxBytes) {
-            return new Encoded((Json.write(map) + "\n").getBytes(StandardCharsets.UTF_8), true);
-        }
-
-        if (event.failure().isPresent()) {
-            map.remove("error");
-            map.put("error_ref", event.failure().orElseThrow().id());
-            if (Json.write(map).getBytes(StandardCharsets.UTF_8).length + 1 <= maxBytes) {
-                return new Encoded((Json.write(map) + "\n").getBytes(StandardCharsets.UTF_8), true);
-            }
-        }
-
-        String message = event.message();
-        int limit = 512;
-        while (limit >= 0) {
-            map.put("message", message.length() <= limit ? message : message.substring(0, limit));
-            json = Json.write(map);
-            bytes = (json + "\n").getBytes(StandardCharsets.UTF_8);
+        record.put("truncated", true);
+        if (record.remove("attributes") != null) {
+            bytes = line(record);
             if (bytes.length <= maxBytes) {
-                return new Encoded(bytes, true);
+                return bytes;
             }
-            limit /= 2;
         }
 
-        Map<String, Object> minimal = new LinkedHashMap<>();
-        minimal.put("schema_version", EventJson.SCHEMA_VERSION);
-        minimal.put("timestamp", event.timestamp().toString());
-        minimal.put("sequence", event.sequence());
-        minimal.put("event_id", event.eventId());
-        minimal.put("level", event.level().name());
-        minimal.put("event_name", event.eventName());
-        minimal.put("message", "");
-        minimal.put("command_id", event.commandId());
-        minimal.put("truncated", true);
-        if (event.runId().isPresent()) {
-            minimal.put("run_id", event.runId().orElseThrow().toString());
+        record.remove("error");
+        event.failure().ifPresent(failure -> record.put("error_ref", failure.id()));
+        String message = event.message();
+        int end = Math.min(512, message.length());
+        if (end < message.length() && Character.isHighSurrogate(message.charAt(end - 1))) {
+            end--;
         }
-        String minimalJson = Json.write(minimal);
-        bytes = (minimalJson + "\n").getBytes(StandardCharsets.UTF_8);
-        if (bytes.length > maxBytes) {
-            throw new IllegalArgumentException("maxRecordBytes too small for JSON envelope");
+        record.put("message", message.substring(0, end));
+        bytes = line(record);
+        if (bytes.length <= maxBytes) {
+            return bytes;
         }
-        return new Encoded(bytes, true);
+
+        record.keySet().retainAll(ENVELOPE);
+        record.put("message", "");
+        bytes = line(record);
+        return bytes.length <= maxBytes ? bytes : null;
     }
 
-    record Encoded(byte[] bytes, boolean truncated) {
+    private static byte[] line(Map<String, Object> record) {
+        return (Json.write(record) + "\n").getBytes(StandardCharsets.UTF_8);
     }
 }

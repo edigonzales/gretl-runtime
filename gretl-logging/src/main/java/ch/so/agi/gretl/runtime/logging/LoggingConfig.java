@@ -1,7 +1,6 @@
 package ch.so.agi.gretl.runtime.logging;
 
 import ch.so.agi.gretl.runtime.api.LogLevel;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** Validated logging section of the runtime configuration. */
@@ -58,9 +57,5 @@ public record LoggingConfig(
     public static LoggingConfig withEventFile(LoggingConfig base, boolean enabled) {
         return new LoggingConfig(base.format, base.level, base.libraryLevels, enabled,
                 base.maxRecordBytes, base.maxEventFileBytes);
-    }
-
-    public static Map<String, LogLevel> emptyLibraryLevels() {
-        return new LinkedHashMap<>();
     }
 }

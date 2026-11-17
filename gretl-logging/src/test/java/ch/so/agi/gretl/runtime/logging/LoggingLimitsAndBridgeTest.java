@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.so.agi.gretl.runtime.api.LogLevel;
-import ch.so.agi.gretl.runtime.runner.FailureInfo;
 import ch.so.agi.gretl.runtime.runner.RunEvent;
 import ch.so.agi.gretl.runtime.runner.SecretRegistry;
 import java.io.ByteArrayOutputStream;
@@ -19,7 +18,7 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,6 +48,14 @@ class LoggingLimitsAndBridgeTest {
                         Optional.of("task"), Optional.empty(), Optional.empty(),
                         "task", "", 0, Map.of(), Optional.empty()));
             }
+            // Priority events may consume the reserve except for the final run event.
+            for (int index = 0; index < 200; index++) {
+                pipeline.emit(new RunEvent("gretl.task.failed", "x".repeat(3000),
+                        Instant.parse("2026-10-18T10:00:00Z"), LogLevel.ERROR,
+                        Optional.empty(), Optional.empty(), Optional.of("task"),
+                        Optional.empty(), Optional.empty(), "task", "FAILED", 0,
+                        Map.of(), Optional.empty()));
+            }
             pipeline.emit(new RunEvent("gretl.run.finished", "finished",
                     Instant.parse("2026-10-18T10:00:01Z"), LogLevel.INFO,
                     Optional.of(context.runId()), Optional.of(context.jobName()),
@@ -56,8 +63,24 @@ class LoggingLimitsAndBridgeTest {
                     "run", "SUCCEEDED", 0, Map.of(), Optional.empty()));
             assertTrue(pipeline.state().fileTruncated());
             assertTrue(Files.size(file) <= 1024 * 1024);
-            assertTrue(Files.readString(file).contains("gretl.logging.truncated"));
-            assertTrue(Files.readString(file).contains("gretl.run.finished"));
+            var byId = new HashMap<>();
+            long sequence = 0;
+            for (String line : console.toString(StandardCharsets.UTF_8).lines().toList()) {
+                var event = (Map<?, ?>) Json.parse(line);
+                assertEquals(++sequence, event.get("sequence"));
+                assertEquals(null, byId.put(event.get("event_id"), line));
+            }
+            var lines = Files.readAllLines(file);
+            sequence = 0;
+            for (String line : lines) {
+                var event = (Map<?, ?>) Json.parse(line);
+                long next = (long) event.get("sequence");
+                assertTrue(next > sequence);
+                sequence = next;
+                assertEquals(line, byId.get(event.get("event_id")));
+            }
+            var terminal = (Map<?, ?>) Json.parse(lines.getLast());
+            assertEquals("gretl.run.finished", terminal.get("event_name"));
         }
     }
 
@@ -72,14 +95,25 @@ class LoggingLimitsAndBridgeTest {
             }
         };
         PrintStream stream = new PrintStream(broken, true, StandardCharsets.UTF_8);
+        Path file = tempDir.resolve("events.jsonl");
+        Instant now = Instant.parse("2026-10-18T10:00:00Z");
         try (LoggingPipeline pipeline = new LoggingPipeline(config, context,
-                new Redactor(new SecretRegistry()), stream, tempDir.resolve("events.jsonl"),
-                Clock.systemUTC())) {
+                new Redactor(new SecretRegistry()), stream, file,
+                Clock.fixed(now, ZoneOffset.UTC))) {
             pipeline.emit(new RunEvent("gretl.run.started", "start", Instant.now(),
                     LogLevel.INFO, Optional.of(context.runId()),
                     Optional.of(context.jobName()), Optional.empty(), Optional.empty(),
                     Optional.empty(), "run", "", 0, Map.of(), Optional.empty()));
+            pipeline.scriptMessage("after console failure");
             assertTrue(pipeline.state().degraded());
+            var events = Files.readAllLines(file).stream().map(Json::parse)
+                    .map(value -> (Map<?, ?>) value).toList();
+            assertEquals(3, events.size());
+            var warning = events.get(1);
+            assertEquals("gretl.logging.degraded", warning.get("event_name"));
+            assertEquals("command:2", warning.get("event_id"));
+            assertEquals(now.toString(), warning.get("timestamp"));
+            assertEquals("after console failure", events.getLast().get("message"));
         }
     }
 

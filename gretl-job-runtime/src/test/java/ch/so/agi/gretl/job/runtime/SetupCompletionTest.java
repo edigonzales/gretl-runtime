@@ -101,6 +101,33 @@ class SetupCompletionTest {
         assertEquals(10L, summary.get("exitCode"));
     }
 
+    @Test
+    void existingEventFileDegradesLoggingButLeavesRunSuccessful() throws Exception {
+        var id = java.util.UUID.randomUUID();
+        Path reports = Files.createDirectory(tempDir.resolve("gretl-reports"));
+        Path events = Files.writeString(reports.resolve(id + ".events.jsonl"), "untouched");
+        Path report = tempDir.resolve("report.json");
+        AtomicInteger taskCalls = new AtomicInteger();
+        AtomicInteger cleanups = new AtomicInteger();
+        ByteArrayOutputStream errors = new ByteArrayOutputStream();
+        JobRuntime runtime = new JobRuntime(new PrintStream(new ByteArrayOutputStream()), new PrintStream(errors),
+                Map.of(), tempDir, getClass().getClassLoader(), java.time.Clock.systemUTC(), () -> id);
+        int exit = runtime.executePackaged(source(taskCalls, cleanups), new String[] {
+                "--work-dir", tempDir.resolve("work").toString(),
+                "--report", report.toString(), "--log-format", "json"});
+
+        assertEquals(0, exit, errors.toString());
+        assertEquals(1, taskCalls.get());
+        assertEquals(1, cleanups.get());
+        assertEquals("untouched", Files.readString(events));
+        var data = (Map<?, ?>) Json.parseFile(report, 1 << 20);
+        var logging = (Map<?, ?>) data.get("logging");
+        assertEquals(true, logging.get("degraded"));
+        assertEquals(false, logging.get("fileTruncated"));
+        assertFalse(logging.containsKey("eventFilePath"));
+        assertEquals(1, errors.toString().lines().filter(line -> line.contains("gretl.logging.degraded")).count());
+    }
+
     private JobRuntime runtime(ByteArrayOutputStream errors) {
         return runtime(errors, Map.of());
     }
