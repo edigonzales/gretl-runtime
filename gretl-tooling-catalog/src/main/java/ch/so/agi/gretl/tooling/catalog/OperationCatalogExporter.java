@@ -47,7 +47,7 @@ public final class OperationCatalogExporter {
         }
         var manifest = Map.of("schemaVersion",1,"runtimeVersion",catalog.runtimeVersion(),"catalogId",catalog.catalogId(),
                 "operationsSha256",CatalogJsonCodec.hash(bytes),"schemaSha256",CatalogJsonCodec.hash(Files.readAllBytes(output.resolve("operations.schema.json"))));
-        Files.write(output.resolve("catalog-manifest.json"),new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsBytes(manifest));
+        Files.write(output.resolve("catalog-manifest.json"),new tools.jackson.databind.json.JsonMapper().writeValueAsBytes(manifest));
         Files.writeString(output.resolve("operations.sha256"),CatalogJsonCodec.hash(bytes) + "  operations.json\n");
     }
     public static DataValue dataValue(Object value) {

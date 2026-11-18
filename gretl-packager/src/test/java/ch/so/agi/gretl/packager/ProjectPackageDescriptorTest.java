@@ -1,7 +1,7 @@
 package ch.so.agi.gretl.packager;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;

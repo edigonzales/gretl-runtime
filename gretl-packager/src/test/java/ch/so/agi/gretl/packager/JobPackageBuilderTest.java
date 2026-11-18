@@ -18,7 +18,7 @@ class JobPackageBuilderTest {
     Path tempDir;
 
     @Test
-    void mergesServicesAndWritesMetadataWithoutRuntimeDependencies() throws Exception {
+    void mergesServicesAndLicensesAndWritesMetadataWithoutRuntimeDependencies() throws Exception {
         Files.writeString(tempDir.resolve("job.groovy"),
                 "action('run') { }\ndefaults 'run'\n");
         Path descriptorFile = tempDir.resolve("job-package.json");
@@ -34,6 +34,8 @@ class JobPackageBuilderTest {
         writeMainClass(second);
         write(first, "META-INF/services/example.Service", "example.One\n");
         write(second, "META-INF/services/example.Service", "example.Two\n");
+        write(first, "META-INF/FastDoubleParser-LICENSE", "first license");
+        write(second, "META-INF/FastDoubleParser-LICENSE", "second license");
         write(first, "META-INF/groovy/org.codehaus.groovy.runtime.ExtensionModule",
                 "moduleName=one\nmoduleVersion=1\n");
 
@@ -51,6 +53,11 @@ class JobPackageBuilderTest {
                     StandardCharsets.UTF_8);
             assertTrue(services.contains("example.One"));
             assertTrue(services.contains("example.Two"));
+            try (var license = jar.getInputStream(jar.getJarEntry("META-INF/FastDoubleParser-LICENSE"))) {
+                String merged = new String(license.readAllBytes(), StandardCharsets.UTF_8);
+                assertTrue(merged.contains("first license"));
+                assertTrue(merged.contains("second license"));
+            }
             String manifest = new String(jar.getInputStream(
                     jar.getEntry("META-INF/MANIFEST.MF")).readAllBytes(),
                     StandardCharsets.UTF_8);

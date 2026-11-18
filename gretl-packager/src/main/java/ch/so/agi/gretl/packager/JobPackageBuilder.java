@@ -1,9 +1,9 @@
 package ch.so.agi.gretl.packager;
 
 import ch.so.agi.gretl.i18n.Messages;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
 import ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,7 +44,8 @@ public final class JobPackageBuilder {
     private static final long MAX_ENTRY_BYTES = 256L * 1024 * 1024;
     private static final long MAX_TOTAL_BYTES = 1024L * 1024 * 1024;
     private static final Set<String> MERGED_METADATA = Set.of(
-            "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE",
+            "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/FastDoubleParser-LICENSE",
+            "META-INF/NOTICE",
             "META-INF/NOTICE.txt", "META-INF/DEPENDENCIES",
             "META-INF/sisu/javax.inject.Named");
 
@@ -278,7 +279,7 @@ public final class JobPackageBuilder {
                         Messages.format(locale, "package.entryTooLarge", name));
             }
             addEntry(name, bytes, "package metadata");
-        } catch (JsonProcessingException exception) {
+        } catch (JacksonException exception) {
             throw new PackageException("PACKAGE_WRITE_FAILED", "Could not encode " + name, exception);
         }
     }

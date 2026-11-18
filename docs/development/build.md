@@ -16,9 +16,12 @@ Die Anleitungen für den entpackten Distributionsroot liegen unter
 
 Die Installation liegt in `gretl-cli/build/install/gretl-runtime` und enthält
 `bin/`, `lib/` und `examples/`. ZIP und TAR liegen in
-`gretl-cli/build/distributions`. Jackson Databind, Core und Annotations liegen
-in `lib/` und stehen auch in den mit der Standardlaufzeit gebauten Job-JARs zur Verfügung. Eigene SCRIPT-Erweiterungen können unter
-`lib/extensions` installiert werden.
+`gretl-cli/build/distributions`. GRETL verwendet Jackson 3.1 LTS. Für
+ili2db, IOX-WKF und das AWS SDK enthält `lib/` auch Jackson 2 Core und
+Databind. Beide Linien nutzen das gemeinsame Annotations-Artefakt, das
+Jackson 3 auflöst. Dieselben Bibliotheken stehen in den mit der
+Standardlaufzeit gebauten Job-JARs zur Verfügung. Eigene SCRIPT-Erweiterungen
+können unter `lib/extensions` installiert werden.
 
 ```sh
 ./gradlew :gretl-cli:dockerBuild

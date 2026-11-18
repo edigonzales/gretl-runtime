@@ -5,12 +5,13 @@ import ch.so.agi.gretl.runtime.api.Fields;
 import ch.so.agi.gretl.runtime.api.OperationContext;
 import ch.so.agi.gretl.runtime.api.OperationHandler;
 import ch.so.agi.gretl.runtime.api.OperationType;
-import com.fasterxml.jackson.core.JsonPointer;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonPointer;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.cfg.JsonNodeFeature;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -116,9 +117,8 @@ public final class JsonReadOperation {
     static final class Handler implements OperationHandler<Request, Result> {
         private static final JsonMapper JSON = JsonMapper.builder()
                 .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
-                .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
                 .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
-                .enable(JsonNodeFeature.WRITE_PROPERTIES_SORTED)
+                .enable(JsonNodeFeature.STRIP_TRAILING_BIGDECIMAL_ZEROES, JsonNodeFeature.WRITE_PROPERTIES_SORTED)
                 .build();
 
         @Override public Result execute(Request request, OperationContext context) {
@@ -128,7 +128,7 @@ public final class JsonReadOperation {
 
             try {
                 JsonNode root = JSON.readTree(bytes);
-                if (root == null || root.isMissingNode()) {
+                if (root.isMissingNode()) {
                     throw new JsonReadException("JSON_READ_INVALID", "Expected a JSON document", "parse");
                 }
                 JsonNode node = root.at(JsonPointer.compile(request.pointer()));
@@ -141,11 +141,11 @@ public final class JsonReadOperation {
                 String kind = node.getNodeType().name().toLowerCase(Locale.ROOT);
                 String value = switch (node.getNodeType()) {
                     case NULL -> null;
-                    case STRING -> node.textValue();
+                    case STRING -> node.stringValue();
                     default -> JSON.writeValueAsString(node);
                 };
                 return new Result(true, kind, value);
-            } catch (IOException e) {
+            } catch (JacksonException e) {
                 // Parser messages may contain member names or fragments of the payload.
                 throw new JsonReadException("JSON_READ_INVALID", "Invalid or unsupported JSON document", "parse");
             }

@@ -9,8 +9,8 @@ import ch.interlis.ioxwkf.dbtools.Gpkg2db;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.internal.shapefile.ShapefileConstants;
 import ch.so.agi.gretl.internal.sql.DatabaseSpec;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -171,7 +171,7 @@ public final class IoxWkfDatabaseEngine {
                 }
             }
 
-            JsonNode root = new ObjectMapper().readTree(Files.readString(request.jsonFile(), StandardCharsets.UTF_8));
+            JsonNode root = new JsonMapper().readTree(Files.readString(request.jsonFile(), StandardCharsets.UTF_8));
             int count = 0;
             try (PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO " + request.qualifiedTableName() + " (" + request.columnName() + ") VALUES (?)")) {

@@ -1,11 +1,12 @@
 package ch.so.agi.gretl.packager;
 
 import ch.so.agi.gretl.i18n.Messages;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.StreamReadConstraints;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadConstraints;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +34,6 @@ public record PackageDescriptor(
                     .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
                     .streamReadConstraints(StreamReadConstraints.builder().maxNestingDepth(128).build())
                     .build())
-            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
             .enable(DeserializationFeature.USE_LONG_FOR_INTS)
             .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
             .build();
@@ -127,6 +127,8 @@ public record PackageDescriptor(
             }
             String text = StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(bytes)).toString();
             return JSON.readValue(text, Object.class);
+        } catch (JacksonException exception) {
+            throw new IOException(exception.getMessage(), exception);
         }
     }
 

@@ -9,11 +9,10 @@ import ch.so.agi.gretl.runtime.api.OperationHandler;
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.SecretValue;
 import ch.so.agi.gretl.runtime.api.TaskCancelledException;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -159,7 +158,6 @@ public final class OAuth2ClientCredentialsOperation {
         private static final Pattern BEARER_TOKEN = Pattern.compile("[A-Za-z0-9._~+/-]+=*");
         private static final JsonMapper JSON = JsonMapper.builder()
                 .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
-                .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
                 .build();
 
         @Override public Result execute(Request request, OperationContext context) throws InterruptedException {
@@ -250,15 +248,15 @@ public final class OAuth2ClientCredentialsOperation {
         private static String accessToken(byte[] bytes) {
             try {
                 JsonNode root = JSON.readTree(bytes);
-                String token = root.path("access_token").textValue();
-                String type = root.path("token_type").textValue();
+                String token = root.path("access_token").stringValue(null);
+                String type = root.path("token_type").stringValue(null);
                 JsonNode expiry = root.path("expires_in");
                 if (token == null || !BEARER_TOKEN.matcher(token).matches()
                         || !"Bearer".equalsIgnoreCase(type) || expired(expiry)) {
                     throw invalidResponse();
                 }
                 return token;
-            } catch (IOException ignored) {
+            } catch (JacksonException ignored) {
                 throw invalidResponse();
             }
         }
@@ -267,9 +265,9 @@ public final class OAuth2ClientCredentialsOperation {
             if (expiry.isNumber()) {
                 return expiry.doubleValue() <= 0;
             }
-            if (expiry.isTextual()) {
+            if (expiry.isString()) {
                 try {
-                    return new java.math.BigDecimal(expiry.textValue()).signum() <= 0;
+                    return new java.math.BigDecimal(expiry.stringValue()).signum() <= 0;
                 } catch (NumberFormatException ignored) {
                     // The lifetime is optional and is not used for caching.
                 }

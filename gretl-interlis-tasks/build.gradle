@@ -46,7 +46,9 @@ dependencies {
     testImplementation 'io.github.sogis:ilivalidator-custom-functions-geometries:0.0.8'
     testImplementation 'ch.geowerkstatt.ilivalidator.extensions.functions:geow-interlis-functions:0.2.1'
     testImplementation 'ch.geowerkstatt.ilivalidator.extensions.functions:interlis-functions-ngk-so:1.0.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+    implementation 'tools.jackson.core:jackson-databind:3.1.8'
+    // Keep the existing Jackson 2 runtime version floor for ili2db and IOX-WKF.
+    runtimeOnly platform('com.fasterxml.jackson:jackson-bom:2.17.2')
     runtimeOnly 'org.postgresql:postgresql:42.7.14'
     runtimeOnly 'org.duckdb:duckdb_jdbc:1.5.2.0'
     runtimeOnly 'org.xerial:sqlite-jdbc:3.53.2.0'

@@ -1,11 +1,11 @@
 package ch.so.agi.gretl.runtime.logging;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.StreamReadConstraints;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadConstraints;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -24,7 +24,6 @@ public final class Json {
                     .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
                     .streamReadConstraints(StreamReadConstraints.builder().maxNestingDepth(MAX_DEPTH).build())
                     .build())
-            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
             .enable(DeserializationFeature.USE_LONG_FOR_INTS)
             .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
             .build();
@@ -35,7 +34,7 @@ public final class Json {
     public static Object parse(String text) {
         try {
             return MAPPER.readValue(text, Object.class);
-        } catch (JsonProcessingException failure) {
+        } catch (JacksonException failure) {
             // Jackson's original diagnostic can quote tokens from a secret-bearing file.
             var location = failure.getLocation();
             String position = location == null ? "" : " at line " + location.getLineNr()
@@ -65,7 +64,7 @@ public final class Json {
         validate(value, 0);
         try {
             return MAPPER.writeValueAsString(value);
-        } catch (JsonProcessingException failure) {
+        } catch (JacksonException failure) {
             throw new IllegalArgumentException("Cannot serialize JSON", failure);
         }
     }
@@ -89,10 +88,8 @@ public final class Json {
                     validate(element, depth + 1);
                 }
             }
-            case Float ignored -> throw new IllegalArgumentException("JSON numbers must be finite");
-            case Double ignored -> throw new IllegalArgumentException("JSON numbers must be finite");
-            case Map<?, ?> ignored -> throw new IllegalArgumentException("JSON nesting exceeds " + MAX_DEPTH);
-            case List<?> ignored -> throw new IllegalArgumentException("JSON nesting exceeds " + MAX_DEPTH);
+            case Float _, Double _ -> throw new IllegalArgumentException("JSON numbers must be finite");
+            case Map<?, ?> _, List<?> _ -> throw new IllegalArgumentException("JSON nesting exceeds " + MAX_DEPTH);
             default -> throw new IllegalArgumentException("Unsupported JSON value: " + value.getClass().getName());
         }
     }
