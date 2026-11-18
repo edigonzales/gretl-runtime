@@ -1,7 +1,11 @@
 package ch.so.agi.gretl.tooling.catalog;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadConstraints;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.*;
 import java.security.MessageDigest;
 import java.util.*;
 import static ch.so.agi.gretl.tooling.catalog.OperationCatalog.*;
@@ -9,22 +13,23 @@ import static ch.so.agi.gretl.tooling.catalog.OperationCatalog.*;
 /** Strict bounded codec. An incompatible or absent catalog is never an empty success. */
 public final class CatalogJsonCodec {
     public static final int MAX_BYTES = 8 * 1024 * 1024;
-    private final ObjectMapper mapper = new ObjectMapper(com.fasterxml.jackson.core.JsonFactory.builder()
-            .streamReadConstraints(com.fasterxml.jackson.core.StreamReadConstraints.builder().maxNestingDepth(64).maxStringLength(1_000_000).build()).build())
-            .enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
+    private final JsonMapper mapper = JsonMapper.builder(JsonFactory.builder()
+                    .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
+                    .streamReadConstraints(StreamReadConstraints.builder()
+                            .maxNestingDepth(64).maxStringLength(1_000_000).build())
+                    .build())
             .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
             .enable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
-            .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
             .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
-            .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+            .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+            .build();
     public enum State { AVAILABLE, PARTIAL, UNAVAILABLE, INCOMPATIBLE }
     public record CatalogLoadResult(State state, Optional<OperationCatalog> catalog, List<String> problems) {
         public CatalogLoadResult { catalog = Objects.requireNonNull(catalog); problems = List.copyOf(problems); }
     }
     public byte[] encodeCanonical(OperationCatalog catalog) {
         try { return mapper.writeValueAsBytes(catalog); }
-        catch (java.io.IOException e) { throw new IllegalArgumentException("Catalog serialization failed", e); }
+        catch (JacksonException e) { throw new IllegalArgumentException("Catalog serialization failed", e); }
     }
     public String digest(OperationCatalog catalog) {
         var payload = new OperationCatalog(catalog.schemaVersion(), catalog.runtimeVersion(), catalog.dslVersion(),
@@ -48,7 +53,7 @@ public final class CatalogJsonCodec {
             if (expectedDigest != null && !expectedDigest.equals(c.catalogId())) problems.add("CATALOG_IDENTITY");
             if (!problems.isEmpty()) return new CatalogLoadResult(State.INCOMPATIBLE, Optional.empty(), problems);
             return new CatalogLoadResult(c.coverage().equals("COMPLETE") ? State.AVAILABLE : State.PARTIAL, Optional.of(c), List.of());
-        } catch (java.io.IOException | IllegalArgumentException | NullPointerException e) {
+        } catch (JacksonException | IllegalArgumentException | NullPointerException e) {
             return failure(State.INCOMPATIBLE, "CATALOG_SCHEMA");
         }
     }

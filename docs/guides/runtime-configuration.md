@@ -102,7 +102,14 @@ Antwort.
 
 - Konsole: Text (Default) oder JSON auf **stderr**; Hilfe/Plan auf stdout.
 - Ereignisdatei: `<runId>.events.jsonl` unter `runtime.reportRoot`, 0600,
-  Eventlimit 16 KiB, Dateilimit 128 MiB plus Terminalreserve.
+  Standardlimits 16 KiB je Datensatz und 128 MiB je Datei. Ein Teil des
+  Dateilimits ist für Fehler und das abschliessende Runereignis reserviert.
+  Der Runbericht zeigt ausgelassene Ereignisse als `logging.fileTruncated`.
+  Gekürzte JSON-Datensätze tragen `truncated: true`.
+- Scheitert das Öffnen oder Schreiben der Ereignisdatei, läuft der Job
+  weiter. Eine funktionsfähige Senke kann `gretl.logging.degraded` melden.
+  Der Runbericht erfasst den bis zum Berichtszeitpunkt bekannten Zustand
+  in `logging.degraded`.
 - Runbericht: `<runId>.json` bzw. `--report`, atomar ersetzt, 0600.
 - Text/JSON tragen dieselbe Event-/Sequenzidentität; JSON ist ein Objekt pro
   Zeile.
@@ -119,6 +126,11 @@ Antwort.
   Startfehler als `gretl.cli.error` mit `exit_code`, `diagnostic_code` und den
   verfügbaren Angaben `field`, `task` und `source` ausgegeben.
 
+Runtimekonfiguration und Parameterdateien verwenden UTF-8. Der JSON-Parser
+weist doppelte Schlüssel, nachfolgende Werte und eine Verschachtelung über
+128 Ebenen zurück. Syntaxdiagnosen nennen die Position, soweit verfügbar.
+
+Die Bridge verwendet die aktive Logback-Implementierung von SLF4J.
 Bibliothekslogs werden über lexikalische Run-/Task-/Invocation-Scopes zugeordnet.
 `LibraryScopeLocalJobIT` prüft diesen Vertrag. Die Maskierung gilt für verwaltete
 Log- und Reportsenken.

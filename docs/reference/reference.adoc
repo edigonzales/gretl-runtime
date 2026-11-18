@@ -796,6 +796,10 @@ Konsole, Ereignisdatei und Abschlussbericht erfüllen unterschiedliche Aufgaben:
 * Text- oder JSON-Konsolenlogs gehen auf stderr; Hilfe und Planausgabe auf stdout.
 * Die begrenzte Ereignisdatei [.code-fragment]#`<runId>.events.jsonl`# liegt im Reportverzeichnis.
   [.code-fragment]#`logging.eventFile=false`# deaktiviert sie.
+  Der Bericht vermerkt ausgelassene Ereignisse aufgrund des Grössenlimits unter
+  [.code-fragment]#`logging.fileTruncated`#. Ein Teil des Limits ist für
+  Fehlerereignisse und das abschliessende Runereignis reserviert.
+  Ein Fehler der Ereignisdatei ändert den fachlichen Runstatus nicht.
 * Der erforderliche Abschlussbericht heisst [.file-name]#`<runId>.json`# oder verwendet den
   Pfad aus [.cli-option]#`--report`#. Er enthält Taskstatus, Zeiten und explizite Diagnosen.
 

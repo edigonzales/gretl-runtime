@@ -3,7 +3,7 @@ package ch.so.agi.gretl.packager;
 import static org.junit.jupiter.api.Assertions.*;
 import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
 import ch.so.agi.gretl.runtime.groovy.project.ProjectSourceHash;
-import ch.so.agi.gretl.runtime.logging.Json;
+import tools.jackson.databind.json.JsonMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -38,6 +38,6 @@ class ProjectCompilerTest {
         Files.writeString(root.resolve("settings.gretl"),"include 'a', 'b:c', 'a_b'\ndefaults ':a:run'\n");
         for(String dir:List.of("a","b/c","a_b")) {Files.createDirectories(root.resolve(dir));Files.writeString(root.resolve(dir+"/job.groovy"),"import helpers.Label\nnew File('"+root.resolve("marker.txt")+"').text = 'bad'\naction('run') { Label.value() }\n");}
         Files.createDirectories(root.resolve("helpers"));Files.writeString(root.resolve("helpers/Label.groovy"),"package helpers\nclass Label { static String value() { 'ok' } }\n");
-        Path file=root.resolve("job-package.json");Files.writeString(file,Json.write(Map.of("schemaVersion",1,"name","project","version","1","runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl","sources",List.of("helpers"))));return PackageDescriptor.load(file);
+        Path file=root.resolve("job-package.json");Files.writeString(file,new JsonMapper().writeValueAsString(Map.of("schemaVersion",1,"name","project","version","1","runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl","sources",List.of("helpers"))));return PackageDescriptor.load(file);
     }
 }

@@ -10,10 +10,11 @@ import ch.interlis.iox.IoxReader;
 import ch.interlis.iox_j.PipelinePool;
 import ch.interlis.iox_j.logging.LogEventFactory;
 import ch.interlis.ioxwkf.json.JsonReader;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import org.interlis2.validator.Validator;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ final class JsonValidatorImpl extends Validator {
             JsonReader reader = new JsonReader(preprocessedFile.toFile(), settings);
             reader.setModel(td);
             return new CleanupReader(reader, preprocessedFile.getParent());
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new IoxException(e);
         }
     }
@@ -41,7 +42,7 @@ final class JsonValidatorImpl extends Validator {
         Path target = tempDir.resolve(jsonFile.getFileName());
 
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
+            JsonMapper objectMapper = new JsonMapper();
             JsonNode rootNode = objectMapper.readTree(jsonFile.toFile());
 
             if (!rootNode.isArray()) {
@@ -61,7 +62,7 @@ final class JsonValidatorImpl extends Validator {
                 objectMapper.writerWithDefaultPrettyPrinter().writeValue(target.toFile(), rootNode);
             }
             return target;
-        } catch (IOException | RuntimeException e) {
+        } catch (RuntimeException e) {
             deleteDirectory(tempDir);
             throw e;
         }
@@ -69,12 +70,12 @@ final class JsonValidatorImpl extends Validator {
 
     private void addAttributes(ObjectNode objectNode, int id) {
         JsonNode typeNode = objectNode.get("@type");
-        if (typeNode == null || !typeNode.isTextual()) {
+        if (typeNode == null || !typeNode.isString()) {
             throw new IllegalArgumentException("Missing or invalid @type attribute in JSON object.");
         }
 
         if (!objectNode.has("@topic")) {
-            String[] parts = typeNode.asText().split("\\.");
+            String[] parts = typeNode.stringValue().split("\\.");
             if (parts.length >= 2) {
                 objectNode.put("@topic", parts[0] + "." + parts[1]);
             }

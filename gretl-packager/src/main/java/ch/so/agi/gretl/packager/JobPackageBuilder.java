@@ -1,7 +1,9 @@
 package ch.so.agi.gretl.packager;
 
 import ch.so.agi.gretl.i18n.Messages;
-import ch.so.agi.gretl.runtime.logging.Json;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
 import ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,10 +40,12 @@ import java.util.stream.Stream;
  */
 public final class JobPackageBuilder {
     public static final String MAIN_CLASS = "ch.so.agi.gretl.job.JobJarMain";
+    private static final ObjectWriter METADATA_JSON = new JsonMapper().writer();
     private static final long MAX_ENTRY_BYTES = 256L * 1024 * 1024;
     private static final long MAX_TOTAL_BYTES = 1024L * 1024 * 1024;
     private static final Set<String> MERGED_METADATA = Set.of(
-            "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE",
+            "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/FastDoubleParser-LICENSE",
+            "META-INF/NOTICE",
             "META-INF/NOTICE.txt", "META-INF/DEPENDENCIES",
             "META-INF/sisu/javax.inject.Named");
 
@@ -267,11 +271,17 @@ public final class JobPackageBuilder {
         job.put("runtimeVersion", descriptor.runtimeVersion());
         job.put("bundle", bundle.toMetadata());
         job.put("resourceFiles", List.copyOf(resourceFiles));
-        addMetadataEntry("META-INF/gretl/job.json", Json.write(job));
-    }
-
-    private void addMetadataEntry(String name, String value) throws PackageException {
-        addEntry(name, value.getBytes(StandardCharsets.UTF_8), "package metadata");
+        String name = "META-INF/gretl/job.json";
+        try {
+            byte[] bytes = METADATA_JSON.writeValueAsBytes(job);
+            if (bytes.length > CompiledScriptBundle.MAX_METADATA_BYTES) {
+                throw new PackageException("PACKAGE_ENTRY_TOO_LARGE",
+                        Messages.format(locale, "package.entryTooLarge", name));
+            }
+            addEntry(name, bytes, "package metadata");
+        } catch (JacksonException exception) {
+            throw new PackageException("PACKAGE_WRITE_FAILED", "Could not encode " + name, exception);
+        }
     }
 
     private void addServices() throws PackageException {

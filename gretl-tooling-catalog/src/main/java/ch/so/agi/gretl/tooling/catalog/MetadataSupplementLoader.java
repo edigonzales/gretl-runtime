@@ -2,8 +2,11 @@ package ch.so.agi.gretl.tooling.catalog;
 
 import ch.so.agi.gretl.runtime.api.OperationType;
 import ch.so.agi.gretl.runtime.api.OperationProvider;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.*;
 import java.util.*;
 
@@ -14,7 +17,7 @@ public final class MetadataSupplementLoader {
         public Supplement { hints = Map.copyOf(hints); }
         public String key() { return operationId + "/" + field; }
     }
-    private final ObjectMapper mapper = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+    private final JsonMapper mapper = JsonMapper.builder().enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION).build();
     public List<Supplement> loadFromOwnedResources(ClassLoader loader) throws IOException {
         // Provider-qualified resource names also coexist in a packaged runtime JAR.
         // Discover identities from the same SPI, never from a second provider/operation list.
@@ -30,30 +33,34 @@ public final class MetadataSupplementLoader {
     public List<Supplement> read(InputStream in) throws IOException {
         byte[] data = in.readNBytes(1024 * 1024 + 1);
         if (data.length > 1024 * 1024) throw new IOException("Supplement too large");
-        JsonNode root = mapper.readTree(data);
-        if (root == null || !root.path("schemaVersion").isInt() || root.path("schemaVersion").asInt() != 1 || !root.path("fields").isArray()) throw new IOException("Supplement schema");
-        requireKeys(root, Set.of("schemaVersion", "fields"));
-        var result = new ArrayList<Supplement>();
-        for (var row : root.get("fields")) {
-            requireKeys(row, Set.of("operationId","field","shape","pathRole","sensitive","hints"));
-            if (!row.path("operationId").isTextual() || !row.path("field").isTextual()) throw new IOException("Supplement target");
-            if (row.has("sensitive") && !row.get("sensitive").isBoolean()) throw new IOException("Supplement sensitive must be boolean");
-            if (row.has("pathRole") && !row.get("pathRole").isTextual()) throw new IOException("Supplement pathRole must be text");
-            if (row.has("hints")) {
-                if (!row.get("hints").isObject()) throw new IOException("Supplement hints must be an object");
-                for (var hint : row.get("hints")) if (!hint.isTextual()) throw new IOException("Supplement hint values must be text");
+        try {
+            JsonNode root = mapper.readTree(data);
+            if (!root.path("schemaVersion").isInt() || root.path("schemaVersion").asInt() != 1 || !root.path("fields").isArray()) throw new IOException("Supplement schema");
+            requireKeys(root, Set.of("schemaVersion", "fields"));
+            var result = new ArrayList<Supplement>();
+            for (var row : root.get("fields")) {
+                requireKeys(row, Set.of("operationId","field","shape","pathRole","sensitive","hints"));
+                if (!row.path("operationId").isString() || !row.path("field").isString()) throw new IOException("Supplement target");
+                if (row.has("sensitive") && !row.get("sensitive").isBoolean()) throw new IOException("Supplement sensitive must be boolean");
+                if (row.has("pathRole") && !row.get("pathRole").isString()) throw new IOException("Supplement pathRole must be text");
+                if (row.has("hints")) {
+                    if (!row.get("hints").isObject()) throw new IOException("Supplement hints must be an object");
+                    for (var hint : row.get("hints")) if (!hint.isString()) throw new IOException("Supplement hint values must be text");
+                }
+                result.add(new Supplement(row.get("operationId").stringValue(), row.get("field").stringValue(),
+                        row.has("shape") ? mapper.treeToValue(row.get("shape"), OperationCatalog.ValueShape.class) : null,
+                        row.has("pathRole") ? row.get("pathRole").stringValue() : null,
+                        row.path("sensitive").asBoolean(false), row.has("hints") ? mapper.convertValue(row.get("hints"),
+                                new TypeReference<Map<String,String>>() {}) : Map.of()));
             }
-            result.add(new Supplement(row.get("operationId").textValue(), row.get("field").textValue(),
-                    row.has("shape") ? mapper.treeToValue(row.get("shape"), OperationCatalog.ValueShape.class) : null,
-                    row.has("pathRole") ? row.get("pathRole").textValue() : null,
-                    row.path("sensitive").asBoolean(false), row.has("hints") ? mapper.convertValue(row.get("hints"),
-                            new com.fasterxml.jackson.core.type.TypeReference<Map<String,String>>() {}) : Map.of()));
+            return List.copyOf(result);
+        } catch (JacksonException exception) {
+            throw new IOException("Invalid supplement JSON", exception);
         }
-        return List.copyOf(result);
     }
     private static void requireKeys(JsonNode node, Set<String> allowed) throws IOException {
         if (!node.isObject()) throw new IOException("Supplement object required");
-        var it = node.fieldNames(); while (it.hasNext()) if (!allowed.contains(it.next())) throw new IOException("Unknown supplement property");
+        if (!allowed.containsAll(node.propertyNames())) throw new IOException("Unknown supplement property");
     }
     public Map<String,Supplement> validateAgainstOperations(List<Supplement> supplements, Collection<OperationType<?,?>> operations) {
         var fields = new HashSet<String>();

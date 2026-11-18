@@ -2,27 +2,22 @@ package ch.so.agi.gretl.runtime.logging;
 
 import ch.so.agi.gretl.runtime.runner.FailureInfo;
 import ch.so.agi.gretl.runtime.runner.SourceLocation;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /** Canonical GRETL JSON event envelope (not OTLP/JSON). */
 public final class EventJson {
     public static final int SCHEMA_VERSION = 1;
-    private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ISO_INSTANT;
 
     private EventJson() {
     }
 
-    public static Map<String, Object> encode(LogEvent event, LogContext context,
-                                             boolean includeFailureDetail) {
+    static Map<String, Object> encode(LogEvent event, LogContext context) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("schema_version", SCHEMA_VERSION);
-        result.put("timestamp", TIMESTAMP.format(event.timestamp().atOffset(ZoneOffset.UTC)));
+        result.put("timestamp", event.timestamp().toString());
         result.put("sequence", event.sequence());
         result.put("event_id", event.eventId());
         result.put("level", event.level().name());
@@ -55,16 +50,9 @@ public final class EventJson {
         result.put("resource", resource);
         event.source().ifPresent(source -> result.put("source", sourceMap(source)));
         if (!event.attributes().isEmpty()) {
-            result.put("attributes", new LinkedHashMap<>(event.attributes()));
+            result.put("attributes", event.attributes());
         }
-        if (event.failure().isPresent()) {
-            FailureInfo failure = event.failure().orElseThrow();
-            if (includeFailureDetail) {
-                result.put("error", failureMap(failure));
-            } else {
-                result.put("error_ref", failure.id());
-            }
-        }
+        event.failure().ifPresent(failure -> result.put("error", failureMap(failure)));
         return result;
     }
 
@@ -129,9 +117,5 @@ public final class EventJson {
             result.put("column", source.column());
         }
         return result;
-    }
-
-    public static Optional<SourceLocation> sourceOf(LogEvent event) {
-        return event.source().or(() -> event.failure().flatMap(FailureInfo::source));
     }
 }

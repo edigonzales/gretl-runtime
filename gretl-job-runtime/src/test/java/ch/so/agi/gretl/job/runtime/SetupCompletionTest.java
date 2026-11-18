@@ -46,6 +46,16 @@ class SetupCompletionTest {
             assertFalse(errors.toString().contains("gretl.run.started"));
             assertFalse(errors.toString().contains("gretl.run.finished"));
             assertTrue(errors.toString().contains("RUN_WORKSPACE_PREPARATION_FAILED"));
+            var events = errors.toString(StandardCharsets.UTF_8).lines()
+                    .map(Json::parse).map(value -> (Map<?, ?>) value).toList();
+            String commandId = (String) events.getFirst().get("command_id");
+            assertEquals("gretl.script.message", events.getFirst().get("event_name"));
+            assertEquals("gretl.cli.error", events.getLast().get("event_name"));
+            for (int index = 0; index < events.size(); index++) {
+                long sequence = index + 1;
+                assertEquals(sequence, events.get(index).get("sequence"));
+                assertEquals(commandId + ":" + sequence, events.get(index).get("event_id"));
+            }
         }
     }
 
@@ -101,6 +111,53 @@ class SetupCompletionTest {
         assertEquals(10L, summary.get("exitCode"));
     }
 
+    @Test
+    void existingEventFileDegradesLoggingButLeavesRunSuccessful() throws Exception {
+        var id = java.util.UUID.randomUUID();
+        Path reports = Files.createDirectory(tempDir.resolve("gretl-reports"));
+        Path events = Files.writeString(reports.resolve(id + ".events.jsonl"), "untouched");
+        Path report = tempDir.resolve("report.json");
+        AtomicInteger taskCalls = new AtomicInteger();
+        AtomicInteger cleanups = new AtomicInteger();
+        ByteArrayOutputStream errors = new ByteArrayOutputStream();
+        JobRuntime runtime = new JobRuntime(new PrintStream(new ByteArrayOutputStream()), new PrintStream(errors),
+                Map.of(), tempDir, getClass().getClassLoader(), java.time.Clock.systemUTC(), () -> id);
+        int exit = runtime.executePackaged(source(taskCalls, cleanups), new String[] {
+                "--work-dir", tempDir.resolve("work").toString(),
+                "--report", report.toString(), "--log-format", "json"});
+
+        assertEquals(0, exit, errors.toString());
+        assertEquals(1, taskCalls.get());
+        assertEquals(1, cleanups.get());
+        assertEquals("untouched", Files.readString(events));
+        var data = (Map<?, ?>) Json.parseFile(report, 1 << 20);
+        var logging = (Map<?, ?>) data.get("logging");
+        assertEquals(true, logging.get("degraded"));
+        assertEquals(false, logging.get("fileTruncated"));
+        assertFalse(logging.containsKey("eventFilePath"));
+        assertEquals(1, errors.toString().lines().filter(line -> line.contains("gretl.logging.degraded")).count());
+    }
+
+    @Test
+    void explicitReportCanSucceedWhenOnlyTheEventDirectoryIsBlocked() throws Exception {
+        Path blocked = Files.writeString(tempDir.resolve("blocked-events"), "untouched");
+        Path config = Files.writeString(tempDir.resolve("runtime.json"),
+                Json.write(Map.of("schemaVersion", 1, "runtime", Map.of("reportRoot", blocked.toString()))));
+        Path report = tempDir.resolve("report.json");
+        AtomicInteger taskCalls = new AtomicInteger();
+        ByteArrayOutputStream errors = new ByteArrayOutputStream();
+
+        int exit = runtime(errors).executePackaged(source(taskCalls, new AtomicInteger()), new String[] {
+                "--config", config.toString(), "--work-dir", tempDir.resolve("work").toString(),
+                "--report", report.toString(), "--log-format", "json"});
+
+        assertEquals(0, exit, errors.toString());
+        assertEquals(1, taskCalls.get());
+        assertEquals("untouched", Files.readString(blocked));
+        var data = (Map<?, ?>) Json.parseFile(report, 1 << 20);
+        assertEquals(true, ((Map<?, ?>) data.get("logging")).get("degraded"));
+    }
+
     private JobRuntime runtime(ByteArrayOutputStream errors) {
         return runtime(errors, Map.of());
     }
@@ -122,6 +179,7 @@ class SetupCompletionTest {
             @Override public String sha256(java.util.Locale locale) { return "a".repeat(64); }
             @Override
             public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink, java.util.Locale locale) {
+                sink.println("definition loaded");
                 JobDefinitionBuilder builder = new JobDefinitionBuilder(tempDir);
                 builder.register(TaskRegistration.builder("work", Object.class).body(context -> {
                     taskCalls.incrementAndGet();

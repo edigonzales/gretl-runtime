@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
- * Explicit single-provider Logback bridge for third-party library logs. GRETL
+ * Logback bridge for third-party library logs. GRETL
  * lifecycle/task logs do not depend on this bridge; they use RunEventSink.
  */
 public final class LogbackBridge implements AutoCloseable {
@@ -35,7 +35,7 @@ public final class LogbackBridge implements AutoCloseable {
         Object factory = LoggerFactory.getILoggerFactory();
         if (!(factory instanceof LoggerContext loggerContext)) {
             throw new IllegalStateException(
-                    "Exactly one Logback provider must be active, found: "
+                    "The active SLF4J provider must be Logback, found: "
                             + factory.getClass().getName());
         }
         loggerContext.reset();

@@ -12,7 +12,6 @@ import ch.so.agi.gretl.runtime.runner.TaskDefinition;
 import ch.so.agi.gretl.runtime.runner.TaskOutcome;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -45,16 +44,17 @@ public final class RunReportWriter {
             throw new IOException("Report path has no parent: " + target);
         }
         PrivateDiagnosticFiles.createParents(parent);
-        byte[] bytes = (Json.write(report(input)) + "\n").getBytes(StandardCharsets.UTF_8);
+        byte[] bytes;
+        try {
+            bytes = (Json.write(report(input)) + "\n").getBytes(StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException exception) {
+            throw new IOException("Cannot encode run report", exception);
+        }
         Path temporary = PrivateDiagnosticFiles.newReportTemporary(parent, "." + target.getFileName() + ".");
         try {
             Files.write(temporary, bytes);
-            try {
-                Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE,
-                        StandardCopyOption.REPLACE_EXISTING);
-            } catch (AtomicMoveNotSupportedException exception) {
-                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-            }
+            Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING);
         } finally {
             Files.deleteIfExists(temporary);
         }
@@ -249,8 +249,6 @@ public final class RunReportWriter {
         logging.eventFile().ifPresent(path -> value.put("eventFilePath", path.toString()));
         value.put("degraded", logging.degraded());
         value.put("fileTruncated", logging.fileTruncated());
-        value.put("fileLost", logging.fileLost());
-        value.put("recordTruncations", logging.recordTruncations());
         return value;
     }
 

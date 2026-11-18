@@ -43,7 +43,7 @@ class RunReportWriterTest {
         var outcome=new SequentialJobRunner().run(definition,plan,input);
         var context=new LogContext("command",outcome.runId(),"finalizers","6.0.0-SNAPSHOT",Optional.empty());
         var reportInput=new RunReportInput(context,outcome,definition,plan,tempDir.resolve("job.groovy"),"hash",Optional.empty(),
-                new LoggingState(LoggingConfig.Format.TEXT,true,Optional.empty(),false,false,false,0));
+                new LoggingState(LoggingConfig.Format.TEXT,true,Optional.empty(),false,false));
         var report=new RunReportWriter(new Redactor(input.secretRegistry())).report(reportInput);
         var execution=(Map<?,?>)report.get("execution");
         var tasks=(List<?>)execution.get("tasks");
@@ -84,7 +84,7 @@ class RunReportWriterTest {
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 Optional.of("revision-1"),
                 new LoggingState(LoggingConfig.Format.TEXT, true, Optional.empty(),
-                        false, false, false, 0));
+                        false, false));
         Path report = tempDir.resolve("reports/run.json");
         Files.createDirectory(report.getParent());
         boolean posix = Files.getFileStore(tempDir).supportsFileAttributeView("posix");

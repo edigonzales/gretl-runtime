@@ -2,7 +2,7 @@ package ch.so.agi.gretl.packager;
 
 import static org.junit.jupiter.api.Assertions.*;
 import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
-import ch.so.agi.gretl.runtime.logging.Json;
+import tools.jackson.databind.json.JsonMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -14,7 +14,7 @@ class ProjectPackageIsolationTest {
     @TempDir Path root;
     @Test void selectedCompilerNeverInheritsHostPackagerClassesAndGrabStaysDisabled() throws Exception {
         Files.writeString(root.resolve("settings.gretl"),"defaults ':run'\n");
-        Path file=root.resolve("job-package.json");Files.writeString(file,Json.write(Map.of("schemaVersion",1,"name","isolated","version","1","runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl")));
+        Path file=root.resolve("job-package.json");Files.writeString(file,new JsonMapper().writeValueAsString(Map.of("schemaVersion",1,"name","isolated","version","1","runtimeVersion","6.0.0-SNAPSHOT","settingsFile","settings.gretl")));
         var descriptor=PackageDescriptor.load(file);
         Path host = Path.of(JobPackager.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         var selected=JobPackager.currentClasspath().stream().filter(path->!path.equals(host)).toList();
