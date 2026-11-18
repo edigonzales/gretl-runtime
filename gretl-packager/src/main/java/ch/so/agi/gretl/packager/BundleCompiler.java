@@ -33,16 +33,12 @@ public final class BundleCompiler {
             throws PackageException {
         ScriptBundleSources.Snapshot snapshot;
         List<String> defaults = List.of();
-        try {
-            if (descriptor.projectPackage()) {
-                var project = new GretlProjectParser(locale).parse(descriptor.baseDirectory());
-                snapshot = ScriptBundleSources.project(project, locale, false);
-                defaults = project.defaultTargets();
-            } else {
-                snapshot = ScriptBundleSources.single(descriptor.entryPath(), locale, false);
-            }
-        } catch (IOException failure) {
-            throw new PackageException("PACKAGE_SOURCE_READ", failure.getMessage(), failure);
+        if (descriptor.projectPackage()) {
+            var project = new GretlProjectParser(locale).parse(descriptor.baseDirectory());
+            snapshot = ScriptBundleSources.project(project, locale);
+            defaults = project.defaultTargets();
+        } else {
+            snapshot = ScriptBundleSources.single(descriptor.entryPath(), locale);
         }
         var bundle = snapshot.bundle();
         var captured = new LinkedHashMap<Path, SourceFile>();

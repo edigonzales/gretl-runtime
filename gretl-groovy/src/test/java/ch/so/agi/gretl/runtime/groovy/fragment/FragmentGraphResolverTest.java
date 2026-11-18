@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FragmentGraphResolverTest {
     @TempDir Path root;
     void write(String id,String text)throws Exception{Path p=root.resolve(id);Files.createDirectories(p.getParent());Files.writeString(p,text);}
-    FragmentGraphResolver.Bundle single(){return new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("","job.groovy")),false,null,new ContainedFragmentSources(root));}
+    FragmentGraphResolver.Bundle single(){return new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("","job.groovy")),null,new ContainedFragmentSources(root));}
     void code(String expected){assertEquals(expected,assertThrows(GroovyDslException.class,this::single).code());}
     @Test void nestedSourcesHaveDistinctNamesConsistentBytesAndHash()throws Exception{
         write("job.groovy","apply from:'tasks/a.groovy'\n");write("tasks/a.groovy","apply from:'../shared/a.groovy'\n");write("shared/a.groovy","// original\n");
@@ -25,14 +25,14 @@ class FragmentGraphResolverTest {
         byte[] exposed=first.sources().get("shared/a.groovy").bytes();exposed[0]=0;assertEquals("// original\n",first.sources().get("shared/a.groovy").text());
         Path copy=Files.createTempDirectory(root.getParent(),"relocated-");
         try {for(var e:single().sources().values()){Path p=copy.resolve(e.sourceId());Files.createDirectories(p.getParent());Files.write(p,e.bytes());}
-            var moved=new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("","job.groovy")),false,null,new ContainedFragmentSources(copy));assertEquals(single().sha256(),moved.sha256());
+            var moved=new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("","job.groovy")),null,new ContainedFragmentSources(copy));assertEquals(single().sha256(),moved.sha256());
         }finally{try(var paths=Files.walk(copy)){for(var p:paths.sorted(Comparator.reverseOrder()).toList())Files.delete(p);}}
     }
     @Test void snapshotReadsEveryPhysicalSourceOnceAcrossScopes()throws Exception{
         write("a/job.groovy","apply from:'../shared.groovy'");write("b/job.groovy","apply from:'../shared.groovy'");write("shared.groovy","// shared");
         Map<String,Integer> reads=new HashMap<>();var disk=new ContainedFragmentSources(root);
         FragmentSourceAccess access=new FragmentSourceAccess(){public FragmentSource read(String id,boolean fragment)throws java.io.IOException{reads.merge(id,1,Integer::sum);return disk.read(id,fragment);}public String resolve(String caller,String from)throws java.io.IOException{return disk.resolve(caller,from);}};
-        var bundle=new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry(":a","a/job.groovy"),new FragmentGraphResolver.Entry(":b","b/job.groovy")),true,null,access);
+        var bundle=new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry(":a","a/job.groovy"),new FragmentGraphResolver.Entry(":b","b/job.groovy")),null,access);
         assertEquals(2,bundle.edges().size());assertEquals(Map.of("a/job.groovy",1,"b/job.groovy",1,"shared.groovy",1),reads);
     }
     @Test void duplicateAndCycleHaveSeparateCodesAndIncludeChains()throws Exception{
@@ -52,29 +52,28 @@ class FragmentGraphResolverTest {
     @Test void allowsUnicodeSpacesAndPreservesOldHashes()throws Exception{
         write("job.groovy","// old\n");assertEquals(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(root.resolve("job.groovy")))),single().sha256());
         write("settings.gretl","include 'a'\n");write("a/job.groovy","// sub\n");var project=new GretlProjectParser().parse(root);
-        var bundle=new FragmentGraphResolver().resolve(project.entries().stream().map(e->new FragmentGraphResolver.Entry(e.projectPath().canonical(),project.root().relativize(e.scriptFile()).toString().replace('\\','/'))).toList(),true,"settings.gretl",new ContainedFragmentSources(root));
-        assertEquals(ProjectSourceHash.sha256(project),bundle.sha256());
-        write("job.groovy","apply from:'ä space.groovy'");write("ä space.groovy","// okay");assertTrue(single().hasIncludes());
+        // Relocation-independent SHA-256 from the previous framed project algorithm.
+        assertEquals("ab58b01379effa93cdda22854d996b73e2e5edec6b0498f68fba98a868f002ab", ScriptBundleSources.project(project, Locale.ENGLISH).bundle().sha256());
+        write("job.groovy","apply from:'ä space.groovy'");write("ä space.groovy","// okay");assertFalse(single().edges().isEmpty());
     }
     @Test void rejectsImportingRealProjectEntryAsFragment()throws Exception{
         write("job.groovy","apply from:'a/job.groovy'");write("a/job.groovy","// entry");
-        var ex=assertThrows(GroovyDslException.class,()->new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry(":","job.groovy"),new FragmentGraphResolver.Entry(":a","a/job.groovy")),true,null,new ContainedFragmentSources(root)));assertEquals("APPLY_CONTEXT",ex.code());
+        var ex=assertThrows(GroovyDslException.class,()->new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry(":","job.groovy"),new FragmentGraphResolver.Entry(":a","a/job.groovy")),null,new ContainedFragmentSources(root)));assertEquals("APPLY_CONTEXT",ex.code());
     }
-    @Test void canonicalEntryAndSettingsSpellingsHaveSameIdentity()throws Exception{
+    @Test void canonicalEntrySpellingsHaveSameIdentity()throws Exception{
         write("settings.gretl","// settings");write("job.groovy","apply from:'fragment.groovy'");write("fragment.groovy","// fragment");Files.createDirectory(root.resolve("sub"));
         var resolver=new FragmentGraphResolver();var access=new ContainedFragmentSources(root);
-        var canonical=resolver.resolve(List.of(new FragmentGraphResolver.Entry(":","job.groovy")),true,"settings.gretl",access);
-        var spelled=resolver.resolve(List.of(new FragmentGraphResolver.Entry(":","./sub/../job.groovy")),true,"./settings.gretl",access);
+        var settings = new FragmentSource("settings.gretl", Files.readAllBytes(root.resolve("settings.gretl")));
+        var canonical=resolver.resolve(List.of(new FragmentGraphResolver.Entry(":","job.groovy")),settings,access);
+        var spelled=resolver.resolve(List.of(new FragmentGraphResolver.Entry(":","./sub/../job.groovy")),settings,access);
         assertEquals(canonical.sha256(),spelled.sha256());assertEquals(canonical.sources().keySet(),spelled.sources().keySet());assertEquals(canonical.entries(),spelled.entries());assertEquals(canonical.edges(),spelled.edges());
     }
     @Test void canonicalRootIdsRejectAbsoluteEscapeAndHiddenSymlink()throws Exception{
         write("job.groovy","// entry");write("settings.gretl","// settings");Files.createDirectory(root.resolve("real"));Files.createSymbolicLink(root.resolve("link"),Path.of("real"));
         for(String id:List.of(root.resolve("job.groovy").toString(),"../job.groovy","link/../job.groovy")){
-            var failure=assertThrows(GroovyDslException.class,()->new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("",id)),false,null,new ContainedFragmentSources(root)));
+            var failure=assertThrows(GroovyDslException.class,()->new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("",id)),null,new ContainedFragmentSources(root)));
             assertEquals("APPLY_PATH_UNSAFE",failure.code(),id);
         }
-        var failure=assertThrows(GroovyDslException.class,()->new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry(":","job.groovy")),true,root.resolve("settings.gretl").toString(),new ContainedFragmentSources(root)));
-        assertEquals("APPLY_PATH_UNSAFE",failure.code());
     }
     @Test void boundedReadAndDepthLimitAreEffective()throws Exception{
         write("job.groovy","apply from:'large.groovy'");Files.write(root.resolve("large.groovy"),new byte[ContainedFragmentSources.MAX_FRAGMENT_BYTES+1]);code("APPLY_LIMIT");

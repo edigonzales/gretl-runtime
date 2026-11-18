@@ -13,7 +13,6 @@ import ch.so.agi.gretl.runtime.groovy.GroovyJobLoader;
 import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
 import ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle;
 import ch.so.agi.gretl.runtime.logging.Json;
-import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
 import java.io.IOException;
 import java.io.InputStream;
@@ -214,12 +213,7 @@ public final class JobJarMain {
         }
 
         @Override
-        public Path jobRoot() {
-            return jobRoot;
-        }
-
-        @Override
-        public Path prepareRun(Path runRoot, Locale locale) throws IOException {
+        public Path prepareRun(Path runRoot, Path definitionRoot, Locale locale) throws IOException {
             return materialize(metadata, locale, runRoot, classLoader);
         }
 
@@ -229,16 +223,11 @@ public final class JobJarMain {
         }
 
         @Override
-        public String sha256(Locale locale) {
-            return metadata.bundle().sha256();
-        }
-
-        @Override
-        public JobDefinition load(OperationRegistry registry, Path startCwd,
-                                  UserMessageSink sink, Locale locale) {
-            DefinitionEnvironment environment = new DefinitionEnvironment(
-                    registry, jobRoot, startCwd, sink, locale);
-            return new GroovyJobLoader().loadCompiledBundle(metadata.bundle(), environment, classLoader);
+        public Loaded load(OperationRegistry registry, Path startCwd, UserMessageSink sink, Locale locale) {
+            var environment = new DefinitionEnvironment(registry, jobRoot, startCwd, sink, locale);
+            var bundle = metadata.bundle();
+            var definition = new GroovyJobLoader().loadCompiledBundle(bundle, environment, classLoader);
+            return new Loaded(definition, bundle.sha256());
         }
 
         @Override

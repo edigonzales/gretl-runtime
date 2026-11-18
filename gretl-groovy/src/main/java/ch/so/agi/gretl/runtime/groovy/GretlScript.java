@@ -176,9 +176,7 @@ public abstract class GretlScript extends Script {
     }
 
     public JobDefinition freeze() {
-        JobDslModel model = model();
-        model.freeze();
-        return model.definition();
+        throw model().freezeControlled();
     }
 
     JobDslModel model() {

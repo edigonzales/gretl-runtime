@@ -3,6 +3,7 @@ package ch.so.agi.gretl.runtime.groovy.fragment;
 import ch.so.agi.gretl.runtime.groovy.CompilerSettings;
 import ch.so.agi.gretl.runtime.groovy.GroovyDslException;
 import ch.so.agi.gretl.runtime.groovy.SourceLocation;
+import ch.so.agi.gretl.syntax.ScriptSourceNames;
 import groovy.lang.GroovyClassLoader;
 import groovyjarjarantlr4.v4.runtime.CharStreams;
 import java.io.IOException;

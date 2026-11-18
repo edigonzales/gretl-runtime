@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
 import ch.so.agi.gretl.runtime.logging.Json;
-import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.JobDefinitionBuilder;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
 import ch.so.agi.gretl.runtime.runner.TaskRegistration;
@@ -174,11 +173,9 @@ class SetupCompletionTest {
     private JobSource source(AtomicInteger taskCalls, AtomicInteger cleanups, Path sabotageReportParent) {
         return new JobSource() {
             @Override public Path displayFile() { return tempDir.resolve("fixture.groovy"); }
-            @Override public Path jobRoot() { return tempDir; }
             @Override public String jobName() { return "setup-fixture"; }
-            @Override public String sha256(java.util.Locale locale) { return "a".repeat(64); }
             @Override
-            public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink, java.util.Locale locale) {
+            public Loaded load(OperationRegistry registry, Path startCwd, UserMessageSink sink, java.util.Locale locale) {
                 sink.println("definition loaded");
                 JobDefinitionBuilder builder = new JobDefinitionBuilder(tempDir);
                 builder.register(TaskRegistration.builder("work", Object.class).body(context -> {
@@ -194,7 +191,7 @@ class SetupCompletionTest {
                     context.log().info("cleanup completed");
                 });
                 builder.defaults("work");
-                return builder.freeze();
+                return new Loaded(builder.freeze(), "a".repeat(64));
             }
         };
     }

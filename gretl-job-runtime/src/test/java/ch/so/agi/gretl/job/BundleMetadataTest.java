@@ -44,7 +44,7 @@ class BundleMetadataTest {
     @SuppressWarnings("unchecked") private List<Map<String,Object>> edges(Map<String,Object> m){return (List<Map<String,Object>>)bundle(m).get("edges");}
     @SuppressWarnings("unchecked") private Map<String,Object> valid(){
         FragmentSourceAccess access=(id,fragment)->new FragmentSource(id,(id.equals("job.groovy")?"apply from:'tasks/f.groovy'":"action('run'){}").getBytes(StandardCharsets.UTF_8));
-        var source=new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("","job.groovy")),false,null,access);
+        var source=new FragmentGraphResolver().resolve(List.of(new FragmentGraphResolver.Entry("","job.groovy")),null,access);
         var types=new LinkedHashMap<String,String>();source.sources().keySet().forEach(id->types.put(id,source.virtualName(id).replace(".groovy","")));
         var m = Map.of("schemaVersion", 1, "name", "bundle", "version", "1",
                 "runtimeVersion", "6.0.0-SNAPSHOT", "resourceFiles", List.of(),

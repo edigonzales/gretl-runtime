@@ -284,7 +284,7 @@ class CliRunIntegrationTest {
         assertTrue(!errors.isEmpty());
         Map<?, ?> error = (Map<?, ?>) errors.get(0);
         Map<?, ?> source = (Map<?, ?>) error.get("source");
-        assertEquals("bad-config.groovy", source.get("file"));
+        assertEquals(script.toString(), source.get("file"));
         assertTrue(((Number) source.get("line")).intValue() > 0);
         assertFalse(Files.readString(report).contains("unknownSetting = 'x'"));
     }

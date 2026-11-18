@@ -12,6 +12,7 @@ import ch.so.agi.gretl.runtime.runner.JobOutcome;
 import ch.so.agi.gretl.runtime.runner.ParameterValueType;
 import ch.so.agi.gretl.runtime.runner.ResultSlot;
 import ch.so.agi.gretl.runtime.runner.RunStatus;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ class GroovyLoaderTest {
         assertEquals(0, TestGroovyOperations.HANDLER_CREATIONS.get());
         assertEquals(0, TestGroovyOperations.HANDLER_CALLS.get());
         var source = definition.task("echo").orElseThrow().source();
-        assertEquals("config.groovy", source.file());
+        assertEquals(harness.jobDir.resolve("config.groovy").toString(), source.file());
         assertTrue(source.line() > 0);
     }
 
@@ -125,6 +126,78 @@ class GroovyLoaderTest {
     }
 
     @Test
+    void emptyAndMissingScriptsHaveDistinctOutcomes() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        var definition = harness.loadSource("empty.groovy", "// empty");
+        assertTrue(definition.tasks().isEmpty());
+        assertTrue(definition.defaultTargets().isEmpty());
+
+        Path missing = harness.jobDir.resolve("missing.groovy");
+        var failure = assertThrows(GroovyDslException.class, () -> harness.load(missing));
+        assertEquals("JOB_NOT_FOUND", failure.code());
+        assertEquals(missing.toString(), failure.source().file());
+    }
+
+    @Test
+    void singleEntryWithoutIncludesUsesTheSameSymlinkBoundary() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        Files.writeString(harness.jobDir.resolve("job.groovy"), "action('run') {}");
+        Path entryLink = Files.createSymbolicLink(harness.jobDir.resolve("entry.groovy"), Path.of("job.groovy"));
+        Path rootLink = Files.createSymbolicLink(tempDir.resolve("alias"), harness.jobDir);
+        for (Path entry : List.of(entryLink, rootLink.resolve("job.groovy"))) {
+            var failure = assertThrows(GroovyDslException.class, () -> harness.load(entry));
+            assertEquals("JOB_SOURCE_UNSAFE", failure.code());
+            assertEquals(entry.toString(), failure.source().file());
+        }
+    }
+
+    @Test
+    void definitionFinalizationBelongsToTheLoader() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        var failure = assertThrows(GroovyDslException.class,
+                () -> harness.loadSource("freeze.groovy", "action('run') {}\nfreeze()"));
+        assertEquals("JOB_FREEZE_CONTROLLED", failure.code());
+        assertEquals(2, failure.source().line());
+    }
+
+    @Test
+    void ordinaryApplyAndImportedTypesWorkAndEachLoadOwnsItsHelperClass() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        String source = """
+                import java.time.LocalDate as Day
+
+                class Numbering {
+                    static int count = 40
+                    static int next() { ++count }
+                }
+
+                String apply(String name) { Day.of(2026, 1, 2).toString() + '-' + name }
+                def label = apply('job')
+                def first = Numbering.next()
+                action('run') { label + ':' + first + ':' + Numbering.next() }
+                defaults 'run'
+                """;
+        var first = harness.loadSource("numbering.groovy", source);
+        var second = harness.load(harness.jobDir.resolve("numbering.groovy"));
+        for (var definition : List.of(first, second)) {
+            var outcome = harness.run(definition, Map.of());
+            assertEquals(RunStatus.SUCCEEDED, outcome.status());
+            assertEquals("2026-01-02-job:41:42",
+                    ((ResultSlot.Value) outcome.task("run").orElseThrow().slot()).value());
+        }
+    }
+
+    @Test
+    void compilerDoesNotResolveGroovySourceOutsideTheSnapshot() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        Files.writeString(harness.jobDir.resolve("Uncaptured.groovy"), "class Uncaptured {}");
+        var failure = assertThrows(GroovyDslException.class, () -> harness.loadSource("job.groovy",
+                "action('run') { new Uncaptured() }"));
+        assertEquals("JOB_LOAD_FAILED", failure.code());
+        assertTrue(failure.getMessage().contains("Uncaptured"));
+    }
+
+    @Test
     void unknownSymbolAndSyntaxErrorsAreLoadErrorsWithSource() throws Exception {
         GroovyHarness harness = new GroovyHarness(tempDir);
         GroovyDslException unknown = assertThrows(GroovyDslException.class,
@@ -136,20 +209,24 @@ class GroovyLoaderTest {
         assertTrue(unknown.source().file().contains("unknown-symbol.groovy"));
 
         GroovyDslException syntax = assertThrows(GroovyDslException.class,
-                () -> harness.loadSource("syntax.groovy", "task('x', Echo) {"));
+                () -> harness.loadSource("syntax.groovy", "// heading\ndef broken = )"));
         assertEquals("JOB_LOAD_FAILED", syntax.code());
+        assertEquals(harness.jobDir.resolve("syntax.groovy").toString(), syntax.source().file());
+        assertEquals(2, syntax.source().line());
+        assertEquals(14, syntax.source().column());
     }
 
     @Test
-    void duplicateTaskAndUnknownDefaultArePreservedDefinitionErrors() throws Exception {
+    void duplicateTaskAndUnknownDefaultKeepTheirDiagnosticCodes() throws Exception {
         GroovyHarness harness = new GroovyHarness(tempDir);
-        DefinitionException duplicate = assertThrows(DefinitionException.class,
+        GroovyDslException duplicate = assertThrows(GroovyDslException.class,
                 () -> harness.loadSource("duplicate.groovy", """
                         task('x', Echo) { text = 'a' }
                         task('x', Echo) { text = 'b' }
                         defaults 'x'
                         """));
         assertEquals("DUPLICATE_TASK_ID", duplicate.code());
+        assertEquals(2, duplicate.source().line());
 
         DefinitionException unknownDefault = assertThrows(DefinitionException.class,
                 () -> harness.loadSource("unknown-default.groovy", """
@@ -209,7 +286,7 @@ class GroovyLoaderTest {
     void duplicateParameterNamesAreDefinitionErrors() throws Exception {
         GroovyHarness harness = new GroovyHarness(tempDir);
         var duplicate = assertThrows(
-                ch.so.agi.gretl.runtime.runner.ParameterException.class,
+                GroovyDslException.class,
                 () -> harness.loadSource("duplicate-parameter.groovy", """
                         parameter('x', description: 'first')
                         parameter('x', description: 'second')
@@ -217,6 +294,9 @@ class GroovyLoaderTest {
                         defaults 'echo'
                         """));
         assertEquals("DUPLICATE_PARAMETER", duplicate.code());
+        assertEquals("x", duplicate.fieldName());
+        assertEquals(2, duplicate.source().line());
+        assertFalse(duplicate.getMessage().contains(duplicate.source().file()));
     }
 
     @Test

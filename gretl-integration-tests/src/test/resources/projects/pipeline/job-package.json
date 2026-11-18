@@ -4,9 +4,6 @@
   "version": "1",
   "runtimeVersion": "6.0.0-SNAPSHOT",
   "settingsFile": "settings.gretl",
-  "sources": [
-    "helpers"
-  ],
   "resources": [
     "download/sql",
     "validation/nested/sql",

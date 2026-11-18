@@ -48,7 +48,7 @@ class ProjectArtifactLocalJobIT {
             assertEquals(1L,metadata.get("schemaVersion"));
             var bundle = object(metadata.get("bundle"));
             assertEquals(5,((List<?>)bundle.get("entries")).size());
-            assertEquals(5,((List<?>)bundle.get("sources")).stream().map(e->object(e).get("className")).distinct().count());
+            assertEquals(6,((List<?>)bundle.get("sources")).stream().map(e->object(e).get("className")).distinct().count());
             assertNotEquals(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job-resources/download/sql/update.sql")).readAllBytes(),StandardCharsets.UTF_8),
                     new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job-resources/validation/nested/sql/update.sql")).readAllBytes(),StandardCharsets.UTF_8));
             assertEquals(object(report(script).get("source")).get("sha256"),bundle.get("sha256"));

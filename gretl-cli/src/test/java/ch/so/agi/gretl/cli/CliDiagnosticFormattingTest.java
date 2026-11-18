@@ -118,7 +118,7 @@ class CliDiagnosticFormattingTest {
         assertTrue(result.err().contains("\n  Feld: unknownSetting"));
         assertTrue(result.err().contains("\n  Erlaubte Felder:"));
         assertTrue(result.err().contains("\n  Meldung:"));
-        assertTrue(result.err().contains("\n  Quelle: bad-config.groovy:2"));
+        assertTrue(result.err().contains("\n  Quelle: " + script + ":2"));
         assertFalse(result.err().contains("Operation fehlgeschlagen"));
         assertFalse(result.err().contains("FEHLER:"));
         assertFalse(result.err().contains("\tat "));

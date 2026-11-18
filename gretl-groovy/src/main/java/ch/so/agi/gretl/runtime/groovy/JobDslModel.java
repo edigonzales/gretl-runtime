@@ -27,7 +27,7 @@ final class JobDslModel {
     private final Path scriptFile;
     private final Map<String, TaskRef<?>> taskRefs;
     private final Map<String, OperationType<?, ?>> taskOperations;
-    private FragmentLoadSession fragments;
+    private final FragmentLoadSession fragments;
     private final Map<String, OperationType<?, ?>> symbols;
     private final ProjectPath scope;
     private final ProjectTaskIndex index;
@@ -35,17 +35,10 @@ final class JobDslModel {
     private final Map<String, Path> sourceFiles;
     private JobDefinition definition;
 
-    JobDslModel(DefinitionEnvironment environment, JobDefinitionBuilder builder, Path scriptFile) {
-        this(environment, builder, scriptFile, null, null, null, Map.of());
-    }
-
-    JobDslModel(DefinitionEnvironment environment, JobDefinitionBuilder builder, Path scriptFile,
-                ProjectPath scope, ProjectTaskIndex index, String virtualSourceName, Map<String, Path> sourceFiles) {
-        this(environment,new DefinitionScopeState(builder),scriptFile,scope,index,virtualSourceName,sourceFiles);
-    }
-
-    JobDslModel(DefinitionEnvironment environment,DefinitionScopeState state,Path scriptFile,
-                ProjectPath scope,ProjectTaskIndex index,String virtualSourceName,Map<String,Path> sourceFiles){
+    JobDslModel(DefinitionEnvironment environment, DefinitionScopeState state, Path scriptFile,
+                ProjectPath scope, ProjectTaskIndex index, String virtualSourceName, Map<String, Path> sourceFiles,
+                FragmentLoadSession fragments) {
+        this.fragments = fragments;
         this.taskRefs=state.taskRefs;this.taskOperations=state.taskOperations;
         this.scope = scope;
         this.index = index;
@@ -71,10 +64,6 @@ final class JobDslModel {
 
     Path scriptFile() {
         return scriptFile;
-    }
-
-    SourceLocation source() {
-        return virtualSourceName!=null ? new SourceLocation(scriptFile.toString(), 0, 0) : SourceLocations.fallback(scriptFile);
     }
 
     Map<String, OperationType<?, ?>> symbols() {
@@ -111,7 +100,7 @@ final class JobDslModel {
             throw new GroovyDslException("UNKNOWN_TASK_NAME",
                     Messages.format(environment.locale(), "error.groovy.unknownTask", name),
                     requestingTask, null,
-                    SourceLocations.current(scriptFile), taskNames(), null);
+                    currentSource(), taskNames(), null);
         }
         return ref;
     }
@@ -124,21 +113,7 @@ final class JobDslModel {
         return projectMode() ? index.taskIds() : List.copyOf(new LinkedHashSet<>(taskRefs.keySet()));
     }
 
-    JobDefinition definition() {
-        return definition;
-    }
-
-    void freeze() {
-        if(fragments!=null)throw fragments.error(this,"APPLY_OUTSIDE_DEFINITION");
-        if (definition == null) {
-            if (projectMode()) throw new GroovyDslException("PROJECT_FREEZE_CONTROLLED", Messages.get(
-                    environment.locale(), "project.freezeControlled"), null, null, currentSource(), List.of(), null);
-            definition = builder.freeze();
-        }
-    }
-
     boolean projectMode() { return scope != null; }
-    boolean mappedSources() { return virtualSourceName != null; }
 
     String qualifiedTaskId(String name) { return qualifyLocal(name); }
     String qualifiedParameterId(String name) {
@@ -182,22 +157,24 @@ final class JobDslModel {
     SourceLocation currentSource() { return SourceLocations.current(scriptFile, virtualSourceName); }
     SourceLocation sourceForTask(String id) {
         SourceLocation current = currentSource();
-        if (!mappedSources() || current.line() > 0) return current;
+        if (current.line() > 0) return current;
         if (projectMode()) return index.source(id).orElse(current);
         if (definition == null) return current;
         return definition.task(id).map(task -> new SourceLocation(task.source().file(),
                 task.source().line(),task.source().column())).orElse(current);
     }
     SourceLocation failureSource(Throwable failure) { return SourceLocations.from(failure, scriptFile, virtualSourceName); }
-    void remap(Throwable failure) { if (virtualSourceName!=null) SourceLocations.remap(failure, sourceFiles); }
+    void remap(Throwable failure) { SourceLocations.remap(failure, sourceFiles); }
     void attachDefinition(JobDefinition value) { definition = value; }
 
-    void fragments(FragmentLoadSession session){fragments=session;}
-    void apply(Map<String,?> options){
-        if(fragments==null)throw new GroovyDslException("APPLY_OUTSIDE_DEFINITION",Messages.format(environment.locale(),"apply.APPLY_OUTSIDE_DEFINITION",scriptFile),null,null,currentSource(),List.of(),null);
-        fragments.apply(this,options);
+    void apply(Map<String, ?> options) { fragments.apply(this, options); }
+    void checkDefaults() { fragments.checkDefaults(this); }
+
+    GroovyDslException freezeControlled() {
+        String code = projectMode() ? "PROJECT_FREEZE_CONTROLLED" : "JOB_FREEZE_CONTROLLED";
+        return new GroovyDslException(code, Messages.get(environment.locale(), "error.groovy.freezeControlled"),
+                null, null, currentSource(), List.of(), null);
     }
-    void checkDefaults(){if(fragments!=null)fragments.checkDefaults(this);}
 
     UserMessageSink userMessages() {
         return environment.userMessages();

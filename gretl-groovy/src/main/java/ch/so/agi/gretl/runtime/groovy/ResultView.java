@@ -44,13 +44,13 @@ public final class ResultView<R> extends GroovyObjectSupport {
                         "UNKNOWN_OUTPUT_FIELD",
                         Messages.format(locale, "error.groovy.unknownOutputField",
                                 operation.symbol(), name),
-                        null, name, SourceLocations.fallback(null),
+                        null, name, null,
                         outputs.stream().map(OutputField::name).toList(), null));
         Object value = field.read().apply(result);
         if (value == null && !field.nullable()) {
             throw new GroovyDslException("NULL_OUTPUT_FIELD",
                     Messages.format(locale, "error.groovy.nullOutputField", name),
-                    null, name, SourceLocations.fallback(null), List.of(), null);
+                    null, name, null, List.of(), null);
         }
         return value;
     }

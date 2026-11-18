@@ -1,7 +1,6 @@
 package ch.so.agi.gretl.runtime.groovy;
 
 import static org.junit.jupiter.api.Assertions.*;
-import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
 import ch.so.agi.gretl.runtime.runner.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +19,12 @@ class ProjectSourceLocationTest {
             var error = assertThrows(GroovyDslException.class, () -> load(h));
             assertEquals("JOB_LOAD_FAILED", error.code()); assertEquals(source.toString(), error.source().file());
             assertEquals(2, error.source().line()); assertNotNull(error.getCause());
-            assertTrue(error.getMessage().contains(source.toString())); assertFalse(error.getMessage().contains("GretlProject_"));
+            if (body.startsWith("throw")) {
+                assertEquals("load-failure", error.getMessage());
+            } else {
+                assertTrue(error.getMessage().contains(source.toString()));
+            }
+            assertFalse(error.getMessage().contains("GretlSource_"));
             assertEquals(0, h.events.count("gretl.run.started"));
         }
     }
@@ -47,19 +51,33 @@ class ProjectSourceLocationTest {
         }
     }
 
-    @Test void sharedCompilerLoaderFindsExplicitRootHelpersWithoutLeakingBindingsOrClosingEarly() throws Exception {
+    @Test void sharedCompilerResolvesClassesFromAnotherEntryAndInjectsBindingIntoConstructor() throws Exception {
         var h = new GroovyHarness(temp);
-        Files.createDirectories(h.jobDir.resolve("helpers"));
-        Files.writeString(h.jobDir.resolve("helpers/Label.groovy"), "package helpers\nclass Label { static String value() { 'helper-value' } }\n");
+        Files.writeString(h.jobDir.resolve("job.groovy"), "package helpers\nclass Label { static String value() { 'helper-value' } }\n");
         tree(h, "import helpers.Label\n@groovy.transform.Field def captured = binding.getVariable('Echo')\ndef constructorValue = captured\naction('run') { assert constructorValue.is(Echo); Label.value() }\n");
         var definition = load(h); var outcome = h.run(definition, Map.of());
         assertEquals(RunStatus.SUCCEEDED, outcome.status(), outcome.toString());
         assertEquals("helper-value", GroovyProjectLoaderTest.value(outcome, ":a:b:run"));
     }
 
+    @Test void duplicateClassNamesAreRejectedBeforeRegistration() throws Exception {
+        var h = new GroovyHarness(temp);
+        Path marker = temp.resolve("registered");
+        String helper = "package helpers\nclass Label {}\n";
+        Files.writeString(h.jobDir.resolve("job.groovy"), helper
+                + "new File(new URI('" + marker.toUri() + "')).text = 'registered'");
+        Path child = tree(h, helper + "action('run') {}");
+
+        var failure = assertThrows(GroovyDslException.class, () -> load(h));
+        assertEquals("JOB_LOAD_FAILED", failure.code());
+        assertTrue(failure.getMessage().contains("helpers.Label"), failure.getMessage());
+        assertTrue(failure.getMessage().contains(child.toString()), failure.getMessage());
+        assertFalse(Files.exists(marker));
+    }
+
     private Path tree(GroovyHarness h, String source) throws Exception {
         Files.writeString(h.jobDir.resolve("settings.gretl"), "include 'a:b'\ndefaults ':a:b:run'\n");
         Path file = h.jobDir.resolve("a/b/job.groovy"); Files.createDirectories(file.getParent()); Files.writeString(file, source); return file.toRealPath();
     }
-    private JobDefinition load(GroovyHarness h) { return new GroovyJobLoader().loadProject(new GretlProjectParser().parse(h.jobDir), h.environment); }
+    private JobDefinition load(GroovyHarness h) { return h.loadProject(); }
 }

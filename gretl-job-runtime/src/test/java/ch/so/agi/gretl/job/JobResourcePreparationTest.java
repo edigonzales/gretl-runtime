@@ -28,7 +28,7 @@ class JobResourcePreparationTest {
 
     @Test void materializesInsideOwnedRunWithPrivateDirectories() throws Exception {
         Path run = Files.createDirectory(root.resolve("run"));
-        Path job = source("models/local.ili").prepareRun(run, Locale.ENGLISH);
+        Path job = source("models/local.ili").prepareRun(run, run.getParent(), Locale.ENGLISH);
         assertEquals(run.resolve("job-resources"), job);
         assertEquals("resource", Files.readString(job.resolve("models/local.ili")));
         if (Files.getFileStore(run).supportsFileAttributeView("posix")) {
@@ -36,12 +36,12 @@ class JobResourcePreparationTest {
             assertEquals(PosixFilePermissions.fromString("rwx------"), Files.getPosixFilePermissions(job.resolve("models")));
         }
         assertFalse(Files.exists(root.resolve("logical")));
-        assertThrows(IOException.class, () -> source("models/local.ili").prepareRun(run, Locale.ENGLISH));
+        assertThrows(IOException.class, () -> source("models/local.ili").prepareRun(run, run.getParent(), Locale.ENGLISH));
     }
 
     @Test void missingResourceIsAnIoSetupFailure() throws Exception {
         Path run = Files.createDirectory(root.resolve("run"));
-        var failure = assertThrows(IOException.class, () -> source("missing.txt").prepareRun(run, Locale.ENGLISH));
+        var failure = assertThrows(IOException.class, () -> source("missing.txt").prepareRun(run, run.getParent(), Locale.ENGLISH));
         assertTrue(failure.getMessage().contains("JOB_RESOURCE_MISSING"));
     }
 }

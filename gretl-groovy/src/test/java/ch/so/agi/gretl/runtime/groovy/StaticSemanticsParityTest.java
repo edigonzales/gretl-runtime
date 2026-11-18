@@ -151,7 +151,7 @@ class StaticSemanticsParityTest {
         }
     }
     private JobOutcome runCustom(ch.so.agi.gretl.runtime.api.OperationType<?,?> type,String text) throws Exception {
-        ch.so.agi.gretl.runtime.api.OperationProvider provider=()->List.of(type);var registry=OperationRegistry.fromProviders(List.of(provider));var source=temp.resolve("custom.groovy");java.nio.file.Files.writeString(source,text);var definition=new GroovyJobLoader().load(source,DefinitionEnvironment.of(registry,temp));return new SequentialJobRunner().run(definition,new ExecutionPlanner().plan(definition,List.of()),RunInput.builder().jobRoot(temp).startCwd(temp).workRoot(temp.resolve("work-custom")).build());
+        ch.so.agi.gretl.runtime.api.OperationProvider provider=()->List.of(type);var registry=OperationRegistry.fromProviders(List.of(provider));var source=temp.resolve("custom.groovy");java.nio.file.Files.writeString(source,text);var definition=new GroovyJobLoader().loadBundle(ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.single(source, java.util.Locale.GERMAN), DefinitionEnvironment.of(registry,temp), List.of(), Map.of());return new SequentialJobRunner().run(definition,new ExecutionPlanner().plan(definition,List.of()),RunInput.builder().jobRoot(temp).startCwd(temp).workRoot(temp.resolve("work-custom")).build());
     }
 
     @Test void guardedInvocationsAndReferencesMatchActualControlFlowWithoutExecutingConditions() throws Exception {

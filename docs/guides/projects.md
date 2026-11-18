@@ -78,10 +78,17 @@ Runtimekonfig, Deklarationsdefault. Required und Typkonversion gelten für die
 gesamte Definition; `check`, `plan` und Hilfe benötigen keine Pflichtwerte.
 `config(alias)` und `secret(alias)` behalten globale Aliase.
 
-Alle Skripte registrieren sequenziell Root zuerst und dann in Include-Reihenfolge
-in denselben Builder. Sie teilen Compilerloader und Operation-Registry, erhalten
-aber eigene Bindings und Scopes. Erst danach wird einmal eingefroren und mit dem
-bestehenden Planner ein Graph geplant. `dependsOn` selektiert Vorgänger;
+Im SCRIPT-Modus kompiliert GRETL alle erfassten Projektjobs und ihre
+`apply`-Fragmente gemeinsam. Groovy-Hilfsklassen können in diesen Quellen
+deklariert und daraus importiert werden. Vollqualifizierte Klassennamen müssen
+innerhalb der Definition eindeutig sein. Bereits kompilierte Klassen bleiben
+über den Classpath verfügbar. Lose Groovy-Hilfsdateien im Projektverzeichnis
+werden nur als erfasste Projekt- oder Fragmentquellen kompiliert.
+Die Skripte registrieren ihre Tasks in denselben Builder, den Root-Job zuerst
+und danach die eingebundenen Projekte in Settings-Reihenfolge. Jede Skriptinstanz
+erhält ein eigenes Binding. GRETL finalisiert die Definition einmal und plant
+darauf den Taskgraphen.
+`dependsOn` selektiert Vorgänger;
 `after` ordnet nur bereits ausgewählte Tasks. `result` und `resultOptional`
 benötigen weiterhin echte Datenabhängigkeiten, auch über Projektgrenzen hinweg.
 Taskkonfiguration und Cleanup werden bei Hilfe und Planung nicht ausgeführt.
@@ -94,9 +101,9 @@ absolute Pfade bleiben absolut. Temporäre Ausgaben gehören in `workPath(...)`.
 Alle Tasks teilen Run-ID, ResultStore, Parameterauflösung, Workspace- und
 Cleanup-Lebenszyklus sowie einen Runbericht mit qualifizierten Tasknamen.
 Fehler nennen die ursprünglichen Jobdateien und Zeilen. Der Projektquellhash
-umfasst Settings und eingebundene Jobskripte mit relativen Namen und Rohbytes;
-Daten, Ressourcen und zusätzliche Hilfsklassen sind kein Bestandteil dieses
-Quellhashs. Er ist kein Hash der gesamten Abhängigkeitswelt.
+umfasst Settings und eingebundene Jobskripte mit relativen Namen und Rohbytes.
+Mit `apply` gehören auch die Fragmentquellen und Include-Kanten dazu. Daten,
+Ressourcen und zusätzliche Abhängigkeiten bleiben ausserhalb der Quellidentität.
 
 GRETL-Job-Subprojekte führen weder Gradle- noch Maven-Builds aus. Es gibt keine
 verschachtelten Runs und keine neue `.gretl`-Endung für Jobskripte;

@@ -74,16 +74,19 @@ Laufwerkspfade, Backslashes, Kontrollzeichen, Symlinkkomponenten, fehlende oder
 nicht reguläre Dateien werden abgewiesen. Leerzeichen und Unicode sind erlaubt.
 Neue Fragmente sind UTF-8 und enden auf `.groovy`. Endliche Grenzen sind 64 Ebenen,
 1024 erfasste Quellen, 8 MiB je Fragment und 64 MiB Gesamtbytes bei Includes.
-Jobs ohne Includes behalten ihre bisherigen Eingangspfad- und Hashverträge.
+Bei Einzeljobs muss auch der Einstieg eine reguläre Datei sein. Einstieg und
+unmittelbare Definitionroot dürfen keine Symlinks sein.
 
 ## Quellen, Fehler und Pakete
 
-Ein unveränderlicher Snapshot verwendet die einmal erfassten Bytes für
-Includeanalyse, Kompilation und Quellhash. Der Hash umfasst kanonische
-rootrelative Quellnamen, Bytes aller Einstiege/Fragmente, geordnete Scopes/Kanten
-und bei Projekten die Settings. Ein anderer absoluter Checkoutpfad ändert ihn
-nicht; eine geänderte verschachtelte Quelle schon. Dies verspricht keinen atomaren
-Filesystemsnapshot über mehrere Dateien. Ein neuer Ladevorgang erfasst neue Bytes.
+Jeder SCRIPT-Job erfasst seine Definition einmal. Die erfassten Bytes dienen
+der Includeanalyse, der gemeinsamen Groovy-Kompilation und dem Quellhash des
+Runberichts. Ein neuer Ladevorgang erfasst den dann vorliegenden Stand.
+Bei einem Einzeljob ohne Includes ist der Hash der SHA-256 der Dateibytes.
+Bei Projekten ohne `apply` gehen Settings und Projekteinstiege mit relativen
+Namen und Bytes ein. Mit `apply` umfasst er zusätzlich alle Fragmente und die
+geordneten Scopes und Include-Kanten. Absolute Checkoutpfade gehen in keinen
+dieser Hashes ein. Änderungen zwischen dem Lesen einzelner Dateien sind möglich.
 Kompilier-, Registrierungs-, Konfigurations-, Action- und Cleanupfehler nennen die
 wirkliche Quelle und Zeile; gleiche Basenames bleiben unterscheidbar.
 

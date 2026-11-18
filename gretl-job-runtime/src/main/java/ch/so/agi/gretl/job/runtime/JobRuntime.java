@@ -156,16 +156,15 @@ public final class JobRuntime {
                 options.keepWork(), options.timeout(), logging, Optional.of(jobName));
         OperationRegistry registry = OperationRegistry.load(classLoader, locale);
 
+        MutableSink sink = new MutableSink();
+        JobSource.Loaded loaded = loadDefinition(source, registry, sink);
+        JobDefinition definition = loaded.definition();
         if (options.help()) {
-            MutableSink sink = new MutableSink();
-            JobDefinition definition = loadDefinition(source, registry, sink);
             sink.flushTo(message -> err.println("SCRIPT: " + message));
             new JobHelpPrinter(out, locale).jobHelp(definition, source.displayFile());
             return 0;
         }
 
-        MutableSink sink = new MutableSink();
-        JobDefinition definition = loadDefinition(source, registry, sink);
         Map<String, String> fileParameters = ParameterFile.read(options.parameterFile(), locale);
         ParameterResolver resolver = new ParameterResolver(startCwd, locale);
         ParameterMode mode = options.command() == JobOptions.Command.RUN
@@ -209,15 +208,15 @@ public final class JobRuntime {
             }
             return 0;
         }
-        return run(source, definition, plan, parameters, config, sink,
+        return run(source, loaded, plan, parameters, config, sink,
                 options.report(), commandId);
     }
 
-    private int run(JobSource source, JobDefinition definition, ExecutionPlan plan,
+    private int run(JobSource source, JobSource.Loaded loaded, ExecutionPlan plan,
                     ResolvedParameters parameters, RuntimeConfig config,
                     MutableSink userSink,
                     Path explicitReport, String commandId) {
-        String sourceHash = source.sha256(locale);
+        JobDefinition definition = loaded.definition();
         UUID runId = runIds.get();
         prepareDirectory(config.workRoot(), "workRoot");
         Path report = explicitReport != null
@@ -262,8 +261,8 @@ public final class JobRuntime {
             RunInput input = RunInput.builder()
                     .parameters(parameters)
                     .taskConfig(config.taskConfig())
-                    .jobRoot(source.jobRoot())
-                    .workspacePreparation(root -> source.prepareRun(root, locale))
+                    .jobRoot(definition.jobRoot())
+                    .workspacePreparation(root -> source.prepareRun(root, definition.jobRoot(), locale))
                     .locale(locale)
                     .startCwd(startCwd)
                     .workRoot(config.workRoot())
@@ -304,7 +303,7 @@ public final class JobRuntime {
             try {
                 new RunReportWriter(redactor).write(new RunReportInput(
                         context, outcome, definition, plan, source.displayFile(),
-                        sourceHash, revision, loggingState), report);
+                        loaded.sha256(), revision, loggingState), report);
             } catch (IOException | SecurityException exception) {
                 String message = Messages.format(locale,
                         "cli.error.reportWrite", redactor.redact(StartException.message(exception)));
@@ -362,8 +361,8 @@ public final class JobRuntime {
         }
     }
 
-    private JobDefinition loadDefinition(JobSource source, OperationRegistry registry,
-                                         UserMessageSink sink) {
+    private JobSource.Loaded loadDefinition(JobSource source, OperationRegistry registry,
+                                            UserMessageSink sink) {
         try {
             return source.load(registry, startCwd, sink, locale);
         } catch (DefinitionException | ParameterException | GroovyDslException exception) {

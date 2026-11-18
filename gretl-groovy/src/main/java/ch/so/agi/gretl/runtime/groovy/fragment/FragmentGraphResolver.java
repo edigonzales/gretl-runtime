@@ -2,10 +2,10 @@ package ch.so.agi.gretl.runtime.groovy.fragment;
 
 import ch.so.agi.gretl.runtime.groovy.GroovyDslException;
 import ch.so.agi.gretl.runtime.groovy.SourceLocation;
+import ch.so.agi.gretl.syntax.ScriptSourceNames;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.security.*;
 import java.util.*;
 
@@ -16,26 +16,27 @@ public final class FragmentGraphResolver {
     public record Entry(String scopeId,String sourceId) { public Entry { Objects.requireNonNull(scopeId);Objects.requireNonNull(sourceId); } }
     public record Edge(String scopeId,String sourceId,ApplyDirectiveReader.Directive directive,String targetId) { }
     public record Bundle(List<Entry> entries, Map<String,FragmentSource> sources, List<Edge> edges,
-                         boolean projectMode, String settingsId, String sha256) {
+                         String settingsId, String sha256) {
         public Bundle {
             entries=List.copyOf(entries);sources=Collections.unmodifiableMap(new LinkedHashMap<>(sources));edges=List.copyOf(edges);
         }
-        public boolean hasIncludes(){return !edges.isEmpty();}
-        public List<Edge> edgesFrom(String scope,String source){return edges.stream().filter(e->e.scopeId().equals(scope)&&e.sourceId().equals(source)).toList();}
         public String virtualName(String source) {
             // Hex UTF-8 identity is injective, portable and Groovy-class-name safe.
             return ScriptSourceNames.virtualGroovyName(source);
         }
     }
-    public Bundle resolve(List<Entry> entries, boolean projectMode, String settingsId, FragmentSourceAccess access) {
+    public Bundle resolve(List<Entry> entries, FragmentSource settings, FragmentSourceAccess access) {
         Objects.requireNonNull(access);entries=List.copyOf(entries);
         if(entries.isEmpty())throw new IllegalArgumentException("Entry required");
         entries=entries.stream().map(e->new Entry(e.scopeId(),canonicalId(access,e.sourceId()))).toList();
-        if(settingsId!=null)settingsId=canonicalId(access,settingsId);
-        var state=new State(entries,projectMode,settingsId,access);
-        if(settingsId!=null)state.read(settingsId,false);
+        String settingsId = settings == null ? null : settings.sourceId();
+        var state=new State(entries,settingsId,access);
+        if (settings != null) {
+            state.sources.put(settingsId, settings);
+            state.total = settings.bytes().length;
+        }
         for(var entry:entries) state.visit(entry.scopeId(),entry.sourceId(),new ArrayList<>(),new LinkedHashMap<>());
-        return new Bundle(entries,state.sources,state.edges,projectMode,settingsId,state.hash());
+        return new Bundle(entries,state.sources,state.edges,settingsId,state.hash());
     }
     private static String canonicalId(FragmentSourceAccess access,String sourceId) {
         try{return access.canonicalId(sourceId);}
@@ -43,11 +44,11 @@ public final class FragmentGraphResolver {
                 ch.so.agi.gretl.i18n.Messages.format(access.locale(),"apply.APPLY_NOT_FOUND",sourceId),failure);}
     }
     private static final class State {
-        final List<Entry> entries; final boolean project;final String settings;final FragmentSourceAccess access;
+        final List<Entry> entries; final String settings;final FragmentSourceAccess access;
         final Map<String,FragmentSource> sources=new LinkedHashMap<>();final List<Edge> edges=new ArrayList<>();
         final Map<String,List<ApplyDirectiveReader.Directive>> parsed=new LinkedHashMap<>();
         final Map<String,Map<String,List<String>>> visited=new HashMap<>();long total;
-        State(List<Entry> entries,boolean project,String settings,FragmentSourceAccess access){this.entries=entries;this.project=project;this.settings=settings;this.access=access;}
+        State(List<Entry> entries,String settings,FragmentSourceAccess access){this.entries=entries;this.settings=settings;this.access=access;}
         FragmentSource read(String id,boolean fragment) {
             var existing=sources.get(id);if(existing!=null)return existing;
             if(sources.size()>=MAX_SOURCES)throw error("APPLY_LIMIT",id,List.of(),null);
@@ -98,14 +99,14 @@ public final class FragmentGraphResolver {
             try {
                 var digest=MessageDigest.getInstance("SHA-256");
                 if(edges.isEmpty()) {
-                    if(!project)digest.update(sources.get(entries.getFirst().sourceId()).bytes());
+                    if(settings==null)digest.update(sources.get(entries.getFirst().sourceId()).bytes());
                     else {
                         digest.update("gretl-project-source-v1\0".getBytes(StandardCharsets.UTF_8));
-                        if(settings!=null)hashSource(digest,settings);
+                        hashSource(digest,settings);
                         for(var entry:entries)hashSource(digest,entry.sourceId());
                     }
                 } else {
-                    frame(digest,"gretl-script-bundle-v1");frame(digest,project?"project":"single");
+                    frame(digest,"gretl-script-bundle-v1");frame(digest,settings==null?"single":"project");
                     frame(digest,settings==null?"":settings);
                     frame(digest,Integer.toString(entries.size()));
                     for(var entry:entries){frame(digest,entry.scopeId());frame(digest,entry.sourceId());}

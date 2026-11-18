@@ -2,7 +2,6 @@ package ch.so.agi.gretl.runtime.groovy;
 
 import static org.junit.jupiter.api.Assertions.*;
 import ch.so.agi.gretl.runtime.api.CancelReason;
-import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
 import ch.so.agi.gretl.runtime.runner.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -117,7 +116,7 @@ class ProjectScopeTest {
         var h = new GroovyHarness(temp);
         settings(h, "System.exit(99)");
         Path file = script(h, "", "parameter('legacy.name', description: 'Legacy', defaultValue: 'old')\naction('legacy:run') { parameter('legacy.name') }\ndefaults 'legacy:run'");
-        var definition = new GroovyJobLoader().load(file, h.environment);
+        var definition = h.load(file);
         assertEquals(List.of("legacy:run"), definition.defaultTargets());
         assertEquals("old", GroovyProjectLoaderTest.value(h.run(definition, Map.of()), "legacy:run"));
     }
@@ -156,7 +155,7 @@ class ProjectScopeTest {
     private boolean hasCode(FailureInfo failure, String code) {
         return failure.diagnostic().map(d -> d.code().equals(code)).orElse(false) || failure.causes().stream().anyMatch(c -> hasCode(c, code));
     }
-    private JobDefinition load(GroovyHarness h) { return new GroovyJobLoader().loadProject(new GretlProjectParser().parse(h.jobDir), h.environment); }
+    private JobDefinition load(GroovyHarness h) { return h.loadProject(); }
     private void settings(GroovyHarness h, String source) throws Exception { Files.writeString(h.jobDir.resolve("settings.gretl"), source); }
     private Path script(GroovyHarness h, String dir, String source) throws Exception { Path p = h.jobDir.resolve(dir).resolve("job.groovy"); Files.createDirectories(p.getParent()); Files.writeString(p, source); return p.toRealPath(); }
 }
