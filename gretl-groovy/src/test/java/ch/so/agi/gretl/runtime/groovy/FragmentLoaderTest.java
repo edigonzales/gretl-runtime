@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.runtime.groovy;
 
-import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
 import ch.so.agi.gretl.runtime.runner.*;
 import java.nio.file.*;
 import java.util.*;
@@ -16,7 +15,7 @@ class FragmentLoaderTest {
     Path write(GroovyHarness h,String name,String text)throws Exception{
         Path file=h.jobDir.resolve(name);Files.createDirectories(file.getParent());Files.writeString(file,text);return file;
     }
-    JobDefinition load(GroovyHarness h){return new GroovyJobLoader().load(h.jobDir.resolve("job.groovy"),h.environment);}
+    JobDefinition load(GroovyHarness h){return h.load(h.jobDir.resolve("job.groovy"));}
     Object value(JobOutcome outcome,String id){return ((ResultSlot.Value)outcome.task(id).orElseThrow().slot()).value();}
     @Test void forwardTypedResultsParametersAndOneCleanupShareTheDefinition()throws Exception{
         var h=new GroovyHarness(temp);
@@ -74,7 +73,7 @@ class FragmentLoaderTest {
         var h=new GroovyHarness(temp);write(h,"settings.gretl","include 'a','b'\ndefaults ':a:run',':b:run'\n");
         for(String scope:List.of("a","b")){write(h,scope+"/job.groovy","apply from:'../shared/tasks.groovy'");write(h,scope+"/data.txt",scope);}
         write(h,"shared/data.txt","wrong");write(h,"shared/tasks.groovy","parameter('tag',description:'Tag')\ndef own=0\naction('run'){own++; parameter('tag')+':'+java.nio.file.Files.readString(file('data.txt'))+':'+own}");
-        var d=new GroovyJobLoader().loadProject(new GretlProjectParser().parse(h.jobDir),h.environment);
+        var d=h.loadProject();
         assertEquals(List.of(":a:run",":b:run"),d.tasks().stream().map(TaskDefinition::id).toList());
         var outcome=h.run(d,Map.of(":a:tag","A",":b:tag","B"));assertEquals(RunStatus.SUCCEEDED,outcome.status());assertEquals("A:a:1",value(outcome,":a:run"));assertEquals("B:b:1",value(outcome,":b:run"));
     }
@@ -135,6 +134,17 @@ class FragmentLoaderTest {
             assertEquals(fragment.toString(),failure.source().file());assertEquals(2,failure.source().line());assertEquals(0,h.events.count("gretl.run.started"));
         }
     }
+    @Test void registrationErrorRemapsTheLongerOfTwoSourceNamesWithTheSamePrefix() throws Exception {
+        var h = new GroovyHarness(temp);
+        write(h, "job.groovy", "apply from: 'job.groovy-helper.groovy'");
+        Path fragment = write(h, "job.groovy-helper.groovy", "task('run', MissingOperation) {}");
+        var failure = assertThrows(GroovyDslException.class, () -> load(h));
+        assertEquals("JOB_LOAD_FAILED", failure.code());
+        assertEquals(fragment.toString(), failure.source().file());
+        assertTrue(failure.getMessage().contains(fragment.toString()), failure.getMessage());
+        assertFalse(failure.getMessage().contains("GretlSource_"), failure.getMessage());
+    }
+
     @Test void orderingAcrossFragmentsDoesNotGrantResultAccess()throws Exception{
         var h=new GroovyHarness(temp);write(h,"job.groovy","apply from:'producer.groovy'\napply from:'consumer.groovy'\ndefaults 'produce','consume'");
         write(h,"producer.groovy","action('produce'){'value'}");write(h,"consumer.groovy","action('consume',after:'produce'){result('produce')}");
@@ -148,7 +158,7 @@ class FragmentLoaderTest {
             write(h,"settings.gretl","include 'a','b'\ndefaults ':a:produce',':b:consume'");
             write(h,"a/job.groovy","apply from:'tasks.groovy'");write(h,"a/tasks.groovy","action('produce'){'cross-value'}");
             write(h,"b/job.groovy","apply from:'tasks.groovy'");write(h,"b/tasks.groovy","action('consume',"+link+":':a:produce'){result(':a:produce')}");
-            var outcome=h.run(new GroovyJobLoader().loadProject(new GretlProjectParser().parse(h.jobDir),h.environment),Map.of());
+            var outcome=h.run(h.loadProject(),Map.of());
             if(link.equals("dependsOn")){assertEquals(RunStatus.SUCCEEDED,outcome.status());assertEquals("cross-value",value(outcome,":b:consume"));}
             else{assertEquals(RunStatus.FAILED,outcome.status());assertEquals("UNDECLARED_RESULT_DEPENDENCY",outcome.task(":b:consume").orElseThrow().failure().orElseThrow().diagnostic().orElseThrow().code());}
         }

@@ -1,62 +1,34 @@
 package ch.so.agi.gretl.job.runtime;
 
-import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.groovy.DefinitionEnvironment;
 import ch.so.agi.gretl.runtime.groovy.GroovyJobLoader;
-import ch.so.agi.gretl.runtime.groovy.SourceLocation;
 import ch.so.agi.gretl.runtime.groovy.UserMessageSink;
-import ch.so.agi.gretl.runtime.groovy.project.GretlProject;
+import ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources;
 import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
-import ch.so.agi.gretl.runtime.groovy.project.ProjectException;
-import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.OperationRegistry;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 
 /** Explicit project definitions on disk; execution still uses the common runtime and runner. */
 public final class ProjectJobSource implements JobSource {
     private final Path directory;
-    private GretlProject parsed;
-    private ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.Snapshot loadedSnapshot;
 
     public ProjectJobSource(Path directory) {
         this.directory = java.util.Objects.requireNonNull(directory).toAbsolutePath().normalize();
     }
 
-    private GretlProject parse(Locale locale) {
-        parsed = new GretlProjectParser(locale).parse(directory);
-        return parsed;
-    }
-
-    @Override public Path displayFile() { return jobRoot().resolve("settings.gretl"); }
-    @Override public Path jobRoot() { return parsed == null ? directory : parsed.root(); }
+    @Override public Path displayFile() { return directory.resolve("settings.gretl"); }
     @Override public String jobName() { return directory.getFileName() == null ? "project" : directory.getFileName().toString(); }
-
-    @Override public JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink, Locale locale) {
-        GretlProject project = parse(locale);
-        try {
-            var snapshot=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.project(project,locale);
-            var loader=new GroovyJobLoader();var environment=new DefinitionEnvironment(registry,project.root(),startCwd,sink,locale);
-            var definition=snapshot==null?loader.loadProject(project,environment):loader.loadBundle(snapshot,environment,project.defaultTargets(),project.defaultTargetSources());
-            loadedSnapshot=snapshot;return definition;
-        }catch(IOException failure){throw new ch.so.agi.gretl.runtime.groovy.GroovyDslException("JOB_LOAD_FAILED",failure.getMessage(),failure);}
-    }
 
     @Override public boolean projectMode() { return true; }
 
-    @Override public String sha256(Locale locale) {
-        if(loadedSnapshot!=null)return loadedSnapshot.bundle().sha256();
-        GretlProject project = parse(locale);
-        try {
-            var snapshot=ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.project(project,locale);
-            return snapshot==null?ch.so.agi.gretl.runtime.groovy.project.ProjectSourceHash.sha256(project):snapshot.bundle().sha256();
-        }
-        catch (IOException failure) {
-            Path failed = failure instanceof java.nio.file.FileSystemException fs && fs.getFile() != null
-                    ? Path.of(fs.getFile()) : project.settingsFile();
-            throw new ProjectException("PROJECT_SOURCE_READ_FAILED", Messages.format(locale,
-                    "project.sourceRead", failed), new SourceLocation(failed.toString(), 0, 0), failure);
-        }
+    @Override
+    public Loaded load(OperationRegistry registry, Path startCwd, UserMessageSink sink, Locale locale) {
+        var project = new GretlProjectParser(locale).parse(directory);
+        var snapshot = ScriptBundleSources.project(project, locale);
+        var environment = new DefinitionEnvironment(registry, snapshot.root(), startCwd, sink, locale);
+        var definition = new GroovyJobLoader().loadBundle(snapshot, environment,
+                project.defaultTargets(), project.defaultTargetSources());
+        return new Loaded(definition, snapshot.bundle().sha256());
     }
 }

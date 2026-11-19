@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.runtime.groovy.fragment;
 
 import ch.so.agi.gretl.runtime.groovy.project.ProjectPath;
+import ch.so.agi.gretl.syntax.ScriptSourceNames;
 import java.nio.file.Path;
 import java.util.regex.Pattern;
 import java.util.*;
@@ -59,7 +60,6 @@ public record CompiledScriptBundle(String settingsId,String sha256,List<String> 
     public boolean projectMode() { return settingsId != null; }
 
     public String virtualName(String id){return ScriptSourceNames.virtualGroovyName(id);}
-    public List<FragmentGraphResolver.Edge> edgesFrom(String scope,String source){return edges.stream().filter(e->e.scopeId().equals(scope)&&e.sourceId().equals(source)).toList();}
     public static CompiledScriptBundle from(FragmentGraphResolver.Bundle bundle,Map<String,String> classes,List<String> defaultTargets){
         return new CompiledScriptBundle(bundle.settingsId(),bundle.sha256(),defaultTargets,bundle.entries(),
                 bundle.sources().keySet().stream().filter(id->!id.equals(bundle.settingsId())).map(id->new Source(id,Objects.requireNonNull(classes.get(id)))).toList(),bundle.edges());

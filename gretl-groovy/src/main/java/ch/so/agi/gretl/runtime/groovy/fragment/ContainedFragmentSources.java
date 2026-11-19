@@ -14,13 +14,14 @@ public final class ContainedFragmentSources implements FragmentSourceAccess {
     @Override public java.util.Locale locale(){return locale;}
     @Override public String canonicalId(String sourceId) throws IOException {
         String canonical=FragmentSourceAccess.super.canonicalId(sourceId);
-        validate(sourceId); // Inspect original components before discarding internal '..'.
+        if (!canonical.equals(sourceId)) validate(sourceId); // Inspect components discarded by normalization.
         return canonical;
     }
     @Override public String resolve(String caller,String from) throws IOException {
         String id=FragmentSourceAccess.super.resolve(caller,from);
         Path parent=Path.of(caller).getParent();
-        validate((parent==null?Path.of(from):parent.resolve(from)).toString());
+        String spelling = (parent == null ? Path.of(from) : parent.resolve(from)).toString().replace(java.io.File.separatorChar, '/');
+        if (!id.equals(spelling)) validate(spelling);
         return id;
     }
     private Path validate(String sourceId) throws IOException {

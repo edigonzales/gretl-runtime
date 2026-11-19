@@ -38,7 +38,7 @@ class ProjectMetadataTest {
             }
         };
         var source=new JobJarMain.PackagedJobSource(metadata,temp,loader);
-        Path resources=source.prepareRun(run, Locale.ENGLISH);
+        Path resources=source.prepareRun(run, source.jobRoot, Locale.ENGLISH);
         assertEquals(run.resolve("job-resources"),resources);
         assertEquals("synthetic",Files.readString(resources.resolve("a/data..txt")));
         assertFalse(Files.exists(temp.resolve("a/data..txt")));

@@ -10,19 +10,17 @@ import java.util.Locale;
 public interface JobSource {
     Path displayFile();
 
-    /** Definition root; packaged execution uses the root returned by prepareRun. */
-    Path jobRoot();
-
     /** Materialize resources only for an actual run, inside its owned workspace. */
-    default Path prepareRun(Path runRoot, Locale locale) throws java.io.IOException {
-        return jobRoot();
+    default Path prepareRun(Path runRoot, Path definitionRoot, Locale locale) throws java.io.IOException {
+        return definitionRoot;
     }
 
     default boolean projectMode() { return false; }
 
     String jobName();
 
-    String sha256(Locale locale);
+    /** One load's definition and the identity of the sources it used. */
+    record Loaded(JobDefinition definition, String sha256) { }
 
-    JobDefinition load(OperationRegistry registry, Path startCwd, UserMessageSink sink, Locale locale);
+    Loaded load(OperationRegistry registry, Path startCwd, UserMessageSink sink, Locale locale);
 }

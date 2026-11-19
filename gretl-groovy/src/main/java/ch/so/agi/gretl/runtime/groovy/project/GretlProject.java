@@ -15,15 +15,9 @@ public record GretlProject(Path root, Path settingsFile, List<ProjectEntry> entr
         entries = List.copyOf(entries);
         defaultTargets = List.copyOf(defaultTargets);
         defaultTargetSources = Map.copyOf(defaultTargetSources);
+        Objects.requireNonNull(settingsSource, "settingsSource");
     }
 
     @Override public String toString(){return "GretlProject[root="+root+", settingsFile="+settingsFile+", entries="+entries
             +", defaultTargets="+defaultTargets+", defaultTargetSources="+defaultTargetSources+"]";}
-
-    public GretlProject(Path root,Path settingsFile,List<ProjectEntry> entries,List<String> defaultTargets,Map<String,SourceLocation> sources){
-        this(root,settingsFile,entries,defaultTargets,sources,null);
-    }
-    public GretlProject(Path root, Path settingsFile, List<ProjectEntry> entries, List<String> defaultTargets) {
-        this(root, settingsFile, entries, defaultTargets, Map.of());
-    }
 }

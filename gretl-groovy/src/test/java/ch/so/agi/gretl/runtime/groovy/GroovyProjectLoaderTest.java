@@ -2,7 +2,6 @@ package ch.so.agi.gretl.runtime.groovy;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
 import ch.so.agi.gretl.runtime.runner.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,7 +75,7 @@ class GroovyProjectLoaderTest {
     }
 
     private JobDefinition load(GroovyHarness h) {
-        return new GroovyJobLoader().loadProject(new GretlProjectParser().parse(h.jobDir), h.environment);
+        return h.loadProject();
     }
 
     static Object value(JobOutcome outcome, String id) {

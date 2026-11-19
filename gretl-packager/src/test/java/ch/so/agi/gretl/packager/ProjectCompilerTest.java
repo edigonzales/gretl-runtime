@@ -2,7 +2,7 @@ package ch.so.agi.gretl.packager;
 
 import static org.junit.jupiter.api.Assertions.*;
 import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
-import ch.so.agi.gretl.runtime.groovy.project.ProjectSourceHash;
+import ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources;
 import tools.jackson.databind.json.JsonMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,12 +19,12 @@ class ProjectCompilerTest {
         assertEquals(3,compiled.bundle().entries().size()); assertEquals(3,compiled.bundle().sources().stream().map(source -> source.className()).distinct().count());
         for (var source : compiled.bundle().sources()) assertTrue(compiled.classes().containsKey(source.className() + ".class"));
         assertTrue(compiled.classes().containsKey("helpers/Label.class"));assertFalse(Files.exists(root.resolve("marker.txt")));
-        assertEquals(ProjectSourceHash.sha256(project), compiled.bundle().sha256());
+        assertEquals(ScriptBundleSources.project(project, java.util.Locale.GERMAN).bundle().sha256(), compiled.bundle().sha256());
         assertEquals(java.util.Set.of("settings.gretl","a/job.groovy","b/c/job.groovy","a_b/job.groovy","helpers/Label.groovy"),
                 new java.util.HashSet<>(compiled.sources().stream().map(BundleCompiler.SourceFile::relativePath).toList()));
     }
     @Test void hiddenHelperScriptAndDuplicateClassesAreRejectedWithSources() throws Exception {
-        var descriptor = tree();var project = new GretlProjectParser().parse(root);
+        var descriptor = tree();
         Files.writeString(root.resolve("helpers/Hidden.groovy"),"throw new AssertionError('must not run')\n");
         assertEquals("PACKAGE_MULTIPLE_SCRIPTS",assertThrows(PackageException.class,()->BundleCompiler.compile(descriptor, JobPackager.currentClasspath(), java.util.Locale.GERMAN)).code());
         Files.delete(root.resolve("helpers/Hidden.groovy"));

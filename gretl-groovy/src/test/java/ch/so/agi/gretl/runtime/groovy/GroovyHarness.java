@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources;
+import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
 import ch.so.agi.gretl.runtime.runner.ExecutionPlan;
 import ch.so.agi.gretl.runtime.runner.ExecutionPlanner;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
@@ -56,13 +58,27 @@ final class GroovyHarness {
             }
             Files.copy(input, target);
         }
-        return new GroovyJobLoader().load(target, environment);
+        return load(target);
     }
 
     JobDefinition loadSource(String fileName, String source) throws IOException {
         Path target = jobDir.resolve(fileName);
         Files.writeString(target, source, StandardCharsets.UTF_8);
-        return new GroovyJobLoader().load(target, environment);
+        return load(target);
+    }
+
+    JobDefinition load(Path target) {
+        return new GroovyJobLoader().loadBundle(ScriptBundleSources.single(target, environment.locale()),
+                environment, List.of(), Map.of());
+    }
+
+    JobDefinition loadProject() {
+        var project = new GretlProjectParser(environment.locale()).parse(jobDir);
+        var snapshot = ScriptBundleSources.project(project, environment.locale());
+        var projectEnvironment = new DefinitionEnvironment(registry, snapshot.root(), tempDir, messages,
+                environment.locale());
+        return new GroovyJobLoader().loadBundle(snapshot, projectEnvironment,
+                project.defaultTargets(), project.defaultTargetSources());
     }
 
     JobOutcome run(JobDefinition definition, Map<String, String> parameters) {

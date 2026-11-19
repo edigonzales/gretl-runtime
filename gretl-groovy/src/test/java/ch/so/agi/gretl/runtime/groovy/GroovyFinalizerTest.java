@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.runtime.groovy;
 
-import ch.so.agi.gretl.runtime.groovy.project.GretlProjectParser;
 import ch.so.agi.gretl.runtime.runner.*;
 import java.nio.file.*;
 import java.util.*;
@@ -13,7 +12,7 @@ class GroovyFinalizerTest {
     Path write(GroovyHarness h,String name,String text)throws Exception {
         var p=h.jobDir.resolve(name);Files.createDirectories(p.getParent());Files.writeString(p,text);return p;
     }
-    JobDefinition load(GroovyHarness h){return new GroovyJobLoader().load(h.jobDir.resolve("job.groovy"),h.environment);}
+    JobDefinition load(GroovyHarness h){return h.load(h.jobDir.resolve("job.groovy"));}
     @Test void forwardFragmentLinksTypedTasksAndGlobalCleanupUseOnePipeline()throws Exception {
         var h=new GroovyHarness(root);
         write(h,"job.groovy","apply from:'tasks/owner.groovy'\napply from:'tasks/end.groovy'\ndefaults 'owner'");
@@ -54,7 +53,7 @@ class GroovyFinalizerTest {
         for(String id:List.of("a","b")){write(h,id+"/job.groovy","apply from:'../shared/tasks.groovy'");write(h,id+"/input.txt",id);}
         write(h,"shared/input.txt","wrong");
         write(h,"shared/tasks.groovy","def count=0\naction('run',finalizedBy:'end'){count++;println 'owner-'+java.nio.file.Files.readString(file('input.txt'))}\naction('end'){println 'end-'+java.nio.file.Files.readString(file('input.txt'))+'-'+count}");
-        var d=new GroovyJobLoader().loadProject(new GretlProjectParser().parse(h.jobDir),h.environment);var out=h.run(d,Map.of());assertEquals(RunStatus.SUCCEEDED,out.status());
+        var d=h.loadProject();var out=h.run(d,Map.of());assertEquals(RunStatus.SUCCEEDED,out.status());
         assertEquals(List.of("owner-a","end-a-1","owner-b","end-b-1"),h.messages.messages());assertEquals(4,out.tasks().size());
     }
     @Test void qualifiedFinalizerUsesTargetDeclarationResourcesAndTrueSourcePosition()throws Exception {
@@ -62,13 +61,13 @@ class GroovyFinalizerTest {
         write(h,"a/job.groovy","action('run',finalizedBy:':b:end'){println 'owner'}");write(h,"b/job.groovy","apply from:'tasks/end.groovy'");
         write(h,"a/input.txt","wrong");write(h,"b/input.txt","right");
         var fragment=write(h,"b/tasks/end.groovy","action('end'){\n assert java.nio.file.Files.readString(file('input.txt'))=='right'\n throw new IllegalStateException('finalizer-source')\n}");
-        var d=new GroovyJobLoader().loadProject(new GretlProjectParser().parse(h.jobDir),h.environment);var out=h.run(d,Map.of());
+        var d=h.loadProject();var out=h.run(d,Map.of());
         assertEquals(RunStatus.FAILED,out.status());assertEquals("finalizer-source",out.primaryFailure().orElseThrow().message());
         var source=out.primaryFailure().orElseThrow().source().orElseThrow();assertEquals(fragment.toRealPath(),Path.of(source.file()).toRealPath());assertEquals(3,source.line());
     }
     @Test void finalizationAloneGrantsNoOptionalResultRights()throws Exception {
         var h=new GroovyHarness(root);var d=h.loadSource("rights.groovy","action('a',finalizedBy:'f'){'value'}\naction('f'){try{resultOptional('a');throw new AssertionError('rights granted')}catch(ch.so.agi.gretl.runtime.runner.ResultAccessException e){assert e.code()=='UNDECLARED_RESULT_DEPENDENCY';throw e}}\ndefaults 'a'");
-        var out=h.run(d,Map.of());assertEquals(RunStatus.FAILED,out.status());assertEquals(ResultAccessException.class.getName(),out.primaryFailure().orElseThrow().type());
+        var out=h.run(d,Map.of());assertEquals(RunStatus.FAILED,out.status());assertEquals("UNDECLARED_RESULT_DEPENDENCY", out.primaryFailure().orElseThrow().diagnostic().orElseThrow().code());
     }
     @Test void finishOwnerAllowsTypedFinalizerAndSuppressesOrdinaryFollowup()throws Exception {
         var h=new GroovyHarness(root);var d=h.loadSource("finish.groovy","""

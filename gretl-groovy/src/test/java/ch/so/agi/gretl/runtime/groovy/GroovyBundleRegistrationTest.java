@@ -2,7 +2,6 @@ package ch.so.agi.gretl.runtime.groovy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import ch.so.agi.gretl.runtime.groovy.fragment.CompiledScriptBundle;
@@ -19,7 +18,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class LegacyGroovyLoaderTest {
+class GroovyBundleRegistrationTest {
     private static final String MISSING_DEFAULT = """
             action('run') { 'ok' }
             defaults 'missing'
@@ -29,14 +28,13 @@ class LegacyGroovyLoaderTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"en", "de"})
-    void singleSourceFallbackUsesTheRequestedLocaleForBuilderErrors(String language) throws Exception {
+    void singleSourceUsesTheRequestedLocaleForBuilderErrors(String language) throws Exception {
         var environment = environment(language);
-        Path script = Files.writeString(environment.jobRoot().resolve("legacy.groovy"), MISSING_DEFAULT);
-        assertNull(ScriptBundleSources.single(script, environment.locale()),
-                "This fixture must reach the single-source fallback, not the bundle loader");
+        Path script = Files.writeString(environment.jobRoot().resolve("job.groovy"), MISSING_DEFAULT);
+        var snapshot = ScriptBundleSources.single(script, environment.locale());
 
         var failure = assertThrows(DefinitionException.class,
-                () -> new GroovyJobLoader().load(script, environment));
+                () -> new GroovyJobLoader().loadBundle(snapshot, environment, List.of(), Map.of()));
         assertUnknownDefault(failure, language);
     }
 
@@ -45,7 +43,7 @@ class LegacyGroovyLoaderTest {
         var environment = environment("en");
         String text = "parameter('name', description: 'first')\nparameter('name', description: 'second')\n";
         Path source = Files.writeString(environment.jobRoot().resolve("job.groovy"), text);
-        var bundle = ScriptBundleSources.single(source, environment.locale(), false).bundle();
+        var bundle = ScriptBundleSources.single(source, environment.locale()).bundle();
         try (var classes = compiler()) {
             var entry = classes.parseClass(text, bundle.virtualName("job.groovy"));
             var metadata = CompiledScriptBundle.from(
@@ -64,7 +62,7 @@ class LegacyGroovyLoaderTest {
         var environment = environment("en");
         String sourceId = "invalid.groovy";
         Path source = Files.writeString(environment.jobRoot().resolve(sourceId), "action('run') {}");
-        var bundle = ScriptBundleSources.single(source, environment.locale(), false).bundle();
+        var bundle = ScriptBundleSources.single(source, environment.locale()).bundle();
         String virtualName = bundle.virtualName(sourceId);
         String className = virtualName.substring(0, virtualName.length() - ".groovy".length());
         Path marker = temp.resolve("invalid-initialized.txt");

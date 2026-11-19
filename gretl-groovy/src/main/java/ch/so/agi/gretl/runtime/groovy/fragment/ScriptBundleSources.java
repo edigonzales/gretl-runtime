@@ -1,66 +1,55 @@
 package ch.so.agi.gretl.runtime.groovy.fragment;
 
+import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.groovy.GroovyDslException;
 import ch.so.agi.gretl.runtime.groovy.SourceLocation;
 import ch.so.agi.gretl.runtime.groovy.project.GretlProject;
-import java.io.IOException;
-import java.nio.file.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Locale;
 
-/** Per-definition capture; never a global cache. SCRIPT callers can skip capturing definitions without includes. */
+/** Captures the definition sources for one compilation. */
 public final class ScriptBundleSources {
     private ScriptBundleSources() { }
-    public record Snapshot(Path root,FragmentGraphResolver.Bundle bundle) { }
-    public static Snapshot single(Path file,Locale locale)throws IOException{
-        return single(file, locale, true);
+
+    public record Snapshot(Path root, FragmentGraphResolver.Bundle bundle) { }
+
+    public static Snapshot single(Path file, Locale locale) {
+        Path script = file.toAbsolutePath().normalize();
+        Path root = script.getParent();
+        var entry = new FragmentGraphResolver.Entry("", script.getFileName().toString());
+        try {
+            var bundle = new FragmentGraphResolver().resolve(List.of(entry), null,
+                    new ContainedFragmentSources(root, locale));
+            return new Snapshot(root, bundle);
+        } catch (GroovyDslException failure) {
+            if (failure.source() != null) throw failure;
+            var source = new SourceLocation(script.toString(), 0, 0);
+            if (failure.code().equals("APPLY_PATH_UNSAFE")) {
+                throw new GroovyDslException("JOB_SOURCE_UNSAFE",
+                        Messages.get(locale, "error.groovy.jobSourceUnsafe"), null, null, source, List.of(), failure);
+            }
+            if (failure.code().equals("APPLY_NOT_FOUND")) {
+                boolean missing = failure.getCause() == null || failure.getCause() instanceof NoSuchFileException;
+                throw new GroovyDslException(missing ? "JOB_NOT_FOUND" : "JOB_LOAD_FAILED",
+                        Messages.format(locale, missing ? "error.groovy.jobNotFound" : "error.groovy.loadFailed",
+                                missing ? script : failure.getCause().getMessage()),
+                        null, null, source, List.of(), failure);
+            }
+            throw failure;
+        }
     }
 
-    public static Snapshot single(Path file, Locale locale, boolean includesOnly) throws IOException {
-        file=file.toAbsolutePath().normalize();Path root=file.getParent();String id=file.getFileName().toString();
-        byte[] bytes=Files.readAllBytes(file);
-        if (includesOnly && !new ApplyDirectiveReader().read(id, new String(bytes, StandardCharsets.UTF_8)).applySeen()) {
-            return null;
-        }
-        return resolve(root,List.of(new FragmentGraphResolver.Entry("",id)),false,null,Map.of(id,source(id,bytes,locale)),locale);
-    }
-    public static Snapshot project(GretlProject project,Locale locale)throws IOException{
-        return project(project, locale, true);
-    }
-
-    public static Snapshot project(GretlProject project, Locale locale, boolean includesOnly) throws IOException {
-        var entries=project.entries().stream().map(e->new FragmentGraphResolver.Entry(e.projectPath().canonical(),
-                project.root().relativize(e.scriptFile()).toString().replace('\\','/'))).toList();
-        Map<String,byte[]> raw=new LinkedHashMap<>();boolean includes=false;
-        for(var entry:entries){
-            byte[] bytes=Files.readAllBytes(project.root().resolve(entry.sourceId()));raw.put(entry.sourceId(),bytes);
-            if (includesOnly && !includes) {
-                includes = new ApplyDirectiveReader().read(entry.sourceId(), new String(bytes, StandardCharsets.UTF_8)).applySeen();
-            }
-        }
-        if (includesOnly && !includes) return null;
-        Map<String,FragmentSource> captured=new LinkedHashMap<>();raw.forEach((id,bytes)->captured.put(id,source(id,bytes,locale)));
-        String settingsId=project.root().relativize(project.settingsFile()).toString().replace('\\','/');
-        byte[] settings=project.settingsSource()==null?Files.readAllBytes(project.settingsFile()):project.settingsSource().getBytes(StandardCharsets.UTF_8);
-        captured.put(settingsId,source(settingsId,settings,locale));
-        return resolve(project.root(),entries,true,settingsId,captured,locale);
-    }
-    private static Snapshot resolve(Path root,List<FragmentGraphResolver.Entry> entries,boolean project,String settings,
-                                    Map<String,FragmentSource> captured,Locale locale){
-        var disk=new ContainedFragmentSources(root,locale);
-        FragmentSourceAccess access=new FragmentSourceAccess(){
-            @Override public Locale locale(){return locale;}
-            @Override public String canonicalId(String id)throws IOException{return disk.canonicalId(id);}
-            @Override public String resolve(String caller,String from)throws IOException{return disk.resolve(caller,from);}
-            @Override public FragmentSource read(String id,boolean fragment)throws IOException{
-                return captured.containsKey(id)?captured.get(id):disk.read(id,fragment);
-            }
-        };
-        return new Snapshot(root,new FragmentGraphResolver().resolve(entries,project,settings,access));
-    }
-    private static FragmentSource source(String id,byte[] bytes,Locale locale){
-        try{return new FragmentSource(id,bytes);}
-        catch(IllegalArgumentException failure){throw new GroovyDslException("APPLY_SYNTAX",
-                ch.so.agi.gretl.i18n.Messages.format(locale,"apply.APPLY_SYNTAX",id),null,null,new SourceLocation(id,0,0),List.of(),failure);}
+    public static Snapshot project(GretlProject project, Locale locale) {
+        Path root = project.root();
+        var entries = project.entries().stream().map(entry -> new FragmentGraphResolver.Entry(
+                entry.projectPath().canonical(),
+                root.relativize(entry.scriptFile()).toString().replace('\\', '/'))).toList();
+        var settings = new FragmentSource("settings.gretl", project.settingsSource().getBytes(StandardCharsets.UTF_8));
+        var bundle = new FragmentGraphResolver().resolve(entries, settings,
+                new ContainedFragmentSources(root, locale));
+        return new Snapshot(root, bundle);
     }
 }

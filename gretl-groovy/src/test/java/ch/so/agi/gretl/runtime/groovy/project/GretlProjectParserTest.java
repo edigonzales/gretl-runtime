@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -68,14 +69,14 @@ class GretlProjectParserTest {
         var defaults = new ArrayList<>(List.of(":run"));
         var sources = new LinkedHashMap<String, SourceLocation>();
         sources.put(":run", new SourceLocation("settings.gretl", 2, 1));
-        var value = new GretlProject(root.resolve("."), root.resolve("a/../settings.gretl"), entries, defaults, sources);
+        var value = new GretlProject(root.resolve("."), root.resolve("a/../settings.gretl"), entries, defaults, sources, "");
         entries.clear(); defaults.clear(); sources.clear();
         assertEquals(root, value.root());
         assertEquals(root.resolve("settings.gretl"), value.settingsFile());
         assertEquals(root.resolve("job.groovy"), value.entries().getFirst().scriptFile());
         assertEquals(List.of(":run"), value.defaultTargets());
         assertEquals(2, value.defaultTargetSources().get(":run").line());
-        assertTrue(new GretlProject(root, root.resolve("settings.gretl"), List.of(), List.of())
+        assertTrue(new GretlProject(root, root.resolve("settings.gretl"), List.of(), List.of(), Map.of(), "")
                 .defaultTargetSources().isEmpty());
     }
 
@@ -369,8 +370,10 @@ class GretlProjectParserTest {
         List<String> expected = List.of("Quelle: lokale synthetische Daten", "Prüfung: eigener lokaler Datenbestand");
         for (int index = 0; index < parsed.entries().size(); index++) {
             var entry = parsed.entries().get(index);
-            var definition = new GroovyJobLoader().load(entry.scriptFile(),
-                    DefinitionEnvironment.of(OperationRegistry.fromProviders(List.of()), entry.scriptFile().getParent()));
+            var definition = new GroovyJobLoader().loadBundle(
+                    ch.so.agi.gretl.runtime.groovy.fragment.ScriptBundleSources.single(entry.scriptFile(), Locale.GERMAN),
+                    DefinitionEnvironment.of(OperationRegistry.fromProviders(List.of()), entry.scriptFile().getParent()),
+                    List.of(), Map.of());
             assertEquals(List.of("run"), definition.tasks().stream().map(t -> t.id()).toList());
             var plan = new ExecutionPlanner().plan(definition, List.of());
             var outcome = new SequentialJobRunner().run(definition, plan, RunInput.builder()
