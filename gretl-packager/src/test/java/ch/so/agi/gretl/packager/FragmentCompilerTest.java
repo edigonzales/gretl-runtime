@@ -16,7 +16,11 @@ class FragmentCompilerTest {
         Path file=root.resolve("package.json");Files.writeString(file,"{\"schemaVersion\":1,\"name\":\"fragments\",\"version\":\"1\",\"runtimeVersion\":\"6.0.0-SNAPSHOT\",\"entryScript\":\"job.groovy\",\"sources\":[\"tasks\"]}");
         var descriptor=PackageDescriptor.load(file);var compiled=BundleCompiler.compile(descriptor, JobPackager.currentClasspath(), java.util.Locale.GERMAN);
         assertEquals(ScriptBundleSources.single(root.resolve("job.groovy"),Locale.GERMAN).bundle().sha256(),compiled.bundle().sha256());
-        assertFalse(Files.exists(marker));assertEquals(2,compiled.sources().size());
+        assertFalse(Files.exists(marker));
+        assertEquals(2, compiled.bundle().sources().size());
+        for (var source : compiled.bundle().sources()) {
+            assertTrue(compiled.classes().containsKey(source.className().replace('.', '/') + ".class"));
+        }
         Files.writeString(root.resolve("tasks/hidden.groovy"),"action('hidden'){}");
         assertEquals("PACKAGE_MULTIPLE_SCRIPTS",assertThrows(PackageException.class,()->BundleCompiler.compile(descriptor, JobPackager.currentClasspath(), java.util.Locale.GERMAN)).code());
         assertFalse(Files.exists(marker));

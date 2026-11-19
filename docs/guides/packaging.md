@@ -9,8 +9,9 @@ java -jar /tmp/job.jar --param output=/tmp/message.txt
 ```
 
 Das Paket enthält die Standardlaufzeit, alle regulären Taskbibliotheken, die
-kompilierten Jobklassen, deklarierte Ressourcen und explizite zusätzliche
-Abhängigkeiten.
+kompilierten Jobklassen, Jobmetadaten, deklarierte Ressourcen und explizite
+zusätzliche Abhängigkeiten. Originalquellen, einschliesslich der
+Projekteinstellungen, werden nicht automatisch mitgeliefert.
 Die Paketierung kompiliert den Job, ohne Jobtasks auszuführen.
 
 ## Einzelfile und Projekte
@@ -18,8 +19,10 @@ Die Paketierung kompiliert den Job, ohne Jobtasks auszuführen.
 Der Deskriptor verwendet `schemaVersion: 1` und genau eines der Felder
 `entryScript` oder `settingsFile`. `name`, `version` und `runtimeVersion`
 sind Pflicht. Die optionalen Listen `sources` und `resources` enthalten
-Pfade relativ zum Deskriptor. Includes und Ressourcen müssen innerhalb
-des Jobverzeichnisses liegen.
+Pfade relativ zum Deskriptor. `sources` ergänzt die Kompilierung.
+Explizit unter `resources` aufgeführte Dateien wie etwa `.groovy`-Dateien
+werden als Ressourcen mitgeliefert. Includes und Ressourcen müssen
+innerhalb des Jobverzeichnisses liegen.
 
 ```json
 {"schemaVersion":1,"name":"single","version":"1","runtimeVersion":"6.0.0-SNAPSHOT","entryScript":"job.groovy"}
@@ -32,7 +35,9 @@ des Jobverzeichnisses liegen.
 `META-INF/gretl/job.json` enthält Schema 1, Jobname, Jobversion,
 Runtimeversion, die Paketressourcen und ein kompiliertes Bundle. Das
 Bundle enthält den Einstieg je Projektpfad, Klassen und Quellzuordnung,
-gegebenenfalls Apply-Kanten und Projekt-Default-Ziele.
+gegebenenfalls Apply-Kanten und Projekt-Default-Ziele. Die Metadaten
+erhalten die SHA-256-Quellidentität und erlauben zusammen mit den
+kompilierten Klassen die Zuordnung von Diagnosen zu Quelldateien und Zeilen.
 `java -jar` lädt die Klassen direkt aus dem JAR.
 
 ## Externe Abhängigkeiten

@@ -44,46 +44,50 @@ class ProjectArtifactLocalJobIT {
         assertEquals("ivd",Files.readString(jarRequest.directory().resolve("output/cleanup.txt")));
         assertFalse(Files.exists(prepared.source()));
         try(var jar=new JarFile(prepared.jar().toFile())) {
+            assertFalse(jar.stream().anyMatch(entry -> entry.getName().startsWith("META-INF/gretl/sources/")));
+            assertNotNull(jar.getJarEntry("META-INF/gretl/job.json"));
             var metadata=object(Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),StandardCharsets.UTF_8)));
             assertEquals(1L,metadata.get("schemaVersion"));
             var bundle = object(metadata.get("bundle"));
             assertEquals(5,((List<?>)bundle.get("entries")).size());
-            assertEquals(6,((List<?>)bundle.get("sources")).stream().map(e->object(e).get("className")).distinct().count());
+            var classes = ((List<?>) bundle.get("sources")).stream()
+                    .map(source -> (String) object(source).get("className")).distinct().toList();
+            assertEquals(6, classes.size());
+            for (String className : classes) {
+                assertNotNull(jar.getJarEntry(className.replace('.', '/') + ".class"), className);
+            }
+            assertNotNull(jar.getJarEntry("helpers/Label.class"));
             assertNotEquals(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job-resources/download/sql/update.sql")).readAllBytes(),StandardCharsets.UTF_8),
                     new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job-resources/validation/nested/sql/update.sql")).readAllBytes(),StandardCharsets.UTF_8));
             assertEquals(object(report(script).get("source")).get("sha256"),bundle.get("sha256"));
             assertEquals(bundle.get("sha256"),object(report(result).get("source")).get("sha256"));
         }
     }
-    @Test void versionHelpPlanHaveNoMaterializationAndCompiledClassesNeedNoSourceTexts() throws Exception {
+    @Test void versionHelpPlanWorkWithoutSourcesOrResourceMaterialization() throws Exception {
         var request=request("project-controls","success",List.of(),"always");
         var prepared=ArtifactJobRunner.prepare(request,ArtifactJobRunner.Mode.JAR);
-        // Remove provenance text after compilation: startup must never recompile or parse settings.
-        Path stripped=request.directory().resolve("stripped.jar");rewrite(prepared.jar(),stripped,"META-INF/gretl/sources/",null);
+        JobJarSupport.delete(prepared.source());
         Path noEntry=request.directory().resolve("no-entry.jar");
         String rootClass;
-        try (var jar = new JarFile(stripped.toFile())) {
+        try (var jar = new JarFile(prepared.jar().toFile())) {
             var metadata = object(Json.parse(new String(jar.getInputStream(jar.getJarEntry("META-INF/gretl/job.json"))
                     .readAllBytes(), StandardCharsets.UTF_8)));
             var sources = (List<?>) object(metadata.get("bundle")).get("sources");
             rootClass = (String) sources.stream().map(source -> object(source))
                     .filter(source -> "job.groovy".equals(source.get("sourceId"))).findFirst().orElseThrow().get("className");
         }
-        rewrite(stripped, noEntry, rootClass.replace('.', '/') + ".class", null);
+        rewrite(prepared.jar(), noEntry, rootClass.replace('.', '/') + ".class", null);
         assertEquals(0,control(request.directory(),noEntry,"version-no-class",List.of("--version")));
-        assertEquals(0,control(request.directory(),stripped,"version",List.of("--version")));
+        assertEquals(0,control(request.directory(),prepared.jar(),"version",List.of("--version")));
         assertFalse(Files.exists(request.directory().resolve("controls/version/toplevel-marker.txt")));
         assertFalse(Files.exists(request.directory().resolve("controls/version-no-class/toplevel-marker.txt")));
-        assertEquals(0,control(request.directory(),stripped,"help",List.of("--help")));
-        assertEquals(0,control(request.directory(),stripped,"plan",List.of("--plan")));
+        assertEquals(0,control(request.directory(),prepared.jar(),"help",List.of("--help")));
+        assertEquals(0,control(request.directory(),prepared.jar(),"plan",List.of("--plan")));
         assertTrue(Files.readString(request.directory().resolve("controls/help/control.stdout.log")).contains(":import:count"));
         assertTrue(Files.readString(request.directory().resolve("controls/plan/control.stdout.log")).contains(":validation:nested:run"));
         for(String id:List.of("version","help","plan")) try(var paths=Files.walk(request.directory().resolve("controls/"+id))) {
             assertFalse(paths.anyMatch(p->p.getFileName().toString().equals("job-resources")));
         }
-        var strippedPrepared=new ArtifactJobRunner.Prepared(request, prepared.source(), prepared.report(), new ArtifactJobRunner.JarLaunch(stripped));
-        var run=ArtifactJobRunner.finish(ArtifactJobRunner.start(strippedPrepared),false);
-        assertEquals(0,run.code(),run.err());assertRun(run,ORDER,"SUCCEEDED");
     }
     @Test void failurePreservesCauseCleanupOriginalLineAndRetainedProjectResources() throws Exception {
         var request=request("project-failure","fail",List.of(),"on-failure");
@@ -192,10 +196,10 @@ class ProjectArtifactLocalJobIT {
     }
     private Map<String,Object> report(ArtifactJobRunner.Result result) throws Exception {return object(Json.parseFile(result.report(),1L<<24));}
     @SuppressWarnings("unchecked")private static Map<String,Object> object(Object value){return (Map<String,Object>)value;}
-    private void rewrite(Path original,Path output,String prefix,String replacement)throws Exception{
+    private void rewrite(Path original,Path output,String name,String replacement)throws Exception{
         try(var in=new JarFile(original.toFile());var out=new JarOutputStream(Files.newOutputStream(output))){
             for(var entry:in.stream().toList()){
-                if(entry.getName().startsWith(prefix)){if(replacement!=null){out.putNextEntry(new JarEntry(entry.getName()));out.write(replacement.getBytes(StandardCharsets.UTF_8));out.closeEntry();}continue;}
+                if(entry.getName().equals(name)){if(replacement!=null){out.putNextEntry(new JarEntry(entry.getName()));out.write(replacement.getBytes(StandardCharsets.UTF_8));out.closeEntry();}continue;}
                 out.putNextEntry(new JarEntry(entry.getName()));try(var stream=in.getInputStream(entry)){stream.transferTo(out);}out.closeEntry();
             }
         }
