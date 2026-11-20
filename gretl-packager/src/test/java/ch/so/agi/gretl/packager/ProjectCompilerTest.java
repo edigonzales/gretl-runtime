@@ -20,8 +20,9 @@ class ProjectCompilerTest {
         for (var source : compiled.bundle().sources()) assertTrue(compiled.classes().containsKey(source.className() + ".class"));
         assertTrue(compiled.classes().containsKey("helpers/Label.class"));assertFalse(Files.exists(root.resolve("marker.txt")));
         assertEquals(ScriptBundleSources.project(project, java.util.Locale.GERMAN).bundle().sha256(), compiled.bundle().sha256());
-        assertEquals(java.util.Set.of("settings.gretl","a/job.groovy","b/c/job.groovy","a_b/job.groovy","helpers/Label.groovy"),
-                new java.util.HashSet<>(compiled.sources().stream().map(BundleCompiler.SourceFile::relativePath).toList()));
+        assertEquals("settings.gretl", compiled.bundle().settingsId());
+        assertEquals(java.util.Set.of("a/job.groovy", "b/c/job.groovy", "a_b/job.groovy"),
+                new java.util.HashSet<>(compiled.bundle().sources().stream().map(source -> source.sourceId()).toList()));
     }
     @Test void hiddenHelperScriptAndDuplicateClassesAreRejectedWithSources() throws Exception {
         var descriptor = tree();

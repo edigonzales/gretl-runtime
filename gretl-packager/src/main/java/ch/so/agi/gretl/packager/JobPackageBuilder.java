@@ -91,7 +91,9 @@ public final class JobPackageBuilder {
                     Messages.get(locale, "package.jobRuntimeMissing"));
         }
         validateDeclaredDependencies(descriptor);
-        addCompiled(compiled.classes(), compiled.sources());
+        for (var entry : compiled.classes().entrySet()) {
+            addEntry(entry.getKey(), entry.getValue(), "compiled job");
+        }
         addResources(descriptor);
         addMetadata(descriptor, compiled.bundle());
         addServices();
@@ -218,16 +220,6 @@ public final class JobPackageBuilder {
 
     private static boolean isAv2geobau(String origin) {
         return origin.startsWith("ch.interlis:av2geobau:") || origin.matches("av2geobau-[0-9].*\\.jar");
-    }
-
-    private void addCompiled(Map<String, byte[]> classes, List<BundleCompiler.SourceFile> sources) throws PackageException {
-        for (Map.Entry<String, byte[]> entry : classes.entrySet()) {
-            addEntry(entry.getKey(), entry.getValue(), "compiled job");
-        }
-        for (BundleCompiler.SourceFile source : sources) {
-            addEntry("META-INF/gretl/sources/" + source.relativePath(),
-                    source.text().getBytes(StandardCharsets.UTF_8), "job source");
-        }
     }
 
     private void addResources(PackageDescriptor descriptor) throws PackageException {

@@ -17,14 +17,23 @@ class FragmentJarProcessTest {
     void singleIncludesRunFromForeignCwdWithoutSources()throws Exception{
         Path root=Files.createDirectory(temp.resolve("sources"));Path marker=temp.resolve("packaging-marker");
         write(root,"job.groovy","new File('"+marker+"').text='loaded'\napply from:'tasks/prepare.groovy'\napply from:'tasks/check.groovy'\ndefaults 'verify'");
-        write(root,"input.txt","payload äöü\n");
-        write(root,"tasks/prepare.groovy","task('prepare',Gzip){new File('config-marker').text='yes';dataFile=file('input.txt');gzipFile=workPath('result.gz')}\ncleanup('end'){new File('cleanup-marker').text='yes'}");
-        write(root,"tasks/check.groovy","action('verify',dependsOn:'prepare'){def text=new java.util.zip.GZIPInputStream(java.nio.file.Files.newInputStream(result('prepare').file)).getText('UTF-8');assert text=='payload äöü\\n';new File('verified.txt').text=text}\naction('bad'){\n throw new IllegalStateException('fragment-jar-failure')\n}\n");
-        var data=descriptor();data.put("entryScript","job.groovy");data.put("resources",List.of("input.txt"));
+        write(root,"data/payload.groovy","// payload äöü\n");
+        write(root,"helpers/Payload.groovy","package helpers\nclass Payload { static String expected() { '// payload äöü\\n' } }");
+        write(root,"tasks/prepare.groovy","task('prepare',Gzip){new File('config-marker').text='yes';dataFile=file('data/payload.groovy');gzipFile=workPath('result.gz')}\ncleanup('end'){new File('cleanup-marker').text='yes'}");
+        write(root,"tasks/check.groovy","action('verify',dependsOn:'prepare'){def text=new java.util.zip.GZIPInputStream(java.nio.file.Files.newInputStream(result('prepare').file)).getText('UTF-8');assert text==helpers.Payload.expected();new File('verified.txt').text=text}\naction('bad'){\n throw new IllegalStateException('fragment-jar-failure')\n}\n");
+        var data=descriptor();data.put("entryScript","job.groovy");data.put("resources",List.of("data/payload.groovy"));data.put("sources",List.of("helpers"));
         Path descriptor=root.resolve("package.json");Files.writeString(descriptor,Json.write(data));
         var d=PackageDescriptor.load(descriptor);var cp=classpath();var compiled=BundleCompiler.compile(d,cp,Locale.ENGLISH);
         Path jar=temp.resolve("job.jar");new JobPackageBuilder(cp, Map.of(), Locale.ENGLISH).build(d,compiled,jar);assertFalse(Files.exists(marker));
-        try(var file=new JarFile(jar.toFile())){var metadata=(Map<?,?>)Json.parse(new String(file.getInputStream(file.getJarEntry("META-INF/gretl/job.json")).readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));assertEquals(1L,metadata.get("schemaVersion"));assertNull(((Map<?,?>)metadata.get("bundle")).get("settingsId"));}
+        try (var file = new JarFile(jar.toFile())) {
+            assertFalse(file.stream().anyMatch(entry -> entry.getName().startsWith("META-INF/gretl/sources/")));
+            assertNotNull(file.getJarEntry("META-INF/gretl/job-resources/data/payload.groovy"));
+            assertNotNull(file.getJarEntry("helpers/Payload.class"));
+            var metadata = (Map<?, ?>) Json.parse(new String(file.getInputStream(file.getJarEntry("META-INF/gretl/job.json"))
+                    .readAllBytes(), java.nio.charset.StandardCharsets.UTF_8));
+            assertEquals(1L, metadata.get("schemaVersion"));
+            assertNull(((Map<?, ?>) metadata.get("bundle")).get("settingsId"));
+        }
         delete(root);Path cwd=Files.createDirectory(temp.resolve("foreign"));
         {
             Path broken=temp.resolve("missing-fragment.jar");
@@ -37,7 +46,7 @@ class FragmentJarProcessTest {
             String failure=process(broken,cwd,List.of("--plan"),2);assertTrue(failure.contains("JOB_LOAD_FAILED"),failure);assertFalse(Files.exists(marker),"All classes must be checked before root registration");
         }
         for(var args:List.of(List.of("--plan"),List.of("--help"))){process(jar,cwd,args);assertFalse(Files.exists(cwd.resolve("config-marker")));assertFalse(Files.exists(cwd.resolve("cleanup-marker")));assertFalse(Files.exists(cwd.resolve("verified.txt")));}
-        process(jar,cwd,List.of());assertEquals("payload äöü\n",Files.readString(cwd.resolve("verified.txt")));assertTrue(Files.exists(cwd.resolve("cleanup-marker")));
+        process(jar,cwd,List.of());assertEquals("// payload äöü\n",Files.readString(cwd.resolve("verified.txt")));assertTrue(Files.exists(cwd.resolve("cleanup-marker")));
         String failure=process(jar,cwd,List.of("--target","bad"),10);assertTrue(failure.contains("tasks/check.groovy:3"),failure);
     }
     @Test void sharedProjectFragmentKeepsScopesResourcesAndCrossProjectResultsInJar()throws Exception{

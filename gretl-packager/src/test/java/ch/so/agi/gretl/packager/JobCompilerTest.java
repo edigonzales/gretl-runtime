@@ -52,12 +52,9 @@ class JobCompilerTest {
         var entry = compiled.bundle().sources().getFirst();
         assertEquals("job.groovy", entry.sourceId());
         assertTrue(compiled.classes().containsKey(entry.className() + ".class"));
-        assertTrue(compiled.classes().keySet().stream()
-                .anyMatch(name -> name.startsWith("helpers/Greeting")));
+        assertTrue(compiled.classes().containsKey("helpers/Greeting.class"));
         assertFalse(Files.exists(marker), "packaging must not execute top-level script code");
         assertEquals(64, compiled.bundle().sha256().length());
-        assertTrue(compiled.sources().stream()
-                .anyMatch(source -> source.relativePath().equals("job.groovy")));
     }
 
     @Test
