@@ -8,10 +8,13 @@ erklärt den Laufzeitvertrag.
 ## Abhängigkeiten und Parsing
 
 `gretl-language-contract` enthält die JDK-basierten Namens-, DSL- und
-Planungsregeln. `gretl-script-syntax` teilt die Erkennung von Include-Direktiven
-auf dem konvertierten Groovy-AST und den Originaltokens. Die Runtime behält
-`ApplyDirectiveReader` als Fassade. Im Tooling verwendet `GretlDocumentParser`
-eine isolierte Groovy-Syntaxanalyse und begrenzte Recovery. Der LSP lädt keine
+Planungsregeln. Runtime und Tooling verwenden `gretl-script-syntax` für die
+Erkennung von Script-Includes und für die deklarative Settings-Prüfung auf
+dem konvertierten Groovy-AST und den Originaltokens. Die Runtime behält
+`ApplyDirectiveReader` für Script-Includes. Für `settings.gretl` bricht sie
+beim ersten Fehler ab. Das Tooling verwendet eine isolierte Groovy-Syntaxanalyse,
+sammelt Settings-Diagnosen und gewinnt bei unvollständigen Quellen innerhalb
+seiner Budgets Teilinformationen. Der LSP lädt keine
 Jobdefinition, ruft weder Check noch Plan der Runtime auf, löst keine Secrets
 auf und führt keine Scriptbodies oder Annotationstransformationen aus.
 

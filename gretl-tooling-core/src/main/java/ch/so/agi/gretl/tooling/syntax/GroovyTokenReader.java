@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tooling.syntax;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import groovyjarjarantlr4.v4.runtime.*;
 import org.apache.groovy.parser.antlr4.*;
@@ -15,6 +16,9 @@ public final class GroovyTokenReader {
     public static final int MAX_NUMBER_UTF16=4_096;
     public static final int MAX_LOGICAL_STATEMENT_TOKENS=512;
     public TokenIndex lex(SourceText source,ParseOptions budget,CancellationToken cancellation) {
+        return lex(source,budget,cancellation,token->{});
+    }
+    TokenIndex lex(SourceText source,ParseOptions budget,CancellationToken cancellation,Consumer<Token> capture) {
         var mapper=new ParserCoordinateMapper(source);var raw=new ArrayList<LexToken>();var comments=new ArrayList<LexToken>();var problems=new ArrayList<SyntaxProblem>();
         var lexer=new GroovyLangLexer(CharStreams.fromString(source.hasBom()?" "+source.text().substring(1):source.text())) {
             @Override protected void handleComment(int type,Supplier<String> text) {
@@ -27,6 +31,7 @@ public final class GroovyTokenReader {
         try {
             while(true) {
                 cancellation.check();Token token=lexer.nextToken();if(token.getType()==Token.EOF)break;
+                capture.accept(token);
                 int type=token.getType();var span=new TextSpan(mapper.lexerOffset(token.getStartIndex()),mapper.lexerOffset(token.getStopIndex()+1));
                 // A newline is a safe complexity boundary only outside parenthesized groups,
                 // after a complete operand and before an unambiguous new statement operand.

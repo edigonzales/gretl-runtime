@@ -6,7 +6,7 @@ den aktuellen Zuschnitt.
 | Artefakt (`ch.so.agi.gretl`, Version `6.0.0-SNAPSHOT`) | Verantwortung | Erlaubte interne Produktionsabhängigkeiten |
 | --- | --- | --- |
 | gretl-language-contract | Reine Namens-, DSL- und Graphregeln | keine; ausschliesslich JDK |
-| gretl-script-syntax | Gemeinsame reine Include-AST-Inspektion und Quellnamen | keine; JDK und Groovy |
+| gretl-script-syntax | Gemeinsame AST-Inspektion für Script-Includes und deklarative Settings, Quellnamen | keine; JDK und Groovy |
 | gretl-tooling-core | Sicheres Parsing, Katalogdaten, Workspacecaptures und statische Semantik | Language-Contract, Script-Syntax |
 | gretl-tooling-catalog | Vertrauenswuerdiger Buildexport; separates reines Katalogdatenartefakt | API, Tooling-Core, aktuelle Taskbibliotheken |
 | gretl-lsp | Eigenstaendiger Java25-stdio-Host fuer Queries, Graph und Editplanung | Tooling-Core, Language-Contract, Script-Syntax; ausschliesslich der isolierte Datenclassifier des Katalogs |
@@ -57,11 +57,11 @@ sichere relative Directoryhandles ohne Symlinkfolgen. Nicht unterstuetzte
 Dateisystemadapter liefern einen sichtbaren Policyzustand. Eine atomare
 Transaktion mit unabhaengigen externen Dateischreibern wird nicht behauptet.
 
-Die gemeinsame Includeerkennung in `gretl-script-syntax` inspiziert nur bereits
-konvertierte Groovy-ASTs und Originalkoordinaten. Runtime und Tooling behalten
-getrennte Parsehüllen; die Runtimefassade bildet weiterhin ihre bisherigen
-Fehler ab. Der Toolingparser behält Platform-Classloader, deaktivierte
-Transformationen, Recovery und Budgets. Das Syntaxmodul besitzt keine
+`gretl-script-syntax` inspiziert für Script-Includes und deklarative Settings
+nur bereits konvertierte Groovy-ASTs und Originaltokens. Runtime und Tooling
+behalten getrennte Parsehüllen mit ihren jeweiligen Fehlerverträgen. Das
+Tooling behält Platform-Classloader, deaktivierte Transformationen, Recovery
+und Budgets. Das Syntaxmodul besitzt keine
 Quellen-IO und keine Runtime- oder Tooling-Core-Abhängigkeit. Includeerkennung
 allein verspricht noch keine vollständige Closure oder Mehrdateien-Editfähigkeit.
 

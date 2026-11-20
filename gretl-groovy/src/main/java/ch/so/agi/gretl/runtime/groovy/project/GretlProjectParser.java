@@ -3,9 +3,9 @@ package ch.so.agi.gretl.runtime.groovy.project;
 import ch.so.agi.gretl.i18n.Messages;
 import ch.so.agi.gretl.runtime.groovy.CompilerSettings;
 import ch.so.agi.gretl.runtime.groovy.SourceLocation;
+import ch.so.agi.gretl.syntax.SettingsAstInspector;
 import groovy.lang.GroovyClassLoader;
 import groovyjarjarantlr4.v4.runtime.CharStreams;
-import groovyjarjarantlr4.v4.runtime.Token;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -19,14 +19,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import org.apache.groovy.parser.antlr4.GroovyLexer;
 import org.apache.groovy.parser.antlr4.GroovyLangLexer;
 import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.ErrorCollector;
 import org.codehaus.groovy.control.SourceUnit;
@@ -94,66 +88,34 @@ public final class GretlProjectParser {
             unit.completePhase();
             unit.nextPhase();
             unit.convert();
-            var module = unit.getAST();
             var tokens = new GroovyLangLexer(CharStreams.fromString(source)).getAllTokens();
-            // Groovy supplies a shared empty-script sentinel; user-written return statements remain forbidden.
-            var statements = List.copyOf(module.getStatementBlock().getStatements());
-            if (module.getPackage() != null) throw unsupported(settingsFile, module.getPackage());
-            for (ASTNode node : module.getImports()) throw unsupported(settingsFile, node);
-            for (ASTNode node : module.getStarImports()) throw unsupported(settingsFile, node);
-            if (!module.getModuleStarImports().isEmpty()) {
-                // Groovy 6 leaves module-import AST nodes without source positions.
-                // Lex only to recover the original import token, never to accept settings syntax.
-                for (var token : tokens) {
-                    if (token.getType() == GroovyLexer.IMPORT) {
-                        throw error("PROJECT_SETTINGS_UNSUPPORTED", new SourceLocation(
-                                settingsFile.toAbsolutePath().normalize().toString(), token.getLine(),
-                                token.getCharPositionInLine() + 1), null, "project.settingsUnsupported");
-                    }
-                }
-                throw unsupported(settingsFile, module.getModuleStarImports().getFirst());
-            }
-            for (ASTNode node : module.getStaticImports().values()) throw unsupported(settingsFile, node);
-            for (ASTNode node : module.getStaticStarImports().values()) throw unsupported(settingsFile, node);
-            for (ASTNode node : module.getMethods()) throw unsupported(settingsFile, node);
-            for (var node : module.getClasses()) {
-                if (!node.isScript()) throw unsupported(settingsFile, node);
-                for (var annotation : node.getAnnotations()) throw unsupported(settingsFile, annotation);
-            }
             Map<ProjectPath, SourceLocation> includes = new LinkedHashMap<>();
             Map<ProjectPath, String> originalIncludes = new LinkedHashMap<>();
             Map<String, SourceLocation> defaults = new LinkedHashMap<>();
-            boolean seenInclude = false;
-            boolean seenDefaults = false;
-            for (var statement : statements) {
-                if (statement == ReturnStatement.RETURN_NULL_OR_VOID) continue;
-                if (!(statement instanceof ExpressionStatement expression)
-                        || (statement.getStatementLabels() != null && !statement.getStatementLabels().isEmpty())
-                        || !(expression.getExpression() instanceof MethodCallExpression call)
-                        || !call.isImplicitThis() || call.isSafe() || call.isSpreadSafe()
-                        || call.isUsingGenerics()
-                        || !(call.getMethod() instanceof ConstantExpression method)
-                        || !(method.getValue() instanceof String name)
-                        || !(call.getArguments() instanceof ArgumentListExpression arguments)
-                        || !(name.equals("include") || name.equals("defaults"))) {
-                    throw unsupported(settingsFile, statement);
+            String file = settingsFile.toAbsolutePath().normalize().toString();
+            for (var finding : new SettingsAstInspector().inspect(unit.getAST(), tokens, () -> {})) {
+                if (finding instanceof SettingsAstInspector.Unsupported unsupported) {
+                    var token = unsupported.importToken();
+                    if (token == null) throw unsupported(settingsFile, unsupported.node());
+                    throw error("PROJECT_SETTINGS_UNSUPPORTED",
+                            new SourceLocation(file, token.getLine(), token.getCharPositionInLine() + 1),
+                            null, "project.settingsUnsupported");
                 }
-                SourceLocation callSource = location(settingsFile, call);
-                boolean include = name.equals("include");
-                if ((include && seenInclude) || (!include && seenDefaults)) {
+                var directive = (SettingsAstInspector.Directive) finding;
+                String name = directive.name();
+                boolean include = directive.isInclude();
+                SourceLocation callSource = location(settingsFile, directive.node());
+                if (directive.repeated()) {
                     throw error("PROJECT_SETTINGS_INVALID", callSource, null, "project.directiveRepeated", name);
                 }
-                if (include) seenInclude = true; else seenDefaults = true;
-                if (arguments.getExpressions().isEmpty()) {
+                if (directive.arguments().isEmpty()) {
                     throw error(include ? "PROJECT_INCLUDE_INVALID" : "PROJECT_TARGET_INVALID",
                             callSource, null, "project.directiveEmpty", name);
                 }
-                for (var argument : arguments.getExpressions()) {
-                    if (!(argument instanceof ConstantExpression value) || !(value.getValue() instanceof String text)
-                            || !simpleQuotedLiteral(argument, tokens)) {
-                        throw unsupported(settingsFile, argument);
-                    }
-                    SourceLocation position = location(settingsFile, argument);
+                for (var argument : directive.arguments()) {
+                    if (argument.literal() == null) throw unsupported(settingsFile, argument.node());
+                    String text = argument.value();
+                    SourceLocation position = location(settingsFile, argument.node());
                     ProjectPath path;
                     try {
                         path = include ? ProjectPath.parseInclude(text) : ProjectPath.parseQualified(text);
@@ -242,36 +204,6 @@ public final class GretlProjectParser {
         } catch (IOException exception) {
             throw error("PROJECT_PATH_UNSAFE", source, exception, "project.pathUnsafe", file);
         }
-    }
-
-    private static boolean simpleQuotedLiteral(ASTNode node, List<? extends Token> tokens) {
-        long start = sourcePosition(node.getLineNumber(), node.getColumnNumber());
-        long end = sourcePosition(node.getLastLineNumber(), node.getLastColumnNumber());
-        if (node.getLineNumber() < 1 || node.getColumnNumber() < 1 || end <= start) return false;
-        // AST constants may start at enclosing parentheses. Locate their first literal token
-        // with Groovy's own coordinates, without converting columns or splitting source lines.
-        int left = 0, right = tokens.size();
-        while (left < right) {
-            int middle = (left + right) >>> 1;
-            Token token = tokens.get(middle);
-            if (sourcePosition(token.getLine(), token.getCharPositionInLine() + 1) < start) left = middle + 1;
-            else right = middle;
-        }
-        for (int index = left; index < tokens.size(); index++) {
-            Token token = tokens.get(index);
-            if (sourcePosition(token.getLine(), token.getCharPositionInLine() + 1) >= end) return false;
-            if (token.getChannel() != Token.DEFAULT_CHANNEL || token.getType() == GroovyLexer.NL
-                    || token.getType() == GroovyLexer.LPAREN) continue;
-            if (token.getType() != GroovyLexer.StringLiteral) return false;
-            String text = token.getText();
-            char quote = text.charAt(0);
-            return (quote == '\'' || quote == '"') && !text.startsWith(String.valueOf(quote).repeat(3));
-        }
-        return false;
-    }
-
-    private static long sourcePosition(int line, int column) {
-        return ((long) line << 32) | (column & 0xffffffffL);
     }
 
     private ProjectException unsupported(Path settings, ASTNode node) {
