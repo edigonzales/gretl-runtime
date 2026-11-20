@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tooling.edit;
 
 import ch.so.agi.gretl.language.DslVocabulary;
+import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.semantic.AnalysisSnapshot;
 import ch.so.agi.gretl.tooling.semantic.SemanticModel.*;
 import ch.so.agi.gretl.tooling.syntax.ExecutionRegions;
@@ -13,8 +14,27 @@ import java.util.List;
 /** Local editability and closed-reference requirements are separate decisions. */
 public final class EditabilityAnalyzer {
     public EditCapability assess(AnalysisSnapshot snapshot, SemanticEditIntent intent, EditStyle style) {
+        return assess(snapshot, intent, style, dependencies(snapshot));
+    }
+
+    EditCapability assessAll(AnalysisSnapshot snapshot, List<SemanticEditIntent> intents, EditStyle style, CancellationToken cancellation) {
+        var dependencies = dependencies(snapshot);
+        var requiredOpen = new LinkedHashSet<URI>();
+        for (var intent : intents) {
+            cancellation.check();
+            var capability = assess(snapshot, intent, style, dependencies);
+            if (capability.state() == EditCapability.State.REJECTED) return capability;
+            requiredOpen.addAll(capability.requiredOpenDocuments());
+        }
+        return capability(snapshot, dependencies, List.copyOf(requiredOpen));
+    }
+
+    private List<URI> dependencies(AnalysisSnapshot snapshot) {
+        return snapshot.analysis().capture().project().sources().versions().keySet().stream().sorted().toList();
+    }
+
+    private EditCapability assess(AnalysisSnapshot snapshot, SemanticEditIntent intent, EditStyle style, List<URI> dependencies) {
         var analysis = snapshot.analysis();
-        var dependencies = analysis.capture().project().sources().versions().keySet().stream().sorted().toList();
         if (!analysis.capabilities().bounded() || analysis.capture().project().sources().limited()) return rejected(snapshot, dependencies, "EDIT_ANALYSIS_LIMIT", null);
         var documents = new LinkedHashSet<URI>();
         SymbolId target = target(intent);
@@ -101,6 +121,10 @@ public final class EditabilityAnalyzer {
             if (source == null || !source.stamp().editable()) return rejected(snapshot, dependencies, "EDIT_READONLY", new Anchor(document, null));
             if (style.requireOpenDocuments() && source.stamp().bufferVersion() == null) open.add(document);
         }
+        return capability(snapshot, dependencies, open);
+    }
+
+    private EditCapability capability(AnalysisSnapshot snapshot, List<URI> dependencies, List<URI> open) {
         return new EditCapability(open.isEmpty() ? EditCapability.State.ALLOWED : EditCapability.State.NEEDS_OPEN_DOCUMENTS,
                 open.isEmpty() ? List.of() : List.of(reason(snapshot, "EDIT_OPEN_DOCUMENTS", null)), dependencies, open);
     }

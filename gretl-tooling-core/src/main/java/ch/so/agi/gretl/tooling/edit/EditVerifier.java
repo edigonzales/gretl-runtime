@@ -21,12 +21,12 @@ public final class EditVerifier {
     public PlannedEdit verify(AnalysisSnapshot before, Map<URI, List<SourceReplacement>> requested,
             String summary, Predicate<AnalysisSnapshot> expectedDelta, List<String> notices,
             CancellationToken cancellation) {
-        return verify(before,requested,summary,expectedDelta,notices,cancellation,false,false);
+        return verify(before,requested,summary,expectedDelta,notices,cancellation,false);
     }
 
     PlannedEdit verify(AnalysisSnapshot before, Map<URI, List<SourceReplacement>> requested,
             String summary, Predicate<AnalysisSnapshot> expectedDelta, List<String> notices,
-            CancellationToken cancellation, boolean literalRename,boolean intermediateConfiguration) {
+            CancellationToken cancellation, boolean literalRename) {
         cancellation.check();
         if (!before.analysis().capabilities().bounded() || before.analysis().capture().project().sources().limited()) throw new IllegalArgumentException("EDIT_ANALYSIS_LIMIT");
         if (requested.size() > 512 || requested.values().stream().mapToInt(List::size).sum() > SourceEditBuilder.MAXIMUM_EDITS) {
@@ -50,7 +50,7 @@ public final class EditVerifier {
             changes.put(id, edits);
             postimages.put(id, text);
         }
-        if(!new EditImpactAnalyzer().assess(before,null,changes).allowed())throw new IllegalArgumentException("EDIT_SHARED_SOURCE");
+        if(!new EditImpactAnalyzer().assessSources(before, changes.keySet()).allowed())throw new IllegalArgumentException("EDIT_SHARED_SOURCE");
         var after = changes.isEmpty() ? before : reanalyze(before, postimages, cancellation);
         if (!after.analysis().capabilities().bounded() || after.analysis().capture().project().sources().limited()) {
             throw new IllegalArgumentException("EDIT_ANALYSIS_LIMIT");
@@ -63,7 +63,7 @@ public final class EditVerifier {
         }
         var remaining = errorCounts(before,changes,literalRename);
         for (var entry : errorCounts(after,Map.of(),false).entrySet()) {
-            if (!intermediateConfiguration&&entry.getValue() > remaining.getOrDefault(entry.getKey(), 0)) throw new IllegalArgumentException("EDIT_NEW_ERROR");
+            if (entry.getValue() > remaining.getOrDefault(entry.getKey(), 0)) throw new IllegalArgumentException("EDIT_NEW_ERROR");
         }
         var applicationsBefore=before.analysis().capture().project().includeClosure().applications().stream().map(a->a.id()).collect(java.util.stream.Collectors.toSet());
         var applicationsAfter=after.analysis().capture().project().includeClosure().applications().stream().map(a->a.id()).collect(java.util.stream.Collectors.toSet());

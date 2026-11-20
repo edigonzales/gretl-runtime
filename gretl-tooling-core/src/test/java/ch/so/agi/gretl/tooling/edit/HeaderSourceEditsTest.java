@@ -5,6 +5,8 @@ import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.syntax.EffectiveOptions;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.LiteralValue;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +42,34 @@ class HeaderSourceEditsTest {
             var empty = new EditTransaction(fixture.capture(),EditStyle.defaults());
             new HeaderSourceEdits().set(empty,TASK,"timeout",new EditableValue.Literal("PT1S"));
             assertEquals("task([\n  timeout: 'PT1S' // empty map comment\n], 'a', Echo) { input='x' }",empty.finish("Timeout",CancellationToken.NONE).postimages().get(JOB));
+        }
+    }
+
+    @Test void formInsertsMultipleOptionsAtTheOriginalHeaderAnchor() {
+        var headers = Map.of(
+                "task('a', Echo)", "task('a', Echo, description: 'new', timeout: 'PT1S')",
+                "task('a', Echo, // retained\n)", "task('a', Echo, // retained\ndescription: 'new', timeout: 'PT1S')",
+                "task('a', Echo // retained\n)", "task('a', Echo // retained\n, description: 'new', timeout: 'PT1S')",
+                "task('a', Echo /* retained */)", "task('a', Echo /* retained */, description: 'new', timeout: 'PT1S')",
+                "task([\r\n  : // retained\r\n], 'a', Echo)",
+                "task([\r\n  description: 'new', // retained\r\n  timeout: 'PT1S'\r\n], 'a', Echo)",
+                "task([\n  :], 'a', Echo)", "task([\n  description: 'new', timeout: 'PT1S'], 'a', Echo)",
+                "task([after:null,], 'a', Echo)", "task([after:null, description: 'new', timeout: 'PT1S'], 'a', Echo)",
+                "task([\r\n  after:null, // retained\r\n], 'a', Echo)",
+                "task([\r\n  after:null, // retained\r\n  description: 'new',\r\n  timeout: 'PT1S'\r\n], 'a', Echo)",
+                "task([\r\n  after:null // retained\r\n], 'a', Echo)",
+                "task([\r\n  after:null, // retained\r\n  description: 'new',\r\n  timeout: 'PT1S'\r\n], 'a', Echo)");
+        String body = " { input='x' }\r\n";
+        for (var header : headers.entrySet()) {
+            try (var fixture = new EditTestWorkspace()) {
+                fixture.files.put(JOB, header.getKey() + body);
+                var result = new SemanticEditPlanner().planConfiguration(fixture.capture(), TASK, Map.of(), Set.of(),
+                        Map.of("timeout", new EditableValue.Literal("PT1S"), "description", new EditableValue.Literal("new")),
+                        EditStyle.defaults(), CancellationToken.NONE);
+                var plan = result.plan().orElseThrow(() -> new AssertionError(header.getKey() + ": " + result.capability()));
+                assertEquals(header.getValue() + body, plan.postimages().get(JOB));
+                assertEquals(1, plan.changes().get(JOB).stream().filter(edit -> edit.replacement().contains("description")).count());
+            }
         }
     }
 

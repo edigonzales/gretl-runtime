@@ -76,16 +76,10 @@ final class DependencySourceEdits {
 
     void bind(EditTransaction transaction, SemanticEditIntent.BindResult intent) {
         checkTasks(transaction,intent.producer(),intent.consumer());
-        var producer=transaction.symbol(intent.producer());
-        var consumer=transaction.symbol(intent.consumer());
-        if(producer.operation()==null||consumer.operation()==null||List.of("class","metaClass").contains(intent.outputField()))throw new IllegalArgumentException("EDIT_UNKNOWN_SCHEMA");
-        var input=consumer.operation().inputs().stream().filter(f->f.name().equals(intent.inputField())).findFirst()
-                .orElseThrow(()->new IllegalArgumentException("EDIT_UNKNOWN_FIELD"));
-        new PortCompatibility().require(transaction.before,intent.producer(),intent.outputField(),input.shape());
+        new FieldSourceEdits().set(transaction,intent.consumer(),intent.inputField(),new EditableValue.ResultFieldRef(intent.producer(),intent.outputField()));
         if(!new PlanSemantics().dataPredecessors(transaction.before.analysis().graph(),intent.consumer().qualifiedName()).contains(intent.producer().qualifiedName())) {
             add(transaction,intent.producer(),intent.consumer(),EdgeKind.DEPENDS_ON);
         }
-        new FieldSourceEdits().set(transaction,intent.consumer(),intent.inputField(),new EditableValue.ResultFieldRef(intent.producer(),intent.outputField()));
     }
 
     private void append(EditTransaction transaction,Symbol symbol,ListValue list,String text) {

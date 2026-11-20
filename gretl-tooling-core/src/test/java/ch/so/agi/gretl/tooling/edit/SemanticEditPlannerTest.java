@@ -1,11 +1,16 @@
 package ch.so.agi.gretl.tooling.edit;
 
 import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
+import ch.so.agi.gretl.tooling.workspace.DocumentStore.TextChange;
 import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.semantic.SemanticModel.*;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.concurrent.CancellationException;
 import org.junit.jupiter.api.Test;
 import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
@@ -33,7 +38,7 @@ class SemanticEditPlannerTest {
             if(kind.equals("ListPath"))value=new EditableValue.Sequence(List.of(value));
             boolean compatible=kind.equals("Path")||kind.equals("ListPath");
             var direct=planner.plan(snapshot,new SemanticEditIntent.SetField(id("c"),"input",value),EditStyle.defaults(),CancellationToken.NONE);
-            var form=planner.planConfiguration(snapshot,id("c"),Map.of("input",value),java.util.Set.of(),Map.of(),EditStyle.defaults(),CancellationToken.NONE);
+            var form=planner.planConfiguration(snapshot,id("c"),Map.of("input",value),Set.of(),Map.of(),EditStyle.defaults(),CancellationToken.NONE);
             for(var result:List.of(direct,form)) {
                 assertEquals(compatible?EditCapability.State.ALLOWED:EditCapability.State.REJECTED,result.capability().state(),kind+": "+result.capability());
                 if(compatible)assertTrue(result.plan().orElseThrow().postimages().get(JOB).contains("result('p').file"));
@@ -42,41 +47,107 @@ class SemanticEditPlannerTest {
         }
     }
 
-    @Test void aFormMayChangeAResultAndItsDependencyTogetherButCannotPublishAnInvalidIntermediateState() {
+    @Test void aFormValidatesResultDependenciesInTheFinalState() {
         try(var fixture=new EditTestWorkspace()) {
             fixture.addResultOperations();
             fixture.files.put(JOB,"task('p', Source) {}; task('c', Sink) { input=workPath('old') }");
             var snapshot=fixture.capture();var planner=new SemanticEditPlanner();
             var fields=Map.<String,EditableValue>of("input",new EditableValue.ResultFieldRef(id("p"),"file"));
-            var valid=planner.planConfiguration(snapshot,id("c"),fields,java.util.Set.of(),Map.of("dependsOn",new EditableValue.Literal("p")),EditStyle.defaults(),CancellationToken.NONE);
+            var valid=planner.planConfiguration(snapshot,id("c"),fields,Set.of(),Map.of("dependsOn",new EditableValue.Literal("p")),EditStyle.defaults(),CancellationToken.NONE);
             assertEquals(EditCapability.State.ALLOWED,valid.capability().state(),valid.capability().reasons().toString());
             assertTrue(valid.plan().orElseThrow().postimage().analysis().diagnostics().stream().noneMatch(d->d.severity()==ch.so.agi.gretl.tooling.semantic.SemanticModel.Severity.ERROR));
-            var invalid=planner.planConfiguration(snapshot,id("c"),fields,java.util.Set.of(),Map.of(),EditStyle.defaults(),CancellationToken.NONE);
+            var invalid=planner.planConfiguration(snapshot,id("c"),fields,Set.of(),Map.of(),EditStyle.defaults(),CancellationToken.NONE);
             assertEquals(EditCapability.State.REJECTED,invalid.capability().state());assertTrue(invalid.plan().isEmpty());
         }
     }
 
-    @Test void oneFormConfirmationComposesSharedAnchorsWithoutReformattingOrPartialApplication() {
+    @Test void oneFormConfirmationUsesSharedAnchorsWithoutReformattingOrPartialApplication() {
         try(var fixture=new EditTestWorkspace()) {
-            var shape=ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape.fromMetadata("text");
-            var fields=List.of("input","first","second").stream().map(name->new ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor(name,name,name.equals("input"),false,null,List.<String>of(),"example",shape,null,false,Map.<String,String>of())).toList();
-            fixture.catalog.mergeExplicitDescriptors(List.of(new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor("test.wide","Wide","Wide","fixture",fields,List.of(),"example",true)));
-            fixture.manager.onCatalogChanged();
+            addWideOperation(fixture);
             String source="// heading 😀\r\ntask([:], 'a', Wide) {\r\n  input='old' // retain\r\n}\r\n";
             fixture.files.put(JOB,source);var before=fixture.capture();var planner=new SemanticEditPlanner();
-            var values=Map.<String,EditableValue>of("first",new EditableValue.Literal("one"),"second",new EditableValue.Literal("two"));
-            var options=Map.<String,EditableValue>of("description",new EditableValue.Literal("Description"),"timeout",new EditableValue.Literal("PT1S"));
-            var result=planner.planConfiguration(before,TASK,values,java.util.Set.of(),options,EditStyle.defaults(),CancellationToken.NONE);
+            var values = new LinkedHashMap<String, EditableValue>();
+            values.put("second", new EditableValue.Literal("two"));
+            values.put("first", new EditableValue.Literal("one"));
+            var options = new LinkedHashMap<String, EditableValue>();
+            options.put("timeout", new EditableValue.Literal("PT1S"));
+            options.put("description", new EditableValue.Literal("Description"));
+            var result=planner.planConfiguration(before,TASK,values,Set.of(),options,EditStyle.defaults(),CancellationToken.NONE);
             assertEquals(EditCapability.State.ALLOWED,result.capability().state(),result.capability().reasons().toString());
             var plan=result.plan().orElseThrow();String text=plan.postimages().get(JOB);
-            assertTrue(text.contains("first = 'one'\r\n"));assertTrue(text.contains("second = 'two'\r\n"));
-            assertTrue(text.startsWith("// heading 😀\r\n"));assertTrue(text.contains("input='old' // retain\r\n"));
+            assertEquals("// heading 😀\r\ntask([description: 'Description', timeout: 'PT1S'], 'a', Wide) {\r\n"
+                    + "  input='old' // retain\r\n  first = 'one'\r\n  second = 'two'\r\n}\r\n", text);
+            var reordered = planner.planConfiguration(before, TASK, values.reversed(), Set.of(), options.reversed(),
+                    EditStyle.defaults(), CancellationToken.NONE).plan().orElseThrow();
+            assertEquals(plan.changes(), reordered.changes());
             assertEquals(2,plan.changes().get(JOB).size(),"One header patch and one body insertion; untouched text stays outside the edits");
             assertTrue(SourceEditBuilder.verifyPreservation(before.source(JOB).orElseThrow(),text,plan.changes().get(JOB)));
-            assertTrue(planner.planConfiguration(plan.postimage(),TASK,values,java.util.Set.of(),options,EditStyle.defaults(),CancellationToken.NONE).plan().orElseThrow().noOp());
-            var refused=planner.planConfiguration(before,TASK,values,java.util.Set.of(),Map.of("timeout",new EditableValue.Literal("invalid")),EditStyle.defaults(),CancellationToken.NONE);
+            var repeated = planner.planConfiguration(plan.postimage(), TASK, values, Set.of(), options,
+                    EditStyle.defaults(), CancellationToken.NONE).plan().orElseThrow();
+            assertTrue(repeated.noOp());
+            assertSame(plan.postimage(), repeated.postimage());
+            var refused=planner.planConfiguration(before,TASK,values,Set.of(),Map.of("timeout",new EditableValue.Literal("invalid")),EditStyle.defaults(),CancellationToken.NONE);
             assertEquals(EditCapability.State.REJECTED,refused.capability().state());assertTrue(refused.plan().isEmpty());
             assertEquals(source,fixture.files.get(JOB));
+        }
+    }
+
+    private void addWideOperation(EditTestWorkspace fixture) {
+        var shape=ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape.fromMetadata("text");
+        var fields=List.of("input","first","second","mode").stream().map(name->new ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor(name,name,name.equals("input"),false,null,List.<String>of(),"example",shape,null,false,Map.<String,String>of())).toList();
+        fixture.catalog.mergeExplicitDescriptors(List.of(new ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor("test.wide","Wide","Wide","fixture",fields,List.of(),"example",true)));
+        fixture.manager.onCatalogChanged();
+    }
+
+    @Test void mixedFormEditsKeepOriginalCoordinatesAndBecomeStaleAfterABufferChange() {
+        try (var fixture = new EditTestWorkspace()) {
+            addWideOperation(fixture);
+            String header = "\uFEFFtask('a', Wide, description:\"old\") {\r\n";
+            String body = "  input=\"old\" // Zürich 😀\r\n  mode='FAST' // keep\r\n";
+            String tail = "}\r\naction('neighbor') { println(\"\\u0061\") }\r\n";
+            String source = header + body + tail;
+            fixture.buffers.open(JOB, "gretl", 1, source);
+            var before = fixture.capture();
+            var planner = new SemanticEditPlanner();
+            var result = planner.planConfiguration(before, TASK,
+                    Map.of("input", new EditableValue.Literal("new\"$"), "first", new EditableValue.Literal("added")), Set.of("mode"),
+                    Map.of("description", new EditableValue.Literal("changed"), "timeout", new EditableValue.Literal("PT1S")),
+                    EditStyle.openDocuments(), CancellationToken.NONE);
+            var plan = result.plan().orElseThrow(() -> new AssertionError(result.capability()));
+            assertEquals("\uFEFFtask('a', Wide, description:\"changed\", timeout: 'PT1S') {\r\n"
+                    + "  input=\"new\\\"\\$\" // Zürich 😀\r\n   // keep\r\n  first = 'added'\r\n" + tail, plan.postimages().get(JOB));
+            assertTrue(planner.validate(plan, before).current());
+            fixture.buffers.applyChanges(JOB, 2, List.of(TextChange.full(source)));
+            assertFalse(planner.validate(plan, fixture.capture()).current());
+        }
+    }
+
+    @Test void emptyAndRejectedFormsStillCheckTheirTargetAndLimits() {
+        try (var fixture = new EditTestWorkspace()) {
+            var before = fixture.capture();
+            var planner = new SemanticEditPlanner();
+            var empty = planner.planConfiguration(before, TASK, Map.of(), Set.of(), Map.of(),
+                    EditStyle.openDocuments(), CancellationToken.NONE);
+            assertEquals(EditCapability.State.NEEDS_OPEN_DOCUMENTS, empty.capability().state());
+            assertEquals(List.of(JOB), empty.capability().requiredOpenDocuments());
+            assertTrue(empty.plan().isEmpty());
+            var invalid = planner.planConfiguration(before, TASK,
+                    Map.of("input", new EditableValue.Literal("old"), "unknown", new EditableValue.Literal(false)),
+                    Set.of(), Map.of(), EditStyle.openDocuments(), CancellationToken.NONE);
+            assertEquals(EditCapability.State.REJECTED, invalid.capability().state());
+            assertEquals("EDIT_UNKNOWN_FIELD", invalid.capability().reasons().getFirst().code());
+            assertTrue(invalid.plan().isEmpty());
+            fixture.buffers.open(JOB, "gretl", 1, fixture.files.get(JOB), false);
+            var readOnly = planner.planConfiguration(fixture.capture(), TASK, Map.of("mode", new EditableValue.Literal("FAST")),
+                    Set.of(), Map.of("description", new EditableValue.Literal("Changed")), EditStyle.defaults(), CancellationToken.NONE);
+            assertEquals("EDIT_READONLY", readOnly.capability().reasons().getFirst().code());
+            assertTrue(readOnly.plan().isEmpty());
+            var tooMany = IntStream.range(0, 129).mapToObj(i -> "field" + i).collect(Collectors.toSet());
+            assertEquals("EDIT_CONFIGURATION_LIMIT", assertThrows(IllegalArgumentException.class,
+                    () -> planner.planConfiguration(before, TASK, Map.of(), tooMany, Map.of(), EditStyle.defaults(),
+                            CancellationToken.NONE)).getMessage());
+            assertThrows(CancellationException.class, () -> planner.planConfiguration(before, TASK,
+                    Map.of("input", new EditableValue.Literal("new")), Set.of(), Map.of(), EditStyle.defaults(), () -> true));
         }
     }
 
