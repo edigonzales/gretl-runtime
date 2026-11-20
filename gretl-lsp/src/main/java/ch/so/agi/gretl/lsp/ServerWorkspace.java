@@ -6,6 +6,7 @@ import ch.so.agi.gretl.tooling.edit.EditPreconditions;
 import ch.so.agi.gretl.tooling.edit.PlannedEdit;
 import ch.so.agi.gretl.tooling.semantic.*;
 import ch.so.agi.gretl.tooling.workspace.*;
+import ch.so.agi.gretl.tooling.workspace.WorkspaceManager.WorkspaceCapture;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
@@ -41,14 +42,14 @@ final class ServerWorkspace implements AutoCloseable {
     private ScheduledFuture<?> refresh;
     private final HostFileWatcher watcher;
     private final BiConsumer<AnalysisSnapshot,CancellationToken> publish;
-    private final AnalysisScheduler.Analyzer<AnalysisSnapshot> analyzer;
+    private final BiFunction<WorkspaceCapture,CancellationToken,AnalysisSnapshot> analyzer;
     volatile ServerConfiguration configuration=ServerConfiguration.defaults();
     private volatile boolean closed;
     private long epoch;
     ServerWorkspace(CatalogRepository catalog,BiConsumer<AnalysisSnapshot,CancellationToken> publish) throws IOException {
         this(catalog,publish,(capture,cancel)->AnalysisSnapshot.of(new ProjectAnalyzer().analyze(capture,cancel)));
     }
-    ServerWorkspace(CatalogRepository catalog,BiConsumer<AnalysisSnapshot,CancellationToken> publish,AnalysisScheduler.Analyzer<AnalysisSnapshot> analyzer) throws IOException {
+    ServerWorkspace(CatalogRepository catalog,BiConsumer<AnalysisSnapshot,CancellationToken> publish,BiFunction<WorkspaceCapture,CancellationToken,AnalysisSnapshot> analyzer) throws IOException {
         this.catalog=catalog;this.publish=publish;this.analyzer=analyzer;manager=new WorkspaceManager(documents,catalog);
         workers=new ThreadPoolExecutor(2,2,0,TimeUnit.SECONDS,new ArrayBlockingQueue<>(16),r->{var t=new Thread(r,"gretl-lsp-worker");t.setDaemon(true);return t;},new ThreadPoolExecutor.AbortPolicy());
         debounce=Executors.newSingleThreadScheduledExecutor(r->{var t=new Thread(r,"gretl-lsp-refresh");t.setDaemon(true);return t;});
@@ -155,7 +156,7 @@ final class ServerWorkspace implements AutoCloseable {
                         var known=sourceContexts.contextsFor(capture,document);
                         if(!contextsOnly)capture=known.contexts().isEmpty()?manager.syntaxOnly(capture,document,cancellation)
                                 :manager.inContext(capture,sourceContexts.resolveForQuery(capture,document,panelContext).application().id().project());
-                        snapshot=analyzer.analyze(capture,cancellation);
+                        snapshot=analyzer.apply(capture,cancellation);
                         watcher.capture(capture.project().sources().versions().keySet());
                         var analyzed=snapshot;
                         if(!manager.publishIfCurrent(capture,()->{synchronized(this){snapshots.put(analyzed.analysis().capture().project().id(),analyzed);while(snapshots.size()>8)snapshots.remove(snapshots.keySet().iterator().next());}publish.accept(analyzed,cancellation);},cancellation))throw new CancellationException();
@@ -176,7 +177,7 @@ final class ServerWorkspace implements AutoCloseable {
                 if(snapshot!=null&&!manager.isCurrent(snapshot.analysis().capture(),cancellation))snapshot=null;
                 if(snapshot==null) {
                     var capture=manager.capture(new ProjectResolver.ProjectRequest(rootFor(document),document,singleJob,List.of(),extra),cancellation);
-                    snapshot=analyzer.analyze(capture,cancellation);
+                    snapshot=analyzer.apply(capture,cancellation);
                     watcher.capture(capture.project().sources().versions().keySet());
                     var analyzed=snapshot;
                     if(!manager.publishIfCurrent(capture,()->{synchronized(this){snapshots.put(capture.project().id(),analyzed);while(snapshots.size()>8)snapshots.remove(snapshots.keySet().iterator().next());}publish.accept(analyzed,cancellation);},cancellation))throw new CancellationException();
