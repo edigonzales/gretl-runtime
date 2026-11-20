@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-/** Accumulates one intent's source changes and expected semantic effects before the single verifier pass. */
+/** Accumulates source changes and expected semantic effects before the single verifier pass. */
 final class EditTransaction {
     final AnalysisSnapshot before;
     final EditStyle style;
@@ -59,12 +59,8 @@ final class EditTransaction {
     }
 
     PlannedEdit finish(String summary, CancellationToken cancellation) {
-        return finish(summary,cancellation,false);
-    }
-
-    PlannedEdit finish(String summary, CancellationToken cancellation,boolean intermediateConfiguration) {
         return new EditVerifier().verify(before, changes(), summary,
-                after -> expectations.stream().allMatch(expected -> expected.test(after)), notices, cancellation, literalRename,intermediateConfiguration);
+                after -> expectations.stream().allMatch(expected -> expected.test(after)), notices, cancellation, literalRename);
     }
 
     Map<URI,List<SourceReplacement>> changes() {

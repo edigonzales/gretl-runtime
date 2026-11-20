@@ -1,15 +1,33 @@
 package ch.so.agi.gretl.tooling.edit;
 
+import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.semantic.AnalysisSnapshot;
+import ch.so.agi.gretl.tooling.semantic.SemanticModel.Symbol;
 import ch.so.agi.gretl.tooling.semantic.SemanticModel.SymbolId;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-/** Changes one proven assignment; surrounding opaque statements and trivia are never regenerated. */
+/** Edits proven assignments while preserving surrounding statements and trivia. */
 final class FieldSourceEdits {
     void set(EditTransaction transaction, SymbolId target, String field, EditableValue value) {
+        set(transaction, target, Map.of(field, value), CancellationToken.NONE);
+    }
+
+    void set(EditTransaction transaction, SymbolId target, Map<String, EditableValue> fields, CancellationToken cancellation) {
+        if (fields.isEmpty()) return;
         var symbol = transaction.symbol(target);
+        var additions = new ArrayList<String>();
+        for (var entry : fields.entrySet()) {
+            cancellation.check();
+            set(transaction, symbol, entry.getKey(), entry.getValue(), additions);
+        }
+        if (!additions.isEmpty()) insert(transaction, symbol, additions);
+    }
+
+    private void set(EditTransaction transaction, Symbol symbol, String field, EditableValue value, List<String> additions) {
         var declaration = symbol.declaration();
         if(symbol.operation()==null)throw new IllegalArgumentException("EDIT_UNKNOWN_SCHEMA");
         var input=symbol.operation().inputs().stream().filter(descriptor->descriptor.name().equals(field)).findFirst()
@@ -19,12 +37,10 @@ final class FieldSourceEdits {
         new PortCompatibility().dependencies(transaction.before,value,input.shape());
         var matches = declaration.fields().stream().filter(f -> f.name().equals(field)).toList();
         if (matches.size() > 1) throw new IllegalArgumentException("EDIT_MULTIPLE_ASSIGNMENTS");
-        if (matches.size() == 1 && same(matches.getFirst().value(), value, transaction, symbol.scope())) {
-            transaction.expect(after -> matching(after, target, field, value, transaction, symbol.scope()));
-            return;
-        }
+        transaction.expect(after -> matching(after, symbol.id(), field, value, transaction, symbol.scope()));
+        if (!matches.isEmpty() && same(matches.getFirst().value(), value, transaction, symbol.scope())) return;
         String replacement = transaction.writer(symbol).write(value);
-        if (matches.size() == 1) {
+        if (!matches.isEmpty()) {
             var previous = matches.getFirst().value();
             if (previous instanceof LiteralValue literal && literal.literal() != null && value instanceof EditableValue.Literal desired
                     && desired.value() instanceof String text) replacement = SourceValueWriter.string(text, literal.literal().quotes());
@@ -33,29 +49,34 @@ final class FieldSourceEdits {
         } else {
             if (!field.matches("[A-Za-z_][A-Za-z0-9_]*")) throw new IllegalArgumentException("EDIT_FIELD_SYNTAX");
             if (declaration.locals().stream().anyMatch(l -> l.name().equals(field))) throw new IllegalArgumentException("EDIT_SHADOWED_FIELD");
-            var source = transaction.source(symbol.anchor().documentId());
-            int close = declaration.body().endUtf16() - 1;
-            if (source.text().charAt(close) != '}') throw new IllegalArgumentException("EDIT_UNSAFE_REGION");
-            String eol = source.preferredEol();
-            int lineStart = source.lines().contentSpan(source.lines().positionAt(close).line()).startUtf16();
-            String closingIndent = source.text().substring(lineStart, close);
-            boolean ownClosingLine = closingIndent.chars().allMatch(c -> c == ' ' || c == '\t');
-            int insertion = ownClosingLine ? lineStart : close;
-            String prefix = ownClosingLine ? "" : eol;
-            String declarationLine = source.lines().lineText(source.lines().positionAt(declaration.span().startUtf16()).line());
-            int begin = declarationLine.startsWith("\uFEFF") ? 1 : 0, end = begin;
-            while (end < declarationLine.length() && (declarationLine.charAt(end) == ' ' || declarationLine.charAt(end) == '\t')) end++;
-            String baseIndent = declarationLine.substring(begin, end);
-            String indentation = baseIndent + transaction.style.indentation();
-            if (!declaration.fields().isEmpty()) {
-                var first = declaration.fields().getFirst();
-                int line = source.lines().positionAt(first.span().startUtf16()).line();
-                String leading = source.text().substring(source.lines().contentSpan(line).startUtf16(), first.span().startUtf16());
-                if (!leading.isEmpty() && leading.chars().allMatch(c -> c == ' ' || c == '\t')) indentation = leading;
-            }
-            transaction.edits(symbol.anchor().documentId()).insert(insertion, prefix + indentation + field + " = " + replacement + eol + (ownClosingLine ? "" : baseIndent));
+            additions.add(field + " = " + replacement);
         }
-        transaction.expect(after -> matching(after, target, field, value, transaction, symbol.scope()));
+    }
+
+    private void insert(EditTransaction transaction, Symbol symbol, List<String> additions) {
+        var declaration = symbol.declaration();
+        var source = transaction.source(symbol.anchor().documentId());
+        int close = declaration.body().endUtf16() - 1;
+        if (source.text().charAt(close) != '}') throw new IllegalArgumentException("EDIT_UNSAFE_REGION");
+        String eol = source.preferredEol();
+        int lineStart = source.lines().contentSpan(source.lines().positionAt(close).line()).startUtf16();
+        String closingIndent = source.text().substring(lineStart, close);
+        boolean ownClosingLine = closingIndent.chars().allMatch(c -> c == ' ' || c == '\t');
+        int insertion = ownClosingLine ? lineStart : close;
+        String prefix = ownClosingLine ? "" : eol;
+        String declarationLine = source.lines().lineText(source.lines().positionAt(declaration.span().startUtf16()).line());
+        int begin = declarationLine.startsWith("\uFEFF") ? 1 : 0, end = begin;
+        while (end < declarationLine.length() && (declarationLine.charAt(end) == ' ' || declarationLine.charAt(end) == '\t')) end++;
+        String baseIndent = declarationLine.substring(begin, end);
+        String indentation = baseIndent + transaction.style.indentation();
+        if (!declaration.fields().isEmpty()) {
+            var first = declaration.fields().getFirst();
+            int line = source.lines().positionAt(first.span().startUtf16()).line();
+            String leading = source.text().substring(source.lines().contentSpan(line).startUtf16(), first.span().startUtf16());
+            if (!leading.isEmpty() && leading.chars().allMatch(c -> c == ' ' || c == '\t')) indentation = leading;
+        }
+        String text = prefix + indentation + String.join(eol + indentation, additions) + eol + (ownClosingLine ? "" : baseIndent);
+        transaction.edits(symbol.anchor().documentId()).insert(insertion, text);
     }
 
     void remove(EditTransaction transaction, SymbolId target, String field) {

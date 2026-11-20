@@ -49,6 +49,11 @@ class IncludeEditsTest {
             denied(before,new SemanticEditIntent.RemoveDependency(task(":north:owner"),task(":north:release"),EdgeKind.FINALIZED_BY),"EDIT_SHARED_SOURCE");
             denied(before,new SemanticEditIntent.SetTaskOption(task(":north:owner"),"finalizedBy",new EditableValue.Sequence(List.of())),"EDIT_SHARED_SOURCE");
             var batch=new SemanticEditPlanner().planConfiguration(before,task(":north:owner"),Map.of(),Set.of(),Map.of("finalizedBy",new EditableValue.Literal(null)),EditStyle.defaults(),CancellationToken.NONE);assertTrue(batch.plan().isEmpty());assertEquals("EDIT_SHARED_SOURCE",batch.capability().reasons().getFirst().code());
+            var localForm = new SemanticEditPlanner().planConfiguration(before, task(":north:local"), Map.of(), Set.of(),
+                    Map.of("finalizedBy", new EditableValue.Literal(":north:release"), "description", new EditableValue.Literal("Local")),
+                    EditStyle.defaults(), CancellationToken.NONE);
+            var plan = localForm.plan().orElseThrow(() -> new AssertionError(localForm.capability()));
+            assertEquals(Set.of(root.resolve("north/job.groovy").toUri()), plan.changes().keySet());
             var add=allowed(before,new SemanticEditIntent.AddDependency(task(":north:local"),task(":north:release"),EdgeKind.FINALIZED_BY));assertEquals(Set.of(root.resolve("north/job.groovy").toUri()),add.changes().keySet());
             var remove=allowed(add.postimage(),new SemanticEditIntent.RemoveDependency(task(":north:local"),task(":north:release"),EdgeKind.FINALIZED_BY));assertEquals(add.changes().keySet(),remove.changes().keySet());
         }

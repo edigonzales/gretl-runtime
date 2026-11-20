@@ -351,7 +351,12 @@ class ServerProcessIT {
                 Map.of("kind","RenameSymbol","target",p,"name","producer"),
                 Map.of("kind","DeleteTask","target",Map.of("namespace","TASK","qualifiedName","unused")),
                 Map.of("kind","SetDefaults","targets",List.of(p,c)),
-                Map.of("kind","ConfigureTask","target",c,"fields",Map.of("archive",Map.of("kind","JobFileRef","scalar","new.zip")),"options",Map.of("description",Map.of("kind","Text","scalar","Configured")))
+                Map.of("kind","ConfigureTask","target",c,"fields",Map.of("archive",Map.of("kind","JobFileRef","scalar","new.zip")),"options",Map.of("description",Map.of("kind","Text","scalar","Configured"))),
+                Map.of("kind","ConfigureTask","target",p,
+                        "fields",Map.of("url",Map.of("kind","Text","scalar","https://example.invalid/new"),
+                                "maxBytes",Map.of("kind","Integer","scalar","1024"),"method",Map.of("kind","Text","scalar","GET")),
+                        "options",Map.of("description",Map.of("kind","Text","scalar","Configured"),
+                                "timeout",Map.of("kind","Text","scalar","PT1S")))
         );
         try(var wire=new LspProcessHarness(temporary,"--stdio")) {
             wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
@@ -361,7 +366,26 @@ class ServerProcessIT {
             for(var intent:intents) {
                 var result=wire.call("gretl/planEdit",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",snapshot,"requireOpenDocuments",true,"intent",intent)).getAsJsonObject();
                 assertEquals("ALLOWED",result.getAsJsonObject("capability").get("state").getAsString(),intent+": "+result);
-                assertFalse(result.getAsJsonObject("edit").getAsJsonArray("documentChanges").isEmpty(),intent.toString());
+                var documents = result.getAsJsonObject("edit").getAsJsonArray("documentChanges");
+                assertFalse(documents.isEmpty(), intent.toString());
+                if (intent.get("kind").equals("ConfigureTask") && intent.get("target").equals(p)) {
+                    assertEquals(1, documents.size());
+                    var document = documents.get(0).getAsJsonObject();
+                    assertEquals(1, document.getAsJsonObject("textDocument").get("version").getAsInt());
+                    var edits = document.getAsJsonArray("edits");
+                    assertEquals(3, edits.size());
+                    String post = source;
+                    for (int i = edits.size() - 1; i >= 0; i--) {
+                        var edit = edits.get(i).getAsJsonObject();
+                        var range = edit.getAsJsonObject("range");
+                        int start = range.getAsJsonObject("start").get("character").getAsInt();
+                        int end = range.getAsJsonObject("end").get("character").getAsInt();
+                        post = post.substring(0, start) + edit.get("newText").getAsString() + post.substring(end);
+                    }
+                    assertEquals("task('p', HttpDownload, description: 'Configured', timeout: 'PT1S') "
+                            + "{ url='https://example.invalid/new'; output=workPath('a.zip'); overwrite=false "
+                            + "\n    maxBytes = 1024\n    method = 'GET'\n" + source.substring(source.indexOf('}')), post);
+                }
             }
             assertEquals(source,Files.readString(job));wire.stop();
         }
