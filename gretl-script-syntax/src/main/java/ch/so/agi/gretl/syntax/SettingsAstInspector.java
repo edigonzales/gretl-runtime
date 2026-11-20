@@ -14,13 +14,14 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.ReturnStatement;
 
-/** Inspects a converted settings AST and its original, ordered Groovy lexer tokens. */
+/**
+ * Inspects a converted settings AST and the Groovy lexer tokens for the same parser text.
+ * Supply tokens in source order, with Groovy's code-point indexes and LF-based line coordinates.
+ */
 public final class SettingsAstInspector {
     public sealed interface Finding permits Unsupported, Directive { }
     public record Unsupported(ASTNode node, Token importToken) implements Finding { }
-    public record Directive(String name, ASTNode node, List<Argument> arguments, boolean repeated) implements Finding {
-        public boolean isInclude() { return name.equals("include"); }
-    }
+    public record Directive(String name, ASTNode node, List<Argument> arguments, boolean repeated) implements Finding { }
     /** A null literal marks an unsupported argument. The AST node retains its enclosing range. */
     public record Argument(ASTNode node, String value, Token literal) { }
 

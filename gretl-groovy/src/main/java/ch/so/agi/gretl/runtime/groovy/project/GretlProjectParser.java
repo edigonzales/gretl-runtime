@@ -103,7 +103,7 @@ public final class GretlProjectParser {
                 }
                 var directive = (SettingsAstInspector.Directive) finding;
                 String name = directive.name();
-                boolean include = directive.isInclude();
+                boolean include = name.equals("include");
                 SourceLocation callSource = location(settingsFile, directive.node());
                 if (directive.repeated()) {
                     throw error("PROJECT_SETTINGS_INVALID", callSource, null, "project.directiveRepeated", name);

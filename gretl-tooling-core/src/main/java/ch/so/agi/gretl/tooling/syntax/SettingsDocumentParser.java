@@ -57,8 +57,12 @@ public final class SettingsDocumentParser {
                         unsupported(argument.node(), coordinates, problems);
                         continue;
                     }
-                    var literal = LiteralDecoder.decode(source, tokenSpan(argument.literal(), coordinates)).span();
-                    values.add(new LiteralValue(argument.value(), span(argument.node(), coordinates), literal));
+                    try {
+                        var literal = LiteralDecoder.decode(source, tokenSpan(argument.literal(), coordinates)).span();
+                        values.add(new LiteralValue(argument.value(), span(argument.node(), coordinates), literal));
+                    } catch (IllegalArgumentException invalidLiteral) {
+                        unsupported(argument.node(), coordinates, problems);
+                    }
                 }
                 if (values.size() == directive.arguments().size()) {
                     var call = span(directive.node(), coordinates);

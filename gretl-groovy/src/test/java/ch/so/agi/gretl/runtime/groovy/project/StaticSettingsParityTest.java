@@ -101,6 +101,24 @@ class StaticSettingsParityTest {
         assertEquals(text.indexOf("'a'"), duplicate.related().getFirst().startUtf16());
     }
 
+    @Test void bareCarriageReturnKeepsEachHostsLineConvention() {
+        String text = "include 'a'\rinclude('b')";
+        var runtime = assertThrows(ProjectException.class,
+                () -> new GretlProjectParser(Locale.ENGLISH).parseSettings(temp.resolve("settings.gretl"), text));
+        assertEquals("PROJECT_SETTINGS_INVALID", runtime.code());
+        assertEquals(1, runtime.source().line());
+        assertEquals(13, runtime.source().column());
+
+        var parsed = tooling(text);
+        assertFalse(parsed.complete());
+        var duplicate = parsed.problems().getFirst();
+        assertEquals("PROJECT_SETTINGS_INVALID", duplicate.code());
+        assertEquals(12, duplicate.span().startUtf16());
+        var position = parsed.source().lines().positionAt(duplicate.span().startUtf16());
+        assertEquals(1, position.line());
+        assertEquals(0, position.character());
+    }
+
     @Test void hostErrorOrderAndRecoveryRemainDistinct() {
         var parser = new GretlProjectParser(Locale.ENGLISH);
         Path file = temp.resolve("settings.gretl");
@@ -159,7 +177,7 @@ class StaticSettingsParityTest {
     }
 
     @Test void bomHandlingIsComparedToTheCurrentRuntimeContract(){
-        String text="\uFEFFinclude 'a'";var parsed=tooling(text);
+        String text="\uFEFFinclude(('a'))";var parsed=tooling(text);
         try{new GretlProjectParser(Locale.ENGLISH).parseSettings(temp.resolve("settings.gretl"),text);assertTrue(parsed.complete(),parsed.problems().toString());}
         catch(ProjectException runtime){assertFalse(parsed.complete(),"Runtime rejects the BOM; tooling must retain it and diagnose it");assertTrue(parsed.problems().stream().anyMatch(p->p.code().equals(runtime.code())));}
         assertEquals(text,parsed.source().text());
