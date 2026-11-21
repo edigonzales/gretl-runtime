@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.job.runtime;
 
 import ch.so.agi.gretl.i18n.Messages;
+import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.runtime.runner.ExecutionPlan;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.ParameterDefinition;
@@ -66,16 +67,17 @@ public final class JobHelpPrinter {
     }
 
     public void plan(ExecutionPlan plan) {
-        out.println(text("help.targets") + ": " + String.join(", ", plan.requestedTargets()));
+        var selection = plan.selection();
+        out.println(text("help.targets") + ": " + String.join(", ", selection.requestedTargets()));
         out.println(text("help.order") + ":");
-        if(plan.edges().stream().anyMatch(edge->edge.type()==ch.so.agi.gretl.runtime.runner.PlanEdge.EdgeType.FINALIZED_BY))
+        if(selection.activeEdges().stream().anyMatch(edge->edge.kind()==EdgeKind.FINALIZED_BY))
             out.println("  " + text("help.finalizerHint"));
         for (TaskDefinition<?> task : plan.selectedTasks()) {
             out.printf("  %-24s registrationIndex=%d dependsOn=%s after=%s finalizedBy=%s normalSelected=%s%n",
                     task.id(), task.registrationIndex(),
                     task.dependsOn().stream().map(ref -> ref.id()).toList(),
                     task.after().stream().map(ref -> ref.id()).toList(),
-                    task.finalizedBy().stream().map(ref->ref.id()).toList(),plan.selection().normalDemand().contains(task.id()));
+                    task.finalizedBy().stream().map(ref->ref.id()).toList(),selection.normalDemand().contains(task.id()));
         }
     }
 }

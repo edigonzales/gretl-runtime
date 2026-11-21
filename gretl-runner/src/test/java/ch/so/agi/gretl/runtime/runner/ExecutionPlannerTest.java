@@ -1,12 +1,15 @@
 package ch.so.agi.gretl.runtime.runner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.so.agi.gretl.language.PlanSemantics.Edge;
+import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -21,17 +24,20 @@ class ExecutionPlannerTest {
             builder.register(RunnerTestSupport.task("a").body(context -> "a").build());
             builder.register(RunnerTestSupport.task("b").dependsOn("a")
                     .body(context -> "b").build());
-            builder.register(RunnerTestSupport.task("c").body(context -> "c").build());
-            builder.defaults("b");
+            builder.register(RunnerTestSupport.task("c").dependsOn("b")
+                    .body(context -> "c").build());
+            builder.register(RunnerTestSupport.task("unselected").body(context -> null).build());
+            builder.defaults("c");
         });
 
         ExecutionPlan plan = RunnerTestSupport.plan(definition);
 
-        assertEquals(List.of("a", "b"), plan.selectedTasks().stream()
+        assertEquals(List.of("a", "b", "c"), plan.selectedTasks().stream()
                 .map(TaskDefinition::id).toList());
-        assertFalse(plan.contains("c"));
-        assertEquals(List.of("b"), plan.requestedTargets());
-        assertEquals(List.of("a"), plan.dataPredecessors("b").stream().toList());
+        assertEquals(List.of("c"), plan.selection().requestedTargets());
+        assertEquals(Set.of("a", "b"), plan.selection().dataPredecessors().get("c"));
+        assertEquals(List.of(new Edge("a", "b", EdgeKind.DEPENDS_ON),
+                new Edge("b", "c", EdgeKind.DEPENDS_ON)), plan.selection().activeEdges());
     }
 
     @Test
@@ -62,8 +68,7 @@ class ExecutionPlannerTest {
         ExecutionPlan plan = RunnerTestSupport.plan(definition);
         assertEquals(List.of("b", "c"), plan.selectedTasks().stream()
                 .map(TaskDefinition::id).toList());
-        assertFalse(plan.contains("a"));
-        assertTrue(plan.dataPredecessors("b").isEmpty(),
+        assertTrue(plan.selection().dataPredecessors().get("b").isEmpty(),
                 "after must not become a data dependency");
     }
 
@@ -81,10 +86,10 @@ class ExecutionPlannerTest {
 
         assertEquals(List.of("earlier", "later", "last"), plan.selectedTasks().stream()
                 .map(TaskDefinition::id).toList());
-        assertTrue(plan.dataPredecessors("last").isEmpty());
-        assertTrue(plan.edges().stream().anyMatch(edge ->
+        assertTrue(plan.selection().dataPredecessors().get("last").isEmpty());
+        assertTrue(plan.selection().activeEdges().stream().anyMatch(edge ->
                 edge.fromId().equals("earlier") && edge.toId().equals("last")
-                        && edge.type() == PlanEdge.EdgeType.AFTER));
+                        && edge.kind() == EdgeKind.AFTER));
     }
 
     @Test
@@ -94,12 +99,29 @@ class ExecutionPlannerTest {
             builder.register(RunnerTestSupport.task("b").body(context -> "b").build());
         });
 
-        ExecutionPlan plan = new ExecutionPlanner().plan(definition,
-                List.of("b", "a", "b", "a"));
+        var targets = new ArrayList<>(List.of("b", "a", "b", "a"));
+        ExecutionPlan plan = new ExecutionPlanner().plan(definition, targets);
+        targets.clear();
 
-        assertEquals(List.of("b", "a"), plan.requestedTargets());
+        assertEquals(List.of("b", "a"), plan.selection().requestedTargets());
         assertEquals(List.of("a", "b"), plan.selectedTasks().stream()
                 .map(TaskDefinition::id).toList());
+    }
+
+    @Test
+    void bindingKeepsAnImmutableListInPlanOrder() {
+        JobDefinition definition = RunnerTestSupport.definition(tempDir, builder -> {
+            builder.register(RunnerTestSupport.task("a").body(context -> null).build());
+            builder.register(RunnerTestSupport.task("b").dependsOn("a").body(context -> null).build());
+        });
+        ExecutionPlan planned = RunnerTestSupport.plan(definition, "b");
+        var tasks = new ArrayList<>(planned.selectedTasks());
+        var binding = new ExecutionPlan(definition.definitionId(), tasks, planned.selection());
+        assertThrows(IllegalArgumentException.class,
+                () -> new ExecutionPlan(definition.definitionId(), tasks.reversed(), planned.selection()));
+        tasks.clear();
+        assertEquals(planned.selectedTasks(), binding.selectedTasks());
+        assertThrows(UnsupportedOperationException.class, () -> binding.selectedTasks().clear());
     }
 
     @Test

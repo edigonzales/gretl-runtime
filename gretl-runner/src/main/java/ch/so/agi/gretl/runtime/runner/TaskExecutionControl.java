@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.runner;
 
+import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.runtime.api.*;
 import java.time.Duration;
 import java.util.Optional;
@@ -30,8 +31,8 @@ final class TaskExecutionControl {
                 public boolean expired() {return parent.expired()||local.expired();}
             };
         }
-        return new TaskExecutionControl(run,effective,budget,environment.plan().edges().stream()
-                .anyMatch(e->e.type()==PlanEdge.EdgeType.FINALIZED_BY));
+        return new TaskExecutionControl(run,effective,budget,environment.plan().selection().activeEdges().stream()
+                .anyMatch(e->e.kind()==EdgeKind.FINALIZED_BY));
     }
     static TaskExecutionControl normal(RunControl run,TimeBudget budget) {
         return new TaskExecutionControl(run,run,budget,false);

@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.runtime.runner;
 
+import ch.so.agi.gretl.language.PlanSemantics.Edge;
+import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.runtime.api.TaskRef;
 import java.nio.file.Path;
 import java.util.*;
@@ -23,8 +25,8 @@ class FinalizerDefinitionTest {
         assertEquals(List.of(f),definition.tasks().get(1).finalizedBy());
         assertEquals(List.of(f),definition.tasks().get(1).after());
         assertThrows(UnsupportedOperationException.class,()->definition.tasks().get(1).finalizedBy().clear());
-        assertTrue(plan.dataPredecessors("g").isEmpty());
-        assertEquals(new PlanEdge("b","g",PlanEdge.EdgeType.FINALIZED_BY),plan.edges().getFirst());
+        assertTrue(plan.selection().dataPredecessors().get("g").isEmpty());
+        assertEquals(new Edge("b","g",EdgeKind.FINALIZED_BY),plan.selection().activeEdges().getFirst());
     }
     @Test void invalidFinalizerDefinitionsAreSpecificAndOwnerLocated() {
         for(String kind:List.of("missing","duplicate","self","foreign")) {

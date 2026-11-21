@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.runtime.runner;
 
 import ch.so.agi.gretl.i18n.Messages;
+import ch.so.agi.gretl.language.PlanSemantics.Edge;
+import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.language.TaskSchedule;
 import ch.so.agi.gretl.runtime.api.CancelReason;
 import ch.so.agi.gretl.runtime.api.ExecutionIdentity;
@@ -34,6 +36,7 @@ public final class SequentialJobRunner {
     }
 
     private JobOutcome execute(JobDefinition definition, ExecutionPlan plan, RunInput input) {
+        var selection = plan.selection();
         WorkspaceManager manager = new WorkspaceManager(input.workRoot());
         WorkspaceManager.Workspace workspace;
         try {
@@ -70,7 +73,7 @@ public final class SequentialJobRunner {
 
             environment.emit("gretl.run.started", LogLevel.INFO, runIdentity, Optional.empty(),
                     "run", null, 0,
-                    Map.of("targets", String.join(",", plan.requestedTargets())),
+                    Map.of("targets", String.join(",", selection.requestedTargets())),
                     Optional.empty());
 
             FailureInfo runPrimary = null;
@@ -80,8 +83,8 @@ public final class SequentialJobRunner {
             boolean finishRequested = false;
             String finishReason = null;
 
-            var schedule = new TaskSchedule(plan.selection());
-            boolean hasFinalizers = plan.edges().stream().anyMatch(e -> e.type() == PlanEdge.EdgeType.FINALIZED_BY);
+            var schedule = new TaskSchedule(selection);
+            boolean hasFinalizers = selection.activeEdges().stream().anyMatch(e -> e.kind() == EdgeKind.FINALIZED_BY);
             var tasks = new java.util.LinkedHashMap<String,TaskDefinition<?>>();
             plan.selectedTasks().forEach(task -> tasks.put(task.id(),task));
             var executedRoles = new java.util.LinkedHashMap<String,List<String>>();
@@ -219,19 +222,21 @@ public final class SequentialJobRunner {
                 environment.emit("gretl.run.finished", runLevel(status), runIdentity, Optional.empty(),
                         "run", status.name(), durationMillis,
                         terminalAttributes(status == RunStatus.CANCELLED ? environment.control().snapshot().cancellationReason() : Optional.empty(),
-                                Map.of("exit_code", Integer.toString(status.exitCode()), "targets", String.join(",", plan.requestedTargets()))),
+                                Map.of("exit_code", Integer.toString(status.exitCode()), "targets", String.join(",", selection.requestedTargets()))),
                         Optional.ofNullable(primaryFailure));
 
                 List<TaskOutcome> taskOutcomes = results.outcomes();
                 var finalization=new java.util.LinkedHashMap<String,TaskFinalization>();
                 for(var task:plan.selectedTasks()) {
-                    var owners=plan.edges().stream().filter(edge->edge.type()==PlanEdge.EdgeType.FINALIZED_BY&&edge.toId().equals(task.id())).map(PlanEdge::fromId).toList();
+                    var owners = selection.activeEdges().stream()
+                            .filter(edge -> edge.kind() == EdgeKind.FINALIZED_BY && edge.toId().equals(task.id()))
+                            .map(Edge::fromId).toList();
                     finalization.put(task.id(),new TaskFinalization(schedule.normalDemand(task.id()),owners,
                             new ArrayList<>(schedule.activatingOwners(task.id())),executedRoles.getOrDefault(task.id(),List.of())));
                 }
                 JobOutcome outcome = new JobOutcome(
                         input.runId(), definition.definitionId(), input.jobName(),
-                        status, status.exitCode(), plan.requestedTargets(),
+                        status, status.exitCode(), selection.requestedTargets(),
                         taskOutcomes, environment.diagnostics(),
                         Optional.ofNullable(primaryFailure), secondaryFailures,
                         startedAt, finishedAt, durationMillis,

@@ -44,9 +44,13 @@ verwendet dieselbe Standardlaufzeit und isoliert den Jobcompiler vom Host.
 
 Der statische Tooling-Core besitzt keine Produktionsabhaengigkeit auf Runner,
 Groovyadapter, Taskprovider oder Exporter. Die gemeinsame `PlanSemantics` arbeitet
-ausschliesslich mit logischen IDs und Kanten. Der Runner prueft weiterhin die
-UUID-Identitaet seiner Referenzen. Der Buildexporter darf Metadaten lesen; der
-Core bekommt ausschliesslich validierte Katalogdaten. Hosttests in Groovy und
+ausschliesslich mit logischen IDs und Kanten und erzeugt die massgebende
+`PlanSelection`. Der Runner prueft die UUID-Identitaet seiner Referenzen und
+bindet die Auswahl im `ExecutionPlan` an ausfuehrbare Tasks. Der Runner
+uebergibt dieselbe Auswahl an `TaskSchedule`. Ergebniszugriff, Planvorschau und
+Runreport lesen Datenvorgaenger, Ziele, Reihenfolge und logische Kanten aus
+dieser Auswahl. Der Buildexporter darf Metadaten lesen. Der Core bekommt
+ausschliesslich validierte Katalogdaten. Hosttests in Groovy und
 Database vergleichen statische Aussagen mit der Runtime ueber Testdependencies.
 
 Der Core liest explizit registrierte Quellen ueber eine begrenzte Readpolicy.

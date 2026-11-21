@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.runtime.groovy;
 
+import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.runtime.runner.*;
 import java.nio.file.*;
 import java.util.*;
@@ -19,7 +20,7 @@ class GroovyFinalizerTest {
         write(h,"tasks/owner.groovy","action('owner',finalizedBy:['typed','report']){println 'owner';throw new IllegalStateException('owner-failed')}");
         write(h,"tasks/end.groovy","task('typed',Echo){text='finished'}\naction('report',after:'typed'){println 'report'}\ncleanup('global'){println 'cleanup'}");
         var d=load(h);var p=new ExecutionPlanner().plan(d,List.of());assertEquals(List.of("owner","typed","report"),p.selectedTasks().stream().map(TaskDefinition::id).toList());
-        assertEquals(2,p.edges().stream().filter(e->e.type()==PlanEdge.EdgeType.FINALIZED_BY).count());
+        assertEquals(2,p.selection().activeEdges().stream().filter(e->e.kind()==EdgeKind.FINALIZED_BY).count());
         var out=h.run(d,Map.of());assertEquals(RunStatus.FAILED,out.status());assertEquals("owner-failed",out.primaryFailure().orElseThrow().message());
         assertEquals(TaskStatus.SUCCEEDED,out.task("typed").orElseThrow().status());assertEquals(InvocationStatus.SUCCEEDED,out.invocations().getFirst().status());
         assertEquals(List.of("owner","report","cleanup"),h.messages.messages());

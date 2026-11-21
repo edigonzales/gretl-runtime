@@ -168,7 +168,8 @@ public final class ResultStore {
             throw new ResultAccessException("FOREIGN_OR_UNKNOWN_TASK_REF",
                     "Plan und Ergebnisablage gehoeren zu verschiedenen Definitionen");
         }
-        Set<String> predecessors = plan.dataPredecessors(consumerDefinition.id());
+        Set<String> predecessors = plan.selection().dataPredecessors()
+                .getOrDefault(consumerDefinition.id(), Set.of());
         if (!predecessors.contains(producerDefinition.id())) {
             throw new ResultAccessException("UNDECLARED_RESULT_DEPENDENCY",
                     "Task " + consumerDefinition.id() + " reads " + producerDefinition.id()

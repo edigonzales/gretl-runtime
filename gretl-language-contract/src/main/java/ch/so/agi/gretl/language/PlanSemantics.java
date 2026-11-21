@@ -25,9 +25,6 @@ public final class PlanSemantics {
         public String code(){return problem.code();}
     }
     public record PlanSelection(List<String> requestedTargets,List<String> orderedIds,List<Edge> activeEdges,Map<String,Set<String>> dataPredecessors,Set<String> normalDemand,List<String> registrationOrder) {
-        public PlanSelection(List<String> requestedTargets,List<String> orderedIds,List<Edge> activeEdges,Map<String,Set<String>> dataPredecessors) {
-            this(requestedTargets,orderedIds,activeEdges,dataPredecessors,new LinkedHashSet<>(orderedIds),orderedIds);
-        }
         public PlanSelection {
             normalDemand=Collections.unmodifiableSet(new LinkedHashSet<>(normalDemand));registrationOrder=List.copyOf(registrationOrder);
             requestedTargets=List.copyOf(requestedTargets);orderedIds=List.copyOf(orderedIds);activeEdges=List.copyOf(activeEdges);
@@ -64,9 +61,8 @@ public final class PlanSemantics {
         var ordered=topologicalSort(selected,active,nodes);var predecessors=new LinkedHashMap<String,Set<String>>();
         for(String id:selected)predecessors.put(id,dataPredecessors(incoming,id));
         var registrationOrder=selected.stream().sorted(Comparator.comparingInt(id->nodes.get(id).registrationIndex())).toList();
-        var selection=new PlanSelection(targets,ordered,active,predecessors,normal,registrationOrder);
         if(active.stream().anyMatch(e->e.kind()==EdgeKind.FINALIZED_BY)) {
-            var schedule=new TaskSchedule(selection);var nominal=new ArrayList<String>();
+            var schedule=new TaskSchedule(ordered,registrationOrder,active,predecessors,normal);var nominal=new ArrayList<String>();
             try {
                 while(true) {
                     var decision=schedule.next();
@@ -78,9 +74,9 @@ public final class PlanSemantics {
             } catch(IllegalStateException blocked) {
                 throw new GraphException(new GraphProblem("FINALIZER_ACTIVATION_DEADLOCK",blocked.getMessage(),null,active));
             }
-            selection=new PlanSelection(targets,nominal,active,predecessors,normal,registrationOrder);
+            ordered=nominal;
         }
-        return selection;
+        return new PlanSelection(targets,ordered,active,predecessors,normal,registrationOrder);
     }
     public Set<String> dataPredecessors(DeclaredGraph graph,String taskId){
         var nodes=index(graph);var problems=unknownLinks(graph,nodes);if(!problems.isEmpty())throw new GraphException(problems.getFirst());

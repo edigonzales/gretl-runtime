@@ -13,7 +13,11 @@ public final class TaskSchedule {
     public record NotRun(String taskId, String reason) implements Decision { }
     public record Done() implements Decision { }
 
-    private final PlanSelection plan;
+    private final List<String> orderedIds;
+    private final List<String> registrationOrder;
+    private final List<Edge> activeEdges;
+    private final Map<String,Set<String>> dataPredecessors;
+    private final Set<String> normalDemand;
     private final boolean hasFinalizers;
     private final Map<String,List<String>> dependencies = new LinkedHashMap<>();
     private final Map<String,List<String>> predecessors = new LinkedHashMap<>();
@@ -26,9 +30,20 @@ public final class TaskSchedule {
     private String completionStop;
 
     public TaskSchedule(PlanSelection plan) {
-        this.plan = Objects.requireNonNull(plan);
-        this.hasFinalizers = plan.activeEdges().stream().anyMatch(e -> e.kind() == EdgeKind.FINALIZED_BY);
-        for (var edge : plan.activeEdges()) {
+        this(plan.orderedIds(), plan.registrationOrder(), plan.activeEdges(),
+                plan.dataPredecessors(), plan.normalDemand());
+    }
+
+    // The planner runs the nominal schedule before the final execution order is known.
+    TaskSchedule(List<String> orderedIds, List<String> registrationOrder, List<Edge> activeEdges,
+                 Map<String,Set<String>> dataPredecessors, Set<String> normalDemand) {
+        this.orderedIds = orderedIds;
+        this.registrationOrder = registrationOrder;
+        this.activeEdges = activeEdges;
+        this.dataPredecessors = dataPredecessors;
+        this.normalDemand = normalDemand;
+        this.hasFinalizers = activeEdges.stream().anyMatch(e -> e.kind() == EdgeKind.FINALIZED_BY);
+        for (var edge : activeEdges) {
             predecessors.computeIfAbsent(edge.toId(), id -> new ArrayList<>()).add(edge.fromId());
             if (edge.kind() == EdgeKind.DEPENDS_ON)
                 dependencies.computeIfAbsent(edge.toId(), id -> new ArrayList<>()).add(edge.fromId());
@@ -39,28 +54,28 @@ public final class TaskSchedule {
 
     public Decision next() {
         if (running != null) throw new IllegalStateException("Task still running: " + running);
-        if (terminals.size() == plan.orderedIds().size()) return new Done();
+        if (terminals.size() == orderedIds.size()) return new Done();
         if (preventedStart != null) return preventedStart;
         if (!hasFinalizers && normalStop != null) return new NotRun(firstPending(),normalStop);
         if (completionStop != null)
             return new NotRun(firstPending(), completionStop);
         Set<String> demand = demand();
         // Failed real data prerequisites can never recover, in any role.
-        for (String id : plan.registrationOrder()) if (pending(id) && (demand.contains(id) || plan.normalDemand().contains(id)) && blocked(id))
+        for (String id : registrationOrder) if (pending(id) && (demand.contains(id) || normalDemand.contains(id)) && blocked(id))
             return new NotRun(id, !demand.contains(id) && normalStop != null ? normalStop : "DEPENDENCY_FAILED");
         Set<String> potential = potential(demand);
         // Resolve inactive owners before checking the finalizer owner barriers.
-        for (String id : plan.registrationOrder()) if (pending(id) && !potential.contains(id))
-            return new NotRun(id, isFinalizer(id) && !plan.normalDemand().contains(id) ? "FINALIZER_NOT_TRIGGERED"
+        for (String id : registrationOrder) if (pending(id) && !potential.contains(id))
+            return new NotRun(id, isFinalizer(id) && !normalDemand.contains(id) ? "FINALIZER_NOT_TRIGGERED"
                     : normalStop == null ? "FINALIZER_NOT_TRIGGERED" : normalStop);
-        for (String id : plan.registrationOrder()) {
+        for (String id : registrationOrder) {
             if (pending(id) && demand.contains(id)
                     && predecessors.getOrDefault(id,List.of()).stream().allMatch(terminals::containsKey))
                 return new Execute(id);
         }
         throw new IllegalStateException("FINALIZER_ACTIVATION_DEADLOCK: pending "
-                + plan.registrationOrder().stream().filter(this::pending).toList()
-                + "; demand " + demand + "; edges " + plan.activeEdges());
+                + registrationOrder.stream().filter(this::pending).toList()
+                + "; demand " + demand + "; edges " + activeEdges);
     }
 
     /** The executor rejected a ready task at the last control boundary, before RUNNING. */
@@ -102,16 +117,16 @@ public final class TaskSchedule {
     public Set<String> demandingFinalizers(String id) {
         var result=new LinkedHashSet<String>();
         for(String finalizer:triggers.keySet())if(pending(finalizer)
-                &&plan.dataPredecessors().getOrDefault(finalizer,Set.of()).contains(id))result.add(finalizer);
+                &&dataPredecessors.getOrDefault(finalizer,Set.of()).contains(id))result.add(finalizer);
         return Collections.unmodifiableSet(result);
     }
-    public boolean normalDemand(String id) { return plan.normalDemand().contains(id); }
+    public boolean normalDemand(String id) { return normalDemand.contains(id); }
     public boolean draining() { return normalStop != null; }
 
-    private boolean pending(String id) { return plan.dataPredecessors().containsKey(id) && !terminals.containsKey(id); }
-    private String firstPending() { return plan.orderedIds().stream().filter(this::pending).findFirst().orElseThrow(); }
+    private boolean pending(String id) { return dataPredecessors.containsKey(id) && !terminals.containsKey(id); }
+    private String firstPending() { return orderedIds.stream().filter(this::pending).findFirst().orElseThrow(); }
     private boolean isFinalizer(String id) {
-        return plan.activeEdges().stream().anyMatch(e -> e.kind() == EdgeKind.FINALIZED_BY && e.toId().equals(id));
+        return activeEdges.stream().anyMatch(e -> e.kind() == EdgeKind.FINALIZED_BY && e.toId().equals(id));
     }
     private boolean blocked(String id) {
         return dependencies.getOrDefault(id,List.of()).stream().anyMatch(p -> {
@@ -121,7 +136,7 @@ public final class TaskSchedule {
     }
     private Set<String> demand() {
         var result = new LinkedHashSet<String>();
-        if (normalStop == null) plan.normalDemand().stream().filter(this::pending).forEach(result::add);
+        if (normalStop == null) normalDemand.stream().filter(this::pending).forEach(result::add);
         triggers.keySet().stream().filter(this::pending).forEach(result::add);
         var queue = new ArrayDeque<>(result);
         while (!queue.isEmpty()) {

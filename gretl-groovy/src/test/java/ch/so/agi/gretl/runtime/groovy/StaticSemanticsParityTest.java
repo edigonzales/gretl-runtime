@@ -87,7 +87,7 @@ class StaticSemanticsParityTest {
             "action('a') {}; action([dependsOn:'missing',dependsOn:'a',when:{parameter('notRead')},when:{true}],'b') {}; defaults 'b'",
             "action('outsideA',after:'outsideB') {}; action('outsideB',after:'outsideA') {}; action('selected') {}; defaults 'selected'")){
             var definition=harness.loadSource("fixture.groovy",text);var staticModel=staticAnalysis(text);assertEquals(List.of(),errors(staticModel));assertEquals(definition.taskIds(),staticModel.symbols().keySet().stream().filter(k->k.namespace()==Namespace.TASK).map(SymbolId::qualifiedName).collect(java.util.stream.Collectors.toSet()));assertEquals(definition.defaultTargets(),staticModel.defaultTargets());
-            var runtime=new ExecutionPlanner().plan(definition,List.of());var pure=new PlanSemantics().plan(staticModel.graph(),List.of(),staticModel.defaultTargets());assertEquals(runtime.selectedTasks().stream().map(TaskDefinition::id).toList(),pure.orderedIds());assertEquals(runtime.dataPredecessors(),pure.dataPredecessors());
+            var runtime=new ExecutionPlanner().plan(definition,List.of());var pure=new PlanSemantics().plan(staticModel.graph(),List.of(),staticModel.defaultTargets());assertEquals(runtime.selectedTasks().stream().map(TaskDefinition::id).toList(),pure.orderedIds());assertEquals(runtime.selection().dataPredecessors(),pure.dataPredecessors());
         }
     }
     @Test void actualPlannerRejectsTheSameUnknownAndCyclicEdgesEvenOutsideTargets() throws Exception {
@@ -198,7 +198,7 @@ class StaticSemanticsParityTest {
             assertEquals(List.of(),errors(analysis));assertTrue(analysis.capabilities().declarationsComplete());assertTrue(analysis.capabilities().referencesComplete());
             assertEquals(List.of("first","nested","middle","last"),analysis.graph().nodes().stream().map(PlanSemantics.Node::id).toList());
             var actual=new ExecutionPlanner().plan(definition,List.of());var pure=new PlanSemantics().plan(analysis.graph(),List.of(),analysis.defaultTargets());
-            assertEquals(actual.selectedTasks().stream().map(TaskDefinition::id).toList(),pure.orderedIds());assertEquals(actual.dataPredecessors(),pure.dataPredecessors());
+            assertEquals(actual.selectedTasks().stream().map(TaskDefinition::id).toList(),pure.orderedIds());assertEquals(actual.selection().dataPredecessors(),pure.dataPredecessors());
             var outcome=harness.run(definition,Map.of());assertEquals(RunStatus.SUCCEEDED,outcome.status());
             assertEquals("value",((TestGroovyOperations.EchoResult)((ResultSlot.Value)outcome.task("last").orElseThrow().slot()).value()).result());
         }

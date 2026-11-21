@@ -41,17 +41,22 @@ class ResultStoreTest {
     }
 
     @Test
-    void successfulValueCanBeReadOnlyByADataDependentConsumer() {
-        Fixture fixture = fixture();
-        ResultStore store = fixture.store();
-        TaskRef<Object> a = fixture.a();
-        TaskRef<Object> b = fixture.b();
+    void successfulValueCanBeReadByATransitiveDataDependentConsumer() {
+        JobDefinition definition = RunnerTestSupport.definition(tempDir, builder -> {
+            builder.register(RunnerTestSupport.task("a").body(context -> "value").build());
+            builder.register(RunnerTestSupport.task("b").dependsOn("a").body(context -> "b").build());
+            builder.register(RunnerTestSupport.task("c").dependsOn("b").body(context -> "c").build());
+            builder.defaults("c");
+        });
+        ResultStore store = new ResultStore(definition, RunnerTestSupport.plan(definition));
+        var a = definition.task("a").orElseThrow().ref();
+        var c = definition.task("c").orElseThrow().ref();
 
         store.start(a, T0, 0);
         store.complete(a, TaskCompletion.succeeded("value"), T1, 1_000_000L);
 
-        assertEquals("value", store.require(b, a));
-        assertEquals(Optional.of("value"), store.optional(b, a));
+        assertEquals("value", store.require(c, a));
+        assertEquals(Optional.of("value"), store.optional(c, a));
     }
 
     @Test
@@ -73,6 +78,8 @@ class ResultStoreTest {
         ResultAccessException exception = assertThrows(ResultAccessException.class,
                 () -> store.require(b.get(), a.get()));
         assertEquals("UNDECLARED_RESULT_DEPENDENCY", exception.code());
+        assertEquals(exception.code(), assertThrows(ResultAccessException.class,
+                () -> store.optional(b.get(), a.get())).code());
     }
 
     @Test
@@ -138,6 +145,16 @@ class ResultStoreTest {
         ResultAccessException running = assertThrows(ResultAccessException.class,
                 () -> store.optional(fixture.b(), fixture.a()));
         assertEquals("RESULT_NOT_AVAILABLE", running.code());
+    }
+
+    @Test
+    void planFromAnotherDefinitionIsRejected() {
+        Fixture fixture = fixture();
+        JobDefinition other = RunnerTestSupport.definition(tempDir, builder ->
+                builder.register(RunnerTestSupport.task("a").body(context -> null).build()));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> new ResultStore(other, RunnerTestSupport.plan(fixture.definition())));
     }
 
     @Test

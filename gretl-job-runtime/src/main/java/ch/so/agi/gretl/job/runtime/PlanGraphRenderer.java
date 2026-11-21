@@ -1,8 +1,9 @@
 package ch.so.agi.gretl.job.runtime;
 
 import ch.so.agi.gretl.i18n.Messages;
+import ch.so.agi.gretl.language.PlanSemantics.Edge;
+import ch.so.agi.gretl.language.PlanSemantics.EdgeKind;
 import ch.so.agi.gretl.runtime.runner.ExecutionPlan;
-import ch.so.agi.gretl.runtime.runner.PlanEdge;
 import ch.so.agi.gretl.runtime.runner.TaskDefinition;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -29,7 +30,8 @@ public final class PlanGraphRenderer {
 
     private String mermaid(ExecutionPlan plan, String source) {
         Map<String, String> aliases = aliases(plan, "n");
-        Set<String> targets = Set.copyOf(plan.requestedTargets());
+        var selection = plan.selection();
+        Set<String> targets = Set.copyOf(selection.requestedTargets());
         StringBuilder out = new StringBuilder();
         out.append("flowchart TB\n");
         out.append("%% gretl plan: ").append(singleLine(source)).append('\n');
@@ -39,18 +41,18 @@ public final class PlanGraphRenderer {
         }
         for (TaskDefinition<?> task : plan.selectedTasks()) {
             out.append("  ").append(aliases.get(task.id())).append("[\"")
-                    .append(mermaidLabel(task,!plan.selection().normalDemand().contains(task.id()))).append("\"]");
+                    .append(mermaidLabel(task,!selection.normalDemand().contains(task.id()))).append("\"]");
             if (targets.contains(task.id())) {
                 out.append(":::target");
             }
             out.append('\n');
         }
-        for (PlanEdge edge : uniqueEdges(plan)) {
+        for (Edge edge : new LinkedHashSet<>(selection.activeEdges())) {
             String from = alias(aliases, edge.fromId());
             String to = alias(aliases, edge.toId());
-            if (edge.type() == PlanEdge.EdgeType.DEPENDS_ON) {
+            if (edge.kind() == EdgeKind.DEPENDS_ON) {
                 out.append("  ").append(from).append(" -->|dependsOn| ").append(to).append('\n');
-            } else if (edge.type() == PlanEdge.EdgeType.FINALIZED_BY) {
+            } else if (edge.kind() == EdgeKind.FINALIZED_BY) {
                 out.append("  ").append(from).append(" ==>|finalizedBy| ").append(to).append('\n');
             } else {
                 out.append("  ").append(from).append(" -.->|after| ").append(to).append('\n');
@@ -61,7 +63,8 @@ public final class PlanGraphRenderer {
 
     private String plantuml(ExecutionPlan plan, String source, Locale locale) {
         Map<String, String> aliases = aliases(plan, "t");
-        Set<String> targets = Set.copyOf(plan.requestedTargets());
+        var selection = plan.selection();
+        Set<String> targets = Set.copyOf(selection.requestedTargets());
         StringBuilder out = new StringBuilder();
         out.append("@startuml\n");
         out.append("' gretl plan: ").append(singleLine(source)).append('\n');
@@ -69,19 +72,19 @@ public final class PlanGraphRenderer {
                 "plan.graph.title", singleLine(source))).append('\n');
         out.append("skinparam shadowing false\n");
         for (TaskDefinition<?> task : plan.selectedTasks()) {
-            out.append("rectangle \"").append(plantumlLabel(task,!plan.selection().normalDemand().contains(task.id()))).append("\" as ")
+            out.append("rectangle \"").append(plantumlLabel(task,!selection.normalDemand().contains(task.id()))).append("\" as ")
                     .append(aliases.get(task.id()));
             if (targets.contains(task.id())) {
                 out.append(" #FFE8A3");
             }
             out.append('\n');
         }
-        for (PlanEdge edge : uniqueEdges(plan)) {
+        for (Edge edge : new LinkedHashSet<>(selection.activeEdges())) {
             String from = alias(aliases, edge.fromId());
             String to = alias(aliases, edge.toId());
-            if (edge.type() == PlanEdge.EdgeType.DEPENDS_ON) {
+            if (edge.kind() == EdgeKind.DEPENDS_ON) {
                 out.append(from).append(" --> ").append(to).append(" : dependsOn\n");
-            } else if (edge.type() == PlanEdge.EdgeType.FINALIZED_BY) {
+            } else if (edge.kind() == EdgeKind.FINALIZED_BY) {
                 out.append(from).append(" -[#7B1FA2,bold]-> ").append(to).append(" : finalizedBy\n");
             } else {
                 out.append(from).append(" ..> ").append(to).append(" : after\n");
@@ -106,18 +109,6 @@ public final class PlanGraphRenderer {
             throw new IllegalArgumentException("plan edge references unselected task: " + taskId);
         }
         return alias;
-    }
-
-    private static List<PlanEdge> uniqueEdges(ExecutionPlan plan) {
-        Set<String> seen = new LinkedHashSet<>();
-        List<PlanEdge> result = new ArrayList<>();
-        for (PlanEdge edge : plan.edges()) {
-            String key = edge.fromId() + '\u0000' + edge.toId() + '\u0000' + edge.type();
-            if (seen.add(key)) {
-                result.add(edge);
-            }
-        }
-        return result;
     }
 
     private static String mermaidLabel(TaskDefinition<?> task,boolean completionCandidate) {

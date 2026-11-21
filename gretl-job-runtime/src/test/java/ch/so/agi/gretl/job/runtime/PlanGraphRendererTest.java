@@ -1,8 +1,5 @@
 package ch.so.agi.gretl.job.runtime;
 
-import ch.so.agi.gretl.job.runtime.PlanGraphFormat;
-import ch.so.agi.gretl.job.runtime.PlanGraphRenderer;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -11,7 +8,7 @@ import ch.so.agi.gretl.runtime.runner.ExecutionPlan;
 import ch.so.agi.gretl.runtime.runner.ExecutionPlanner;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.JobDefinitionBuilder;
-import ch.so.agi.gretl.runtime.runner.PlanEdge;
+import ch.so.agi.gretl.runtime.runner.TaskDefinition;
 import ch.so.agi.gretl.runtime.runner.TaskRegistration;
 import java.nio.file.Path;
 import java.util.List;
@@ -69,25 +66,45 @@ class PlanGraphRendererTest {
     }
 
     @Test
-    void labelsAreEscapedAndDuplicateEdgesAreRenderedOnce() {
+    void labelsAreEscaped() {
         JobDefinitionBuilder builder = new JobDefinitionBuilder(tempDir);
-        builder.register(TaskRegistration.builder("a\"b", Object.class)
+        String id = "a\"<&>\\\r\nb";
+        builder.register(TaskRegistration.builder(id, Object.class)
                 .body(context -> "x").build());
         JobDefinition definition = builder.freeze();
-        ExecutionPlan base = new ExecutionPlanner().plan(definition, List.of("a\"b"));
-        PlanEdge edge = new PlanEdge("a\"b", "a\"b", PlanEdge.EdgeType.DEPENDS_ON);
-        ExecutionPlan plan = new ExecutionPlan(base.definitionId(), base.requestedTargets(),
-                base.selectedTasks(), base.dataPredecessors(), List.of(edge, edge));
+        ExecutionPlan plan = new ExecutionPlanner().plan(definition, List.of(id));
 
         String mermaid = new PlanGraphRenderer().render(plan,
                 PlanGraphFormat.MERMAID, "job.groovy", Locale.ENGLISH);
         String plantuml = new PlanGraphRenderer().render(plan,
                 PlanGraphFormat.PLANTUML, "job.groovy", Locale.ENGLISH);
 
-        assertTrue(mermaid.contains("&quot;"), mermaid);
-        assertTrue(plantuml.contains("\\\""), plantuml);
-        assertEquals(1, occurrences(mermaid, "-->|dependsOn|"));
-        assertEquals(1, occurrences(plantuml, ": dependsOn"));
+        assertTrue(mermaid.contains("a&quot;&lt;&amp;&gt;\\<br/>b"), mermaid);
+        assertTrue(plantuml.contains("a\\\"<&>\\\\\\nb"), plantuml);
+    }
+
+    @Test
+    void duplicateLinksInAJavaDefinitionRenderOnce() {
+        JobDefinitionBuilder builder = new JobDefinitionBuilder(tempDir);
+        var producer = builder.register(TaskRegistration.builder("producer", Object.class)
+                .body(context -> null).build());
+        var consumer = builder.register(TaskRegistration.builder("consumer", Object.class)
+                .body(context -> null).build());
+        JobDefinition registered = builder.freeze();
+        var linkedConsumer = new TaskDefinition<>(consumer, 1, "consumer",
+                List.of(producer, producer), List.of(), List.of(), null, null,
+                context -> null, null, null);
+        var definition = new JobDefinition(registered.definitionId(),
+                List.of(registered.requireTask(producer), linkedConsumer),
+                List.of(), List.of("consumer"), List.of(), tempDir);
+        var plan = new ExecutionPlanner().plan(definition, List.of());
+        var renderer = new PlanGraphRenderer();
+
+        assertEquals(2, plan.selection().activeEdges().size());
+        String mermaid = renderer.render(plan, PlanGraphFormat.MERMAID, "probe", Locale.ENGLISH);
+        String plantuml = renderer.render(plan, PlanGraphFormat.PLANTUML, "probe", Locale.ENGLISH);
+        assertEquals(1, mermaid.lines().filter("  n0 -->|dependsOn| n1"::equals).count(), mermaid);
+        assertEquals(1, plantuml.lines().filter("t0 --> t1 : dependsOn"::equals).count(), plantuml);
     }
 
     private ExecutionPlan plan() {
@@ -103,9 +120,5 @@ class PlanGraphRendererTest {
         builder.defaults("unpack", "notify");
         JobDefinition definition = builder.freeze();
         return new ExecutionPlanner().plan(definition, List.of("unpack", "notify"));
-    }
-
-    private static int occurrences(String value, String needle) {
-        return value.split(java.util.regex.Pattern.quote(needle), -1).length - 1;
     }
 }
