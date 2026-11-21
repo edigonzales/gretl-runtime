@@ -88,6 +88,12 @@ jeweils Fähigkeitsversion 1. Das ausgehandelte Include-Tooling liefert
 Ein ausstehender Abgleich liefert `INCLUDE_MEMBERSHIP_PENDING`, sodass der
 Host offene Buffer abgleichen kann, bevor eine Mutation angeboten wird.
 
+`gretl/graph` projiziert die vollständige Modeler-Darstellung. Der Host
+erfasst native Editkontexte mit `gretl/context` und fragt diesen Kontext
+vor und nach der Quellenprüfung ab. Beide Requests verwenden denselben
+Analyse- und Snapshotpfad. `gretl/context` gibt den vorhandenen Kontext
+direkt zurück.
+
 Nachrichten-, Capture-, Parser-, Snapshot- und Watcherbudgets begrenzen
 die Arbeit. Cancellation reicht bis in Analyse und Editprüfung. Für
 Paket- und Prozessprüfung gelten die [Buildanleitung](../development/build.md)

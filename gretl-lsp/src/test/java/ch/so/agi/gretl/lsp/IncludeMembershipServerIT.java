@@ -18,7 +18,9 @@ class IncludeMembershipServerIT {
         String uri=job.toUri().toString(),dirty="// ä😀 unsaved\r\ntask('dirty',Gzip){dataFile=file('input');gzipFile=workPath('dirty.gz')}";
         try(var w=new LspProcessHarness(root,"--stdio")){
             fixture.initialize(w,true);w.opened(uri,1,source);var disk=fixture.graph(w,uri);
+            var request=Map.of("protocolVersion",1,"documentId",uri);
             assertTrue(disk.getAsJsonObject("context").getAsJsonArray("notices").asList().stream().anyMatch(v->v.getAsString().equals("INCLUDE_MEMBERSHIP_PENDING")));
+            assertEquals(disk.get("context"),w.call("gretl/context",request).getAsJsonObject().get("context"));
             var initial=w.notification("gretl/sourceMembershipChanged",u->!u.getAsJsonArray("members").isEmpty());
             var denied=w.response("gretl/planEdit",fixture.scalar(uri,disk.getAsJsonObject("context").get("snapshotId").getAsString()));assertTrue(denied.has("error"));assertEquals("INCLUDE_MEMBERSHIP_PENDING",denied.getAsJsonObject("error").get("message").getAsString());
             var action=w.response("textDocument/codeAction",Map.of("textDocument",Map.of("uri",uri),"range",Map.of("start",Map.of("line",0,"character",0),"end",Map.of("line",1,"character",0)),"context",Map.of("diagnostics",List.of())));
@@ -30,6 +32,7 @@ class IncludeMembershipServerIT {
             var ack=w.call("gretl/confirmSourceMembership",Map.of("protocolVersion",1,"includeToolingVersion",1,"documentId",uri,"ownerGeneration",update.get("ownerGeneration").getAsString(),"syncToken",update.get("syncToken").getAsString(),
                     "buffers",List.of(Map.of("documentId",fragment.toUri().toString(),"version",7,"sha256",fixture.hash(fragment.toUri(),dirty))))).getAsJsonObject();assertTrue(ack.get("current").getAsBoolean(),ack.toString());
             current=fixture.graph(w,uri);assertTrue(current.getAsJsonObject("context").getAsJsonArray("notices").isEmpty());String snapshot=current.getAsJsonObject("context").get("snapshotId").getAsString();
+            assertEquals(current.get("context"),w.call("gretl/context",request).getAsJsonObject().get("context"));
             var plan=w.call("gretl/planEdit",fixture.scalar(uri,snapshot)).getAsJsonObject();assertEquals("ALLOWED",plan.getAsJsonObject("capability").get("state").getAsString(),plan.toString());
             String planId=plan.get("planId").getAsString();var before=fixture.contexts(w,fragment.toUri().toString());
             w.send("textDocument/didClose",Map.of("textDocument",Map.of("uri",fragment.toUri().toString())),null);w.opened(fragment.toUri().toString(),7,dirty);
@@ -65,14 +68,23 @@ class IncludeMembershipServerIT {
             assertTrue(choices.get("selectionRequired").getAsBoolean());assertEquals(2,choices.getAsJsonArray("contexts").size());
             var first=choices.getAsJsonArray("contexts").get(0).getAsJsonObject();var second=choices.getAsJsonArray("contexts").get(1).getAsJsonObject();
             assertNotEquals(first.get("resourceBase"),second.get("resourceBase"));
-            assertEquals("SOURCE_CONTEXT_SELECTION_REQUIRED",w.response("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject("error").get("message").getAsString());
+            var request=Map.of("protocolVersion",1,"documentId",uri);
+            for(String method:List.of("gretl/graph","gretl/context"))
+                assertEquals("SOURCE_CONTEXT_SELECTION_REQUIRED",w.response(method,request).getAsJsonObject("error").get("message").getAsString());
             w.call("gretl/selectSourceContext",Map.of("protocolVersion",1,"includeToolingVersion",1,"documentId",uri,"contextToken",first.get("contextToken").getAsString(),"ownerGeneration",choices.get("ownerGeneration").getAsString()));
-            w.call("gretl/graph",Map.of("protocolVersion",1,"documentId",uri,"contextToken",second.get("contextToken").getAsString()));
+            var pinned=Map.of("protocolVersion",1,"documentId",uri,"contextToken",second.get("contextToken").getAsString());
+            var graph=w.call("gretl/graph",pinned).getAsJsonObject();
+            var context=w.call("gretl/context",pinned).getAsJsonObject().getAsJsonObject("context");
+            assertEquals(graph.get("context"),context);
+            assertEquals(second.get("contextToken"),context.get("contextToken"));
+            assertEquals(first.get("contextToken"),w.call("gretl/context",request).getAsJsonObject().getAsJsonObject("context").get("contextToken"));
             assertEquals(first.get("contextToken"),fixture.contexts(w,uri).get("selectedToken"));
             var standalone=w.call("gretl/sourceContexts",Map.of("protocolVersion",1,"includeToolingVersion",1,"documentId",uri,"registerAsEntry",true)).getAsJsonObject();
             String selected=standalone.get("selectedToken").getAsString();
             var chosen=standalone.getAsJsonArray("contexts").asList().stream().map(JsonElement::getAsJsonObject).filter(c->c.get("contextToken").getAsString().equals(selected)).findFirst().orElseThrow();
-            assertEquals("ENTRY",chosen.get("role").getAsString());assertEquals(fragment.toUri(),URI.create(chosen.get("entryDocument").getAsString()));w.stop();
+            assertEquals("ENTRY",chosen.get("role").getAsString());assertEquals(fragment.toUri(),URI.create(chosen.get("entryDocument").getAsString()));
+            assertEquals("SOURCE_CONTEXT_STALE",w.response("gretl/context",pinned).getAsJsonObject("error").get("message").getAsString());
+            w.stop();
         }
     }
 

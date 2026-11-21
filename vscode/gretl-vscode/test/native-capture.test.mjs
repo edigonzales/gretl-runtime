@@ -1,20 +1,92 @@
 import {test,after} from 'node:test';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
-import {mkdtemp,readFile,rm} from 'node:fs/promises';
+import {mkdtemp,readFile,rm,realpath,writeFile} from 'node:fs/promises';
+import {pathToFileURL} from 'node:url';
 import os from 'node:os';import path from 'node:path';import {createRequire} from 'node:module';
 const temp=await mkdtemp(path.join(os.tmpdir(),'gretl-native-capture-'));after(()=>rm(temp,{recursive:true,force:true}));
 // Exercise the actual host method. Only external Workbench/LanguageClient services are replaced.
 const source=await readFile('src/extension.ts','utf8');
-await build({stdin:{contents:source+'\nexport {RuntimeHost};',sourcefile:'extension.ts',resolveDir:path.resolve('src'),loader:'ts'},bundle:true,platform:'node',format:'cjs',outfile:temp+'/host.cjs',plugins:[{name:'external-host-services',setup(b){b.onResolve({filter:/^(vscode|vscode-languageclient\/node)$/},a=>({path:a.path,namespace:'host-fixture'}));b.onLoad({filter:/.*/,namespace:'host-fixture'},()=>({contents:"module.exports={Uri:{parse:s=>({toString:()=>new URL(s).href})},workspace:{textDocuments:[]}}",loader:'js'}));}}]});
-const {RuntimeHost}=createRequire(import.meta.url)(temp+'/host.cjs');
-test('native rename captures graph schema two and preserves session and source-vector checks',async()=>{
- const host=Object.create(RuntimeHost.prototype);host.instance='server';host.captures=new WeakMap();
- const context={protocolVersion:1,schemaVersion:2,serverInstanceId:'server',snapshotId:'snapshot',sourceStamps:[{documentId:'file:///work/owner.groovy',editable:true}]};
- host.synchronizedGraph=async()=>({value:{context:structuredClone(context)}});
- const captured=await host.capture({}, {uri:{toString:()=> 'file:///work/owner.groovy'}},{});
+await build({stdin:{contents:source+'\nexport {RuntimeHost,sourceDigest};',sourcefile:'extension.ts',resolveDir:path.resolve('src'),loader:'ts'},bundle:true,platform:'node',format:'cjs',outfile:temp+'/host.cjs',plugins:[{name:'external-host-services',setup(b){b.onResolve({filter:/^(vscode|vscode-languageclient\/node)$/},a=>({path:a.path,namespace:'host-fixture'}));b.onLoad({filter:/.*/,namespace:'host-fixture'},()=>({contents:`module.exports={
+ Uri:{parse:s=>({toString:()=>new URL(s).href})},workspace:{textDocuments:[],isTrusted:true},
+ TextDocumentEdit:{is:change=>!!change.textDocument&&Array.isArray(change.edits)}
+}`,loader:'js'}));}}]});
+const {RuntimeHost,sourceDigest}=createRequire(import.meta.url)(temp+'/host.cjs');
+const documentId='file:///work/owner.groovy';
+const doc={uri:{toString:()=>documentId},version:1,isClosed:false};
+const token={isCancellationRequested:false};
+const context={protocolVersion:1,schemaVersion:2,serverInstanceId:'server',snapshotId:'snapshot',projectId:'project',
+ workspaceGeneration:'1',ownerGeneration:'2',contextGeneration:'3',contextDocumentId:documentId,contextToken:'chosen',
+ sourceStamps:[{documentId,editable:true}],notices:[]};
+function hostWith(sendRequest){
+ const host=Object.create(RuntimeHost.prototype);
+ Object.assign(host,{instance:'server',captures:new WeakMap(),client:{isRunning:()=>true,sendRequest}});
+ return host;
+}
+
+test('native capture synchronizes membership with context requests and preserves capture validation',async()=>{
+ const calls=[];
+ const host=hostWith(async(method,params,cancellation)=>{
+  calls.push(method);
+  assert.equal(params.documentId,documentId);
+  if(method==='gretl/sourceContexts')return {};
+  assert.equal(method,'gretl/context');assert.equal(cancellation,token);
+  return {context:{...structuredClone(context),notices:calls.length===1?['INCLUDE_MEMBERSHIP_PENDING']:[]}};
+ });
+ const captured=await host.capture(host.client,doc,token);
+ assert.deepEqual(calls,['gretl/context','gretl/sourceContexts','gretl/context']);
  assert.equal(captured.schemaVersion,2);assert.equal(captured.sourceStamps[0].version,null);assert.equal(captured.sourceStamps[0].incarnation,null);assert(host.captures.has(captured));
  for(const change of [{schemaVersion:1},{schemaVersion:3},{serverInstanceId:'foreign'},{sourceStamps:Array(4097).fill(context.sourceStamps[0])}]){
-  host.synchronizedGraph=async()=>({value:{context:{...context,...change}}});await assert.rejects(host.capture({}, {uri:{toString:()=> 'file:///work/owner.groovy'}},{}),/stale or incompatible/);
+  host.client.sendRequest=async()=>({context:{...context,...change}});
+  await assert.rejects(host.capture(host.client,doc,token),/stale or incompatible/);
  }
+});
+
+test('current brackets the asynchronous disk check with two context requests and fails closed',async()=>{
+ const file=path.join(await realpath(temp),'guard.groovy');
+ const uri=pathToFileURL(file).href;
+ const edit={documentChanges:[{textDocument:{uri,version:null},edits:[]}]};
+ const source='action(\'a\') {}\n';
+ const capture={...context,sourceStamps:[{documentId:uri,version:null,editable:true,sha256:sourceDigest(source)}]};
+ for(const [secondReply,error] of [
+  [{},null],
+  [{snapshotId:'new snapshot'},/context changed/],
+  [{ownerGeneration:'4'},/context changed/],
+  [{notices:['INCLUDE_MEMBERSHIP_PENDING']},/synchronization is pending/],
+  [null,/file changed/],
+ ]){
+  await writeFile(file,'stale before the first request');
+  let count=0;
+  const host=hostWith(async(method,params)=>{
+   assert.equal(method,'gretl/context');
+   assert.deepEqual(params,{protocolVersion:1,documentId,contextToken:'chosen'});
+   if(++count===1){
+    if(secondReply!==null)await writeFile(file,source);
+    return {context};
+   }
+   return {context:{...context,...secondReply}};
+  });
+  const current=host.current(host.client,capture,edit);
+  if(error)await assert.rejects(current,error);else await current;
+  assert.equal(count,secondReply===null?1:2);
+ }
+ const host=hostWith(async method=>{assert.equal(method,'gretl/context');throw Error('context request failed');});
+ await assert.rejects(host.current(host.client,capture,edit),/context request failed/);
+});
+
+test('modeler graph still requests and returns the full projection',async()=>{
+ const payload={status:'COMPLETE',nodes:[],edges:[],parameters:[],cleanup:[],diagnostics:[]};
+ const response={context:{...context,sourceStamps:[]},payload};
+ const calls=[];
+ const host=hostWith(async(method,params,cancellation)=>{
+  calls.push(method);
+  assert.deepEqual(params,{protocolVersion:1,documentId,contextToken:'chosen',includeInnerInvocations:true,previewTargets:[]});
+  assert.equal(cancellation,token);
+  return response;
+ });
+ host.panelContext=async()=>({projectId:'project',entryDocument:documentId,ownerScope:':',role:'ENTRY',contextToken:'chosen'});
+ host.graphSourceContexts=new WeakMap();host.modelerCaptures=new WeakMap();
+ const graph=await host.graph(doc,{includeInnerInvocations:true,previewTargets:[]},token);
+ assert.equal(graph.payload,payload);
+ assert.deepEqual(calls,['gretl/graph']);
 });
