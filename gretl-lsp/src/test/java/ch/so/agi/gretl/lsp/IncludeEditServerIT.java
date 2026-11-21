@@ -25,7 +25,29 @@ class IncludeEditServerIT {
             var binding=h.plan(w,uri,graph,Map.of("kind","BindResult","producer",h.symbol("source"),"target",h.symbol("use"),"outputField","file","field","dataFile"));assertEquals("ALLOWED",binding.getAsJsonObject("capability").get("state").getAsString());
             var fragmentGraph=h.graph(w,use.toUri().toString());var defaults=h.plan(w,use.toUri().toString(),fragmentGraph,Map.of("kind","SetDefaults","targets",List.of(h.symbol("use"))));assertEquals("ALLOWED",defaults.getAsJsonObject("capability").get("state").getAsString(),defaults.toString());assertEquals(job.toUri(),URI.create(defaults.getAsJsonObject("edit").getAsJsonArray("documentChanges").get(0).getAsJsonObject().getAsJsonObject("textDocument").get("uri").getAsString()));
             var form=h.plan(w,uri,graph,Map.of("kind","ConfigureTask","target",h.symbol("use"),"fields",Map.of("overwrite",Map.of("kind","Boolean","scalar","false")),"options",Map.of("description",Map.of("kind","Text","scalar","Changed"))));assertEquals("ALLOWED",form.getAsJsonObject("capability").get("state").getAsString());
-            assertTrue(w.call("gretl/validateEdit",Map.of("protocolVersion",1,"planId",form.get("planId").getAsString(),"expectedSnapshotId",graph.getAsJsonObject("context").get("snapshotId").getAsString())).getAsJsonObject().get("current").getAsBoolean());
+            String snapshot=graph.getAsJsonObject("context").get("snapshotId").getAsString();
+            assertTrue(w.call("gretl/validateEdit",Map.of("protocolVersion",1,"planId",form.get("planId").getAsString(),"expectedSnapshotId",snapshot)).getAsJsonObject().get("current").getAsBoolean());
+
+            var crossFile=h.plan(w,uri,graph,Map.of("kind","RenameSymbol","target",h.symbol("source"),"name","renamedSource"));
+            assertEquals("ALLOWED",crossFile.getAsJsonObject("capability").get("state").getAsString(),crossFile.toString());
+            var changes=crossFile.getAsJsonObject("edit").getAsJsonArray("documentChanges");
+            assertEquals(3,changes.size());
+            var versions=new HashMap<URI,Integer>();
+            for(var change:changes) {
+                var target=change.getAsJsonObject().getAsJsonObject("textDocument");
+                versions.put(URI.create(target.get("uri").getAsString()),target.get("version").getAsInt());
+            }
+            assertEquals(Map.of(job.toUri(),1,source.toUri(),3,use.toUri(),5),versions);
+            var renameValidation=Map.of("protocolVersion",1,"planId",crossFile.get("planId").getAsString(),"expectedSnapshotId",snapshot);
+            assertTrue(w.call("gretl/validateEdit",renameValidation).getAsJsonObject().get("current").getAsBoolean());
+            assertTrue(use.toFile().setReadOnly());
+            try {
+                var readonly=w.call("gretl/validateEdit",renameValidation).getAsJsonObject();
+                assertFalse(readonly.get("current").getAsBoolean());
+                assertEquals("EDIT_STALE_SNAPSHOT",readonly.getAsJsonArray("reasons").get(0).getAsString());
+            } finally {
+                assertTrue(use.toFile().setWritable(true));
+            }
             assertEquals(entry,Files.readString(job));assertEquals(producer,Files.readString(source));assertEquals(consumer,Files.readString(use));w.stop();
         }
     }

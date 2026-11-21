@@ -69,7 +69,8 @@ optional bis zu 32 zusaetzliche lokale `requestedSources` fuer neue SQLpfade.
 Ein Editrequest bezieht sich zwingend auf `expectedSnapshotId`; der Modeler
 fordert `requireOpenDocuments: true`. Bei geschlossenen Zielen antwortet der
 Core mit NEEDS_OPEN_DOCUMENTS. Nach Oeffnen/Synchronisieren neu erfassen und
-planen. Ein Plan ist hoechstens 60 Sekunden gespeichert (maximal 32 Plaene).
+planen. Fuer die spaetere Editvalidierung speichert der LSP nur Vorbedingungen,
+Ziel-URIs und Ablaufzeit (hoechstens 60 Sekunden, maximal 32 Plaene).
 
 Edits sind versionierte `documentChanges`; geschlossene Dateien haben explizit
 `version: null`. Diskhashes und physische Readonly-/Symlinkkonflikte werden vor

@@ -1,13 +1,35 @@
 package ch.so.agi.gretl.lsp;
 
+import ch.so.agi.gretl.tooling.catalog.CatalogRepository;
 import com.google.gson.JsonParser;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+import org.eclipse.lsp4j.jsonrpc.ResponseErrorException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HostBoundaryTest {
+    @Test void hostWritabilityRejectsAReadOnlyLaterTarget(@TempDir Path root)throws Exception {
+        var first=Files.createFile(root.resolve("job.groovy"));
+        var second=Files.createFile(root.resolve("fragment.groovy"));
+        var targets=List.of(first.toUri(),second.toUri());
+        try(var workspace=new ServerWorkspace(new CatalogRepository(),(snapshot,cancel)->{})) {
+            workspace.addRoot(root.toUri());
+            workspace.requireWritableTargets(targets);
+            assertTrue(second.toFile().setReadOnly());
+            try {
+                var failure=assertThrows(ResponseErrorException.class,()->workspace.requireWritableTargets(targets));
+                assertEquals("EDIT_READONLY",failure.getResponseError().getMessage());
+            } finally {
+                assertTrue(second.toFile().setWritable(true));
+            }
+        }
+    }
+
     @Test void customRequestSchemaPropertiesMatchTheActualJavaWireRecords()throws Exception {
         try(var input=getClass().getResourceAsStream("/gretl-protocol-v1.schema.json")) {
             assertNotNull(input);var definitions=JsonParser.parseString(new String(input.readAllBytes(),StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("$defs");

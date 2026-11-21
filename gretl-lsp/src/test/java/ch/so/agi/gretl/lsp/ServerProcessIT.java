@@ -216,6 +216,10 @@ class ServerProcessIT {
             String element=graph.getAsJsonObject("payload").getAsJsonArray("nodes").get(0).getAsJsonObject().get("id").getAsString();
             assertFalse(wire.call("gretl/navigation",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",snapshot,"elementId",element)).getAsJsonObject().get("location").isJsonNull());
             assertEquals(source,Files.readString(root.resolve("job.groovy")),"Server only returns edits");
+            wire.send("workspace/didChangeConfiguration",Map.of("settings",Map.of("language","en")),null);
+            assertEquals("EDIT_PLAN_UNKNOWN_OR_EXPIRED",wire.response("gretl/validateEdit",
+                    Map.of("protocolVersion",1,"planId",planned.get("planId").getAsString(),"expectedSnapshotId",snapshot))
+                    .getAsJsonObject("error").get("message").getAsString());
             wire.stop();
         }
     }
@@ -462,11 +466,12 @@ class ServerProcessIT {
             wire.initialize(root,true,true);wire.send("initialized",Map.of(),null);wire.opened(uri,1,source);
             String snapshot=graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString();
             var plan=wire.call("gretl/planEdit",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",snapshot,"requireOpenDocuments",true,"intent",Map.of("kind","RenameSymbol","target",Map.of("namespace","TASK","qualifiedName","a"),"name","renamed"))).getAsJsonObject();
+            var validation=Map.of("protocolVersion",1,"planId",plan.get("planId").getAsString(),"expectedSnapshotId",snapshot);
             var rootFolder=Map.of("uri",root.toUri().toString(),"name","root");
             wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(rootFolder),"added",List.of(Map.of("uri",invalid.toUri().toString(),"name","invalid")))),null);
             wire.notification("window/logMessage",params->params.get("message").getAsString().equals("WORKSPACE_ROOT_UNSAFE"));
             assertEquals(snapshot,graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString());
-            assertTrue(wire.call("gretl/validateEdit",Map.of("protocolVersion",1,"planId",plan.get("planId").getAsString(),"expectedSnapshotId",snapshot)).getAsJsonObject().get("current").getAsBoolean());
+            assertTrue(wire.call("gretl/validateEdit",validation).getAsJsonObject().get("current").getAsBoolean());
             Path extra=Files.createDirectory(temporary.resolve("extra"));var extraFolder=Map.of("uri",extra.toUri().toString(),"name","extra");
             wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(rootFolder),"added",List.of(extraFolder,extraFolder))),null);
             assertEquals(snapshot,graph(wire,uri).getAsJsonObject("context").get("snapshotId").getAsString(),"Duplicate additions must not mutate ownership");
@@ -482,6 +487,9 @@ class ServerProcessIT {
             wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(rootFolder),"added",List.of(extraFolder))),null);
             assertEquals("replacement",graph(wire,extra.resolve("job.groovy").toUri().toString()).getAsJsonObject("payload").getAsJsonArray("nodes").get(0).getAsJsonObject().get("title").getAsString());
             assertTrue(wire.response("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).has("error"));
+            wire.send("workspace/didChangeWorkspaceFolders",Map.of("event",Map.of("removed",List.of(extraFolder),"added",List.of(rootFolder))),null);
+            assertEquals("EDIT_PLAN_UNKNOWN_OR_EXPIRED",wire.response("gretl/validateEdit",validation)
+                    .getAsJsonObject("error").get("message").getAsString());
             assertEquals(source,Files.readString(job));wire.stop();
         }
     }
