@@ -6,6 +6,7 @@ import ch.so.agi.gretl.tooling.graph.JobGraph;
 import ch.so.agi.gretl.tooling.graph.JobGraphProjector;
 import ch.so.agi.gretl.tooling.graph.TargetPreviewProjector;
 import ch.so.agi.gretl.tooling.source.SourceText;
+import ch.so.agi.gretl.tooling.source.TextSpan;
 import ch.so.agi.gretl.tooling.workspace.*;
 import java.net.URI;
 import java.util.*;
@@ -130,6 +131,46 @@ class ProjectAnalyzerTest {
         assertEquals(List.of(":sub:run"), analysis.defaultTargets());
         assertTrue(codes(analysis).contains("DYNAMIC_REFERENCE"));
         assertFalse(analysis.capabilities().referencesComplete());
+    }
+
+    @Test void unknownVariablesInProjectDefaultsMakeTheAnalysisPartial() {
+        var settings = URI.create("file:/work/settings.gretl");
+        for (String defaults : List.of("defaults missing", "defaults([missing])",
+                "defaults([[key: missing]])", "defaults([key: missing])")) {
+            String source = "action('run') {}\n" + defaults;
+            var analysis = analyze(Map.of(settings, "defaults ':run'", JOB, source),
+                    JOB, new DocumentStore(), catalog(), "en");
+            assertEquals(List.of(":run"), analysis.defaultTargets(), defaults);
+            var diagnostics = analysis.diagnostics().stream()
+                    .filter(d -> d.code().equals("DYNAMIC_REFERENCE")).toList();
+            assertEquals(1, diagnostics.size(), defaults);
+            var diagnostic = diagnostics.getFirst();
+            int offset = source.indexOf("missing");
+            assertEquals(new Anchor(JOB, new TextSpan(offset, offset + "missing".length())),
+                    diagnostic.anchor(), defaults);
+            assertEquals(analysis.unique(new SymbolId(Namespace.TASK, ":run")).orElseThrow()
+                    .application().id(), diagnostic.application(), defaults);
+            assertEquals(Severity.INFORMATION, diagnostic.severity(), defaults);
+            assertFalse(analysis.capabilities().referencesComplete(), defaults);
+            assertTrue(analysis.capabilities().graphComplete(), defaults);
+            var snapshot = AnalysisSnapshot.of(analysis);
+            assertEquals(JobGraph.Status.PARTIAL, new JobGraphProjector().project(snapshot,
+                    JobGraphProjector.GraphOptions.defaults(), CancellationToken.NONE).status(), defaults);
+            assertFalse(new TargetPreviewProjector().project(snapshot, List.of(), CancellationToken.NONE)
+                    .available(), defaults);
+        }
+    }
+
+    @Test void projectDefaultsKeepSettingsTargetsForBoundTaskRefsAndStringLiterals() {
+        var settings = URI.create("file:/work/settings.gretl");
+        for (String argument : List.of("ref", "'ignored'")) {
+            String source = "action('run') {}\ndef ref = action('other') {}\ndefaults " + argument;
+            var analysis = analyze(Map.of(settings, "defaults ':run'", JOB, source),
+                    JOB, new DocumentStore(), catalog(), "en");
+            assertEquals(List.of(":run"), analysis.defaultTargets(), argument);
+            assertEquals(List.of(), codes(analysis), argument);
+            assertTrue(analysis.capabilities().referencesComplete(), argument);
+        }
     }
 
     @Test void overwrittenOptionsStillNeedTheirTaskRefAtRegistration() {

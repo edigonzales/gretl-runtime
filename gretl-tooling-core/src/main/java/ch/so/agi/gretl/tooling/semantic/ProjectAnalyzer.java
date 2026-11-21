@@ -361,12 +361,18 @@ public final class ProjectAnalyzer {
                 var declaration = event.declaration();
                 if (application.role() != SourceRole.ENTRY
                         || declaration.kind() != DeclarationKind.DEFAULTS) continue;
-                for (var target : declaration.targets()) {
-                    if (projectMode) {
-                        // The call evaluates its arguments even when settings select the targets.
+                if (projectMode) {
+                    // The call evaluates its arguments even when settings select the targets.
+                    for (var target : declaration.targets())
                         checkDiscardedTaskRef(application, null, target, index);
-                        continue;
+                    // The extractor stores direct map arguments as options.
+                    for (var entry : declaration.options()) {
+                        checkDiscardedTaskRef(application, null, entry.key(), index);
+                        checkDiscardedTaskRef(application, null, entry.value(), index);
                     }
+                    continue;
+                }
+                for (var target : declaration.targets()) {
                     var ref =
                             resolve(
                                     application,
@@ -540,7 +546,8 @@ public final class ProjectAnalyzer {
             switch (value) {
                 case NameValue name -> {
                     var localAliases = aliases.getOrDefault(application.id(), Map.of());
-                    if (localAliases.containsKey(name.name())
+                    // Ownerless project defaults also need to evaluate unknown names.
+                    if ((owner == null || localAliases.containsKey(name.name()))
                             && taskRefBindings(application.id(), owner, name, useIndex).size() != 1)
                         dynamicReference(application, new Anchor(application.id().sourceDocument(), name.span()));
                 }

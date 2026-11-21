@@ -313,6 +313,21 @@ class GroovyLoaderTest {
     }
 
     @Test
+    void unboundProjectDefaultArgumentFailsDuringLoad() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        Files.writeString(harness.jobDir.resolve("settings.gretl"), "defaults ':run'");
+        Path job = harness.jobDir.resolve("job.groovy");
+        Files.writeString(job, "action('run') {}\ndefaults missing");
+        var failure = assertThrows(GroovyDslException.class, harness::loadProject);
+        assertEquals("JOB_LOAD_FAILED", failure.code());
+        assertTrue(failure.getMessage().contains("No such property: missing"), failure.getMessage());
+        assertEquals(2, failure.source().line());
+
+        Files.writeString(job, "action('run') {}\ndef target = 'run'\ndefaults target");
+        assertEquals(List.of(":run"), harness.loadProject().defaultTargets());
+    }
+
+    @Test
     void fragmentTaskNamesCrossApplicationsWhileLocalTaskRefsDoNot() throws Exception {
         var harness = new GroovyHarness(tempDir);
         Path fragment = harness.jobDir.resolve("fragment.groovy");
