@@ -37,9 +37,14 @@ vorkommen. Die Anwendung verbindet Projekt, Entry, Scope, Quelldatei,
 Ressourcenbasis und Einbindekette. Includes lösen relativ zur enthaltenden
 Quelle auf; SQL und `file` relativ zur Ressourcenbasis der Anwendung.
 `ProjectAnalyzer` registriert Deklarationen in Include- und Quellreihenfolge.
-TaskRef-Aliase bleiben lokal zur Scriptanwendung. Die gemeinsamen
-Planungsregeln entscheiden Zielauswahl und Kanten; Includes fügen keine
-Ablaufkanten hinzu.
+TaskRef-Aliase bleiben lokal zur Scriptanwendung, auch bei Defaults ohne
+Taskbesitzer. Header und Defaults benötigen eine vorher abgeschlossene
+Zuweisung. Später ausgeführte Closures benötigen eine lexikalisch sichtbare
+Bindung. Zugriffe auf erneut zugewiesene TaskRef-Variablen bleiben in
+später ausgeführten Closures dynamisch. Logische Tasknamen dürfen auf
+spätere Registrierungen verweisen.
+Die gemeinsamen Planungsregeln entscheiden Zielauswahl und Kanten. Includes
+fügen keine Ablaufkanten hinzu.
 
 Ein vollständig erfasster, statisch unterstützter Includejob kann einen
 vollständigen Graphen erhalten. Unbekannter Kontrollfluss, Return/Throw,

@@ -252,6 +252,145 @@ class GroovyLoaderTest {
     }
 
     @Test
+    void taskRefArgumentsAreEvaluatedBeforeRegistrationOrDefaults() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        var defaults = harness.loadSource("default-action.groovy", """
+                def first = action('first') {}
+                defaults first
+                """);
+        assertEquals(List.of("first"), defaults.defaultTargets());
+
+        for (String source : List.of(
+                "action('consumer', dependsOn: producer) {}\ndef producer = action('producer') {}\ndefaults 'consumer'",
+                "def producer = action('producer', dependsOn: producer) {}",
+                "action([dependsOn: [producer], dependsOn: 'producer'], 'consumer') {}\ndef producer = action('producer') {}",
+                "action([description: [nested:[producer]], description: 'active'], 'consumer') {}\ndef producer = action('producer') {}",
+                "defaults producer\ndef producer = action('producer') {}")) {
+            var failure = assertThrows(GroovyDslException.class,
+                    () -> harness.loadSource("early.groovy", source));
+            assertEquals("JOB_LOAD_FAILED", failure.code());
+            assertTrue(failure.getMessage().contains("producer"), failure.getMessage());
+        }
+
+        for (String source : List.of(
+                "action('consumer', dependsOn: 'producer') {}\ndef producer = action('producer') {}",
+                "def producer = action('producer') {}\naction('consumer', dependsOn: producer) {}")) {
+            var definition = harness.loadSource("valid.groovy", source + "\ndefaults 'consumer'");
+            assertEquals(List.of("consumer"), definition.defaultTargets());
+            assertEquals(List.of("producer"), definition.task("consumer").orElseThrow()
+                    .dependsOn().stream().map(ref -> ref.id()).toList());
+        }
+    }
+
+    @Test
+    void coercingATaskRefToAStringDoesNotPreserveItsDefaultTarget() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        var failure = assertThrows(DefinitionException.class, () -> harness.loadSource("coerced.groovy", """
+                String first = action('first') {}
+                defaults first
+                """));
+        assertEquals("UNKNOWN_DEFAULT_TARGET", failure.code());
+        var typed = harness.loadSource("typed.groovy", """
+                import ch.so.agi.gretl.runtime.api.TaskRef as Ref
+                Ref first = action('first') {}
+                defaults first
+                """);
+        assertEquals(List.of("first"), typed.defaultTargets());
+    }
+
+    @Test
+    void projectEntryDefaultsStillEvaluateArgumentsAlthoughSettingsSelectTheTargets() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        Files.writeString(harness.jobDir.resolve("settings.gretl"), "include 'sub'\ndefaults ':sub:run'");
+        Path job = Files.createDirectories(harness.jobDir.resolve("sub")).resolve("job.groovy");
+        Files.writeString(job, "defaults ref\ndef ref = action('run') {}");
+        var failure = assertThrows(GroovyDslException.class, harness::loadProject);
+        assertEquals("JOB_LOAD_FAILED", failure.code());
+        assertTrue(failure.getMessage().contains("ref"), failure.getMessage());
+
+        Files.writeString(job, "def ref = action('run') {}\ndefaults ref");
+        assertEquals(List.of(":sub:run"), harness.loadProject().defaultTargets());
+    }
+
+    @Test
+    void unboundProjectDefaultArgumentFailsDuringLoad() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        Files.writeString(harness.jobDir.resolve("settings.gretl"), "defaults ':run'");
+        Path job = harness.jobDir.resolve("job.groovy");
+        Files.writeString(job, "action('run') {}\ndefaults missing");
+        var failure = assertThrows(GroovyDslException.class, harness::loadProject);
+        assertEquals("JOB_LOAD_FAILED", failure.code());
+        assertTrue(failure.getMessage().contains("No such property: missing"), failure.getMessage());
+        assertEquals(2, failure.source().line());
+
+        Files.writeString(job, "action('run') {}\ndef target = 'run'\ndefaults target");
+        assertEquals(List.of(":run"), harness.loadProject().defaultTargets());
+    }
+
+    @Test
+    void fragmentTaskNamesCrossApplicationsWhileLocalTaskRefsDoNot() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        Path fragment = harness.jobDir.resolve("fragment.groovy");
+        Files.writeString(harness.jobDir.resolve("nested.groovy"), "action('nested') {}");
+        Files.writeString(fragment, """
+                def ref = action('local', dependsOn: 'nested') {}
+                apply from: 'nested.groovy'
+                action('use', dependsOn: ref) {}
+                """);
+        String entry = "def ref = action('entry') {}\napply from: 'fragment.groovy'\ndefaults 'use'";
+        var definition = harness.loadSource("job.groovy", entry);
+        assertEquals(List.of("entry", "local", "nested", "use"), List.copyOf(definition.taskIds()));
+        assertEquals(List.of("local"), definition.task("use").orElseThrow()
+                .dependsOn().stream().map(ref -> ref.id()).toList());
+
+        Files.writeString(fragment, "action('use', dependsOn: ref) {}");
+        var failure = assertThrows(GroovyDslException.class, () -> harness.loadSource("job.groovy", entry));
+        assertEquals("JOB_LOAD_FAILED", failure.code());
+        assertTrue(failure.getMessage().contains("ref"), failure.getMessage());
+    }
+
+    @Test
+    void resultCallsInDeferredClosuresCaptureOnlyAlreadyDeclaredLocals() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        var captured = harness.loadSource("captured.groovy", """
+                def producer = action('producer') { 'value' }
+                action('consumer', dependsOn: producer, when: { resultOptional(producer).present }) { result(producer) }
+                defaults 'consumer'
+                """);
+        var succeeded = harness.run(captured, Map.of());
+        assertEquals(RunStatus.SUCCEEDED, succeeded.status());
+        assertEquals("value", ((ResultSlot.Value) succeeded.task("consumer").orElseThrow().slot()).value());
+
+        for (String consumer : List.of(
+                "action('consumer', dependsOn: 'producer') { result(producer) }",
+                "action('consumer', dependsOn: 'producer', when: { resultOptional(producer).present }) {}")) {
+            var definition = harness.loadSource("uncaptured.groovy", consumer
+                    + "\ndef producer = action('producer') { 'value' }\ndefaults 'consumer'");
+            var failed = harness.run(definition, Map.of());
+            assertEquals(RunStatus.FAILED, failed.status(), consumer);
+            assertEquals("UNKNOWN_PROPERTY", failed.task("consumer").orElseThrow()
+                    .failure().orElseThrow().diagnostic().orElseThrow().code());
+        }
+    }
+
+    @Test
+    void deferredClosuresShareTheCurrentValueOfACapturedVariable() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        var definition = harness.loadSource("reassigned.groovy", """
+                def producer = action('producer') {}
+                action('change', dependsOn: producer) { producer = 'elsewhere' }
+                action('consume', dependsOn: [producer, 'change']) { result(producer) }
+                defaults 'consume'
+                """);
+        assertEquals(List.of("producer", "change"), definition.task("consume").orElseThrow()
+                .dependsOn().stream().map(ref -> ref.id()).toList());
+        var outcome = harness.run(definition, Map.of());
+        assertEquals(RunStatus.FAILED, outcome.status());
+        assertEquals("UNKNOWN_TASK_NAME", outcome.task("consume").orElseThrow()
+                .failure().orElseThrow().diagnostic().orElseThrow().code());
+    }
+
+    @Test
     void timeoutOptionIsAPositiveDurationAndInvalidValuesAreRejected() throws Exception {
         GroovyHarness harness = new GroovyHarness(tempDir);
         JobDefinition definition = harness.loadSource("timeout.groovy", """

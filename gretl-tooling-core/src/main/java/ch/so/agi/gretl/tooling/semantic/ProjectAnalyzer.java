@@ -33,8 +33,8 @@ public final class ProjectAnalyzer {
         final List<PlanSemantics.Edge> edges = new ArrayList<>();
         final List<String> defaults = new ArrayList<>();
         final Map<Declaration, EffectiveOptions> optionCache = new IdentityHashMap<>();
-        final Map<ApplicationId, Map<String, List<Symbol>>> aliases = new LinkedHashMap<>();
-        final List<Symbol> declarations = new ArrayList<>();
+        final Map<ApplicationId, Map<String, List<Integer>>> aliases = new LinkedHashMap<>();
+        final Map<Integer, Symbol> declarations = new LinkedHashMap<>();
         SourceApplication currentApplication;
         final List<OperationDescriptor> operations;
         final boolean catalogComplete;
@@ -96,33 +96,41 @@ public final class ProjectAnalyzer {
             reportDuplicateSymbols();
             graphComplete =
                     declarationsComplete && symbols.values().stream().noneMatch(v -> v.size() != 1);
-            for (var symbol : declarations) {
+            for (var registration : declarations.entrySet()) {
                 cancellation.check();
+                var symbol = registration.getValue();
                 currentApplication = symbol.application();
-                validateOptions(symbol);
+                validateOptions(symbol, registration.getKey());
                 if (symbol.id().namespace() == Namespace.PARAMETER) validateParameter(symbol);
                 else if (symbol.id().namespace() == Namespace.TASK) {
                     links(
                             symbol,
+                            registration.getKey(),
                             "dependsOn",
                             ReferenceKind.DEPENDS_ON,
                             PlanSemantics.EdgeKind.DEPENDS_ON);
-                    links(symbol, "after", ReferenceKind.AFTER, PlanSemantics.EdgeKind.AFTER);
                     links(
                             symbol,
+                            registration.getKey(),
+                            "after",
+                            ReferenceKind.AFTER,
+                            PlanSemantics.EdgeKind.AFTER);
+                    links(
+                            symbol,
+                            registration.getKey(),
                             "finalizedBy",
                             ReferenceKind.FINALIZED_BY,
                             PlanSemantics.EdgeKind.FINALIZED_BY);
                 }
             }
             currentApplication = null;
-            collectDefaults();
-            currentApplication = null;
+            collectDefaults(closure.registrationOrder());
             var graph = validateGraph();
-            for (var symbol : declarations) {
+            for (var registration : declarations.entrySet()) {
                 cancellation.check();
+                var symbol = registration.getValue();
                 currentApplication = symbol.application();
-                validateReferences(symbol, graph);
+                validateReferences(symbol, registration.getKey(), graph);
                 if (symbol.id().namespace() == Namespace.TASK
                         && symbol.declaration().kind() == DeclarationKind.TASK)
                     validateFields(
@@ -159,7 +167,7 @@ public final class ProjectAnalyzer {
                 diagnostic("PARTIAL_ANALYSIS", Severity.INFORMATION, global(), List.of());
             boolean fieldsComplete =
                     declarationsComplete
-                            && declarations.stream()
+                            && declarations.values().stream()
                                     .allMatch(
                                             s ->
                                                     s.declaration().coverage().fieldAssignments()
@@ -176,7 +184,7 @@ public final class ProjectAnalyzer {
                                                                                                     .COMPLETE));
             boolean executionComplete =
                     declarationsComplete
-                            && declarations.stream()
+                            && declarations.values().stream()
                                     .allMatch(
                                             s ->
                                                     !conditional(s)
@@ -207,8 +215,9 @@ public final class ProjectAnalyzer {
         }
 
         private void registerSymbols(List<RegistrationEvent> registrationOrder) {
-            for (var event : registrationOrder) {
+            for (int index = 0; index < registrationOrder.size(); index++) {
                 cancellation.check();
+                var event = registrationOrder.get(index);
                 var application = event.application();
                 var declaration = event.declaration();
                 var document = application.id().sourceDocument();
@@ -271,12 +280,12 @@ public final class ProjectAnalyzer {
                                         new Anchor(document, declaration.header()),
                                         application),
                                 application);
-                declarations.add(symbol);
+                declarations.put(index, symbol);
                 symbols.computeIfAbsent(symbol.id(), id -> new ArrayList<>()).add(symbol);
                 if (declaration.bindingName() != null && namespace == Namespace.TASK)
                     aliases.computeIfAbsent(application.id(), id -> new LinkedHashMap<>())
                             .computeIfAbsent(declaration.bindingName(), id -> new ArrayList<>())
-                            .add(symbol);
+                            .add(index);
             }
         }
 
@@ -305,7 +314,7 @@ public final class ProjectAnalyzer {
 
         private PlanSemantics.DeclaredGraph validateGraph() {
             var nodes = new ArrayList<PlanSemantics.Node>();
-            for (var symbol : declarations)
+            for (var symbol : declarations.values())
                 if (symbol.id().namespace() == Namespace.TASK && unique(symbol.id()).isPresent())
                     nodes.add(new PlanSemantics.Node(symbol.id().qualifiedName(), nodes.size()));
             var graph = new PlanSemantics.DeclaredGraph(nodes, edges);
@@ -326,8 +335,9 @@ public final class ProjectAnalyzer {
             return graph;
         }
 
-        void collectDefaults() {
-            if (capture.project().projectMode()) {
+        void collectDefaults(List<RegistrationEvent> registrationOrder) {
+            boolean projectMode = capture.project().projectMode();
+            if (projectMode) {
                 for (var target : capture.project().defaultTargets()) {
                     var value =
                             new LiteralValue(
@@ -335,41 +345,62 @@ public final class ProjectAnalyzer {
                     var ref =
                             resolve(
                                     null,
+                                    -1,
+                                    null,
                                     Namespace.TASK,
                                     value,
                                     ReferenceKind.DEFAULT,
-                                    new Anchor(capture.project().settingsId(), value.span()),
-                                    ProjectNameRules.root());
-                    ref.target().ifPresent(id -> addDefault(id.qualifiedName(), ref.anchor()));
+                                    new Anchor(capture.project().settingsId(), value.span()));
+                    ref.target().ifPresent(id -> addDefault(null, id.qualifiedName(), ref.anchor()));
                 }
-            } else
-                for (var job : capture.project().jobs())
-                    for (var declaration :
-                            capture.project().documents().get(job.documentId()).declarations())
-                        if (declaration.kind() == DeclarationKind.DEFAULTS)
-                            for (var target : declaration.targets()) {
-                                var ref =
-                                        resolve(
-                                                null,
-                                                Namespace.TASK,
-                                                target,
-                                                ReferenceKind.DEFAULT,
-                                                new Anchor(job.documentId(), target.span()),
-                                                job.scope());
-                                ref.target()
-                                        .ifPresent(
-                                                id -> addDefault(id.qualifiedName(), ref.anchor()));
-                            }
+            }
+            for (int index = 0; index < registrationOrder.size(); index++) {
+                cancellation.check();
+                var event = registrationOrder.get(index);
+                var application = event.application();
+                var declaration = event.declaration();
+                if (application.role() != SourceRole.ENTRY
+                        || declaration.kind() != DeclarationKind.DEFAULTS) continue;
+                if (projectMode) {
+                    // The call evaluates its arguments even when settings select the targets.
+                    for (var target : declaration.targets())
+                        checkDiscardedTaskRef(application, null, target, index);
+                    // The extractor stores direct map arguments as options.
+                    for (var entry : declaration.options()) {
+                        checkDiscardedTaskRef(application, null, entry.key(), index);
+                        checkDiscardedTaskRef(application, null, entry.value(), index);
+                    }
+                    continue;
+                }
+                for (var target : declaration.targets()) {
+                    var ref =
+                            resolve(
+                                    application,
+                                    index,
+                                    null,
+                                    Namespace.TASK,
+                                    target,
+                                    ReferenceKind.DEFAULT,
+                                    new Anchor(application.id().sourceDocument(), target.span()));
+                    ref.target().ifPresent(
+                            id -> addDefault(application, id.qualifiedName(), ref.anchor()));
+                }
+            }
         }
 
-        void addDefault(String name, Anchor anchor) {
+        void addDefault(SourceApplication application, String name, Anchor anchor) {
             if (defaults.contains(name))
-                diagnostic("DUPLICATE_DEFAULT_TARGET", Severity.ERROR, anchor, List.of());
+                diagnosticFor(
+                        application, "DUPLICATE_DEFAULT_TARGET", Severity.ERROR, anchor, List.of());
             else defaults.add(name);
         }
 
         void links(
-                Symbol owner, String option, ReferenceKind kind, PlanSemantics.EdgeKind edgeKind) {
+                Symbol owner,
+                int useIndex,
+                String option,
+                ReferenceKind kind,
+                PlanSemantics.EdgeKind edgeKind) {
             var effective = effective(owner.declaration());
             if (!effective.complete()) {
                 graphComplete = false;
@@ -387,12 +418,13 @@ public final class ProjectAnalyzer {
                     for (var item : items) {
                         var ref =
                                 resolve(
+                                        owner.application(),
+                                        useIndex,
                                         owner,
                                         Namespace.TASK,
                                         item,
                                         kind,
-                                        new Anchor(owner.anchor().documentId(), item.span()),
-                                        scope(owner));
+                                        new Anchor(owner.anchor().documentId(), item.span()));
                         if (ref.resolution() != Resolution.RESOLVED) {
                             graphComplete = false;
                             continue;
@@ -417,14 +449,16 @@ public final class ProjectAnalyzer {
         }
 
         Reference resolve(
+                SourceApplication application,
+                int useIndex,
                 Symbol owner,
                 Namespace namespace,
                 ValueExpression value,
                 ReferenceKind kind,
-                Anchor anchor,
-                ProjectNameRules scope) {
+                Anchor anchor) {
+            var applicationId = application == null ? null : application.id();
             if (references.size() >= MAX_REFERENCES) {
-                limit(currentApplication);
+                limit(application);
                 return new Reference(
                         kind,
                         anchor,
@@ -432,7 +466,7 @@ public final class ProjectAnalyzer {
                         null,
                         Resolution.DYNAMIC,
                         List.of(),
-                        currentApplication == null ? null : currentApplication.id());
+                        applicationId);
             }
             if (value instanceof LiteralValue l && l.literal() != null)
                 anchor = new Anchor(anchor.documentId(), l.literal().content());
@@ -441,30 +475,21 @@ public final class ProjectAnalyzer {
             List<Symbol> found = List.of();
             boolean dynamic = false;
             if (spelling != null) {
+                var scope =
+                        applicationId == null
+                                ? ProjectNameRules.root()
+                                : ProjectNameRules.parseQualified(applicationId.ownerScope());
                 String qualified = qualify(scope, spelling, namespace, false);
                 if (qualified == null) {
-                    diagnostic("INVALID_NAME", error, anchor, List.of());
+                    diagnosticFor(application, "INVALID_NAME", error, anchor, List.of());
                 } else found = symbols.getOrDefault(new SymbolId(namespace, qualified), List.of());
             } else if (value instanceof NameValue name && namespace == Namespace.TASK) {
                 spelling = name.name();
-                boolean shadowed =
-                        !declarationsComplete
-                                || owner != null
-                                        && owner.declaration().locals().stream()
-                                                .anyMatch(
-                                                        l ->
-                                                                l.name().equals(name.name())
-                                                                        && l.span().startUtf16()
-                                                                                < value.span()
-                                                                                        .startUtf16());
-                found =
-                        shadowed
-                                ? List.of()
-                                : aliases.getOrDefault(
-                                                owner == null ? null : owner.application().id(),
-                                                Map.of())
-                                        .getOrDefault(name.name(), List.of());
-                dynamic = shadowed || found.isEmpty();
+                if (applicationId != null)
+                    found = taskRefBindings(applicationId, owner, name, useIndex).stream()
+                            .map(declarations::get)
+                            .toList();
+                dynamic = found.isEmpty();
             } else dynamic = true;
             var resolution =
                     dynamic
@@ -480,19 +505,20 @@ public final class ProjectAnalyzer {
                             spelling,
                             resolution,
                             found.stream().map(Symbol::id).distinct().toList(),
-                            currentApplication == null ? null : currentApplication.id());
+                            applicationId);
             references.add(ref);
             if (resolution == Resolution.DYNAMIC) {
-                referencesComplete = false;
-                diagnostic("DYNAMIC_REFERENCE", Severity.INFORMATION, anchor, List.of());
+                dynamicReference(application, anchor);
             } else if (resolution == Resolution.AMBIGUOUS)
-                diagnostic(
+                diagnosticFor(
+                        application,
                         "AMBIGUOUS_REFERENCE",
                         error,
                         anchor,
                         found.stream().map(Symbol::anchor).toList());
             else if (resolution == Resolution.UNRESOLVED && declarationsComplete)
-                diagnostic(
+                diagnosticFor(
+                        application,
                         namespace == Namespace.PARAMETER
                                 ? "UNKNOWN_PARAMETER"
                                 : "UNKNOWN_TASK_REFERENCE",
@@ -502,7 +528,47 @@ public final class ProjectAnalyzer {
             return ref;
         }
 
-        void validateReferences(Symbol owner, PlanSemantics.DeclaredGraph graph) {
+        private List<Integer> taskRefBindings(
+                ApplicationId application, Symbol owner, NameValue name, int useIndex) {
+            if (!declarationsComplete || owner != null && owner.declaration().locals().stream()
+                    .anyMatch(local -> local.name().equals(name.name())
+                            && local.span().startUtf16() < name.span().startUtf16())) return List.of();
+            var bindings = aliases.getOrDefault(application, Map.of())
+                    .getOrDefault(name.name(), List.of());
+            // Eager arguments need the assigned value. A deferred closure
+            // can only capture locals declared before its enclosing call.
+            return bindings.size() == 1 && bindings.getFirst() >= useIndex ? List.of() : bindings;
+        }
+
+        private void checkDiscardedTaskRef(
+                SourceApplication application, Symbol owner, ValueExpression value, int useIndex) {
+            cancellation.check();
+            switch (value) {
+                case NameValue name -> {
+                    var localAliases = aliases.getOrDefault(application.id(), Map.of());
+                    // Ownerless project defaults also need to evaluate unknown names.
+                    if ((owner == null || localAliases.containsKey(name.name()))
+                            && taskRefBindings(application.id(), owner, name, useIndex).size() != 1)
+                        dynamicReference(application, new Anchor(application.id().sourceDocument(), name.span()));
+                }
+                case ListValue list -> list.items().forEach(
+                        item -> checkDiscardedTaskRef(application, owner, item, useIndex));
+                case MapValue map -> {
+                    for (var entry : map.entries()) {
+                        checkDiscardedTaskRef(application, owner, entry.key(), useIndex);
+                        checkDiscardedTaskRef(application, owner, entry.value(), useIndex);
+                    }
+                }
+                default -> { }
+            }
+        }
+
+        private void dynamicReference(SourceApplication application, Anchor anchor) {
+            referencesComplete = false;
+            diagnosticFor(application, "DYNAMIC_REFERENCE", Severity.INFORMATION, anchor, List.of());
+        }
+
+        void validateReferences(Symbol owner, int useIndex, PlanSemantics.DeclaredGraph graph) {
             if (owner.id().namespace() == Namespace.CLEANUP)
                 for (var inner : owner.declaration().invocations())
                     if (effective(owner.declaration()).active(inner.span()))
@@ -544,14 +610,15 @@ public final class ProjectAnalyzer {
                 } else if (call.name().equals("result") || call.name().equals("resultOptional")) {
                     var ref =
                             resolve(
+                                    owner.application(),
+                                    useIndex,
                                     owner,
                                     Namespace.TASK,
                                     call.arguments().getFirst(),
                                     call.name().equals("result")
                                             ? ReferenceKind.RESULT
                                             : ReferenceKind.RESULT_OPTIONAL,
-                                    anchor,
-                                    scope(owner));
+                                    anchor);
                     boolean allowed =
                             owner.id().namespace() == Namespace.TASK
                                     && (owner.declaration().body() != null
@@ -614,12 +681,13 @@ public final class ProjectAnalyzer {
                                 List.of());
                     var ref =
                             resolve(
+                                    owner.application(),
+                                    useIndex,
                                     owner,
                                     Namespace.PARAMETER,
                                     call.arguments().getFirst(),
                                     ReferenceKind.PARAMETER,
-                                    anchor,
-                                    scope(owner));
+                                    anchor);
                     if (ref.target().isPresent())
                         unique(ref.target().get())
                                 .filter(p -> parameterType(p).equals("path"))
@@ -711,20 +779,27 @@ public final class ProjectAnalyzer {
                                                     && contains(e.value().span(), span));
         }
 
-        void validateOptions(Symbol symbol) {
+        void validateOptions(Symbol symbol, int useIndex) {
             var allowed =
                     symbol.id().namespace() == Namespace.PARAMETER
                             ? DslVocabulary.parameterOptions()
                             : symbol.id().namespace() == Namespace.TASK
                                     ? DslVocabulary.taskOptions()
                                     : Set.<String>of();
-            for (var option : symbol.declaration().options())
-                if (text(option.key()) != null && !allowed.contains(text(option.key())))
+            var selected = effective(symbol.declaration()).entries();
+            for (var option : symbol.declaration().options()) {
+                var key = text(option.key());
+                if (key == null) continue;
+                if (!allowed.contains(key))
                     diagnostic(
                             "UNKNOWN_OPTION",
                             Severity.ERROR,
                             new Anchor(symbol.anchor().documentId(), option.key().span()),
                             List.of());
+                // Groovy evaluates overwritten values before the DSL receives the map.
+                if (selected.get(key) != option)
+                    checkDiscardedTaskRef(symbol.application(), symbol, option.value(), useIndex);
+            }
         }
 
         void validateParameter(Symbol parameter) {
@@ -951,10 +1026,6 @@ public final class ProjectAnalyzer {
         Optional<Symbol> unique(SymbolId id) {
             var values = symbols.getOrDefault(id, List.of());
             return values.size() == 1 ? Optional.of(values.getFirst()) : Optional.empty();
-        }
-
-        ProjectNameRules scope(Symbol symbol) {
-            return ProjectNameRules.parseQualified(symbol.scope());
         }
 
         EffectiveOptions effective(Declaration declaration) {
