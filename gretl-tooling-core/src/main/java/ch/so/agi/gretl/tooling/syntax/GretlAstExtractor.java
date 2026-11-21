@@ -48,7 +48,16 @@ final class GretlAstExtractor {
             cancellation.check();if(statement==ReturnStatement.RETURN_NULL_OR_VOID||statement instanceof EmptyStatement)continue;
             Expression expression=statement instanceof ExpressionStatement es?es.getExpression():null;
             String binding=null;TextSpan bindingSpan=null;
-            if(expression instanceof DeclarationExpression d&&d.getLeftExpression() instanceof VariableExpression v){binding=v.getName();bindingSpan=span(v);expression=d.getRightExpression();}
+            if (expression instanceof DeclarationExpression d
+                    && d.getLeftExpression() instanceof VariableExpression variable) {
+                expression = d.getRightExpression();
+                boolean taskCall = expression instanceof MethodCallExpression call
+                        && ("task".equals(call.getMethodAsString()) || "action".equals(call.getMethodAsString()));
+                if (!taskCall || preservesTaskRef(variable, module)) {
+                    binding = variable.getName();
+                    bindingSpan = span(variable);
+                }
+            }
             if(expression instanceof MethodCallExpression call&&dsl(call.getMethodAsString())&&implicit(call)&&!shadowed.contains(call.getMethodAsString())) {
                 declarations.add(extractDeclaration(call,binding,bindingSpan,span(statement)));
             } else {
@@ -61,6 +70,16 @@ final class GretlAstExtractor {
         return new Extraction(declarations,opaque,new Coverage(partial?Completeness.PARTIAL:Completeness.COMPLETE,refsPartial?Completeness.PARTIAL:Completeness.COMPLETE,
                 declarations.stream().anyMatch(d->d.coverage().fieldAssignments()!=Completeness.COMPLETE)?Completeness.PARTIAL:Completeness.COMPLETE,Completeness.COMPLETE));
     }
+    private static boolean preservesTaskRef(VariableExpression variable, ModuleNode module) {
+        if (variable.isDynamicTyped()) return true;
+        String type = variable.getOriginType().getName();
+        var imported = module.getImport(type);
+        if (imported != null) type = imported.getClassName();
+        return type.equals("java.lang.Object")
+                || type.equals("Object") && module.getStarImports().isEmpty()
+                || type.equals("ch.so.agi.gretl.runtime.api.TaskRef");
+    }
+
     private boolean pureContainer(Expression expression){
         if(expression instanceof ConstantExpression||expression instanceof VariableExpression)return true;
         if(expression instanceof ListExpression list)return list.getExpressions().stream().allMatch(this::pureContainer);

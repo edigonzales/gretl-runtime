@@ -2,6 +2,9 @@ package ch.so.agi.gretl.tooling.semantic;
 
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.catalog.*;
+import ch.so.agi.gretl.tooling.graph.JobGraph;
+import ch.so.agi.gretl.tooling.graph.JobGraphProjector;
+import ch.so.agi.gretl.tooling.graph.TargetPreviewProjector;
 import ch.so.agi.gretl.tooling.source.SourceText;
 import ch.so.agi.gretl.tooling.workspace.*;
 import java.net.URI;
@@ -28,6 +31,10 @@ class ProjectAnalyzerTest {
     static Analysis analyze(Map<URI,String> files,URI document,DocumentStore store,CatalogRepository catalogs,String language){
         var prohibit=new AtomicBoolean();SourceRepository repository=new SourceRepository(){
             public SourceRead read(URI id,ReadPolicy policy,CancellationToken cancellation){assertFalse(prohibit.get(),"Semantic analysis must use only captured sources");var text=files.get(id);return text==null?SourceRead.unavailable("SOURCE_MISSING",id):SourceRead.found(new SourceText(id,text,null,"DISK",true,text));}
+            public List<SourceIssue> checkIncludeTraversal(IncludeTraversal path, ReadPolicy policy, CancellationToken cancellation) {
+                assertFalse(prohibit.get(), "Semantic analysis must reuse the captured traversal");
+                return List.of();
+            }
             public SourceListing listProjectEntries(URI root,ScanBudget budget,CancellationToken cancellation){
                 assertFalse(prohibit.get(),"Semantic analysis must reuse the captured owner inventory");
                 assertEquals(SourceUris.directoryIdentity(ROOT),SourceUris.directoryIdentity(root));
@@ -39,6 +46,168 @@ class ProjectAnalyzerTest {
         try(var manager=new WorkspaceManager(store,catalogs)){manager.addRoot(ROOT,repository);manager.updateConfiguration(ROOT,new WorkspaceManager.Configuration(language,Map.of()));var captured=manager.capture(new ProjectRequest(ROOT,document),CancellationToken.NONE);prohibit.set(true);return new ProjectAnalyzer().analyze(captured,CancellationToken.NONE);}
     }
     static List<String> codes(Analysis analysis){return analysis.diagnostics().stream().map(Diagnostic::code).toList();}
+    @Test void defaultsResolveLocalTaskRefsWithoutAnOwner() {
+        var analysis = analyze("def first = action('first') {}\ndefaults first");
+        var ref = analysis.references().getFirst();
+        assertEquals(ReferenceKind.DEFAULT, ref.kind());
+        assertEquals(Resolution.RESOLVED, ref.resolution());
+        assertEquals(new SymbolId(Namespace.TASK, "first"), ref.target().orElseThrow());
+        assertNull(ref.owner());
+        assertEquals(analysis.capture().project().includeClosure().applications().getFirst().id(),
+                ref.application());
+        assertEquals(List.of("first"), analysis.defaultTargets());
+        assertEquals(List.of(), codes(analysis));
+        assertTrue(analysis.capabilities().referencesComplete());
+        assertTrue(analysis.capabilities().graphComplete());
+        var snapshot = AnalysisSnapshot.of(analysis);
+        assertEquals(JobGraph.Status.COMPLETE, new JobGraphProjector().project(snapshot,
+                JobGraphProjector.GraphOptions.defaults(), CancellationToken.NONE).status());
+        assertTrue(new TargetPreviewProjector().project(snapshot, List.of(), CancellationToken.NONE).available());
+        assertEquals(Set.of(ref.target().orElseThrow()),
+                snapshot.references().targetsAt(JOB, ref.anchor().span().startUtf16(), ref.application()));
+
+        var mixed = analyze("def first = action('first') {}\naction('second') {}\ndefaults first, 'second'");
+        assertEquals(List.of("first", "second"), mixed.defaultTargets());
+        assertEquals(List.of(), codes(mixed));
+    }
+
+    @Test void defaultsOnlyBindVariablesThatKeepTheTaskRefValue() {
+        var coerced = analyze("String first = action('first') {}\ndefaults first");
+        assertEquals(Resolution.DYNAMIC, coerced.references().getFirst().resolution());
+        assertTrue(coerced.defaultTargets().isEmpty());
+        assertFalse(coerced.capabilities().graphComplete());
+
+        var typed = analyze("""
+                import ch.so.agi.gretl.runtime.api.TaskRef as Ref
+                Ref first = action('first') {}
+                defaults first
+                """);
+        assertEquals(Resolution.RESOLVED, typed.references().getFirst().resolution());
+        assertEquals(List.of("first"), typed.defaultTargets());
+    }
+
+    @Test void eagerTaskRefUsesRequireAnEarlierAssignment() {
+        for (String source : List.of(
+                "action('consumer', dependsOn: producer) {}\ndef producer = action('producer') {}\ndefaults 'consumer'",
+                "def producer = action('producer', dependsOn: producer) {}",
+                "defaults producer\ndef producer = action('producer') {}")) {
+            var analysis = analyze(source);
+            var ref = analysis.references().stream().filter(r -> "producer".equals(r.spelling()))
+                    .findFirst().orElseThrow();
+            assertEquals(Resolution.DYNAMIC, ref.resolution(), source);
+            assertTrue(ref.target().isEmpty(), source);
+            assertTrue(analysis.graph().edges().isEmpty(), source);
+            assertTrue(codes(analysis).containsAll(List.of("DYNAMIC_REFERENCE", "PARTIAL_ANALYSIS")), source);
+            assertFalse(analysis.capabilities().referencesComplete(), source);
+            assertFalse(analysis.capabilities().graphComplete(), source);
+            var snapshot = AnalysisSnapshot.of(analysis);
+            var graph = new JobGraphProjector().project(snapshot, JobGraphProjector.GraphOptions.defaults(),
+                    CancellationToken.NONE);
+            assertEquals(JobGraph.Status.PARTIAL, graph.status(), source);
+            assertTrue(graph.edges().isEmpty(), source);
+            assertFalse(new TargetPreviewProjector().project(snapshot, List.of(), CancellationToken.NONE)
+                    .available(), source);
+        }
+    }
+
+    @Test void overwrittenLinkValuesStillNeedTheirTaskRefAtRegistration() {
+        String consumer = "action([dependsOn: producer, dependsOn: 'active'], 'consumer') {}";
+        String producer = "def producer = action('discarded') {}";
+        String end = "\naction('active') {}\ndefaults 'consumer'";
+        var early = analyze(consumer + "\n" + producer + end);
+        assertTrue(codes(early).contains("DYNAMIC_REFERENCE"));
+        assertFalse(early.capabilities().graphComplete());
+
+        var bound = analyze(producer + "\n" + consumer + end);
+        assertEquals(List.of(), codes(bound));
+        assertTrue(bound.capabilities().graphComplete());
+        assertEquals(List.of("active"), bound.graph().edges().stream().map(edge -> edge.fromId()).toList());
+    }
+
+    @Test void logicalForwardLinksAndAlreadyBoundTaskRefsProduceTheSameEdges() {
+        var logical = analyze("""
+                action('consumer', dependsOn: 'producer', after: 'ordered', finalizedBy: 'end') {}
+                def producer = action('producer') {}
+                action('ordered') {}
+                action('end') {}
+                defaults 'consumer'
+                """);
+        var bound = analyze("""
+                def producer = action('producer') {}
+                def ordered = action('ordered') {}
+                def end = action('end') {}
+                action('consumer', dependsOn: producer, after: ordered, finalizedBy: end) {}
+                defaults 'consumer'
+                """);
+        assertEquals(List.of(), codes(logical));
+        assertEquals(List.of(), codes(bound));
+        assertTrue(logical.capabilities().graphComplete());
+        assertTrue(bound.capabilities().graphComplete());
+        assertEquals(3, logical.graph().edges().size());
+        assertEquals(logical.graph().edges(), bound.graph().edges());
+    }
+
+    @Test void fragmentApplicationsKeepTheirAliasesAndUseExpandedRegistrationOrder() {
+        var settings = URI.create("file:/work/settings.gretl");
+        var a = URI.create("file:/work/a/job.groovy");
+        var b = URI.create("file:/work/b/job.groovy");
+        var shared = URI.create("file:/work/shared.groovy");
+        var nested = URI.create("file:/work/nested.groovy");
+        var analysis = analyze(Map.of(settings, "include 'a', 'b'\ndefaults ':a:use', ':b:use'",
+                a, "def ref = action('entry') {}\napply from: '../shared.groovy'",
+                b, "def ref = action('entry') {}\napply from: '../shared.groovy'",
+                shared, """
+                        def ref = action('local', dependsOn: 'nested') {}
+                        apply from: 'nested.groovy'
+                        action('use', dependsOn: ref) {}
+                        """,
+                nested, "action('nested') {}"), a, new DocumentStore(), catalog(), "en");
+        assertEquals(List.of(), codes(analysis));
+        assertTrue(analysis.capabilities().graphComplete());
+        assertEquals(List.of(":a:entry", ":a:local", ":a:nested", ":a:use",
+                        ":b:entry", ":b:local", ":b:nested", ":b:use"),
+                analysis.graph().nodes().stream().map(n -> n.id()).toList());
+        var refs = analysis.references().stream().filter(r -> "ref".equals(r.spelling())).toList();
+        assertEquals(2, refs.size());
+        for (var ref : refs) {
+            assertEquals(shared, ref.application().sourceDocument());
+            assertEquals(Resolution.RESOLVED, ref.resolution());
+            assertEquals(ref.application().ownerScope() + ":local",
+                    ref.target().orElseThrow().qualifiedName());
+        }
+
+        var entry = "def ref = action('entry') {}\napply from: 'shared.groovy'";
+        var foreign = analyze(Map.of(JOB, entry, shared, "action('use', dependsOn: ref) {}"),
+                JOB, new DocumentStore(), catalog(), "en");
+        var unresolved = foreign.references().getFirst();
+        assertEquals(shared, unresolved.application().sourceDocument());
+        assertEquals(Resolution.DYNAMIC, unresolved.resolution());
+        assertTrue(foreign.graph().edges().isEmpty());
+
+        var incomplete = analyze(Map.of(JOB, entry + "\naction('use', dependsOn: ref) {}"),
+                JOB, new DocumentStore(), catalog(), "en");
+        assertFalse(incomplete.capture().project().includeClosure().orderProven());
+        assertEquals(Resolution.DYNAMIC, incomplete.references().getFirst().resolution());
+        assertFalse(incomplete.capabilities().graphComplete());
+    }
+
+    @Test void deferredResultCallsRequireLexicalCaptureAndRespectLocalShadowing() {
+        var analysis = analyze("""
+                def producer = action('producer') {}
+                action('valid', dependsOn: producer, when: { resultOptional(producer).present }) { result(producer) }
+                action('early', dependsOn: 'later', when: { resultOptional(later).present }) { result(later) }
+                def later = action('later') {}
+                action('shadowed', dependsOn: producer) { def producer = 'elsewhere'; result(producer) }
+                """);
+        for (var kind : List.of(ReferenceKind.RESULT, ReferenceKind.RESULT_OPTIONAL)) {
+            var refs = analysis.references().stream().filter(r -> r.kind() == kind).toList();
+            assertEquals(Resolution.RESOLVED, refs.getFirst().resolution());
+            assertEquals("producer", refs.getFirst().target().orElseThrow().qualifiedName());
+            assertTrue(refs.subList(1, refs.size()).stream().allMatch(r -> r.resolution() == Resolution.DYNAMIC));
+            assertEquals(kind == ReferenceKind.RESULT ? 3 : 2, refs.size());
+        }
+    }
+
     @Test void bindingsNamespacesAliasesAndTransitiveResultsShareTheDataGraph(){
         var analysis=analyze("""
             parameter('source', description:'Path', type:'path')
