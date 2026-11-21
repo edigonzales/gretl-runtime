@@ -136,7 +136,8 @@ class ProjectAnalyzerTest {
     @Test void unknownVariablesInProjectDefaultsMakeTheAnalysisPartial() {
         var settings = URI.create("file:/work/settings.gretl");
         for (String defaults : List.of("defaults missing", "defaults([missing])",
-                "defaults([[key: missing]])", "defaults([key: missing])")) {
+                "defaults([[key: missing]])", "defaults([key: missing])",
+                "defaults([key: [nested: missing]])", "defaults([(missing): 'value'])")) {
             String source = "action('run') {}\n" + defaults;
             var analysis = analyze(Map.of(settings, "defaults ':run'", JOB, source),
                     JOB, new DocumentStore(), catalog(), "en");
@@ -145,8 +146,9 @@ class ProjectAnalyzerTest {
                     .filter(d -> d.code().equals("DYNAMIC_REFERENCE")).toList();
             assertEquals(1, diagnostics.size(), defaults);
             var diagnostic = diagnostics.getFirst();
-            int offset = source.indexOf("missing");
-            assertEquals(new Anchor(JOB, new TextSpan(offset, offset + "missing".length())),
+            String access = defaults.contains("(missing)") ? "(missing)" : "missing";
+            int offset = source.indexOf(access);
+            assertEquals(new Anchor(JOB, new TextSpan(offset, offset + access.length())),
                     diagnostic.anchor(), defaults);
             assertEquals(analysis.unique(new SymbolId(Namespace.TASK, ":run")).orElseThrow()
                     .application().id(), diagnostic.application(), defaults);
@@ -171,6 +173,17 @@ class ProjectAnalyzerTest {
             assertEquals(List.of(), codes(analysis), argument);
             assertTrue(analysis.capabilities().referencesComplete(), argument);
         }
+    }
+
+    @Test void anUnprovenLocalStringInProjectDefaultsIsInformational() {
+        var settings = URI.create("file:/work/settings.gretl");
+        var analysis = analyze(Map.of(settings, "defaults ':run'", JOB,
+                "action('run') {}\ndef target = 'run'\ndefaults target"),
+                JOB, new DocumentStore(), catalog(), "en");
+        assertEquals(List.of(":run"), analysis.defaultTargets());
+        assertEquals(List.of("DYNAMIC_REFERENCE", "PARTIAL_ANALYSIS"), codes(analysis));
+        assertTrue(analysis.diagnostics().stream().allMatch(d -> d.severity() == Severity.INFORMATION));
+        assertFalse(analysis.capabilities().referencesComplete());
     }
 
     @Test void overwrittenOptionsStillNeedTheirTaskRefAtRegistration() {
