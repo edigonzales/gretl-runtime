@@ -23,6 +23,7 @@ final class GretlAstExtractor {
     private final int sourceOffset;
     private final Set<String> shadowed=new HashSet<>();
     private final Set<String> taskBindings=new HashSet<>();
+    private final Set<String> reassignedTaskBindings = new HashSet<>();
     GretlAstExtractor(SourceText source,TokenIndex tokens,CancellationToken cancellation) {
         this(source,tokens,cancellation,source,0);
     }
@@ -40,6 +41,19 @@ final class GretlAstExtractor {
                 collectNames(d.getLeftExpression(),shadowed);
                 if(d.getLeftExpression() instanceof VariableExpression v&&d.getRightExpression() instanceof MethodCallExpression c&&c.getMethodAsString()!=null&&Set.of("task","action").contains(c.getMethodAsString())&&implicit(c))taskBindings.add(v.getName());
             }
+        if (!taskBindings.isEmpty()) {
+            // Deferred closures share captured locals. Any write leaves their later value unknown.
+            module.getStatementBlock().visit(new CodeVisitorSupport() {
+                @Override public void visitBinaryExpression(BinaryExpression expression) {
+                    cancellation.check();
+                    if (!(expression instanceof DeclarationExpression)
+                            && Types.ofType(expression.getOperation().getType(), Types.ASSIGNMENT_OPERATOR))
+                        collectNames(expression.getLeftExpression(), reassignedTaskBindings);
+                    super.visitBinaryExpression(expression);
+                }
+            });
+            reassignedTaskBindings.retainAll(taskBindings);
+        }
         for(var type:module.getClasses()) {
             if(!type.isScript())opaque.add(new OpaqueStatement(span(type),"CLASS_DECLARATION",true));
             for(var annotation:type.getAnnotations())opaque.add(new OpaqueStatement(span(annotation),"ANNOTATION",true));
@@ -48,7 +62,16 @@ final class GretlAstExtractor {
             cancellation.check();if(statement==ReturnStatement.RETURN_NULL_OR_VOID||statement instanceof EmptyStatement)continue;
             Expression expression=statement instanceof ExpressionStatement es?es.getExpression():null;
             String binding=null;TextSpan bindingSpan=null;
-            if(expression instanceof DeclarationExpression d&&d.getLeftExpression() instanceof VariableExpression v){binding=v.getName();bindingSpan=span(v);expression=d.getRightExpression();}
+            if (expression instanceof DeclarationExpression d
+                    && d.getLeftExpression() instanceof VariableExpression variable) {
+                expression = d.getRightExpression();
+                boolean taskCall = expression instanceof MethodCallExpression call
+                        && ("task".equals(call.getMethodAsString()) || "action".equals(call.getMethodAsString()));
+                if (!taskCall || preservesTaskRef(variable, module)) {
+                    binding = variable.getName();
+                    bindingSpan = span(variable);
+                }
+            }
             if(expression instanceof MethodCallExpression call&&dsl(call.getMethodAsString())&&implicit(call)&&!shadowed.contains(call.getMethodAsString())) {
                 declarations.add(extractDeclaration(call,binding,bindingSpan,span(statement)));
             } else {
@@ -61,6 +84,18 @@ final class GretlAstExtractor {
         return new Extraction(declarations,opaque,new Coverage(partial?Completeness.PARTIAL:Completeness.COMPLETE,refsPartial?Completeness.PARTIAL:Completeness.COMPLETE,
                 declarations.stream().anyMatch(d->d.coverage().fieldAssignments()!=Completeness.COMPLETE)?Completeness.PARTIAL:Completeness.COMPLETE,Completeness.COMPLETE));
     }
+    private static boolean preservesTaskRef(VariableExpression variable, ModuleNode module) {
+        if (variable.isDynamicTyped()) return true;
+        String type = variable.getOriginType().getName();
+        var imported = module.getImport(type);
+        if (imported != null) type = imported.getClassName();
+        return type.equals("java.lang.Object")
+                || type.equals("Object")
+                || type.equals("ch.so.agi.gretl.runtime.api.TaskRef")
+                || type.equals("TaskRef") && module.getStarImports().stream()
+                        .anyMatch(entry -> "ch.so.agi.gretl.runtime.api.".equals(entry.getPackageName()));
+    }
+
     private boolean pureContainer(Expression expression){
         if(expression instanceof ConstantExpression||expression instanceof VariableExpression)return true;
         if(expression instanceof ListExpression list)return list.getExpressions().stream().allMatch(this::pureContainer);
@@ -157,7 +192,14 @@ final class GretlAstExtractor {
             }
             private void guard(ASTNode node){if(node!=null&&node.getLineNumber()>0)guards.add(span(node));}
             private ValueExpression argument(Expression expression){
-                if(expression instanceof VariableExpression variable&&(declaredHere.contains(variable.getName())||receiversNow().contains(variable.getName())||hidden.stream().anyMatch(names->names.contains(variable.getName()))))return new OpaqueExpression(span(expression),"SCOPED_REFERENCE");
+                if (expression instanceof VariableExpression variable) {
+                    String name = variable.getName();
+                    if (declaredHere.contains(name) || receiversNow().contains(name)
+                            || hidden.stream().anyMatch(names -> names.contains(name)))
+                        return new OpaqueExpression(span(expression), "SCOPED_REFERENCE");
+                    if (reassignedTaskBindings.contains(name))
+                        return new OpaqueExpression(span(expression), "REASSIGNED_TASK_REF");
+                }
                 return value(expression,receiversNow(),hiddenNow());
             }
             @Override public void visitIfElse(IfStatement node){guard(node.getIfBlock());guard(node.getElseBlock());super.visitIfElse(node);}
