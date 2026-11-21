@@ -11,6 +11,7 @@ public interface GretlLanguageServerApi extends LanguageServer {
     @JsonRequest("gretl/confirmSourceMembership") CompletableFuture<ConfirmSourceMembershipResponse> confirmSourceMembership(ConfirmSourceMembershipRequest request);
     @JsonRequest("gretl/catalog") CompletableFuture<CatalogResponse> catalog(CatalogRequest request);
     @JsonRequest("gretl/graph") CompletableFuture<GraphResponse> graph(GraphRequest request);
+    @JsonRequest("gretl/context") CompletableFuture<ContextResponse> context(ContextRequest request);
     @JsonRequest("gretl/planEdit") CompletableFuture<EditResponse> planEdit(EditRequest request);
     @JsonRequest("gretl/validateEdit") CompletableFuture<ValidationResponse> validateEdit(ValidationRequest request);
     @JsonRequest("gretl/navigation") CompletableFuture<NavigationResponse> navigate(NavigationRequest request);

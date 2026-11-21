@@ -6,6 +6,7 @@ const id='11111111-1111-1111-1111-111111111111',symbol={namespace:'TASK',qualifi
 test('versioned custom requests accept typed data and exact 64-bit scalar strings',()=> {
  for(const request of [
   {protocolVersion:1,catalogSchemaVersion:1},
+  {protocolVersion:1,documentId:'file:///work/job.groovy'},
   {protocolVersion:1,documentId:'file:///work/job.groovy',requestedSources:['file:///work/query.sql']},
   {protocolVersion:1,documentId:'file:///work/job.groovy',expectedSnapshotId:id,requireOpenDocuments:true,intent:{kind:'SetField',target:symbol,field:'limit',value:{kind:'Long',scalar:'9223372036854775807'}}},
   {protocolVersion:1,planId:id,expectedSnapshotId:id},

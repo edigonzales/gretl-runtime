@@ -16,7 +16,7 @@ import {GretlModelerProvider} from './modeler/provider';
 import {CatalogResponse,EditIntent,catalogResponse,editIntent} from './modeler/edit-model';
 import {EditPlan,applyEditPlan} from './modeler/edit-plan';
 interface Context extends EditContextIdentity {sourceStamps:Stamp[];notices?:string[]}
-interface Graph {context:Context}
+interface ContextResponse {context:Context}
 
 class RuntimeHost implements vscode.Disposable,ModelerBackend {
     private client?:LanguageClient;
@@ -102,7 +102,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         if(!client?.isRunning()||!instance||!vscode.workspace.isTrusted)throw Error('GRETL server is not ready.');
         const normalize=(uri:string)=>vscode.Uri.parse(uri).toString();
         const selected=await this.panelContext(client,document.uri.toString(),options.sourceContext,token,true);options.sourceContext={projectId:selected.projectId,entryDocument:selected.entryDocument,ownerScope:selected.ownerScope,role:selected.role};
-        const {value,before,contextToken}=await this.synchronizedGraph(client,{protocolVersion:1,documentId:document.uri.toString(),contextToken:selected.contextToken,includeInnerInvocations:options.includeInnerInvocations,...(options.previewTargets===null?{}:{previewTargets:options.previewTargets})},token,options.sourceContext);
+        const {value,before,contextToken}=await this.synchronizedSnapshot(client,'gretl/graph',{protocolVersion:1,documentId:document.uri.toString(),contextToken:selected.contextToken,includeInnerInvocations:options.includeInnerInvocations,...(options.previewTargets===null?{}:{previewTargets:options.previewTargets})},token,options.sourceContext);
         const response=graphResponse(value);this.graphSourceContexts.set(response,{documentId:document.uri.toString(),contextToken:typeof contextToken==='string'?contextToken:selected.contextToken});
         if(token.isCancellationRequested||this.client!==client||this.instance!==instance||response.context.serverInstanceId!==instance||document.isClosed||document.version!==version)throw new vscode.CancellationError();
         const now=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
@@ -351,12 +351,12 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             vscode.workspace.onDidChangeTextDocument(event=>coordinator.changed(view(event.document))),vscode.workspace.onDidCloseTextDocument(doc=>coordinator.closed(view(doc))));
         return coordinator;
     }
-    private async synchronizedGraph(client:LanguageClient,params:{documentId:string;[key:string]:unknown},token:vscode.CancellationToken,pin?:PinnedSourceContext){
+    private async synchronizedSnapshot(client:LanguageClient,method:'gretl/graph'|'gretl/context',params:{documentId:string;[key:string]:unknown},token:vscode.CancellationToken,pin?:PinnedSourceContext){
         for(let attempt=0;attempt<4;attempt++){
             if(this.client!==client||token.isCancellationRequested)throw new vscode.CancellationError();
             await this.fragments?.settled();const before=new Map(vscode.workspace.textDocuments.map(d=>[d.uri.toString(),d]));
             if(pin)params.contextToken=(await this.panelContext(client,params.documentId,pin,token,false)).contextToken;
-            const value=await client.sendRequest<Graph>('gretl/graph',params,token);
+            const value=await client.sendRequest<ContextResponse>(method,params,token);
             if(!value.context?.notices?.includes('INCLUDE_MEMBERSHIP_PENDING'))return {value,before,contextToken:params.contextToken};
             await this.fragments?.settled();
             await client.sendRequest('gretl/sourceContexts',{protocolVersion:1,includeToolingVersion:1,documentId:params.documentId});
@@ -384,8 +384,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         for(const doc of vscode.workspace.textDocuments)open(doc);
     }
     private async capture(client:LanguageClient,doc:vscode.TextDocument,token:vscode.CancellationToken):Promise<Context>{
-        const {value:graph}=await this.synchronizedGraph(client,{protocolVersion:1,documentId:doc.uri.toString()},token);
-        const context=graph.context;
+        const {value:{context}}=await this.synchronizedSnapshot(client,'gretl/context',{protocolVersion:1,documentId:doc.uri.toString()},token);
         if(context?.protocolVersion!==1||context.schemaVersion!==2||context.serverInstanceId!==this.instance||!Array.isArray(context.sourceStamps)||context.sourceStamps.length>4096)throw new Error('GRETL source capture is stale or incompatible. Retry.');
         context.sourceStamps=context.sourceStamps.map(stamp=>({...stamp,sha256:stamp.sha256??null,version:stamp.version??null,incarnation:stamp.incarnation??null,unavailableCode:stamp.unavailableCode??null}));
         const ownedBuffers=new Set(context.sourceStamps.filter(stamp=>stamp.version!==null).map(stamp=>vscode.Uri.parse(stamp.documentId).toString()));
@@ -409,8 +408,8 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         if(edit.changes&&Object.keys(edit.changes).length||!edit.documentChanges)throw new Error('GRETL requires versioned document changes.');
         if(!capture.ownerGeneration||!capture.contextGeneration||!capture.contextDocumentId||!capture.contextToken)throw Error('GRETL edit has no confirmed ownership context.');
         const currentContext=async()=>{
-            const graph=await client.sendRequest<Graph>('gretl/graph',{protocolVersion:1,documentId:capture.contextDocumentId,contextToken:capture.contextToken});
-            validateEditContext(capture,graph.context);if(graph.context.notices?.includes('INCLUDE_MEMBERSHIP_PENDING'))throw Error('GRETL fragment synchronization is pending.');
+            const {context}=await client.sendRequest<ContextResponse>('gretl/context',{protocolVersion:1,documentId:capture.contextDocumentId,contextToken:capture.contextToken});
+            validateEditContext(capture,context);if(context.notices?.includes('INCLUDE_MEMBERSHIP_PENDING'))throw Error('GRETL fragment synchronization is pending.');
         };
         await currentContext();
         const normalize=(uri:string)=>vscode.Uri.parse(uri).toString();

@@ -200,6 +200,15 @@ class ServerProcessIT {
             var catalog=wire.call("gretl/catalog",Map.of("protocolVersion",1,"catalogSchemaVersion",1)).getAsJsonObject();assertEquals("AVAILABLE",catalog.get("state").getAsString());assertEquals(51,catalog.getAsJsonObject("catalog").getAsJsonArray("operations").size());
             var graph=graph(wire,uri);String snapshot=graph.getAsJsonObject("context").get("snapshotId").getAsString();
             assertEquals(2,graph.getAsJsonObject("payload").getAsJsonArray("nodes").size());
+            var response=wire.call("gretl/context",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject();
+            assertEquals(Set.of("context"),response.keySet());
+            var context=response.getAsJsonObject("context");
+            assertEquals(graph.getAsJsonObject("context"),context);
+            var jobStamp=context.getAsJsonArray("sourceStamps").asList().stream().map(JsonElement::getAsJsonObject)
+                    .filter(stamp->root.resolve("job.groovy").equals(Path.of(URI.create(stamp.get("documentId").getAsString()))))
+                    .findFirst().orElseThrow();
+            assertEquals(SourceText.job(source).stamp().contentSha256(),jobStamp.get("sha256").getAsString());
+            assertEquals(1,jobStamp.get("version").getAsInt());
             var planned=wire.call("gretl/planEdit",Map.of("protocolVersion",1,"documentId",uri,"expectedSnapshotId",snapshot,"requireOpenDocuments",true,
                     "intent",Map.of("kind","SetTaskOption","target",Map.of("namespace","TASK","qualifiedName","c"),"field","description","value",Map.of("kind","Text","scalar","consumer")))).getAsJsonObject();
             assertEquals("ALLOWED",planned.getAsJsonObject("capability").get("state").getAsString());
@@ -217,11 +226,31 @@ class ServerProcessIT {
             assertEquals(-32002,wire.response("textDocument/completion",position(uri,0,0)).getAsJsonObject("error").get("code").getAsInt());
             var capabilities=wire.initialize(temporary,false,false).getAsJsonObject("capabilities");assertFalse(capabilities.has("renameProvider"));
             wire.send("initialized",Map.of(),null);wire.opened(uri,1,"action('a') {}\n");
-            assertTrue(wire.response("gretl/graph",Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject("error").get("message").getAsString().contains("UNTRUSTED"));
+            for(String method:List.of("gretl/graph","gretl/context"))
+                assertEquals("WORKSPACE_UNTRUSTED",wire.response(method,Map.of("protocolVersion",1,"documentId",uri)).getAsJsonObject("error").get("message").getAsString());
             wire.send("exit",Map.of(),null);assertTrue(wire.process.waitFor(8,TimeUnit.SECONDS));assertEquals(1,wire.process.exitValue());
         }
         try(var wire=new LspProcessHarness(temporary,"--bad")){assertTrue(wire.process.waitFor(8,TimeUnit.SECONDS));assertEquals(2,wire.process.exitValue());assertTrue(wire.failures.isEmpty());}
         try(var wire=new LspProcessHarness(temporary,"--stdio")){wire.process.getOutputStream().close();assertTrue(wire.process.waitFor(8,TimeUnit.SECONDS));assertEquals(1,wire.process.exitValue());}
+    }
+
+    @Test void contextChecksTheSameProtocolAndDocumentBoundariesAsGraph()throws Exception {
+        String uri=temporary.resolve("job.groovy").toUri().toString();
+        var params=Map.of("protocolVersion",1,"documentId",uri);
+        try(var wire=new LspProcessHarness(temporary,"--stdio")) {
+            assertEquals(-32002,wire.response("gretl/context",params).getAsJsonObject("error").get("code").getAsInt());
+            wire.initialize(temporary,true,true);wire.send("initialized",Map.of(),null);
+            var invalidVersion=wire.response("gretl/context",Map.of("protocolVersion",2,"documentId",uri)).getAsJsonObject("error");
+            assertEquals(-32602,invalidVersion.get("code").getAsInt());
+            assertEquals("PROTOCOL_VERSION_MISMATCH",invalidVersion.get("message").getAsString());
+            for(String document:List.of(temporary.resolve("unknown.groovy").toUri().toString(),"https://example.invalid/job.groovy")){
+                var request=Map.of("protocolVersion",1,"documentId",document);
+                var graphError=wire.response("gretl/graph",request).getAsJsonObject("error");
+                assertEquals(-32602,graphError.get("code").getAsInt());
+                assertEquals(graphError,wire.response("gretl/context",request).getAsJsonObject("error"));
+            }
+            wire.stop();
+        }
     }
 
     @Test void incrementalEventsVersionsCloseReopenAndStalePlansUseTheActualBuffer()throws Exception {

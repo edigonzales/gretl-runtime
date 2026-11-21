@@ -3,7 +3,8 @@
   "$id": "https://gretl.ch/schemas/tooling/protocol-v1",
   "title": "GRETL Runtime custom request parameters v1",
   "oneOf": [
-    {"$ref":"#/$defs/CatalogRequest"}, {"$ref":"#/$defs/GraphRequest"},
+    {"$ref":"#/$defs/CatalogRequest"},
+    {"anyOf":[{"$ref":"#/$defs/GraphRequest"},{"$ref":"#/$defs/ContextRequest"}]},
     {"$ref":"#/$defs/EditRequest"}, {"$ref":"#/$defs/ValidationRequest"},
     {"$ref":"#/$defs/NavigationRequest"}, {"$ref":"#/$defs/SourceContextsRequest"},
     {"$ref":"#/$defs/SelectSourceContextRequest"}, {"$ref":"#/$defs/ConfirmSourceMembershipRequest"}
@@ -86,6 +87,10 @@
     "GraphRequest":{
       "type":"object","additionalProperties":false,"required":["protocolVersion","documentId"],
       "properties":{"contextToken":{"type":"string","format":"uuid"},"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"},"expectedSnapshotId":{"$ref":"#/$defs/SnapshotId"},"includeInnerInvocations":{"type":"boolean"},"requestedSources":{"type":"array","maxItems":32,"uniqueItems":true,"items":{"$ref":"#/$defs/DocumentId"}},"previewTargets":{"type":"array","maxItems":1024,"uniqueItems":true,"items":{"type":"string","maxLength":65536}}}
+    },
+    "ContextRequest":{
+      "type":"object","additionalProperties":false,"required":["protocolVersion","documentId"],
+      "properties":{"contextToken":{"type":"string","format":"uuid"},"protocolVersion":{"const":1},"documentId":{"$ref":"#/$defs/DocumentId"}}
     },
     "EditRequest":{
       "type":"object","additionalProperties":false,"required":["protocolVersion","documentId","expectedSnapshotId","intent","requireOpenDocuments"],

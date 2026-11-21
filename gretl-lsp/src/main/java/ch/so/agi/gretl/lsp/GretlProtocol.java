@@ -43,6 +43,8 @@ public final class GretlProtocol {
         public GraphPayload(JobGraph.Status status,List<JobGraph.Node> nodes,List<JobGraph.Edge> edges,List<JobGraph.Node> parameters,List<JobGraph.Node> cleanup,List<Diagnostic> diagnostics,ch.so.agi.gretl.tooling.graph.TargetPreviewProjector.Preview preview){this(status,nodes,edges,parameters,cleanup,diagnostics,preview,null);}
     }
     public record GraphResponse(Context context,GraphPayload payload) { }
+    public record ContextRequest(int protocolVersion,String documentId,String contextToken) { }
+    public record ContextResponse(Context context) { }
     public record SymbolKey(String namespace,String qualifiedName) {
         SymbolId core(){return new SymbolId(Namespace.valueOf(required(namespace,32)),required(qualifiedName,65_536));}
     }

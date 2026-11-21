@@ -182,7 +182,7 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
         });
     }
     private Context responseContext(AnalysisSnapshot snapshot){
-        var context=context(snapshot);
+        var context=GretlProtocol.context(snapshot);
         return !workspace.includeTooling||workspace.membershipReady(snapshot)?context:new Context(context.protocolVersion(),context.schemaVersion(),context.serverInstanceId(),context.projectId(),context.workspaceGeneration(),context.snapshotId(),context.catalogId(),context.sourceStamps(),context.completeness(),List.of("INCLUDE_MEMBERSHIP_PENDING"),context.ownerGeneration(),context.contextGeneration(),context.contextDocumentId(),context.contextToken());
     }
     public CompletableFuture<CatalogResponse> catalog(CatalogRequest request) {
@@ -204,6 +204,15 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
         });
         });
     }
+    @Override
+    public CompletableFuture<ContextResponse> context(ContextRequest request) {
+        return deferred(()-> {
+            requireActive();version(request.protocolVersion());
+            var document=workspace.document(request.documentId());
+            return workspace.request(document,List.of(),request.contextToken(),false,
+                    (snapshot,cancel)->new ContextResponse(responseContext(snapshot)));
+        });
+    }
     public CompletableFuture<EditResponse> planEdit(EditRequest request) {
         return deferred(()-> {
             requireActive();ensureEdits();version(request.protocolVersion());
@@ -214,7 +223,7 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
                 var destination="SetDefaults".equals(intent.kind())?(snapshot.analysis().capture().project().projectMode()?snapshot.analysis().capture().project().settingsId():snapshot.analysis().capture().project().id().anchor()):document;
                 var result="ConfigureTask".equals(intent.kind())?planner.planConfiguration(snapshot,Objects.requireNonNull(intent.target()).core(),values(intent.fields()),intent.removedFields()==null?Set.of():intent.removedFields(),values(intent.options()),style,cancel):planner.plan(snapshot,intent.core(destination),style,cancel);
                 var plan=result.plan().orElse(null);if(plan!=null){workspace.requireWritableTargets(plan);workspace.retain(snapshot,plan);}
-                return new EditResponse(context(snapshot),result.capability(),plan==null?null:plan.id().toString(),plan==null?null:new LspQueryMapper(snapshot).edit(plan),plan==null?List.of():plan.notices());
+                return new EditResponse(GretlProtocol.context(snapshot),result.capability(),plan==null?null:plan.id().toString(),plan==null?null:new LspQueryMapper(snapshot).edit(plan),plan==null?List.of():plan.notices());
             });
         });
     }
@@ -244,9 +253,9 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
                     var wanted=application.id();var choice=choices.contexts().stream().filter(c->c.application().id().equals(wanted)).findFirst();
                     if(choice.isPresent())selected=new SourceContextInfo(choice.get().token(),wanted.project().toString(),wanted.entryDocument().toString(),wanted.ownerScope(),application.resourceBase()==null?null:application.resourceBase().toString(),application.role().name());
                 }
-                return new NavigationResponse(context(snapshot),location,List.of(),selected);
+                return new NavigationResponse(GretlProtocol.context(snapshot),location,List.of(),selected);
             }
-            return new NavigationResponse(context(snapshot),null,projector.elementsAt(snapshot,graph,workspace.document(request.documentId()),Objects.requireNonNull(request.offsetUtf16()),snapshot.id(),workspace.includeTooling?workspace.sourceContexts.resolveForQuery(snapshot.analysis().capture(),workspace.document(request.documentId()),request.contextToken()).application().id():null));
+            return new NavigationResponse(GretlProtocol.context(snapshot),null,projector.elementsAt(snapshot,graph,workspace.document(request.documentId()),Objects.requireNonNull(request.offsetUtf16()),snapshot.id(),workspace.includeTooling?workspace.sourceContexts.resolveForQuery(snapshot.analysis().capture(),workspace.document(request.documentId()),request.contextToken()).application().id():null));
         }));
     }
     private void expected(AnalysisSnapshot snapshot,String expected,boolean required){if(required&&expected==null||expected!=null&&!snapshot.id().toString().equals(expected))throw ServerWorkspace.error(ResponseErrorCode.ContentModified,"SNAPSHOT_MISMATCH");}

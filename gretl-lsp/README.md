@@ -42,12 +42,16 @@ Quickfixes setzen CodeAction-Literals voraus. Clientfaehigkeiten fuer Markdown,
 hierarchische Symbole und Folding werden beruecksichtigt. Kein Formatter,
 Runtime-/Debugstart oder allgemeine Groovy-Typinferenz.
 
-Customrequests: `gretl/catalog`, `gretl/graph`, `gretl/planEdit`,
+Customrequests: `gretl/catalog`, `gretl/graph`, `gretl/context`, `gretl/planEdit`,
 `gretl/validateEdit`, `gretl/navigation`; Notification `gretl/analysisReady`.
 Der [Schema-Vertrag](src/main/resources/gretl-protocol-v1.schema.json) beschreibt
 die Requestparameter. Version ist 1. Snapshotantworten enthalten `context`
 (Server-/Projekt-/Snapshot-ID, Generation als String, Source-Stamps und
-Completeness) sowie ihren typisierten Payload. Fachliche Enums sind Strings;
+Completeness). `gretl/graph` liefert zusätzlich den vollständigen Payload für
+den Modeler. `gretl/context` liefert ausschliesslich den vorhandenen Kontext.
+Beide verwenden denselben Analyse- und Snapshotpfad. Der VS-Code-Host nutzt
+`gretl/context` zur Erfassung nativer Editkontexte und zur Aktualitätsprüfung
+ohne Graphprojektion. Fachliche Enums sind Strings;
 Standard-LSP-Enums behalten ihre numerischen Protokollwerte. Integer-/Decimal-
 Editwerte werden verlustfrei als getypte Scalarstrings uebertragen.
 

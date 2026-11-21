@@ -11,7 +11,7 @@ class HostBoundaryTest {
     @Test void customRequestSchemaPropertiesMatchTheActualJavaWireRecords()throws Exception {
         try(var input=getClass().getResourceAsStream("/gretl-protocol-v1.schema.json")) {
             assertNotNull(input);var definitions=JsonParser.parseString(new String(input.readAllBytes(),StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("$defs");
-            for(var type:List.of(GretlProtocol.CatalogRequest.class,GretlProtocol.GraphRequest.class,GretlProtocol.EditRequest.class,GretlProtocol.ValidationRequest.class,GretlProtocol.NavigationRequest.class,GretlProtocol.Intent.class,GretlProtocol.Value.class,GretlProtocol.Parameter.class,GretlProtocol.SymbolKey.class)) {
+            for(var type:List.of(GretlProtocol.CatalogRequest.class,GretlProtocol.GraphRequest.class,GretlProtocol.ContextRequest.class,GretlProtocol.EditRequest.class,GretlProtocol.ValidationRequest.class,GretlProtocol.NavigationRequest.class,GretlProtocol.Intent.class,GretlProtocol.Value.class,GretlProtocol.Parameter.class,GretlProtocol.SymbolKey.class)) {
                 var fields=Arrays.stream(type.getRecordComponents()).map(java.lang.reflect.RecordComponent::getName).collect(java.util.stream.Collectors.toSet());
                 assertEquals(fields,definitions.getAsJsonObject(type.getSimpleName()).getAsJsonObject("properties").keySet(),type.getName());
             }
