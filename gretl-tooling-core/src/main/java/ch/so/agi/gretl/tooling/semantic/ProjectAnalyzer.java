@@ -100,7 +100,7 @@ public final class ProjectAnalyzer {
                 cancellation.check();
                 var symbol = registration.getValue();
                 currentApplication = symbol.application();
-                validateOptions(symbol);
+                validateOptions(symbol, registration.getKey());
                 if (symbol.id().namespace() == Namespace.PARAMETER) validateParameter(symbol);
                 else if (symbol.id().namespace() == Namespace.TASK) {
                     links(
@@ -401,9 +401,8 @@ public final class ProjectAnalyzer {
                 referencesComplete = false;
                 return;
             }
-            for (var entry : owner.declaration().options())
+            for (var entry : effective.entries().values())
                 if (option.equals(text(entry.key()))) {
-                    boolean selected = effective.entries().get(option) == entry;
                     if (entry.value() instanceof LiteralValue l && l.value() == null) continue;
                     var items =
                             entry.value() instanceof ListValue list
@@ -411,12 +410,6 @@ public final class ProjectAnalyzer {
                                     : List.of(entry.value());
                     var seen = new HashSet<SymbolId>();
                     for (var item : items) {
-                        if (!selected) {
-                            // Groovy evaluates discarded map values, but only the selected
-                            // value can contribute a task link.
-                            checkDiscardedTaskRef(owner.application(), owner, item, useIndex);
-                            continue;
-                        }
                         var ref =
                                 resolve(
                                         owner.application(),
@@ -543,9 +536,24 @@ public final class ProjectAnalyzer {
 
         private void checkDiscardedTaskRef(
                 SourceApplication application, Symbol owner, ValueExpression value, int useIndex) {
-            if (value instanceof NameValue name
-                    && taskRefBindings(application.id(), owner, name, useIndex).size() != 1)
-                dynamicReference(application, new Anchor(application.id().sourceDocument(), value.span()));
+            cancellation.check();
+            switch (value) {
+                case NameValue name -> {
+                    var localAliases = aliases.getOrDefault(application.id(), Map.of());
+                    if (localAliases.containsKey(name.name())
+                            && taskRefBindings(application.id(), owner, name, useIndex).size() != 1)
+                        dynamicReference(application, new Anchor(application.id().sourceDocument(), name.span()));
+                }
+                case ListValue list -> list.items().forEach(
+                        item -> checkDiscardedTaskRef(application, owner, item, useIndex));
+                case MapValue map -> {
+                    for (var entry : map.entries()) {
+                        checkDiscardedTaskRef(application, owner, entry.key(), useIndex);
+                        checkDiscardedTaskRef(application, owner, entry.value(), useIndex);
+                    }
+                }
+                default -> { }
+            }
         }
 
         private void dynamicReference(SourceApplication application, Anchor anchor) {
@@ -764,20 +772,27 @@ public final class ProjectAnalyzer {
                                                     && contains(e.value().span(), span));
         }
 
-        void validateOptions(Symbol symbol) {
+        void validateOptions(Symbol symbol, int useIndex) {
             var allowed =
                     symbol.id().namespace() == Namespace.PARAMETER
                             ? DslVocabulary.parameterOptions()
                             : symbol.id().namespace() == Namespace.TASK
                                     ? DslVocabulary.taskOptions()
                                     : Set.<String>of();
-            for (var option : symbol.declaration().options())
-                if (text(option.key()) != null && !allowed.contains(text(option.key())))
+            var selected = effective(symbol.declaration()).entries();
+            for (var option : symbol.declaration().options()) {
+                var key = text(option.key());
+                if (key == null) continue;
+                if (!allowed.contains(key))
                     diagnostic(
                             "UNKNOWN_OPTION",
                             Severity.ERROR,
                             new Anchor(symbol.anchor().documentId(), option.key().span()),
                             List.of());
+                // Groovy evaluates overwritten values before the DSL receives the map.
+                if (selected.get(key) != option)
+                    checkDiscardedTaskRef(symbol.application(), symbol, option.value(), useIndex);
+            }
         }
 
         void validateParameter(Symbol parameter) {

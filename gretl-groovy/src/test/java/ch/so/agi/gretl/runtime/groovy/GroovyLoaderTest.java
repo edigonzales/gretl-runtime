@@ -263,7 +263,8 @@ class GroovyLoaderTest {
         for (String source : List.of(
                 "action('consumer', dependsOn: producer) {}\ndef producer = action('producer') {}\ndefaults 'consumer'",
                 "def producer = action('producer', dependsOn: producer) {}",
-                "action([dependsOn: producer, dependsOn: 'producer'], 'consumer') {}\ndef producer = action('producer') {}",
+                "action([dependsOn: [producer], dependsOn: 'producer'], 'consumer') {}\ndef producer = action('producer') {}",
+                "action([description: [nested:[producer]], description: 'active'], 'consumer') {}\ndef producer = action('producer') {}",
                 "defaults producer\ndef producer = action('producer') {}")) {
             var failure = assertThrows(GroovyDslException.class,
                     () -> harness.loadSource("early.groovy", source));

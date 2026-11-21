@@ -132,18 +132,30 @@ class ProjectAnalyzerTest {
         assertFalse(analysis.capabilities().referencesComplete());
     }
 
-    @Test void overwrittenLinkValuesStillNeedTheirTaskRefAtRegistration() {
-        String consumer = "action([dependsOn: producer, dependsOn: 'active'], 'consumer') {}";
+    @Test void overwrittenOptionsStillNeedTheirTaskRefAtRegistration() {
         String producer = "def producer = action('discarded') {}";
         String end = "\naction('active') {}\ndefaults 'consumer'";
-        var early = analyze(consumer + "\n" + producer + end);
-        assertTrue(codes(early).contains("DYNAMIC_REFERENCE"));
-        assertFalse(early.capabilities().referencesComplete());
+        for (String key : List.of("dependsOn", "description")) {
+            String consumer = "action([" + key + ": [nested:[producer]], "
+                    + key + ": 'active'], 'consumer') {}";
+            var early = analyze(consumer + "\n" + producer + end);
+            assertTrue(codes(early).contains("DYNAMIC_REFERENCE"), key);
+            assertFalse(early.capabilities().referencesComplete(), key);
 
-        var bound = analyze(producer + "\n" + consumer + end);
-        assertEquals(List.of(), codes(bound));
-        assertTrue(bound.capabilities().graphComplete());
-        assertEquals(List.of("active"), bound.graph().edges().stream().map(edge -> edge.fromId()).toList());
+            var bound = analyze(producer + "\n" + consumer + end);
+            assertEquals(List.of(), codes(bound), key);
+            assertTrue(bound.capabilities().graphComplete(), key);
+            assertEquals(key.equals("dependsOn") ? List.of("active") : List.of(),
+                    bound.graph().edges().stream().map(edge -> edge.fromId()).toList(), key);
+        }
+
+        var nonTask = analyze("""
+                def local = 'discarded'
+                action([description: local, description: 'active'], 'consumer') {}
+                defaults 'consumer'
+                """);
+        assertEquals(List.of(), codes(nonTask));
+        assertTrue(nonTask.capabilities().referencesComplete());
     }
 
     @Test void logicalForwardLinksAndAlreadyBoundTaskRefsProduceTheSameEdges() {
