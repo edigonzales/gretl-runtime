@@ -69,6 +69,29 @@ class ServerProcessIT {
         }
     }
 
+    @Test void publishedProjectSettingsResolveThePipelineThroughThePackagedServer() throws Exception {
+        Path project = Path.of("../examples/project-pipeline").toRealPath();
+        Path job = project.resolve("job.groovy");
+        String uri = job.toUri().toString();
+        try (var wire = new LspProcessHarness(temporary, "--stdio")) {
+            wire.initialize(project, true, true);
+            wire.send("initialized", Map.of(), null);
+            wire.opened(uri, 1, Files.readString(job));
+            var model = wire.graphAfterRefresh(uri);
+            var payload = model.getAsJsonObject("payload");
+            assertFalse(diagnostic(model, "PROJECT_SETTINGS_UNSUPPORTED"));
+            assertFalse(diagnostic(model, "PROJECT_SETTINGS_INVALID"));
+            assertFalse(diagnostic(model, "PROJECT_ENTRY_MISSING"));
+            assertEquals(List.of(":", ":prepare", ":checks:local", ":publish"),
+                    payload.getAsJsonArray("nodes").asList().stream().map(JsonElement::getAsJsonObject)
+                            .filter(node -> node.get("kind").getAsString().equals("PROJECT"))
+                            .map(node -> node.get("title").getAsString()).toList());
+            assertEquals(":publish:run", payload.getAsJsonObject("forms").getAsJsonArray("defaults")
+                    .get(0).getAsJsonObject().get("qualifiedName").getAsString());
+            wire.stop();
+        }
+    }
+
     @Test void quotedCompletionFilteringMatchesTheOriginalDelimiterAndKeepsTheCoreEdit()throws Exception {
         String uri=temporary.resolve("job.groovy").toUri().toString();Files.writeString(temporary.resolve("job.groovy"),"action('initial') {}\n");
         try(var wire=new LspProcessHarness(temporary,"--stdio")) {
