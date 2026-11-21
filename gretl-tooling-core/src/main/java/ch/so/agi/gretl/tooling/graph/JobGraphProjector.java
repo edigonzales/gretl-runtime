@@ -50,9 +50,9 @@ public final class JobGraphProjector {
             }
             var operation=symbol.operation();
             var anchor=new Anchor(symbol.anchor().documentId(),symbol.declaration().statementSpan());
-            var diagnostics=analysis.diagnostics().stream().filter(d->inside(anchor,d.anchor())&&(d.application()==null||symbol.application()!=null&&d.application().equals(symbol.application().id()))).toList();
+            var diagnostics=analysis.diagnostics().stream().filter(d->inside(anchor,d.anchor())&&(d.application()==null||d.application().equals(symbol.application().id()))).toList();
             var node=new Node(id,entry.getValue().size()==1?key(project,symbol.id().namespace().name(),symbol.id().qualifiedName(),kind.name()):null,
-                    symbol.id(),anchor,kind,symbol.id().qualifiedName(),operation==null?null:operation.operationId(),containers.get(symbol.application()==null?anchor.documentId():symbol.application().id().entryDocument()),capabilities,
+                    symbol.id(),anchor,kind,symbol.id().qualifiedName(),operation==null?null:operation.operationId(),containers.get(symbol.application().id().entryDocument()),capabilities,
                     operation==null?List.of():operation.inputs(),operation==null?List.of():operation.outputs(),diagnostics);
             if(kind==NodeKind.PARAMETER)parameters.add(node);else if(kind==NodeKind.CLEANUP)cleanup.add(node);else nodes.add(node);
             if(options.includeInnerInvocations())for(var inner:symbol.declaration().invocations()) {
@@ -124,7 +124,7 @@ public final class JobGraphProjector {
         return List.copyOf(result);
     }
     private boolean symbolApplication(AnalysisSnapshot snapshot,SymbolId symbol,ch.so.agi.gretl.tooling.workspace.IncludeModel.ApplicationId application){
-        return snapshot.analysis().unique(symbol).map(s->s.application()!=null&&s.application().id().equals(application)).orElse(false);
+        return snapshot.analysis().unique(symbol).map(s->s.application().id().equals(application)).orElse(false);
     }
     private java.util.stream.Stream<Node> allNodes(JobGraph graph){return java.util.stream.Stream.of(graph.nodes(),graph.parameters(),graph.cleanup()).flatMap(List::stream);}
     private void requireSnapshot(JobGraph graph,UUID expected){if(!graph.snapshotId().equals(expected))throw new IllegalArgumentException("GRAPH_STALE_SNAPSHOT");}

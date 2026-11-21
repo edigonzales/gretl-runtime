@@ -5,6 +5,8 @@ import ch.so.agi.gretl.tooling.catalog.*;
 import ch.so.agi.gretl.tooling.graph.JobGraph;
 import ch.so.agi.gretl.tooling.graph.JobGraphProjector;
 import ch.so.agi.gretl.tooling.graph.TargetPreviewProjector;
+import ch.so.agi.gretl.tooling.query.LanguageQueries;
+import ch.so.agi.gretl.tooling.query.QueryContext;
 import ch.so.agi.gretl.tooling.source.SourceText;
 import ch.so.agi.gretl.tooling.source.TextSpan;
 import ch.so.agi.gretl.tooling.workspace.*;
@@ -323,6 +325,25 @@ class ProjectAnalyzerTest {
             """);
         assertEquals(List.of(),codes(analysis),analysis.diagnostics().toString());assertTrue(analysis.capabilities().graphComplete());assertEquals(5,analysis.symbols().size());assertEquals(List.of("end"),analysis.defaultTargets());
         assertEquals(2,analysis.graph().edges().size());assertTrue(analysis.references().stream().allMatch(r->r.resolution()==Resolution.RESOLVED));
+        var registrations = analysis.capture().project().includeClosure().registrationOrder();
+        for (var definitions : analysis.symbols().values()) {
+            var symbol = definitions.getFirst();
+            var registration = registrations.stream().filter(event -> event.declaration() == symbol.declaration())
+                    .findFirst().orElseThrow();
+            assertEquals(registration.application().id(), symbol.application().id());
+            assertEquals(JOB, symbol.application().id().sourceDocument());
+            assertEquals(symbol.anchor().documentId(), symbol.application().id().sourceDocument());
+        }
+        var task = analysis.unique(new SymbolId(Namespace.TASK, "source")).orElseThrow();
+        assertThrows(NullPointerException.class, () -> new Symbol(task.id(), task.localName(), task.scope(),
+                task.anchor(), task.declaration(), task.operation(), null));
+        var use = analysis.references().stream().filter(ref -> ref.kind() == ReferenceKind.DEPENDS_ON)
+                .findFirst().orElseThrow();
+        var snapshot = AnalysisSnapshot.of(analysis);
+        var context = new QueryContext(snapshot, JOB, use.anchor().span().startUtf16());
+        var queries = new LanguageQueries();
+        assertEquals(List.of(task.anchor()), queries.definitions(context));
+        assertEquals(use.anchor(), queries.hover(context).orElseThrow().anchor());
         assertThrows(UnsupportedOperationException.class,()->analysis.symbols().clear());assertThrows(UnsupportedOperationException.class,()->analysis.symbols().values().iterator().next().clear());
     }
     @Test void afterNeverGrantsResultRightsAndOptionalHasTheSameDependencyRule(){
