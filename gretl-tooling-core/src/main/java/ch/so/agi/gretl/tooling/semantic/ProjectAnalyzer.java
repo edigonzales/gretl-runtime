@@ -336,7 +336,8 @@ public final class ProjectAnalyzer {
         }
 
         void collectDefaults(List<RegistrationEvent> registrationOrder) {
-            if (capture.project().projectMode()) {
+            boolean projectMode = capture.project().projectMode();
+            if (projectMode) {
                 for (var target : capture.project().defaultTargets()) {
                     var value =
                             new LiteralValue(
@@ -352,29 +353,31 @@ public final class ProjectAnalyzer {
                                     new Anchor(capture.project().settingsId(), value.span()));
                     ref.target().ifPresent(id -> addDefault(null, id.qualifiedName(), ref.anchor()));
                 }
-            } else {
-                for (int index = 0; index < registrationOrder.size(); index++) {
-                    cancellation.check();
-                    var event = registrationOrder.get(index);
-                    var application = event.application();
-                    var declaration = event.declaration();
-                    if (application.role() != SourceRole.ENTRY
-                            || declaration.kind() != DeclarationKind.DEFAULTS) continue;
-                    for (var target : declaration.targets()) {
-                        var ref =
-                                resolve(
-                                        application,
-                                        index,
-                                        null,
-                                        Namespace.TASK,
-                                        target,
-                                        ReferenceKind.DEFAULT,
-                                        new Anchor(
-                                                application.id().sourceDocument(), target.span()));
-                        if (ref.resolution() == Resolution.DYNAMIC) graphComplete = false;
-                        ref.target().ifPresent(
-                                id -> addDefault(application, id.qualifiedName(), ref.anchor()));
+            }
+            for (int index = 0; index < registrationOrder.size(); index++) {
+                cancellation.check();
+                var event = registrationOrder.get(index);
+                var application = event.application();
+                var declaration = event.declaration();
+                if (application.role() != SourceRole.ENTRY
+                        || declaration.kind() != DeclarationKind.DEFAULTS) continue;
+                for (var target : declaration.targets()) {
+                    if (projectMode) {
+                        // The call evaluates its arguments even when settings select the targets.
+                        checkDiscardedTaskRef(application, null, target, index);
+                        continue;
                     }
+                    var ref =
+                            resolve(
+                                    application,
+                                    index,
+                                    null,
+                                    Namespace.TASK,
+                                    target,
+                                    ReferenceKind.DEFAULT,
+                                    new Anchor(application.id().sourceDocument(), target.span()));
+                    ref.target().ifPresent(
+                            id -> addDefault(application, id.qualifiedName(), ref.anchor()));
                 }
             }
         }
@@ -408,16 +411,10 @@ public final class ProjectAnalyzer {
                                     : List.of(entry.value());
                     var seen = new HashSet<SymbolId>();
                     for (var item : items) {
-                        var anchor = new Anchor(owner.anchor().documentId(), item.span());
                         if (!selected) {
                             // Groovy evaluates discarded map values, but only the selected
                             // value can contribute a task link.
-                            if (item instanceof NameValue name
-                                    && taskRefBindings(owner.application().id(), owner, name, useIndex)
-                                            .size() != 1) {
-                                graphComplete = false;
-                                dynamicReference(owner.application(), anchor);
-                            }
+                            checkDiscardedTaskRef(owner.application(), owner, item, useIndex);
                             continue;
                         }
                         var ref =
@@ -428,7 +425,7 @@ public final class ProjectAnalyzer {
                                         Namespace.TASK,
                                         item,
                                         kind,
-                                        anchor);
+                                        new Anchor(owner.anchor().documentId(), item.span()));
                         if (ref.resolution() != Resolution.RESOLVED) {
                             graphComplete = false;
                             continue;
@@ -542,6 +539,13 @@ public final class ProjectAnalyzer {
             // Eager arguments need the assigned value. A deferred closure
             // can only capture locals declared before its enclosing call.
             return bindings.size() == 1 && bindings.getFirst() >= useIndex ? List.of() : bindings;
+        }
+
+        private void checkDiscardedTaskRef(
+                SourceApplication application, Symbol owner, ValueExpression value, int useIndex) {
+            if (value instanceof NameValue name
+                    && taskRefBindings(application.id(), owner, name, useIndex).size() != 1)
+                dynamicReference(application, new Anchor(application.id().sourceDocument(), value.span()));
         }
 
         private void dynamicReference(SourceApplication application, Anchor anchor) {

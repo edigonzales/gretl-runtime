@@ -298,6 +298,20 @@ class GroovyLoaderTest {
     }
 
     @Test
+    void projectEntryDefaultsStillEvaluateArgumentsAlthoughSettingsSelectTheTargets() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        Files.writeString(harness.jobDir.resolve("settings.gretl"), "include 'sub'\ndefaults ':sub:run'");
+        Path job = Files.createDirectories(harness.jobDir.resolve("sub")).resolve("job.groovy");
+        Files.writeString(job, "defaults ref\ndef ref = action('run') {}");
+        var failure = assertThrows(GroovyDslException.class, harness::loadProject);
+        assertEquals("JOB_LOAD_FAILED", failure.code());
+        assertTrue(failure.getMessage().contains("ref"), failure.getMessage());
+
+        Files.writeString(job, "def ref = action('run') {}\ndefaults ref");
+        assertEquals(List.of(":sub:run"), harness.loadProject().defaultTargets());
+    }
+
+    @Test
     void fragmentTaskNamesCrossApplicationsWhileLocalTaskRefsDoNot() throws Exception {
         var harness = new GroovyHarness(tempDir);
         Path fragment = harness.jobDir.resolve("fragment.groovy");
@@ -341,6 +355,23 @@ class GroovyLoaderTest {
             assertEquals("UNKNOWN_PROPERTY", failed.task("consumer").orElseThrow()
                     .failure().orElseThrow().diagnostic().orElseThrow().code());
         }
+    }
+
+    @Test
+    void deferredClosuresShareTheCurrentValueOfACapturedVariable() throws Exception {
+        var harness = new GroovyHarness(tempDir);
+        var definition = harness.loadSource("reassigned.groovy", """
+                def producer = action('producer') {}
+                action('change', dependsOn: producer) { producer = 'elsewhere' }
+                action('consume', dependsOn: [producer, 'change']) { result(producer) }
+                defaults 'consume'
+                """);
+        assertEquals(List.of("producer", "change"), definition.task("consume").orElseThrow()
+                .dependsOn().stream().map(ref -> ref.id()).toList());
+        var outcome = harness.run(definition, Map.of());
+        assertEquals(RunStatus.FAILED, outcome.status());
+        assertEquals("UNKNOWN_TASK_NAME", outcome.task("consume").orElseThrow()
+                .failure().orElseThrow().diagnostic().orElseThrow().code());
     }
 
     @Test

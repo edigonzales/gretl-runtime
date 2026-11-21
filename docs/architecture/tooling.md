@@ -40,7 +40,9 @@ Quelle auf; SQL und `file` relativ zur Ressourcenbasis der Anwendung.
 TaskRef-Aliase bleiben lokal zur Scriptanwendung, auch bei Defaults ohne
 Taskbesitzer. Header und Defaults benötigen eine vorher abgeschlossene
 Zuweisung. Später ausgeführte Closures benötigen eine lexikalisch sichtbare
-Bindung. Logische Tasknamen dürfen auf spätere Registrierungen verweisen.
+Bindung. Zugriffe auf erneut zugewiesene TaskRef-Variablen bleiben in
+später ausgeführten Closures dynamisch. Logische Tasknamen dürfen auf
+spätere Registrierungen verweisen.
 Die gemeinsamen Planungsregeln entscheiden Zielauswahl und Kanten. Includes
 fügen keine Ablaufkanten hinzu.
 

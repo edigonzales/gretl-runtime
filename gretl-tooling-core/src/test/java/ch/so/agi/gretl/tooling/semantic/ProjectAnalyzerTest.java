@@ -75,15 +75,14 @@ class ProjectAnalyzerTest {
         var coerced = analyze("String first = action('first') {}\ndefaults first");
         assertEquals(Resolution.DYNAMIC, coerced.references().getFirst().resolution());
         assertTrue(coerced.defaultTargets().isEmpty());
-        assertFalse(coerced.capabilities().graphComplete());
+        assertFalse(coerced.capabilities().referencesComplete());
 
-        var typed = analyze("""
-                import ch.so.agi.gretl.runtime.api.TaskRef as Ref
-                Ref first = action('first') {}
-                defaults first
-                """);
-        assertEquals(Resolution.RESOLVED, typed.references().getFirst().resolution());
-        assertEquals(List.of("first"), typed.defaultTargets());
+        for (String declaration : List.of("import ch.so.agi.gretl.runtime.api.TaskRef as Ref\nRef first",
+                "import ch.so.agi.gretl.runtime.api.*\nTaskRef first")) {
+            var typed = analyze(declaration + " = action('first') {}\ndefaults first");
+            assertEquals(Resolution.RESOLVED, typed.references().getFirst().resolution());
+            assertEquals(List.of("first"), typed.defaultTargets());
+        }
     }
 
     @Test void eagerTaskRefUsesRequireAnEarlierAssignment() {
@@ -99,7 +98,7 @@ class ProjectAnalyzerTest {
             assertTrue(analysis.graph().edges().isEmpty(), source);
             assertTrue(codes(analysis).containsAll(List.of("DYNAMIC_REFERENCE", "PARTIAL_ANALYSIS")), source);
             assertFalse(analysis.capabilities().referencesComplete(), source);
-            assertFalse(analysis.capabilities().graphComplete(), source);
+            assertEquals(ref.kind() == ReferenceKind.DEFAULT, analysis.capabilities().graphComplete(), source);
             var snapshot = AnalysisSnapshot.of(analysis);
             var graph = new JobGraphProjector().project(snapshot, JobGraphProjector.GraphOptions.defaults(),
                     CancellationToken.NONE);
@@ -110,13 +109,36 @@ class ProjectAnalyzerTest {
         }
     }
 
+    @Test void dynamicDefaultsKeepTheKnownGraphAvailableForValidation() {
+        var analysis = analyze("""
+                def target = 'consumer'
+                action('producer') {}
+                action('consumer') { result('producer') }
+                defaults target
+                """);
+        assertTrue(analysis.capabilities().graphComplete());
+        assertFalse(analysis.capabilities().referencesComplete());
+        assertTrue(codes(analysis).contains("RESULT_DEPENDENCY_REQUIRED"));
+    }
+
+    @Test void settingsSelectTargetsWhileEntryDefaultsStillEvaluateTheirArguments() {
+        var settings = URI.create("file:/work/settings.gretl");
+        var sub = URI.create("file:/work/sub/job.groovy");
+        var analysis = analyze(Map.of(settings, "include 'sub'\ndefaults ':sub:run'",
+                sub, "defaults ref\ndef ref = action('run') {}"),
+                sub, new DocumentStore(), catalog(), "en");
+        assertEquals(List.of(":sub:run"), analysis.defaultTargets());
+        assertTrue(codes(analysis).contains("DYNAMIC_REFERENCE"));
+        assertFalse(analysis.capabilities().referencesComplete());
+    }
+
     @Test void overwrittenLinkValuesStillNeedTheirTaskRefAtRegistration() {
         String consumer = "action([dependsOn: producer, dependsOn: 'active'], 'consumer') {}";
         String producer = "def producer = action('discarded') {}";
         String end = "\naction('active') {}\ndefaults 'consumer'";
         var early = analyze(consumer + "\n" + producer + end);
         assertTrue(codes(early).contains("DYNAMIC_REFERENCE"));
-        assertFalse(early.capabilities().graphComplete());
+        assertFalse(early.capabilities().referencesComplete());
 
         var bound = analyze(producer + "\n" + consumer + end);
         assertEquals(List.of(), codes(bound));
@@ -206,6 +228,22 @@ class ProjectAnalyzerTest {
             assertTrue(refs.subList(1, refs.size()).stream().allMatch(r -> r.resolution() == Resolution.DYNAMIC));
             assertEquals(kind == ReferenceKind.RESULT ? 3 : 2, refs.size());
         }
+    }
+
+    @Test void assignmentInADeferredClosureInvalidatesTheCapturedValueAtExecutionOnly() {
+        var analysis = analyze("""
+                def producer = action('producer') {}
+                action('change', dependsOn: producer) { producer = 'elsewhere' }
+                action('consume', dependsOn: [producer, 'change']) { result(producer) }
+                defaults 'consume'
+                """);
+        var producerLinks = analysis.references().stream().filter(r -> r.kind() == ReferenceKind.DEPENDS_ON
+                && "producer".equals(r.spelling())).toList();
+        assertEquals(2, producerLinks.size());
+        assertTrue(producerLinks.stream().allMatch(r -> r.resolution() == Resolution.RESOLVED));
+        var result = analysis.references().stream().filter(r -> r.kind() == ReferenceKind.RESULT).findFirst().orElseThrow();
+        assertEquals(Resolution.DYNAMIC, result.resolution());
+        assertFalse(analysis.capabilities().referencesComplete());
     }
 
     @Test void bindingsNamespacesAliasesAndTransitiveResultsShareTheDataGraph(){
