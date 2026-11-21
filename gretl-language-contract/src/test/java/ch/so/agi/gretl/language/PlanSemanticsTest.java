@@ -19,19 +19,32 @@ class PlanSemanticsTest {
         assertThrows(UnsupportedOperationException.class,()->all.activeEdges().clear());
     }
     @Test
-    void selectionCopiesTheTransitivePredecessorMapAndSets() {
+    void selectionCopiesAllPlanCollections() {
         var graph = graph(List.of(new Edge("a", "b", EdgeKind.DEPENDS_ON)), "a", "b");
         var planned = semantics.plan(graph, List.of("b"), List.of());
+        var targets = new ArrayList<>(planned.requestedTargets());
+        var order = new ArrayList<>(planned.orderedIds());
+        var edges = new ArrayList<>(planned.activeEdges());
         var predecessors = new LinkedHashMap<>(planned.dataPredecessors());
         var sources = new LinkedHashSet<>(predecessors.get("b"));
         predecessors.put("b", sources);
-        var selection = new PlanSelection(planned.requestedTargets(), planned.orderedIds(),
-                planned.activeEdges(), predecessors, planned.normalDemand(), planned.registrationOrder());
+        var demand = new LinkedHashSet<>(planned.normalDemand());
+        var registrationOrder = new ArrayList<>(planned.registrationOrder());
+        var selection = new PlanSelection(targets, order, edges, predecessors, demand, registrationOrder);
 
+        targets.clear();
+        order.clear();
+        edges.clear();
         sources.clear();
         predecessors.clear();
+        demand.clear();
+        registrationOrder.clear();
 
-        assertEquals(planned.dataPredecessors(), selection.dataPredecessors());
+        assertEquals(planned, selection);
+        assertThrows(UnsupportedOperationException.class, () -> selection.requestedTargets().clear());
+        assertThrows(UnsupportedOperationException.class, () -> selection.orderedIds().clear());
+        assertThrows(UnsupportedOperationException.class, () -> selection.normalDemand().clear());
+        assertThrows(UnsupportedOperationException.class, () -> selection.registrationOrder().clear());
         assertThrows(UnsupportedOperationException.class, () -> selection.dataPredecessors().clear());
     }
 
