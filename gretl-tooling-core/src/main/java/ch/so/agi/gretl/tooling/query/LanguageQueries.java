@@ -185,7 +185,7 @@ public final class LanguageQueries {
                 if (reference.isEmpty() && s.declaration().bindingSpan() != null && s.declaration().bindingSpan().contains(context.offsetUtf16())) {
                     anchor = new Anchor(context.documentId(), s.declaration().bindingSpan());
                 }
-                return Optional.of(new HoverInfo(anchor, s.id().qualifiedName(), documentation+(s.application()==null?"":"\nContext: "+s.scope()+" · "+s.application().id().entryDocument()+"\nSource: "+s.anchor().documentId())));
+                return Optional.of(new HoverInfo(anchor, s.id().qualifiedName(), documentation+"\nContext: "+s.scope()+" · "+s.application().id().entryDocument()+"\nSource: "+s.anchor().documentId()));
             }
         }
         for (var symbols : analysis.symbols().values()) for (var symbol : symbols) {

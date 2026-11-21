@@ -50,7 +50,19 @@ class IncludeSemanticsTest {
         assertEquals(Set.of(root.resolve("north/sql/input.sql").toUri(),root.resolve("south/sql/input.sql").toUri()),s.analysis().paths().stream().map(PathReference::resourceId).collect(java.util.stream.Collectors.toSet()));
         assertEquals(shared.toUri(),s.analysis().unique(new SymbolId(Namespace.TASK,":south:consumer")).orElseThrow().anchor().documentId());
         var graph=new JobGraphProjector().project(s,JobGraphProjector.GraphOptions.defaults(),CancellationToken.NONE);
-        for(var node:graph.nodes())if(node.symbol()!=null)assertNotNull(node.parentId(),node.toString());
+        for (var node : graph.nodes()) {
+            if (node.symbol() == null) continue;
+            var symbol = s.analysis().unique(node.symbol()).orElseThrow();
+            var parent = graph.nodes().stream().filter(n -> n.id().equals(node.parentId())).findFirst().orElseThrow();
+            assertEquals(symbol.application().id().entryDocument(), parent.anchor().documentId());
+        }
+        var northSql = graph.nodes().stream().filter(n -> n.title().equals(":north:sql")).findFirst().orElseThrow();
+        var southSql = graph.nodes().stream().filter(n -> n.title().equals(":south:sql")).findFirst().orElseThrow();
+        var sqlDiagnostic = graph.diagnostics().stream().filter(d -> d.code().equals("SQL_PARAMETER_MISSING"))
+                .findFirst().orElseThrow();
+        assertEquals(root.resolve("north/sql/input.sql").toUri(), sqlDiagnostic.anchor().documentId());
+        assertTrue(northSql.diagnostics().isEmpty());
+        assertTrue(southSql.diagnostics().isEmpty());
     }
 
     @Test
@@ -102,16 +114,32 @@ class IncludeSemanticsTest {
         var ambiguous=new ch.so.agi.gretl.tooling.query.QueryContext(s,file.toUri(),reference);
         assertTrue(ambiguous.ambiguous());assertTrue(queries.definitions(ambiguous).isEmpty());assertTrue(queries.hover(ambiguous).isEmpty());
         assertEquals(2,queries.documentSymbols(ambiguous).size());
+        int declaration = text.indexOf("'source'") + 2;
+        var ambiguousDeclaration = new ch.so.agi.gretl.tooling.query.QueryContext(s, file.toUri(), declaration);
+        assertTrue(s.references().targetsAt(file.toUri(), declaration).isEmpty());
+        assertTrue(queries.definitions(ambiguousDeclaration).isEmpty());
+        assertTrue(queries.hover(ambiguousDeclaration).isEmpty());
+        var applicationIds = new HashSet<IncludeModel.ApplicationId>();
         for(var app:s.analysis().capture().project().includeClosure().applications())if(app.id().sourceDocument().equals(file.toUri())){
+            var id = new SymbolId(Namespace.TASK, app.id().ownerScope() + ":source");
+            var symbol = s.analysis().unique(id).orElseThrow();
+            assertEquals(app.id(), symbol.application().id());
+            assertEquals(file.toUri(), symbol.anchor().documentId());
+            applicationIds.add(symbol.application().id());
+            assertEquals(Set.of(id), s.references().targetsAt(file.toUri(), declaration, app.id()));
+            assertEquals(Set.of(id), s.references().targetsAt(file.toUri(), reference, app.id()));
             var selected=new ch.so.agi.gretl.tooling.query.QueryContext(s,file.toUri(),reference,app.id());
-            assertEquals(1,queries.definitions(selected).size());assertEquals(file.toUri(),queries.definitions(selected).getFirst().documentId());
-            assertEquals(app.id().ownerScope()+":source",queries.hover(selected).orElseThrow().title());
+            assertEquals(List.of(symbol.anchor()), queries.definitions(selected));
+            var hover = queries.hover(selected).orElseThrow();
+            assertEquals(id.qualifiedName(), hover.title());
+            assertTrue(hover.documentation().contains(app.id().entryDocument().toString()));
             assertEquals(3,queries.references(selected,true).locations().size());
             assertTrue(queries.complete(selected).stream().anyMatch(p->p.label().equals("source")));
             var entry=s.source(app.id().entryDocument()).orElseThrow();var include=new ch.so.agi.gretl.tooling.query.QueryContext(s,app.id().entryDocument(),entry.text().indexOf("tasks")+1);
             assertEquals(file.toUri(),queries.definitions(include).getFirst().documentId());assertEquals(file.toUri(),queries.documentLinks(include).getFirst().target());
             assertTrue(queries.documentSymbols(include).isEmpty());
         }
+        assertEquals(2, applicationIds.size());
     }
     @Test void includePathCompletionUsesCapturedSafeListingsAndPreservesQuoteAndEscapes()throws Exception{
         write("tasks/one.groovy","// one");write("tasks/two.txt","not groovy");Files.createDirectories(root.resolve("tasks/nested"));

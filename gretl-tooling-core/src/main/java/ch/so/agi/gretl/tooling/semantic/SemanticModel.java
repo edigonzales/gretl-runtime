@@ -16,7 +16,9 @@ public final class SemanticModel {
     public record SymbolId(Namespace namespace,String qualifiedName) { }
     public record Anchor(URI documentId,TextSpan span) { }
     public record Symbol(SymbolId id,String localName,String scope,Anchor anchor,Declaration declaration,OperationDescriptor operation,SourceApplication application) {
-        public Symbol(SymbolId id,String localName,String scope,Anchor anchor,Declaration declaration,OperationDescriptor operation){this(id,localName,scope,anchor,declaration,operation,null);}
+        public Symbol {
+            Objects.requireNonNull(application, "application");
+        }
     }
     public enum Resolution { RESOLVED, UNRESOLVED, AMBIGUOUS, DYNAMIC }
     public enum ReferenceKind { DEPENDS_ON, AFTER, FINALIZED_BY, DEFAULT, RESULT, RESULT_OPTIONAL, PARAMETER }

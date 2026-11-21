@@ -69,7 +69,7 @@ public final class ReferenceIndex {
         var targets = new LinkedHashSet<SymbolId>();
         for (var reference : referencesAt(id, offset,application)) targets.addAll(reference.candidates());
         for (var entry : analysis.symbols().entrySet()) for (var symbol : entry.getValue()) {
-            if (!symbol.anchor().documentId().equals(id)||symbol.application()!=null&&!symbol.application().id().equals(application)) continue;
+            if (!symbol.anchor().documentId().equals(id)||!symbol.application().id().equals(application)) continue;
             if (at(symbol.anchor(), offset) || symbol.declaration().bindingSpan() != null
                     && symbol.declaration().bindingSpan().contains(offset)) targets.add(entry.getKey());
         }

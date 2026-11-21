@@ -18,7 +18,7 @@ public record QueryContext(AnalysisSnapshot snapshot, URI documentId, int offset
         return applications.size()==1?applications.getFirst():null;
     }
     public boolean accepts(ApplicationId candidate){return candidate==null||candidate.equals(application);}
-    public boolean accepts(ch.so.agi.gretl.tooling.semantic.SemanticModel.Symbol symbol){return symbol.application()==null||accepts(symbol.application().id());}
+    public boolean accepts(ch.so.agi.gretl.tooling.semantic.SemanticModel.Symbol symbol){return accepts(symbol.application().id());}
     public boolean ambiguous(){return application==null&&snapshot.analysis().capture().project().includeClosure().applications().stream().filter(a->a.id().sourceDocument().equals(documentId)).count()>1;}
     public QueryContext {
         Objects.requireNonNull(snapshot);

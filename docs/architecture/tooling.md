@@ -37,6 +37,7 @@ vorkommen. Die Anwendung verbindet Projekt, Entry, Scope, Quelldatei,
 Ressourcenbasis und Einbindekette. Includes lösen relativ zur enthaltenden
 Quelle auf; SQL und `file` relativ zur Ressourcenbasis der Anwendung.
 `ProjectAnalyzer` registriert Deklarationen in Include- und Quellreihenfolge.
+Jedes gebundene Symbol gehört zur Scriptanwendung seiner Registrierung.
 TaskRef-Aliase bleiben lokal zur Scriptanwendung, auch bei Defaults ohne
 Taskbesitzer. Header und Defaults benötigen eine vorher abgeschlossene
 Zuweisung. Später ausgeführte Closures benötigen eine lexikalisch sichtbare
