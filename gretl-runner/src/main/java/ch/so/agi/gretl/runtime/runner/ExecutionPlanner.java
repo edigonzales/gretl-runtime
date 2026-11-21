@@ -21,8 +21,7 @@ public final class ExecutionPlanner {
         try {
             var selection=new PlanSemantics().plan(new PlanSemantics.DeclaredGraph(nodes,edges),requestedTargets,definition.defaultTargets());
             var ordered=new ArrayList<TaskDefinition<?>>();for(String id:selection.orderedIds())ordered.add(tasks.get(id));
-            var selectedEdges=selection.activeEdges().stream().map(e->new PlanEdge(e.fromId(),e.toId(),PlanEdge.EdgeType.valueOf(e.kind().name()))).toList();
-            return new ExecutionPlan(definition.definitionId(),selection.requestedTargets(),ordered,selection.dataPredecessors(),selectedEdges,selection);
+            return new ExecutionPlan(definition.definitionId(), ordered, selection);
         }catch(PlanSemantics.GraphException invalid){throw new PlanException(invalid.code(),invalid.getMessage());}
     }
 

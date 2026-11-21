@@ -18,6 +18,23 @@ class PlanSemanticsTest {
         assertThrows(UnsupportedOperationException.class,()->all.dataPredecessors().get("c").add("b"));
         assertThrows(UnsupportedOperationException.class,()->all.activeEdges().clear());
     }
+    @Test
+    void selectionCopiesTheTransitivePredecessorMapAndSets() {
+        var graph = graph(List.of(new Edge("a", "b", EdgeKind.DEPENDS_ON)), "a", "b");
+        var planned = semantics.plan(graph, List.of("b"), List.of());
+        var predecessors = new LinkedHashMap<>(planned.dataPredecessors());
+        var sources = new LinkedHashSet<>(predecessors.get("b"));
+        predecessors.put("b", sources);
+        var selection = new PlanSelection(planned.requestedTargets(), planned.orderedIds(),
+                planned.activeEdges(), predecessors, planned.normalDemand(), planned.registrationOrder());
+
+        sources.clear();
+        predecessors.clear();
+
+        assertEquals(planned.dataPredecessors(), selection.dataPredecessors());
+        assertThrows(UnsupportedOperationException.class, () -> selection.dataPredecessors().clear());
+    }
+
     @Test void mixedCycleDependsOnTheRequestedSelection(){
         var graph=graph(List.of(new Edge("b","a",EdgeKind.DEPENDS_ON),new Edge("a","b",EdgeKind.AFTER)),"a","b");
         assertTrue(semantics.validateDeclaredDependencies(graph).isEmpty());assertEquals(List.of("b"),semantics.plan(graph,null,List.of("b")).orderedIds());

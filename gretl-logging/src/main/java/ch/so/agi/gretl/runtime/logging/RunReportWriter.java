@@ -111,13 +111,15 @@ public final class RunReportWriter {
         execution.put("startedAt", timestamp(outcome.startedAt()));
         execution.put("finishedAt", timestamp(outcome.finishedAt()));
         execution.put("durationMillis", outcome.durationMillis());
-        execution.put("requestedTargets", outcome.requestedTargets());
+        execution.put("requestedTargets", plan.selection().requestedTargets());
         execution.put("finishRequested", outcome.finishRequested());
         outcome.finishReason().ifPresent(reason -> execution.put("finishReason", reason));
         execution.put("workRetained", outcome.workRetained());
         execution.put("selectedPlan", plan.selectedTasks().stream()
                 .map(task -> plannedTask(task,plan)).toList());
-        execution.put("planEdges",plan.edges().stream().map(edge->Map.of("from",edge.fromId(),"to",edge.toId(),"kind",edge.type().name())).toList());
+        execution.put("planEdges", plan.selection().activeEdges().stream()
+                .map(edge -> Map.of("from", edge.fromId(), "to", edge.toId(), "kind", edge.kind().name()))
+                .toList());
         execution.put("tasks", outcome.tasks().stream().map(task->task(task,outcome.finalization().get(task.taskId()))).toList());
         List<InvocationOutcome> allInvocations = outcome.invocations();
         execution.put("invocations", allInvocations.stream().limit(MAX_INVOCATIONS)
