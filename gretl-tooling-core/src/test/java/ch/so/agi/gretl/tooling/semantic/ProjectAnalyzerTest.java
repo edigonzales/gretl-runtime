@@ -375,6 +375,14 @@ class ProjectAnalyzerTest {
         var dynamic=analyze("parameter('dynamic',description:'P',required:true,defaultValue:lookup())");assertFalse(codes(dynamic).contains("PARAMETER_REQUIRED_DEFAULT"));
         var invalid=analyze("parameter('read'); parameter('n',description:' ',type:'integer',defaultValue:5G); parameter('b',description:'B',type:'boolean',required:true,defaultValue:'TRUE'); action('a') { parameter('n',Integer); parameter('unknown') }");assertTrue(codes(invalid).containsAll(List.of("TOPLEVEL_PARAMETER_READ","PARAMETER_DESCRIPTION","PARAMETER_DEFAULT","PARAMETER_REQUIRED_DEFAULT","PARAMETER_READ_TYPE","UNKNOWN_PARAMETER")));
     }
+    @Test void completeCatalogWarnsAtUnknownOperationNames() {
+        String source = "task('a', MissingTaskOperation) {}; action('b') { ctx.run(MissingInnerOperation) {} }";
+        var warnings = analyze(source).diagnostics().stream().filter(d -> d.code().equals("UNKNOWN_OPERATION")).toList();
+        assertTrue(warnings.stream().allMatch(d -> d.severity() == Severity.WARNING && d.anchor().documentId().equals(JOB)));
+        assertEquals(List.of("MissingInnerOperation", "MissingTaskOperation"), warnings.stream()
+                .map(d -> source.substring(d.anchor().span().startUtf16(), d.anchor().span().endUtf16()))
+                .sorted().toList());
+    }
     @Test void catalogOutageIsVisibleWithoutFalseUnknownOperationsAndFieldsUseCoverage(){
         var unavailable=analyze(Map.of(JOB,"task('a', Echo) { impossible='x' }"),JOB,new DocumentStore(),new CatalogRepository(),"fr");assertTrue(codes(unavailable).contains("CATALOG_UNAVAILABLE"));assertFalse(codes(unavailable).contains("UNKNOWN_OPERATION"));assertFalse(codes(unavailable).contains("UNKNOWN_INPUT"));assertEquals("Operation catalog is unavailable or incomplete.",unavailable.diagnostics().getFirst().message());
         var fields=analyze("task('a', Echo) { typo='x'; mode='invalid' }; task('b', Echo) { configureSomehow() }");assertTrue(codes(fields).containsAll(List.of("UNKNOWN_INPUT","INPUT_ENUM","REQUIRED_INPUT")));assertEquals(1,Collections.frequency(codes(fields),"REQUIRED_INPUT"));
@@ -399,12 +407,16 @@ class ProjectAnalyzerTest {
         var sql = URI.create("file:/work/query.sql");
         for (String operation : List.of("DuckDbSqlExecutor", "DuckDbId")) {
             String source = "action('a') { ctx.run(" + operation + ") { sqlFiles=[file('query.sql')] } }";
-            // SQL acquisition is syntax-based. Explicitly capture the resource when using the ID.
-            var requestedSources = operation.equals("DuckDbId") ? List.of(sql) : List.<URI>of();
-            var analysis = analyze(Map.of(JOB, source, sql, "select ${missing}"), JOB, new DocumentStore(),
-                    catalog(), "en", requestedSources);
+            var files = Map.of(JOB, source, sql, "select ${missing}");
+            var analysis = analyze(files, JOB, new DocumentStore(), catalog(), "en");
+            if (operation.equals("DuckDbId")) {
+                // Automatic capture keys off the written SQL symbol. An explicit capture supplies the source for IDs.
+                assertTrue(codes(analysis).contains("SQL_SOURCE_NOT_INSPECTED"));
+                assertFalse(codes(analysis).contains("SQL_PARAMETER_MISSING"));
+                analysis = analyze(files, JOB, new DocumentStore(), catalog(), "en", List.of(sql));
+            }
             var diagnostic = analysis.diagnostics().stream().filter(d -> d.code().equals("SQL_PARAMETER_MISSING"))
-                    .findFirst().orElseThrow(() -> new AssertionError(operation + ": " + analysis.diagnostics()));
+                    .findFirst().orElseThrow();
             assertEquals(Severity.ERROR, diagnostic.severity());
             assertEquals(sql, diagnostic.anchor().documentId());
         }

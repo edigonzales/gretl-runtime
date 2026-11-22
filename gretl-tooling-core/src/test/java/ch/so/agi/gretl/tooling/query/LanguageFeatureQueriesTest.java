@@ -2,6 +2,7 @@ package ch.so.agi.gretl.tooling.query;
 
 import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.CancellationToken;
+import ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor;
 import ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor;
 import ch.so.agi.gretl.tooling.graph.JobGraph.NodeKind;
 import ch.so.agi.gretl.tooling.graph.JobGraphProjector;
@@ -11,6 +12,7 @@ import ch.so.agi.gretl.tooling.query.QueryResults.*;
 import ch.so.agi.gretl.tooling.semantic.AnalysisSnapshot;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -74,8 +76,10 @@ class LanguageFeatureQueriesTest {
     @Test void innerOperationIdSuppliesTheSameMetadataToAnalysisGraphHoverAndCompletion() {
         try (var fixture = new EditTestWorkspace()) {
             var echo = fixture.catalog.snapshot().result().catalog().orElseThrow().resolve("Echo").orElseThrow();
-            var operation = new OperationDescriptor("EchoId", "OtherEcho", echo.description(), echo.origin(),
-                    echo.inputs(), echo.outputs(), echo.example(), echo.voidResult());
+            var mode = new InputDescriptor("mode", "Other echo mode", false, false, null, List.of("FAST", "QUIET"),
+                    "mode='QUIET'", echo.inputs().getFirst().shape(), null, false, Map.of());
+            var operation = new OperationDescriptor("EchoId", "OtherEcho", "Other echo", echo.origin(),
+                    List.of(echo.inputs().getFirst(), mode), echo.outputs(), echo.example(), echo.voidResult());
             fixture.catalog.mergeExplicitDescriptors(List.of(operation));
             fixture.manager.onCatalogChanged();
             String source = "action('consumer') { ctx.run(EchoId) { input='example'; mode='FAST'; typo='x' } }";
@@ -91,10 +95,9 @@ class LanguageFeatureQueriesTest {
             assertEquals(operation.inputs(), inner.inputs());
             assertEquals(operation.description(), queries.hover(at(snapshot, source, "EchoId", 1))
                     .orElseThrow().documentation());
-            assertEquals(operation.inputs().getFirst().description(), queries.hover(at(snapshot, source, "input", 1))
-                    .orElseThrow().documentation());
+            assertEquals(mode.description(), queries.hover(at(snapshot, source, "mode", 1)).orElseThrow().documentation());
             assertEquals("mode", proposal(at(snapshot, source, "mode", 1), "mode").newText());
-            assertTrue(apply(source, proposal(at(snapshot, source, "'FAST'", 2), "SLOW")).contains("mode='SLOW'"));
+            assertTrue(apply(source, proposal(at(snapshot, source, "'FAST'", 2), "QUIET")).contains("mode='QUIET'"));
 
             fixture.catalog.mergeExplicitDescriptors(List.of(new OperationDescriptor("anotherId", "EchoId",
                     "Ambiguous", echo.origin(), List.of(), List.of(), echo.example(), true)));
