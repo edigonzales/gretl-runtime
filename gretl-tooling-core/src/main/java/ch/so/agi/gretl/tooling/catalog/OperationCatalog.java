@@ -3,6 +3,8 @@ package ch.so.agi.gretl.tooling.catalog;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /** Data-only catalog. No runtime type, reflection, callback or class loader is retained. */
 public record OperationCatalog(int schemaVersion, String runtimeVersion, String dslVersion,
@@ -12,6 +14,21 @@ public record OperationCatalog(int schemaVersion, String runtimeVersion, String 
         Objects.requireNonNull(runtimeVersion); Objects.requireNonNull(dslVersion);
         Objects.requireNonNull(catalogId); Objects.requireNonNull(coverage);
     }
+    /** Resolves an exact symbol or operation ID only if the match is unique. */
+    public Optional<OperationDescriptor> resolve(String name) {
+        var matches = matching(name).limit(2).toList();
+        return matches.size() == 1 ? Optional.of(matches.getFirst()) : Optional.empty();
+    }
+
+    /** Includes ambiguous names so callers can distinguish them from unknown names. */
+    public boolean containsName(String name) {
+        return matching(name).findAny().isPresent();
+    }
+
+    private Stream<OperationDescriptor> matching(String name) {
+        return operations.stream().filter(op -> op.symbol().equals(name) || op.operationId().equals(name));
+    }
+
     public record ValueShape(String kind, String runtimeType, List<ValueShape> children) {
         public ValueShape { Objects.requireNonNull(kind); Objects.requireNonNull(runtimeType); children = List.copyOf(children); }
         public static ValueShape fromMetadata(String type) {

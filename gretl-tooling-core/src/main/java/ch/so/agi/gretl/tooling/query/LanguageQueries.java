@@ -192,7 +192,7 @@ public final class LanguageQueries {
             if(!context.accepts(symbol))continue;
             if(symbol.anchor().documentId().equals(context.documentId()))for(var inner:symbol.declaration().invocations()) {
                 if(inner.operation() instanceof NameValue name) {
-                    var operation=analysis.capture().catalog().result().catalog().stream().flatMap(c->c.operations().stream()).filter(o->o.symbol().equals(name.name())).findFirst();
+                    var operation=analysis.capture().catalog().result().catalog().flatMap(c -> c.resolve(name.name()));
                     if(operation.isPresent()&&inner.operation().span().contains(context.offsetUtf16()))return Optional.of(new HoverInfo(new Anchor(context.documentId(),inner.operation().span()),name.name(),operation.get().description()));
                     if(operation.isPresent())for(var field:inner.fields())if(field.nameSpan().contains(context.offsetUtf16())) {
                         var input=operation.get().inputs().stream().filter(i->i.name().equals(field.name())).findFirst();
