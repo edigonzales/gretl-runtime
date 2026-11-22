@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -36,7 +37,7 @@ final class RunnerTestSupport {
                 .jobName("runner-test")
                 .runId(UUID.randomUUID())
                 .clock(Clock.fixed(Instant.parse("2026-10-18T10:00:00Z"), ZoneOffset.UTC))
-                .monotonicClock(monotonic)
+                .runControl(new RunControl(monotonic, Optional.empty()))
                 .eventSink(sink)
                 .parameters(noParameters());
     }
