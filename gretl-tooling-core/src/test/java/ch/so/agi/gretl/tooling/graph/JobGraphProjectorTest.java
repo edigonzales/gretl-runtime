@@ -57,8 +57,14 @@ class JobGraphProjectorTest {
 
     @Test void dynamicCodeIsVisibleAndPresentationIdentitySurvivesSnapshotChanges() {
         try(var fixture=new EditTestWorkspace()) {
-            fixture.files.put(JOB,"task('a', Echo) { input='old' }; def x=System.getProperty('name'); task(x,Echo) { input='dynamic' }");
-            var first=fixture.capture();var graph=projector.project(first,JobGraphProjector.GraphOptions.defaults(),CancellationToken.NONE);
+            fixture.files.put(JOB, "task('a', Echo) { input='old' }; def x=System.getProperty('name'); "
+                    + "task(x,Echo) { input='dynamic' }; action('run') { ctx.run(chooseOperation()) { input='x' } }");
+            var first = fixture.capture();
+            var graph = projector.project(first, new JobGraphProjector.GraphOptions(true, true), CancellationToken.NONE);
+            var inner = graph.nodes().stream().filter(n -> n.kind() == NodeKind.INNER_INVOCATION).findFirst().orElseThrow();
+            assertEquals("Dynamic invocation", inner.title());
+            assertNull(inner.operationId());
+            assertTrue(inner.inputs().isEmpty());
             assertEquals(Status.PARTIAL,graph.status());
             assertTrue(graph.nodes().stream().anyMatch(n->n.kind()==NodeKind.DYNAMIC_CODE&&n.editCapabilities().isEmpty()));
             var next=projector.project(fixture.capture(),JobGraphProjector.GraphOptions.defaults(),CancellationToken.NONE);

@@ -994,9 +994,7 @@ public final class ProjectAnalyzer {
                         application,
                         "UNKNOWN_OPERATION",
                         Severity.WARNING,
-                        expression == null
-                                ? anchor
-                                : new Anchor(anchor.documentId(), expression.span()),
+                        new Anchor(anchor.documentId(), expression.span()),
                         List.of());
             return null;
         }

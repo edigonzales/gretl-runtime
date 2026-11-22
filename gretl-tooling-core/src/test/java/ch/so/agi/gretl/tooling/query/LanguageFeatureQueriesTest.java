@@ -2,7 +2,9 @@ package ch.so.agi.gretl.tooling.query;
 
 import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.CancellationToken;
+import ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor;
 import ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor;
+import ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape;
 import ch.so.agi.gretl.tooling.graph.JobGraph.NodeKind;
 import ch.so.agi.gretl.tooling.graph.JobGraphProjector;
 import ch.so.agi.gretl.tooling.edit.EditVerifier;
@@ -11,6 +13,7 @@ import ch.so.agi.gretl.tooling.query.QueryResults.*;
 import ch.so.agi.gretl.tooling.semantic.AnalysisSnapshot;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,14 +76,15 @@ class LanguageFeatureQueriesTest {
 
     @Test void innerOperationSymbolsSupplyMetadataButTechnicalIdsDoNot() {
         try (var fixture = new EditTestWorkspace()) {
-            var echo = fixture.catalog.snapshot().result().catalog().orElseThrow().resolveSymbol("Echo").orElseThrow();
-            var operation = new OperationDescriptor("EchoId", "OtherEcho", "Other echo", echo.origin(),
-                    echo.inputs(), echo.outputs(), echo.example(), echo.voidResult());
+            var mode = new InputDescriptor("mode", "Other echo mode", false, false, null, List.of("FAST", "QUIET"),
+                    "mode='QUIET'", ValueShape.fromMetadata("text"), null, false, Map.of());
+            var operation = new OperationDescriptor("EchoId", "OtherEcho", "Other echo", "fixture",
+                    List.of(mode), List.of(), "example", true);
             fixture.catalog.mergeExplicitDescriptors(List.of(operation));
             fixture.manager.onCatalogChanged();
             var projector = new JobGraphProjector();
             var options = new JobGraphProjector.GraphOptions(true, false);
-            String source = "action('consumer') { ctx.run(OtherEcho) { input='example'; mode='FAST' } }";
+            String source = "action('consumer') { ctx.run(OtherEcho) { mode='FAST' } }";
             fixture.files.put(JOB, source);
             var snapshot = fixture.capture();
             assertTrue(snapshot.analysis().diagnostics().isEmpty());
@@ -91,9 +95,9 @@ class LanguageFeatureQueriesTest {
             assertEquals(operation.inputs(), inner.inputs());
             assertEquals(operation.description(), queries.hover(at(snapshot, source, "OtherEcho", 1))
                     .orElseThrow().documentation());
-            assertEquals("Mode", queries.hover(at(snapshot, source, "mode", 1)).orElseThrow().documentation());
+            assertEquals(mode.description(), queries.hover(at(snapshot, source, "mode", 1)).orElseThrow().documentation());
             assertEquals("mode", proposal(at(snapshot, source, "mode", 1), "mode").newText());
-            assertTrue(apply(source, proposal(at(snapshot, source, "'FAST'", 2), "SLOW")).contains("mode='SLOW'"));
+            assertTrue(apply(source, proposal(at(snapshot, source, "'FAST'", 2), "QUIET")).contains("mode='QUIET'"));
 
             String idSource = source.replace("OtherEcho", "EchoId");
             fixture.files.put(JOB, idSource);

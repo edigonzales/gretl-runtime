@@ -465,7 +465,10 @@ class ProjectAnalyzerTest {
 
     @Test void partialCatalogsLimitFieldCertaintyWithoutSuppressingKnownReservedNames(){
         var incomplete=catalog();var original=incomplete.snapshot().result().catalog().orElseThrow();var codec=new CatalogJsonCodec();incomplete.loadBundled(codec.encodeCanonical(codec.identify(new OperationCatalog(1,original.runtimeVersion(),original.dslVersion(),"",original.producers(),original.operations(),"PARTIAL"))),null);
-        var analysis=analyze(Map.of(JOB,"task('a', Echo) { typo='x'; owner='bad' }"),JOB,new DocumentStore(),incomplete,"en");
+        String source = "task('a', Echo) { typo='x'; owner='bad' }; action('b') { ctx.run(MissingOperation) {} }";
+        var analysis = analyze(Map.of(JOB, source), JOB, new DocumentStore(), incomplete, "en");
+        assertTrue(codes(analysis).contains("CATALOG_UNAVAILABLE"));
+        assertFalse(codes(analysis).contains("UNKNOWN_OPERATION"));
         assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_INPUT")&&d.severity()==Severity.WARNING));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.WARNING));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("RESERVED_CONFIGURATION_FIELD")&&d.severity()==Severity.ERROR));assertFalse(analysis.capabilities().catalogAvailable());
     }
 

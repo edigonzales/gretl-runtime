@@ -13,7 +13,7 @@ public record OperationCatalog(int schemaVersion, String runtimeVersion, String 
         Objects.requireNonNull(runtimeVersion); Objects.requireNonNull(dslVersion);
         Objects.requireNonNull(catalogId); Objects.requireNonNull(coverage);
     }
-    /** Resolves an exact, unique Groovy operation symbol. */
+    /** Resolves an exact Groovy operation symbol. Validated catalogs have unique symbols. */
     public Optional<OperationDescriptor> resolveSymbol(String symbol) {
         var matches = operations.stream().filter(op -> op.symbol().equals(symbol)).limit(2).toList();
         return matches.size() == 1 ? Optional.of(matches.getFirst()) : Optional.empty();
