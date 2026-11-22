@@ -60,7 +60,7 @@ public final class JobGraphProjector {
                 String name = inner.operation() instanceof NameValue value ? value.name() : null;
                 String title = name == null ? "Dynamic invocation" : name;
                 var innerOperation = analysis.capture().catalog().result().catalog()
-                        .filter(c -> name != null).flatMap(c -> c.resolve(name));
+                        .filter(c -> name != null).flatMap(c -> c.resolveSymbol(name));
                 // Explanatory children have no orchestrated symbol or independent edit capability.
                 nodes.add(new Node(id(snapshot,"inner",innerNext++),null,null,new Anchor(anchor.documentId(),inner.span()),NodeKind.INNER_INVOCATION,title,
                         innerOperation.map(o->o.operationId()).orElse(null),id,Map.of(),innerOperation.map(o->o.inputs()).orElse(List.of()),innerOperation.map(o->o.outputs()).orElse(List.of()),List.of()));

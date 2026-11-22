@@ -43,25 +43,24 @@ class OperationCatalogExporterTest {
         new OperationCatalogExporter().write(catalog,output);
         assertEquals(CatalogJsonCodec.State.AVAILABLE,codec.decode(Files.readAllBytes(output.resolve("operations.json")),catalog.catalogId()).state());
     }
-    @Test void namesResolveExactlyAndOnlyWhenUnique() throws Exception {
-        var catalog = actual();
-        var operation = catalog.operations().getFirst();
-        assertEquals(Optional.of(operation), catalog.resolve(operation.symbol()));
-        assertEquals(Optional.of(operation), catalog.resolve(operation.operationId()));
-        assertTrue(catalog.resolve("UnknownOperation").isEmpty());
-        assertTrue(catalog.resolve(operation.symbol() + " ").isEmpty());
+    @Test void groovySymbolsResolveExactlyAndIndependentlyOfOperationIds() {
+        var echo = new OperationDescriptor("operation.echo", "Echo", "Echo", "fixture",
+                List.of(), List.of(), "example", true);
+        var other = new OperationDescriptor("Echo", "OtherEcho", "Other echo", "fixture",
+                List.of(), List.of(), "example", true);
+        var catalog = new OperationCatalog(1, "test", "1", "", List.of("fixture"), List.of(echo, other), "COMPLETE");
+        assertEquals(Optional.of(echo), catalog.resolveSymbol("Echo"));
+        assertEquals(Optional.of(other), catalog.resolveSymbol("OtherEcho"));
+        assertTrue(catalog.resolveSymbol("operation.echo").isEmpty());
+        assertTrue(catalog.resolveSymbol("UnknownOperation").isEmpty());
+        assertTrue(catalog.resolveSymbol("echo").isEmpty());
+        assertTrue(catalog.resolveSymbol("Echo ").isEmpty());
 
-        var sameName = new OperationDescriptor(operation.symbol(), operation.symbol(), operation.description(),
-                operation.origin(), operation.inputs(), operation.outputs(), operation.example(), operation.voidResult());
-        var sameNameCatalog = new OperationCatalog(1, "test", "1", "", catalog.producers(),
-                List.of(sameName), "COMPLETE");
-        assertEquals(Optional.of(sameName), sameNameCatalog.resolve(sameName.symbol()));
-
-        var collision = new OperationDescriptor(operation.symbol(), "DifferentSymbol", operation.description(),
-                operation.origin(), operation.inputs(), operation.outputs(), operation.example(), operation.voidResult());
-        var ambiguousCatalog = new OperationCatalog(1, "test", "1", "", catalog.producers(),
-                List.of(operation, collision), "COMPLETE");
-        assertTrue(ambiguousCatalog.resolve(operation.symbol()).isEmpty());
+        var duplicate = new OperationDescriptor("duplicate.echo", "Echo", "Duplicate echo", "fixture",
+                List.of(), List.of(), "example", true);
+        var ambiguous = new OperationCatalog(1, "test", "1", "", List.of("fixture"),
+                List.of(echo, duplicate), "COMPLETE");
+        assertTrue(ambiguous.resolveSymbol("Echo").isEmpty());
     }
 
     @Test void poisonCallbacksAndUnknownObjectAreNeverExecuted() {

@@ -987,10 +987,9 @@ public final class ProjectAnalyzer {
                 ValueExpression expression, Anchor anchor, SourceApplication application) {
             String name = expression instanceof NameValue n ? n.name() : null;
             if (name == null) return null;
-            var catalog = capture.catalog().result().catalog();
-            var operation = catalog.flatMap(c -> c.resolve(name));
+            var operation = capture.catalog().result().catalog().flatMap(c -> c.resolveSymbol(name));
             if (operation.isPresent()) return operation.get();
-            if (catalogComplete && catalog.filter(c -> !c.containsName(name)).isPresent())
+            if (catalogComplete)
                 diagnosticFor(
                         application,
                         "UNKNOWN_OPERATION",

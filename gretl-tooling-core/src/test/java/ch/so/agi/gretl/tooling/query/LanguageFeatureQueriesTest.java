@@ -2,7 +2,6 @@ package ch.so.agi.gretl.tooling.query;
 
 import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
 import ch.so.agi.gretl.tooling.CancellationToken;
-import ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor;
 import ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor;
 import ch.so.agi.gretl.tooling.graph.JobGraph.NodeKind;
 import ch.so.agi.gretl.tooling.graph.JobGraphProjector;
@@ -12,7 +11,6 @@ import ch.so.agi.gretl.tooling.query.QueryResults.*;
 import ch.so.agi.gretl.tooling.semantic.AnalysisSnapshot;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,45 +71,43 @@ class LanguageFeatureQueriesTest {
         }
     }
 
-    @Test void innerOperationIdSuppliesTheSameMetadataToAnalysisGraphHoverAndCompletion() {
+    @Test void innerOperationSymbolsSupplyMetadataButTechnicalIdsDoNot() {
         try (var fixture = new EditTestWorkspace()) {
-            var echo = fixture.catalog.snapshot().result().catalog().orElseThrow().resolve("Echo").orElseThrow();
-            var mode = new InputDescriptor("mode", "Other echo mode", false, false, null, List.of("FAST", "QUIET"),
-                    "mode='QUIET'", echo.inputs().getFirst().shape(), null, false, Map.of());
+            var echo = fixture.catalog.snapshot().result().catalog().orElseThrow().resolveSymbol("Echo").orElseThrow();
             var operation = new OperationDescriptor("EchoId", "OtherEcho", "Other echo", echo.origin(),
-                    List.of(echo.inputs().getFirst(), mode), echo.outputs(), echo.example(), echo.voidResult());
+                    echo.inputs(), echo.outputs(), echo.example(), echo.voidResult());
             fixture.catalog.mergeExplicitDescriptors(List.of(operation));
             fixture.manager.onCatalogChanged();
-            String source = "action('consumer') { ctx.run(EchoId) { input='example'; mode='FAST'; typo='x' } }";
+            var projector = new JobGraphProjector();
+            var options = new JobGraphProjector.GraphOptions(true, false);
+            String source = "action('consumer') { ctx.run(OtherEcho) { input='example'; mode='FAST' } }";
             fixture.files.put(JOB, source);
             var snapshot = fixture.capture();
-            assertEquals(List.of("UNKNOWN_INPUT"), snapshot.analysis().diagnostics().stream()
-                    .map(d -> d.code()).toList());
-            var graph = new JobGraphProjector().project(snapshot, new JobGraphProjector.GraphOptions(true, false),
-                    CancellationToken.NONE);
+            assertTrue(snapshot.analysis().diagnostics().isEmpty());
+            var graph = projector.project(snapshot, options, CancellationToken.NONE);
             var inner = graph.nodes().stream().filter(n -> n.kind() == NodeKind.INNER_INVOCATION)
                     .findFirst().orElseThrow();
             assertEquals(operation.operationId(), inner.operationId());
             assertEquals(operation.inputs(), inner.inputs());
-            assertEquals(operation.description(), queries.hover(at(snapshot, source, "EchoId", 1))
+            assertEquals(operation.description(), queries.hover(at(snapshot, source, "OtherEcho", 1))
                     .orElseThrow().documentation());
-            assertEquals(mode.description(), queries.hover(at(snapshot, source, "mode", 1)).orElseThrow().documentation());
+            assertEquals("Mode", queries.hover(at(snapshot, source, "mode", 1)).orElseThrow().documentation());
             assertEquals("mode", proposal(at(snapshot, source, "mode", 1), "mode").newText());
-            assertTrue(apply(source, proposal(at(snapshot, source, "'FAST'", 2), "QUIET")).contains("mode='QUIET'"));
+            assertTrue(apply(source, proposal(at(snapshot, source, "'FAST'", 2), "SLOW")).contains("mode='SLOW'"));
 
-            fixture.catalog.mergeExplicitDescriptors(List.of(new OperationDescriptor("anotherId", "EchoId",
-                    "Ambiguous", echo.origin(), List.of(), List.of(), echo.example(), true)));
-            fixture.manager.onCatalogChanged();
-            var ambiguous = fixture.capture();
-            assertTrue(ambiguous.analysis().diagnostics().isEmpty());
-            var ambiguousGraph = new JobGraphProjector().project(ambiguous,
-                    new JobGraphProjector.GraphOptions(true, false), CancellationToken.NONE);
-            var ambiguousInner = ambiguousGraph.nodes().stream().filter(n -> n.kind() == NodeKind.INNER_INVOCATION)
+            String idSource = source.replace("OtherEcho", "EchoId");
+            fixture.files.put(JOB, idSource);
+            var unknown = fixture.capture();
+            assertEquals(List.of("UNKNOWN_OPERATION"), unknown.analysis().diagnostics().stream()
+                    .map(d -> d.code()).toList());
+            var unknownGraph = projector.project(unknown, options, CancellationToken.NONE);
+            var unknownInner = unknownGraph.nodes().stream().filter(n -> n.kind() == NodeKind.INNER_INVOCATION)
                     .findFirst().orElseThrow();
-            assertNull(ambiguousInner.operationId());
-            assertTrue(ambiguousInner.inputs().isEmpty());
-            assertTrue(queries.hover(at(ambiguous, source, "EchoId", 1)).isEmpty());
-            assertTrue(queries.complete(at(ambiguous, source, "mode", 1)).isEmpty());
+            assertNull(unknownInner.operationId());
+            assertTrue(unknownInner.inputs().isEmpty());
+            assertTrue(queries.hover(at(unknown, idSource, "EchoId", 1)).isEmpty());
+            assertTrue(queries.hover(at(unknown, idSource, "mode", 1)).isEmpty());
+            assertTrue(queries.complete(at(unknown, idSource, "mode", 1)).isEmpty());
         }
     }
 

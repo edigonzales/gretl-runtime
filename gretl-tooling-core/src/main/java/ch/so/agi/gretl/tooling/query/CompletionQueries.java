@@ -69,7 +69,7 @@ final class CompletionQueries {
             for(var inner:declaration.invocations())if(inner.body()!=null&&touch(inner.body(),context.offsetUtf16())) {
                 fields=inner.fields();body=inner.body();
                 operation = inner.operation() instanceof NameValue name
-                        ? analysis.capture().catalog().result().catalog().flatMap(c -> c.resolve(name.name())).orElse(null)
+                        ? analysis.capture().catalog().result().catalog().flatMap(c -> c.resolveSymbol(name.name())).orElse(null)
                         : null;
             }
             if(operation!=null) {

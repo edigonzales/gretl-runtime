@@ -25,7 +25,7 @@ public final class SqlTemplateAnalyzer {
         if(symbol.operation()!=null)validateFields(capture,symbol.application().resourceBase(),symbol.anchor(),symbol.operation().symbol(),symbol.declaration().fields(),guarded(reporter,conditional),cancellation);
         for (var inner : symbol.declaration().invocations()) {
             if (EffectiveOptions.of(symbol.declaration()).active(inner.span()) && inner.operation() instanceof NameValue name) {
-                capture.catalog().result().catalog().flatMap(c -> c.resolve(name.name())).ifPresent(operation ->
+                capture.catalog().result().catalog().flatMap(c -> c.resolveSymbol(name.name())).ifPresent(operation ->
                         validateFields(capture, symbol.application().resourceBase(),
                                 new Anchor(symbol.anchor().documentId(), inner.span()), operation.symbol(), inner.fields(),
                                 guarded(reporter, guarded.test(inner.span()) || inner.coverage().fieldAssignments() != Completeness.COMPLETE),

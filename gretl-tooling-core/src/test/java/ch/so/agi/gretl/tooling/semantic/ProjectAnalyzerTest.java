@@ -32,9 +32,6 @@ class ProjectAnalyzerTest {
         var load=repository.loadBundled(codec.encodeCanonical(codec.identify(new OperationCatalog(1,"test","test","",List.of("fixture"),operations,"COMPLETE"))),null);assertEquals(CatalogJsonCodec.State.AVAILABLE,load.result().state());return repository;}
     static Analysis analyze(String text){return analyze(Map.of(JOB,text),JOB,new DocumentStore(),catalog(),"en");}
     static Analysis analyze(Map<URI,String> files,URI document,DocumentStore store,CatalogRepository catalogs,String language){
-        return analyze(files, document, store, catalogs, language, List.of());
-    }
-    static Analysis analyze(Map<URI,String> files,URI document,DocumentStore store,CatalogRepository catalogs,String language,List<URI> requestedSources){
         var prohibit=new AtomicBoolean();SourceRepository repository=new SourceRepository(){
             public SourceRead read(URI id,ReadPolicy policy,CancellationToken cancellation){assertFalse(prohibit.get(),"Semantic analysis must use only captured sources");var text=files.get(id);return text==null?SourceRead.unavailable("SOURCE_MISSING",id):SourceRead.found(new SourceText(id,text,null,"DISK",true,text));}
             public List<SourceIssue> checkIncludeTraversal(IncludeTraversal path, ReadPolicy policy, CancellationToken cancellation) {
@@ -49,7 +46,7 @@ class ProjectAnalyzerTest {
                 assertTrue(entries.size()<=budget.maximumEntries());return new SourceListing(entries,List.of(),true);
             }
         };
-        try(var manager=new WorkspaceManager(store,catalogs)){manager.addRoot(ROOT,repository);manager.updateConfiguration(ROOT,new WorkspaceManager.Configuration(language,Map.of()));var captured=manager.capture(new ProjectRequest(ROOT,document,false,List.of(),requestedSources),CancellationToken.NONE);prohibit.set(true);return new ProjectAnalyzer().analyze(captured,CancellationToken.NONE);}
+        try(var manager=new WorkspaceManager(store,catalogs)){manager.addRoot(ROOT,repository);manager.updateConfiguration(ROOT,new WorkspaceManager.Configuration(language,Map.of()));var captured=manager.capture(new ProjectRequest(ROOT,document),CancellationToken.NONE);prohibit.set(true);return new ProjectAnalyzer().analyze(captured,CancellationToken.NONE);}
     }
     static List<String> codes(Analysis analysis){return analysis.diagnostics().stream().map(Diagnostic::code).toList();}
     @Test void defaultsResolveLocalTaskRefsWithoutAnOwner() {
@@ -375,11 +372,11 @@ class ProjectAnalyzerTest {
         var dynamic=analyze("parameter('dynamic',description:'P',required:true,defaultValue:lookup())");assertFalse(codes(dynamic).contains("PARAMETER_REQUIRED_DEFAULT"));
         var invalid=analyze("parameter('read'); parameter('n',description:' ',type:'integer',defaultValue:5G); parameter('b',description:'B',type:'boolean',required:true,defaultValue:'TRUE'); action('a') { parameter('n',Integer); parameter('unknown') }");assertTrue(codes(invalid).containsAll(List.of("TOPLEVEL_PARAMETER_READ","PARAMETER_DESCRIPTION","PARAMETER_DEFAULT","PARAMETER_REQUIRED_DEFAULT","PARAMETER_READ_TYPE","UNKNOWN_PARAMETER")));
     }
-    @Test void completeCatalogWarnsAtUnknownOperationNames() {
-        String source = "task('a', MissingTaskOperation) {}; action('b') { ctx.run(MissingInnerOperation) {} }";
+    @Test void completeCatalogWarnsAtUnknownOperationNamesIncludingTechnicalIds() {
+        String source = "task('a', MissingTaskOperation) {}; action('b') { ctx.run(DuckDbId) {} }";
         var warnings = analyze(source).diagnostics().stream().filter(d -> d.code().equals("UNKNOWN_OPERATION")).toList();
         assertTrue(warnings.stream().allMatch(d -> d.severity() == Severity.WARNING && d.anchor().documentId().equals(JOB)));
-        assertEquals(List.of("MissingInnerOperation", "MissingTaskOperation"), warnings.stream()
+        assertEquals(List.of("DuckDbId", "MissingTaskOperation"), warnings.stream()
                 .map(d -> source.substring(d.anchor().span().startUtf16(), d.anchor().span().endUtf16()))
                 .sorted().toList());
     }
@@ -403,24 +400,20 @@ class ProjectAnalyzerTest {
         var analysis=analyze("parameter('external',description:'P',type:'path'); action('a') { file('sql/input.sql'); workPath('output'); parameter('external'); path('raw-relative') }");
         assertEquals(List.of(PathKind.JOB_RESOURCE,PathKind.WORK,PathKind.EXTERNAL_PARAMETER,PathKind.DYNAMIC),analysis.paths().stream().map(PathReference::kind).toList());assertEquals(URI.create("file:/work/sql/input.sql"),analysis.paths().getFirst().resourceId());assertNull(analysis.paths().get(1).resourceId());assertNull(analysis.paths().get(2).resourceId());
     }
-    @Test void innerSqlTemplatesUseTheCanonicalSymbolForAnOperationId() {
+    @Test void innerSqlTemplatesAreCheckedForGroovySymbols() {
         var sql = URI.create("file:/work/query.sql");
-        for (String operation : List.of("DuckDbSqlExecutor", "DuckDbId")) {
-            String source = "action('a') { ctx.run(" + operation + ") { sqlFiles=[file('query.sql')] } }";
-            var files = Map.of(JOB, source, sql, "select ${missing}");
-            var analysis = analyze(files, JOB, new DocumentStore(), catalog(), "en");
-            if (operation.equals("DuckDbId")) {
-                // Automatic capture keys off the written SQL symbol. An explicit capture supplies the source for IDs.
-                assertTrue(codes(analysis).contains("SQL_SOURCE_NOT_INSPECTED"));
-                assertFalse(codes(analysis).contains("SQL_PARAMETER_MISSING"));
-                analysis = analyze(files, JOB, new DocumentStore(), catalog(), "en", List.of(sql));
-            }
-            var diagnostic = analysis.diagnostics().stream().filter(d -> d.code().equals("SQL_PARAMETER_MISSING"))
-                    .findFirst().orElseThrow();
-            assertEquals(Severity.ERROR, diagnostic.severity());
-            assertEquals(sql, diagnostic.anchor().documentId());
-        }
+        String source = "action('a') { ctx.run(DuckDbSqlExecutor) { sqlFiles=[file('query.sql')] } }";
+        var analysis = analyze(Map.of(JOB, source, sql, "select ${missing}"), JOB, new DocumentStore(), catalog(), "en");
+        var diagnostic = analysis.diagnostics().stream().filter(d -> d.code().equals("SQL_PARAMETER_MISSING"))
+                .findFirst().orElseThrow();
+        assertEquals(Severity.ERROR, diagnostic.severity());
+        assertEquals(sql, diagnostic.anchor().documentId());
+
+        String idSource = source.replace("DuckDbSqlExecutor", "DuckDbId");
+        var unknown = analyze(Map.of(JOB, idSource, sql, "select ${missing}"), JOB, new DocumentStore(), catalog(), "en");
+        assertEquals(List.of("UNKNOWN_OPERATION"), codes(unknown));
     }
+
     @Test void sqlExecutorAcceptsMapsAndListsAndChecksOnlyExecutedTemplates() {
         var sql = URI.create("file:/work/query.sql");
         for (String fields : List.of(
