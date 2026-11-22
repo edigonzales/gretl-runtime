@@ -53,10 +53,6 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
                 await this.current(action.client,action.context,action.edit);
                 const converted=await action.client.protocol2CodeConverter.asWorkspaceEdit(action.edit);
                 await this.current(action.client,action.context,action.edit);
-                // A local buffer can change while the final server context response is pending.
-                const stamps=action.context.sourceStamps.map(stamp=>({...stamp,documentId:vscode.Uri.parse(stamp.documentId).toString()}));
-                const buffers=new Map(vscode.workspace.textDocuments.map(doc=>[doc.uri.toString(),doc]));
-                validateEditBuffers(stamps,this.captures.get(action.context)??new Map(),buffers);
                 if(!converted||!await vscode.workspace.applyEdit(converted))throw new Error('GRETL quick fix could not be applied. Request it again.');
             }),
             vscode.commands.registerCommand('gretlRuntime.stopServer',()=>{this.stopped=true;return this.serial(()=>this.stop());}),
@@ -231,21 +227,7 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
                     if(!current())throw new vscode.CancellationError();
                     return converted;
                 },
-                provideRenameEdits:async(doc,position,newName,token)=>{
-                    let capture:Context|undefined,edit:ProtocolEdit|null|undefined;
-                    for(let attempt=0;attempt<3;attempt++){
-                        capture=await this.capture(client,doc,token);
-                        edit=await client.sendRequest(RenameRequest.type,{textDocument:{uri:doc.uri.toString()},position,newName},token);
-                        if(!edit||!await this.openEditTargets(capture,edit))break;
-                        if(attempt===2)throw new vscode.CancellationError();
-                    }
-                    if(!capture)throw new vscode.CancellationError();
-                    if(!edit||token.isCancellationRequested)return null;
-                    await this.current(client,capture,edit);
-                    const result=await client.protocol2CodeConverter.asWorkspaceEdit(edit,token);
-                    await this.current(client,capture,edit);
-                    return result;
-                },
+                provideRenameEdits:(doc,position,newName,token)=>this.rename(client,doc,position,newName,token),
                 provideCodeActions:async(doc,range,context,token)=>{
                     let capture=await this.capture(client,doc,token);
                     const params={textDocument:{uri:doc.uri.toString()},range:client.code2ProtocolConverter.asRange(range),context:await client.code2ProtocolConverter.asCodeActionContext(context,token)};
@@ -395,6 +377,21 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
         this.captures.set(context,new Map(vscode.workspace.textDocuments.filter(doc=>ownedBuffers.has(doc.uri.toString())).map(doc=>[doc.uri.toString(),doc])));
         return context;
     }
+    private async rename(client:LanguageClient,doc:vscode.TextDocument,position:vscode.Position,newName:string,token:vscode.CancellationToken){
+        let capture:Context|undefined,edit:ProtocolEdit|null|undefined;
+        for(let attempt=0;attempt<3;attempt++){
+            capture=await this.capture(client,doc,token);
+            edit=await client.sendRequest(RenameRequest.type,{textDocument:{uri:doc.uri.toString()},position,newName},token);
+            if(!edit||!await this.openEditTargets(capture,edit))break;
+            if(attempt===2)throw new vscode.CancellationError();
+        }
+        if(!capture)throw new vscode.CancellationError();
+        if(!edit||token.isCancellationRequested)return null;
+        await this.current(client,capture,edit);
+        const result=await client.protocol2CodeConverter.asWorkspaceEdit(edit,token);
+        await this.current(client,capture,edit);
+        return result;
+    }
     private async openEditTargets(capture:Context,edit:ProtocolEdit):Promise<boolean>{
         if(edit.changes&&Object.keys(edit.changes).length||!edit.documentChanges)throw Error('GRETL requires versioned document changes.');
         let opened=false;
@@ -422,9 +419,13 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
             if(!TextDocumentEdit.is(change))throw new Error('GRETL file operations are unsupported.');
             return {uri:normalize(change.textDocument.uri),version:change.textDocument.version};
         });
-        await validateEditSources(stamps,changes,this.captures.get(capture)??new Map(),()=>new Map(vscode.workspace.textDocuments.map(doc=>[doc.uri.toString(),doc])));
+        const capturedBuffers=this.captures.get(capture)??new Map();
+        const currentBuffers=()=>new Map(vscode.workspace.textDocuments.map(doc=>[doc.uri.toString(),doc]));
+        await validateEditSources(stamps,changes,capturedBuffers,currentBuffers);
         await currentContext();
         if(this.client!==client||capture.serverInstanceId!==this.instance||!client.isRunning())throw new Error('GRETL edit belongs to an obsolete session. Retry.');
+        // The last context request can outlive a local buffer change.
+        validateEditBuffers(stamps,capturedBuffers,currentBuffers());
     }
     private async stop():Promise<void>{
         ++this.generation;this.instance=undefined;this.actions.clear();
