@@ -8,11 +8,11 @@ const temp=await mkdtemp(path.join(os.tmpdir(),'gretl-native-capture-'));after((
 // Exercise the actual host. Only external Workbench/LanguageClient services are replaced.
 const source=await readFile('src/extension.ts','utf8');
 await build({stdin:{contents:source+'\nexport {RuntimeHost,sourceDigest,vscode};',sourcefile:'extension.ts',resolveDir:path.resolve('src'),loader:'ts'},bundle:true,platform:'node',format:'cjs',outfile:temp+'/host.cjs',plugins:[{name:'external-host-services',setup(b){b.onResolve({filter:/^(vscode|vscode-languageclient\/node)$/},a=>({path:a.path,namespace:'host-fixture'}));b.onLoad({filter:/.*/,namespace:'host-fixture'},()=>({contents:`module.exports={
- Uri:{parse:s=>({toString:()=>new URL(s).href})},
- workspace:{textDocuments:[],isTrusted:true,applyEdit(){},onDidGrantWorkspaceTrust(){},onDidChangeWorkspaceFolders(){},onDidOpenTextDocument(){},onDidChangeConfiguration(){}},
+ Uri:{parse:s=>({scheme:new URL(s).protocol.slice(0,-1),toString:()=>new URL(s).href})},
+ workspace:{textDocuments:[],isTrusted:true,getWorkspaceFolder:()=>({}),applyEdit(){},onDidGrantWorkspaceTrust(){},onDidChangeWorkspaceFolders(){},onDidOpenTextDocument(){},onDidChangeConfiguration(){}},
  window:{createOutputChannel:()=>({}),createStatusBarItem:()=>({show(){}})},
  StatusBarAlignment:{Left:1},EventEmitter:class{fire(){}},commands:{registerCommand(){}},
- TextDocumentEdit:{is:change=>!!change.textDocument&&Array.isArray(change.edits)}
+ TextDocumentEdit:{is:change=>!!change.textDocument&&Array.isArray(change.edits)},RenameRequest:{type:'textDocument/rename'}
 }`,loader:'js'}));}}]});
 const {RuntimeHost,sourceDigest,vscode}=createRequire(import.meta.url)(temp+'/host.cjs');
 const documentId='file:///work/owner.groovy';
@@ -123,6 +123,84 @@ test('quick fix rejects a buffer change while its final context response is pend
    assert.deepEqual(applied,[nativeEdit]);
   }
  }finally{vscode.workspace.textDocuments.pop();}
+});
+
+function editDuringFinalContext(extraStamps,newText,onFinalContext){
+ const buffer={...doc,text:"action('consumer') {}",getText(){return this.text;}};
+ const capture={...context,sourceStamps:[
+  {documentId,version:1,editable:true,sha256:sourceDigest(buffer.text)},...extraStamps
+ ]};
+ const position={line:0,character:0};
+ const edit={documentChanges:[{textDocument:{uri:documentId,version:1},edits:[
+  {range:{start:position,end:position},newText}
+ ]}]};
+ const native={entries:()=>[[doc.uri,[]]]};
+ let converted=false,contextsAfterConversion=0;
+ const host=hostWith(async method=>{
+  switch(method){
+   case 'textDocument/rename':return edit;
+   case 'gretl/planEdit':return {context:capture,edit,planId:'plan',capability:{state:'ALLOWED'},notices:[]};
+   case 'gretl/validateEdit':return {protocolVersion:1,current:true,reasons:[]};
+   case 'gretl/context':
+    if(converted&&++contextsAfterConversion===2){
+     await new Promise(resolve=>setImmediate(resolve));
+     onFinalContext(buffer);
+    }
+    return {context:structuredClone(capture)};
+   default:throw Error('Unexpected request '+method);
+  }
+ });
+ host.client.protocol2CodeConverter={asWorkspaceEdit:async value=>{
+  assert.equal(value,edit);
+  converted=true;
+  return native;
+ }};
+ host.captures.set(capture,new Map([[documentId,buffer]]));
+ return {host,buffer,capture,native};
+}
+
+test('rename rejects a changed buffer before returning the native edit',async()=>{
+ for(const changeBuffer of [false,true]){
+  const {host,buffer,native}=editDuringFinalContext([], "action('renamed') {}\n", buffer=>{
+   if(changeBuffer){buffer.version++;buffer.text='// shifted range\n'+buffer.text;}
+  });
+  vscode.workspace.textDocuments.push(buffer);
+  try{
+   const result=host.rename(host.client,buffer,{line:0,character:8},'renamed',token);
+   if(changeBuffer)await assert.rejects(result,/GRETL buffer changed/);
+   else assert.equal(await result,native);
+  }finally{vscode.workspace.textDocuments.pop();}
+ }
+});
+
+test('modeler rejects a captured dependency opened during its final context response',async t=>{
+ const dependency=pathToFileURL(path.join(await realpath(temp),'dependency.sql')).href;
+ const dependencyText='SELECT 1;';
+ await writeFile(new URL(dependency),dependencyText);
+ const applied=[];
+ t.mock.method(vscode.workspace,'applyEdit',async edit=>{applied.push(edit);return true;});
+ for(const openDependency of [false,true]){
+  applied.length=0;
+  const stamps=[{documentId:dependency,version:null,editable:false,sha256:sourceDigest(dependencyText)}];
+  const {host,buffer,capture,native}=editDuringFinalContext(stamps, "action('added') {}\n", ()=>{
+   if(openDependency)vscode.workspace.textDocuments.push({...doc,uri:vscode.Uri.parse(dependency),languageId:'sql',getText:()=>dependencyText});
+  });
+  const graph={context:capture};
+  host.modelerCaptures=new WeakMap([[graph,capture]]);
+  host.graphSourceContexts=new WeakMap();
+  host.modelerEditQueue=Promise.resolve();
+  vscode.workspace.textDocuments.push(buffer);
+  try{
+   const result=host.commit(buffer,graph,{kind:'AddAction',name:'added',insertionOffset:0},token);
+   if(openDependency){
+    await assert.rejects(result,/GRETL source was opened after capture/);
+    assert.deepEqual(applied,[]);
+   }else{
+    assert.deepEqual(await result,{notices:[],documents:[documentId]});
+    assert.deepEqual(applied,[native]);
+   }
+  }finally{vscode.workspace.textDocuments.length=0;}
+ }
 });
 
 test('modeler graph still requests and returns the full projection',async()=>{
