@@ -15,8 +15,7 @@ public final class WorkspaceManager implements AutoCloseable {
         public Configuration { language=language==null?"en":language;options=Map.copyOf(options); }
         public static Configuration defaults(){return new Configuration("en",Map.of());}
     }
-    public record WorkspaceCapture(UUID serverInstance,long generation,long rootConfigurationGeneration,String configurationDigest,Configuration configuration,CatalogRepository.CatalogSnapshot catalog,ResolvedProject project,ReadPolicy readPolicy,SourceOwnershipIndex.OwnershipSnapshot ownership) {
-        public WorkspaceCapture(UUID serverInstance,long generation,long rootConfigurationGeneration,String configurationDigest,Configuration configuration,CatalogRepository.CatalogSnapshot catalog,ResolvedProject project,ReadPolicy readPolicy){this(serverInstance,generation,rootConfigurationGeneration,configurationDigest,configuration,catalog,project,readPolicy,SourceOwnershipIndex.OwnershipSnapshot.unknown());}
+    public record WorkspaceCapture(UUID serverInstance,long generation,long rootConfigurationGeneration,Configuration configuration,CatalogRepository.CatalogSnapshot catalog,ResolvedProject project,ReadPolicy readPolicy,SourceOwnershipIndex.OwnershipSnapshot ownership) {
     }
     private static final class RootState {
         final URI id;final SourceRepository repository;final Set<SourceOwnershipIndex.EntryRegistration> explicitEntries=new LinkedHashSet<>();Configuration configuration=Configuration.defaults();long configurationGeneration,sourceEpoch,ownerGeneration;String ownerFingerprint;
@@ -112,7 +111,7 @@ public final class WorkspaceManager implements AutoCloseable {
             boolean current=documents.ifUnchanged(resolved.sources().buffers(),id->policy.permits(id)&&resolved.sources().versions().containsKey(id),()->{
                 var canonicalRequest=new ProjectRequest(root.id,resolved.id().anchor(),resolved.id().singleJob(),policy.excludedRoots(),request.requestedSources());
                 var state=projects.computeIfAbsent(resolved.id(),id->new ProjectState(id,canonicalRequest,++clock));state.request=canonicalRequest;state.sourceQuery=sourceQuery;state.dependencies=Set.copyOf(resolved.sources().versions().keySet());
-                captured[0]=new WorkspaceCapture(serverInstance,state.generation,rootGeneration,digest(configuration,policy),configuration,catalog,resolved,policy,ownership);
+                captured[0]=new WorkspaceCapture(serverInstance,state.generation,rootGeneration,configuration,catalog,resolved,policy,ownership);
                 while(projects.size()>64){var oldest=projects.keySet().iterator().next();projects.remove(oldest);evicted.add(oldest);}
             });
             if(!current)throw new java.util.concurrent.CancellationException("STALE_CAPTURE");
@@ -126,7 +125,7 @@ public final class WorkspaceManager implements AutoCloseable {
             var project=capture.ownership().projects().get(id);if(project==null)throw new IllegalArgumentException("SOURCE_CONTEXT_UNKNOWN");
             var request=new ProjectRequest(id.workspaceRoot(),id.anchor(),id.singleJob(),capture.readPolicy().excludedRoots());
             var state=projects.computeIfAbsent(id,key->new ProjectState(key,request,++clock));state.sourceQuery=true;state.dependencies=Set.copyOf(capture.project().sources().versions().keySet());
-            selected=new WorkspaceCapture(capture.serverInstance(),state.generation,capture.rootConfigurationGeneration(),capture.configurationDigest(),
+            selected=new WorkspaceCapture(capture.serverInstance(),state.generation,capture.rootConfigurationGeneration(),
                     capture.configuration(),capture.catalog(),project.withSources(capture.project().sources()),capture.readPolicy(),capture.ownership());
             while(projects.size()>64){var oldest=projects.keySet().iterator().next();projects.remove(oldest);evicted.add(oldest);}
         }
@@ -138,7 +137,7 @@ public final class WorkspaceManager implements AutoCloseable {
         var request=new ProjectRequest(capture.project().id().workspaceRoot(),source,false,capture.readPolicy().excludedRoots());
         var project=syntaxOnly(request,view,cancellation).withSources(original);
         synchronized(this){var state=projects.computeIfAbsent(project.id(),id->new ProjectState(id,request,++clock));state.sourceQuery=true;state.dependencies=Set.copyOf(original.versions().keySet());
-            return new WorkspaceCapture(capture.serverInstance(),state.generation,capture.rootConfigurationGeneration(),capture.configurationDigest(),capture.configuration(),capture.catalog(),project,capture.readPolicy(),capture.ownership());}
+            return new WorkspaceCapture(capture.serverInstance(),state.generation,capture.rootConfigurationGeneration(),capture.configuration(),capture.catalog(),project,capture.readPolicy(),capture.ownership());}
     }
     private static ResolvedProject syntaxOnly(ProjectRequest request,SourceView view,CancellationToken cancellation){
         var read=view.read(request.documentId(),cancellation);var documents=new LinkedHashMap<URI,ch.so.agi.gretl.tooling.syntax.SyntaxModel.ParsedDocument>();
@@ -158,7 +157,7 @@ public final class WorkspaceManager implements AutoCloseable {
     }
     public synchronized boolean sameGeneration(WorkspaceCapture capture){
         if(closed||!serverInstance.equals(capture.serverInstance()))return false;var root=roots.get(capture.project().id().workspaceRoot());var project=projects.get(capture.project().id());
-        return root!=null&&project!=null&&project.generation==capture.generation()&&root.configurationGeneration==capture.rootConfigurationGeneration()&&(capture.ownership().generation()<0||root.ownerGeneration==capture.ownership().generation())&&catalogs.snapshot().generation()==capture.catalog().generation()&&digest(root.configuration,policy(root,project.request.documentId())).equals(capture.configurationDigest())&&documents.ifUnchanged(capture.project().sources().buffers(),id->capture.readPolicy().permits(id)&&capture.project().sources().versions().containsKey(id),()->{});
+        return root!=null&&project!=null&&project.generation==capture.generation()&&root.configurationGeneration==capture.rootConfigurationGeneration()&&(capture.ownership().generation()<0||root.ownerGeneration==capture.ownership().generation())&&catalogs.snapshot().generation()==capture.catalog().generation()&&documents.ifUnchanged(capture.project().sources().buffers(),id->capture.readPolicy().permits(id)&&capture.project().sources().versions().containsKey(id),()->{});
     }
     public synchronized boolean containsProject(ProjectId id){return !closed&&projects.containsKey(id);}
     /** Metadata-only validity for host state that must not retain whole captures. */
@@ -189,9 +188,6 @@ public final class WorkspaceManager implements AutoCloseable {
         ownership.applications().values().stream().flatMap(List::stream).map(a->a.id().toString()).sorted().forEach(s->append(text,s));
         sources.versions().entrySet().stream().filter(e->ownership.applications().containsKey(e.getKey())||ownership.projects().values().stream().anyMatch(p->e.getKey().equals(p.settingsId()))).sorted(Map.Entry.comparingByKey()).forEach(e->{append(text,e.getKey().toString());append(text,e.getValue().toString());});
         append(text,ownership.inventory().toString());return CatalogJsonCodec.hash(text.toString().getBytes(StandardCharsets.UTF_8));
-    }
-    private static String digest(Configuration configuration,ReadPolicy policy){
-        var text=new StringBuilder();append(text,configuration.language());new TreeMap<>(configuration.options()).forEach((k,v)->{append(text,k);append(text,v);});policy.excludedRoots().stream().map(URI::toString).sorted().forEach(v->append(text,v));return CatalogJsonCodec.hash(text.toString().getBytes(StandardCharsets.UTF_8));
     }
     private static void append(StringBuilder text,String value){text.append(value.length()).append(':').append(value);}
     private void checkOpen(){if(closed)throw new IllegalStateException("WORKSPACE_CLOSED");}
