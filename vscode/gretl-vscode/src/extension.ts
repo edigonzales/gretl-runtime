@@ -8,7 +8,7 @@ import {LanguageClient,CloseAction,ErrorAction,State,RenameRequest,CodeActionReq
 import {checkBundle,checkJava,languageConfiguration,localHost,sourceDigest} from './host';
 
 import {FragmentDocumentCoordinator,FragmentDocument,sourceContexts,membershipUpdate} from './fragment-documents';
-import {Stamp,validateEditSources,validateEditContext,EditContextIdentity} from './edit-guard';
+import {Stamp,validateEditBuffers,validateEditSources,validateEditContext,EditContextIdentity} from './edit-guard';
 import {currentRead} from './read-query';
 import {ModelerBackend,ModelerOptions,ModelerCommit} from './modeler/backend';
 import {GraphContext,GraphResponse,graphResponse} from './modeler/graph-model';
@@ -53,6 +53,10 @@ class RuntimeHost implements vscode.Disposable,ModelerBackend {
                 await this.current(action.client,action.context,action.edit);
                 const converted=await action.client.protocol2CodeConverter.asWorkspaceEdit(action.edit);
                 await this.current(action.client,action.context,action.edit);
+                // A local buffer can change while the final server context response is pending.
+                const stamps=action.context.sourceStamps.map(stamp=>({...stamp,documentId:vscode.Uri.parse(stamp.documentId).toString()}));
+                const buffers=new Map(vscode.workspace.textDocuments.map(doc=>[doc.uri.toString(),doc]));
+                validateEditBuffers(stamps,this.captures.get(action.context)??new Map(),buffers);
                 if(!converted||!await vscode.workspace.applyEdit(converted))throw new Error('GRETL quick fix could not be applied. Request it again.');
             }),
             vscode.commands.registerCommand('gretlRuntime.stopServer',()=>{this.stopped=true;return this.serial(()=>this.stop());}),

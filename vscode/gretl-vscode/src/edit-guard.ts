@@ -33,23 +33,26 @@ export async function diskSourceHash(uri:string):Promise<string|null>{
     }catch(error){if((error as NodeJS.ErrnoException).code==='ENOENT')return null;throw error;}
     finally{await handle?.close();}
 }
+export function validateEditBuffers(stamps:Stamp[],captured:Buffers,current:Buffers):void {
+    for(const stamp of stamps){
+        const doc=current.get(stamp.documentId);
+        if(stamp.version===null){
+            if(doc)throw new Error('GRETL source was opened after capture. Retry.');
+        }else if(!doc||doc.isClosed||doc!==captured.get(stamp.documentId)||doc.version!==stamp.version||sourceDigest(doc.getText())!==stamp.sha256){
+            throw new Error('GRETL buffer changed. Retry.');
+        }
+    }
+}
+
 export async function validateEditSources(stamps:Stamp[],changes:ChangedDocument[],captured:Buffers,current:()=>Buffers,diskHash=diskSourceHash):Promise<void>{
     const sources=new Map(stamps.map(stamp=>[stamp.documentId,stamp]));
     for(const change of changes){const stamp=sources.get(change.uri);if(!stamp?.editable||stamp.version!==change.version)throw new Error('GRETL edit source precondition differs. Retry.');}
-    const assertBuffers=()=>{
-        const buffers=current();
-        for(const stamp of stamps){
-            const doc=buffers.get(stamp.documentId);
-            if(stamp.version===null){if(doc)throw new Error('GRETL source was opened after capture. Retry.');}
-            else if(!doc||doc.isClosed||doc!==captured.get(stamp.documentId)||doc.version!==stamp.version||sourceDigest(doc.getText())!==stamp.sha256)throw new Error('GRETL buffer changed. Retry.');
-        }
-    };
-    assertBuffers();
+    validateEditBuffers(stamps,captured,current());
     for(const stamp of stamps)if(stamp.version===null){
         if(await diskHash(stamp.documentId)!==stamp.sha256)throw new Error('GRETL file changed. Retry.');
-        assertBuffers();
+        validateEditBuffers(stamps,captured,current());
     }
-    assertBuffers();
+    validateEditBuffers(stamps,captured,current());
 }
 
 export interface EditContextIdentity {
