@@ -57,6 +57,10 @@ public final class RunControl implements TimeBudget, CancellationToken {
         }
     }
 
+    MonotonicClock monotonicClock() {
+        return clock;
+    }
+
     public synchronized void requestCancel(CancelReason reason) {
         Objects.requireNonNull(reason, "reason");
         if (reason == CancelReason.INTERRUPTED) {

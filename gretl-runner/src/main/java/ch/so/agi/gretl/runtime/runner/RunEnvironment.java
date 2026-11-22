@@ -93,7 +93,7 @@ final class RunEnvironment {
     }
 
     MonotonicClock monotonicClock() {
-        return input.monotonicClock();
+        return control().monotonicClock();
     }
 
     boolean isOpen() {

@@ -122,7 +122,7 @@ class LibraryScopeTest {
                  var bridge = LogbackBridge.install(pipeline, config)) {
                 var d = b.freeze(); var result = new SequentialJobRunner().run(d, new ExecutionPlanner().plan(d, List.of()),
                         RunInput.builder().startCwd(root).jobRoot(root).workRoot(root.resolve("work")).runId(id)
-                                .jobName("job").monotonicClock(ticks::get).eventSink(pipeline).build());
+                                .jobName("job").runControl(new RunControl(ticks::get, Optional.empty())).eventSink(pipeline).build());
                 assertEquals(first ? (timeout ? RunStatus.CANCELLED : RunStatus.FAILED) : RunStatus.SUCCEEDED, result.status());
                 assertNull(org.slf4j.MDC.get("gretl.task_id")); assertNull(org.slf4j.MDC.get("gretl.invocation_id"));
                 logger.warn("after-run");

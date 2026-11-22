@@ -270,7 +270,6 @@ public final class JobRuntime {
                     .runId(runId)
                     .keepWork(config.keepWork())
                     .clock(clock)
-                    .monotonicClock(SystemMonotonicClock.INSTANCE)
                     .eventSink(new ch.so.agi.gretl.runtime.runner.RunEventSink() {
                         @Override public void emit(RunEvent event) {
                             if ("gretl.run.finished".equals(event.eventName())) {

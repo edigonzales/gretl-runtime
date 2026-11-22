@@ -9,6 +9,7 @@ import ch.so.agi.gretl.runtime.runner.ExecutionPlanner;
 import ch.so.agi.gretl.runtime.runner.JobDefinition;
 import ch.so.agi.gretl.runtime.runner.JobDefinitionBuilder;
 import ch.so.agi.gretl.runtime.runner.JobOutcome;
+import ch.so.agi.gretl.runtime.runner.RunControl;
 import ch.so.agi.gretl.runtime.runner.RunEventSink;
 import ch.so.agi.gretl.runtime.runner.RunInput;
 import ch.so.agi.gretl.runtime.runner.SequentialJobRunner;
@@ -70,7 +71,7 @@ class RunReportWriterTest {
                 .jobRoot(tempDir).startCwd(tempDir).workRoot(tempDir.resolve("work"))
                 .jobName("report-job").runId(UUID.randomUUID())
                 .clock(Clock.fixed(Instant.parse("2026-10-18T10:00:00Z"), ZoneOffset.UTC))
-                .monotonicClock(() -> 0L)
+                .runControl(new RunControl(() -> 0L, Optional.empty()))
                 .eventSink(RunEventSink.NO_OP)
                 .build();
         JobOutcome outcome = new SequentialJobRunner().run(definition, plan, input);

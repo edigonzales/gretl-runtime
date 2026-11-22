@@ -525,6 +525,32 @@ class SequentialJobRunnerTest {
     }
 
     @Test
+    void measuresRunAndTaskDurationWithTheExplicitRunControlClock() {
+        FakeMonotonicClock clock = new FakeMonotonicClock();
+        RunControl control = new RunControl(clock, Optional.empty());
+        RunInput input = RunInput.builder()
+                .startCwd(tempDir)
+                .jobRoot(tempDir)
+                .workRoot(tempDir.resolve("work"))
+                .runControl(control)
+                .build();
+        JobDefinition definition = RunnerTestSupport.definition(tempDir, builder -> {
+            builder.register(RunnerTestSupport.task("work").body(context -> {
+                clock.advance(Duration.ofSeconds(2));
+                return "done";
+            }).build());
+            builder.defaults("work");
+        });
+
+        JobOutcome outcome = new SequentialJobRunner().run(definition,
+                RunnerTestSupport.plan(definition), input);
+
+        assertEquals(RunStatus.SUCCEEDED, outcome.status());
+        assertEquals(2000L, outcome.durationMillis());
+        assertEquals(2000L, outcome.task("work").orElseThrow().durationMillis());
+    }
+
+    @Test
     void timeoutInsideTaskBecomesControlledCancellation() {
         FakeMonotonicClock clock = new FakeMonotonicClock();
         RunInput input = RunnerTestSupport.input(tempDir, clock, new RecordingEventSink())

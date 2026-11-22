@@ -11,6 +11,7 @@ import ch.so.agi.gretl.runtime.runner.ParameterMode;
 import ch.so.agi.gretl.runtime.runner.ParameterResolver;
 import ch.so.agi.gretl.runtime.runner.ParameterSources;
 import ch.so.agi.gretl.runtime.runner.ResolvedParameters;
+import ch.so.agi.gretl.runtime.runner.RunControl;
 import ch.so.agi.gretl.runtime.runner.RunEvent;
 import ch.so.agi.gretl.runtime.runner.RunEventSink;
 import ch.so.agi.gretl.runtime.runner.RunInput;
@@ -90,7 +91,7 @@ final class GroovyHarness {
     }
 
     JobOutcome run(JobDefinition definition, Map<String, String> parameters,
-                   ch.so.agi.gretl.runtime.runner.RunControl control) {
+                   RunControl control) {
         ResolvedParameters resolved = new ParameterResolver(tempDir).resolve(
                 definition,
                 new ParameterSources(Map.of(), Map.of(), parameters),
@@ -99,7 +100,7 @@ final class GroovyHarness {
     }
 
     private JobOutcome run(JobDefinition definition, ResolvedParameters parameters,
-                           Optional<ch.so.agi.gretl.runtime.runner.RunControl> control) {
+                           Optional<RunControl> control) {
         ExecutionPlan plan = new ExecutionPlanner().plan(definition, List.of());
         RunInput.Builder input = RunInput.builder()
                 .parameters(parameters)
@@ -109,9 +110,8 @@ final class GroovyHarness {
                 .jobName("groovy-harness")
                 .runId(UUID.randomUUID())
                 .clock(Clock.fixed(Instant.parse("2026-10-18T10:00:00Z"), ZoneOffset.UTC))
-                .monotonicClock(new HarnessClock())
+                .runControl(control.orElseGet(() -> new RunControl(new HarnessClock(), Optional.empty())))
                 .eventSink(events);
-        control.ifPresent(input::runControl);
         return new SequentialJobRunner().run(definition, plan, input.build());
     }
 

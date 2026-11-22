@@ -31,7 +31,6 @@ public final class RunInput {
     private final UUID runId;
     private final KeepWork keepWork;
     private final Clock clock;
-    private final MonotonicClock monotonicClock;
     private final RunEventSink eventSink;
     private final SecretResolver secretResolver;
     private final SecretRegistry secretRegistry;
@@ -51,13 +50,12 @@ public final class RunInput {
         this.runId = builder.runId;
         this.keepWork = builder.keepWork;
         this.clock = builder.clock;
-        this.monotonicClock = builder.monotonicClock;
         this.eventSink = builder.eventSink;
         this.secretResolver = builder.secretResolver;
         this.secretRegistry = builder.secretRegistry;
         this.runControl = builder.runControl != null
                 ? builder.runControl
-                : new RunControl(builder.monotonicClock, builder.timeout);
+                : new RunControl(SystemMonotonicClock.INSTANCE, builder.timeout);
         this.locale = builder.locale;
     }
 
@@ -106,10 +104,6 @@ public final class RunInput {
         return clock;
     }
 
-    public MonotonicClock monotonicClock() {
-        return monotonicClock;
-    }
-
     public RunEventSink eventSink() {
         return eventSink;
     }
@@ -154,7 +148,6 @@ public final class RunInput {
         private UUID runId = UUID.randomUUID();
         private KeepWork keepWork = KeepWork.ON_FAILURE;
         private Clock clock = Clock.systemUTC();
-        private MonotonicClock monotonicClock = SystemMonotonicClock.INSTANCE;
         private RunEventSink eventSink = RunEventSink.NO_OP;
         private SecretResolver secretResolver = SecretResolver.none();
         private SecretRegistry secretRegistry = new SecretRegistry();
@@ -212,11 +205,6 @@ public final class RunInput {
 
         public Builder clock(Clock value) {
             this.clock = Objects.requireNonNull(value, "clock");
-            return this;
-        }
-
-        public Builder monotonicClock(MonotonicClock value) {
-            this.monotonicClock = Objects.requireNonNull(value, "monotonicClock");
             return this;
         }
 
