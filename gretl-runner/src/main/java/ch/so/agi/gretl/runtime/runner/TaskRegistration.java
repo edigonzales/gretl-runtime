@@ -14,15 +14,6 @@ public record TaskRegistration<R>(
         TaskCondition condition, Duration timeout, TaskBody<R> body,
         OperationType<?, R> operation, SourceLocation source) {
 
-    /** Compatibility constructor for definitions without finalizers. */
-    public TaskRegistration(String id, Class<R> resultType, String description,
-            List<TaskLink> dependsOn, List<TaskLink> after,
-            TaskCondition condition, Duration timeout, TaskBody<R> body,
-            OperationType<?, R> operation, SourceLocation source) {
-        this(id, resultType, description, dependsOn, after, List.of(),
-                condition, timeout, body, operation, source);
-    }
-
     public TaskRegistration {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("id must not be blank");

@@ -13,15 +13,6 @@ public record TaskDefinition<R>(
         TaskCondition condition, Duration timeout, TaskBody<R> body,
         OperationType<?, R> operation, SourceLocation source) {
 
-    /** Compatibility constructor for definitions without finalizers. */
-    public TaskDefinition(TaskRef<R> ref, int registrationIndex, String description,
-            List<TaskRef<?>> dependsOn, List<TaskRef<?>> after,
-            TaskCondition condition, Duration timeout, TaskBody<R> body,
-            OperationType<?, R> operation, SourceLocation source) {
-        this(ref, registrationIndex, description, dependsOn, after, List.of(),
-                condition, timeout, body, operation, source);
-    }
-
     public TaskDefinition {
         Objects.requireNonNull(ref, "ref");
         if (registrationIndex < 0) {
