@@ -2,6 +2,7 @@ package ch.so.agi.gretl.lsp;
 
 import ch.so.agi.gretl.tooling.CancellationToken;
 import ch.so.agi.gretl.tooling.catalog.CatalogRepository;
+import ch.so.agi.gretl.tooling.edit.EditPreconditions;
 import ch.so.agi.gretl.tooling.edit.PlannedEdit;
 import ch.so.agi.gretl.tooling.semantic.*;
 import ch.so.agi.gretl.tooling.workspace.*;
@@ -31,7 +32,7 @@ final class ServerWorkspace implements AutoCloseable {
 
     private final Set<URI> roots=new LinkedHashSet<>();
     private final LinkedHashMap<ProjectResolver.ProjectId,AnalysisSnapshot> snapshots=new LinkedHashMap<>(16,.75f,true);
-    private record Retained(AnalysisSnapshot snapshot,PlannedEdit edit,Instant expires) { }
+    record Retained(EditPreconditions preconditions,Set<URI> targetDocuments,Instant expires) { }
     private final LinkedHashMap<String,Retained> plans=new LinkedHashMap<>();
     private final ThreadPoolExecutor workers;
     private final Object acquisition=new Object();
@@ -239,11 +240,18 @@ final class ServerWorkspace implements AutoCloseable {
         return new GretlProtocol.ConfirmSourceMembershipResponse(1,1,current,Long.toString(capture.ownership().generation()),current?List.of():List.of("MEMBERSHIP_STALE_OR_UNSYNCHRONIZED"));
     }
     void contextChanged(){synchronized(this){epoch++;}schedule();}
-    synchronized void retain(AnalysisSnapshot snapshot,PlannedEdit edit){plans.entrySet().removeIf(e->e.getValue().expires().isBefore(Instant.now()));plans.put(edit.id().toString(),new Retained(snapshot,edit,Instant.now().plusSeconds(60)));while(plans.size()>32)plans.remove(plans.keySet().iterator().next());}
-    synchronized AnalysisSnapshot planSnapshot(String id){var plan=plans.get(id);if(plan==null||plan.expires().isBefore(Instant.now()))throw error(ResponseErrorCode.InvalidParams,"EDIT_PLAN_UNKNOWN_OR_EXPIRED");return plan.snapshot();}
-    synchronized PlannedEdit plan(String id){planSnapshot(id);return plans.get(id).edit();}
-    void requireWritableTargets(PlannedEdit edit) {
-        for(var document:edit.changes().keySet())if(!LspHostSourceRepository.writable(document,rootFor(document)))throw error(ResponseErrorCode.RequestFailed,"EDIT_READONLY");
+    synchronized void retain(PlannedEdit edit) {
+        plans.entrySet().removeIf(e->e.getValue().expires().isBefore(Instant.now()));
+        plans.put(edit.id().toString(),new Retained(edit.preconditions(),Set.copyOf(edit.changes().keySet()),Instant.now().plusSeconds(60)));
+        while(plans.size()>32)plans.remove(plans.keySet().iterator().next());
+    }
+    synchronized Retained retained(String id) {
+        var plan=plans.get(id);
+        if(plan==null||plan.expires().isBefore(Instant.now()))throw error(ResponseErrorCode.InvalidParams,"EDIT_PLAN_UNKNOWN_OR_EXPIRED");
+        return plan;
+    }
+    void requireWritableTargets(Collection<URI> documents) {
+        for(var document:documents)if(!LspHostSourceRepository.writable(document,rootFor(document)))throw error(ResponseErrorCode.RequestFailed,"EDIT_READONLY");
     }
     static ResponseErrorException error(ResponseErrorCode code,String message){return new ResponseErrorException(new ResponseError(code,message,null));}
     static String code(Throwable failure){String message=failure.getMessage();return message!=null&&message.matches("[A-Z][A-Z0-9_]{0,127}")?message:"INVALID_REQUEST";}

@@ -222,17 +222,23 @@ public final class GretlLanguageServer implements GretlLanguageServerApi,AutoClo
                 var planner=new SemanticEditPlanner();var style=new EditStyle("    ",request.requireOpenDocuments());
                 var destination="SetDefaults".equals(intent.kind())?(snapshot.analysis().capture().project().projectMode()?snapshot.analysis().capture().project().settingsId():snapshot.analysis().capture().project().id().anchor()):document;
                 var result="ConfigureTask".equals(intent.kind())?planner.planConfiguration(snapshot,Objects.requireNonNull(intent.target()).core(),values(intent.fields()),intent.removedFields()==null?Set.of():intent.removedFields(),values(intent.options()),style,cancel):planner.plan(snapshot,intent.core(destination),style,cancel);
-                var plan=result.plan().orElse(null);if(plan!=null){workspace.requireWritableTargets(plan);workspace.retain(snapshot,plan);}
+                var plan=result.plan().orElse(null);if(plan!=null){workspace.requireWritableTargets(plan.changes().keySet());workspace.retain(plan);}
                 return new EditResponse(GretlProtocol.context(snapshot),result.capability(),plan==null?null:plan.id().toString(),plan==null?null:new LspQueryMapper(snapshot).edit(plan),plan==null?List.of():plan.notices());
             });
         });
     }
     public CompletableFuture<ValidationResponse> validateEdit(ValidationRequest request) {
         return deferred(()-> {
-            requireActive();version(request.protocolVersion());var original=workspace.planSnapshot(required(request.planId(),64));
-            var selection=original.contextSelection();var document=selection==null?original.analysis().capture().project().id().anchor():selection.application().sourceDocument();
+            requireActive();version(request.protocolVersion());
+            var planId=required(request.planId(),64);
+            var preconditions=workspace.retained(planId).preconditions();
+            var selection=preconditions.context();
+            var document=selection==null?preconditions.project().anchor():selection.application().sourceDocument();
             return workspace.request(document,List.of(),selection==null?null:selection.token(),false,(current,cancel)-> {
-                var plan=workspace.plan(request.planId());workspace.requireWritableTargets(plan);boolean valid=current.id().equals(original.id())&&Objects.equals(request.expectedSnapshotId(),original.id().toString())&&plan.isCurrent(current);
+                var retained=workspace.retained(planId);
+                workspace.requireWritableTargets(retained.targetDocuments());
+                var expected=retained.preconditions();
+                boolean valid=Objects.equals(request.expectedSnapshotId(),expected.snapshotId().toString())&&expected.matches(current);
                 return new ValidationResponse(1,valid,valid?List.of():List.of("EDIT_STALE_SNAPSHOT"));
             }).exceptionally(failure->new ValidationResponse(1,false,List.of("EDIT_STALE_SNAPSHOT")));
         });
