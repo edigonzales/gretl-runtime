@@ -112,7 +112,7 @@ public final class EditVerifier {
         for(var traversal:frozen.traversals().keySet())view.checkIncludeTraversal(traversal,cancellation);
         resolved=resolved.withSources(view.freeze());
         var capture = new WorkspaceCapture(original.serverInstance(), original.generation(),
-                original.rootConfigurationGeneration(), original.configurationDigest(), original.configuration(),
+                original.rootConfigurationGeneration(), original.configuration(),
                 original.catalog(), resolved, original.readPolicy(),original.ownership());
         return before.postimage(new ProjectAnalyzer().analyze(capture, cancellation));
     }

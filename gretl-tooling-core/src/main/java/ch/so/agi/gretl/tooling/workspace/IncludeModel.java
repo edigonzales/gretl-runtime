@@ -1,7 +1,8 @@
 package ch.so.agi.gretl.tooling.workspace;
 
 import java.net.URI;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import ch.so.agi.gretl.tooling.workspace.ProjectResolver.ProjectId;
 
 /** Physical source identity is independent of each logical application in a definition. */
@@ -22,16 +23,6 @@ public final class IncludeModel {
         public IncludeClosure {applications=List.copyOf(applications);links=List.copyOf(links);registrationOrder=List.copyOf(registrationOrder);}
         public static IncludeClosure empty(){return new IncludeClosure(List.of(),List.of(),List.of(),true,true);}
         public boolean hasIncludes(){return !links.isEmpty();}
-    }
-    /** Preserve callers of the original ResolvedProject constructors without guessing include links. */
-    static IncludeClosure localClosure(ProjectId project,List<ProjectResolver.JobSource> jobs,Map<URI,ch.so.agi.gretl.tooling.syntax.SyntaxModel.ParsedDocument> documents){
-        var applications=new ArrayList<SourceApplication>();var events=new ArrayList<RegistrationEvent>();boolean complete=true,order=true;
-        for(var job:jobs){
-            var application=new SourceApplication(new ApplicationId(project,job.documentId(),job.scope().canonical(),job.documentId()),SourceUris.parent(job.documentId()),SourceRole.ENTRY,List.of());applications.add(application);
-            var document=documents.get(job.documentId());complete&=document!=null&&document.includes().directives().isEmpty();
-            var expansion=ch.so.agi.gretl.tooling.syntax.RegistrationSequence.expand(application,documents,List.of(),ch.so.agi.gretl.tooling.CancellationToken.NONE);events.addAll(expansion.registrations());order&=expansion.orderProven();
-        }
-        return new IncludeClosure(applications,List.of(),events,complete,order);
     }
     public enum IncludeResolution { RESOLVED, UNAVAILABLE, INVALID, CYCLE, DUPLICATE, LIMITED }
     public record IncludeLink(ApplicationId caller,IncludeSiteId site,URI targetDocument,

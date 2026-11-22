@@ -183,7 +183,7 @@ class IncludeEditsTest {
             var plain=capture(manager);var application=plain.analysis().capture().project().includeClosure().applications().getFirst().id();
             var before=plain.inContext(new AnalysisSnapshot.ContextSelection(application,1,"token"));var edit=allowed(before,new SemanticEditIntent.SetField(task("shared"),"input",new EditableValue.Literal("new")));
             assertFalse(edit.isCurrent(before.inContext(new AnalysisSnapshot.ContextSelection(application,2,"token"))));
-            var a=before.analysis();var c=a.capture();var changed=new WorkspaceManager.WorkspaceCapture(c.serverInstance(),c.generation(),c.rootConfigurationGeneration(),c.configurationDigest(),c.configuration(),c.catalog(),c.project(),c.readPolicy(),c.ownership().withGeneration(c.ownership().generation()+1));
+            var a=before.analysis();var c=a.capture();var changed=new WorkspaceManager.WorkspaceCapture(c.serverInstance(),c.generation(),c.rootConfigurationGeneration(),c.configuration(),c.catalog(),c.project(),c.readPolicy(),c.ownership().withGeneration(c.ownership().generation()+1));
             var current=new AnalysisSnapshot(before.id(),new Analysis(changed,a.symbols(),a.references(),a.paths(),a.diagnostics(),a.graph(),a.defaultTargets(),a.capabilities()),before.contextSelection());
             assertEquals(before.sources(),current.sources());assertFalse(edit.isCurrent(current));
         }

@@ -49,7 +49,15 @@ class WorkspaceManagerTest {
             store.close(JOB);store.open(JOB,"gretl",1,"action('dirty') {}");assertFalse(manager.isCurrent(first,CancellationToken.NONE));assertTrue(manager.isCurrent(independent,CancellationToken.NONE));
             var reopened=manager.capture(first.project().id(),CancellationToken.NONE);assertNotEquals(first.project().sources().versions().get(JOB).bufferIncarnation(),reopened.project().sources().versions().get(JOB).bufferIncarnation());
             store.close(JOB);var disk=manager.capture(first.project().id(),CancellationToken.NONE);files.texts.put(JOB,"action('external') {}");assertFalse(manager.isCurrent(disk,CancellationToken.NONE));
-            var current=manager.capture(first.project().id(),CancellationToken.NONE);manager.updateConfiguration(ROOT,new WorkspaceManager.Configuration("de",Map.of("mode","strict")));assertFalse(manager.sameGeneration(current));assertTrue(manager.sameGeneration(independent));
+            var current=manager.capture(first.project().id(),CancellationToken.NONE);
+            manager.updateConfiguration(ROOT,new WorkspaceManager.Configuration("de",Map.of()));
+            assertFalse(manager.sameGeneration(current));
+            assertTrue(manager.sameGeneration(independent));
+
+            current=manager.capture(first.project().id(),CancellationToken.NONE);
+            manager.updateConfiguration(ROOT,new WorkspaceManager.Configuration("de",Map.of("mode","strict")));
+            assertFalse(manager.sameGeneration(current));
+            assertTrue(manager.sameGeneration(independent));
             current=manager.capture(first.project().id(),CancellationToken.NONE);catalogs.loadBundled(null,null);assertFalse(manager.sameGeneration(current));assertFalse(manager.sameGeneration(independent));
             manager.removeRoot(ROOT);assertFalse(manager.containsProject(first.project().id()));assertThrows(IllegalArgumentException.class,()->manager.capture(new ProjectRequest(ROOT,JOB),CancellationToken.NONE));
         }
@@ -59,6 +67,10 @@ class WorkspaceManagerTest {
         try(var manager=new WorkspaceManager(new DocumentStore(),new CatalogRepository())){
             manager.addRoot(ROOT,files);var before=manager.capture(new ProjectRequest(ROOT,JOB),CancellationToken.NONE);assertTrue(before.project().problems().stream().anyMatch(p->p.code().equals("PROJECT_ENTRY_MISSING")&&p.error()));
             manager.addRoot(nestedRoot,files);assertFalse(manager.sameGeneration(before));var after=manager.capture(new ProjectRequest(ROOT,JOB),CancellationToken.NONE);assertEquals(List.of(JOB),after.project().jobs().stream().map(JobSource::documentId).toList());assertTrue(after.project().problems().stream().anyMatch(p->p.code().equals("PROJECT_SOURCE_NOT_INSPECTED")&&!p.error()));
+            manager.removeRoot(nestedRoot);
+            assertFalse(manager.sameGeneration(after));
+            var restored=manager.capture(new ProjectRequest(ROOT,JOB),CancellationToken.NONE);
+            assertEquals(List.of(JOB,URI.create("file:/workspace/nested/job.groovy")),restored.project().jobs().stream().map(JobSource::documentId).toList());
             assertThrows(IllegalArgumentException.class,()->manager.addRoot(URI.create("file:/workspace/"),files));
         }
     }

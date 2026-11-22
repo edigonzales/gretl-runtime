@@ -42,13 +42,20 @@ class FinalizerDefinitionTest {
             var error=assertThrows(DefinitionException.class,b::freeze);assertEquals(code,error.code());assertTrue(error.getMessage().contains("owner"));
         }
     }
-    @Test void oldConstructorsAndEmptyListsPreserveLegacyDefinitions() {
-        var old=new TaskRegistration<>("a",String.class,"A",List.of(),List.of(),null,null,ctx->"a",null,null);
-        assertTrue(old.finalizedBy().isEmpty());
-        var b=new JobDefinitionBuilder(root);var ref=b.register(old);b.defaults("a");var d=b.freeze();
-        var task=d.tasks().getFirst();
-        var compatibility=new TaskDefinition<>(ref,0,"A",List.of(),List.of(),null,null,ctx->"a",null,null);
-        assertTrue(compatibility.finalizedBy().isEmpty());assertEquals(List.of("a"),new ExecutionPlanner().plan(d,List.of()).selection().normalDemand().stream().toList());
+    @Test void taskWithoutFinalizersCanBePlannedAndRun() {
+        var builder = new JobDefinitionBuilder(root);
+        builder.register(task("a").build());
+        builder.defaults("a");
+        var definition = builder.freeze();
+        assertTrue(definition.tasks().getFirst().finalizedBy().isEmpty());
+
+        var plan = new ExecutionPlanner().plan(definition, List.of());
+        assertEquals(List.of("a"), plan.selectedTasks().stream().map(TaskDefinition::id).toList());
+
+        var input = RunnerTestSupport.input(root, new FakeMonotonicClock(), new RecordingEventSink()).build();
+        var outcome = new SequentialJobRunner().run(definition, plan, input);
+        assertEquals(RunStatus.SUCCEEDED, outcome.status());
+        assertEquals(TaskStatus.SUCCEEDED, outcome.task("a").orElseThrow().status());
     }
 
 }
