@@ -1,12 +1,19 @@
 package ch.so.agi.gretl.tooling.query;
 
 import ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace;
+import ch.so.agi.gretl.tooling.CancellationToken;
+import ch.so.agi.gretl.tooling.catalog.OperationCatalog.InputDescriptor;
+import ch.so.agi.gretl.tooling.catalog.OperationCatalog.OperationDescriptor;
+import ch.so.agi.gretl.tooling.catalog.OperationCatalog.ValueShape;
+import ch.so.agi.gretl.tooling.graph.JobGraph.NodeKind;
+import ch.so.agi.gretl.tooling.graph.JobGraphProjector;
 import ch.so.agi.gretl.tooling.edit.EditVerifier;
 import ch.so.agi.gretl.tooling.edit.SourceReplacement;
 import ch.so.agi.gretl.tooling.query.QueryResults.*;
 import ch.so.agi.gretl.tooling.semantic.AnalysisSnapshot;
 import ch.so.agi.gretl.tooling.syntax.SyntaxModel.*;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import static ch.so.agi.gretl.tooling.testsupport.EditTestWorkspace.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,6 +71,47 @@ class LanguageFeatureQueriesTest {
             var inner=at(snapshot,fixture.files.get(JOB),"Echo",1);
             assertEquals("Echo",proposal(inner,"Echo").newText());assertTrue(queries.hover(inner).isPresent());
             assertTrue(queries.signatureHelp(inner).orElseThrow().label().startsWith("ctx.run("));
+        }
+    }
+
+    @Test void innerOperationSymbolsSupplyMetadataButTechnicalIdsDoNot() {
+        try (var fixture = new EditTestWorkspace()) {
+            var mode = new InputDescriptor("mode", "Other echo mode", false, false, null, List.of("FAST", "QUIET"),
+                    "mode='QUIET'", ValueShape.fromMetadata("text"), null, false, Map.of());
+            var operation = new OperationDescriptor("EchoId", "OtherEcho", "Other echo", "fixture",
+                    List.of(mode), List.of(), "example", true);
+            fixture.catalog.mergeExplicitDescriptors(List.of(operation));
+            fixture.manager.onCatalogChanged();
+            var projector = new JobGraphProjector();
+            var options = new JobGraphProjector.GraphOptions(true, false);
+            String source = "action('consumer') { ctx.run(OtherEcho) { mode='FAST' } }";
+            fixture.files.put(JOB, source);
+            var snapshot = fixture.capture();
+            assertTrue(snapshot.analysis().diagnostics().isEmpty());
+            var graph = projector.project(snapshot, options, CancellationToken.NONE);
+            var inner = graph.nodes().stream().filter(n -> n.kind() == NodeKind.INNER_INVOCATION)
+                    .findFirst().orElseThrow();
+            assertEquals(operation.operationId(), inner.operationId());
+            assertEquals(operation.inputs(), inner.inputs());
+            assertEquals(operation.description(), queries.hover(at(snapshot, source, "OtherEcho", 1))
+                    .orElseThrow().documentation());
+            assertEquals(mode.description(), queries.hover(at(snapshot, source, "mode", 1)).orElseThrow().documentation());
+            assertEquals("mode", proposal(at(snapshot, source, "mode", 1), "mode").newText());
+            assertTrue(apply(source, proposal(at(snapshot, source, "'FAST'", 2), "QUIET")).contains("mode='QUIET'"));
+
+            String idSource = source.replace("OtherEcho", "EchoId");
+            fixture.files.put(JOB, idSource);
+            var unknown = fixture.capture();
+            assertEquals(List.of("UNKNOWN_OPERATION"), unknown.analysis().diagnostics().stream()
+                    .map(d -> d.code()).toList());
+            var unknownGraph = projector.project(unknown, options, CancellationToken.NONE);
+            var unknownInner = unknownGraph.nodes().stream().filter(n -> n.kind() == NodeKind.INNER_INVOCATION)
+                    .findFirst().orElseThrow();
+            assertNull(unknownInner.operationId());
+            assertTrue(unknownInner.inputs().isEmpty());
+            assertTrue(queries.hover(at(unknown, idSource, "EchoId", 1)).isEmpty());
+            assertTrue(queries.hover(at(unknown, idSource, "mode", 1)).isEmpty());
+            assertTrue(queries.complete(at(unknown, idSource, "mode", 1)).isEmpty());
         }
     }
 

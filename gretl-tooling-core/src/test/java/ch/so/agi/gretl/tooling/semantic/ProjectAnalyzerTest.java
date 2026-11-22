@@ -25,7 +25,7 @@ class ProjectAnalyzerTest {
     static InputDescriptor input(String name,String type,boolean required,List<String> values){return new InputDescriptor(name,"Input",required,false,null,values,"example",ValueShape.fromMetadata(type),null,false,Map.of());}
     static CatalogRepository catalog(){var repository=new CatalogRepository();var codec=new CatalogJsonCodec();var operations=List.of(
         new OperationDescriptor("test.echo","Echo","Test","fixture",List.of(input("input","text",true,List.of()),input("mode","text",false,List.of("COPY","MOVE"))),List.of(new OutputDescriptor("file","File",ValueShape.fromMetadata("path"),false)),"example",false),
-        new OperationDescriptor("test.duckdb","DuckDbSqlExecutor","Test","fixture",List.of(input("sqlFiles","list",true,List.of()),input("sqlParameters","map",false,List.of()),input("sqlParameterSets","list",false,List.of())),List.of(),"example",true),
+        new OperationDescriptor("DuckDbId","DuckDbSqlExecutor","Test","fixture",List.of(input("sqlFiles","list",true,List.of()),input("sqlParameters","map",false,List.of()),input("sqlParameterSets","list",false,List.of())),List.of(),"example",true),
         new OperationDescriptor("test.db2db","Db2Db","Test","fixture",List.of(input("transfers","list",true,List.of()),input("sqlParameters","map",false,List.of()),input("sqlParameterSets","list",false,List.of())),List.of(),"example",true),
         new OperationDescriptor("test.sql","SqlExecutor","Test","fixture",List.of(input("scripts","list",false,List.of()),input("sqlFiles","list",false,List.of()),
                 input("sqlParameters","map-or-list",false,List.of()),input("sqlParameterSets","list",false,List.of())),List.of(),"example",true));
@@ -372,6 +372,14 @@ class ProjectAnalyzerTest {
         var dynamic=analyze("parameter('dynamic',description:'P',required:true,defaultValue:lookup())");assertFalse(codes(dynamic).contains("PARAMETER_REQUIRED_DEFAULT"));
         var invalid=analyze("parameter('read'); parameter('n',description:' ',type:'integer',defaultValue:5G); parameter('b',description:'B',type:'boolean',required:true,defaultValue:'TRUE'); action('a') { parameter('n',Integer); parameter('unknown') }");assertTrue(codes(invalid).containsAll(List.of("TOPLEVEL_PARAMETER_READ","PARAMETER_DESCRIPTION","PARAMETER_DEFAULT","PARAMETER_REQUIRED_DEFAULT","PARAMETER_READ_TYPE","UNKNOWN_PARAMETER")));
     }
+    @Test void completeCatalogWarnsAtUnknownOperationNamesIncludingTechnicalIds() {
+        String source = "task('a', MissingTaskOperation) {}; action('b') { ctx.run(DuckDbId) {} }";
+        var warnings = analyze(source).diagnostics().stream().filter(d -> d.code().equals("UNKNOWN_OPERATION")).toList();
+        assertTrue(warnings.stream().allMatch(d -> d.severity() == Severity.WARNING && d.anchor().documentId().equals(JOB)));
+        assertEquals(List.of("DuckDbId", "MissingTaskOperation"), warnings.stream()
+                .map(d -> source.substring(d.anchor().span().startUtf16(), d.anchor().span().endUtf16()))
+                .sorted().toList());
+    }
     @Test void catalogOutageIsVisibleWithoutFalseUnknownOperationsAndFieldsUseCoverage(){
         var unavailable=analyze(Map.of(JOB,"task('a', Echo) { impossible='x' }"),JOB,new DocumentStore(),new CatalogRepository(),"fr");assertTrue(codes(unavailable).contains("CATALOG_UNAVAILABLE"));assertFalse(codes(unavailable).contains("UNKNOWN_OPERATION"));assertFalse(codes(unavailable).contains("UNKNOWN_INPUT"));assertEquals("Operation catalog is unavailable or incomplete.",unavailable.diagnostics().getFirst().message());
         var fields=analyze("task('a', Echo) { typo='x'; mode='invalid' }; task('b', Echo) { configureSomehow() }");assertTrue(codes(fields).containsAll(List.of("UNKNOWN_INPUT","INPUT_ENUM","REQUIRED_INPUT")));assertEquals(1,Collections.frequency(codes(fields),"REQUIRED_INPUT"));
@@ -392,6 +400,20 @@ class ProjectAnalyzerTest {
         var analysis=analyze("parameter('external',description:'P',type:'path'); action('a') { file('sql/input.sql'); workPath('output'); parameter('external'); path('raw-relative') }");
         assertEquals(List.of(PathKind.JOB_RESOURCE,PathKind.WORK,PathKind.EXTERNAL_PARAMETER,PathKind.DYNAMIC),analysis.paths().stream().map(PathReference::kind).toList());assertEquals(URI.create("file:/work/sql/input.sql"),analysis.paths().getFirst().resourceId());assertNull(analysis.paths().get(1).resourceId());assertNull(analysis.paths().get(2).resourceId());
     }
+    @Test void innerSqlTemplatesAreCheckedForGroovySymbols() {
+        var sql = URI.create("file:/work/query.sql");
+        String source = "action('a') { ctx.run(DuckDbSqlExecutor) { sqlFiles=[file('query.sql')] } }";
+        var analysis = analyze(Map.of(JOB, source, sql, "select ${missing}"), JOB, new DocumentStore(), catalog(), "en");
+        var diagnostic = analysis.diagnostics().stream().filter(d -> d.code().equals("SQL_PARAMETER_MISSING"))
+                .findFirst().orElseThrow();
+        assertEquals(Severity.ERROR, diagnostic.severity());
+        assertEquals(sql, diagnostic.anchor().documentId());
+
+        String idSource = source.replace("DuckDbSqlExecutor", "DuckDbId");
+        var unknown = analyze(Map.of(JOB, idSource, sql, "select ${missing}"), JOB, new DocumentStore(), catalog(), "en");
+        assertEquals(List.of("UNKNOWN_OPERATION"), codes(unknown));
+    }
+
     @Test void sqlExecutorAcceptsMapsAndListsAndChecksOnlyExecutedTemplates() {
         var sql = URI.create("file:/work/query.sql");
         for (String fields : List.of(
@@ -443,7 +465,10 @@ class ProjectAnalyzerTest {
 
     @Test void partialCatalogsLimitFieldCertaintyWithoutSuppressingKnownReservedNames(){
         var incomplete=catalog();var original=incomplete.snapshot().result().catalog().orElseThrow();var codec=new CatalogJsonCodec();incomplete.loadBundled(codec.encodeCanonical(codec.identify(new OperationCatalog(1,original.runtimeVersion(),original.dslVersion(),"",original.producers(),original.operations(),"PARTIAL"))),null);
-        var analysis=analyze(Map.of(JOB,"task('a', Echo) { typo='x'; owner='bad' }"),JOB,new DocumentStore(),incomplete,"en");
+        String source = "task('a', Echo) { typo='x'; owner='bad' }; action('b') { ctx.run(MissingOperation) {} }";
+        var analysis = analyze(Map.of(JOB, source), JOB, new DocumentStore(), incomplete, "en");
+        assertTrue(codes(analysis).contains("CATALOG_UNAVAILABLE"));
+        assertFalse(codes(analysis).contains("UNKNOWN_OPERATION"));
         assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("UNKNOWN_INPUT")&&d.severity()==Severity.WARNING));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("REQUIRED_INPUT")&&d.severity()==Severity.WARNING));assertTrue(analysis.diagnostics().stream().anyMatch(d->d.code().equals("RESERVED_CONFIGURATION_FIELD")&&d.severity()==Severity.ERROR));assertFalse(analysis.capabilities().catalogAvailable());
     }
 

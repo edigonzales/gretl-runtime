@@ -36,7 +36,6 @@ public final class ProjectAnalyzer {
         final Map<ApplicationId, Map<String, List<Integer>>> aliases = new LinkedHashMap<>();
         final Map<Integer, Symbol> declarations = new LinkedHashMap<>();
         SourceApplication currentApplication;
-        final List<OperationDescriptor> operations;
         final boolean catalogComplete;
         boolean declarationsComplete,
                 referencesComplete,
@@ -48,8 +47,6 @@ public final class ProjectAnalyzer {
             this.capture = Objects.requireNonNull(capture);
             this.cancellation = Objects.requireNonNull(cancellation);
             language = capture.configuration().language();
-            operations =
-                    capture.catalog().result().catalog().map(c -> c.operations()).orElse(List.of());
             catalogComplete = capture.catalog().result().state().name().equals("AVAILABLE");
             declarationsComplete = capture.project().complete();
             referencesComplete = declarationsComplete;
@@ -990,19 +987,14 @@ public final class ProjectAnalyzer {
                 ValueExpression expression, Anchor anchor, SourceApplication application) {
             String name = expression instanceof NameValue n ? n.name() : null;
             if (name == null) return null;
-            var matches =
-                    operations.stream()
-                            .filter(o -> o.symbol().equals(name) || o.operationId().equals(name))
-                            .toList();
-            if (matches.size() == 1) return matches.getFirst();
-            if (matches.isEmpty() && catalogComplete)
+            var operation = capture.catalog().result().catalog().flatMap(c -> c.resolveSymbol(name));
+            if (operation.isPresent()) return operation.get();
+            if (catalogComplete)
                 diagnosticFor(
                         application,
                         "UNKNOWN_OPERATION",
                         Severity.WARNING,
-                        expression == null
-                                ? anchor
-                                : new Anchor(anchor.documentId(), expression.span()),
+                        new Anchor(anchor.documentId(), expression.span()),
                         List.of());
             return null;
         }

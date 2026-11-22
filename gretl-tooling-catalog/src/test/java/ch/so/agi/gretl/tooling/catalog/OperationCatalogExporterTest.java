@@ -43,6 +43,26 @@ class OperationCatalogExporterTest {
         new OperationCatalogExporter().write(catalog,output);
         assertEquals(CatalogJsonCodec.State.AVAILABLE,codec.decode(Files.readAllBytes(output.resolve("operations.json")),catalog.catalogId()).state());
     }
+    @Test void groovySymbolsResolveExactlyAndIndependentlyOfOperationIds() {
+        var echo = new OperationDescriptor("operation.echo", "Echo", "Echo", "fixture",
+                List.of(), List.of(), "example", true);
+        var other = new OperationDescriptor("Echo", "OtherEcho", "Other echo", "fixture",
+                List.of(), List.of(), "example", true);
+        var catalog = new OperationCatalog(1, "test", "1", "", List.of("fixture"), List.of(echo, other), "COMPLETE");
+        assertEquals(Optional.of(echo), catalog.resolveSymbol("Echo"));
+        assertEquals(Optional.of(other), catalog.resolveSymbol("OtherEcho"));
+        assertTrue(catalog.resolveSymbol("operation.echo").isEmpty());
+        assertTrue(catalog.resolveSymbol("UnknownOperation").isEmpty());
+        assertTrue(catalog.resolveSymbol("echo").isEmpty());
+        assertTrue(catalog.resolveSymbol("Echo ").isEmpty());
+
+        var duplicate = new OperationDescriptor("duplicate.echo", "Echo", "Duplicate echo", "fixture",
+                List.of(), List.of(), "example", true);
+        var ambiguous = new OperationCatalog(1, "test", "1", "", List.of("fixture"),
+                List.of(echo, duplicate), "COMPLETE");
+        assertTrue(ambiguous.resolveSymbol("Echo").isEmpty());
+    }
+
     @Test void poisonCallbacksAndUnknownObjectAreNeverExecuted() {
         var field = new InputField<Object,Long>("large","integer","large number",false,Optional.of(Long.MAX_VALUE),List.of(),"large = 1",v->{throw new AssertionError("convert");},(b,v)->{throw new AssertionError("assign");});
         var op = new OperationType<Object,Object>("test.poison","Poison","description",Object.class,Object.class,

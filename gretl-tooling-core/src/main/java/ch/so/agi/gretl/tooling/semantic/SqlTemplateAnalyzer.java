@@ -23,7 +23,15 @@ public final class SqlTemplateAnalyzer {
     @FunctionalInterface interface Reporter {void report(String code,Severity severity,Anchor anchor);}
     static void validate(WorkspaceCapture capture,Symbol symbol,Reporter reporter,CancellationToken cancellation,boolean conditional,java.util.function.Predicate<ch.so.agi.gretl.tooling.source.TextSpan> guarded){
         if(symbol.operation()!=null)validateFields(capture,symbol.application().resourceBase(),symbol.anchor(),symbol.operation().symbol(),symbol.declaration().fields(),guarded(reporter,conditional),cancellation);
-        for(var inner:symbol.declaration().invocations())if(EffectiveOptions.of(symbol.declaration()).active(inner.span())&&inner.operation() instanceof NameValue operation&&capture.catalog().result().catalog().stream().flatMap(c->c.operations().stream()).anyMatch(op->op.symbol().equals(operation.name())))validateFields(capture,symbol.application().resourceBase(),new Anchor(symbol.anchor().documentId(),inner.span()),operation.name(),inner.fields(),guarded(reporter,guarded.test(inner.span())||inner.coverage().fieldAssignments()!=Completeness.COMPLETE),cancellation);
+        for (var inner : symbol.declaration().invocations()) {
+            if (EffectiveOptions.of(symbol.declaration()).active(inner.span()) && inner.operation() instanceof NameValue name) {
+                capture.catalog().result().catalog().flatMap(c -> c.resolveSymbol(name.name())).ifPresent(operation ->
+                        validateFields(capture, symbol.application().resourceBase(),
+                                new Anchor(symbol.anchor().documentId(), inner.span()), operation.symbol(), inner.fields(),
+                                guarded(reporter, guarded.test(inner.span()) || inner.coverage().fieldAssignments() != Completeness.COMPLETE),
+                                cancellation));
+            }
+        }
     }
     private static Reporter guarded(Reporter reporter,boolean conditional){return (code,severity,anchor)->reporter.report(code,conditional&&severity==Severity.ERROR?Severity.WARNING:severity,anchor);}
     private static void validateFields(WorkspaceCapture capture,java.net.URI resourceBase,Anchor owner,String operation,List<FieldAssignment> fields,Reporter reporter,CancellationToken cancellation){

@@ -68,7 +68,9 @@ final class CompletionQueries {
             TextSpan body=declaration.body();
             for(var inner:declaration.invocations())if(inner.body()!=null&&touch(inner.body(),context.offsetUtf16())) {
                 fields=inner.fields();body=inner.body();
-                operation=inner.operation() instanceof NameValue name?operations(context).stream().filter(o->o.symbol().equals(name.name())).findFirst().orElse(null):null;
+                operation = inner.operation() instanceof NameValue name
+                        ? analysis.capture().catalog().result().catalog().flatMap(c -> c.resolveSymbol(name.name())).orElse(null)
+                        : null;
             }
             if(operation!=null) {
                 for(var field:fields)if(touch(field.span(),context.offsetUtf16())) {
@@ -155,10 +157,10 @@ final class CompletionQueries {
         return context.application()==null?":":context.application().ownerScope();
     }
     private void operations(QueryContext context,List<CompletionProposal> result,TextSpan range) {
-        for(var op:operations(context))add(result,op.symbol(),"CLASS",op.description(),range,op.symbol());
-    }
-    private List<OperationDescriptor> operations(QueryContext context) {
-        return context.snapshot().analysis().capture().catalog().result().catalog().map(c->c.operations()).orElse(List.of());
+        var catalog = context.snapshot().analysis().capture().catalog().result().catalog();
+        catalog.ifPresent(c -> {
+            for (var op : c.operations()) add(result, op.symbol(), "CLASS", op.description(), range, op.symbol());
+        });
     }
     private void options(List<CompletionProposal> result,Declaration declaration,TextSpan range,boolean insertColon) {
         var names=declaration.kind()==DeclarationKind.PARAMETER?DslVocabulary.parameterOptions():DslVocabulary.taskOptions();

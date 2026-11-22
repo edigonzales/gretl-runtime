@@ -3,6 +3,7 @@ package ch.so.agi.gretl.tooling.catalog;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /** Data-only catalog. No runtime type, reflection, callback or class loader is retained. */
 public record OperationCatalog(int schemaVersion, String runtimeVersion, String dslVersion,
@@ -12,6 +13,12 @@ public record OperationCatalog(int schemaVersion, String runtimeVersion, String 
         Objects.requireNonNull(runtimeVersion); Objects.requireNonNull(dslVersion);
         Objects.requireNonNull(catalogId); Objects.requireNonNull(coverage);
     }
+    /** Resolves an exact Groovy operation symbol. Validated catalogs have unique symbols. */
+    public Optional<OperationDescriptor> resolveSymbol(String symbol) {
+        var matches = operations.stream().filter(op -> op.symbol().equals(symbol)).limit(2).toList();
+        return matches.size() == 1 ? Optional.of(matches.getFirst()) : Optional.empty();
+    }
+
     public record ValueShape(String kind, String runtimeType, List<ValueShape> children) {
         public ValueShape { Objects.requireNonNull(kind); Objects.requireNonNull(runtimeType); children = List.copyOf(children); }
         public static ValueShape fromMetadata(String type) {

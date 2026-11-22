@@ -24,6 +24,10 @@ bekommt nur den Katalog als Datenartefakt mit Schema, Identität und Prüfsummen
 keine Taskprovider oder Runtimeabhängigkeiten. Der VSIX enthält Server und
 Katalog und benötigt zum Start eine Java-25-JVM.
 
+Groovy-Operationsnamen werden ausschliesslich über das `symbol` des
+Operationskatalogs aufgelöst. Die `operationId` ist die technische Identität
+einer Operation. Die Groovy-DSL stellt Operationen unter ihrem Symbolnamen bereit.
+
 ## Quellen, Anwendungen und vollständige Analyse
 
 `ProjectResolver` und `ToolingIncludeResolver` erfassen unterstützte
