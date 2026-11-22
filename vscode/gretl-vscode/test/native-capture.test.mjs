@@ -5,13 +5,16 @@ import {mkdtemp,readFile,rm,realpath,writeFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 import os from 'node:os';import path from 'node:path';import {createRequire} from 'node:module';
 const temp=await mkdtemp(path.join(os.tmpdir(),'gretl-native-capture-'));after(()=>rm(temp,{recursive:true,force:true}));
-// Exercise the actual host method. Only external Workbench/LanguageClient services are replaced.
+// Exercise the actual host. Only external Workbench/LanguageClient services are replaced.
 const source=await readFile('src/extension.ts','utf8');
-await build({stdin:{contents:source+'\nexport {RuntimeHost,sourceDigest};',sourcefile:'extension.ts',resolveDir:path.resolve('src'),loader:'ts'},bundle:true,platform:'node',format:'cjs',outfile:temp+'/host.cjs',plugins:[{name:'external-host-services',setup(b){b.onResolve({filter:/^(vscode|vscode-languageclient\/node)$/},a=>({path:a.path,namespace:'host-fixture'}));b.onLoad({filter:/.*/,namespace:'host-fixture'},()=>({contents:`module.exports={
- Uri:{parse:s=>({toString:()=>new URL(s).href})},workspace:{textDocuments:[],isTrusted:true},
+await build({stdin:{contents:source+'\nexport {RuntimeHost,sourceDigest,vscode};',sourcefile:'extension.ts',resolveDir:path.resolve('src'),loader:'ts'},bundle:true,platform:'node',format:'cjs',outfile:temp+'/host.cjs',plugins:[{name:'external-host-services',setup(b){b.onResolve({filter:/^(vscode|vscode-languageclient\/node)$/},a=>({path:a.path,namespace:'host-fixture'}));b.onLoad({filter:/.*/,namespace:'host-fixture'},()=>({contents:`module.exports={
+ Uri:{parse:s=>({toString:()=>new URL(s).href})},
+ workspace:{textDocuments:[],isTrusted:true,applyEdit(){},onDidGrantWorkspaceTrust(){},onDidChangeWorkspaceFolders(){},onDidOpenTextDocument(){},onDidChangeConfiguration(){}},
+ window:{createOutputChannel:()=>({}),createStatusBarItem:()=>({show(){}})},
+ StatusBarAlignment:{Left:1},EventEmitter:class{fire(){}},commands:{registerCommand(){}},
  TextDocumentEdit:{is:change=>!!change.textDocument&&Array.isArray(change.edits)}
 }`,loader:'js'}));}}]});
-const {RuntimeHost,sourceDigest}=createRequire(import.meta.url)(temp+'/host.cjs');
+const {RuntimeHost,sourceDigest,vscode}=createRequire(import.meta.url)(temp+'/host.cjs');
 const documentId='file:///work/owner.groovy';
 const doc={uri:{toString:()=>documentId},version:1,isClosed:false};
 const token={isCancellationRequested:false};
@@ -72,6 +75,54 @@ test('current brackets the asynchronous disk check with two context requests and
  }
  const host=hostWith(async method=>{assert.equal(method,'gretl/context');throw Error('context request failed');});
  await assert.rejects(host.current(host.client,capture,edit),/context request failed/);
+});
+
+test('quick fix rejects a buffer change while its final context response is pending',async t=>{
+ const source="action('consumer') {}";
+ const nativeEdit={};
+ let applyQuickFix;
+ const applied=[];
+ t.mock.method(vscode.commands,'registerCommand',(name,handler)=>{
+  if(name==='gretlRuntime.applyCodeAction')applyQuickFix=handler;
+ });
+ t.mock.method(vscode.workspace,'applyEdit',async edit=>{
+  applied.push(edit);
+  return true;
+ });
+ const buffer={...doc,text:source,getText(){return this.text;}};
+ vscode.workspace.textDocuments.push(buffer);
+ try{
+  for(const changeBuffer of [false,true]){
+   const host=new RuntimeHost({});
+   const capture={...context,sourceStamps:[{documentId,version:1,editable:true,sha256:sourceDigest(source)}]};
+   const position={line:0,character:0};
+   const edit={documentChanges:[{textDocument:{uri:documentId,version:1},edits:[
+    {range:{start:position,end:position},newText:'// fix\n'}
+   ]}]};
+   const pending=Promise.withResolvers();
+   const reply=Promise.withResolvers();
+   let requests=0;
+   const client={isRunning:()=>true,protocol2CodeConverter:{asWorkspaceEdit:async()=>nativeEdit},sendRequest:async method=>{
+    assert.equal(method,'gretl/context');
+    if(++requests===4){
+     pending.resolve();
+     await reply.promise;
+    }
+    return {context:capture};
+   }};
+   Object.assign(host,{instance:'server',client});
+   host.captures.set(capture,new Map([[documentId,buffer]]));
+   host.actions.set('fix',{client,context:capture,edit,expires:Infinity});
+   const started=applyQuickFix('fix');
+   await Promise.race([pending.promise,started]);
+   assert.equal(requests,4);
+   if(changeBuffer){buffer.version++;buffer.text='// user edit\n'+source;}
+   reply.resolve();
+   if(changeBuffer)await assert.rejects(started,/GRETL buffer changed/);
+   else await started;
+   assert.deepEqual(applied,[nativeEdit]);
+  }
+ }finally{vscode.workspace.textDocuments.pop();}
 });
 
 test('modeler graph still requests and returns the full projection',async()=>{
